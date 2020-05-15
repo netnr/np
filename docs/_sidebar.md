@@ -46,4 +46,4 @@
 
 - [Netnr.Chat （基于 SignalR 的聊天）](Netnr.Chat.md)
 
-- [开发指南](GUIDE.md)
+- [Guide （开发指南）](GUIDE.md)
