@@ -1,5 +1,5 @@
 # Netnr.FileServer
-基于 .NET Core 的简单文件服务器，数据库为SQLite
+基于 .NET Core 的简单文件服务器，数据库为 SQLite
 
 ---
 

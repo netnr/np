@@ -1,5 +1,6 @@
 # netnrf 响应式框架
-用于快速开发的响应式框架
+.NET Core 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
+
 
 > 演示一：<https://rf2.netnr.com>  
 > 演示二：<https://free-rf.zme.ink>

@@ -4,5 +4,5 @@
 
 > 开源项目集合（Netnr Project）
 
-[GitHub](https://github.com/netnr/np)
+[GitHub](https://github.com/netnr)
 [Netnr](#Netnr)
