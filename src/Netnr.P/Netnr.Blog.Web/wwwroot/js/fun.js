@@ -18,7 +18,7 @@ if (console) {
     outs.push(oi);
 
     oi = fi();
-    oi.msg = "\r\n源码：\r\nhttps://github.com/netnr/blog\r\n\r\nGitHub：\r\nhttps://github.com/netnr\r\n\r\n码云：\r\nhttps://gitee.com/netnr\r\n\r\nQ群：83084426";
+    oi.msg = "\r\n源码：\r\nhttps://github.com/netnr/np\r\n\r\nGitHub：\r\nhttps://github.com/netnr\r\n\r\n码云：\r\nhttps://gitee.com/netnr\r\n\r\nQ群：83084426";
     outs.push(oi);
 
     if (!("ActiveXObject" in window)) {

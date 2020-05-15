@@ -6,8 +6,8 @@
     <Copyright>netnr</Copyright>
     <PackageIconUrl></PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/netnr/Netnr.ClassLibrary</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/netnr/Netnr.ClassLibrary</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageTags>netnr</PackageTags>
     <PackageReleaseNotes>调整 支持 `.NETStandard2.0` ，为支持 `.NET Framework 4.6` + 的引用</PackageReleaseNotes>

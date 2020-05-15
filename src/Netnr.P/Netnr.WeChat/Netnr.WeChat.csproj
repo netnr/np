@@ -6,7 +6,7 @@
     <Description>微信SDK，一个轻量级的，极致简约的微信公众平台SDK</Description>
     <Authors>netnr</Authors>
     <Company>netnr</Company>
-    <PackageProjectUrl>https://github.com/netnr/Netnr.WeChat</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
     <PackageTags>netnr wechat weixin 微信 公众号</PackageTags>
     <PackageReleaseNotes>修改项目依赖 Netnr.Core 常用的类库，项目整合</PackageReleaseNotes>
@@ -15,7 +15,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>favicon.png</PackageIcon>
     <Copyright>netnr</Copyright>
-    <RepositoryUrl>https://github.com/netnr/Netnr.WeChat</RepositoryUrl>
+    <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">

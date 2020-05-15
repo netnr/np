@@ -10,9 +10,9 @@
     <PackageReleaseNotes>日志</PackageReleaseNotes>
     <Version>0.0.1</Version>
     <Nullable>warnings</Nullable>
-    <PackageProjectUrl>https://github.com/netnr/Netnr.ClassLibrary</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
     <PackageIcon>favicon.png</PackageIcon>
-    <RepositoryUrl>https://github.com/netnr/Netnr.ClassLibrary</RepositoryUrl>
+    <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
     <PackageTags>netnr</PackageTags>
     <Copyright>netnr</Copyright>
     <DocumentationFile>Netnr.Logging.xml</DocumentationFile>

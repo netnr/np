@@ -9,6 +9,11 @@
             缓存
             </summary>
         </member>
+        <member name="F:Netnr.Core.CacheTo.memoryCache">
+            <summary>
+            缓存
+            </summary>
+        </member>
         <member name="M:Netnr.Core.CacheTo.Get(System.String)">
             <summary>
             获取数据缓存
@@ -149,6 +154,180 @@
             ||：当||前的命令失败时,才执行||后的命令
             ]]>
             </summary>  
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Shell(System.String)">
+            <summary>
+            Linux操作系统，执行Shell
+            【 using https://github.com/phil-harmoniq/Shell.NET 】
+            </summary>
+            <param name="cmd"></param>
+        </member>
+        <member name="T:Netnr.Core.CmdTo.BashResult">
+            <summary>
+            返回结果
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.BashResult.Output">
+            <summary>
+            The command's standard output as a string. (if redirected)</summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.BashResult.ErrorMsg">
+            <summary>
+            The command's error output as a string. (if redirected)</summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.BashResult.ExitCode">
+            <summary>
+            The command's exit code as an integer.</summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.BashResult.Lines">
+            <summary>
+            An array of the command's output split by newline characters. (if redirected)</summary>
+        </member>
+        <member name="T:Netnr.Core.CmdTo.Bash">
+            <summary>
+            执行
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.Bash.Native">
+            <summary>Determines whether bash is running in a native OS (Linux/MacOS).</summary>
+            <returns>True if in *nix, else false.</returns>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.Bash.Subsystem">
+            <summary>Determines if using Windows and if Linux subsystem is installed.</summary>
+            <returns>True if in Windows and bash detected.</returns>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.Bash.Output">
+            <summary>Stores output of the previous command if redirected.</summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.Bash.Lines">
+            <summary>
+            Gets an array of the command output split by newline characters if redirected. </summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.Bash.ExitCode">
+            <summary>Stores the exit code of the previous command.</summary>
+        </member>
+        <member name="P:Netnr.Core.CmdTo.Bash.ErrorMsg">
+            <summary>Stores the error message of the previous command if redirected.</summary>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Command(System.String,System.Boolean)">
+            <summary>Execute a new Bash command.</summary>
+            <param name="input">The command to execute.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Echo(System.String,System.Boolean)">
+            <summary>Echo the given string to standard output.</summary>
+            <param name="input">The string to print.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Echo(System.String,System.String,System.Boolean)">
+            <summary>Echo the given string to standard output.</summary>
+            <param name="input">The string to print.</param>
+            <param name="flags">Optional `echo` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Echo(System.Object,System.Boolean)">
+            <summary>Echo the given string to standard output.</summary>
+            <param name="input">The string to print.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Echo(System.Object,System.String,System.Boolean)">
+            <summary>Echo the given string to standard output.</summary>
+            <param name="input">The string to print.</param>
+            <param name="flags">Optional `echo` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Grep(System.String,System.String,System.Boolean)">
+            <summary>Search for `pattern` in each file in `location`.</summary>
+            <param name="pattern">The pattern to match.</param>
+            <param name="location">The files or directory to search.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Grep(System.String,System.String,System.String,System.Boolean)">
+            <summary>Search for `pattern` in each file in `location`.</summary>
+            <param name="pattern">The pattern to match.</param>
+            <param name="location">The files or directory to search.</param>
+            <param name="flags">Optional `grep` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Ls(System.Boolean)">
+            <summary>List information about files in the current directory.</summary>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Ls(System.String,System.Boolean)">
+            <summary>List information about files in the current directory.</summary>
+            <param name="flags">Optional `ls` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Ls(System.String,System.String,System.Boolean)">
+            <summary>List information about the given files.</summary>
+            <param name="flags">Optional `ls` arguments.</param>
+            <param name="files">Files or directory to search.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Mv(System.String,System.String,System.Boolean)">
+            <summary>Move `source` to `directory`.</summary>
+            <param name="source">The file to be moved.</param>
+            <param name="directory">The destination directory.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Mv(System.String,System.String,System.String,System.Boolean)">
+            <summary>Move `source` to `directory`.</summary>
+            <param name="source">The file to be moved.</param>
+            <param name="directory">The destination directory.</param>
+            <param name="flags">Optional `mv` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Cp(System.String,System.String,System.Boolean)">
+            <summary>Copy `source` to `directory`.</summary>
+            <param name="source">The file to be copied.</param>
+            <param name="directory">The destination directory.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Cp(System.String,System.String,System.String,System.Boolean)">
+            <summary>Copy `source` to `directory`.</summary>
+            <param name="source">The file to be copied.</param>
+            <param name="directory">The destination directory.</param>
+            <param name="flags">Optional `cp` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Rm(System.String,System.Boolean)">
+            <summary>Remove or unlink the given file.</summary>
+            <param name="file">The file(s) to be removed.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Rm(System.String,System.String,System.Boolean)">
+            <summary>Remove or unlink the given file.</summary>
+            <param name="file">The file(s) to be removed.</param>
+            <param name="flags">Optional `rm` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Cat(System.String,System.Boolean)">
+            <summary>Concatenate `file` to standard input.</summary>
+            <param name="file">The source file.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.Bash.Cat(System.String,System.String,System.Boolean)">
+            <summary>Concatenate `file` to standard input.</summary>
+            <param name="file">The source file.</param>
+            <param name="flags">Optional `cat` arguments.</param>
+            <param name="redirect">Print output to terminal if false.</param>
+            <returns>A `BashResult` containing the command's output information.</returns>
         </member>
         <member name="T:Netnr.Core.ConsoleTo">
             <summary>

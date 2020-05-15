@@ -4,7 +4,7 @@
     <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
     <Description>Tencent AI SDK</Description>
     <Copyright>netnr</Copyright>
-    <PackageProjectUrl>https://github.com/netnr/Netnr.TencentAI</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
     <PackageTags>netnr Tencent AI</PackageTags>
     <PackageReleaseNotes>修改项目依赖 Netnr.Core 常用的类库，项目整合</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -12,7 +12,7 @@
     <Version>1.0.0</Version>
     <Authors>netnr</Authors>
     <PackageIcon>favicon.png</PackageIcon>
-    <RepositoryUrl>https://github.com/netnr/Netnr.TencentAI</RepositoryUrl>
+    <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
