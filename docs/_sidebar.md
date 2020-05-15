@@ -1,47 +1,49 @@
-- [Netnr](README.md)
+- [Netnr （我）](README.md)
 
-- DataBase
+- DataBase （数据库访问）
     - [Netnr.Data.MySQL](Netnr.Data.MySQL.md)
     - [Netnr.Data.Oracle](Netnr.Data.Oracle.md)
     - [Netnr.Data.PostgreSQL](Netnr.Data.PostgreSQL.md)
     - [Netnr.Data.SQLite](Netnr.Data.SQLite.md)
     - [Netnr.Data.SQLServer](Netnr.Data.SQLServer.md)
 
-- ClassLibrary
-    - [Netnr.Core](Netnr.Core.md)
-    - [Netnr.Logging](Netnr.Logging.md)
-    - [Netnr.Login](Netnr.Login.md)
-    - [Netnr.TencentAI](Netnr.TencentAI.md)
-    - [Netnr.WeChat](Netnr.WeChat.md)
+- ClassLibrary （SDK）
+    - [Netnr.Core （公共类库）](Netnr.Core.md)
+    - [Netnr.Logging （日志）](Netnr.Logging.md)
+    - [Netnr.Login （第三方登录）](Netnr.Login.md)
+    - [Netnr.TencentAI （腾讯AI）](Netnr.TencentAI.md)
+    - [Netnr.WeChat （微信公众号）](Netnr.WeChat.md)
 
-- ClassApplication
-    - [Netnr.Fast](Netnr.Fast.md)
-    - [Netnr.Fast.Extend](Netnr.Fast.Extend.md)
+- ClassApplication （应用类）
+    - [Netnr.Fast （应用基础常用）](Netnr.Fast.md)
+    - [Netnr.Fast.Extend （更多拓展）](Netnr.Fast.Extend.md)
 
-- [Netnr.Blog](Netnr.Blog.md)
-    - [Netnr.Blog.Application](Netnr.Blog.Application.md)
-    - [Netnr.Blog.Data](Netnr.Blog.Data.md)
-    - [Netnr.Blog.Domain](Netnr.Blog.Domain.md)
-    - [Netnr.Blog.Web](Netnr.Blog.Web.md)
+- [Netnr.Blog （个站）](Netnr.Blog.md) 
+    - [Netnr.Blog.Application （应用层）](Netnr.Blog.Application.md)
+    - [Netnr.Blog.Data （数据层）](Netnr.Blog.Data.md)
+    - [Netnr.Blog.Domain （领域层）](Netnr.Blog.Domain.md)
+    - [Netnr.Blog.Web （展现层）](Netnr.Blog.Web.md)
 
-- [Netnr.ResponseFramework](Netnr.ResponseFramework.md)
+- [Netnr.ResponseFramework （RF框架）](Netnr.ResponseFramework.md)
     - [Netnr.ResponseFramework.Application](Netnr.ResponseFramework.Application.md)
     - [Netnr.ResponseFramework.Data](Netnr.ResponseFramework.Data.md)
     - [Netnr.ResponseFramework.Domain](Netnr.ResponseFramework.Domain.md)
     - [Netnr.ResponseFramework.Web](Netnr.ResponseFramework.Web.md)
 
-- [Netnr.ScriptService](Netnr.ScriptService.md)
+- [Netnr.ScriptService （脚本服务）](Netnr.ScriptService.md)
 
-- [Netnr.Guff](Netnr.Guff.md)
+- [Netnr.Guff（尬服）](Netnr.Guff.md)
 
-- [Netnr.DataKit](Netnr.DataKit.md)
+- [Netnr.DataKit （数据库工具及代码构建）](Netnr.DataKit.md)
     - [Netnr.DataKit.Web](Netnr.DataKit.Web.md)
     - [Netnr.DataKit.NodeJs](Netnr.DataKit.NodeJs.md)
 
-- [Netnr.FileServer](Netnr.FileServer.md)
+- [Netnr.FileServer （上传文件服务器）](Netnr.FileServer.md)
 
-- [Netnr.Tool](Netnr.Tool.md)
+- [Netnr.Tool （应用工具）](Netnr.Tool.md)
 
-- [Netnr.AliyunSMS](Netnr.AliyunSMS.md)
+- [Netnr.AliyunSMS （发短信任务）](Netnr.AliyunSMS.md)
 
-- [Netnr.Chat](Netnr.Chat.md)
+- [Netnr.Chat （基于 SignalR 的聊天）](Netnr.Chat.md)
+
+- [开发指南](GUIDE.md)
