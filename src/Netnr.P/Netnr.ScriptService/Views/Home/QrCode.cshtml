@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <small class="text-muted">网址：需包含 http 或 https 前缀 &nbsp; &nbsp; &nbsp; 电话：tel:电话号码 &nbsp; &nbsp; &nbsp; 邮箱：mailto:邮箱地址</small>
+            <div class="input-group">
+                <input id="txt" type="text" class="form-control" placeholder="内容：网址、电话、邮箱" />
+                <span class="input-group-append">
+                    <button class="btn btn-warning" type="button" id="btnCode">生成二维码</button>
+                </span>
+            </div>
+            <div id="divCodeResult" class="mt-3" style="height:520px;"></div>
+        </div>
+    </div>
+</div>
+
+<partial name="_PartialQuote" model="@("qrcode.js")" />
+
+<script>
+    $('#txt').keydown(function (e) {
+        e = e || window.event;
+        var keys = e.keyCode || e.which || e.charCode;
+        keys == 13 && $("#btnCode")[0].click();
+    })[0].focus();
+
+    $("#btnCode").click(function () {
+        if ($.trim($("#txt").val()) != "") {
+            $("#divCodeResult").empty();
+            jQuery('#divCodeResult').qrcode({
+                render: "table",
+                height: 500,
+                width: 500,
+                text: $("#txt").val()
+            });
+        } else { $("#divCodeResult").html(''); }
+    });
+</script>

@@ -1,0 +1,17 @@
+﻿<link href="/css/weather.css" rel="stylesheet" asp-append-version="true" />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <!--搜索-->
+            <div class="input-group" style="position:relative">
+                <input id="txtSearch" type="text" class="form-control" placeholder="输入城市名 ， 例如：重庆 或 CQ" autocomplete="off">
+                <div id="divWeatherCode"></div>
+            </div>
+        </div>
+    </div>
+    <div id="divweather" class="row"></div>
+</div>
+
+<script src="/js/weathercode.js" asp-append-version="true"></script>
+<script src="/js/weather.js" asp-append-version="true"></script>

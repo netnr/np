@@ -1,0 +1,48 @@
+﻿@model List<Netnr.ResponseFramework.Domain.SysButton>
+
+@if (Model.Count > 0)
+{
+    <div class="row">
+        <div class="col-md-12 btn-menu bgwhite" id="BtnMenu">
+            @foreach (var item in Model)
+            {
+                if (item.SbPid == Guid.Empty.ToString())
+                {
+                    var list_sub = Model.Where(m => m.SbPid == item.SbId).ToList();
+                    int? group = -1;
+
+                    if (list_sub.Count == 0)
+                    {
+                        <button id="@item.SbBtnId" class="@item.SbBtnClass @(item.SbBtnHide==1?"hidden":"")">
+                            <i class="@item.SbBtnIcon"></i> @item.SbBtnText
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="btn-group @(item.SbBtnHide==1?"hidden":"")">
+                            <button id="@item.SbBtnId" class="@item.SbBtnClass" data-toggle="dropdown">
+                                <i class="@item.SbBtnIcon"></i> @item.SbBtnText <i class="caret"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-yellow">
+                                @foreach (var item_sub in list_sub)
+                                {
+                                    if (group != -1 && group != item_sub.SbBtnGroup)
+                                    {
+                                        <li class="divider"></li>
+                                    }
+                                    group = item_sub.SbBtnGroup;
+
+                                    <li class="@(item_sub.SbBtnHide==1?"hidden":"")">
+                                        <a id="@item_sub.SbBtnId" href="javascript:void(0)">
+                                            <i class="@item_sub.SbBtnIcon"></i> @item_sub.SbBtnText
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+}

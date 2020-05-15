@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "单据";
+}
+
+@await Component.InvokeAsync("Form", new InvokeFormVM()
+{
+    ViewName = "Invoice",
+    TableName = "TempInvoiceMain",
+    InvoiceTitle = "采购订单"
+})
+
+<partial name="_BaseViewPartial" />

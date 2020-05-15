@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "表配置示例";
+}
+
+@await Component.InvokeAsync("Form", new InvokeFormVM()
+{
+    TableName = "TempExample",
+    PanelTitle = "面板一,面板二"
+})
+
+<partial name="_BaseViewPartial" />

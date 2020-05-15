@@ -1,0 +1,66 @@
+@{
+    ViewData["Title"] = "登录";
+}
+
+<link href="/css/account/login.css" rel="stylesheet" asp-append-version="true" />
+
+<div class="row">
+    <div class="col-sm-6 leftcard">
+        <div class="row">
+            <div class="col-lg-7 col-lg-offset-4 col-md-8 col-md-offset-3">
+                <h1>RF响应式管理系统</h1>
+                <p>.NET Core的响应式框架，基于Ace Admin框架菜单导航，Bootstrap布局，fontAwesome图标，内嵌Iframe用EasyUI做数据绑定，动态配置列表，动态配置表单</p>
+                <img class="leftimg" src="/images/chart.svg">
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 rightcard">
+        <div class="row">
+            <div class="col-lg-7 col-md-8 col-md-offset-1">
+                <h2>用户登录</h2>
+                <p>输入账号、密码进行登录</p>
+                <form onsubmit="return loginValid()">
+                    <div class="input-group input-group-lg mt-3">
+                        <span class="input-group-addon">
+                            <i class="fa fa-fw fa-user"></i>
+                        </span>
+                        <input class="form-control" name="SuName" maxlength="50" placeholder="请输入账号" value="admin" autofocus required />
+                    </div>
+                    <div class="input-group input-group-lg mt-3">
+                        <span class="input-group-addon">
+                            <i class="fa fa-fw fa-lock"></i>
+                        </span>
+                        <input class="form-control" type="text" name="SuPwd" maxlength="50" placeholder="请输入密码" value="admin" required />
+                    </div>
+                    <div class="input-group input-group-lg mt-3">
+                        <span class="input-group-addon">
+                            <i class="fa fa-fw fa-tag"></i>
+                        </span>
+                        <input class="form-control" name="captcha" placeholder="请输入验证码" maxlength="4" required autocomplete="off" />
+                        <span class="input-group-addon iga-captcha">
+                            <img src="/account/captcha" title="点击验证码刷新" id="img_captcha" />
+                        </span>
+                    </div>
+                    <div class="checkbox mt-3">
+                        <label>
+                            <input type="checkbox" name="remember" checked="checked" value="1"> 记住登录状态
+                        </label>
+                    </div>
+                    <button class="btn btn-danger btn-lg submit" type="submit">登录</button>
+
+                    <a href="/tool/resetdatabaseforjson" class="btn btn-warning btn-lg pull-right" target="_blank">重置数据库</a>
+                </form>
+                <p class="small">点击登录即表示您同意我们的<a href="javascript:void(0)">条款</a>！</p>
+                <p class="small">没有账号? <a href="javascript:void(0)">点击注册</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 footer text-muted">
+        <div>
+            <a class="text-muted" target="_blank" href="//dot.net">Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</a>
+            &nbsp; &nbsp; &copy; <a class="text-muted" target="_blank" href="https://github.com/netnr/netnrf">netnrf</a> @DateTime.Now.Year
+        </div>
+    </div>
+</div>
+
+<script src="/js/account/login.js" asp-append-version="true"></script>

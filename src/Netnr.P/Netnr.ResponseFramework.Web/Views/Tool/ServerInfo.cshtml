@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "服务器信息";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="divAs">
+            <img src="/images/loading.svg" />
+        </div>
+    </div>
+</div>
+
+<script src="/js/tool/serverinfo.js" asp-append-version="true"></script>

@@ -1,0 +1,38 @@
+﻿<style>
+    .messagebox img {
+        width: 32px;
+    }
+
+    .messagebox textarea {
+        height: 90px;
+    }
+
+    .messagebox pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+</style>
+<div class="container">
+    <div class="row messagebox">
+        <div class="col-md-12">
+            <ul class="list-unstyled" id="messagelist"></ul>
+        </div>
+        <div class="col-md-12 my-3">
+            <form id="form1">
+                <div class="form-group">
+                    <label>昵称</label>
+                    <input class="form-control" placeholder="输入昵称（可选）" name="UserNickname" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>内容</label>
+                    <textarea class="form-control" name="Content" placeholder=" 内容：写留言内容，文明点 ^_^ &#xD;&#xA;&#xD;&#xA; 快捷提交：Ctrl + Enter"></textarea>
+                </div>
+            </form>
+            <button class="btn btn-warning" id="btnSave">留言</button>
+        </div>
+    </div>
+</div>
+
+<partial name="_PartialQuote" model="@("bmob.js")" />
+
+<script src="/js/message.js" asp-append-version="true"></script>

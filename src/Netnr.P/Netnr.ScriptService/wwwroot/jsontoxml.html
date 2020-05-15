@@ -1,0 +1,156 @@
+﻿            <!--
+            https://github.com/netnr
+            https://gitee.com/netnr
+            https://www.netnr.com
+            https://zme.ink
+            -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>JSON转换XML NET牛人</title>
+    <meta name="keywords" content="netnr,NET牛人,JSON转换XML" />
+    <meta name="description" content="netnr,NET牛人,JSON与XML相互转换" />
+
+</head>
+<body>
+                <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
+            <link href="https://code.bdstatic.com/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+            <script src="https://code.bdstatic.com/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+
+
+    <link href="/css/global.css?v=M5KD0L7Um9ATF0UOw4IBUuIsX5R_V8zjtaf0WT4k8f4" rel="stylesheet" />
+
+        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+            <span class="fa fa-align-justify fa-2x"></span>
+        </button>
+        <div class="netnrnav horizontal">
+            <div class="netnrnav-wrapper">
+                <ul>
+                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                    <li>
+                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                        <ul>
+                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
+                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
+                            <li class="divider"></li>
+                            <li><a href="https://ss.netnr.com/message"><i class="fa fa-fw fa-commenting-o"></i> 留言</a></li>
+                            <li><a target="_blank" href="https://ss.netnr.com/contact"><i class="fa fa-fw fa-envelope-open-o"></i> 联系 <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            <li class="divider"></li>
+                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    <script src="/js/global.js?v=9yoeQxqNVY-Z-rH-PpzgyIMpryLYqquO6_YhErgT10M"></script>
+
+        <h4 class="text-center mt-3 mb-4">
+            <img src="/icon/xml.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
+            JSON&#x8F6C;&#x6362;XML
+        </h4>
+
+    <div class="min300">
+        <div class="container">
+    <div class="row" id="tobox">
+        <div class="col-sm-6">
+            <div class="input-group mb-2">
+                <button type="button" class="btn btn-warning" id="btnToXml">JSON → XML</button>
+                <div class="input-group-prepend">
+                    <select class="custom-select" id="seautoformatter1">
+                        <option value="1">自动格式化</option>
+                        <option value="2">不格式化</option>
+                    </select>
+                </div>
+            </div>
+            <pre id="txt1" class="border overflow-hidden">
+{
+  "site": {
+    "title": "NET牛人",
+    "domain": "https://www.netnr.com",
+    "foreverdomain": "http://netnr.top",
+    "createtime": "2014.01.01",
+    "qqgroup": 83084426
+  },
+  "about": {
+    "name": "netnr",
+    "sex": "男",
+    "birthday": "1992.07.13",
+    "injob": "2012.03.01",
+    "live": "中国重庆",
+    "stain": null,
+    "qq": 1041911384,
+    "mail": "netnr@netnr.com",
+    "git": [
+      {
+        "name": "github",
+        "url": "https://github.com/netnr"
+      },
+      {
+        "name": "gitee",
+        "url": "https://gitee.com/netnr"
+      }
+    ]
+  },
+  "updaet": "2018.01.08",
+  "version": "v.1.0.0"
+}</pre>
+        </div>
+        <div class="col-sm-6">
+            <div class="input-group mb-2">
+                <button type="button" class="btn btn-warning" id="btnToJson">XML → JSON</button>
+                <div class="input-group-prepend">
+                    <select class="custom-select" id="seautoformatter2">
+                        <option value="1">自动格式化</option>
+                        <option value="2">不格式化</option>
+                    </select>
+                </div>
+                <div class="input-group-prepend">
+                    <i class="fa fa-info-circle ml-2" data-toggle="tooltip" title="必须有一个根节点，没有则自动加 root"></i>
+                </div>
+            </div>
+
+            <div class="border overflow-hidden" id="txt2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function AutoHeight() {
+        var ch = $(window).height() - $('#txt1').offset().top - 20;
+        $('#txt1').css('height', Math.max(200, ch));
+        $('#txt2').css('height', Math.max(200, ch));
+    }
+    AutoHeight();
+</script>
+
+            <script src="https://cdn.jsdelivr.net/gh/abdolence/x2js@1.2.0/xml2json.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs/loader.js"></script>
+            <script>
+                require.config({
+                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs" },
+                    'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+                });
+            </script>
+
+
+<script src="/js/jsontoxml.js?v=i_Zy74zNkM0K8_K8NVVZYyruyTBgQkivhlpmp85cLV4"></script>
+    </div>
+
+    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

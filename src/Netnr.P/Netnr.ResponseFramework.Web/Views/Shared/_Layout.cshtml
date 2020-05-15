@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <partial name="_QuotePartial" model="@("bootstrap.css,fa.css,jquery.js,bootstrap.js,easyui,z.css,z.js")" />
+</head>
+<body>
+    <div class="container-fluid">
+        @await Component.InvokeAsync("Button")
+        <div id="myBody">
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>

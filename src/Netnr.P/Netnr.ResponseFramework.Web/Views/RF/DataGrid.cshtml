@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "DataGrid";
+}
+
+<!--快捷查询-->
+<div class="row">
+    <div class="col-md-2 col-sm-4 col-xs-6 mb5">
+        <div class="input-group">
+            <span class="input-group-addon">虚表</span>
+            <select class="form-control" id="query_tablename">
+                <option value="">全部</option>
+                <option>SysTableConfig</option>
+                <option>SysUser</option>
+                <option>SysRole</option>
+                <option>SysLog</option>
+                <option disabled>示例数据，没列完</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-8 col-xs-6 mb5">
+        <div class="input-group">
+            <span class="input-group-addon">列键</span>
+            <input class="form-control" id="query_colfield" placeholder="模糊搜索表字段名" />
+            <span class="input-group-btn">
+                <button class="btn btn-primary" id="btnSearch">搜索</button>
+            </span>
+        </div>
+    </div>
+</div>
+
+<partial name="_BaseViewPartial" />

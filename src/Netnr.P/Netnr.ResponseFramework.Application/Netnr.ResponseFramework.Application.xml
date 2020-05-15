@@ -1,0 +1,387 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Netnr.ResponseFramework.Application</name>
+    </assembly>
+    <members>
+        <member name="T:Netnr.ResponseFramework.Application.CommonService">
+            <summary>
+            公共、常用方法
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.CommonService.DicSqlRelation">
+            <summary>
+            数据库查询条件关系符
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QueryJoin``1(System.Linq.IQueryable{``0},QueryDataInputVM,Netnr.ResponseFramework.Data.ContextBase,QueryDataOutputVM@)">
+            <summary>
+            查询拼接
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <param name="ivm"></param>
+            <param name="db"></param>
+            <param name="ovm"></param>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QueryWhere``1(System.Linq.IQueryable{``0},QueryDataInputVM)">
+            <summary>
+            查询条件（IQueryable）
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QueryWhere``1(System.Collections.Generic.IEnumerable{``0},QueryDataInputVM)">
+            <summary>
+            查询条件（IEnumerable,仅支持部分）
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.ToDataTableForString``1(System.Collections.Generic.List{``0})">
+            <summary>
+            实体转表，类型为字符串
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.GetLoginUserInfo(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            获取登录用户信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.LoginUserRoleInfo(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            获取登录用户角色信息
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey">
+            <summary>
+            全局缓存KEY
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey.SysMenu">
+            <summary>
+            菜单缓存KEY
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey.SysButton">
+            <summary>
+            按钮缓存KEY
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.GlobalCacheRmove">
+            <summary>
+            清空全局缓存
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysTableConfigList(System.Linq.Expressions.Expression{System.Func{Netnr.ResponseFramework.Domain.SysTableConfig,System.Boolean}})">
+            <summary>
+            查询配置信息
+            </summary>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysMenuList(System.Func{Netnr.ResponseFramework.Domain.SysMenu,System.Boolean},System.Boolean)">
+            <summary>
+            查询菜单
+            </summary>
+            <param name="predicate"></param>
+            <param name="cache"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysButtonList(System.Func{Netnr.ResponseFramework.Domain.SysButton,System.Boolean},System.Boolean)">
+            <summary>
+            查询按钮
+            </summary>
+            <param name="predicate"></param>
+            <param name="cache"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysRoleEntity(System.Linq.Expressions.Expression{System.Func{Netnr.ResponseFramework.Domain.SysRole,System.Boolean}})">
+            <summary>
+            查询角色信息
+            </summary>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.DataMirrorService">
+            <summary>
+            - 数据库数据存储为JSON（备份数据）
+            - 根据JSON反序列化导入（重置数据）
+            
+            说明：从执行SQL脚本重置 改为 EF清理表插入数据的模式，更好维护，而且兼容了内存数据库
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.DataMirrorService.JsonPath">
+            <summary>
+            JSON存储路径
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.DataMirrorService.SaveAsJson(System.Boolean)">
+            <summary>
+            保存为JSON文件
+            </summary>
+            <param name="CoverJson">写入JSON文件，默认 false</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.DataMirrorService.AddForJson(System.Boolean)">
+            <summary>
+            根据JSON写入数据
+            </summary>
+            <param name="isClear">是否清理表，默认清理</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.ExportService">
+            <summary>
+            导出辅助
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.ModelsMapping(QueryDataInputVM,QueryDataOutputVM)">
+            <summary>
+            数据实体映射
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellFormat(System.String,System.String,System.String,System.Data.DataRow)">
+            <summary>
+            单元格格式化
+            </summary>
+            <param name="tableName">表名</param>
+            <param name="field">字段名</param>
+            <param name="value">单元格值</param>
+            <param name="dr">当前行</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.ExportService.CellMapping">
+            <summary>
+            映射
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.CellMapping.Mck">
+            <summary>
+            缓存前缀
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.CellMapping.Mce">
+            <summary>
+            缓存过期时间（单位：秒）
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.KeyValueMap(System.String,System.String)">
+            <summary>
+            字典映射转换
+            </summary>
+            <param name="kv">格式：1:未生成,2:已生成</param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status01(System.String)">
+            <summary>
+            状态格式化
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status02(System.String)">
+            <summary>
+            状态格式化
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status03(System.String)">
+            <summary>
+            状态格式化
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.DateTimeFormat(System.String,System.String)">
+            <summary>
+            时间格式化
+            </summary>
+            <param name="value"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.ExcelDraw(System.String,QueryDataInputVM)">
+            <summary>
+            操作已经生成的Excel
+            </summary>
+            <param name="fullPath"></param>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.ExportService.StyleType">
+            <summary>
+            单元格公共样式枚举
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.normal">
+            <summary>
+            正常，默认
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.headCenter">
+            <summary>
+            头部居中
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.headLeft">
+            <summary>
+            头部居左
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.whiteGreen">
+            <summary>
+            白色字体，绿色背景
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.whiteOrange">
+            <summary>
+            白色字体，橙色背景
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.blue">
+            <summary>
+            蓝色字体
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.green">
+            <summary>
+            绿色字体
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.blankGray">
+            <summary>
+            黑色字体，灰色背景
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.bold">
+            <summary>
+            加粗
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.ExportService.StyleType.headNoBorder">
+            <summary>
+            头部无边框
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CreateCellStyle(NPOI.SS.UserModel.IWorkbook,Netnr.ResponseFramework.Application.ExportService.StyleType)">
+            <summary>
+            定义单元格常用到样式
+            </summary>
+            <param name="wb"></param>
+            <param name="st"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.TaskService">
+            <summary>
+            任务
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.TaskService.ClearTemp">
+            <summary>
+            清理临时文件
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.TaskService.Reg">
+            <summary>
+            任务注册
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.TaskService.Reg.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.TaskService.ResetDataBaseJob">
+            <summary>
+            重置数据库
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.TaskService.ClearTempJob">
+            <summary>
+            清理临时目录
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM">
+            <summary>
+            表单组件参数项
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.ViewName">
+            <summary>
+            渲染视图名称，默认Default
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.TableName">
+            <summary>
+            表配置表名（虚表）
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.PanelTitle">
+            <summary>
+            多面板选项卡标题（有两个区域或以上时，英文逗号分隔）
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.InvoiceTitle">
+            <summary>
+            单据标题
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.ModalSize">
+            <summary>
+            模态框大小 1小 2中 3大
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.MsClass">
+            <summary>
+            模态框大小转换样式名
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.Index">
+            <summary>
+            表单ID后缀，单页面多表单，需要累加
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM.Data">
+            <summary>
+            输出的数据
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Application.ViewModel.LoginUserVM">
+            <summary>
+            登录用户信息
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.LoginUserVM.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.LoginUserVM.UserName">
+            <summary>
+            登录账号
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.LoginUserVM.Nickname">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Application.ViewModel.LoginUserVM.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,40 @@
+﻿<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="input-group-append">
+                    <select class="custom-select" id="setheme">
+                        <optgroup label="Theme">
+                            <option value="vs">Visual Studio</option>
+                            <option value="vs-dark">Visual Studio Dark</option>
+                            <option value="hc-black">High Contrast Dark</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="input-group-append">
+                    <select class="custom-select" id="selanguage">
+                        <optgroup label="Language"></optgroup>
+                    </select>
+                </div>
+                <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-12">
+            <div id="editor" class="border overflow-hidden"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function AutoHeight() {
+        var ch = $(window).height() - $('#editor').offset().top - 15;
+        $('#editor').css('height', Math.max(200, ch));
+    }
+    AutoHeight();
+</script>
+
+<partial name="_PartialQuote" model="@("monaco-editor")" />
+
+<script src="/js/vscode.js" asp-append-version="true"></script>

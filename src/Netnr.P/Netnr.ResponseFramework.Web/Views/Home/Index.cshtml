@@ -1,0 +1,232 @@
+﻿@model Netnr.ResponseFramework.Application.ViewModel.LoginUserVM
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html style="overflow:hidden; padding:0;">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>netnrf响应式框架</title>
+</head>
+
+<body class="no-skin">
+    <partial name="_QuotePartial" model="@("loading,bootstrap.css,fa.css,ace.css,z.css")" />
+
+    <!--顶部-->
+    <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-container" id="navbar-container">
+            <!--导航小按钮-->
+            <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler">
+                <span class="sr-only">Toggle sidebar</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!--Logo-->
+            <div class="navbar-header pull-left hidden-xs">
+                <a href="javascript:void(0);" class="navbar-brand">
+                    RF框架
+                </a>
+            </div>
+            <!--右侧-->
+            <div class="navbar-buttons navbar-header pull-right" style="white-space:nowrap">
+                <ul class="nav ace-nav">
+                    <!--通知-->
+                    <li class="purple">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <i class="ace-icon fa fa-bell icon-animated-bell"></i>
+                            <span class="badge badge-important">8</span>
+                        </a>
+                        <ul class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+                            <li class="dropdown-header">
+                                <i class="ace-icon fa fa-envelope-o"></i>
+                                8条通知
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="btn btn-xs btn-primary fa fa-user"></i>
+                                    新用户注册...
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <div class="clearfix">
+                                        <span class="pull-left">
+                                            <i class="btn btn-xs no-hover btn-success fa fa-shopping-cart"></i>
+                                            新订单
+                                        </span>
+                                        <span class="pull-right badge badge-success">+8</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <div class="clearfix">
+                                        <span class="pull-left">
+                                            <i class="btn btn-xs no-hover btn-info fa fa-twitter"></i>
+                                            粉丝
+                                        </span>
+                                        <span class="pull-right badge badge-info">+11</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="dropdown-footer">
+                                <a href="#">
+                                    查看所有通知
+                                    <i class="ace-icon fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!--消息-->
+                    <li class="green">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <i class="ace-icon fa fa-envelope icon-animated-vertical"></i>
+                            <span class="badge badge-success">5</span>
+                        </a>
+                        <ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+                            <li class="dropdown-header">
+                                <i class="ace-icon fa fa-envelope-o"></i>
+                                5条消息
+                            </li>
+                            <li class="dropdown-content">
+                                <ul class="dropdown-menu dropdown-navbar">
+                                    @for (int i = 0; i < 5; i++)
+                                    {
+                                        <li>
+                                            <a href="#">
+                                                <img src="/images/bird.jpg" class="msg-photo" alt="图标" />
+                                                <span class="msg-body">
+                                                    <span class="msg-title">
+                                                        <span class="blue">netnr:</span>
+                                                        项目迭代更新，进群交流
+                                                    </span>
+                                                    <span class="msg-time">
+                                                        <i class="ace-icon fa fa-clock-o"></i>
+                                                        <span>前@(i * 3)分钟</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                            <li class="dropdown-footer">
+                                <a href="#">
+                                    查看全部<i class="ace-icon fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!--个人信息-->
+                    <li class="light-blue">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                            <img class="nav-user-photo" src="/images/bird.jpg" alt="头像" />
+                            <span class="user-info">@Model.Nickname</span>
+                            <i class="ace-icon fa fa-caret-down"></i>
+                        </a>
+                        <!--个人菜单-->
+                        <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret" id="usermenu">
+                            <li><a><i class="fa fa-user-circle-o text-primary"></i>@Model.UserName</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/home/guide"><i class="fa fa-flag blue"></i>系统初始化向导</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#wechatp"><i class="fa fa-wechat green"></i>关注公众号</a></li>
+                            <li><a href="https://ss.netnr.com/contact" target="_blank"><i class="fa fa-envelope green"></i>联系打赏</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#updatepassword"><i class="fa fa-edit orange"></i>修改密码</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/account/logout"><i class="ace-icon fa fa-power-off red"></i>安全退出</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--主-->
+    <div class="main-container" id="main-container">
+        <div id="sidebar" class="sidebar responsive sidebar-fixed">
+            <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+                <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+                    <!--折叠菜单-->
+                    <button class="btn btn-success sidebar-collapse" id="sidebar-collapse" title="折叠菜单">
+                        <i class="ace-icon fa fa-expand"></i>
+                    </button>
+                    <!--菜单模式-->
+                    <div class="btn btn-warning dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#" style="color: white; display: block;">
+                            <i class="ace-icon fa fa-cog"></i>
+                        </a>
+                        <ul id="ulset" class="dropdown-menu" style="color:#333;text-shadow:none;padding:0 5px">
+                            <li>
+                                <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-hover" />
+                                <label class="lbl" for="ace-settings-hover">菜单浮动</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-compact" />
+                                <label class="lbl" for="ace-settings-compact">菜单收缩</label>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--主题-->
+                    <div id="divTheme" title="皮肤切换" class="btn btn-info dropdown dropdown-colorpicker">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#" style="color: white; display: block;">
+                            <i class="ace-icon fa fa-pencil"></i>
+                        </a>
+                        <ul class="dropdown-menu" id="switch_skin">
+                            <li><a class="colorpick-btn selected" href="#" style="background-color:#438EB9;" data-skin="no-skin"></a></li>
+                            <li><a class="colorpick-btn" href="#" style="background-color:#222A2D;" data-skin="skin-1"></a></li>
+                            <li><a class="colorpick-btn" href="#" style="background-color:#C6487E;" data-skin="skin-2"></a></li>
+                            <li><a class="colorpick-btn" href="#" style="background-color:#D0D0D0;" data-skin="skin-3 no-skin"></a></li>
+                        </ul>
+                    </div>
+                    <!--样式设置-->
+                    <button class="btn btn-danger" id="btn_style_config" title="样式配置">
+                        <i class="ace-icon fa fa-text-height"></i>
+                    </button>
+                </div>
+                <!--四色菜单-->
+                <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+                    <span class="btn btn-info"></span>
+                    <span class="btn btn-success"></span>
+                    <span class="btn btn-warning"></span>
+                    <span class="btn btn-danger"></span>
+                </div>
+            </div>
+            <!--菜单-->
+            <ul id="ulnav" class="nav nav-list"></ul>
+        </div>
+        <!--主体-->
+        <div class="main-content">
+            <!--选项卡·标签-->
+            <div class="hidden-xs mtab" id="mtab">
+                <!--左滑-->
+                <a href="javascript:void(0);" class="mtab-btn" title="左滑"><i class="fa fa-backward"></i></a>
+                <!--标签主体-->
+                <div class="mtab-body"><div class="mtab-main" id="mtab-main"></div></div>
+                <!--下拉菜单-->
+                <div class="pull-right btn-group" id="mtab-menu">
+                    <button class="mtab-btn" data-cmd="reload" title="刷新"><i class="fa fa-refresh"></i></button>
+                    <button class="mtab-btn" data-toggle="dropdown" title="更多"><i class="fa fa-chevron-down"></i></button>
+                    <ul class="dropdown-menu dropdown-yellow dropdown-menu-right">
+                        <li data-cmd="closeother"><a>关闭其他标签页</a></li>
+                        <li class="divider"></li>
+                        <li data-cmd="closeall"><a>关闭全部</a></li>
+                    </ul>
+                </div>
+                <!--右滑-->
+                <a href="javascript:void(0);" class="pull-right mtab-btn" title="右滑"><i class="fa fa-forward"></i></a>
+            </div>
+            <!--选项卡·内容-->
+            <div class="tab-content" id="mtabox"></div>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_QuotePartial", "jquery.js,bootstrap.js,ace.js,z.js,init.js")
+
+</body>
+</html>

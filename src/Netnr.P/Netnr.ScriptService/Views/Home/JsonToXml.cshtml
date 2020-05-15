@@ -1,0 +1,76 @@
+<div class="container">
+    <div class="row" id="tobox">
+        <div class="col-sm-6">
+            <div class="input-group mb-2">
+                <button type="button" class="btn btn-warning" id="btnToXml">JSON → XML</button>
+                <div class="input-group-prepend">
+                    <select class="custom-select" id="seautoformatter1">
+                        <option value="1">自动格式化</option>
+                        <option value="2">不格式化</option>
+                    </select>
+                </div>
+            </div>
+            <pre id="txt1" class="border overflow-hidden">
+{
+  "site": {
+    "title": "NET牛人",
+    "domain": "https://www.netnr.com",
+    "foreverdomain": "http://netnr.top",
+    "createtime": "2014.01.01",
+    "qqgroup": 83084426
+  },
+  "about": {
+    "name": "netnr",
+    "sex": "男",
+    "birthday": "1992.07.13",
+    "injob": "2012.03.01",
+    "live": "中国重庆",
+    "stain": null,
+    "qq": 1041911384,
+    "mail": "netnr@netnr.com",
+    "git": [
+      {
+        "name": "github",
+        "url": "https://github.com/netnr"
+      },
+      {
+        "name": "gitee",
+        "url": "https://gitee.com/netnr"
+      }
+    ]
+  },
+  "updaet": "2018.01.08",
+  "version": "v.1.0.0"
+}</pre>
+        </div>
+        <div class="col-sm-6">
+            <div class="input-group mb-2">
+                <button type="button" class="btn btn-warning" id="btnToJson">XML → JSON</button>
+                <div class="input-group-prepend">
+                    <select class="custom-select" id="seautoformatter2">
+                        <option value="1">自动格式化</option>
+                        <option value="2">不格式化</option>
+                    </select>
+                </div>
+                <div class="input-group-prepend">
+                    <i class="fa fa-info-circle ml-2" data-toggle="tooltip" title="必须有一个根节点，没有则自动加 root"></i>
+                </div>
+            </div>
+
+            <div class="border overflow-hidden" id="txt2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function AutoHeight() {
+        var ch = $(window).height() - $('#txt1').offset().top - 20;
+        $('#txt1').css('height', Math.max(200, ch));
+        $('#txt2').css('height', Math.max(200, ch));
+    }
+    AutoHeight();
+</script>
+
+<partial name="_PartialQuote" model="@("xml2json.js,monaco-editor")" />
+
+<script src="/js/jsontoxml.js" asp-append-version="true"></script>

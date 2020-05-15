@@ -1,0 +1,58 @@
+﻿@model IGrouping<int, SysTableConfig>
+
+@foreach (var item in Model)
+{
+    var maxlen = item.FormMaxlength == -1 ? "" : item.FormMaxlength.ToString();
+    var coln = 6;
+    switch (item.FormSpan)
+    {
+        case 2: coln = 12; break;
+        case 3: coln = 4; break;
+        case 4: coln = 8; break;
+    }
+
+    <div class='col-md-@coln col-sm-6 @(item.FormHide>=1?"hidden":"")'>
+        <div class="form-group">
+            <label class='control-label @(item.FormRequired==1?"required":"")'>@item.ColTitle</label>
+            <div>
+                @if ("checkbox".Contains(item.FormType))
+                {
+                    <label class="checkbox">
+                        <input type="checkbox" @(item.FormValue == "1" ? "checked" : "") value="1" id="@item.ColField" name="@item.ColField" data-type="@item.FormType" data-query="@item.ColQuery" data-url="@item.FormUrl" placeholder="@item.FormPlaceholder" />
+                        @item.FormText
+                    </label>
+                }
+                else if ("datetime".Contains(item.FormType))
+                {
+                    <input type='text' id="@item.ColField" name="@item.ColField" class="form-control" value="@item.FormValue" data-type="@item.FormType" data-query="@item.ColQuery" data-url="@item.FormUrl" placeholder="@item.FormPlaceholder" maxlength="@maxlen" />
+                }
+                else if ("modal".Contains(item.FormType))
+                {
+                    <input type='text' id="@item.ColField" name="@item.ColField" class="form-control" value="@item.FormValue" data-type="@item.FormType" data-query="@item.ColQuery" data-url="@item.FormUrl" placeholder="@item.FormPlaceholder" maxlength="@maxlen" />
+                    <i class="fa fa-search form-control-feedback"></i>
+                }
+                else if ("textarea".Equals(item.FormType))
+                {
+                    <textarea id="@item.ColField" name="@item.ColField" class="form-control area-height" data-type="@item.FormType" data-query="@item.ColQuery" data-url="@item.FormUrl" placeholder="@item.FormPlaceholder" maxlength="@maxlen">@item.FormValue</textarea>
+                }
+                else if ("password".Equals(item.FormType))
+                {
+                    <input type='password' id="@item.ColField" name="@item.ColField" class="form-control" value="@item.FormValue" data-type="@item.FormType" data-query="@item.ColQuery" data-url="@item.FormUrl" placeholder="@item.FormPlaceholder" maxlength="@maxlen" />
+                }
+                else if ("file".Equals(item.FormType))
+                {
+                    <input type='file' id="@item.ColField" class="form-control" data-type="@item.FormType" data-query="@item.ColQuery" data-url="@item.FormUrl" />
+                    <input type="hidden" id="hid_@item.ColField" name="@item.ColField" value="@item.FormValue" />
+                    @if (!string.IsNullOrWhiteSpace(item.FormPlaceholder))
+                    {
+                        <p class="help-block">@item.FormPlaceholder</p>
+                    }
+                }
+                else
+                {
+                    <input type='text' id="@item.ColField" name="@item.ColField" class="form-control" value="@item.FormValue" data-type="@item.FormType" data-query="@item.ColQuery" data-url="@item.FormUrl" placeholder="@item.FormPlaceholder" maxlength="@maxlen" />
+                }
+            </div>
+        </div>
+    </div>
+}

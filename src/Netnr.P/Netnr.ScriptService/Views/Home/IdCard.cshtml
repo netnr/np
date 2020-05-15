@@ -1,0 +1,29 @@
+﻿<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="input-group mb-3">
+                <input id="txtSearch" type="text" class="form-control" placeholder="请输入身份证号（15位或18位）" autocomplete="off">
+                <span class="input-group-append">
+                    <button class="btn btn-warning" type="button" id="btnSearch">查询</button>
+                </span>
+            </div>
+
+            <div id="info">
+                <p>号 码： <strong id="code"></strong></p>
+                <p>地 区： <strong id="diqu"></strong></p>
+                <p>生 日： <strong id="shengri"></strong></p>
+                <p>性 别： <strong id="xingbie"></strong></p>
+                <br>
+            </div>
+            <div style="display:none;" id="e_info">
+                <p>你查询的是： <strong id="e_e_code"></strong> <font class="text-danger">(最后一位校验码错误)</font></p>
+                <p>　正确号码： <strong id="e_code"></strong></p>
+                <p>　　　地区： <strong id="e_diqu"></strong></p>
+                <p>　　　生日： <strong id="e_shengri"></strong></p>
+                <p>　　　性别： <strong id="e_xingbie"></strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/idcard.js" asp-append-version="true"></script>

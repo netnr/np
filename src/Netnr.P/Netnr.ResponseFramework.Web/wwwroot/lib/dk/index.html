@@ -1,0 +1,2441 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+    <title> Netnr.DataKit</title>
+
+    <meta name="keywords" content="netnr,NET牛人,Netnr.DataKit" />
+    <meta name="description" content="netnr,NET牛人,数据库生成实体" />
+
+    <link href="https://code.bdstatic.com/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui/1.9.0/themes/metro/easyui.css" rel="stylesheet" />
+    <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui/1.9.0/jquery.easyui.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/exceljs@3.6.0/dist/exceljs.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/jszip@3.2.2/dist/jszip.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+
+    <script src="https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs/loader.js"></script>
+
+    <style>
+        .h150 {
+            height: 150px !important;
+        }
+
+        .dmbox {
+            width: 100%;
+            overflow-y: auto;
+            max-height: 250px;
+        }
+
+        .gfck {
+            width: 15px;
+            height: 15px;
+            margin: 0 10px 0 2px;
+            vertical-align: middle;
+        }
+
+        /*清除值*/
+        .comboclear::before {
+            content: "✕";
+        }
+
+        .comboclear {
+            opacity: .3;
+            font-size: 14px;
+            line-height: 2.2;
+            text-align: center;
+            outline: none !important;
+            filter: alpha(opacity=30);
+            text-decoration: none !important;
+        }
+
+        /* Bootstrap Ext */
+        .modal-full {
+            width: auto;
+            margin: 8px 8px 0;
+            max-width: initial;
+        }
+
+        .modal-open .modal {
+            overflow-y: hidden;
+        }
+
+        /*隐藏输入框内容*/
+        .hidetxt, .hidetxt::selection {
+            outline: none !important;
+            color: transparent !important;
+        }
+
+        /* easyui */
+        .combo {
+            width: 100% !important;
+        }
+
+        .textbox .textbox-text {
+            padding: 0 30px 0 8px;
+        }
+
+        /* 最大化表格 */
+        .maxgrid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 9;
+            max-width: 100%;
+            background-color: white;
+        }
+
+            .maxgrid .mgbtn {
+                color: white;
+                border-color: #343a40;
+                background-color: #343a40;
+            }
+    </style>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 mt-3 dkn-menu">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#menuModalCenter">菜单</button>
+                    </div>
+                    <div class="input-group-prepend">
+                        <select class="custom-select custom-select-sm" id="seti">
+                            <option value="">（选择数据库）</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" data-reference="parent" title="数据库连接记录及模版">
+                        <span class="sr-only"></span>
+                    </button>
+                    <input type="text" id="txtConn" class="form-control form-control-sm" placeholder="数据库连接字符串，本地记录，后台不记录">
+                    <div class="dropdown-menu dropdown-menu-right border-info dmbox" id="dmbox"></div>
+                    <div class="input-group-prepend">
+                        <button class="btn btn-sm btn-light" id="btnToggleSHconn" title="隐藏/显示 连接字符串">✱</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 dkn-table">
+                <div class="my-2 btn-toolbar">
+                    <div class="btn-group btn-group-sm mr-2">
+                        <button class="btn btn-sm btn-success" id="btnQueryTable">加载表</button>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">导出表</button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportTableForExcel">Excel</a>
+                                <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportTableForJson">Json</a>
+                            </div>
+                        </div>
+                        <button class="btn btn-light btn-sm mgbtn" id="btnMaxGridTable" title="放大/缩小 表格">✤</button>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" id="txtSearchTable" placeholder="搜索" />
+                        </div>
+                    </div>
+                    <div class="spinner-border spinner-border-sm d-none mt-2" id="sb1"></div>
+                </div>
+                <div id="PGrid1">
+                    <div id="Grid1"></div>
+                </div>
+            </div>
+            <div class="col-lg-8 dkn-column">
+                <div class="row my-2">
+                    <div class="col-5">
+                        <div class="btn-group btn-group-sm mr-2">
+                            <button class="btn btn-sm btn-success" id="btnQueryColumn">加载列</button>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">导出列</button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportColumnForExcel">Excel</a>
+                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportColumnForJson">Json</a>
+                                </div>
+                            </div>
+                            <button class="btn btn-light mgbtn" id="btnMaxGridColumn" title="放大/缩小 表格">✤</button>
+                        </div>
+                        <div class="spinner-border spinner-border-sm d-none mt-1" id="sb2"></div>
+                    </div>
+                    <div class="col-4">
+                        <input type="text" class="form-control form-control-sm w-100" id="txtBuild" placeholder="请选择构建模版">
+                    </div>
+                    <div class="col">
+                        <div class="btn-group btn-group-sm mr-2">
+                            <button class="btn btn-sm btn-warning" title="构建语言模版并直接下载" id="btnBuild">生成</button>
+                            <button class="btn btn-sm btn-secondary" title="调试语言模版" id="btnDebug">调试</button>
+                            <button class="btn btn-sm btn-primary" title="拓展语言模版，自定义构建" id="btnExtendJs">拓展</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="PGrid2">
+                    <div id="Grid2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--菜单-->
+    <div class="modal fade" id="menuModalCenter">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">菜单</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <h5>✌ 设置服务接口</h5>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" id="txtDkApi" placeholder="填写自动生效">
+                        </div>
+                        <small class="form-text text-muted">
+                            查看 <a target="_blank" id="aapi" href="/swagger">当前接口</a>，可设置为自己部署的接口服务
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <h5>✌ 说明</h5>
+                        <ul>
+                            <li>项目源码：<a target="_blank" href="https://github.com/netnr/Netnr.DataKit">https://github.com/netnr/Netnr.DataKit</a></li>
+                            <li>数据库连接字符串仅保存浏览器本地，后台不做记录，请放心使用；或者可以自己部署服务</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--调试-->
+    <div class="modal fade" id="debugModalCenter">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <input class="form-control form-control-sm" type="text" id="txtBuildDebug" placeholder="请选择语言模版" />
+                        </div>
+                        <div class="col-sm-4">
+                            <button type="button" class="btn btn-sm btn-success" id="btnRunDebug">运行</button>
+                            <button type="button" class="btn btn-sm btn-warning" id="btnSaveDebug">保存</button>
+                            <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">关闭</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="custom-select custom-select-sm" id="seDebugLg">
+                                <optgroup label="输出的语言"></optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="border" id="txtDebugJs"></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="border" id="txtDebugLg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--拓展-->
+    <div class="modal fade" id="extendModalCenter">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 mb-1">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-sm btn-success" id="btnExtendLoadDemo">加载示例</button>
+                                </div>
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-sm btn-warning" id="btnExtendIn">注入</button>
+                                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">关闭</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="border" id="txtExtendJs"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--数据显示-->
+    <div class="modal" id="dataModalCenter">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 mb-1">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">导出</button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportDataForTitle">Excel（注释为标题）</a>
+                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportDataForField">Excel（字段为标题）</a>
+                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportDataForJson">Json</a>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-danger float-right" data-dismiss="modal">关闭</button>
+                            <div class="spinner-border spinner-border-sm d-none mt-1" id="sb3"></div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div id="PGrid3">
+                                <div id="Grid3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--修改注释-->
+    <div class="modal fade" id="commentModalCenter">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">修改注释</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h5></h5>
+                    <textarea class="form-control h150"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <div class="spinner-border spinner-border-sm d-none" id="sb4"></div>
+                    <button type="button" class="btn btn-light" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveComment">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--消息-->
+    <div class="modal fade" id="msgModalCenter">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">消息</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var dk = {
+            version: '0.0.2',
+            //数据库类型
+            tdb: ["MySQL", "SQLite", "Oracle", "SQLServer", "PostgreSQL"],
+            //数据库连接字符串模版
+            connTemplate: [
+                { istemplate: true, type: "MySQL", conn: "Data Source=【IP】;Port=【端口】;User Id=【账号】;Password=【密码】;Database=【数据库名】;" },
+                { istemplate: true, type: "SQLite", conn: "Data Source=【文件物理路径，或网络路径，后台自动下载文件】" },
+                { istemplate: true, type: "Oracle", conn: "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=【IP】)(PORT=【端口】))(CONNECT_DATA=(SERVICE_NAME=【服务名】)));User Id=【账号】;Password=【密码】;" },
+                { istemplate: true, type: "SQLServer", conn: "Server=【IP】,【端口】;uid=【账号】;pwd=【密码】;database=【数据库名】;" },
+                { istemplate: true, type: "PostgreSQL", conn: "Host=【IP】;Port=【端口】;Username=【账号】;Password=【密码】;Database=【数据库名】;" }
+            ],
+            //默认服务接口
+            dapi: location.origin,
+            //接口详情
+            apiDetail: {
+                GetTable: "/DK/GetTable",
+                GetColumn: "/DK/GetColumn",
+                SetTableComment: "/DK/SetTableComment",
+                SetColumnComment: "/DK/SetColumnComment",
+                GetData: "/DK/GetData"
+            },
+            //缓存
+            dc: {
+                //当前数据库
+                dbi: null,
+                //是否为后台内置连接信息
+                backConn: false,
+                //表数据
+                table: [],
+                //列数据
+                column: [],
+                //查询数据条件
+                dataWhere: {
+                    table: null,
+                    page: null,
+                    rows: null,
+                    sort: null,
+                    order: null,
+                    fields: [],
+                    column: [],
+                    result: null
+                },
+                //双击行，修改注释行
+                row: {},
+                //双击行索引
+                rowIndex: null,
+                //请求活动对象
+                requestActive: null,
+                //数据列宽自适应，不超过行数
+                autoWidthRow: 30
+            },
+
+            /**
+             * 初始化 */
+            init: function () {
+
+                //数据库类型列表
+                for (var i = 0; i < dk.tdb.length; i++) {
+                    $('#seti').append('<option value="' + i + '">' + dk.tdb[i] + '</option>');
+                }
+
+                //添加测试数据库
+                dk.addConn("MySQL", "Data Source=den1.mysql5.gear.host;User Id=rfmysql;Password=Vr8a474!nW4!;Database=rfmysql;");
+                dk.addConn("SQLServer", "Server=den1.mssql7.gear.host;uid=rfmssql;pwd=Cj24-GXLO9-H;database=rfmssql;");
+                dk.addConn("PostgreSQL", "Host=satao.db.elephantsql.com;Username=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;");
+
+                //渲染本地连接记录
+                dk.viewConn();
+
+                //选择本地连接
+                $('#dmbox').click(function (e) {
+                    e = e || window.event;
+                    var target = e.target || e.srcElement;
+                    //删除
+                    if (target.nodeName == "EM") {
+                        var di = $(target).parent().parent();
+                        dk.delConn(di.attr('data-type'), di.attr('data-conn'));
+                        di.remove();
+
+                        if (e.stopPropagation) {
+                            e.stopPropagation()
+                        } else {
+                            e.cancelBubble = true
+                        }
+                    } else {
+                        var di;
+                        $(this).children().each(function () {
+                            if (this.contains(target)) {
+                                di = this;
+                                return false;
+                            }
+                        })
+                        //选择
+                        if (di) {
+                            $('#seti').val(dk.tdb.indexOf(di.getAttribute('data-type')));
+                            $('#txtConn').val(di.getAttribute('data-conn'));
+                        }
+                    }
+                });
+
+                //显示/隐藏 连接字符串
+                $('#btnToggleSHconn').click(function () {
+                    var tc = $('#txtConn');
+                    if (tc.hasClass('hidetxt')) {
+                        tc.removeClass('hidetxt')
+                    } else {
+                        tc.addClass('hidetxt')
+                    }
+                });
+
+                //显示空表
+                dk.viewTable();
+                dk.viewColumn();
+
+                //自适应高度
+                $(window).resize(dk.resize);
+
+                //查询表
+                $('#btnQueryTable').click(function () {
+                    dk.loadTable(function () {
+                        dk.viewTable();
+                    })
+                });
+
+                //查询列
+                $('#btnQueryColumn').click(function () {
+                    var rowDatas = $('#Grid1').datagrid('getSelections');
+                    if (rowDatas.length) {
+                        var arrTable = [];
+                        if (dk.dc.table.data.length != rowDatas.length) {
+                            rowDatas.forEach(x => arrTable.push(x.TableName));
+                        }
+
+                        dk.loadColumn(arrTable.join(','), function () {
+                            dk.viewColumn();
+                        });
+                    } else {
+                        dk.msg('请选择表')
+                    }
+                });
+
+                //导出表 Excel
+                $('#btnExportTableForExcel').click(function () {
+                    dk.exportGrid({
+                        id: "#Grid1",
+                        filename: "table.xlsx"
+                    })
+                });
+
+                //导出表 Json
+                $('#btnExportTableForJson').click(function () {
+                    var rowDatas = $('#Grid1').datagrid('getSelections');
+                    if (rowDatas.length) {
+                        dk.exportJson(rowDatas, "table.json");
+                    } else {
+                        dk.msg('请选择表')
+                    }
+                });
+
+                //导出列 Excel
+                $('#btnExportColumnForExcel').click(function () {
+                    dk.exportGrid({
+                        id: "#Grid2",
+                        filename: "column.xlsx"
+                    })
+                });
+
+                //导出列 Json
+                $('#btnExportColumnForJson').click(function () {
+                    var rowDatas = $('#Grid2').datagrid('getSelections');
+                    if (rowDatas.length) {
+                        dk.exportJson(rowDatas, "column.json");
+                    } else {
+                        dk.msg('请选择列')
+                    }
+                });
+
+                //导出数据 Excel（注释为标题）
+                $('#btnExportDataForTitle').click(function () {
+                    dk.exportGrid({
+                        id: "#Grid3",
+                        filename: "data_" + dk.dc.dataWhere.table + ".xlsx"
+                    })
+                });
+                //导出数据 Excel（字段为标题）
+                $('#btnExportDataForField').click(function () {
+                    dk.exportGrid({
+                        id: "#Grid3",
+                        fieldHeader: true,
+                        filename: "data_" + dk.dc.dataWhere.table + ".xlsx"
+                    })
+                });
+                //导出数据 Json
+                $('#btnExportDataForJson').click(function () {
+                    var rowDatas = $('#Grid3').datagrid('getSelections');
+                    if (rowDatas.length) {
+                        dk.exportJson(rowDatas, "data_" + dk.dc.dataWhere.table + ".json");
+                    } else {
+                        dk.msg('请选择数据行')
+                    }
+                });
+
+                //放大/缩小 表格
+                $('#btnMaxGridTable').click(function () {
+                    var pbox = $('#PGrid1').parent();
+                    pbox.hasClass('maxgrid') ? pbox.removeClass('maxgrid') : pbox.addClass('maxgrid');
+
+                    dk.resize();
+                });
+                $('#btnMaxGridColumn').click(function () {
+                    var pbox = $('#PGrid2').parent();
+                    pbox.hasClass('maxgrid') ? pbox.removeClass('maxgrid') : pbox.addClass('maxgrid');
+
+                    dk.resize();
+                });
+
+                //表过滤
+                $('#txtSearchTable').on('input', function () {
+                    dk.viewTable();
+                })
+
+                //构建项
+                dk.viewBuild();
+
+                //构建
+                $('#btnBuild').click(function () {
+                    var tbv = $('#txtBuild').combotree('getValues');
+                    if (tbv.length == 0) {
+                        dk.msg("请选择语言模版");
+                    } else {
+                        var rowDatas = $('#Grid2').datagrid('getSelections');
+                        if (rowDatas.length == 0) {
+                            dk.msg('请选择列');
+                        } else {
+                            //输出结果
+                            var arro = [];
+
+                            tbv.forEach(tv => {
+                                var vis = tv.split('/');
+
+                                //构建参数
+                                var pa = dk.build.pa();
+                                pa.rows = rowDatas;
+
+                                //调用构建方法
+                                dk.build.language[vis[0]][vis[1]](pa);
+
+                                arro.push(pa);
+                            });
+
+                            //下载结果
+                            dk.build.down(arro);
+                        }
+                    }
+                });
+
+                //初始化编辑器
+                require.config({
+                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs" },
+                    'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+                });
+                //调试
+                $('#btnDebug').click(function () {
+                    var tbv = $('#txtBuild').combotree('getValues');
+                    if (tbv.length != 1) {
+                        dk.msg("请选择一个语言模版 子项");
+                    } else {
+                        var rowDatas = $('#Grid2').datagrid('getSelections');
+                        if (rowDatas.length == 0) {
+                            dk.msg('请选择一张表的所有列');
+                        } else {
+                            $('#debugModalCenter').modal();
+                        }
+                    }
+                });
+                //调试时赋值当前选中的语言模版子项
+                $('#debugModalCenter').on('shown.bs.modal', function () {
+                    var gv = $('#txtBuild').combotree('getValue');
+                    dk.viewBuildDebug();
+                    $('#txtBuildDebug').combotree('setValue', gv);
+
+                    //默认输出语言
+                    var lgdv = gv.split('/')[0] || 'csharp',
+                        seDebugLg = $('#seDebugLg');
+
+                    if (dk.dc.EditorDebugJs) {
+                        dk.setDebugJs(gv);
+
+                        dk.dc.EditorDebugLg.setValue('');
+                        //设置输出语言
+                        seDebugLg.val(lgdv);
+
+                        //模拟点击运行
+                        $('#btnRunDebug')[0].click();
+                    } else {
+                        require(['vs/editor/editor.main'], function () {
+                            var modesIds = monaco.languages.getLanguages().map(function (lang) { return lang.id }).sort();
+
+                            //输出语言
+                            var languagehtm = [];
+                            for (var i = 0; i < modesIds.length; i++) {
+                                languagehtm.push('<option>' + modesIds[i] + '</option>');
+                            }
+                            seDebugLg.children()[0].innerHTML = languagehtm.join('');
+                            //设置输出语言
+                            seDebugLg.val(lgdv);
+
+                            //js
+                            dk.dc.EditorDebugJs = monaco.editor.create(document.getElementById('txtDebugJs'), {
+                                value: '',
+                                language: 'javascript',
+                                automaticLayout: true,
+                                scrollbar: {
+                                    verticalScrollbarSize: 6,
+                                    horizontalScrollbarSize: 6
+                                },
+                                minimap: {
+                                    enabled: false
+                                }
+                            });
+                            //赋值
+                            dk.setDebugJs(gv);
+
+                            //格式化文档，初始化时延迟格式化生效
+                            setTimeout(function () {
+                                dk.dc.EditorDebugJs.trigger('a', 'editor.action.formatDocument');
+                            }, 200)
+
+                            //语言模版输出
+                            dk.dc.EditorDebugLg = monaco.editor.create(document.getElementById('txtDebugLg'), {
+                                value: '',
+                                language: lgdv,
+                                automaticLayout: true,
+                                scrollbar: {
+                                    verticalScrollbarSize: 6,
+                                    horizontalScrollbarSize: 6
+                                },
+                                minimap: {
+                                    enabled: false
+                                }
+                            });
+
+                            //调整输出语言
+                            seDebugLg.change(function () {
+                                dk.changeEditorLg(dk.dc.EditorDebugLg, this.value);
+                            });
+
+                            //高度自适应
+                            dk.resize()
+
+                            //模拟点击运行
+                            $('#btnRunDebug')[0].click();
+                        });
+                    }
+                })
+                //运行调式
+                $('#btnRunDebug').click(function () {
+                    //构建参数
+                    var pa = dk.build.pa();
+                    pa.rows = $('#Grid2').datagrid('getSelections');
+
+                    //脚本
+                    var rdjs = dk.dc.EditorDebugJs.getValue();
+                    var rdfn = eval('(' + rdjs + ')');
+
+                    try {
+                        rdfn(pa);
+
+                        //显示第一张表
+                        for (var i in pa.output) {
+                            dk.dc.EditorDebugLg.setValue(pa.output[i].join('\n'))
+                            break;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        dk.msg('报错了，请看控制台');
+                    }
+                });
+
+                //保存调试
+                $('#btnSaveDebug').click(function () {
+                    //构建参数
+                    var pa = dk.build.pa();
+                    pa.rows = $('#Grid2').datagrid('getSelections');
+
+                    //脚本
+                    var rdjs = dk.dc.EditorDebugJs.getValue();
+                    var rdfn = eval('(' + rdjs + ')');
+
+                    try {
+                        rdfn(pa);
+
+                        //运行成功，覆盖方法
+                        var gv = $('#txtBuildDebug').combotree('getValue');
+                        var gvs = gv.split('/');
+                        dk.build.language[gvs[0]][gvs[1]] = rdfn;
+
+                        dk.msg('保存成功');
+                    } catch (e) {
+                        console.error(e);
+                        dk.msg('报错了，请看控制台');
+                    }
+                });
+
+                //保存注释
+                $('#btnSaveComment').click(function () {
+                    var row = dk.dc.row;
+                    if (row) {
+                        var newcomment = $('#commentModalCenter').find('textarea').val();
+                        //列注释
+                        if ("FieldComment" in row) {
+                            dk.setColumnComment(row, newcomment);
+                        } else {
+                            dk.setTableComment(row, newcomment);
+                        }
+                    } else {
+                        dk.msg('未选择目标')
+                    }
+                });
+
+                //拓展
+                $('#btnExtendJs').click(function () {
+                    $('#extendModalCenter').modal();
+
+                    if (!dk.dc.EditorExtendJs) {
+                        require(['vs/editor/editor.main'], function () {
+                            dk.dc.EditorExtendJs = monaco.editor.create(document.getElementById('txtExtendJs'), {
+                                value: '',
+                                language: 'javascript',
+                                automaticLayout: true,
+                                scrollbar: {
+                                    verticalScrollbarSize: 6,
+                                    horizontalScrollbarSize: 6
+                                },
+                                minimap: {
+                                    enabled: false
+                                }
+                            });
+
+                            //高度自适应
+                            dk.resize()
+                        });
+                    }
+                });
+
+                //加载示例
+                $('#btnExtendLoadDemo').click(function () {
+                    var uri = 'https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/netnr-datakit-extension/0.0.1/demo.js';
+                    fetch(uri).then(x => x.text()).then(res => {
+                        dk.dc.EditorExtendJs.setValue(res);
+                    }).catch(_ => {
+                        fetch('https://cors.zme.ink/' + uri).then(x => x.text()).then(res => {
+                            dk.dc.EditorExtendJs.setValue(res);
+                        }).catch(_ => {
+                            dk.msg('加载失败');
+                        })
+                    })
+                });
+
+                //拓展注入
+                $('#btnExtendIn').click(function () {
+                    try {
+                        dk.dc.ei = new Function(dk.dc.EditorExtendJs.getValue());
+                        dk.dc.ei();
+                        dk.viewBuild();
+                        dk.msg('注入成功');
+                    } catch (e) {
+                        console.error(e);
+                        dk.msg('注入出错了哦');
+                    }
+                });
+
+                //点击
+                $(document).mouseup(function (e) {
+                    e = e || window.event;
+                    var target = e.target || e.srcElement;
+
+                    //分组项复选框选择
+                    if (target.nodeName == "INPUT" && target.className.indexOf('gfck') >= 0) {
+                        $(target).parent().parent().next().find('tr').each(function () {
+                            var ri = $(this).attr('datagrid-row-index');
+                            $('#Grid2').datagrid(!target.checked ? 'selectRow' : 'unselectRow', ri);
+                        })
+                    }
+
+                    //查询单表数据
+                    if (target.nodeName == "INPUT" && target.className.indexOf('gfqd') >= 0) {
+
+                        var fields = [], column1 = [], column2 = [], table = null, sort = null, fr = null;
+
+                        $(target).parent().parent().next().find('tr').each(function () {
+
+                            var ri = $(this).attr('datagrid-row-index') * 1;
+                            var cdi = dk.dc.column.data[ri];
+                            column1.push(cdi);
+                            if ($(this).hasClass('datagrid-row-selected')) {
+                                fields.push(cdi.FieldName);
+                                column2.push(cdi);
+                            }
+
+                            //查询表名、默认主键排序
+                            if (fr == null) {
+                                fr = dk.dc.column.data[ri];
+                                table = fr.TableName;
+
+                                var wi = ri;
+                                while (wi - 999 < ri && sort == null) {
+                                    var cdi = dk.dc.column.data[wi++];
+                                    if (cdi && cdi.PrimaryKey == "YES") {
+                                        sort = cdi.FieldName;
+                                    }
+                                }
+                                //取第一列
+                                if (sort == null) {
+                                    sort = fr.FieldName;
+                                }
+                            }
+                        })
+
+                        dk.dc.dataWhere.page = 1;
+                        dk.dc.dataWhere.rows = 30;
+                        dk.dc.dataWhere.table = table;
+                        dk.dc.dataWhere.fields = fields;
+                        dk.dc.dataWhere.column = column2.length > 0 ? column2 : column1;
+                        dk.dc.dataWhere.sort = sort;
+                        dk.dc.dataWhere.order = "asc";
+
+                        $('#dataModalCenter').modal();
+                        $('#PGrid3').html('<div id="Grid3"></div>');
+
+                        dk.loadData(function () {
+                            dk.viewData();
+                        })
+                    }
+                });
+
+                //设置服务接口
+                $('#txtDkApi').on('input', function () {
+                    dk.api = this.value == "" ? dk.dapi : this.value;
+                })
+                //服务接口对象监听
+                Object.defineProperty(dk, 'api', {
+                    get: function () {
+                        return api;
+                    },
+                    set: function (val) {
+                        api = val;
+                        $('#aapi').attr('href', api + '/swagger');
+                    }
+                })
+                dk.api = dk.dapi;
+
+                //汉化
+                if ($.fn.pagination) {
+                    $.fn.pagination.defaults.beforePageText = '第';
+                    $.fn.pagination.defaults.afterPageText = '共 {pages} 页';
+                    $.fn.pagination.defaults.displayMsg = '显示 <b>{from}</b> 到 <b>{to}</b>，共 <b>{total}</b> 记录';
+                }
+
+                //JSONP接口支持，支持逗号分割多个扩展包
+                var jpu = dk.getPars("jsonp");
+                if (jpu) {
+                    jpu.split(',').forEach(u => {
+                        //JSONP回调函数名：dk_文件名
+                        var jcb = "dk_" + u.split('/').slice(-1)[0].split('.')[0];
+                        $.ajax({
+                            url: u,
+                            dataType: "jsonp",
+                            jsonpCallback: jcb
+                        }).done(function (res) {
+                            try { res(dk) } catch (e) { }
+                        }).fail(function (err) {
+                            console.log('加载JSONP拓展出错：' + u, err)
+                        });
+                    })
+                }
+            },
+
+            /**
+             * 获取Url参数
+             * @param name
+             */
+            getPars: function (name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = location.search.substr(1).match(reg);
+                if (r != null) {
+                    return decodeURI(r[2]);
+                }
+                return null;
+            },
+
+            /**
+             * 获取数据库类型及连接字符串 */
+            getTC: function () {
+                var tc = {
+                    tdb: $('#seti').val(),
+                    conn: $('#txtConn').val(),
+                    //错误信息
+                    err: []
+                }
+
+                if (!dk.dc.backConn) {
+                    if (tc.tdb == "") {
+                        tc.err.push("未选择数据库类型")
+                    }
+                    if (tc.conn.trim() == "") {
+                        tc.err.push("数据库连接字符串不能为空")
+                    }
+                    if (tc.err.length) {
+                        dk.msg(tc.err.join('<br/>'));
+                    }
+                }
+
+                return tc;
+            },
+
+            /**
+             * 加载表
+             * @param fn 回调
+             */
+            loadTable: function (fn) {
+                var tc = dk.getTC();
+                if (tc.err.length == 0) {
+                    $('#sb1').removeClass('d-none');
+
+                    $.ajax({
+                        url: dk.api + dk.apiDetail.GetTable,
+                        data: tc,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 200) {
+                                //记录到本地
+                                if (!dk.dc.backConn) {
+                                    dk.addConn(dk.tdb[parseInt($('#seti').val())], $('#txtConn').val());
+                                    dk.viewConn();
+                                }
+
+                                dk.dc.dbi = tc.tdb;
+                                dk.dc.table = data;
+                                fn();
+                            } else {
+                                dk.msg(data.msg);
+                            }
+                        },
+                        error: function () {
+                            dk.msg('网络错误');
+                        },
+                        complete: function () {
+                            $('#sb1').addClass('d-none');
+                        }
+                    })
+                }
+            },
+
+            /**
+             * 加载列
+             * @param ftn 表格过滤
+             * @param fn 回调
+             */
+            loadColumn: function (ftn, fn) {
+                var tc = dk.getTC();
+                if (tc.err.length == 0) {
+                    tc.filterTableName = ftn;
+
+                    $('#sb2').removeClass('d-none');
+
+                    $.ajax({
+                        url: dk.api + dk.apiDetail.GetColumn,
+                        data: tc,
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 200) {
+                                //记录到本地
+                                if (!dk.dc.backConn) {
+                                    dk.addConn(dk.tdb[parseInt($('#seti').val())], $('#txtConn').val());
+                                    dk.viewConn();
+                                }
+
+                                dk.dc.dbi = tc.tdb;
+                                dk.dc.column = data;
+                                fn();
+                            } else {
+                                dk.msg(data.msg);
+                            }
+                        },
+                        error: function () {
+                            dk.msg('网络错误');
+                        },
+                        complete: function () {
+                            $('#sb2').addClass('d-none');
+                        }
+                    })
+                }
+            },
+
+            /**
+             * 加载表数据
+             * @param fn 回调
+             */
+            loadData: function (fn) {
+                var tc = dk.getTC();
+                if (tc.err.length == 0) {
+
+                    tc.TableName = dk.dc.dataWhere.table;
+                    tc.page = dk.dc.dataWhere.page || 1;
+                    tc.rows = dk.dc.dataWhere.rows || 30;
+                    tc.sort = dk.dc.dataWhere.sort;
+                    tc.order = dk.dc.dataWhere.order || "asc";
+                    tc.listFieldName = dk.dc.dataWhere.fields.join(',');
+
+                    $('#sb3').removeClass('d-none');
+                    try { $('#Grid3').datagrid("loading") } catch (e) { }
+
+                    $.ajax({
+                        url: dk.api + dk.apiDetail.GetData,
+                        data: tc,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 200) {
+                                dk.dc.dataWhere.result = data.data;
+                                fn();
+                            } else {
+                                dk.msg(data.msg);
+                            }
+                        },
+                        error: function () {
+                            dk.msg('网络错误');
+                        },
+                        complete: function () {
+                            $('#sb3').addClass('d-none');
+                        }
+                    })
+                }
+            },
+
+            /**
+             * 渲染表前回调（用于拓展重写该方法）
+             * @param _dgo datagrid 参数
+             */
+            viewTableBefore: function (_dgo) {
+
+            },
+
+            /**
+             * 渲染表 */
+            viewTable: function () {
+
+                //表名过滤
+                var filterData = [], filterKey = $('#txtSearchTable').val().trim().toLowerCase();
+                if (filterKey == "") {
+                    filterData = dk.dc.table.data || [];
+                } else {
+                    $.each(dk.dc.table.data, function () {
+                        if (this.TableName.toLowerCase().indexOf(filterKey) >= 0 || (this.TableComment || "").toLowerCase().indexOf(filterKey) >= 0) {
+                            filterData.push(this)
+                        }
+                    })
+                }
+
+                var isaw = filterData.length <= dk.dc.autoWidthRow;
+
+                var dgo = {
+                    columns: [[
+                        { field: "ck", checkbox: true },
+                        { field: "TableName", title: "表名", width: isaw ? null : 200 },
+                        { field: "TableComment", title: "表注释", width: isaw ? null : 320 }
+                    ]],
+                    rownumbers: true,
+                    rownumberWidth: 40,
+                    autoRowHeight: false,
+                    onDblClickCell: function (index, field) {
+                        if (field == "TableComment") {
+                            var row = $('#Grid1').datagrid('getRows')[index];
+                            dk.dc.row = row;
+                            dk.dc.rowIndex = index;
+                            dk.editTableComment(row);
+                        }
+                    },
+                    data: filterData
+                };
+                //渲染前回调
+                dk.viewTableBefore(dgo);
+                $('#Grid1').datagrid(dgo);
+
+                dk.resize();
+            },
+
+            /**
+             * 渲染列 */
+            viewColumn: function () {
+                var cols = [
+                    { field: "ck", checkbox: true },
+                    { field: "TableName", title: "表名", hidden: true, width: 200 },
+                    { field: "TableComment", title: "表注释", hidden: true, width: 200 },
+                    { field: "FieldName", title: "表字段", width: 150 },
+                    { field: "DataType", title: "类型", width: 100 },
+                    { field: "DataLength", title: "长度", halign: "center", align: "center", width: 90 },
+                    { field: "DataScale", title: "精度", halign: "center", align: "center", width: 50 },
+                    { field: "FieldOrder", title: "排序", halign: "center", align: "center", width: 50 },
+                    { field: "PrimaryKey", title: "是主键", halign: "center", align: "center", width: 60 },
+                    { field: "AutoAdd", title: "是自增", halign: "center", align: "center", width: 60 },
+                    { field: "NotNull", title: "不为空", halign: "center", align: "center", width: 60 },
+                    { field: "DefaultValue", title: "默认值", halign: "center", align: "center", width: 80 },
+                    { field: "FieldComment", title: "注释", width: 420 }
+                ];
+                if ((dk.dc.column.data || []).length <= dk.dc.autoWidthRow) {
+                    cols.forEach(c => (delete c.width));
+                }
+
+                $('#Grid2').datagrid({
+                    columns: [cols],
+                    rownumbers: true,
+                    rownumberWidth: 40,
+                    autoRowHeight: false,
+                    showGroup: true,
+                    groupField: "TableName",
+                    view: groupview,
+                    groupFormatter: function (_value, rows) {
+                        var row = rows[0];
+                        var htm = [];
+                        htm.push('<input type="checkbox" class="gfck" />');
+                        htm.push(row["TableName"] + ' ❤ ');
+                        htm.push('<input type="button" class="btn btn-sm btn-secondary p-0 mr-2 gfqd" style="vertical-align:initial" title="可选列，默认所有列（ * ）" value=" 查询数据 " />');
+                        htm.push(row["TableComment"] || '');
+                        return htm.join('');
+                    },
+                    onDblClickCell: function (index, field) {
+                        if (field == "FieldComment") {
+                            var row = $('#Grid2').datagrid('getRows')[index];
+                            dk.dc.row = row;
+                            dk.dc.rowIndex = index;
+                            dk.editColumnComment(row)
+                        }
+                    },
+                    scrollOnSelect: false,
+                    onSelectAll: function () {
+                        $('input.gfck').prop('checked', true);
+                    },
+                    onUnselectAll: function () {
+                        $('input.gfck').prop('checked', false);
+                    },
+                    data: dk.dc.column.data
+                });
+
+                dk.resize();
+            },
+
+            /**
+             * 渲染表数据 */
+            viewData: function () {
+
+                var cols = [{ field: "ck", checkbox: true }];
+                dk.dc.dataWhere.column.forEach(oi => {
+                    cols.push({
+                        field: oi.FieldName,
+                        title: oi.FieldComment || oi.FieldName,
+                        sortable: true,
+                        width: dk.dc.dataWhere.rows <= dk.dc.autoWidthRow ? null : 200,
+                        formatter: function (value) {
+                            return dk.htmlEncode(value);
+                        }
+                    });
+                });
+
+                $('#Grid3').datagrid({
+                    columns: [cols],
+                    rownumbers: true,
+                    pagination: true,
+                    autoRowHeight: false,
+                    rownumberWidth: Math.max(30, (dk.dc.dataWhere.page * dk.dc.dataWhere.rows).toString().length * 12),
+                    loadMsg: "加载中...",
+                    pageNumber: dk.dc.dataWhere.page,
+                    pageSize: dk.dc.dataWhere.rows,
+                    onSortColumn: function (sort, order) {
+                        dk.dc.dataWhere.sort = sort;
+                        dk.dc.dataWhere.order = order;
+
+                        dk.loadData(function () {
+                            dk.viewData();
+                        })
+                    },
+                    onDblClickCell: function (_index, _field, value) {
+                        dk.msg('<textarea class="form-control" readonly >' + (value || "") + '</textarea>');
+                    },
+                    pageList: [30, 100, 500, 999],
+                    data: dk.dc.dataWhere.result.data,
+                    total: dk.dc.dataWhere.result.total
+                });
+
+                $('#Grid3').datagrid('getPager').pagination({
+                    pageNumber: dk.dc.dataWhere.page,
+                    pageSize: dk.dc.dataWhere.rows,
+                    total: dk.dc.dataWhere.result.total,
+                    links: 7,
+                    layout: ['list', 'sep', 'first', 'prev', 'links', 'next', 'last', 'sep', 'refresh', 'info'],
+                    onSelectPage: function (pageNumber, pageSize) {
+                        dk.dc.dataWhere.page = pageNumber || 1;
+                        dk.dc.dataWhere.rows = pageSize;
+
+                        dk.loadData(function () {
+                            dk.viewData();
+                        })
+                    },
+                    onChangePageSize: function (pageSize) {
+                        $('#Grid3').datagrid('options').pageSize = pageSize;
+
+                        dk.loadData(function () {
+                            dk.viewData();
+                        })
+                    }
+                });
+
+                dk.resize();
+            },
+
+            /**
+             * 自适应 */
+            resize: function () {
+                //表格
+                window.clearTimeout(dk.asi);
+                dk.asi = setTimeout(function () {
+                    var th1 = $(window).height() - $('#PGrid1').offset().top - 10;
+                    var th2 = $(window).height() - $('#PGrid2').offset().top - 10;
+                    var th3 = $(window).height() - 85;
+
+                    $('#Grid1').datagrid('resize', {
+                        width: $('#PGrid1').width(),
+                        height: Math.max(th1, 200)
+                    });
+
+                    $('#Grid2').datagrid('resize', {
+                        width: $('#PGrid2').width(),
+                        height: Math.max(th2, 200)
+                    });
+
+                    //数据显示表格
+                    if ($('#Grid3').data('datagrid')) {
+                        $('#Grid3').datagrid('resize', {
+                            width: $('#PGrid3').width(),
+                            height: Math.max(th3, 200)
+                        });
+                    }
+                }, 100)
+
+                //调试编辑器
+                if (dk.dc.EditorDebugLg) {
+                    var eh = $(window).height() - 95;
+                    $('#txtDebugJs').height(eh);
+                    $('#txtDebugLg').height(eh);
+                }
+
+                //拓展编辑器
+                if (dk.dc.EditorExtendJs) {
+                    var eh = $(window).height() - 90;
+                    $('#txtExtendJs').height(eh);
+                }
+            },
+
+            /**
+             * 索引转Excel列字母
+             * @param n 索引
+             */
+            excelColumnIndexAsLetter: function (n) {
+                var cs = 'A'.charCodeAt(0), bn = 26;
+                var s = "";
+                while (n >= 0) {
+                    s = String.fromCharCode(n % bn + cs) + s;
+                    n = Math.floor(n / bn) - 1;
+                }
+                return s;
+            },
+
+            /**
+             * 导出Grid
+             * @param ops 参数对象
+             */
+            exportGrid: function (ops) {
+                var rowDatas = $(ops.id).datagrid('getSelections');
+
+                var workbook = new ExcelJS.Workbook();
+
+                workbook.creator = 'netnr';
+                workbook.lastModifiedBy = 'netnr';
+                workbook.created = new Date();
+                workbook.modified = new Date();
+                workbook.lastPrinted = new Date();
+
+                var worksheet = workbook.addWorksheet("Sheet1");
+                worksheet.views = [
+                    { state: 'frozen', xSplit: 0, ySplit: 1 }
+                ];
+
+                //填充头部;
+                var heads = [], colfield = [], dgo = $(ops.id).datagrid('options');
+                dgo.columns[0].forEach(col => {
+                    if (!col.checkbox && !col.hidden) {
+                        colfield.push(col.field);
+                        heads.push({
+                            header: ops.fieldHeader ? col.field : col.title, key: col.field, width: col.width / 7, style: {
+                                alignment: { vertical: 'middle', horizontal: col.align }
+                            }
+                        })
+                    }
+                })
+                worksheet.columns = heads;
+                //设置头部样式
+                var firstRow = worksheet.getRow(1);
+                firstRow.font = { size: 12, bold: true };
+                firstRow.height = 20;
+                firstRow.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+
+                //填充数据行
+                var rows = [], sgi = [], cr;
+                rowDatas.forEach(x => {
+                    var row = [];
+                    //分组
+                    if (dgo.showGroup) {
+                        if (cr == null || x[dgo.groupField] != cr[dgo.groupField]) {
+                            rows.push([$('<div>' + dgo.groupFormatter('', [cr || x]) + '</div>').text()]);
+                            sgi.push(rows.length + 1);
+                            cr = x;
+                        }
+                    }
+                    for (var i in x) {
+                        if (colfield.indexOf(i) >= 0) {
+                            row.push(x[i]);
+                        }
+                    }
+                    rows.push(row);
+                })
+                worksheet.addRows(rows);
+
+                //边框
+                for (var c = 0; c < colfield.length; c++) {
+                    for (var i = 0; i <= rows.length; i++) {
+                        var cp = dk.excelColumnIndexAsLetter(c) + (i + 1);
+                        worksheet.getCell(cp).border = firstRow.border;
+                    }
+                }
+
+                //分组行合并
+                sgi.forEach(si => {
+                    worksheet.mergeCells('A' + si + ':' + dk.excelColumnIndexAsLetter(colfield.length - 1) + si);
+                    worksheet.getCell('A' + si).fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: {
+                            argb: 'FFEDEDED'
+                        }
+                    };
+
+                    //加粗
+                    var cr = worksheet.getRow(si);
+                    cr.font = firstRow.font
+                })
+
+                //保存
+                workbook.xlsx.writeBuffer().then(function (data) {
+                    var blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                    saveAs(blob, ops.filename);
+                });
+            },
+
+            /**
+             * 导出Json
+             * @param rows 数据行
+             * @param name 文件名
+             */
+            exportJson: function (rows, name) {
+                var code = JSON.stringify(rows, null, 2);
+                var blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+                saveAs(blob, name);
+            },
+
+            /**
+             * 消息提示
+             * @param txt 消息
+             */
+            msg: function (txt) {
+                var mmc = $('#msgModalCenter'), ms = 'modal-sm';
+                if (txt.length > 10) {
+                    ms = ''
+                }
+                if (txt.length > 25) {
+                    ms = 'modal-lg'
+                }
+                mmc.children().removeClass('modal-sm').removeClass('modal-lg').addClass(ms);
+                mmc.find('.modal-body').html(txt);
+                mmc.modal();
+            },
+
+            /**
+             * 从本地获取连接记录 */
+            getConn: function () {
+                var dkc = [];
+                try {
+                    dkc = JSON.parse(localStorage.getItem('DKC')) || [];
+                    dkc.sort(function (a, b) {
+                        if (a.type > b.type) {
+                            return 1
+                        } else if (a.type < b.type) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    })
+                } catch (e) { }
+                return dkc;
+            },
+
+            /**
+             * 添加连接记录到本地
+             * @param type 数据库类型
+             * @param conn 连接字符串
+             */
+            addConn: function (type, conn) {
+                var dkc = [];
+                try {
+                    dkc = JSON.parse(localStorage.getItem('DKC')) || [];
+                } catch (e) { }
+                var has = false;
+                dkc.forEach(x => {
+                    if (x.type == type && x.conn == conn) {
+                        has = true;
+                    }
+                });
+                if (!has) {
+                    dkc.push({ type, conn });
+                    localStorage.setItem('DKC', JSON.stringify(dkc));
+                }
+            },
+
+            /**
+             * 从本地删除连接记录
+             * @param type 数据库类型
+             * @param conn 连接字符串
+             */
+            delConn: function (type, conn) {
+                var dkc = [];
+                try {
+                    dkc = JSON.parse(localStorage.getItem('DKC')) || [];
+                } catch (e) { }
+                for (var i = dkc.length - 1; i >= 0; i--) {
+                    var ci = dkc[i];
+                    if (ci.type == type && ci.conn == conn) {
+                        dkc.splice(i, 1);
+                    }
+                }
+                localStorage.setItem('DKC', JSON.stringify(dkc));
+            },
+
+            /**
+             * 渲染连接记录 */
+            viewConn: function () {
+                var tc = $('#txtConn');
+                //头部宽度
+                var bw = tc.parent().width() - tc.outerWidth() - 48 + 8;
+
+                var dm = $('#dmbox').empty();
+                var gc = dk.getConn() || [];
+                gc = gc.concat(dk.connTemplate);
+                gc.forEach(x => {
+                    if (x.type && x.conn) {
+                        var ca = document.createElement('a');
+                        ca.href = "javascript:void(0)";
+                        ca.className = "dropdown-item small py-2";
+                        ca.setAttribute('data-type', x.type);
+                        ca.setAttribute('data-conn', x.conn);
+
+                        var cat = document.createElement('b');
+                        cat.style.cssText = "width:" + bw + "px;text-align:right;float:left;margin-right:15px";
+
+                        if (x.istemplate) {
+                            cat.innerHTML = x.type + ' 模版';
+                        } else {
+                            cat.innerHTML = '<em class="float-left" title="删除">✖</em> ' + x.type;
+                        }
+                        ca.appendChild(cat);
+
+                        var cac = document.createElement('span');
+                        cac.style.cssText = "margin-left:8px";
+                        cac.innerText = x.conn;
+                        ca.appendChild(cac);
+
+                        dm.append(ca);
+                    }
+                })
+            },
+
+            /**
+             * 获取构建语言项 */
+            getBuild: function () {
+                var lg = dk.build.language;
+
+                var btree = [];
+                for (var i in lg) {
+                    //忽略注释的键
+                    if (i.indexOf('-comment') > -1) {
+                        continue;
+                    }
+
+                    //语言分类
+                    var gi = lg[i], gt = { id: i, text: i, children: [] };
+
+                    //语言注释
+                    var lc = lg[i + "-comment"];
+                    if (lc) {
+                        gt.text += " " + lc;
+                    }
+                    //语言构建子项
+                    for (var j in gi) {
+                        //忽略注释的键
+                        if (j.indexOf('-comment') > -1) {
+                            continue;
+                        }
+
+                        var ci = {
+                            id: i + "/" + j,
+                            text: i + " / " + j
+                        };
+                        var cc = gi[j + "-comment"];
+                        if (cc) {
+                            ci.text += " " + cc;
+                        }
+                        gt.children.push(ci);
+                    }
+                    btree.push(gt);
+                }
+                return btree;
+            },
+
+            /**
+             * 渲染构建选项 */
+            viewBuild: function () {
+                var btree = dk.getBuild();
+
+                $('#txtBuild').combotree({
+                    data: btree,
+                    animate: true,
+                    panelHeight: 200,
+                    multiple: true,
+                    onlyLeafCheck: true,
+                    icons: [{
+                        iconCls: 'comboclear',
+                        handler: function (e) {
+                            var tt = $(e.data.target);
+                            tt.combotree('clear');
+                        }
+                    }],
+                });
+
+                dk.supportComobotreePlaceholder('#txtBuild');
+            },
+
+            /**
+             * 渲染调试构建选项 */
+            viewBuildDebug: function () {
+                var btree = dk.getBuild();
+
+                $('#txtBuildDebug').combotree({
+                    data: btree,
+                    animate: true,
+                    panelHeight: 200,
+                    onlyLeafCheck: true,
+                    onBeforeSelect: function (node) {
+                        if (node.id.indexOf('/') == -1) {
+                            dk.msg('请选择语言模版子项')
+                            return false;
+                        }
+                    },
+                    onSelect: function (node) {
+                        dk.setDebugJs(node.id);
+
+                        var lg = node.id.split('/')[0];
+                        dk.changeEditorLg(dk.dc.EditorDebugLg, lg, '');
+
+                        //模拟点击运行
+                        $('#btnRunDebug')[0].click();
+                    }
+                });
+
+                dk.supportComobotreePlaceholder('#txtBuildDebug');
+            },
+
+            /**
+             * 设置构建项js代码
+             * @param id 构建项
+             */
+            setDebugJs: function (id) {
+                if (dk.dc.EditorDebugJs) {
+                    var gvs = id.split('/');
+                    var bi = dk.build.language[gvs[0]][gvs[1]];
+                    var djv = bi.toString();
+
+                    dk.dc.EditorDebugJs.setValue(djv);
+
+                    //格式化文档
+                    dk.dc.EditorDebugJs.trigger('a', 'editor.action.formatDocument');
+                }
+            },
+
+            /**
+             * 修改编辑器语言
+             * @param editor 编辑器对象
+             * @param lg 语言
+             * @param value 内容
+             */
+            changeEditorLg: function (editor, lg, value) {
+                if (editor) {
+                    if (arguments.length != 3) {
+                        value = editor.getValue();
+                    }
+                    var oldModel = editor.getModel();
+                    var newModel = monaco.editor.createModel(value, lg);
+                    editor.setModel(newModel);
+                    if (oldModel) {
+                        oldModel.dispose();
+                    }
+
+                    document.getElementById('seDebugLg').value = lg;
+
+                    //格式化文档
+                    dk.dc.EditorDebugLg.trigger('a', 'editor.action.formatDocument');
+                }
+            },
+
+            /**
+             * 编辑表注释
+             * @param row 数据行
+             */
+            editTableComment: function (row) {
+                var cmc = $('#commentModalCenter');
+                cmc.find('.modal-body').find('h5').html(row.TableName)
+                cmc.find('textarea').val(row.TableComment || "");
+                cmc.modal();
+            },
+
+            /**
+             * 编辑列注释
+             * @param row 数据行
+             */
+            editColumnComment: function (row) {
+                var cmc = $('#commentModalCenter');
+                cmc.find('.modal-body').find('h5').html(row.TableName + ' . ' + row.FieldName);
+                cmc.find('textarea').val(row.FieldComment || "");
+                cmc.modal();
+            },
+
+            /**
+             * 修改表注释
+             * @param row 数据行
+             * @param TableComment 表注释
+             */
+            setTableComment: function (row, TableComment) {
+                var tc = dk.getTC();
+                if (tc.err.length == 0) {
+                    if (dk.dc.requestActive) {
+                        dk.msg('请等待处理结果的返回')
+                        return false;
+                    }
+                    dk.dc.requestActive = "setTableComment";
+
+                    tc.TableName = row.TableName;
+                    tc.TableComment = TableComment;
+
+                    $('#sb4').removeClass('d-none');
+
+                    $.ajax({
+                        url: dk.api + dk.apiDetail.SetTableComment,
+                        data: tc,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 200) {
+                                $('#Grid1').datagrid("updateRow", {
+                                    index: dk.dc.rowIndex, row: { TableComment }
+                                });
+
+                                $('#commentModalCenter').modal('hide');
+                            } else {
+                                dk.msg(data.msg);
+                            }
+                        },
+                        error: function () {
+                            dk.msg('网络错误');
+                        },
+                        complete: function () {
+                            dk.dc.requestActive = null;
+                            $('#sb4').addClass('d-none');
+                        }
+                    })
+                }
+            },
+
+            /**
+             * 修改列注释
+             * @param row 数据行
+             * @param FieldComment 列注释
+             */
+            setColumnComment: function (row, FieldComment) {
+                var tc = dk.getTC();
+                if (tc.err.length == 0) {
+                    if (dk.dc.requestActive) {
+                        dk.msg('请等待处理结果的返回')
+                        return false;
+                    }
+                    dk.dc.requestActive = "setColumnComment";
+
+                    tc.TableName = row.TableName;
+                    tc.FieldName = row.FieldName;
+                    tc.FieldComment = FieldComment;
+
+                    $('#sb4').removeClass('d-none');
+
+                    $.ajax({
+                        url: dk.api + dk.apiDetail.SetColumnComment,
+                        data: tc,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 200) {
+                                $('#Grid2').datagrid('updateRow', {
+                                    index: dk.dc.rowIndex,
+                                    row: { FieldComment }
+                                });
+                                $('#commentModalCenter').modal('hide');
+                            } else {
+                                dk.msg(data.msg);
+                            }
+                        },
+                        error: function () {
+                            dk.msg('网络错误');
+                        },
+                        complete: function () {
+                            dk.dc.requestActive = null;
+                            $('#sb4').addClass('d-none');
+                        }
+                    })
+                }
+            },
+
+            /**
+             * combotree组件支持 placeholder
+             * @param id 节点ID
+             */
+            supportComobotreePlaceholder: function (id) {
+                $(id).data('textbox').textbox.find('input').first().attr('placeholder', $(id).attr('placeholder') || '');
+            },
+
+            /**
+             * html编码
+             * @param str 字符串
+             */
+            htmlEncode: function (str) {
+                if (str == null) {
+                    return "";
+                } else {
+                    return (str + "").replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/\s/g, "&nbsp;")
+                        .replace(/\'/g, "&#39;")
+                        .replace(/\"/g, "&quot;");
+                }
+            },
+
+            //构建代码
+            build: {
+
+                //类型映射
+                typeMapping: {
+
+                    //C#
+                    csharp: {
+                        //可为空
+                        Nullable: ["DateTime", "DateTimeOffset", "Guid", "NpgsqlTypes.NpgsqlLSeg", "NpgsqlTypes.NpgsqlLine", "NpgsqlTypes.NpgsqlPath", "NpgsqlTypes.NpgsqlPoint", "TimeSpan", "bool", "byte", "decimal", "double", "float", "int", "long"],
+
+                        //数据库类型 ➜ SQL语句参数类型
+                        //db：数据库类型，lg：语言类型，pm：参数
+                        MySQL: [{ "db": "bigint", "lg": "long", "pm": "Int64" }, { "db": "binary", "lg": "byte[]", "pm": "Binary" }, { "db": "bit", "lg": "ulong", "pm": "Bit" }, { "db": "blob", "lg": "byte[]", "pm": "Blob" }, { "db": "char", "lg": "string", "pm": "VarChar" }, { "db": "date", "lg": "DateTime", "pm": "Date" }, { "db": "datetime", "lg": "DateTime", "pm": "DateTime" }, { "db": "decimal", "lg": "decimal", "pm": "Decimal" }, { "db": "double", "lg": "double", "pm": "Double" }, { "db": "float", "lg": "float", "pm": "Float" }, { "db": "int", "lg": "int", "pm": "Int32" }, { "db": "json", "lg": "string", "pm": "JSON" }, { "db": "longblob", "lg": "byte[]", "pm": "LongBlob" }, { "db": "longtext", "lg": "string", "pm": "LongText" }, { "db": "mediumblob", "lg": "byte[]", "pm": "MediumBlob" }, { "db": "mediumint", "lg": "int", "pm": "Int32" }, { "db": "mediumtext", "lg": "string", "pm": "MediumText" }, { "db": "tinytext", "lg": "string", "pm": "TinyText" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "time", "lg": "DateTime", "pm": "Time" }, { "db": "timestamp", "lg": "DateTime", "pm": "Timestamp" }, { "db": "tinyblob", "lg": "byte[]", "pm": "TinyBlob" }, { "db": "varbinary", "lg": "byte[]", "pm": "VarBinary" }, { "db": "varchar", "lg": "string", "pm": "VarChar" }, { "db": "year", "lg": "string", "pm": "Year" }],
+                        SQLite: [{ "db": "integer", "lg": "int", "pm": "Integer" }, { "db": "real", "lg": "double", "pm": "Real" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "blob", "lg": "byte[]", "pm": "Blob" }],
+                        Oracle: [{ "db": "BFILE", "lg": "byte[]", "pm": "BFile" }, { "db": "VARCHAR2", "lg": "string", "pm": "Varchar2" }, { "db": "BINARY_DOUBLE", "lg": "double", "pm": "BinaryDouble" }, { "db": "BINARY_FLOAT", "lg": "float", "pm": "BinaryFloat" }, { "db": "BLOB", "lg": "byte[]", "pm": "Blob" }, { "db": "CLOB", "lg": "string", "pm": "Clob" }, { "db": "CHAR", "lg": "string", "pm": "Char" }, { "db": "DATE", "lg": "DateTime", "pm": "Date" }, { "db": "LONG", "lg": "Long", "pm": "Long" }, { "db": "LONG RAW", "lg": "byte[]", "pm": "LongRaw" }, { "db": "NCLOB", "lg": "string", "pm": "NClob" }, { "db": "NUMBER", "lg": "decimal", "pm": "Decimal" }, { "db": "NVARCHAR2", "lg": "string", "pm": "NVarchar2" }, { "db": "RAW", "lg": "byte[]", "pm": "Raw" }, { "db": "TIMESTAMP(6)", "lg": "DateTime", "pm": "TimeStamp" }, { "db": "INTERVAL DAY(2) TO SECOND(6)", "lg": "TimeSpan", "pm": "IntervalDS" }, { "db": "INTERVAL YEAR(2) TO MONTH", "lg": "string", "pm": "IntervalYM" }, { "db": "TIMESTAMP(6) WITH LOCAL TIME ZONE", "lg": "DateTimeOffset", "pm": "TimeStampLTZ" }, { "db": "TIMESTAMP(6) WITH TIME ZONE", "lg": "DateTimeOffset", "pm": "TimeStampTZ" }],
+                        SQLServer: [{ "db": "bigint", "lg": "long", "pm": "BigInt" }, { "db": "binary", "lg": "byte[]", "pm": "Binary" }, { "db": "bit", "lg": "bool", "pm": "Bit" }, { "db": "char", "lg": "string", "pm": "Char" }, { "db": "date", "lg": "DateTime", "pm": "Date" }, { "db": "datetime", "lg": "DateTime", "pm": "DateTime" }, { "db": "datetime2", "lg": "DateTime", "pm": "DateTime2" }, { "db": "datetimeoffset", "lg": "DateTimeOffset", "pm": "DateTimeOffset" }, { "db": "decimal", "lg": "decimal", "pm": "Decimal" }, { "db": "float", "lg": "double", "pm": "Float" }, { "db": "image", "lg": "byte[]", "pm": "Image" }, { "db": "int", "lg": "int", "pm": "Int" }, { "db": "money", "lg": "decimal", "pm": "Money" }, { "db": "nchar", "lg": "string", "pm": "NChar" }, { "db": "ntext", "lg": "string", "pm": "NText" }, { "db": "numeric", "lg": "decimal", "pm": "Decimal" }, { "db": "nvarchar", "lg": "string", "pm": "nvarchar" }, { "db": "nvarchar", "lg": "string", "pm": "NVarChar" }, { "db": "real", "lg": "float", "pm": "Real" }, { "db": "smalldatetime", "lg": "DateTime", "pm": "SmallDateTime" }, { "db": "smallint", "lg": "short", "pm": "SmallInt" }, { "db": "smallmoney", "lg": "decimal", "pm": "SmallMoney" }, { "db": "sql_variant", "lg": "object", "pm": "NVarChar" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "time", "lg": "TimeSpan", "pm": "Time" }, { "db": "timestamp", "lg": "byte[]", "pm": "Timestamp" }, { "db": "tinyint", "lg": "byte", "pm": "TinyInt" }, { "db": "uniqueidentifier", "lg": "Guid", "pm": "UniqueIdentifier" }, { "db": "varbinary", "lg": "byte[]", "pm": "VarBinary" }, { "db": "varchar", "lg": "string", "pm": "VarChar" }, { "db": "xml", "lg": "string", "pm": "Xml" }],
+                        PostgreSQL: [{ "db": "bit", "lg": "System.Collections.BitArray", "pm": "Bit" }, { "db": "bool", "lg": "bool", "pm": "Boolean" }, { "db": "box", "lg": "NpgsqlTypes.NpgsqlBox", "pm": "Box" }, { "db": "bytea", "lg": "byte[]", "pm": "Bytea" }, { "db": "bpchar", "lg": "string", "pm": "Varchar" }, { "db": "cidr", "lg": "ValueTuple<System.Net.IPAddress, int>", "pm": "Cidr" }, { "db": "circle", "lg": "NpgsqlTypes.NpgsqlCircle", "pm": "Circle" }, { "db": "date", "lg": "DateTime", "pm": "Date" }, { "db": "numeric", "lg": "decimal", "pm": "Numeric" }, { "db": "float4", "lg": "float", "pm": "Double" }, { "db": "float8", "lg": "double", "pm": "Double" }, { "db": "inet", "lg": "System.Net.IPAddress", "pm": "Inet" }, { "db": "int2", "lg": "short", "pm": "Integer" }, { "db": "int4", "lg": "int", "pm": "Integer" }, { "db": "int8", "lg": "long", "pm": "Bigint" }, { "db": "interval", "lg": "TimeSpan", "pm": "Interval" }, { "db": "json", "lg": "string", "pm": "Json" }, { "db": "jsonb", "lg": "string", "pm": "Jsonb" }, { "db": "line", "lg": "NpgsqlTypes.NpgsqlLine", "pm": "Line" }, { "db": "lseg", "lg": "NpgsqlTypes.NpgsqlLSeg", "pm": "LSeg" }, { "db": "macaddr", "lg": "System.Net.NetworkInformation.PhysicalAddress", "pm": "MacAddr" }, { "db": "money", "lg": "decimal", "pm": "Money" }, { "db": "path", "lg": "NpgsqlTypes.NpgsqlPath", "pm": "Path" }, { "db": "point", "lg": "NpgsqlTypes.NpgsqlPoint", "pm": "Point" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "time", "lg": "TimeSpan", "pm": "Time" }, { "db": "timestamp", "lg": "DateTime", "pm": "Timestamp" }, { "db": "timestamptz", "lg": "DateTime", "pm": "TimestampTz" }, { "db": "timetz", "lg": "TimeSpan", "pm": "TimeTz" }, { "db": "tsquery", "lg": "NpgsqlTypes.NpgsqlTsQuery", "pm": "TsQuery" }, { "db": "tsvector", "lg": "NpgsqlTypes.NpgsqlTsVector", "pm": "TsVector" }, { "db": "txid_snapshot", "lg": "string", "pm": "Varchar" }, { "db": "uuid", "lg": "Guid", "pm": "Uuid" }, { "db": "varbit", "lg": "System.Collections.BitArray", "pm": "Varbit" }, { "db": "varchar", "lg": "string", "pm": "Varchar" }, { "db": "xml", "lg": "string", "pm": "Xml" }]
+                    },
+
+                    java: {
+                        MySQL: [],
+                        SQLite: [],
+                        Oracle: [],
+                        SQLServer: [],
+                        PostgreSQL: []
+                    },
+
+                    php: {
+                        MySQL: [],
+                        SQLite: [],
+                        Oracle: [],
+                        SQLServer: [],
+                        PostgreSQL: []
+                    }
+                },
+
+                /**
+                 * 数据行按表名分组
+                 * @param rows 数据行
+                 * @param field 字段
+                 */
+                rowsGroup: function (rows, field) {
+                    var rg = {}, i = 0, len = rows.length;
+                    for (; i < len;) {
+                        var ri = rows[i++];
+                        var gn = ri[field || "TableName"];
+                        var rs = rg[gn] || [];
+                        rs.push(ri);
+                        rg[gn] = rs;
+                    }
+                    return rg;
+                },
+
+                /**
+                 * 输出文件
+                 * @param arro 内容组
+                 */
+                down: function (arro) {
+                    var zip = new JSZip();
+
+                    for (var i = 0; i < arro.length; i++) {
+                        var fi = arro[i], fo = fi.output;
+                        for (var j in fo) {
+                            var tj = fo[j];
+                            zip.file(fi.project + "/" + j, tj.join('\n'));
+                        }
+                    }
+
+                    //生成输出缓存
+                    dk.dc.output = arro;
+
+                    zip.generateAsync({ type: "blob" }).then(function (content) {
+                        saveAs(content, "dk.zip");
+                    });
+                },
+
+                /**
+                 * 公共参数，所有方法传参格式 */
+                pa: function () {
+
+                    return {
+                        //项目名称，会创建文件夹
+                        project: null,
+                        //命名空间
+                        namespace: null,
+                        //数据行
+                        rows: [],
+                        //带注释
+                        comment: true,
+                        //文件扩展名,如 .cs .java .php 等
+                        ext: null,
+
+                        //输出对象，键对应数组，数组自动换行输出
+                        output: {}
+                    }
+                },
+
+                //语言模版
+                language: {
+                    "-comment": "带 -comment 的键为注释",
+
+                    //C#
+                    csharp: {
+                        //生成的项目
+
+                        //实体
+                        "model-comment": "实体",
+                        model: function am(pa) {
+
+                            //参数默认值
+                            pa.project = pa.project || "Netnr.Domain";
+                            pa.namespace = pa.namespace || "Netnr.Domain";
+                            pa.ext = pa.ext || ".cs";
+
+                            //数据库名
+                            var tdbname = dk.tdb[dk.dc.dbi];
+
+                            //按表名分组
+                            var rg = dk.build.rowsGroup(pa.rows);
+
+                            //遍历表再遍历列构建代码【主要修改以下代码】
+                            for (var gn in rg) {
+                                var ts = [], rs = rg[gn];
+
+                                //引用
+                                ts.push('using System;')
+                                ts.push('');
+
+                                //命名空间
+                                ts.push('namespace ' + pa.namespace);
+                                ts.push('{');
+
+                                //类注释
+                                if (pa.comment) {
+                                    ts.push('\t' + '/// <summary>');
+                                    (rs[0].TableComment || "").split('\n').forEach(tc => {
+                                        ts.push('\t' + '/// ' + tc);
+                                    });
+                                    ts.push('\t' + '/// </summary>');
+                                }
+
+                                //类
+                                ts.push('\t' + 'public partial class ' + gn);
+                                ts.push('\t' + '{')
+                                for (var i = 0, len = rs.length; i < len; i++) {
+                                    //当前项
+                                    var ri = rs[i];
+
+                                    //项注释
+                                    if (pa.comment) {
+                                        ts.push('\t\t' + '/// <summary>');
+                                        (ri.FieldComment || "").split('\n').forEach(fc => {
+                                            ts.push('\t\t' + '/// ' + fc);
+                                        });
+                                        ts.push('\t\t' + '/// </summary>');
+                                    }
+
+                                    //列
+
+                                    //类型
+                                    var lgtype = 'object';
+                                    var dbo = dk.build.typeMapping.csharp[tdbname];
+                                    for (var o = 0; o < dbo.length; o++) {
+                                        var oi = dbo[o];
+                                        if (oi.db.toLowerCase() == (ri.DataType || "").toLowerCase()) {
+                                            lgtype = oi.lg;
+                                            break;
+                                        }
+                                    }
+                                    //类型 二次处理
+                                    if (tdbname == "Oracle" && lgtype == "decimal" && ri.DataScale == 0) {
+                                        lgtype = "int";
+                                    }
+
+                                    //该项值可为空
+                                    if (ri.NotNull != "YES") {
+                                        //当前类型可为NULL
+                                        if (dk.build.typeMapping.csharp.Nullable.indexOf(lgtype) > -1) {
+                                            lgtype += "?";
+                                        }
+                                    }
+                                    ts.push('\t\t' + 'public ' + lgtype + ' ' + ri.FieldName + ' { get; set; }');
+                                }
+                                ts.push('\t' + '}');
+                                ts.push('}');
+
+                                //以表名+后缀作为键名存储构建的代码行数组
+                                pa.output[gn + pa.ext] = ts;
+                            }
+                        },
+
+                        //dal
+                        "dal-comment": "增删改查等",
+                        dal: function am(pa) {
+
+                            //参数默认值
+                            pa.project = pa.project || "Netnr.Data";
+                            pa.namespace = pa.namespace || "Netnr.Data";
+                            pa.ext = pa.ext || ".cs";
+
+                            //数据库名
+                            var tdbname = dk.tdb[dk.dc.dbi];
+
+                            //实体命名空间
+                            var modelNamespace = "Netnr.Domain",
+                                //数据库方法
+                                dbfunc_query = tdbname + "Helper.Query",
+                                dbfunc_scalar = tdbname + "Helper.ExecuteScalar",
+                                dbfunc_add = tdbname + "Helper.ExecuteNonQuery",
+                                dbfunc_update = tdbname + "Helper.ExecuteNonQuery",
+                                dbfunc_delete = tdbname + "Helper.ExecuteNonQuery";
+
+                            //按表名分组
+                            var rg = dk.build.rowsGroup(pa.rows);
+
+                            //遍历表再遍历列构建代码【主要修改以下代码】
+                            for (var gn in rg) {
+                                var ts = [], rs = rg[gn];
+
+                                //引用
+                                ts.push('using System;')
+                                ts.push('using System.Data;')
+                                switch (tdbname) {
+                                    case "MySQL":
+                                        ts.push('using MySql.Data.MySqlClient;')
+                                        break;
+                                    case "SQLite":
+                                        ts.push('using Microsoft.Data.Sqlite;')
+                                        break;
+                                    case "Oracle":
+                                        ts.push('using Oracle.ManagedDataAccess.Client;')
+                                        break;
+                                    case "SQLServer":
+                                        ts.push('using System.Data.SqlClient;')
+                                        break;
+                                    case "PostgreSQL":
+                                        ts.push('using Npgsql;')
+                                        ts.push('using NpgsqlTypes;')
+                                        break;
+                                }
+                                ts.push('');
+
+                                //命名空间
+                                ts.push('namespace ' + pa.namespace);
+                                ts.push('{');
+
+                                //类注释
+                                if (pa.comment) {
+                                    ts.push('\t' + '/// <summary>');
+                                    (rs[0].TableComment || "").split('\n').forEach(tc => {
+                                        ts.push('\t' + '/// ' + tc);
+                                    });
+                                    ts.push('\t' + '/// </summary>');
+                                }
+
+                                //类
+                                ts.push('\t' + 'public partial class ' + gn);
+                                ts.push('\t' + '{')
+
+                                //构造方法
+                                ts.push('\t\t' + 'public ' + gn + '() { }');
+                                ts.push('');
+
+                                //主键列、参数枚举对象、参数对象、参数前缀、字段数组
+                                var pkcolumn, dbtypeEnum = null, dbpm = null, pmprefix = "@", fields = [];
+
+                                for (var i = 0; i < rs.length; i++) {
+                                    var ri = rs[i];
+                                    fields.push(ri.FieldName);
+                                    var dbm = dk.build.typeMapping.csharp[tdbname];
+                                    ri.omi = dbm.filter(x => x.db.toLowerCase() == ri.DataType.toLowerCase())[0] || {};
+                                    if (ri.PrimaryKey == "YES") {
+                                        pkcolumn = ri;
+                                    }
+                                }
+                                //无主键列，默认第一个字段
+                                if (!pkcolumn) {
+                                    pkcolumn = rs[0];
+                                }
+                                switch (tdbname) {
+                                    case "MySQL":
+                                        dbtypeEnum = "MySqlDbType";
+                                        dbpm = "MySqlParameter";
+                                        break;
+                                    case "SQLite":
+                                        dbtypeEnum = "SqliteType";
+                                        dbpm = "SqliteParameter";
+                                        break;
+                                    case "Oracle":
+                                        dbtypeEnum = "OracleDbType";
+                                        dbpm = "OracleParameter";
+                                        pmprefix = ":";
+                                        break;
+                                    case "SQLServer":
+                                        dbtypeEnum = "SqlDbType";
+                                        dbpm = "SqlParameter";
+                                        break;
+                                    case "PostgreSQL":
+                                        dbtypeEnum = "NpgsqlDbType";
+                                        dbpm = "NpgsqlParameter";
+                                        break;
+                                }
+
+                                //方法
+                                ts.push('\t\t' + '/// <summary>');
+                                ts.push('\t\t' + '/// 查询数据');
+                                ts.push('\t\t' + '/// </summary>');
+                                ts.push('\t\t' + '/// <param name="whereSql">SQL条件，可选</param>');
+                                ts.push('\t\t' + '/// <returns>返回数据集</returns>');
+                                ts.push('\t\t' + 'public DataSet Query(string whereSql = null)');
+                                ts.push('\t\t' + '{');
+                                ts.push('\t\t\t' + 'var sql = "select * from ' + gn + '";');
+                                ts.push('\t\t\t' + 'if (!string.IsNullOrWhiteSpace(whereSql))');
+                                ts.push('\t\t\t' + '{');
+                                ts.push('\t\t\t\t' + 'sql += " where " + whereSql;');
+                                ts.push('\t\t\t' + '}');
+                                ts.push('');
+                                ts.push('\t\t\t' + 'var ds = ' + dbfunc_query + '(sql);');
+                                ts.push('\t\t\t' + 'return ds;');
+                                ts.push('\t\t' + '}');
+                                ts.push('');
+
+                                //方法
+                                ts.push('\t\t' + '/// <summary>');
+                                ts.push('\t\t' + '/// 新增一条');
+                                ts.push('\t\t' + '/// </summary>');
+                                ts.push('\t\t' + '/// <param name="model">新增实体对象</param>');
+                                ts.push('\t\t' + '/// <returns>返回是否成功</returns>');
+                                ts.push('\t\t' + 'public bool Add(' + modelNamespace + '.' + gn + ' model)');
+                                ts.push('\t\t' + '{');
+                                ts.push('\t\t\t' + 'var sql = @"insert into ' + gn + '(');
+                                ts.push('\t\t\t\t\t\t' + fields.join(','));
+                                ts.push('\t\t\t\t\t\t' + ') values (');
+                                ts.push('\t\t\t\t\t\t' + pmprefix + fields.join(',' + pmprefix));
+                                ts.push('\t\t\t\t\t\t' + ')";');
+                                ts.push('\t\t\t' + dbpm + '[] parameters = {');
+                                for (var i = 0; i < rs.length; i++) {
+                                    var ri = rs[i], pm = ri.omi.pm;
+
+                                    //类型 二次处理
+                                    if (tdbname == "Oracle" && pm == "Decimal" && ri.DataScale == 0) {
+                                        pm = "Int32";
+                                    }
+
+                                    var newpm = 'new ' + dbpm + '("' + pmprefix + ri.FieldName + '", ' + dbtypeEnum + '.' + pm;
+
+                                    //Oracle CLOB 不指定长度
+                                    var isoc = tdbname == "Oracle" && pm == "Clob";
+                                    if (!isNaN(parseInt(ri.DataLength)) && !isoc) {
+                                        newpm += ', ' + ri.DataLength + ')';
+                                    } else {
+                                        newpm += ')';
+                                    }
+                                    if (i < rs.length - 1) {
+                                        newpm += ',';
+                                    }
+                                    ts.push('\t\t\t\t' + newpm);
+                                }
+                                ts.push('\t\t\t' + '};');
+                                for (var i = 0; i < rs.length; i++) {
+                                    var ri = rs[i];
+                                    ts.push('\t\t\t' + 'parameters[' + i + '].Value = model.' + ri.FieldName + ';');
+                                }
+                                ts.push('');
+                                ts.push('\t\t\t' + 'int num = ' + dbfunc_add + '(sql, parameters);');
+                                ts.push('\t\t\t' + 'return num > 0;');
+                                ts.push('\t\t' + '}');
+                                ts.push('');
+
+                                //方法
+                                ts.push('\t\t' + '/// <summary>');
+                                ts.push('\t\t' + '/// 修改一条');
+                                ts.push('\t\t' + '/// </summary>');
+                                ts.push('\t\t' + '/// <param name="model">修改实体对象</param>');
+                                ts.push('\t\t' + '/// <returns>返回是否成功</returns>');
+                                ts.push('\t\t' + 'public bool Update(' + modelNamespace + '.' + gn + ' model)');
+                                ts.push('\t\t' + '{');
+                                ts.push('\t\t\t' + 'var sql = @"update ' + gn + ' set ');
+                                var sv = [];
+                                for (var i = 0; i < rs.length; i++) {
+                                    var ri = rs[i];
+                                    if (ri.PrimaryKey != "YES") {
+                                        sv.push(ri.FieldName + '=' + pmprefix + ri.FieldName);
+                                    }
+                                }
+                                ts.push('\t\t\t\t\t\t' + sv.join(',') + ' ');
+                                ts.push('\t\t\t\t\t\t' + 'where ' + pkcolumn.FieldName + '=' + pmprefix + pkcolumn.FieldName + '";');
+                                ts.push('\t\t\t' + dbpm + '[] parameters = {');
+                                for (var i = 0; i < rs.length; i++) {
+                                    var ri = rs[i], pm = ri.omi.pm;
+
+                                    //类型 二次处理
+                                    if (tdbname == "Oracle" && pm == "Decimal" && ri.DataScale == 0) {
+                                        pm = "Int32";
+                                    }
+
+                                    var newpm = 'new ' + dbpm + '("' + pmprefix + ri.FieldName + '", ' + dbtypeEnum + '.' + pm;
+
+                                    //Oracle CLOB 不指定长度
+                                    var isoc = tdbname == "Oracle" && pm == "Clob";
+                                    if (!isNaN(parseInt(ri.DataLength)) && !isoc) {
+                                        newpm += ', ' + ri.DataLength + ')';
+                                    } else {
+                                        newpm += ')';
+                                    }
+                                    if (i < rs.length - 1) {
+                                        newpm += ',';
+                                    }
+                                    ts.push('\t\t\t\t' + newpm);
+                                }
+                                ts.push('\t\t\t' + '};');
+                                for (var p = 0; p < rs.length; p++) {
+                                    var cp = rs[p];
+                                    ts.push('\t\t\t' + 'parameters[' + p + '].Value = model.' + cp.FieldName + ';');
+                                }
+                                ts.push('');
+                                ts.push('\t\t\t' + 'int num = ' + dbfunc_update + '(sql, parameters);');
+                                ts.push('\t\t\t' + 'return num > 0;');
+                                ts.push('\t\t' + '}');
+                                ts.push('');
+
+                                //方法
+                                ts.push('\t\t' + '/// <summary>');
+                                ts.push('\t\t' + '/// 删除一条');
+                                ts.push('\t\t' + '/// </summary>');
+                                ts.push('\t\t' + '/// <param name="' + pkcolumn.FieldName + '">删除标识</param>');
+                                ts.push('\t\t' + '/// <returns>返回是否成功</returns>');
+                                ts.push('\t\t' + 'public bool Delete(' + pkcolumn.omi.lg + ' ' + pkcolumn.FieldName + ')');
+                                ts.push('\t\t' + '{');
+                                ts.push('\t\t\t' + 'var sql = "delete from ' + gn + ' where ' + pkcolumn.FieldName + '=' + pmprefix + pkcolumn.FieldName + '";');
+                                ts.push('\t\t\t' + dbpm + '[] parameters = {');
+                                var newpm = 'new ' + dbpm + '("' + pmprefix + pkcolumn.FieldName + '", ' + dbtypeEnum + '.' + pkcolumn.omi.pm;
+                                if (!isNaN(parseInt(pkcolumn.DataLength))) {
+                                    newpm += ', ' + pkcolumn.DataLength + ')';
+                                } else {
+                                    newpm += ')';
+                                }
+                                ts.push('\t\t\t\t' + newpm);
+                                ts.push('\t\t\t' + '};');
+                                ts.push('\t\t\t' + 'parameters[0].Value = ' + pkcolumn.FieldName + ';');
+                                ts.push('');
+                                ts.push('\t\t\t' + 'var num = ' + dbfunc_delete + '(sql, parameters);');
+                                ts.push('\t\t\t' + 'return num > 0;');
+                                ts.push('\t\t' + '}');
+                                ts.push('');
+
+                                //方法
+                                ts.push('\t\t' + '/// <summary>');
+                                ts.push('\t\t' + '/// 分页查询');
+                                ts.push('\t\t' + '/// </summary>');
+                                ts.push('\t\t' + '/// <param name="page">页码</param>');
+                                ts.push('\t\t' + '/// <param name="rows">页量</param>');
+                                ts.push('\t\t' + '/// <param name="whereSql">SQL条件</param>');
+                                ts.push('\t\t' + '/// <param name="sortOrder">排序</param>');
+                                ts.push('\t\t' + '/// <param name="total">返回总条数</param>');
+                                ts.push('\t\t' + '/// <returns>返回数据表及总条数</returns>');
+                                ts.push('\t\t' + 'public DataTable Query(int page, int rows, string whereSql, string sortOrder, out int total)');
+                                ts.push('\t\t' + '{');
+                                ts.push('\t\t\t' + 'sortOrder = string.IsNullOrWhiteSpace(sortOrder) ? "" : "ORDER BY " + sortOrder;');
+                                if (tdbname != "Oracle") {
+                                    ts.push('\t\t\t' + 'whereSql = string.IsNullOrWhiteSpace(whereSql) ? "" : "WHERE " + whereSql;');
+                                    ts.push('');
+                                }
+
+                                switch (tdbname) {
+                                    case "MySQL":
+                                        ts.push('\t\t\t' + 'var sql = $"SELECT * FROM ' + gn + ' {whereSql} {sortOrder} LIMIT {(page - 1)*rows}, {rows}";');
+                                        ts.push('\t\t\t' + 'sql += $";SELECT COUNT(1) AS TOTAL FROM ' + gn + ' {whereSql}";');
+                                        break;
+                                    case "SQLite":
+                                        ts.push('\t\t\t' + 'var sql = $"SELECT * FROM ' + gn + ' {whereSql} {sortOrder} LIMIT {rows} OFFSET {(page - 1)*rows}";');
+                                        ts.push('\t\t\t' + 'sql += $";SELECT COUNT(1) AS TOTAL FROM ' + gn + ' {whereSql}";');
+                                        break;
+                                    case "Oracle":
+                                        ts.push('\t\t\t' + 'var ws1 = string.IsNullOrWhiteSpace(whereSql) ? "" : whereSql + " AND ";');
+                                        ts.push('\t\t\t' + 'var ws2 = string.IsNullOrWhiteSpace(whereSql) ? "" : "WHERE "+ whereSql;');
+                                        ts.push('');
+
+                                        ts.push('\t\t\t' + 'var sql = $"SELECT * FROM ( SELECT ROWNUM AS rowno, a.* FROM ' + gn + ' a WHERE {ws1} ROWNUM <= {page * rows} {sortOrder} ) x WHERE x.rowno >= {(page - 1)*rows}";');
+                                        ts.push('\t\t\t' + 'var sqlTotal = $"SELECT COUNT(1) AS TOTAL FROM ' + gn + ' {ws2}";');
+                                        break;
+                                    case "SQLServer":
+                                        //ROW_NUMBER分页
+                                        ts.push('\t\t\t' + 'var sql = $"SELECT TOP {rows} * FROM ( SELECT ROW_NUMBER() OVER( {sortOrder} ) AS numid, * FROM ' + gn + ' {whereSql} ) x WHERE numid > {(page - 1)*rows}";');
+                                        //OFFSET分页，版本2012及以上
+                                        //ts.push('\t\t\t' + 'var sql = $"SELECT * FROM ' + gn + ' {whereSql} {sortOrder} OFFSET {(page - 1)*rows} ROWS FETCH NEXT {rows} ROWS ONLY";');
+                                        ts.push('\t\t\t' + 'sql += $";SELECT COUNT(1) AS TOTAL FROM ' + gn + ' {whereSql}";');
+                                        break;
+                                    case "PostgreSQL":
+                                        ts.push('\t\t\t' + 'var sql = $"SELECT * FROM ' + gn + ' {whereSql} {sortOrder} LIMIT {rows} OFFSET {(page - 1)*rows}";');
+                                        ts.push('\t\t\t' + 'sql += $";SELECT COUNT(1) AS TOTAL FROM ' + gn + ' {whereSql}";');
+                                        break;
+                                }
+                                ts.push('');
+                                ts.push('\t\t\t' + 'var ds = ' + dbfunc_query + '(sql);');
+                                if (tdbname != "Oracle") {
+                                    ts.push('\t\t\t' + 'total = Convert.ToInt32(ds.Table[1].Rows[0][0].ToString());');
+                                } else {
+                                    ts.push('\t\t\t' + 'total = Convert.ToInt32(' + dbfunc_scalar + '(sqlTotal));');
+                                }
+                                ts.push('\t\t\t' + 'return ds.Tables[0];');
+                                ts.push('\t\t' + '}');
+                                ts.push('');
+
+                                //方法
+
+
+                                ts.push('\t' + '}');
+                                ts.push('}');
+
+                                //以表名+后缀作为键名存储构建的代码行数组
+                                pa.output[gn + pa.ext] = ts;
+                            }
+                        }
+                    },
+
+                    //JAVA
+                    "java-comment": "【未完成，等你来】",
+                    java: {
+
+                        //实体
+                        "model-comment": "实体【未完成，等你来】",
+                        model: function am(pa) {
+
+                            //参数默认值
+                            pa.project = pa.project || "Netnr.Domain";
+                            pa.namespace = pa.namespace || "Netnr.Domain";
+                            pa.ext = pa.ext || ".java";
+
+                            //按表名分组
+                            var rg = dk.build.rowsGroup(pa.rows);
+
+                            //遍历表再遍历列构建代码【主要修改以下代码】
+                            for (var gn in rg) {
+                                var ts = [], rs = rg[gn];
+
+                                //引用
+                                ts.push('import javax.persistence.*;')
+                                ts.push('import javax.validation.*;')
+                                ts.push('');
+
+                                //数据库名
+                                var tdbname = dk.tdb[dk.dc.dbi];
+
+                                //类注释
+                                if (pa.comment) {
+                                    ts.push('/**');
+                                    (rs[0].TableComment || "").split('\n').forEach(tc => {
+                                        ts.push(' * ' + tc);
+                                    });
+                                    ts.push(' */');
+                                }
+
+                                //类
+                                ts.push('public class ' + gn + ' {');
+                                for (var i = 0, len = rs.length; i < len; i++) {
+                                    //当前项
+                                    var ri = rs[i];
+
+                                    //项注释
+                                    if (pa.comment) {
+                                        ts.push('\t' + '/**');
+                                        (ri.FieldComment || "").split('\n').forEach(fc => {
+                                            ts.push('\t' + ' * ' + fc);
+                                        });
+                                        ts.push('\t' + ' */');
+                                    }
+
+                                    //列
+
+                                    //类型
+                                    var lgtype = 'object';
+                                    var dbo = dk.build.typeMapping.csharp[tdbname];
+                                    for (var o = 0; o < dbo.length; o++) {
+                                        var oi = dbo[o];
+                                        if (oi.db.toLowerCase() == (ri.DataType || "").toLowerCase()) {
+                                            lgtype = oi.lg;
+                                            break;
+                                        }
+                                    }
+
+                                    //该项值可为空
+                                    if (ri.NotNull != "YES") {
+                                        //当前类型可为NULL
+                                        if (dk.build.typeMapping.csharp.Nullable.indexOf(lgtype) > -1) {
+                                            lgtype += "?";
+                                        }
+                                    }
+                                    ts.push('\t' + 'private ' + lgtype + ' ' + ri.FieldName + ';');
+                                }
+                                ts.push('}');
+
+                                //以表名+后缀作为键名存储构建的代码行数组
+                                pa.output[gn + pa.ext] = ts;
+                            }
+                        }
+                    },
+
+                    //PHP
+                    "php-comment": "【未完成，等你来】",
+                    php: {
+
+                        //实体
+                        "model-comment": "实体【未完成，等你来】",
+                        model: function am(pa) {
+
+                            //参数默认值
+                            pa.project = pa.project || "Netnr.Domain";
+                            pa.namespace = pa.namespace || "Netnr.Domain";
+                            pa.ext = pa.ext || ".php";
+
+                        }
+                    }
+                }
+            }
+        };
+
+        dk.init();
+    </script>
+
+</body>
+</html>

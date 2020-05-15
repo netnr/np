@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "样式配置";
+}
+
+<div class="container">
+    <form class="form-horizontal mt15">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group form-group-lg">
+                    <label class="col-sm-3 control-label">字体大小</label>
+                    <div class="col-sm-5">
+                        <select class="form-control" id="seFontSize">
+                            <option value="16px"> 大（16px） </option>
+                            <option value="14px" selected> 中（14px）</option>
+                            <option value="12px"> 小（13px） </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group form-group-lg">
+                    <label class="col-sm-3 control-label">字体类型</label>
+                    <div class="col-sm-5">
+                        <select class="form-control" id="seFontFamily">
+                            <option value="">（ 默认字体 ）</option>
+                            <option value="Verdana"> Verdana </option>
+                            <option value="Microsoft YaHei"> 微软雅黑 </option>
+                            <option value="MS Sans Serif"> MS Sans Serif </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group form-group-lg">
+                    <label class="col-sm-3 control-label">功能按钮</label>
+                    <div class="col-sm-5">
+                        <select class="form-control" id="seButtonStyle">
+                            <option value="">（ 默认小清新风格 ）</option>
+                            <option value="1"> 深色背景风格 </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="col-sm-5 col-sm-offset-3">
+                        <button id="btnSaveStyle" type="button" class="btn btn-lg btn-primary btn-block"> 保 存 </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<partial name="_BaseViewPartial" />

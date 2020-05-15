@@ -1,0 +1,54 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <input class="form-control mb-3" id="txtua" placeholder="请粘贴 User-Agent 信息" />
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>浏览器</th>
+                        <th>内核</th>
+                        <th>系统</th>
+                        <th>设备</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <p>
+                开源项目：<a href="https://github.com/fex-team/ua-device">https://github.com/fex-team/ua-device</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="/js/ua-device/useragent-base.js" asp-append-version="true"></script>
+<script src="/js/ua-device/ua-device.js" asp-append-version="true"></script>
+
+<script>
+    var pg = {
+        ua: navigator.userAgent,
+        init: function () {
+            $('#txtua').on('input', function () {
+                if (this.value == "") {
+                    pg.parse(pg.ua);
+                } else {
+                    pg.parse(this.value);
+                }
+            }).val(pg.ua);
+
+            pg.parse(pg.ua);
+        },
+        parse: function (ua) {
+            var uaobj = uaDevice(ua),
+                ub = uaobj.browser,
+                ue = uaobj.engine || {},
+                uo = uaobj.os,
+                ud = uaobj.device,
+                ubv = ub.version || {},
+                uev = ue.version || {},
+                uov = uo.version || {};
+            $('table').find('tbody').html('<tr><td>' + ub.name + '</br>' + ubv.original + '</td><td>' + ue.name + '</br>' + uev.original + '</td><td>' + uo.name + '</br>' + uov.original + '</td><td>' + ud.type + '</br>' + (ud.model || "") + '</td></tr>');
+        }
+    }
+
+    pg.init();
+</script>

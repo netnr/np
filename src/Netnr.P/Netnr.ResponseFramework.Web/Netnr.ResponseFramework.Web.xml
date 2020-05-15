@@ -1,0 +1,724 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Netnr.ResponseFramework.Web</name>
+    </assembly>
+    <members>
+        <member name="T:Netnr.ResponseFramework.Web.ViewComponents.ButtonViewComponent">
+            <summary>
+            按钮视图组件
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.ViewComponents.ButtonViewComponent.Invoke">
+            <summary>
+            按钮组件
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Components.FormViewComponent">
+            <summary>
+            表单视图组件
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Components.FormViewComponent.InvokeAsync(Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM)">
+            <summary>
+            表单、单据 组件
+            </summary>
+            <param name="vm">表单组件参数</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.AccountController">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.AccountController.Captcha">
+            <summary>
+            生成登录验证码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.AccountController.Login">
+            <summary>
+            登录页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.AccountController.LoginValidation(Netnr.ResponseFramework.Domain.SysUser,System.String,System.Int32)">
+            <summary>
+            登录验证
+            </summary>
+            <param name="mo"></param>
+            <param name="captcha">验证码</param>
+            <param name="remember">1记住登录状态</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.AccountController.Logout">
+            <summary>
+            注销
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.AccountController.UpdatePassword">
+            <summary>
+            修改密码页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.AccountController.UpdateNewPassword(System.String,System.String,System.String)">
+            <summary>
+            修改为新的密码
+            </summary>
+            <param name="oldpwd">现有</param>
+            <param name="newpwd1">新</param>
+            <param name="newpwd2"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.CommonController">
+            <summary>
+            公共、常用查询
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.QueryMenu(System.String)">
+            <summary>
+            公共查询：菜单树
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.QueryButtonTree">
+            <summary>
+            公共查询：功能按钮树
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.QueryRole">
+            <summary>
+            公共查询：角色列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.QueryDictionaryDemo">
+            <summary>
+            公共查询：查询数据字典的例子
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.Upload(System.Nullable{System.Int32},System.String)">
+            <summary>
+            公共上传，支持同时上传多个
+            </summary>
+            <param name="temp">temp=1,表示临时文件</param>
+            <param name="path">upload下自定义子目录，如：doc</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.UploadRich">
+            <summary>
+            公共上传，富文本附件，限制大小2MB
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.HomeController">
+            <summary>
+            起始页
+            
+            注意：该页面勿写接口
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.Index">
+            <summary>
+            首页
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.Desk">
+            <summary>
+            桌面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.UpdateBrowser">
+            <summary>
+            请升级你的浏览器
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.Guide">
+            <summary>
+            向导
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.InlayController">
+            <summary>
+            公共组件、视图
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.InlayController.QueryConfigTable(QueryDataInputVM)">
+            <summary>
+            查询配置表格
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.InlayController.SaveConfigTable(System.String,System.String)">
+            <summary>
+            保存配置表格
+            </summary>
+            <param name="rows">配置JSON</param>
+            <param name="tablename">虚拟表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.InlayController.SaveConfigForm(System.String,System.String)">
+            <summary>
+            保存配置表单
+            </summary>
+            <param name="rows">配置JSON</param>
+            <param name="tablename">虚拟表名</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.IOController">
+            <summary>
+            输入输出
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.IOController.Export(QueryDataInputVM,System.String)">
+            <summary>
+            公共导出
+            </summary>
+            <param name="ivm"></param>
+            <param name="title">标题，文件名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.IOController.ExportDown(System.String)">
+            <summary>
+            导出下载
+            </summary>
+            <param name="path">下载文件路径</param>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.RFController">
+            <summary>
+            示例，请删除
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.Tce">
+            <summary>
+            表配置示例页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.QueryTempExample(QueryDataInputVM)">
+            <summary>
+            查询表配置示例
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.DataGrid">
+            <summary>
+            DataGrid示例页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.QuerySysTableConfig(QueryDataInputVM)">
+            <summary>
+            查询表配置
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.TreeGrid(System.String)">
+            <summary>
+            TreeGrid示例页面
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.QuerySysMenu(QueryDataInputVM)">
+            <summary>
+            查询系统菜单
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.GridChange">
+            <summary>
+            Grid表格联动
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.QueryGridChange1(QueryDataInputVM)">
+            <summary>
+            Grid多表格-主表
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.QueryGridChange2(QueryDataInputVM)">
+            <summary>
+            Grid多表格-子表
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.Form">
+            <summary>
+            静态表单示例页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.BuildForms">
+            <summary>
+            生成多表单
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.Invoice">
+            <summary>
+            单据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.QueryInvoiceMain(QueryDataInputVM)">
+            <summary>
+            查询单据主表
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.QueryInvoiceDetail(QueryDataInputVM)">
+            <summary>
+            查询单据明细表
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.SaveInvoiceForm(Netnr.ResponseFramework.Domain.TempInvoiceMain,System.String)">
+            <summary>
+            保存单据
+            </summary>
+            <param name="moMain"></param>
+            <param name="rows"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.Upload">
+            <summary>
+            公共上传示例
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.RichText">
+            <summary>
+            嵌入富文本
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.BulkInsert">
+            <summary>
+            批量新增
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.BulkUpdate">
+            <summary>
+            批量修改
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.BulkDelete">
+            <summary>
+            批量删除
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.ServicesController">
+            <summary>
+            服务
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.ServicesController.TaskItem">
+            <summary>
+            任务项
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Web.Controllers.ServicesController.TaskItem.ResetDataBase">
+            <summary>
+            重置数据库
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Web.Controllers.ServicesController.TaskItem.ClearTemp">
+            <summary>
+            清理临时目录
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ServicesController.ExecTask">
+            <summary>
+            执行任务项，支持名称或索引
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.SettingController">
+            <summary>
+            系统设置
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysButton">
+            <summary>
+            系统按钮页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.QuerySysButton(QueryDataInputVM)">
+            <summary>
+            查询系统按钮
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SaveSysButton(Netnr.ResponseFramework.Domain.SysButton,System.String)">
+            <summary>
+            保存系统按钮
+            </summary>
+            <param name="mo"></param>
+            <param name="savetype">保存类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.DelSysButton(System.String)">
+            <summary>
+            删除系统按钮
+            </summary>
+            <param name="id">按钮ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysMenu">
+            <summary>
+            系统菜单页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.QuerySysMenu(QueryDataInputVM)">
+            <summary>
+            查询系统菜单
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SaveSysMenu(Netnr.ResponseFramework.Domain.SysMenu,System.String)">
+            <summary>
+            保存系统菜单
+            </summary>
+            <param name="mo"></param>
+            <param name="savetype"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.DelSysMenu(System.String)">
+            <summary>
+            删除系统菜单
+            </summary>
+            <param name="id">菜单ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysRole">
+            <summary>
+            系统角色页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.QuerySysRole(QueryDataInputVM)">
+            <summary>
+            查询系统角色
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SaveSysRole(Netnr.ResponseFramework.Domain.SysRole,System.String)">
+            <summary>
+            保存系统角色
+            </summary>
+            <param name="mo"></param>
+            <param name="savetype"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.CopySysRoleAuth(Netnr.ResponseFramework.Domain.SysRole,System.String)">
+            <summary>
+            复制角色权限
+            </summary>
+            <param name="mo"></param>
+            <param name="copyid">复制的角色ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.DelSysRole(System.String)">
+            <summary>
+            删除系统角色
+            </summary>
+            <param name="id">角色ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysUser">
+            <summary>
+            系统用户页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.QuerySysUser(QueryDataInputVM)">
+            <summary>
+            查询系统用户
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SaveSysUser(Netnr.ResponseFramework.Domain.SysUser,System.String,System.String)">
+            <summary>
+            保存系统用户
+            </summary>
+            <param name="mo"></param>
+            <param name="savetype"></param>
+            <param name="OldUserPwd">原密码，有变化代表为改密码</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.DelSysUser(System.String)">
+            <summary>
+            删除系统用户
+            </summary>
+            <param name="id">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysLog">
+            <summary>
+            系统日志页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.QuerySysLog(QueryDataInputVM)">
+            <summary>
+            查询系统日志
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysDictionary">
+            <summary>
+            系统数据字典
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.QuerySysDictionary(QueryDataInputVM)">
+            <summary>
+            查询系统数据字典
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SaveSysDictionary(Netnr.ResponseFramework.Domain.SysDictionary,System.String)">
+            <summary>
+            保存数据字典
+            </summary>
+            <param name="mo"></param>
+            <param name="savetype"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.DelSysDictionary(System.String)">
+            <summary>
+            逻辑删除数据字典
+            </summary>
+            <param name="id">字典ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysTableConfig">
+            <summary>
+            系统表配置页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.QuerySysTableConfig(QueryDataInputVM)">
+            <summary>
+            查询表配置
+            </summary>
+            <param name="ivm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SaveSysTableConfig(Netnr.ResponseFramework.Domain.SysTableConfig,System.Collections.Generic.List{System.String},System.String)">
+            <summary>
+            保存表配置
+            </summary>
+            <param name="mo"></param>
+            <param name="ColRelation">关系符</param>
+            <param name="savetype"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.DelSysTableConfig(System.String)">
+            <summary>
+            删除表配置
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.SettingController.SysStyle">
+            <summary>
+            样式配置页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.TestController">
+            <summary>
+            测试
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.TestController.Index">
+            <summary>
+            系统字典表页面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.ToolController">
+            <summary>
+            工具
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.TableManage">
+            <summary>
+            表管理
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.QueryTableConfig">
+            <summary>
+            查询表配置虚拟表名
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SaveTableConfig(System.String,System.Int32)">
+            <summary>
+            保存表配置信息
+            </summary>
+            <param name="rows">表配置数据行</param>
+            <param name="buildType">1：追加，2：覆盖</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.ConnCheck(System.Nullable{TypeDB}@,System.String@)">
+            <summary>
+            处理连接信息
+            </summary>
+            <param name="tdb"></param>
+            <param name="conn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.GetTable(System.Nullable{TypeDB},System.String)">
+            <summary>
+            获取所有表名及注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.GetColumn(System.Nullable{TypeDB},System.String,System.String)">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SetTableComment(System.Nullable{TypeDB},System.String,System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SetColumnComment(System.Nullable{TypeDB},System.String,System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SaveGenerateCode(System.String,System.String,System.String,System.String)">
+            <summary>
+            保存生成的代码
+            </summary>
+            <param name="name">视图名称</param>
+            <param name="controller">控制器名称</param>
+            <param name="view">视图内容</param>
+            <param name="javascript">视图页面脚本内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.ResetDataBaseForJson">
+            <summary>
+            根据JSON数据重置数据库
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.BackupDataBaseAsJson">
+            <summary>
+            数据库备份数据为JSON
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.ServerInfo">
+            <summary>
+            服务器信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.QueryServerInfo">
+            <summary>
+            查询服务器信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs">
+            <summary>
+            过滤器
+            
+            能 实现一个过滤器接口，要么是同步版本的，要么是异步版本的，鱼和熊掌不可兼得 。
+            如果你需要在接口中执行异步工作，那么就去实现异步接口。否则应该实现同步版本的接口。
+            框架会首先检查是不是实现了异步接口，如果实现了异步接口，那么将调用它。
+            不然则调用同步接口的方法。如果一个类中实现了两个接口，那么只有异步方法会被调用。
+            最后，不管 action 是同步的还是异步的，过滤器的同步或是异步是独立于 action 的
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.ErrorActionFilter">
+            <summary>
+            全局错误处理
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.GlobalActionAttribute">
+            <summary>
+            全局访问过滤器
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.AllowCors">
+            <summary>
+            允许跨域
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.IsAdmin">
+            <summary>
+            是管理员
+            </summary>
+        </member>
+    </members>
+</doc>

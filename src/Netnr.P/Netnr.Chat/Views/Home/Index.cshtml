@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 id="userId"></h2>
+            <h4 id="userName"></h4>
+            <input type="button" id="btnLogout" value="注销" />
+
+            <br />
+            toUser：<input type="text" id="userInput" />
+            <br />
+            Message：<input type="text" id="messageInput" />
+            <input type="button" id="sendButton" value="Send Message" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+</div>
+<script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/chat.js" asp-append-version="true"></script>

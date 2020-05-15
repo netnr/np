@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "数据字典";
+}
+
+@await Component.InvokeAsync("Form", new InvokeFormVM()
+{
+    TableName = "SysDictionary"
+})
+
+<!--快捷查询-->
+<div class="row">
+    <div class="col-md-4 col-sm-6 mb5">
+        <div class="input-group">
+            <span class="input-group-addon">字典类别</span>
+            <input type="text" class="form-control" id="query_sdtype" placeholder="搜索或选择字典分类" />
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 mb5">
+        <div class="input-group">
+            <span class="input-group-addon">状态</span>
+            <input type="text" class="form-control" id="query_sdstatus" />
+        </div>
+    </div>
+</div>
+
+<partial name="_BaseViewPartial" />

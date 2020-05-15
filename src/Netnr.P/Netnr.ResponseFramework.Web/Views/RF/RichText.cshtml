@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "富文本";
+}
+
+<!--模态 表单-->
+<div class="modal fade modalautoheight" id="fv_modal_1" role="dialog" data-backdrop="static">
+    <div class='modal-dialog modal-lg modal-full'>
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="fv_title_1">
+                    <i class="fa fa-plus blue"></i><span>表单标题</span><em>✶ 为必填</em>
+                </h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal formui" id="fv_form_1">
+                    <div class="row">
+
+                        <div class='col-md-12 col-sm-12'>
+                            <div class="form-group">
+                                <label class='control-label'>标题</label>
+                                <div>
+                                    <input type='text' id="SbBtnId" name="SbBtnId" class="form-control" data-type="text" data-query="0" data-url="" maxlength="20" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-12 col-sm-12'>
+                            <div class="form-group">
+                                <label class='control-label required'>内容</label>
+                                <div>
+                                    <textarea id="txtRich" name="txtRich" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="fv_save_1" type="button" class="btn btn-primary"><span class="fa fa-save"></span>&nbsp;保存 触发必填验证</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_QuotePartial" model="@("ckeditor.js")" />
+
+<partial name="_BaseViewPartial" />

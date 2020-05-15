@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "BuildForms";
+}
+
+<!--表单1，默认index=1 可不传-->
+@await Component.InvokeAsync("Form", new InvokeFormVM()
+{
+    TableName = "SysTableConfig",
+    ModalSize = 3,
+    PanelTitle = "面板一,面板二"
+})
+
+<!--表单2-->
+@await Component.InvokeAsync("Form", new InvokeFormVM()
+{
+    TableName = "SysButton",
+    Index = 2
+})
+
+<!--表单3-->
+@await Component.InvokeAsync("Form", new InvokeFormVM()
+{
+    TableName = "SysUser",
+    ModalSize = 2,
+    Index = 3
+})
+
+<pre class="h4">
+目前，在多表单的情况下，页面的表单、表格配置默认第一个，多表单、表格配置暂不支持；
+
+页面上的配置主要是给用户使用，而用户一般不会使用该功能，意义不大；（如果有强烈需求，进群沟通交流）
+
+而我们开发者应该在【系统设置-表配置】配置表单、表格；
+
+生成多表单，需注意字段名不能重复，根据字段名赋值输入框ID，可在字段名统一加上前缀来处理
+</pre>
+
+<button class="btn btn-primary" id="btn1">
+    <i class="fa fa-plus"></i> 表单1
+</button>
+<button class="btn btn-primary" id="btn2">
+    <i class="fa fa-plus"></i> 表单2
+</button>
+<button class="btn btn-primary" id="btn3">
+    <i class="fa fa-plus"></i> 表单3
+</button>
+
+<script>
+    $('#btn1').click(function () {
+        $('#fv_modal_1').modal();
+    });
+
+    $('#btn2').click(function () {
+        z.FormTitle({
+            id: $('#fv_title_2'),
+            icon: 0,
+            title: '新增按钮'
+        });
+        $('#fv_modal_2').modal();
+    });
+
+    $('#btn3').click(function () {
+        z.FormTitle({
+            id: $('#fv_title_3'),
+            icon: 0,
+            title: '新增用户'
+        });
+        $('#fv_modal_3').modal();
+    });
+</script>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Netnr.Blog.Data</name>
+    </assembly>
+    <members>
+        <member name="F:Netnr.Blog.Data.ContextBase.TDB">
+            <summary>
+            数据库
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Data.ContextBase.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Data.ContextBase.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Netnr.Blog.Data.ContextBase})">
+            <summary>
+            
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="P:Netnr.Blog.Data.ContextBase.LoggerFactory">
+            <summary>
+            日志
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Data.ContextBase.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <summary>
+            配置连接字符串
+            </summary>
+            <param name="optionsBuilder"></param>
+        </member>
+    </members>
+</doc>

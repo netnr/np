@@ -1,0 +1,39 @@
+﻿<style>
+    .difftxt {
+        width: auto;
+        padding: 2px;
+        margin-left: 108px;
+        height: 30px !important;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-5">
+            <label class="btn btn-primary btn-sm float-left">
+                <input type="file" class="d-none" id="fileOrigin" />选择原始文件
+            </label>
+            <textarea class="form-control difftxt" id="txtOrigin" placeholder="或 粘贴内容"></textarea>
+        </div>
+        <div class="col-md-5">
+            <label class="btn btn-info btn-sm float-left">
+                <input type="file" class="d-none" id="fileVary" />选择变动文件
+            </label>
+            <textarea class="form-control difftxt" id="txtVary" placeholder="或 粘贴内容"></textarea>
+        </div>
+        <div class="col-md-2">
+            <label>
+                <input type="checkbox" id="chkDiffMode" /> 内联对比
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="editor" class="border"></div>
+        </div>
+    </div>
+</div>
+
+<partial name="_PartialQuote" model="@("monaco-editor")" />
+
+<script src="/js/diff.js" asp-append-version="true"></script>

@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewData["Title"] = "GridQuery";
+}
+
+<h2>GridQuery</h2>
+
+<!--列表-->
+<div class="row">
+    <div class="col-md-12">
+        <div id="PGrid1" class="gridedit">
+            <div id="Grid1" class="loadingimg"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    z.TableName = "SysTableConfig";
+
+    //载入
+    var gd1 = z.Grid();
+    gd1.url = "/RF/HttpGridQuery?tableName=" + z.TableName;
+    gd1.pageSize = 10;
+    gd1.multiSort = true;
+    gd1.sortName = "TableName,ColOrder";
+    gd1.sortOrder = "asc,asc";
+    gd1.onLoadSuccess = function () {
+        gd1.QueryMark();
+    }
+    gd1.load();
+</script>

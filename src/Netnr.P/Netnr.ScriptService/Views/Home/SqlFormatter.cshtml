@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+            <div class="input-group">
+                <button class="btn btn-warning" id="btnSqlFormatter">格式化</button>
+                <div class="input-group-prepend">
+                    <select class="custom-select" id="selanguage">
+                        <option value="sql">SQL</option>
+                        <option value="n1ql">N1QL</option>
+                        <option value="db2">DB2</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mt-3">
+            <div id="editor" class="border overflow-hidden"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function AutoHeight() {
+        var ch = $(window).height() - $('#editor').offset().top - 15;
+        $('#editor').css('height', Math.max(200, ch));
+    }
+    AutoHeight();
+</script>
+
+<partial name="_PartialQuote" model="@("sql-formatter.js,monaco-editor")" />
+
+<script src="/js/sqlformatter.js" asp-append-version="true"></script>

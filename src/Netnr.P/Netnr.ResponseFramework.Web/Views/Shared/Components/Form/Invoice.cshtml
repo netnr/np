@@ -1,0 +1,36 @@
+﻿@model InvokeFormVM
+@{
+    var data = Model.Data as List<IGrouping<int, SysTableConfig>>;
+}
+
+<input type="hidden" name="hidtablename" value='@Model.TableName' />
+<input type="hidden" name="hidtableindex" value='@Model.Index' />
+
+<!--单据-->
+<div class="invoiceBox hidden" id="invoiceBox_@Model.Index">
+    <form class="form-horizontal formui" id="invoiceForm_@Model.Index">
+        <!--单据标题-->
+        <div class="invoiceTitle">@Model.InvoiceTitle</div>
+
+        <!--单据头部-->
+        <div class="row">
+            <partial name="_FormItemPartial" model="@data.FirstOrDefault()" />
+        </div>
+
+        <!--单据项-->
+        <div id="invoicePGrid_@Model.Index">
+            <div id="invoiceGrid_@Model.Index" class="loadingimg"></div>
+        </div>
+
+        <!--单据底部-->
+        <div class="row mt15">
+            <partial name="_FormItemPartial" model="@data.LastOrDefault()" />
+        </div>
+
+        <!--防跨域-->
+        @Html.AntiForgeryToken()
+    </form>
+</div>
+
+<!--配置单据-->
+<script src="/js/inlay/configinvoice.js" asp-append-version="true"></script>

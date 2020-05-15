@@ -1,0 +1,83 @@
+<div class="container">
+    <div class="row" id="tobox">
+        <div class="col-sm-12 mb-3">
+            <div class="input-group">
+                <button class="btn btn-warning" id="btnJsonToEntity">生成实体</button>
+                <div class="input-group-append">
+                    <select class="form-control" id="seNotes">
+                        <optgroup label="是否带注释">
+                            <option value="1">带注释</option>
+                            <option value="2">不带注释</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="input-group-append">
+                    <select class="form-control" id="seClassNameFirstBig">
+                        <optgroup label="类名强制大写开头">
+                            <option value="1">强制大写</option>
+                            <option value="2">不强制大写</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="input-group-append">
+                    <select class="custom-select" id="seautoformatter1">
+                        <optgroup label="是否自动格式化">
+                            <option value="1">自动格式化</option>
+                            <option value="2">不格式化</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <pre class="border overflow-hidden" id="txt1">
+{
+  "site": {
+    "title": "NET牛人",
+    "domain": "https://www.netnr.com",
+    "foreverdomain": "http://netnr.top",
+    "createtime": "2014.01.01",
+    "qqgroup": 83084426
+  },
+  "about": {
+    "name": "netnr",
+    "sex": "男",
+    "birthday": "1992.07.13",
+    "injob": "2012.03.01",
+    "live": "中国重庆",
+    "stain": null,
+    "qq": 1041911384,
+    "mail": "netnr@netnr.com",
+    "git": [
+      {
+        "name": "github",
+        "url": "https://github.com/netnr"
+      },
+      {
+        "name": "gitee",
+        "url": "https://gitee.com/netnr"
+      }
+    ]
+  },
+  "updaet": "2018.01.08",
+  "version": "v.1.0.0"
+}</pre>
+        </div>
+        <div class="col-sm-6">
+            <div class="border overflow-hidden" id="txt2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function AutoHeight() {
+        var ch = $(window).height() - $('#txt1').offset().top - 20;
+        $('#txt1').css('height', Math.max(200, ch));
+        $('#txt2').css('height', Math.max(200, ch));
+    }
+    AutoHeight();
+</script>
+
+<partial name="_PartialQuote" model="@("monaco-editor")" />
+
+<script src="/js/jsontocsharp.js" asp-append-version="true"></script>

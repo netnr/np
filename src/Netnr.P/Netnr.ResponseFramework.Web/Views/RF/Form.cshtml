@@ -1,0 +1,393 @@
+﻿
+@{
+    ViewData["Title"] = "Form";
+}
+
+<div>
+    <p>建议全部用模态框展示表单</p>
+    <p>直接生成非模态框表单需要新建一个组件，拷贝模态框表单组件，仅保留form标签，去掉模态框这个外壳</p>
+    <p>当然宽度也得适当调整，宽屏可以显示3列甚至4列</p>
+</div>
+
+<form class="form-horizontal formui" id="fv_form_1">
+    <div class="row">
+
+        <ul class='nav nav-tabs' role='tablist' id='fv_tabs_1'>
+            <li class='active'>
+                <a href='#fv_panel_1' data-toggle='tab'>&#x8868;&#x683C;&#x914D;&#x7F6E;</a>
+            </li>
+            <li class=''>
+                <a href='#fv_panel_2' data-toggle='tab'>&#x8868;&#x5355;&#x914D;&#x7F6E;</a>
+            </li>
+        </ul>
+        <div class='tab-content' id='fv_tc_ 1'>
+            <div class='modalscroll tab-pane active' id='fv_panel_1'>
+                <div class='col-md-12 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>动态载入菜单</label>
+                        <div>
+                            <input type='text' id="FormUrl" name="FormUrl" class="form-control" data-type="combotree" data-url="/common/querymenu" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label required'>&#x5217;&#x952E;</label>
+                        <div>
+                            <input type='text' id="ColField" name="ColField" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label required'>&#x5217;&#x6807;&#x9898;</label>
+                        <div>
+                            <input type='text' id="ColTitle" name="ColTitle" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x5217;&#x5BBD;</label>
+                        <div>
+                            <input type='text' id="ColWidth" name="ColWidth" class="form-control" value="100" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x5BF9;&#x9F50;&#x65B9;&#x5F0F;</label>
+                        <div>
+                            <input type='text' id="ColAlign" name="ColAlign" class="form-control" value="1" data-type="combobox" data-url="dataurl_colalign" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x9690;&#x85CF;</label>
+                        <div>
+                            <input type='text' id="ColHide" name="ColHide" class="form-control" data-type="combobox" data-url="dataurl_colhide" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x6392;&#x5E8F;</label>
+                        <div>
+                            <input type='text' id="ColOrder" name="ColOrder" class="form-control" value="100" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x51BB;&#x7ED3;</label>
+                        <div>
+                            <label class='checkbox'>
+                                <input type="checkbox" value="1" id="ColFrozen" name="ColFrozen" data-type="checkbox" />
+                                &#x662F;&#x51BB;&#x7ED3;&#x5217;
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x67E5;&#x8BE2;</label>
+                        <div>
+                            <label class='checkbox'>
+                                <input type="checkbox" value="1" id="ColQuery" name="ColQuery" data-type="checkbox" />
+                                &#x542F;&#x7528;&#x67E5;&#x8BE2;
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='modalscroll tab-pane ' id='fv_panel_2'>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x8F93;&#x5165;&#x7C7B;&#x578B;</label>
+                        <div>
+                            <input type='text' id="FormType" name="FormType" class="form-control" value="text" data-type="combobox" data-url="dataurl_formtype" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x533A;&#x57DF;</label>
+                        <div>
+                            <input type='text' id="FormArea" name="FormArea" class="form-control" value="1" data-type="combobox" data-url="dataurl_formarea" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x8DE8;&#x5217;</label>
+                        <div>
+                            <input type='text' id="FormSpan" name="FormSpan" class="form-control" value="1" data-type="combobox" data-url="dataurl_formspan" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x9690;&#x85CF;</label>
+                        <div>
+                            <input type='text' id="FormHide" name="FormHide" class="form-control" data-type="combobox" data-url="dataurl_formhide" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x6392;&#x5E8F;</label>
+                        <div>
+                            <input type='text' id="FormOrder" name="FormOrder" class="form-control" value="100" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x5FC5;&#x586B;</label>
+                        <div class='checkbox'>
+                            <label>
+                                <input type="checkbox" value="1" id="FormRequired" name="FormRequired" data-type="checkbox" />
+                                &#x662F;&#x5FC5;&#x586B;&#x9879;
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x8F93;&#x5165;&#x6846;&#x63D0;&#x793A;</label>
+                        <div>
+                            <input type='text' id="FormPlaceholder" name="FormPlaceholder" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6 col-sm-6 '>
+                    <div class="form-group">
+                        <label class='control-label'>&#x521D;&#x59CB;&#x503C;</label>
+                        <div>
+                            <input type='text' id="FormValue" name="FormValue" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+
+<div>
+    <p>调整宽度</p>
+</div>
+<form class="form-horizontal formui" id="fv_form_2">
+    <div class='row'>
+        <div class='col-md-4 col-sm-6'>
+            <div class="form-group">
+                <label class='control-label required'>&#x5217;&#x952E;</label>
+                <div>
+                    <input type='text' id="ColField2" name="ColField2" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class='col-md-4 col-sm-6'>
+            <div class="form-group">
+                <label class='control-label required'>&#x5217;&#x6807;&#x9898;</label>
+                <div>
+                    <input type='text' id="ColTitle2" name="ColTitle2" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class='col-md-4 col-sm-6'>
+            <div class="form-group">
+                <label class='control-label'>&#x5217;&#x5BBD;</label>
+                <div>
+                    <input type='text' id="ColWidth2" name="ColWidth2" class="form-control" value="100" />
+                </div>
+            </div>
+        </div>
+        <div class='col-md-4 col-sm-6'>
+            <div class="form-group">
+                <label class='control-label'>&#x51BB;&#x7ED3;</label>
+                <div>
+                    <label class='checkbox'>
+                        <input type="checkbox" value="1" id="ColFrozen2" name="ColFrozen2" data-type="checkbox" />
+                        &#x662F;&#x51BB;&#x7ED3;&#x5217;
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-4 col-sm-6'>
+            <div class="form-group">
+                <label class='control-label'>&#x6392;&#x5E8F;</label>
+                <div>
+                    <input type='text' id="ColOrder2" name="ColOrder2" class="form-control" value="100" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+
+    //格式化
+    z.DC["dataurl_colformat"] = {
+        data: [
+            { value: "0", text: "无格式化" },
+            { value: "col_custom_", text: "col_custom_+小写字段名（自定义）" },
+            { value: "11", text: "yyyy-MM" },
+            { value: "12", text: "HH:mm:ss" },
+            { value: "13", text: "yyyy-MM-dd HH:mm:ss" },
+            { value: "14", text: "yyyy-MM-dd" },
+            { value: "15", text: "精确两位" },
+            { value: "16", text: "确两位 带￥" },
+            { value: "17", text: "1√ 0×" },
+            { value: "18", text: "1× 0√" },
+            { value: "19", text: "1正常 0停用" }
+        ]
+    };
+    //输入类型
+    z.DC["dataurl_formtype"] = {
+        //绑定数据
+        data: [
+            { value: "text", text: "text 文本" },
+            { value: "date", text: "yyyy-MM-dd 日期" },
+            { value: "time", text: "mm:ss 时间" },
+            { value: "datetime", text: "yyyy-MM-dd HH:mm:ss 日期时间" },
+            { value: "calc", text: "calc 计算器" },
+            { value: "combobox", text: "combobox 下拉列表框" },
+            { value: "combotree", text: "combotree 下拉列表树" },
+            { value: "modal", text: "modal 模态弹出（浏览）" },
+            { value: "checkbox", text: "checkbox 复选框" },
+            { value: "password", text: "password 密码框" }
+        ],
+        //绑定数据前回调
+        init: function (obj) {
+            //this和obj 都是 z.Combo构造的对象（obj参数可以不要，直接用this）
+            //允许编辑
+            this.editable = true; //obj.editable = true;
+        }
+    };
+    //跨列
+    z.DC["dataurl_formspan"] = {
+        data: [
+            { value: 1, text: "半排", selected: true },
+            { value: 2, text: "整排" }
+        ],
+        //绑定数据前回调
+        init: function () {
+            this.panelHeight = 100;
+        }
+    };
+    //对齐方式
+    z.DC["dataurl_colalign"] = {
+        data: [
+            { value: 1, text: "居左" },
+            { value: 2, text: "居中" },
+            { value: 3, text: "居右" }
+        ],
+        //绑定数据前回调
+        init: function () {
+            this.panelHeight = 100;
+        }
+    }
+    //区域
+    z.DC["dataurl_formarea"] = {
+        data: [
+            { value: 1, text: "表格配置" },
+            { value: 2, text: "表单配置" }
+        ],
+        //绑定数据前回调
+        init: function () {
+            this.panelHeight = 100;
+        }
+    };
+    //显示/隐藏
+    var hideobj = function () {
+        return {
+            data: [
+                { value: 0, text: "显示" },
+                { value: 1, text: "隐藏" }
+            ],
+            //绑定数据前回调
+            init: function () {
+                this.panelHeight = 100;
+            }
+        }
+    };
+    z.DC["dataurl_formhide"] = hideobj();
+    z.DC["dataurl_colhide"] = hideobj();
+
+
+    //以上是输入框需要绑定的本地数据，还有一部分是服务器数据（动态请求）
+
+    //绑定数据
+    z.FormAttrAjax();
+
+
+
+
+    //===分割线===
+
+
+    //新增
+    z.button('add', function () {
+        //清理验证红框
+        z.FormRequired('reset');
+
+        //解除禁用
+        z.FormDisabled(false);
+    });
+
+    //z.DC里面有页面的所有控件对象，键名为 data-url
+    console.log(z.DC);
+
+    //保存
+    z.button('save', function () {
+        //必填验证
+        if (z.FormRequired('red', '#fv_form_1')) {
+
+            art('正在保存 ... ');
+
+        }
+    });
+
+
+
+
+
+    //查看
+    z.button('see', function () {
+        //表单标题
+        z.FormTitle({
+            icon: 2,
+            title: '查看表配置',
+            required: false
+        });
+
+        //清理验证红框
+        z.FormRequired('reset');
+
+        //禁用
+        z.FormDisabled(true);
+        //显示模态框
+        $('#fv_modal_1').modal();
+    });
+    //关闭模态框后
+    $('#fv_modal_1').on('hidden.bs.modal', function () {
+        //是查看时，解除禁用
+        if (z.btnTrigger == "see") {
+            z.FormDisabled(false);
+        }
+    });
+
+
+
+
+    //刷新
+    z.button('reload', function () {
+        location.reload(false);
+    });
+
+</script>
+

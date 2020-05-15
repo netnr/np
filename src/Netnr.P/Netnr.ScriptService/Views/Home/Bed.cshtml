@@ -1,0 +1,68 @@
+﻿<link href="/lib/bed/css/bed.css" rel="stylesheet" asp-append-version="true" />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <p class="text-danger">请勿上传违反中国法律的文件，违者后果自负。</p>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">请选择上传的托管商</span>
+                </div>
+                <select class="custom-select" id="seup">
+                    <option value="https://imgbb.com/json">imgbb.com</option>
+                    <option value="https://jpg.dog/json">jpg.dog</option>
+                    <option value="https://uploadbeta.com/api/pictures/upload/file/">uploadbeta.com</option>
+                </select>
+            </div>
+
+            <div id="wrapper">
+                <div id="container">
+                    <div id="uploader">
+                        <div class="queueList">
+                            <div id="dndArea" class="placeholder">
+                                <div id="filePicker"></div>
+                                <p>截图粘贴、拖到这里</p>
+                            </div>
+                        </div>
+                        <div class="statusBar" style="display:none;">
+                            <div class="progress">
+                                <span class="text">0%</span>
+                                <span class="percentage"></span>
+                            </div><div class="info"></div>
+                            <div class="btns">
+                                <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="divnt"></div>
+
+            <div class="modal" id="myModal">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">消息</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="myModalBody">
+                            <textarea class="form-control" style="height:300px"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_PartialQuote" model="@("webuploader.js")" />
+
+<script src="/lib/bed/js/bed.js" asp-append-version="true"></script>

@@ -1,0 +1,70 @@
+﻿@model InvokeFormVM
+@{
+    var data = Model.Data as List<IGrouping<int, SysTableConfig>>;
+}
+
+<input type="hidden" name="hidtablename" value='@Model.TableName' />
+<input type="hidden" name="hidtableindex" value='@Model.Index' />
+
+<!--模态 表单-->
+<div class="modal fade modalautoheight" id="fv_modal_@Model.Index" role="dialog" data-backdrop="static">
+    <div class='modal-dialog @Model.MsClass'>
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="fv_title_@Model.Index">
+                    <i class="fa fa-plus blue"></i><span>表单标题</span><em>✶ 为必填</em>
+                </h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal formui" id="fv_form_@Model.Index">
+                    <div class="row">
+
+                        @if (data.Count > 1)
+                        {
+                            var paneltitle = Model.PanelTitle.Split(',').ToList();
+
+                            <ul class='nav nav-tabs' role='tablist' id='fv_tabs_@Model.Index'>
+                                @foreach (var mo in data)
+                                {
+                                    var pt = "面板" + mo.Key;
+                                    if (mo.Key <= paneltitle.Count && !string.IsNullOrWhiteSpace(paneltitle[mo.Key - 1]))
+                                    {
+                                        pt = paneltitle[mo.Key - 1];
+                                    }
+
+                                    <li class='@(mo.Key == 1 ? "active" : "")'>
+                                        <a href='#fv_panel_@mo.Key' data-toggle='tab'>@pt</a>
+                                    </li>
+                                }
+                            </ul>
+                            <div class='tab-content' id='fv_tc_ @Model.Index'>
+                                @foreach (var mo in data)
+                                {
+                                    <div class='modalscroll tab-pane @(mo.Key == 1 ? "active" : "")' id='fv_panel_@mo.Key'>
+                                        <partial name="_FormItemPartial" model="mo" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var mo in data)
+                            {
+                                <partial name="_FormItemPartial" model="mo" />
+                            }
+                        }
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="fv_save_@Model.Index" type="button" class="btn btn-primary"><span class="fa fa-save"></span>&nbsp;保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--配置表单-->
+<script src="/js/inlay/configform.js" asp-append-version="true"></script>

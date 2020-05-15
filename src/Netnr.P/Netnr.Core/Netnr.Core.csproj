@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net40;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Description>开发常用的核心类库；使用文档看GitHub（Gitee）项目说明。</Description>
+    <Copyright>netnr</Copyright>
+    <PackageIconUrl></PackageIconUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/netnr/Netnr.ClassLibrary</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/netnr/Netnr.ClassLibrary</RepositoryUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageTags>netnr</PackageTags>
+    <PackageReleaseNotes>调整 支持 `.NETStandard2.0` ，为支持 `.NET Framework 4.6` + 的引用</PackageReleaseNotes>
+    <Authors>netnr</Authors>
+    <Version>1.2.3</Version>
+    <DocumentationFile>Netnr.Core.xml</DocumentationFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <LangVersion>8.0</LangVersion>
+    <PackageIcon>favicon.png</PackageIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions">
+      <Version>3.1.4</Version>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions">
+      <Version>3.1.4</Version>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="favicon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Netnr.Core.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

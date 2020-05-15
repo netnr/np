@@ -1,0 +1,26 @@
+﻿@model string
+@if (Model != "0")
+{
+    <!--列表-->
+    <div class="row gridBox">
+        <div id="PGrid1" class="col-md-12">
+            <div id="Grid1" class="loadingimg"></div>
+        </div>
+    </div>
+}
+
+<!--配置表格-->
+<script src="/js/inlay/configtable.js" asp-append-version="true"></script>
+<!--搜索模块-->
+<script src="/js/inlay/configquery.js" asp-append-version="true"></script>
+<!--基础包-->
+<script src="/js/inlay/baseviewpartial.js" asp-append-version="true"></script>
+<!--引入页面JS-->
+@{
+    var jssrc = $"/js/{ViewContext.RouteData.Values["controller"].ToString().ToLower()}/{ViewContext.RouteData.Values["action"].ToString().ToLower()}.js";
+    var jspath = GlobalTo.WebRootPath + jssrc;
+    if (System.IO.File.Exists(jspath))
+    {
+        <script src='@jssrc' asp-append-version="true"></script>
+    }
+}

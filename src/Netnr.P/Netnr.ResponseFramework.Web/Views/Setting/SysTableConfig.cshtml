@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "表配置";
+}
+
+@await Component.InvokeAsync("Form", new InvokeFormVM()
+{
+    TableName = "SysTableConfig",
+    PanelTitle = "表格配置,表单配置"
+})
+
+<partial name="_BaseViewPartial" />

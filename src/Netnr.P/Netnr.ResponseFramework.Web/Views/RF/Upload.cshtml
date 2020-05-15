@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "上传";
+}
+
+<!--模态 表单-->
+<div class="modal fade modalautoheight" id="fv_modal_1" role="dialog" data-backdrop="static">
+    <div class='modal-dialog modal-lg'>
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="fv_title_1">
+                    <i class="fa fa-plus blue"></i><span>表单标题</span><em>✶ 为必填</em>
+                </h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal formui" id="fv_form_1">
+                    <div class="row">
+
+                        <div class='col-md-6 col-sm-6 '>
+                            <div class="form-group">
+                                <label class='control-label required'>&#x6309;&#x94AE;&#x6587;&#x672C;</label>
+                                <div>
+                                    <input type='text' id="SbBtnText" name="SbBtnText" class="form-control" data-type="text" data-query="0" data-url="" maxlength="20" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-6 col-sm-6 '>
+                            <div class="form-group">
+                                <label class='control-label '>&#x4E0A;&#x7EA7;&#x6309;&#x94AE;</label>
+                                <div>
+                                    <input type='text' id="SbPid" name="SbPid" class="form-control" data-type="combotree" data-query="0" data-url="/Common/QueryButtonTree" placeholder="&#x65E0;&#x4E0A;&#x7EA7;&#x6309;&#x94AE;&#x4E0D;&#x586B;" maxlength="50" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-6 col-sm-6 hidden'>
+                            <div class="form-group">
+                                <label class='control-label '>SbId</label>
+                                <div>
+                                    <input type='text' id="SbId" name="SbId" class="form-control" data-type="text" data-query="0" data-url="" maxlength="50" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-12 col-sm-6 '>
+                            <div class="form-group">
+                                <label class='control-label required'>文件上传</label>
+                                <div>
+                                    <input type='file' id="txtFile" class="form-control" />
+                                    <input type="hidden" id="hid_txtFile" name="txtFile" />
+                                    <p class="help-block">文件最大2M，支持格式 jpg、png、gif</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-6 col-sm-6 '>
+                            <div class="form-group">
+                                <label class='control-label '>&#x6309;&#x94AE;&#x6392;&#x5E8F;</label>
+                                <div>
+                                    <input type='text' id="SbBtnOrder" name="SbBtnOrder" class="form-control" data-type="text" data-query="0" data-url="" placeholder="&#x5347;&#x5E8F;" maxlength="10" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-6 col-sm-6 '>
+                            <div class="form-group">
+                                <label class='control-label'>&#x6309;&#x94AE;ID</label>
+                                <div>
+                                    <input type='text' id="SbBtnId" name="SbBtnId" class="form-control" data-type="text" data-query="0" data-url="" placeholder="m_ &#x5F00;&#x5934;" maxlength="50" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="fv_save_1" type="button" class="btn btn-primary"><span class="fa fa-save"></span>&nbsp;保存 触发必填验证</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_BaseViewPartial" />
