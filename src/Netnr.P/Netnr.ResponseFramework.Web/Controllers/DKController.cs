@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Netnr.DataKit.Application;
+using Netnr.Fast;
 using Netnr.ResponseFramework.Data;
 
 namespace Netnr.ResponseFramework.Web.Controllers
@@ -10,6 +11,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// <summary>
     /// 数据库工具及代码构建
     /// </summary>
+    [ResponseCache(Duration = 3)]
     [Route("[controller]/[action]")]
     [Filters.FilterConfigs.AllowCors]
     public class DKController : Controller
@@ -269,7 +271,25 @@ namespace Netnr.ResponseFramework.Web.Controllers
         [HttpGet]
         public ActionResultVM ResetDataBaseForJson()
         {
-            var vm = new Application.DataMirrorService().AddForJson();
+            var vm = new ActionResultVM();
+            try
+            {
+                //爬虫
+                if (new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
+                {
+                    vm.Set(ARTag.refuse);
+                    vm.Msg = "are you human？";
+                }
+                else
+                {
+                    //用户
+                    vm = new Application.DataMirrorService().AddForJson();
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
             return vm;
         }
@@ -286,7 +306,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             try
             {
                 //是否覆盖JSON文件，默认不覆盖，避免线上重置功能被破坏
-                var CoverJson = true;
+                var CoverJson = false;
 
                 vm = new Application.DataMirrorService().SaveAsJson(CoverJson);
             }

@@ -21,7 +21,7 @@ namespace Netnr.ResponseFramework.Application
 
             try
             {
-                string directoryPath = (GlobalTo.WebRootPath + "/upload/temp/").Replace("\\", "/");
+                string directoryPath = Path.Combine(GlobalTo.WebRootPath, "upload/temp");
 
                 var listLog = new List<string>();
 

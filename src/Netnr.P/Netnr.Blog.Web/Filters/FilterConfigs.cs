@@ -158,7 +158,7 @@ namespace Netnr.Blog.Web.Filters
                 LogNickname = userinfo?.Nickname,
                 LogAction = reqPath,
                 LogUrl = reqPath + reqQueryString,
-                LogIp = ct.IPv4.Split(',')[0].Trim(),
+                LogIp = ct.IPv4,
                 LogReferer = ct.Referer,
                 LogCreateTime = DateTime.Now,
                 LogUserAgent = ct.UserAgent,

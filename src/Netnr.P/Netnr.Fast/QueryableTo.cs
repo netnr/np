@@ -19,9 +19,8 @@ namespace Netnr.Fast
         {
             var listSort = sorts.Split(',').ToList();
             var listOrder = orders.Split(',').ToList();
-            
-            //倒叙
-            for (int i = listSort.Count - 1; i >= 0; i--)
+
+            for (int i = 0; i < listSort.Count; i++)
             {
                 var sort = listSort[i];
                 var order = i < listOrder.Count ? listOrder[i] : "asc";
@@ -32,14 +31,16 @@ namespace Netnr.Fast
                 var propertyAccess = Expression.MakeMemberAccess(parameter, property);
                 var lambda = Expression.Lambda(propertyAccess, parameter);
 
+                var ob = i == 0 ? "OrderBy" : "ThenBy";
                 if (order.ToLower() == "desc")
                 {
-                    MethodCallExpression resultExp = Expression.Call(typeof(Queryable), "OrderByDescending", new Type[] { typeof(T), property.PropertyType }, query.Expression, Expression.Quote(lambda));
+                    ob += "Descending";
+                    MethodCallExpression resultExp = Expression.Call(typeof(Queryable), ob, new Type[] { typeof(T), property.PropertyType }, query.Expression, Expression.Quote(lambda));
                     query = query.Provider.CreateQuery<T>(resultExp);
                 }
                 else
                 {
-                    MethodCallExpression resultExp = Expression.Call(typeof(Queryable), "OrderBy", new Type[] { typeof(T), property.PropertyType }, query.Expression, Expression.Quote(lambda));
+                    MethodCallExpression resultExp = Expression.Call(typeof(Queryable), ob, new Type[] { typeof(T), property.PropertyType }, query.Expression, Expression.Quote(lambda));
                     query = query.Provider.CreateQuery<T>(resultExp);
                 }
             }
