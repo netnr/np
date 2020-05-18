@@ -165,15 +165,14 @@
                 dk.buildTableConfig(2);
             });
 
-            //仅保留 csharp
-            for (var i in dk.build.language) {
-                if (i != "csharp") {
-                    delete dk.build.language[i];
-                } else {
-                    dk.build.language[i] = {};
-                }
+
+            //重构
+            dk.build.language = {
+                csharp: {},
+                "csharp-comment":"（netnrf 生成通用代码）",
+                javascript: {},
+                "javascript-comment": "（netnrf 生成通用代码）",
             }
-            dk.build.language["csharp-comment"] = "（netnrf 生成通用代码）";
 
             //构建控制器
             dk.build.language.csharp["controller"] = function am(pa) {
@@ -346,7 +345,7 @@
             }
 
             //构建js
-            dk.build.language.csharp["js"] = function am(pa) {
+            dk.build.language.javascript["js"] = function am(pa) {
                 //参数默认值
                 pa.project = pa.project || "Netnr.ResponseFramework.Web";
                 pa.namespace = pa.namespace || "Netnr.ResponseFramework.Web";
@@ -382,12 +381,12 @@
                     ts.push('gd1.load();');
                     ts.push('');
                     ts.push('//刷新');
-                    ts.push('z.button(\'reload\'); function () {');
+                    ts.push('z.button(\'reload\', function () {');
                     ts.push('\t' + 'gd1.load();');
                     ts.push('});');
                     ts.push('');
                     ts.push('//新增');
-                    ts.push('z.button(\'add\'); function () {');
+                    ts.push('z.button(\'add\', function () {');
                     ts.push('\t' + '//表单标题');
                     ts.push('\t' + 'z.FormTitle({');
                     ts.push('\t\t' + 'icon: 0,');
@@ -398,7 +397,7 @@
                     ts.push('});');
                     ts.push('');
                     ts.push('//查看');
-                    ts.push('z.button(\'see\'); function () {');
+                    ts.push('z.button(\'see\', function () {');
                     ts.push('\t' + '//获取选中行');
                     ts.push('\t' + 'var rowData = gd1.func("getSelected");');
                     ts.push('\t' + 'if (rowData) {');
@@ -407,7 +406,7 @@
                     ts.push('\t\t' + '//表单标题');
                     ts.push('\t\t' + 'z.FormTitle({');
                     ts.push('\t\t\t' + 'icon: 2,');
-                    ts.push('\t\t\t' + 'title: \'查看' + tableComment + '\');');
+                    ts.push('\t\t\t' + 'title: \'查看' + tableComment + '\',');
                     ts.push('\t\t\t' + 'required: false');
                     ts.push('\t\t' + '});');
                     ts.push('\t\t' + '//禁用');
@@ -420,7 +419,7 @@
                     ts.push('});');
                     ts.push('');
                     ts.push('//关闭模态框后');
-                    ts.push('$(\'#fv_modal_1\').on(\'hidden.bs.modal\'); function () {');
+                    ts.push('$(\'#fv_modal_1\').on(\'hidden.bs.modal\', function () {');
                     ts.push('\t' + '//是查看时，解除禁用');
                     ts.push('\t' + 'if (z.btnTrigger == "see") {');
                     ts.push('\t\t' + 'z.FormDisabled(false);');
@@ -428,7 +427,7 @@
                     ts.push('});');
                     ts.push('');
                     ts.push('//修改');
-                    ts.push('z.button(\'edit\'); function () {');
+                    ts.push('z.button(\'edit\', function () {');
                     ts.push('\t' + '//获取选中行');
                     ts.push('\t' + 'var rowData = gd1.func("getSelected");');
                     ts.push('\t' + 'if (rowData) {');
@@ -455,7 +454,7 @@
                     ts.push('\t\t\t' + 'url: "/' + gn + '/Save' + gn + '?savetype=" + z.btnTrigger,');
                     ts.push('\t\t\t' + 'type: "post",');
                     ts.push('\t\t\t' + 'data: $("#fv_form_1").serialize(),');
-                    ts.push('\t\t\t' + 'dataType: \'json\');');
+                    ts.push('\t\t\t' + 'dataType: \'json\',');
                     ts.push('\t\t\t' + 'success: function (data) {');
                     ts.push('\t\t\t\t' + 'if (data.code == 200) {');
                     ts.push('\t\t\t\t\t' + 'gd1.load();');
@@ -473,16 +472,16 @@
                     ts.push('});');
                     ts.push('');
                     ts.push('//删除');
-                    ts.push('z.button(\'del\'); function () {');
+                    ts.push('z.button(\'del\', function () {');
                     ts.push('\t' + 'var rowData = gd1.func("getSelected");');
                     ts.push('\t' + 'if (!rowData) {');
                     ts.push('\t\t' + 'art(\'select\');');
                     ts.push('\t\t' + 'return false;');
                     ts.push('\t' + '}');
-                    ts.push('\t' + 'art(\'确定删除选中的行\'); function () {');
+                    ts.push('\t' + 'art(\'确定删除选中的行\', function () {');
                     ts.push('\t\t' + '$.ajax({');
                     ts.push('\t\t\t' + 'url: "/' + gn + '/Del' + gn + '?id=" + rowData.' + pkcolumn.FieldName + ',');
-                    ts.push('\t\t\t' + 'dataType: \'json\');');
+                    ts.push('\t\t\t' + 'dataType: \'json\',');
                     ts.push('\t\t\t' + 'success: function (data) {');
                     ts.push('\t\t\t\t' + 'if (data.code == 200) {');
                     ts.push('\t\t\t\t\t' + 'gd1.load();');
