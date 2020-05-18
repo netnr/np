@@ -1,24 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+  </PropertyGroup> 
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>Netnr.ResponseFramework.Web.xml</DocumentationFile>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="wwwroot\upload\temp\.ignore\**" />
-    <Content Remove="wwwroot\upload\temp\.ignore\**" />
-    <EmbeddedResource Remove="wwwroot\upload\temp\.ignore\**" />
-    <None Remove="wwwroot\upload\temp\.ignore\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\lib\dk\extension\netnrf.js" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentScheduler" Version="5.3.0" />

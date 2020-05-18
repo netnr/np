@@ -5,14 +5,15 @@
     <Description>开发常用的核心类库；使用文档看GitHub（Gitee）项目说明。</Description>
     <Copyright>netnr</Copyright>
     <PackageIconUrl></PackageIconUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
     <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageTags>netnr</PackageTags>
-    <PackageReleaseNotes>调整 支持 `.NETStandard2.0` ，为支持 `.NET Framework 4.6` + 的引用</PackageReleaseNotes>
+    <PackageReleaseNotes>调整 `FileTo` 类 读取/写入方法传参，原来是分开传文件路径和文件名，现一起传完整物理路径
+删除 `CmdTo` 类 Linux上执行Shell的一些方法，仅保留基础方法</PackageReleaseNotes>
     <Authors>netnr</Authors>
-    <Version>1.2.3</Version>
+    <Version>1.3.0</Version>
     <DocumentationFile>Netnr.Core.xml</DocumentationFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <LangVersion>8.0</LangVersion>

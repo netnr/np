@@ -6,7 +6,7 @@ function loadOSinfo() {
             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
         },
         dataType: 'json',
-        success: function (data, status, xhr) {
+        success: function (data, _status, xhr) {
             if (data.code != 0) {
                 return false;
             }

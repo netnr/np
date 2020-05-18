@@ -145,14 +145,14 @@ namespace Netnr.ResponseFramework.Data
                     .HasMaxLength(50)
                     .HasComment("动作");
 
+                entity.Property(e => e.LogArea)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasComment("IP归属地");
+
                 entity.Property(e => e.LogBrowserName)
                     .HasMaxLength(50)
                     .HasComment("浏览器");
-
-                entity.Property(e => e.LogCity)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasComment("IP所属城市");
 
                 entity.Property(e => e.LogContent)
                     .HasMaxLength(200)
@@ -162,12 +162,17 @@ namespace Netnr.ResponseFramework.Data
                     .HasColumnType("datetime")
                     .HasComment("创建时间");
 
-                entity.Property(e => e.LogGroup).HasComment("分组");
+                entity.Property(e => e.LogGroup).HasComment("分组（1：默认；2：爬虫）");
 
                 entity.Property(e => e.LogIp)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("IP");
+
+                entity.Property(e => e.LogLevel)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasComment("级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）");
 
                 entity.Property(e => e.LogRemark)
                     .HasMaxLength(200)
@@ -181,6 +186,11 @@ namespace Netnr.ResponseFramework.Data
                     .HasMaxLength(500)
                     .IsUnicode(false)
                     .HasComment("链接");
+
+                entity.Property(e => e.LogUserAgent)
+                    .HasMaxLength(500)
+                    .IsUnicode(false)
+                    .HasComment("User-Agent");
 
                 entity.Property(e => e.SuName)
                     .HasMaxLength(50)

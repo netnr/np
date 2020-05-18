@@ -32,7 +32,7 @@ namespace Netnr.Guff.Controllers
                 if (mh.DeclaringType == type)
                 {
                     string html = Core.HttpTo.Get(url + mh.Name);
-                    Core.FileTo.WriteText(html, path, mh.Name.ToLower() + ".html", false);
+                    Core.FileTo.WriteText(html, path + mh.Name.ToLower() + ".html", false);
                     pageTotal++;
                 }
 

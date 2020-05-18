@@ -188,6 +188,12 @@
           "icon": "/icon/hosting.svg",
           "title": "免费托管",
           "remark": "免费的托管空间"
+        },
+        {
+          "url": "/dk",
+          "icon": "/favicon.svg",
+          "title": "DataKit",
+          "remark": "数据库工具及代码构建"
         }
       ]
     },
@@ -289,6 +295,12 @@
           "icon": "/icon/tv.svg",
           "title": "在线电视",
           "remark": "m3u8源播放"
+        },
+        {
+          "url": "/bmi",
+          "icon": "/icon/bmi.svg",
+          "title": "体重标准",
+          "remark": "中国成人超重和肥胖标准"
         }
       ]
     }

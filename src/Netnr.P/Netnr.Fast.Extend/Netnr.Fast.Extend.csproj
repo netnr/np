@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="DeviceDetector.NET" Version="4.1.0" />
+    <PackageReference Include="IP2Region" Version="1.2.0" />
     <PackageReference Include="NPOI" Version="2.5.1" />
     <PackageReference Include="System.Management" Version="4.7.0" />
   </ItemGroup>

@@ -78,7 +78,7 @@ namespace Netnr.Logging
         public string LogGroup { get; set; }
 
         /// <summary>
-        /// 级别（F： Fatal，E：Error，W：Warn，I：Info，D：Debug，A：All）
+        /// 级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）
         /// </summary>
         public string LogLevel { get; set; }
 

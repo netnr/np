@@ -1,6 +1,4 @@
-﻿using DeviceDetectorNET;
-using DeviceDetectorNET.Parser;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Netnr.Fast
 {

@@ -37,7 +37,7 @@ public class GlobalTo
     {
         get
         {
-            return ContentRootPath + "/wwwroot";
+            return System.IO.Path.Combine(ContentRootPath, "wwwroot");
         }
     }
 

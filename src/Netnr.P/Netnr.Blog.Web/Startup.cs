@@ -55,7 +55,7 @@ namespace Netnr.Blog.Web
             using var db = new Data.ContextBase();
             if (db.Database.EnsureCreated())
             {
-                var jodb = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/scripts/example/", "data.json").ToJObject();
+                var jodb = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/scripts/example/data.json").ToJObject();
 
                 db.UserInfo.AddRange(jodb["UserInfo"].ToString().ToEntitys<Domain.UserInfo>());
 
@@ -103,7 +103,10 @@ namespace Netnr.Blog.Web
 
                 //注册全局授权访问时登录标记是否有效
                 options.Filters.Add(new Filters.FilterConfigs.LoginSignValid());
-            });
+            })/*.AddRazorRuntimeCompilation()*/;
+            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
+            //发布时：建议删除该包，会生成一堆“垃圾”
+            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {

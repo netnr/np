@@ -370,7 +370,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             var htmlbody = ListTreeEach(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
 
             //读取模版
-            var tm = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/template/", "htmltoword.html");
+            var tm = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/template/htmltoword.html");
             tm = tm.Replace("@netnrmd@", htmlbody);
 
             //文件名

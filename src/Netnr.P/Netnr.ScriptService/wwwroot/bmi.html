@@ -1,0 +1,134 @@
+﻿            <!--
+            https://github.com/netnr
+            https://gitee.com/netnr
+            https://www.netnr.com
+            https://zme.ink
+            -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>体重标准 NET牛人</title>
+    <meta name="keywords" content="netnr,NET牛人,体重标准" />
+    <meta name="description" content="netnr,NET牛人,中国成人超重和肥胖标准" />
+
+</head>
+<body>
+                <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
+            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+
+
+    <link href="/css/global.css?v=M5KD0L7Um9ATF0UOw4IBUuIsX5R_V8zjtaf0WT4k8f4" rel="stylesheet" />
+
+        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+            <span class="fa fa-align-justify fa-2x"></span>
+        </button>
+        <div class="netnrnav horizontal">
+            <div class="netnrnav-wrapper">
+                <ul>
+                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                    <li>
+                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                        <ul>
+                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
+                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
+                            <li class="divider"></li>
+                            <li><a href="https://ss.netnr.com/message"><i class="fa fa-fw fa-commenting-o"></i> 留言</a></li>
+                            <li><a target="_blank" href="https://ss.netnr.com/contact"><i class="fa fa-fw fa-envelope-open-o"></i> 联系 <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            <li class="divider"></li>
+                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    <script src="/js/global.js?v=9yoeQxqNVY-Z-rH-PpzgyIMpryLYqquO6_YhErgT10M"></script>
+
+        <h4 class="text-center mt-3 mb-4">
+            <img src="/icon/bmi.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
+            &#x4F53;&#x91CD;&#x6807;&#x51C6;
+        </h4>
+
+    <div class="min300">
+        <div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">体重</span>
+                </div>
+                <input type="number" id="txt1" class="form-control" placeholder="体重（单位：千克/kg）" min="25" max="300" step="1" maxlength="3" />
+                <div class="input-group-prepend">
+                    <span class="input-group-text">身高</span>
+                </div>
+                <input type="number" id="txt2" class="form-control" placeholder="身高（单位：米/m）" min="1" max="3" step="0.1" maxlength="4" />
+                <div class="input-group-prepend">
+                    <span class="input-group-text">BMI</span>
+                </div>
+                <input type="text" id="txt3" class="form-control" readonly placeholder="输出 BMI 值" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col">
+            <div class="progress" style="height:2rem">
+                <div class="progress-bar bg-dark" title="低重：BMI < 18.5" style="width: 55.5%">低重：BMI < 18.5</div>
+                <div class="progress-bar bg-success" title="正常：18.5 ≤ BMI < 24.0" style="width: 72%">正常：18.5 ≤ BMI < 24.0</div>
+                <div class="progress-bar bg-warning" title="超重：24.0 ≤ BMI < 28.0" style="width: 84%">超重：24.0 ≤ BMI < 28.0</div>
+                <div class="progress-bar bg-danger" title="肥胖：BMI ≥ 28.0" style="width: 100%">肥胖：BMI ≥ 28.0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    ['txt1', 'txt2'].forEach(id => {
+        document.getElementById(id).oninput = function () {
+            var kg = document.getElementById('txt1').value,
+                m = document.getElementById('txt2').value;
+            kg = parseFloat(kg) || 0;
+            m = parseFloat(m) || 0;
+            var bmi = '', bgc = '';
+            if (kg && m) {
+                bmi = (kg / Math.pow(m, 2)).toFixed(2);
+                if (bmi >= 28) {
+                    bgc = 'danger';
+                }
+                if (bmi < 28) {
+                    bgc = 'warning';
+                }
+                if (bmi < 24) {
+                    bgc = 'success';
+                }
+                if (bmi < 18.5) {
+                    bgc = 'dark';
+                }
+                bgc = 'bg-' + bgc;
+            }
+            var t3 = document.getElementById('txt3');
+            t3.value = bmi;
+            t3.className = 'form-control ' + bgc;
+        }
+    })
+</script>
+    </div>
+
+    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

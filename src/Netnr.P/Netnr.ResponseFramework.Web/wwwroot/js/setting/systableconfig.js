@@ -287,7 +287,6 @@ z.button('del', function () {
     art('确定删除选中的行', function () {
         $.ajax({
             url: "/Setting/DelSysTableConfig?id=" + rowData.Id,
-            type: "post",
             dataType: 'json',
             success: function (data) {
                 if (data.code == 200) {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
+using System.IO;
 
 namespace Netnr.DataKit.Web.Controllers
 {
@@ -8,7 +8,14 @@ namespace Netnr.DataKit.Web.Controllers
         [ResponseCache(Duration = 5)]
         public IActionResult Index()
         {
-            var ih = Core.FileTo.ReadText(Environment.CurrentDirectory + "/wwwroot/", "index.html");
+            //先请求本地 /index.html，无效则从线上请求
+            string ih;
+            var uipath = Path.Combine(GlobalTo.WebRootPath, "index.html");
+            ih = Core.FileTo.ReadText(uipath);
+            if (string.IsNullOrEmpty(ih))
+            {
+                ih = Core.HttpTo.Get("https://ss.netnr.com/dk");
+            }
             return new ContentResult()
             {
                 Content = ih,
@@ -16,5 +23,5 @@ namespace Netnr.DataKit.Web.Controllers
                 ContentType = "text/html"
             };
         }
-	}
+    }
 }

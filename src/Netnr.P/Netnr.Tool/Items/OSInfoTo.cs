@@ -257,7 +257,7 @@ namespace Netnr.Tool.Items
             /// <returns></returns>
             public static long MemInfo(string pkey)
             {
-                var meminfo = Core.FileTo.ReadText("/proc/", "meminfo");
+                var meminfo = Core.FileTo.ReadText("/proc/meminfo");
                 var pitem = meminfo.Split(Environment.NewLine.ToCharArray()).FirstOrDefault(x => x.StartsWith(pkey));
 
                 var pvalue = 1024 * long.Parse(pitem.Replace(pkey, "").ToLower().Replace("kb", "").Trim());
@@ -272,7 +272,7 @@ namespace Netnr.Tool.Items
             /// <returns></returns>
             public static string CpuInfo(string pkey)
             {
-                var meminfo = Core.FileTo.ReadText("/proc/", "cpuinfo");
+                var meminfo = Core.FileTo.ReadText("/proc/cpuinfo");
                 var pitem = meminfo.Split(Environment.NewLine.ToCharArray()).FirstOrDefault(x => x.StartsWith(pkey));
 
                 var pvalue = pitem.Split(':')[1].Trim();
@@ -325,7 +325,7 @@ namespace Netnr.Tool.Items
             /// <returns></returns>
             public static long RunTime()
             {
-                var uptime = Core.FileTo.ReadText("/proc/", "uptime");
+                var uptime = Core.FileTo.ReadText("/proc/uptime");
                 var pitem = Convert.ToDouble(uptime.Split(' ')[0]);
 
                 var pvalue = Convert.ToInt64(pitem * 1000); ;

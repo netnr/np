@@ -37,7 +37,11 @@ namespace Netnr.ResponseFramework.Web
 
                 //注册全局过滤器
                 options.Filters.Add(new Filters.FilterConfigs.GlobalActionAttribute());
-            });
+            })/*.AddRazorRuntimeCompilation()*/;
+            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
+            //发布时：建议删除该包，会生成一堆“垃圾”
+            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 //Action原样输出JSON
@@ -105,7 +109,7 @@ namespace Netnr.ResponseFramework.Web
             if (db.Database.EnsureCreated())
             {
                 //调用重置数据库（实际开发中，你可能不需要，或只初始化一些表数据）
-                new Controllers.ToolController(db).ResetDataBaseForJson();
+                new Controllers.DKController(db).ResetDataBaseForJson();
             }
 
             //配置swagger（生产环境不需要，把该代码移至 是开发环境 条件里面）

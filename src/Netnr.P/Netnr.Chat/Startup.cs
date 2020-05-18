@@ -34,7 +34,10 @@ namespace Netnr.Chat
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()/*.AddRazorRuntimeCompilation()*/;
+            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
+            //发布时：建议删除该包，会生成一堆“垃圾”
+            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {

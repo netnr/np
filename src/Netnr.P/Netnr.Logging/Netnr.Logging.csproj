@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net461;netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>netnr</Authors>
     <Description>日志</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

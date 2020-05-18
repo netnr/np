@@ -88,13 +88,16 @@ namespace Netnr.Blog.Application
 
             try
             {
-                var key = GlobalTo.GetValue("VerifyCode:Key");
-
-                var jo = Core.CalcTo.DeDES(token, key).ToJObject();
-
-                if (DateTime.Now.ToTimestamp() < long.Parse(jo["expired"].ToString()))
+                if (!string.IsNullOrWhiteSpace(token))
                 {
-                    mo = jo["mo"].ToString().ToEntity<Domain.UserInfo>();
+                    var key = GlobalTo.GetValue("VerifyCode:Key");
+
+                    var jo = Core.CalcTo.DeDES(token, key).ToJObject();
+
+                    if (DateTime.Now.ToTimestamp() < long.Parse(jo["expired"].ToString()))
+                    {
+                        mo = jo["mo"].ToString().ToEntity<Domain.UserInfo>();
+                    }
                 }
             }
             catch (Exception)

@@ -81,7 +81,7 @@
         </member>
         <member name="P:Netnr.Logging.LoggingModel.LogLevel">
             <summary>
-            级别（F： Fatal，E：Error，W：Warn，I：Info，D：Debug，A：All）
+            级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）
             </summary>
         </member>
         <member name="P:Netnr.Logging.LoggingModel.LogCreateTime">

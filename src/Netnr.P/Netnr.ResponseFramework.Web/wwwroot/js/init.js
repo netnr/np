@@ -61,7 +61,7 @@
         return item;
     },
     //选项卡定位
-    PositionTab: function () {
+    positionTab: function () {
         var mm = $('#mtab-main'), vw = mm.parent().width(), sw = mm[0].scrollWidth;
         if (sw > vw) {
             var max = 0, min = -1 * (sw - vw), ml = 3, left = parseFloat(mm.css('left')), ca;
@@ -84,7 +84,7 @@
         }
     },
     //打开选项卡 链接、含图标的标题，false不显示关闭按钮(可选)
-    OpenPage: function (url, title, close) {
+    openPage: function (url, title, close) {
         var isopen = false, mmc = $('#mtab-main').children(), mb = $('#mtabox');
         mmc.removeClass('active');
         mb.children().removeClass('active');
@@ -108,7 +108,7 @@
         });
         if (!isopen) {
             var pageid = "page_" + new Date().valueOf(), close = close == false ? '' : '<em class="fa fa-close"></em>';
-            mmc.end().append('<a href="#' + pageid + '" class="active">' + title + close + '</a></li>');
+            mmc.end().append('<a href="' + url + '#' + pageid + '" class="active">' + title + close + '</a></li>');
             mb.append('<div class="tab-pane active" id="' + pageid + '"><iframe frameborder="0" src="about:blank" allowfullscreen="true"></iframe></div>');
             var ifr = $('#' + pageid).find('iframe')[0];
             ifr.src = url;
@@ -116,8 +116,8 @@
         }
 
         //定位、调整
-        rf.PositionTab();
-        rf.IframeAuto();
+        rf.positionTab();
+        rf.iframeAuto();
 
         //Mobile 打开时隐藏菜单导航
         if (!rf.isPC()) {
@@ -126,7 +126,7 @@
         }
     },
     //Iframe自适应、延迟响应
-    IframeAuto: function () {
+    iframeAuto: function () {
         clearTimeout(window.deferIA);
         window.deferIA = setTimeout(function () {
             var box = $('#mtabox'), sh = $(window).height() - box.offset().top;
@@ -134,7 +134,7 @@
         }, 100);
     },
     //JSON生成导航菜单
-    TreeEach: function (json) {
+    eachTree: function (json) {
         //拼接HTML
         rf.htm = rf.htm || '';
 
@@ -174,7 +174,7 @@
             dataType: 'json',
             success: function (data) {
                 top.navtreedata = data;
-                $('#ulnav').append(rf.TreeEach(data));
+                $('#ulnav').append(rf.eachTree(data));
             },
             error: function (xhr) {
                 if (xhr.status == 401) {
@@ -245,7 +245,7 @@ $('#switch_skin').click(function (e) {
 });
 //样式配置
 $('#btn_style_config').click(function () {
-    rf.OpenPage('/setting/sysstyle', '<i class="fa fa-text-height"></i> 样式配置');
+    rf.openPage('/setting/sysstyle', '<i class="fa fa-text-height"></i> 样式配置');
 });
 //点击选项卡
 $('#mtab').click(function (e) {
@@ -260,7 +260,7 @@ $('#mtab').click(function (e) {
         }
         $(ta[0].hash).remove();
         ta.remove();
-        rf.PositionTab();
+        rf.positionTab();
         return false;
     } else if ($(this).children('a')[0].contains(target)) {
         //左滑
@@ -298,8 +298,8 @@ $('#mtab').click(function (e) {
                             $(ca[0].hash).remove();
                             ca.remove();
 
-                            rf.PositionTab();
-                            rf.IframeAuto();
+                            rf.positionTab();
+                            rf.iframeAuto();
                         }
                     }
                     break;
@@ -329,7 +329,7 @@ $('#mtab').click(function (e) {
                             $(mmc.first()[0].hash).addClass('active');
                             mmc.end().css('left', 0);
 
-                            rf.IframeAuto();
+                            rf.iframeAuto();
                         }
                     }
                     break
@@ -345,8 +345,8 @@ $('#mtab').click(function (e) {
                     $('#mtabox').children().removeClass('active');
                     $(item.hash).addClass('active').find('iframe')[0].focus();
 
-                    rf.PositionTab();
-                    rf.IframeAuto();
+                    rf.positionTab();
+                    rf.iframeAuto();
                 }
                 return false;
             }
@@ -361,7 +361,7 @@ $('#ulnav').click(function (e) {
     $(this).find('a').each(function () {
         if (this.contains(target)) {
             if (this.href.split('#')[1]) {
-                rf.OpenPage(this.href.split('#')[1], this.innerHTML);
+                rf.openPage(this.href.split('#')[1], this.innerHTML);
             }
             return false;
         }
@@ -395,10 +395,10 @@ $('#usermenu').click(function (e) {
                 }
                 break;
             case "#authbind":
-                rf.OpenPage('/account/authbind', '<i class="fa fa-user-plus"></i> 授权关联');
+                rf.openPage('/account/authbind', '<i class="fa fa-user-plus"></i> 授权关联');
                 break;
             case "#updatepassword":
-                rf.OpenPage('/account/updatepassword', '<i class="fa fa-edit"></i> 修改密码');
+                rf.openPage('/account/updatepassword', '<i class="fa fa-edit"></i> 修改密码');
                 break;
         }
 
@@ -410,7 +410,7 @@ $('#usermenu').click(function (e) {
     }
 });
 
-$(window).resize(rf.IframeAuto);
+$(window).resize(rf.iframeAuto);
 
 //恢复设置
 rf.setSkinStyle();
@@ -418,4 +418,4 @@ rf.setSkinStyle();
 rf.loadNav();
 
 //打开页面 桌面（默认第一个，不能关闭，不然会影响：关闭其他、关闭全部）
-rf.OpenPage('/home/desk', '<i class="fa fa-home"></i> 桌面', false);
+rf.openPage('/home/desk', '<i class="fa fa-home"></i> 桌面', false);

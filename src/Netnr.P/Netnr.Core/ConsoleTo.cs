@@ -56,9 +56,10 @@ namespace Netnr.Core
                 txt = msg.ToString();
             }
 
-            var dt = DateTime.Now;
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs/" + dt.ToString("yyyyMM"));
-            FileTo.WriteText(txt, path, "console_" + dt.ToString("yyyyMMdd") + ".log");
+            var now = DateTime.Now;
+            var filename = $"console_{now:yyyyMMdd}.log";
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.ToString("yyyyMM"), filename);
+            FileTo.WriteText(txt, path);
         }
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace Netnr.Core
 
             string msg = string.Join(en, new List<string>()
             {
-                $"====日志记录时间：{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}",
+                $"====日志记录时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}",
                 $"消息内容：{ex.Message}",
                 $"引发异常的方法：{st}{en}"
             });

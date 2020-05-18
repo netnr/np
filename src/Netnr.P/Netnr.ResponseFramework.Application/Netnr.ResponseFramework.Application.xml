@@ -62,6 +62,20 @@
             </summary>
             <param name="context"></param>
         </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.TokenMake(Netnr.ResponseFramework.Application.ViewModel.LoginUserVM)">
+            <summary>
+            生成Token
+            </summary>
+            <param name="mo">授权用户信息</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.TokenValid(System.String)">
+            <summary>
+            验证Token
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey">
             <summary>
             全局缓存KEY
@@ -120,7 +134,7 @@
             说明：从执行SQL脚本重置 改为 EF清理表插入数据的模式，更好维护，而且兼容了内存数据库
             </summary>
         </member>
-        <member name="F:Netnr.ResponseFramework.Application.DataMirrorService.JsonPath">
+        <member name="F:Netnr.ResponseFramework.Application.DataMirrorService.fullJsonData">
             <summary>
             JSON存储路径
             </summary>

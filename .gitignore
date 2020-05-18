@@ -307,3 +307,5 @@ OpenCover/
 # customer
 .ignore
 .config
+log.db
+ip2region.db

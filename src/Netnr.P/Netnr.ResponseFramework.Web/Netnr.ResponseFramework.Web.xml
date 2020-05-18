@@ -118,6 +118,103 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.DKController">
+            <summary>
+            数据库工具及代码构建
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.Index">
+            <summary>
+            表管理
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.ConnCheck(System.Nullable{TypeDB}@,System.String@)">
+            <summary>
+            处理连接信息
+            </summary>
+            <param name="tdb"></param>
+            <param name="conn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetTable(System.Nullable{TypeDB},System.String)">
+            <summary>
+            获取所有表名及注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetColumn(System.Nullable{TypeDB},System.String,System.String)">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.SetTableComment(System.Nullable{TypeDB},System.String,System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.SetColumnComment(System.Nullable{TypeDB},System.String,System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.QueryTableConfig">
+            <summary>
+            查询表配置虚拟表名
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.SaveTableConfig(System.String,System.Int32)">
+            <summary>
+            保存表配置信息
+            </summary>
+            <param name="rows">表配置数据行</param>
+            <param name="buildType">1：追加，2：覆盖</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.ResetDataBaseForJson">
+            <summary>
+            根据JSON数据重置数据库
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.BackupDataBaseAsJson">
+            <summary>
+            数据库备份数据为JSON
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.ResponseFramework.Web.Controllers.HomeController">
             <summary>
             起始页
@@ -574,108 +671,6 @@
             <summary>
             工具
             </summary>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.TableManage">
-            <summary>
-            表管理
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.QueryTableConfig">
-            <summary>
-            查询表配置虚拟表名
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SaveTableConfig(System.String,System.Int32)">
-            <summary>
-            保存表配置信息
-            </summary>
-            <param name="rows">表配置数据行</param>
-            <param name="buildType">1：追加，2：覆盖</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.ConnCheck(System.Nullable{TypeDB}@,System.String@)">
-            <summary>
-            处理连接信息
-            </summary>
-            <param name="tdb"></param>
-            <param name="conn"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.GetTable(System.Nullable{TypeDB},System.String)">
-            <summary>
-            获取所有表名及注释
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.GetColumn(System.Nullable{TypeDB},System.String,System.String)">
-            <summary>
-            获取所有列
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SetTableComment(System.Nullable{TypeDB},System.String,System.String,System.String)">
-            <summary>
-            设置表注释
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="TableName">表名</param>
-            <param name="TableComment">表注释</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SetColumnComment(System.Nullable{TypeDB},System.String,System.String,System.String,System.String)">
-            <summary>
-            设置列注释
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="TableName">表名</param>
-            <param name="FieldName">列名</param>
-            <param name="FieldComment">列注释</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String)">
-            <summary>
-            查询数据
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="TableName">表名</param>
-            <param name="page">页码</param>
-            <param name="rows">页量</param>
-            <param name="sort">排序字段</param>
-            <param name="order">排序方式</param>
-            <param name="listFieldName">查询列，默认为 *</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.SaveGenerateCode(System.String,System.String,System.String,System.String)">
-            <summary>
-            保存生成的代码
-            </summary>
-            <param name="name">视图名称</param>
-            <param name="controller">控制器名称</param>
-            <param name="view">视图内容</param>
-            <param name="javascript">视图页面脚本内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.ResetDataBaseForJson">
-            <summary>
-            根据JSON数据重置数据库
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.BackupDataBaseAsJson">
-            <summary>
-            数据库备份数据为JSON
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.ServerInfo">
             <summary>

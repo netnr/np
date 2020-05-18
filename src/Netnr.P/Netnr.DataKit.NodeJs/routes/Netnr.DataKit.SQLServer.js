@@ -52,9 +52,7 @@ module.exports = {
                         b.value AS TableComment
                     FROM
                         sys.TABLES a
-                        left join sys.extended_properties b ON b.major_id = a.object_id
-                    WHERE
-                        b.minor_id = 0
+                        left join sys.extended_properties b ON b.major_id = a.object_id AND b.minor_id = 0
                     ORDER BY a.name
                  `;
 

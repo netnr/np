@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml;
 
@@ -133,9 +132,11 @@ namespace Netnr.ResponseFramework.Web.Filters
                             SuNickname = userinfo.Nickname,
                             LogAction = controller + "/" + action,
                             LogUrl = url,
-                            LogIp = ct.IPv4.Split(',')[0].Trim(),
+                            LogIp = ct.IPv4,
+                            LogUserAgent = ct.UserAgent,
                             LogCreateTime = DateTime.Now,
-                            LogGroup = 1
+                            LogGroup = 1,
+                            LogLevel = "I"
                         };
 
                         mo.LogContent = DicDescription[mo.LogAction.ToLower()];
@@ -171,34 +172,22 @@ namespace Netnr.ResponseFramework.Web.Filters
                             {
                                 try
                                 {
-                                    //写入日志前查询IP所属区域
-                                    var dbpath = Path.Combine(GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath), "ip2region.db");
-                                    if (File.Exists(dbpath))
+                                    var ipto = new IPAreaTo();
+                                    //写入日志前
+                                    foreach (var log in cacheLogs)
                                     {
-                                        using var ds = new IP2Region.DbSearcher(dbpath);
+                                        log.LogId = Core.UniqueTo.LongId().ToString();
+                                        //log.LogArea = ipto.Parse(log.LogIp);
+                                        log.LogArea = ipto.Parse("23.99.110.186");
 
-                                        foreach (var log in cacheLogs)
+                                        var uato = new UserAgentTo(log.LogUserAgent);
+                                        log.LogBrowserName = uato.BrowserName + " " + uato.BrowserVersion;
+                                        log.LogSystemName = uato.SystemName + " " + uato.SystemVersion;
+                                        if (uato.IsBot)
                                         {
-                                            var ips = log.LogIp.Split(',');
-                                            var ipi = new List<string>();
-
-                                            foreach (var ip in ips)
-                                            {
-                                                //内容格式：国家|区域|省份|市|运营商。无数据默认为0。
-                                                var listIpInfo = ds.MemorySearch(ip.Trim().Replace("::1", "127.0.0.1")).Region.Split('|').ToList();
-
-                                                listIpInfo.RemoveAt(1);
-                                                listIpInfo = listIpInfo.Where(x => x != "0").Distinct().ToList();
-
-                                                ipi.Add(string.Join(",", listIpInfo));
-                                            }
-
-                                            log.LogCity = string.Join(";", ipi);
+                                            log.LogGroup = 2;
                                         }
                                     }
-
-                                    //赋值主键（在前面赋值出现主键重复的问题，原因暂不明）
-                                    cacheLogs.ForEach(x => x.LogId = Guid.NewGuid().ToString("N"));
 
                                     using var db = new Data.ContextBase(Data.ContextBase.DCOB().Options);
                                     db.SysLog.AddRange(cacheLogs);
@@ -293,12 +282,20 @@ namespace Netnr.ResponseFramework.Web.Filters
 
             public void OnActionExecuting(ActionExecutingContext context)
             {
-                bool isv = false;
+                var an = GlobalTo.GetValue("AdminName");
 
+                bool isv;
+                //cookie 授权已登录
                 if (context.HttpContext.User.Identity.IsAuthenticated)
                 {
                     var uinfo = Application.CommonService.GetLoginUserInfo(context.HttpContext);
-                    isv = uinfo.UserName == GlobalTo.GetValue("AdminName");
+                    isv = uinfo.UserName == an;
+                }
+                else
+                {
+                    var token = context.HttpContext.Request.Headers["Authorization"].ToString();
+                    var mo = Application.CommonService.TokenValid(token);
+                    isv = mo?.UserName == an;
                 }
 
                 if (!isv)

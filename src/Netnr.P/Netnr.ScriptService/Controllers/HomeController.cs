@@ -323,5 +323,14 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// 体重指标
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult BMI()
+        {
+            return View();
+        }
     }
 }

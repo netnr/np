@@ -20,8 +20,7 @@ namespace Netnr.ResponseFramework.Application
         /// <summary>
         /// JSON存储路径
         /// </summary>
-        public string JsonPath = GlobalTo.WebRootPath + "/scripts/table-json/";
-        public string JsonName = "data.json";
+        public string fullJsonData = GlobalTo.WebRootPath + "/scripts/table-json/data.json";
 
         public virtual DbSet<SysButton> Tsb { get; set; }
         public virtual DbSet<SysDictionary> Tsd { get; set; }
@@ -75,7 +74,7 @@ namespace Netnr.ResponseFramework.Application
 
             if (CoverJson)
             {
-                Core.FileTo.WriteText(vm.ToJson(), JsonPath, JsonName, false);
+                Core.FileTo.WriteText(vm.ToJson(), fullJsonData, false);
             }
 
             vm.Set(ARTag.success);
@@ -94,7 +93,7 @@ namespace Netnr.ResponseFramework.Application
 
             try
             {
-                var json = Core.FileTo.ReadText(JsonPath, JsonName);
+                var json = Core.FileTo.ReadText(fullJsonData);
 
                 var objs = json.ToJObject()["data"];
 

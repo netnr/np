@@ -679,7 +679,7 @@ namespace Netnr.Blog.Web.Controllers
                                     }
                                     else
                                     {
-                                        var tml = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/lib/mailchecker/", "list.txt");
+                                        var tml = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/lib/mailchecker/list.txt");
                                         if (tml.Contains(usermo.UserMail.Split('@').LastOrDefault()))
                                         {
                                             vm.Msg = "该邮箱已被屏蔽";
@@ -699,7 +699,7 @@ namespace Netnr.Blog.Web.Controllers
 
                                             var VerifyLink = string.Format(GlobalTo.GetValue("VerifyCode:Url"), vcode);
 
-                                            var txt = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/template/", "sendmailverify.html");
+                                            var txt = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/template/sendmailverify.html");
                                             txt = txt.Replace("@ToMail@", ToMail).Replace("@VerifyLink@", VerifyLink);
 
                                             vm = Application.MailService.Send(ToMail, "[Netnr] 验证你的邮箱", txt);

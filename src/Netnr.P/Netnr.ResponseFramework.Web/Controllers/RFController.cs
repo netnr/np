@@ -357,7 +357,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     LogId = Guid.NewGuid().ToString(),
                     LogAction = "/",
                     LogBrowserName = "Chrome",
-                    LogCity = "重庆",
+                    LogArea = "重庆",
                     LogContent = "测试信息",
                     LogCreateTime = vm.StartTime,
                     LogGroup = 1,

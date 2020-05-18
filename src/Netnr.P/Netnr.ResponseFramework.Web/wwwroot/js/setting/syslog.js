@@ -1,4 +1,30 @@
-﻿//载入
+﻿//日志分组格式化
+function col_custom_loggroup(value) {
+    switch (value) {
+        case 1:
+            value = "用户";
+            break;
+        case 2:
+            value = "爬虫";
+            break;
+    }
+    return value;
+}
+
+//日志级别格式化
+function col_custom_loglevel(value) {
+    switch (value) {
+        case "F": value = "Fatal"; break;
+        case "E": value = "Error"; break;
+        case "W": value = "Warn"; break;
+        case "I": value = "Info"; break;
+        case "D": value = "Debug"; break;
+        case "A": value = "All"; break;
+    }
+    return value;
+}
+
+//载入
 var gd1 = z.Grid();
 gd1.url = "/Setting/QuerySysLog?tableName=" + z.TableName;
 gd1.sortName = "LogCreateTime";
