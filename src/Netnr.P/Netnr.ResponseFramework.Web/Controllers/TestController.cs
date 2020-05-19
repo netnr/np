@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Netnr.Fast;
 using Netnr.ResponseFramework.Data;
 
 namespace Netnr.ResponseFramework.Web.Controllers
@@ -25,9 +25,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index()
         {
-            var ci = new ClientTo(HttpContext);
-            var ua = new UserAgentTo(ci.UserAgent);
-            string result = ua.ToJson();
+            var mo = db.SysLog.FirstOrDefault();
+            var result = mo.ToJson();
 
             return Content(result);
         }

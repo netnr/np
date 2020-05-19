@@ -178,8 +178,7 @@ namespace Netnr.ResponseFramework.Web.Filters
                                     foreach (var log in cacheLogs)
                                     {
                                         log.LogId = Core.UniqueTo.LongId().ToString();
-                                        //log.LogArea = ipto.Parse(log.LogIp);
-                                        log.LogArea = ipto.Parse("23.99.110.186");
+                                        log.LogArea = ipto.Parse(log.LogIp);
 
                                         var uato = new UserAgentTo(log.LogUserAgent);
                                         log.LogBrowserName = uato.BrowserName + " " + uato.BrowserVersion;

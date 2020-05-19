@@ -65,18 +65,32 @@
         </h4>
 
     <div class="min300">
-        <div class="container">
+        <style>
+    .progress {
+        height: 2rem;
+    }
+</style>
+
+<div class="container">
     <div class="row">
-        <div class="col">
+        <div class="col-md mt-3">
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">体重</span>
                 </div>
                 <input type="number" id="txt1" class="form-control" placeholder="体重（单位：千克/kg）" min="25" max="300" step="1" maxlength="3" />
+            </div>
+        </div>
+        <div class="col-md mt-3">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">身高</span>
                 </div>
                 <input type="number" id="txt2" class="form-control" placeholder="身高（单位：米/m）" min="1" max="3" step="0.1" maxlength="4" />
+            </div>
+        </div>
+        <div class="col-md mt-3">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">BMI</span>
                 </div>
@@ -86,11 +100,23 @@
     </div>
 
     <div class="row mt-5">
-        <div class="col">
-            <div class="progress" style="height:2rem">
-                <div class="progress-bar bg-dark" title="低重：BMI < 18.5" style="width: 55.5%">低重：BMI < 18.5</div>
-                <div class="progress-bar bg-success" title="正常：18.5 ≤ BMI < 24.0" style="width: 72%">正常：18.5 ≤ BMI < 24.0</div>
-                <div class="progress-bar bg-warning" title="超重：24.0 ≤ BMI < 28.0" style="width: 84%">超重：24.0 ≤ BMI < 28.0</div>
+        <div class="col-md">
+            <div class="progress">
+                <div class="progress-bar bg-dark" title="低重：BMI < 18.5" style="width: 100%">低重：BMI < 18.5</div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="progress">
+                <div class="progress-bar bg-success" title="正常：18.5 ≤ BMI < 24.0" style="width: 100%">正常：18.5 ≤ BMI < 24.0</div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="progress">
+                <div class="progress-bar bg-warning" title="超重：24.0 ≤ BMI < 28.0" style="width: 100%">超重：24.0 ≤ BMI < 28.0</div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="progress">
                 <div class="progress-bar bg-danger" title="肥胖：BMI ≥ 28.0" style="width: 100%">肥胖：BMI ≥ 28.0</div>
             </div>
         </div>

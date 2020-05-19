@@ -179,7 +179,7 @@
         },
         {
           "url": "/freedb",
-          "icon": "/icon/db.svg",
+          "icon": "/icon/freedb.svg",
           "title": "免费数据库",
           "remark": "在线免费的数据库"
         },
@@ -191,7 +191,7 @@
         },
         {
           "url": "/dk",
-          "icon": "/favicon.svg",
+          "icon": "/icon/db.svg",
           "title": "DataKit",
           "remark": "数据库工具及代码构建"
         }
