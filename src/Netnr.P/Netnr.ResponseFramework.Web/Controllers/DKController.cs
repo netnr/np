@@ -107,7 +107,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         [HttpPost]
         [HttpOptions]
         [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM GetColumn([FromForm]TypeDB? tdb, [FromForm]string conn, [FromForm]string filterTableName = "")
+        public ActionResultVM GetColumn([FromForm] TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
         {
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
@@ -274,8 +274,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = new ActionResultVM();
             try
             {
-                //爬虫
-                if (new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
+                //非内部调用 && 是爬虫
+                if (HttpContext != null && new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
                 {
                     vm.Set(ARTag.refuse);
                     vm.Msg = "are you human？";
