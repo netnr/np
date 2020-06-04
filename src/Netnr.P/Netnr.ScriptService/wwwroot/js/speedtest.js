@@ -20,7 +20,8 @@ var sp = {
     //压缩率（根据开发环境的测试结果计算所得）
     cr: function () {
         var ss = $('#seSpeedServer').val(), cr = 1;
-        sp.ss.forEach(sp => {
+        $.each(sp.ss, function () {
+            var sp = this;
             if (sp.link == ss) {
                 cr = sp.cr;
             }
@@ -43,7 +44,8 @@ var sp = {
     //绑定节点
     bindSpeedServer: function () {
         var htm = [];
-        sp.ss.forEach(si => {
+        $.each(sp.ss, function () {
+            var si = this;
             htm.push('<option value="' + si.link + '">' + si.name + '</option>');
         })
         $('#seSpeedServer').html(htm.join(''));
@@ -77,9 +79,9 @@ var sp = {
         //统计
         var si2 = setInterval(function () {
             var now = new Date().valueOf(), ds = 0;
-            sp.result.map(x => {
-                ds += (x || 0);
-            });
+            $.each(sp.result, function () {
+                ds += (this || 0);
+            })
             sp.downsize = ds;
             var speed = ((sp.downsize / 1024 / 1024 * sp.cr()) / ((now - sp.start) / 1000)).toFixed(2);
             sp.data.push(speed);
@@ -126,9 +128,9 @@ $('#btnRunSpeedTest').click(function () {
     //完成
     sp.complete = function () {
         var sum = 0;
-        sps.map(x => {
-            sum += x * 1;
-        })
+        $.each(sps, function () {
+            sum += this * 1;
+        });
         var avg = (sum / sps.length).toFixed(2);
         $('<h2>平均：' + avg + ' Mb/s</h2>').insertBefore($('#divresult').children().first())
 

@@ -48,7 +48,7 @@ namespace Netnr.Chat.Application
         public static Dictionary<string, ChatUserVM> OnlineUser2 = new Dictionary<string, ChatUserVM>();
 
         /// <summary>
-        /// 在线组，组ID 对应 组信息
+        /// 组，组ID 对应 组信息
         /// </summary>
         public static Dictionary<string, ChatGroupVM> OnlineGroup1 = new Dictionary<string, ChatGroupVM>();
 
@@ -72,7 +72,7 @@ namespace Netnr.Chat.Application
         /// <param name="cm">发送消息</param>
         /// <param name="hc">上下文</param>
         /// <param name="Clients">连接客户端对象</param>
-        public static ActionResultVM HandleMessageToUser(ChatMessageVM cm, HttpContext hc, IHubClients Clients)
+        public static ActionResultVM HandleMessageToUsers(ChatMessageVM cm, HttpContext hc, IHubClients Clients)
         {
             var vm = new ActionResultVM();
             var pmax = GlobalTo.GetValue<int>("NetnrChat:BatchPushUserMax");
@@ -748,20 +748,6 @@ namespace Netnr.Chat.Application
             if (!string.IsNullOrEmpty(UserId) && OnlineUser2.ContainsKey(UserId))
             {
                 return OnlineUser2[UserId];
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 根据组ID找到组信息
-        /// </summary>
-        /// <param name="GroupId">组ID</param>
-        /// <returns></returns>
-        public static ChatGroupVM FindGroup(string GroupId)
-        {
-            if (!string.IsNullOrEmpty(GroupId) && OnlineGroup1.ContainsKey(GroupId))
-            {
-                return OnlineGroup1[GroupId];
             }
             return null;
         }

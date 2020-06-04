@@ -55,13 +55,13 @@ namespace Netnr.Chat.Controllers
         /// <param name="cm">推送消息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM PushMessageToUsers([FromForm]ChatMessageVM cm)
+        public ActionResultVM PushMessageToUsers([FromBody] ChatMessageVM cm)
         {
             var vm = new ActionResultVM();
 
             try
             {
-                vm = ccs.HandleMessageToUser(cm, HttpContext, Clients);
+                vm = ccs.HandleMessageToUsers(cm, HttpContext, Clients);
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ namespace Netnr.Chat.Controllers
         /// <param name="cm">推送消息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM UserMessageReceipt([FromForm]ChatMessageVM cm)
+        public ActionResultVM UserMessageReceipt([FromBody] ChatMessageVM cm)
         {
             var vm = new ActionResultVM();
 
@@ -99,7 +99,7 @@ namespace Netnr.Chat.Controllers
         /// <param name="cm">推送消息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM PushMessageToGroups([FromForm]ChatMessageVM cm)
+        public ActionResultVM PushMessageToGroup([FromBody] ChatMessageVM cm)
         {
             var vm = new ActionResultVM();
 
@@ -121,7 +121,7 @@ namespace Netnr.Chat.Controllers
         /// <param name="cg">组信息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM GroupNew([FromForm]ChatGroupVM cg)
+        public ActionResultVM GroupNew([FromBody] ChatGroupVM cg)
         {
             var vm = new ActionResultVM();
 

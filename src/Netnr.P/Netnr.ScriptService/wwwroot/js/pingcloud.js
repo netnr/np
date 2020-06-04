@@ -893,7 +893,8 @@
 var pc = {
     init: function () {
         var htm = [], tbheader = '<tr><th style="width:40%">区域</th><th style="width:40%">别名</th><th style="width:20%">ms</th></tr>';
-        PingCloud.forEach(p => {
+        $.each(PingCloud, function () {
+            var p = this;
             htm.push('<div class="col-xl-3 col-lg-4 col-md-6 py-3 px-3"><table class="table table-sm table-bordered table-hover">')
 
             var pname = p.name;
@@ -905,7 +906,8 @@ var pc = {
 
             htm.push('<tr><td colspan="3" class="bg-light"><a target="_blank" href="' + p.link + '">' + pname + '</a>' + pfn + '</td></tr>');
             htm.push(tbheader);
-            p.list.forEach(n => {
+            $.each(p.list, function () {
+                var n = this;
                 htm.push('<tr><td class="tipep" data-toggle="tooltip" data-placement="top" title="' + n.endpoint + '">' + n.area + '</td><td>' + n.alias + '</td><td data-endpoint="' + n.endpoint + '"></td></tr>');
             })
             htm.push('</table></div>')

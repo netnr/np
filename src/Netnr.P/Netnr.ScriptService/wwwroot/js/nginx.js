@@ -29,6 +29,11 @@ cme.on("change", function () {
 
 $(window).on('load resize', function () {
     cme.setSize("100%", $(this).height() - ebox.offset().top - 15);
+}).click(function (e) {
+    var target = e.target || window.event.srcElement;
+    if (target.nodeName == "I" && target.className.indexOf('fa-arrows-alt') >= 0) {
+        cme.setSize("100%", $(this).height() - ebox.offset().top - 15);
+    }
 })
 
 $('#btnFormatterNginxConf').click(function () {

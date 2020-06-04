@@ -684,6 +684,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.Close">
+            <summary>
+            关闭应用
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs">
             <summary>
             过滤器

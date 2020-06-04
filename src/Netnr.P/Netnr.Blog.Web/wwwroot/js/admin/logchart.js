@@ -1,12 +1,12 @@
 ﻿function loadPVUV(type, group) {
     $.getJSON('/Admin/QueryLogStatsPVUV?type=' + type + '&LogGroup=' + group, null, function (res) {
         var categories = [], pv = [], uv = [], spv = 0, suv = 0;
-        (res.Data || []).forEach(x => {
-            spv += x.pv;
-            suv += x.ip;
-            categories.push(x.time);
-            pv.push(x.pv);
-            uv.push(x.ip);
+        $.each((res.Data || []), function () {
+            spv += this.pv;
+            suv += this.ip;
+            categories.push(this.time);
+            pv.push(this.pv);
+            uv.push(this.ip);
         });
         series = [{ name: "PV", data: pv }, { name: "UV", data: uv }];
         Highcharts.chart('chart1', {
@@ -45,26 +45,28 @@
 function loadTop(type, field, group) {
     $.getJSON('/Admin/QueryLogReportTop?type=' + type + '&field=' + field + '&LogGroup=' + group, null, function (res) {
         var data = res.Data || [], arr = [], total = 0;
-        data.forEach(x => total += x.total);
-        data.forEach(x => {
-            x.y = (x.total / total * 100).toFixed(2) * 1;
-            x.name = x.field;
-            x.p = x.y + "%";
-        });
+        $.each(data, function () {
+            total += this.total
+        })
+        $.each(data, function () {
+            this.y = (this.total / total * 100).toFixed(2) * 1;
+            this.name = this.field;
+            this.p = this.y + "%";
+        })
 
         switch (field) {
             case "LogUrl":
                 {
                     arr.push('<ul>');
 
-                    data.forEach(function (x) {
+                    $.each(data, function () {
                         arr.push('<li>');
-                        var url = location.origin + x.field;
+                        var url = location.origin + this.field;
                         arr.push('<a target="_blank" href="' + url + '">' + url + '</a>');
-                        arr.push(' &nbsp; ' + x.total);
-                        arr.push(' &nbsp; ' + x.p);
+                        arr.push(' &nbsp; ' + this.total);
+                        arr.push(' &nbsp; ' + this.p);
                         arr.push('</li>');
-                    });
+                    })
                     arr.push('</ul>');
                 }
                 break;
@@ -72,15 +74,15 @@ function loadTop(type, field, group) {
                 {
                     arr.push('<ul>');
 
-                    data.forEach(function (x) {
+                    $.each(data, function () {
                         arr.push('<li>');
-                        if (x.field == "") {
+                        if (this.field == "") {
                             arr.push('unknown');
                         } else {
-                            arr.push('<a target="_blank" href="' + x.field + '">' + x.field + '</a>');
+                            arr.push('<a target="_blank" href="' + this.field + '">' + this.field + '</a>');
                         }
-                        arr.push(' &nbsp; ' + x.total);
-                        arr.push(' &nbsp; ' + x.p);
+                        arr.push(' &nbsp; ' + this.total);
+                        arr.push(' &nbsp; ' + this.p);
                         arr.push('</li>');
                     });
                     arr.push('</ul>');

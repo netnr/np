@@ -92,11 +92,11 @@ var km = {
                 } catch (e) {
                     try {
                         var ismd = 0;
-                        txt.split('\n').forEach(function (row) {
-                            if (row.trim().indexOf('# ') >= 0) {
+                        $.each(txt.split('\n'), function () {
+                            if (this.trim().indexOf('# ') >= 0) {
                                 ismd++;
                             }
-                        });
+                        })
                         editor.minder.importData(ismd ? 'markdown' : 'text', txt)
                         $('#ehModalImport').modal('hide');
                     } catch (e) {
