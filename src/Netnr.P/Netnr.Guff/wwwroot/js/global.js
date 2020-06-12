@@ -65,11 +65,12 @@
         }, false);
         elem.addEventListener('blur', function () {
             var val = this.value.replace(/  /g, ' ').replace(/,,/g, ','), arr = [];
-            val.split(',').forEach(k => {
+            $.each(val.split(','), function () {
+                var k = this;
                 if (k != "" && arr.indexOf(k) == -1) {
                     arr.push(k.trim());
                 }
-            });
+            })
             this.value = arr.join(',');
         }, false);
     },
@@ -97,7 +98,8 @@
             origin = window.location.search;
         }
         var pars = [], ise = false;
-        origin.substring(1).split('&').forEach(pg => {
+        $.each(origin.substring(1).split('&'), function () {
+            var pg = this;
             if (pg != "") {
                 var kvs = pg.split('=');
                 if (kvs[0] == name) {
@@ -339,21 +341,21 @@
 
         if (item.GrImage) {
             var urls = item.GrImage.split(',') || [];
-            urls.forEach(u => {
-                htm.push('<div class="mb-3"><img src="' + u.replace(/"/g, "") + '" onerror="this.remove()"/></div>');
+            $.each(urls, function () {
+                htm.push('<div class="mb-3"><img src="' + this.replace(/"/g, "") + '" onerror="this.remove()"/></div>');
             })
         }
 
         if (item.GrAudio) {
             var urls = item.GrAudio.split(',') || [];
-            urls.forEach(u => {
+            $.each(urls, function () {
                 htm.push('<div class="mb-3"><audio class="w-100" src="' + u.replace(/"/g, "") + '" controls /></div>');
             })
         }
 
         if (item.GrVideo) {
             var urls = item.GrVideo.split(',') || [];
-            urls.forEach(u => {
+            $.each(urls, function () {
                 htm.push('<div class="mb-3"><video class="w-100" src="' + u.replace(/"/g, "") + '" controls /></div>');
             })
         }
@@ -374,9 +376,11 @@
         }
 
         item.GrObject && htm.push('<a href="javascript:guff.setGoLink(\'obj\',\'' + encodeURIComponent(item.GrObject) + '\')" class="mr-2 text-muted badge badge-light" title="对象">' + guff.htmlEncode(item.GrObject) + '</a>');
-        (item.GrTag || '').split(',').forEach(t => {
+
+        $.each((item.GrTag || '').split(','), function () {
+            var t = this;
             (t && t != '') && htm.push('<a href="javascript:guff.setGoLink(\'tag\',\'' + encodeURIComponent(t) + '\')" class="mr-2 text-muted badge badge-light" title="标签">' + guff.htmlEncode(t) + '</a>');
-        })
+        });
 
         if (item.Spare2 == "owner") {
             htm.push('<a href="javascript:guff.deleteOne(\'' + item.GrId + '\')" class="float-right badge badge-light" title="删除"><i class="fa fa-fw fa-trash-o"></i></a>');
@@ -568,7 +572,8 @@
             guff.fetch(uri).then(x => x.json()).then(res => {
                 if (res.code == 200) {
                     var htm = [];
-                    res.data.forEach(t => {
+                    $.each(res.data, function () {
+                        var t = this;
                         htm.push('<a href="#tag=' + encodeURIComponent(t) + '" class="mr-2 text-muted badge badge-light" title="标签">' + t + '</a>');
                     });
                     tbox.innerHTML = htm.join('');

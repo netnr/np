@@ -26,7 +26,8 @@ var gp = {
             hidv.val(hidv.val() + "," + values);
         }
 
-        values.split(',').forEach(v => {
+        $.each(values.split(','), function () {
+            var v = this;
             if (v != "") {
                 var bi = document.createElement('div'), ics = [];
                 bi.className = "rounded";
@@ -83,7 +84,8 @@ var gp = {
                     $('input[name="' + i + '"]').val(res.data[i]);
                     $('textarea[name="' + i + '"]').val(res.data[i]);
                 }
-                gp.types.forEach(f => {
+                $.each(gp.types, function () {
+                    var f = this;
                     //先清空值再赋值
                     $('input[name="Gr' + f + '"]').val('');
                     gp.addFile(f, res.data['Gr' + f] || '');
@@ -101,7 +103,8 @@ var gp = {
     }
 }
 
-gp.types.forEach(t => {
+$.each(gp.types, function () {
+    var t = this;
     //上传
     $('#btnUp' + t).change(function () {
         var file = this.files[0];

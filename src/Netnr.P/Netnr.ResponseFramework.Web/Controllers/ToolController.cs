@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Netnr.ResponseFramework.Web.Controllers
@@ -43,6 +44,20 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             return vm;
+        }
+
+        #endregion
+
+        #region 退出
+
+        /// <summary>
+        /// 关闭应用
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public void Close()
+        {
+            //Process.GetCurrentProcess().Kill();
         }
 
         #endregion

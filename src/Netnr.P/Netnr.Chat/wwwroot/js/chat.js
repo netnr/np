@@ -7,7 +7,7 @@ var nc = {
     //配置
     config: {
         //连接地址
-        chatUrl: "/chathub",
+        host: location.origin,
         //接收消息事件名称
         receiveMessage: "ReceiveMessage",
         //token缓存key
@@ -28,7 +28,7 @@ var nc = {
         nc.dc.tokenObj = nc.ls(nc.config.lsKeyToken);
 
         //构建
-        nc.dc.conn = new signalR.HubConnectionBuilder().withUrl(nc.config.chatUrl, {
+        nc.dc.conn = new signalR.HubConnectionBuilder().withUrl(nc.config.host + "/chathub", {
             accessTokenFactory: () => { return nc.token() }
         }).build();
 
@@ -73,7 +73,7 @@ var nc = {
                 var un = prompt("请输入账号", new Date().valueOf());
                 var pd = prompt("请输入密码", new Date().valueOf());
 
-                fetch("/account/token", {
+                fetch(nc.config.host + "/account/token", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -108,7 +108,17 @@ var nc = {
      */
     pushMessageToUsers: function (cm) {
         cm.CmFromId = nc.dc.tokenObj.userId;
-        return nc.dc.conn.invoke("PushMessageToUsers", cm);
+
+        return fetch(nc.config.host + "/Chat/PushMessageToUsers", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: "Bearer " + nc.dc.tokenObj.token
+            },
+            body: JSON.stringify(cm)
+        }).then(x => x.json());
+
+        //return nc.dc.conn.invoke("PushMessageToUsers", cm);
     },
 
     /**
@@ -117,7 +127,17 @@ var nc = {
      */
     pushMessageToGroups: function (cm) {
         cm.CmFromId = nc.dc.tokenObj.userId;
-        return nc.dc.conn.invoke("PushMessageToGroups", cm);
+
+        return fetch(nc.config.host + "/Chat/PushMessageToGroups", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: "Bearer " + nc.dc.tokenObj.token
+            },
+            body: JSON.stringify(cm)
+        }).then(x => x.json());
+
+        //return nc.dc.conn.invoke("PushMessageToGroups", cm);
     },
 
     /**
@@ -139,7 +159,7 @@ var nc = {
         console.log(cm);
 
         var nn = document.createElement('li');
-        nn.innerHTML = JSON.stringify(cm);
+        nn.innerHTML = '<pre>' + JSON.stringify(cm, null, 4) + '</pre>';
         document.getElementById("messagesList").appendChild(nn);
     },
 
@@ -159,8 +179,11 @@ document.getElementById("sendButton").addEventListener("click", function () {
         CmContent: message,
         CmType: "Text",
         CmToIds: [toUser]
-    }).then(x => {
-        console.log('推送', x);
+    }).then(res => {
+        if (res.code != 200) {
+            alert(res.msg);
+            console.log(res);
+        }
     }).catch(function (err) {
         return console.error(err.toString());
     });

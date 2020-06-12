@@ -13,13 +13,15 @@
     <meta name="keywords" content="netnr,NET牛人,Netnr.DataKit" />
     <meta name="description" content="netnr,NET牛人,数据库工具及代码构建" />
 
-    <link href="https://code.bdstatic.com/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-    <script src="https://code.bdstatic.com/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <link href="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui/1.9.0/themes/metro/easyui.css" rel="stylesheet" />
     <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui/1.9.0/jquery.easyui.min.js"></script>
     <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
+
     <script src="https://code.bdstatic.com/npm/exceljs@3.6.0/dist/exceljs.min.js"></script>
     <script src="https://code.bdstatic.com/npm/jszip@3.2.2/dist/jszip.min.js"></script>
     <script src="https://code.bdstatic.com/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
@@ -27,6 +29,10 @@
     <script src="https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs/loader.js"></script>
 
     <style>
+        html {
+            overflow: hidden;
+        }
+
         .h150 {
             height: 150px !important;
         }
@@ -38,25 +44,10 @@
         }
 
         .gfck {
-            width: 15px;
-            height: 15px;
-            margin: 0 10px 0 2px;
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
             vertical-align: middle;
-        }
-
-        /*清除值*/
-        .comboclear::before {
-            content: "✕";
-        }
-
-        .comboclear {
-            opacity: .3;
-            font-size: 14px;
-            line-height: 2.2;
-            text-align: center;
-            outline: none !important;
-            filter: alpha(opacity=30);
-            text-decoration: none !important;
         }
 
         /* Bootstrap Ext */
@@ -77,12 +68,47 @@
         }
 
         /* easyui */
-        .combo {
+        .combo, .combo .textbox-text {
             width: 100% !important;
         }
 
         .textbox .textbox-text {
-            padding: 0 30px 0 8px;
+            font-size: initial;
+            padding: 0 55px 0 8px;
+            margin: 0 !important;
+            height: 29px !important;
+            line-height: 29px !important;
+        }
+
+        /*清除值*/
+        .comboclear::before {
+            content: "✕";
+        }
+
+        .comboclear {
+            opacity: .3;
+            font-size: 14px;
+            line-height: 2.2;
+            text-align: center;
+            outline: none !important;
+            filter: alpha(opacity=30);
+            text-decoration: none !important;
+        }
+
+        /*表格*/
+        .datagrid-header-check input, .datagrid-cell-check input {
+            width: 18px;
+        }
+
+        .datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber, .datagrid-group, .datagrid-group-title {
+            font-size: initial;
+            height: 35px !important;
+            line-height: 35px !important;
+        }
+
+        /*重置大小*/
+        .datagrid-header .datagrid-cell span, .panel-body, .tree-title {
+            font-size: initial;
         }
 
         /* 最大化表格 */
@@ -107,75 +133,103 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12 mt-3 dkn-menu">
-                <div class="input-group">
+
+            <!--菜单-->
+            <div class="col-lg-12 mt-2 dkn-menu">
+                <div class="input-group input-group-sm">
+                    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#menuModalCenter">
+                        <i class="fa fa-fw fa-bars"></i>菜单
+                    </button>
                     <div class="input-group-prepend">
-                        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#menuModalCenter">菜单</button>
-                    </div>
-                    <div class="input-group-prepend">
-                        <select class="custom-select custom-select-sm" id="seti">
+                        <select class="from-control" id="seti">
                             <option value="">（选择数据库）</option>
                         </select>
                     </div>
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" data-reference="parent" title="数据库连接记录及模版">
-                        <span class="sr-only"></span>
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle-split" data-toggle="dropdown" data-reference="parent" title="数据库连接记录及模版">
+                        <i class="fa fa-fw fa-caret-down"></i>
                     </button>
-                    <input type="text" id="txtConn" class="form-control form-control-sm" placeholder="数据库连接字符串，本地记录，后台不记录">
-                    <div class="dropdown-menu dropdown-menu-right border-info dmbox" id="dmbox"></div>
+                    <input type="text" id="txtConn" class="form-control" placeholder="数据库连接字符串，本地记录，后台不记录" autocomplete="off" maxlength="300">
+                    <div class="dropdown-menu dropdown-menu-right border-info dmbox" id="dmConn"></div>
                     <div class="input-group-prepend">
-                        <button class="btn btn-sm btn-light" id="btnToggleSHconn" title="隐藏/显示 连接字符串">✱</button>
+                        <button class="btn btn-light" id="btnToggleSHconn" title="隐藏/显示 连接字符串">
+                            <i class="fa fa-fw fa-eye"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+
+            <!--表-->
             <div class="col-lg-4 dkn-table">
-                <div class="my-2 btn-toolbar">
-                    <div class="btn-group btn-group-sm mr-2">
-                        <button class="btn btn-sm btn-success" id="btnQueryTable">加载表</button>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">导出表</button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportTableForExcel">Excel</a>
-                                <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportTableForJson">Json</a>
-                            </div>
-                        </div>
-                        <button class="btn btn-light btn-sm mgbtn" id="btnMaxGridTable" title="放大/缩小 表格">✤</button>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" id="txtSearchTable" placeholder="搜索" />
-                        </div>
+
+                <div class="btn-group btn-group-sm my-2">
+                    <button type="button" class="btn btn-secondary dropdown-toggle-split" data-toggle="dropdown">
+                        <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportTableForExcel">
+                            <i class="fa fa-fw fa-file-excel-o"></i>导出表（Excel）
+                        </a>
+                        <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportTableForJson">
+                            <i class="fa fa-fw fa-file-text"></i>导出表（JSON）
+                        </a>
                     </div>
-                    <div class="spinner-border spinner-border-sm d-none mt-2" id="sb1"></div>
+                    <button class="btn btn-success dkn-queryTable" id="btnQueryTable">
+                        <i class="fa fa-fw fa-refresh"></i>加载表
+                    </button>
+                    <button class="btn btn-light mgbtn" id="btnMaxGridTable" title="放大/缩小 表格">
+                        <i class="fa fa-fw fa-arrows-alt"></i>
+                    </button>
+                    <div class="input-group-prepend">
+                        <input class="form-control form-control-sm" id="txtSearchTable" placeholder="搜索" />
+                    </div>
                 </div>
+
                 <div id="PGrid1">
                     <div id="Grid1"></div>
                 </div>
             </div>
+
+            <!--列-->
             <div class="col-lg-8 dkn-column">
-                <div class="row my-2">
-                    <div class="col-5">
-                        <div class="btn-group btn-group-sm mr-2">
-                            <button class="btn btn-sm btn-success" id="btnQueryColumn">加载列</button>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">导出列</button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportColumnForExcel">Excel</a>
-                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportColumnForJson">Json</a>
-                                </div>
-                            </div>
-                            <button class="btn btn-light mgbtn" id="btnMaxGridColumn" title="放大/缩小 表格">✤</button>
-                        </div>
-                        <div class="spinner-border spinner-border-sm d-none mt-1" id="sb2"></div>
+
+                <div class="btn-group btn-group-sm my-2">
+                    <button type="button" class="btn btn-secondary dropdown-toggle-split" data-toggle="dropdown">
+                        <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportColumnForExcel">
+                            <i class="fa fa-fw fa-file-excel-o"></i>导出列（Excel）
+                        </a>
+                        <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportColumnForJson">
+                            <i class="fa fa-fw fa-file-text"></i>导出列（JSON）
+                        </a>
+                        <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportColumnForMd">
+                            <i class="fa fa-fw fa-file-text-o"></i>导出列（Markdown）
+                        </a>
                     </div>
-                    <div class="col-4">
-                        <input type="text" class="form-control form-control-sm w-100" id="txtBuild" placeholder="请选择构建模版">
-                    </div>
-                    <div class="col">
-                        <div class="btn-group btn-group-sm mr-2">
-                            <button class="btn btn-sm btn-warning" title="构建语言模版并直接下载" id="btnBuild">生成</button>
-                            <button class="btn btn-sm btn-secondary" title="调试语言模版" id="btnDebug">调试</button>
-                            <button class="btn btn-sm btn-primary" title="拓展语言模版，自定义构建" id="btnExtendJs">拓展</button>
+                    <button class="btn btn-success dkn-queryColumn" id="btnQueryColumn">
+                        <i class="fa fa-fw fa-refresh"></i>加载列
+                    </button>
+                    <button class="btn btn-light mgbtn" id="btnMaxGridColumn" title="放大/缩小 表格">
+                        <i class="fa fa-fw fa-arrows-alt"></i>
+                    </button>
+
+                    <div class="btn-group btn-group-sm">
+                        <div style="width:320px">
+                            <input type="text" class="form-control" id="txtBuild" placeholder="请选择构建模版">
                         </div>
+                        <button class="btn btn-info" title="构建语言模版并直接下载" id="btnBuild">
+                            <i class="fa fa-fw fa-forward"></i>生成
+                        </button>
+                        <button class="btn btn-warning" title="调试语言模版" id="btnDebug">
+                            <i class="fa fa-fw fa-play"></i>调试
+                        </button>
+                        <button class="btn btn-primary" title="拓展语言模版，自定义构建" id="btnExtendJs">
+                            <i class="fa fa-fw fa-plug"></i>拓展
+                        </button>
                     </div>
                 </div>
+
                 <div id="PGrid2">
                     <div id="Grid2"></div>
                 </div>
@@ -185,31 +239,31 @@
 
     <!--菜单-->
     <div class="modal fade" id="menuModalCenter">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">菜单</h5>
+                    <h5 class="modal-title">
+                        <i class="fa fa-fw fa-bars"></i>菜单
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <h5>✌ 设置服务接口</h5>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" id="txtDkApi" placeholder="填写自动生效">
-                        </div>
-                        <small class="form-text text-muted">
-                            当前接口 <a target="_blank" id="aapi" href="/swagger"></a>，可设置为自己部署的接口服务
-                        </small>
+                    <div class="input-group input-group-sm">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle-split" data-toggle="dropdown" data-reference="parent">
+                            <i class="fa fa-fw fa-server"></i>设置服务接口<i class="fa fa-fw fa-caret-down"></i>
+                        </button>
+                        <input type="text" id="txtDkApi" class="form-control" placeholder="新增服务接口地址，空格添加备注，回车">
+                        <div class="dropdown-menu dropdown-menu-right border-info dmbox" id="dmDkApi"></div>
                     </div>
-                    <div class="form-group">
-                        <h5>✌ 说明</h5>
-                        <ul>
-                            <li>项目源码：<a target="_blank" href="https://github.com/netnr/np">https://github.com/netnr/np</a></li>
-                            <li>数据库连接字符串仅保存浏览器本地，后台不做记录，请放心使用；或者可以自己部署服务</li>
-                        </ul>
-                    </div>
+                    <p class="form-text text-muted">当前接口 <a target="_blank" id="aapi" href="/swagger"></a></p>
+                    <hr />
+                    <h5><i class="fa fa-fw fa-flag"></i>说明</h5>
+                    <ul>
+                        <li>项目源码：<a target="_blank" href="https://github.com/netnr/np">https://github.com/netnr/np</a></li>
+                        <li>数据库连接字符串仅保存浏览器本地，后台不做记录，请放心使用；或者可以自己部署服务</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -220,26 +274,31 @@
         <div class="modal-dialog modal-full">
             <div class="modal-content">
                 <div class="modal-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-4">
-                            <input class="form-control form-control-sm" type="text" id="txtBuildDebug" placeholder="请选择语言模版" />
-                        </div>
-                        <div class="col-sm-4">
-                            <button type="button" class="btn btn-sm btn-success" id="btnRunDebug">运行</button>
-                            <button type="button" class="btn btn-sm btn-warning" id="btnSaveDebug">保存</button>
-                            <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">关闭</button>
-                        </div>
-                        <div class="col-sm-4">
-                            <select class="custom-select custom-select-sm" id="seDebugLg">
-                                <optgroup label="输出的语言"></optgroup>
-                            </select>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-sm-6">
+                            <div class="btn-group btn-group-sm mb-2">
+                                <div style="width:320px">
+                                    <input class="form-control" type="text" id="txtBuildDebug" placeholder="请选择语言模版" />
+                                </div>
+                                <button type="button" class="btn btn-success" id="btnRunDebug">
+                                    <i class="fa fa-fw fa-play"></i>运行
+                                </button>
+                                <button type="button" class="btn btn-warning" id="btnSaveDebug">
+                                    <i class="fa fa-fw fa-save"></i>保存
+                                </button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                    <i class="fa fa-fw fa-close"></i>关闭
+                                </button>
+                            </div>
+
                             <div class="border" id="txtDebugJs"></div>
                         </div>
                         <div class="col-sm-6">
+                            <div class="btn-group btn-group-sm mb-2">
+                                <select class="custom-select custom-select-sm" id="seDebugLg">
+                                    <optgroup label="输出的语言"></optgroup>
+                                </select>
+                            </div>
                             <div class="border" id="txtDebugLg"></div>
                         </div>
                     </div>
@@ -257,11 +316,17 @@
                         <div class="col-sm-12 mb-1">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <button class="btn btn-sm btn-success" id="btnExtendLoadDemo">加载示例</button>
+                                    <button class="btn btn-sm btn-success" id="btnExtendLoadDemo">
+                                        <i class="fa fa-fw fa-file-code-o"></i>加载示例
+                                    </button>
                                 </div>
                                 <div class="input-group-prepend">
-                                    <button class="btn btn-sm btn-warning" id="btnExtendIn">注入</button>
-                                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">关闭</button>
+                                    <button class="btn btn-sm btn-warning" id="btnExtendIn">
+                                        <i class="fa fa-fw fa-plug"></i>注入
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">
+                                        <i class="fa fa-fw fa-remove"></i>关闭
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -281,16 +346,29 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-12 mb-1">
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">导出</button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportDataForTitle">Excel（注释为标题）</a>
-                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportDataForField">Excel（字段为标题）</a>
-                                    <a class="dropdown-item py-1" href="javascript:void(0);" id="btnExportDataForJson">Json</a>
-                                </div>
+                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle-split" data-toggle="dropdown">
+                                <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForField">
+                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（字段 为标题）
+                                </a>
+                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForTitle">
+                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释 为标题）
+                                </a>
+                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForFieldTitle">
+                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释:注释 为标题）
+                                </a>
+                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForJson">
+                                    <i class="fa fa-fw fa-file-text"></i>导出 JSON
+                                </a>
                             </div>
-                            <button type="button" class="btn btn-sm btn-danger float-right" data-dismiss="modal">关闭</button>
-                            <div class="spinner-border spinner-border-sm d-none mt-1" id="sb3"></div>
+                            <div class="spinner-border spinner-border-sm invisible mt-1 dkn-queryDataWait"></div>
+
+                            <button type="button" class="btn btn-sm btn-danger float-right" data-dismiss="modal">
+                                <i class="fa fa-fw fa-close"></i>关闭
+                            </button>
+                            <small class="float-right text-muted mt-2 mr-4 dkn-queryDataUseTime"></small>
                         </div>
                         <div class="col-sm-12">
                             <div id="PGrid3">
@@ -318,7 +396,7 @@
                     <textarea class="form-control h150"></textarea>
                 </div>
                 <div class="modal-footer">
-                    <div class="spinner-border spinner-border-sm d-none" id="sb4"></div>
+                    <div class="spinner-border invisible dkn-updateCommentWait"></div>
                     <button type="button" class="btn btn-light" data-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary" id="btnSaveComment">确定</button>
                 </div>
@@ -331,7 +409,9 @@
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">消息</h5>
+                    <h5 class="modal-title">
+                        <i class="fa fa-fw fa-exclamation"></i>消息
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -358,9 +438,13 @@
                 { istemplate: true, type: "PostgreSQL", conn: "Host=【IP】;Port=【端口】;Username=【账号】;Password=【密码】;Database=【数据库名】;" }
             ],
             //默认服务接口
-            dapi: location.origin,
-            //接口详情
-            apiDetail: {
+            dapi: [
+                { istemplate: true, host: "https://free-dk.zme.ink", remark: "免费的 .NET Core 服务" },
+                { istemplate: true, host: "https://free-dk.herokuapp.com", remark: "免费的 NodeJS 服务，不支持 Oracle" },
+                { istemplate: true, host: location.origin, remark: "当前" }
+            ],
+            //接口地址
+            apiPath: {
                 GetTable: "/DK/GetTable",
                 GetColumn: "/DK/GetColumn",
                 SetTableComment: "/DK/SetTableComment",
@@ -369,6 +453,8 @@
             },
             //接口头部参数（如：{ Authorization: "token" }）
             apiHeaders: null,
+            //localStorage
+            ls: null,
             //缓存
             dc: {
                 //当前数据库
@@ -404,34 +490,119 @@
              * 初始化 */
             init: function () {
 
+                //是否支持
+                if (!localStorage) {
+                    document.body.innerHTML = '<div style="text-align:center;padding:10px;">不支持您的浏览器（请换 Chrome、Firefox）</div>';
+                    return false;
+                }
+
+                //读取本地配置
+                try {
+                    var lsdk = localStorage.getItem('DK');
+                    dk.ls = lsdk ? JSON.parse(lsdk) : {};
+                } catch (e) {
+                    dk.ls = {};
+                    dk.lsSave();
+                }
+
+                //渲染服务接口
+                dk.viewApiHost();
+
+                //新增服务接口
+                $('#txtDkApi').on('keydown', function (e) {
+                    var na = this.value;
+                    if (e.keyCode == 13 && na != "") {
+                        var ah = dk.lsArr('apiHost');
+                        var nas = na.split(' ');
+                        if (!ah.filter(x => x.host == nas[0]).length) {
+                            ah.push({ host: nas[0], remark: nas[1] })
+                            dk.ls["apiHost"] = ah;
+                            dk.lsSave();
+                            dk.viewApiHost();
+                            this.value = "";
+                        }
+                    }
+                })
+
+                //选择服务接口
+                $('#dmDkApi').click(function (e) {
+                    e = e || window.event;
+                    var target = e.target || e.srcElement;
+                    //删除
+                    if (target.nodeName == "EM") {
+                        var di = $(target).parent().parent();
+                        var ah = dk.lsArr('apiHost');
+                        for (var i = ah.length - 1; i >= 0; i--) {
+                            if (ah[i].host == di.attr('data-host')) {
+                                ah.splice(i, 1);
+                                dk.ls["apiHost"] = ah;
+                                dk.lsSave();
+                                break;
+                            }
+                        }
+                        di.remove();
+
+                        dk.stopEvent(e);
+                    } else {
+                        var di;
+                        $(this).children().each(function () {
+                            if (this.contains(target)) {
+                                di = this;
+                                return false;
+                            }
+                        })
+                        //选择
+                        if (di) {
+                            dk.api = di.getAttribute('data-host');
+                            var ahosts = dk.dapi.concat(dk.lsArr('apiHost'));
+                            var ahs = dk.lsObj('apiHostSelected');
+                            for (var i = 0; i < ahosts.length; i++) {
+                                if (ahosts[i].host == dk.api) {
+                                    ahs = dk.api;
+                                    dk.ls["apiHostSelected"] = ahs;
+                                    dk.lsSave();
+                                    break;
+                                }
+                            }
+                            dk.viewApiHost();
+                        }
+                    }
+                });
+
                 //数据库类型列表
                 for (var i = 0; i < dk.tdb.length; i++) {
                     $('#seti').append('<option value="' + i + '">' + dk.tdb[i] + '</option>');
                 }
 
                 //添加测试数据库
-                dk.addConn("MySQL", "Data Source=den1.mysql5.gear.host;User Id=rfmysql;Password=Vr8a474!nW4!;Database=rfmysql;");
-                dk.addConn("SQLServer", "Server=den1.mssql7.gear.host;uid=rfmssql;pwd=Cj24-GXLO9-H;database=rfmssql;");
-                dk.addConn("PostgreSQL", "Host=satao.db.elephantsql.com;Username=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;");
+                dk.addDbConn("MySQL", "Data Source=den1.mysql5.gear.host;User Id=rfmysql;Password=Vr8a474!nW4!;Database=rfmysql;");
+                dk.addDbConn("SQLServer", "Server=den1.mssql7.gear.host;uid=rfmssql;pwd=Cj24-GXLO9-H;database=rfmssql;");
+                dk.addDbConn("PostgreSQL", "Host=satao.db.elephantsql.com;Username=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;");
+                dk.addDbConn("SQLite", "Data Source=https://static.netnr.com/2020/05/22/2037505934.db");
 
                 //渲染本地连接记录
                 dk.viewConn();
 
                 //选择本地连接
-                $('#dmbox').click(function (e) {
+                $('#dmConn').click(function (e) {
                     e = e || window.event;
                     var target = e.target || e.srcElement;
                     //删除
                     if (target.nodeName == "EM") {
                         var di = $(target).parent().parent();
-                        dk.delConn(di.attr('data-type'), di.attr('data-conn'));
+
+                        var lsdc = dk.lsArr('dbConn');
+                        for (var i = lsdc.length - 1; i >= 0; i--) {
+                            if (lsdc[i].type == di.attr('data-type') && lsdc[i].conn == di.attr('data-conn')) {
+                                lsdc.splice(i, 1);
+                                dk.ls["dbConn"] = lsdc;
+                                dk.lsSave();
+                                break;
+                            }
+                        }
                         di.remove();
 
-                        if (e.stopPropagation) {
-                            e.stopPropagation()
-                        } else {
-                            e.cancelBubble = true
-                        }
+                        dk.stopEvent(e);
                     } else {
                         var di;
                         $(this).children().each(function () {
@@ -444,17 +615,25 @@
                         if (di) {
                             $('#seti').val(dk.tdb.indexOf(di.getAttribute('data-type')));
                             $('#txtConn').val(di.getAttribute('data-conn'));
+
+                            //有效连接，直接加载表
+                            if (di.getAttribute('data-valid')) {
+                                $('#btnQueryTable')[0].click();
+                            }
                         }
                     }
                 });
 
                 //显示/隐藏 连接字符串
                 $('#btnToggleSHconn').click(function () {
+                    var icon = $(this).children();
                     var tc = $('#txtConn');
                     if (tc.hasClass('hidetxt')) {
-                        tc.removeClass('hidetxt')
+                        tc.removeClass('hidetxt');
+                        icon.removeClass('fa-eye-slash').addClass('fa-eye');
                     } else {
-                        tc.addClass('hidetxt')
+                        tc.addClass('hidetxt');
+                        icon.removeClass('fa-eye').addClass('fa-eye-slash');
                     }
                 });
 
@@ -493,6 +672,7 @@
                 $('#btnExportTableForExcel').click(function () {
                     dk.exportGrid({
                         id: "#Grid1",
+                        headerType: 2,
                         filename: "table.xlsx"
                     })
                 });
@@ -511,6 +691,7 @@
                 $('#btnExportColumnForExcel').click(function () {
                     dk.exportGrid({
                         id: "#Grid2",
+                        headerType: 2,
                         filename: "column.xlsx"
                     })
                 });
@@ -525,18 +706,35 @@
                     }
                 });
 
-                //导出数据 Excel（注释为标题）
-                $('#btnExportDataForTitle').click(function () {
-                    dk.exportGrid({
-                        id: "#Grid3",
-                        filename: "data_" + dk.dc.dataWhere.table + ".xlsx"
+                //导出列 Markdown
+                $('#btnExportColumnForMd').click(function () {
+                    dk.exportMd({
+                        id: "#Grid2",
+                        filename: "column.md"
                     })
                 });
+
                 //导出数据 Excel（字段为标题）
                 $('#btnExportDataForField').click(function () {
                     dk.exportGrid({
                         id: "#Grid3",
-                        fieldHeader: true,
+                        headerType: 1,
+                        filename: "data_" + dk.dc.dataWhere.table + ".xlsx"
+                    })
+                });
+                //导出数据 Excel（注释为标题）
+                $('#btnExportDataForTitle').click(function () {
+                    dk.exportGrid({
+                        id: "#Grid3",
+                        headerType: 2,
+                        filename: "data_" + dk.dc.dataWhere.table + ".xlsx"
+                    })
+                });
+                //导出数据 Excel（字段:注释为标题）
+                $('#btnExportDataForFieldTitle').click(function () {
+                    dk.exportGrid({
+                        id: "#Grid3",
+                        headerType: 3,
                         filename: "data_" + dk.dc.dataWhere.table + ".xlsx"
                     })
                 });
@@ -876,29 +1074,15 @@
                         dk.dc.dataWhere.order = "asc";
 
                         $('#dataModalCenter').modal();
-                        $('#PGrid3').html('<div id="Grid3"></div>');
+                        //加载空表
+                        dk.dc.dataWhere.result = { data: [], total: 0 };
+                        dk.viewData();
 
                         dk.loadData(function () {
                             dk.viewData();
                         })
                     }
                 });
-
-                //设置服务接口
-                $('#txtDkApi').on('input', function () {
-                    dk.api = this.value == "" ? dk.dapi : this.value;
-                })
-                //服务接口对象监听
-                Object.defineProperty(dk, 'api', {
-                    get: function () {
-                        return api;
-                    },
-                    set: function (val) {
-                        api = val;
-                        $('#aapi').attr('href', api + '/swagger').html(api);
-                    }
-                })
-                dk.api = dk.dapi;
 
                 //汉化
                 if ($.fn.pagination) {
@@ -913,6 +1097,59 @@
                 $(window).on('hashchange', function () {
                     dk.runJsFromHash();
                 });
+            },
+
+            /**
+             * ls保存 */
+            lsSave: function () {
+                localStorage.setItem('DK', JSON.stringify(dk.ls));
+            },
+
+            /**
+             * 数组排序
+             * @param arr 数组
+             * @param key 排序属性名
+             */
+            arrSort: function (arr, key) {
+                key = key || "order";
+                arr.sort(function (a, b) {
+                    if (a[key] > b[key]) {
+                        return 1
+                    } else if (a[key] < b[key]) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                })
+                return arr;
+            },
+
+            /**
+             * 获取ls数组
+             * @param key 键
+             */
+            lsArr: function (key) {
+                return dk.ls[key] = dk.ls[key] || [];
+            },
+
+            /**
+             * 获取ls对象
+             * @param key 键
+             */
+            lsObj: function (key) {
+                return dk.ls[key] = dk.ls[key] || {};
+            },
+
+            /**
+             * 阻止冒泡
+             * @param e
+             */
+            stopEvent: function (e) {
+                if (e && e.stopPropagation) {
+                    e.stopPropagation()
+                } else {
+                    window.event.cancelBubble = true
+                }
             },
 
             /**
@@ -931,6 +1168,83 @@
                 } catch (e) {
                     console.error(e);
                 }
+            },
+
+            /**
+             * 渲染服务接口列表 */
+            viewApiHost: function () {
+                var ahosts = dk.dapi.concat(dk.arrSort(dk.lsArr('apiHost')));
+                var ahs = dk.lsObj('apiHostSelected');
+
+                var dm = $('#dmDkApi').empty();
+                //头部宽度
+                var bw = 94;
+
+                ahosts.forEach(x => {
+                    var ca = document.createElement('a');
+                    ca.href = "javascript:void(0)";
+                    ca.className = "dropdown-item small py-2";
+                    ca.setAttribute('data-host', x.host);
+
+                    //启用的服务接口
+                    if (x.host == ahs) {
+                        dk.api = x.host;
+                    }
+
+                    var cat = document.createElement('b');
+                    cat.style.cssText = "width:" + bw + "px;text-align:right;float:left;margin-right:15px";
+
+                    if (x.istemplate) {
+                        cat.innerHTML = '示例服务';
+                    } else {
+                        cat.innerHTML = '<em class="float-left" title="删除">✖</em>';
+                    }
+                    ca.appendChild(cat);
+
+                    var cac = document.createElement('span');
+                    cac.style.cssText = "margin-left:8px";
+                    cac.innerText = x.host + (x.remark ? "（" + x.remark + "）" : "");
+                    ca.appendChild(cac);
+
+                    dm.append(ca);
+                })
+                //默认第一个服务接口
+                if (dk.api == null) {
+                    dk.api = ahosts[0].host;
+                }
+
+                //选择标记
+                dm.find('[data-host="' + dk.api + '"]').find('span').append($('<i class="ml-3" title="启用">✔</i>'));
+
+                //显示服务接口地址
+                $('#aapi').html(dk.api)[0].href = dk.api + "/swagger";
+            },
+
+            /**
+             * 新增数据库连接字符串
+             * @param type 类型
+             * @param conn 连接字符串
+             */
+            addDbConn: function (type, conn) {
+                var lsdc = dk.lsArr('dbConn');
+
+                if (!lsdc.filter(x => x.type == type && x.conn == conn).length) {
+                    lsdc.push({ type, conn });
+                    dk.ls["dbConn"] = lsdc;
+                    dk.lsSave();
+
+                    dk.viewConn();
+                }
+            },
+
+            /**
+             * 保存数据库连接字符串 */
+            saveDbConn: function () {
+                var type = dk.tdb[parseInt($('#seti').val())];
+                var conn = $('#txtConn').val();
+
+                dk.addDbConn(type, conn);
+                dk.viewConn();
             },
 
             /**
@@ -965,8 +1279,8 @@
             loadTable: function (fn) {
                 var tc = dk.getTC();
                 if (tc.err.length == 0) {
-                    $('#sb1').removeClass('d-none');
-                    var url = dk.api + dk.apiDetail.GetTable;
+                    $('.dkn-queryTable').find('i').addClass('fa-spin');
+                    var url = dk.api + dk.apiPath.GetTable;
                     $.ajax({
                         url: url,
                         data: tc,
@@ -976,8 +1290,7 @@
                             if (data.code == 200) {
                                 //记录到本地
                                 if (!dk.dc.backConn) {
-                                    dk.addConn(dk.tdb[parseInt($('#seti').val())], $('#txtConn').val());
-                                    dk.viewConn();
+                                    dk.saveDbConn();
                                 }
 
                                 dk.dc.dbi = tc.tdb;
@@ -991,7 +1304,7 @@
                             dk.msgError(url)
                         },
                         complete: function () {
-                            $('#sb1').addClass('d-none');
+                            $('.dkn-queryTable').find('i').removeClass('fa-spin');
                         }
                     })
                 }
@@ -1007,9 +1320,9 @@
                 if (tc.err.length == 0) {
                     tc.filterTableName = ftn;
 
-                    $('#sb2').removeClass('d-none');
+                    $('.dkn-queryColumn').find('i').addClass('fa-spin');
 
-                    var url = dk.api + dk.apiDetail.GetColumn;
+                    var url = dk.api + dk.apiPath.GetColumn;
                     $.ajax({
                         url: url,
                         data: tc,
@@ -1020,8 +1333,7 @@
                             if (data.code == 200) {
                                 //记录到本地
                                 if (!dk.dc.backConn) {
-                                    dk.addConn(dk.tdb[parseInt($('#seti').val())], $('#txtConn').val());
-                                    dk.viewConn();
+                                    dk.saveDbConn();
                                 }
 
                                 dk.dc.dbi = tc.tdb;
@@ -1035,7 +1347,7 @@
                             dk.msgError(url, 'POST');
                         },
                         complete: function () {
-                            $('#sb2').addClass('d-none');
+                            $('.dkn-queryColumn').find('i').removeClass('fa-spin');
                         }
                     })
                 }
@@ -1056,17 +1368,21 @@
                     tc.order = dk.dc.dataWhere.order || "asc";
                     tc.listFieldName = dk.dc.dataWhere.fields.join(',');
 
-                    $('#sb3').removeClass('d-none');
+                    $('.dkn-queryDataWait').removeClass('invisible').addClass('visible');
                     try { $('#Grid3').datagrid("loading") } catch (e) { }
-                    var url = dk.api + dk.apiDetail.GetData;
+                    var url = dk.api + dk.apiPath.GetData;
                     $.ajax({
-                        url: dk.api + dk.apiDetail.GetData,
+                        url: url,
                         data: tc,
                         dataType: 'json',
                         headers: dk.apiHeaders,
                         success: function (data) {
                             if (data.code == 200) {
                                 dk.dc.dataWhere.result = data.data;
+
+                                //查询耗时
+                                $('.dkn-queryDataUseTime').html('time：' + data.useTime + ' ms');
+
                                 fn();
                             } else {
                                 dk.msg(data.msg);
@@ -1076,7 +1392,7 @@
                             dk.msgError(url)
                         },
                         complete: function () {
-                            $('#sb3').addClass('d-none');
+                            $('.dkn-queryDataWait').removeClass('visible').addClass('invisible');
                         }
                     })
                 }
@@ -1112,13 +1428,13 @@
                     columns: [[
                         { field: "ck", checkbox: true },
                         { field: "TableName", title: "表名", width: isaw ? null : 200 },
-                        { field: "TableComment", title: "表注释", width: isaw ? null : 320 }
+                        { field: "TableComment", title: "注释", width: isaw ? null : 320 }
                     ]],
                     rownumbers: true,
                     rownumberWidth: 40,
                     autoRowHeight: false,
                     onDblClickCell: function (index, field) {
-                        if (field == "TableComment") {
+                        if (field == "TableComment" && dk.dc.dbi != "1") {
                             var row = $('#Grid1').datagrid('getRows')[index];
                             dk.dc.row = row;
                             dk.dc.rowIndex = index;
@@ -1140,14 +1456,13 @@
                 var cols = [
                     { field: "ck", checkbox: true },
                     { field: "TableName", title: "表名", hidden: true, width: 200 },
-                    { field: "TableComment", title: "表注释", hidden: true, width: 200 },
-                    { field: "FieldName", title: "表字段", width: 150 },
+                    { field: "FieldName", title: "字段", width: 150 },
                     { field: "DataType", title: "类型", width: 100 },
                     { field: "DataLength", title: "长度", halign: "center", align: "center", width: 90 },
                     { field: "DataScale", title: "精度", halign: "center", align: "center", width: 50 },
                     { field: "FieldOrder", title: "排序", halign: "center", align: "center", width: 50 },
-                    { field: "PrimaryKey", title: "是主键", halign: "center", align: "center", width: 60 },
-                    { field: "AutoAdd", title: "是自增", halign: "center", align: "center", width: 60 },
+                    { field: "PrimaryKey", title: "主键", halign: "center", align: "center", width: 60 },
+                    { field: "AutoAdd", title: "自增", halign: "center", align: "center", width: 60 },
                     { field: "NotNull", title: "不为空", halign: "center", align: "center", width: 60 },
                     { field: "DefaultValue", title: "默认值", halign: "center", align: "center", width: 80 },
                     { field: "FieldComment", title: "注释", width: 420 }
@@ -1168,13 +1483,13 @@
                         var row = rows[0];
                         var htm = [];
                         htm.push('<input type="checkbox" class="gfck" />');
-                        htm.push(row["TableName"] + ' ❤ ');
+                        htm.push(row["TableName"] + '<i class="fa fa-fw fa-heart text-danger mx-2"> </i>');
                         htm.push('<input type="button" class="btn btn-sm btn-secondary p-0 mr-2 gfqd" style="vertical-align:initial" title="可选列，默认所有列（ * ）" value=" 查询数据 " />');
                         htm.push(row["TableComment"] || '');
                         return htm.join('');
                     },
                     onDblClickCell: function (index, field) {
-                        if (field == "FieldComment") {
+                        if (field == "FieldComment" && dk.dc.dbi != "1") {
                             var row = $('#Grid2').datagrid('getRows')[index];
                             dk.dc.row = row;
                             dk.dc.rowIndex = index;
@@ -1344,8 +1659,13 @@
                 dgo.columns[0].forEach(col => {
                     if (!col.checkbox && !col.hidden) {
                         colfield.push(col.field);
+                        var hd = col.field;
+                        switch (ops.headerType) {
+                            case 2: hd = col.title; break;
+                            case 3: hd = col.field + ":" + col.title; break;
+                        }
                         heads.push({
-                            header: ops.fieldHeader ? col.field : col.title, key: col.field, width: col.width / 7, style: {
+                            header: hd, key: col.field, width: col.width / 7, style: {
                                 alignment: { vertical: 'middle', horizontal: col.align }
                             }
                         })
@@ -1370,9 +1690,9 @@
                     //分组
                     if (dgo.showGroup) {
                         if (cr == null || x[dgo.groupField] != cr[dgo.groupField]) {
-                            rows.push([$('<div>' + dgo.groupFormatter('', [cr || x]) + '</div>').text()]);
-                            sgi.push(rows.length + 1);
                             cr = x;
+                            rows.push([$('<div>' + dgo.groupFormatter('', [cr]) + '</div>').text()]);
+                            sgi.push(rows.length + 1);
                         }
                     }
                     for (var i in x) {
@@ -1427,6 +1747,39 @@
             },
 
             /**
+             * 导出Markdown
+             * @param ops 参数对象
+             */
+            exportMd: function (ops) {
+                var rowDatas = $(ops.id).datagrid('getSelections'),
+                    dgo = $(ops.id).datagrid('options'), tablemd = [], cr;
+                for (var i = 0; i < rowDatas.length; i++) {
+                    var x = rowDatas[i];
+                    if (cr == null || x[dgo.groupField] != cr[dgo.groupField]) {
+                        if (i > 0) {
+                            tablemd.push('');
+                            tablemd.push('---');
+                            tablemd.push('');
+                        }
+
+                        cr = x;
+                        tablemd.push('### ' + cr[dgo.groupField]);
+                        tablemd.push('');
+                        if (cr.TableComment) {
+                            tablemd.push(cr.TableComment.split('\n').join('</br>').replace(/\[/g, '\\[').replace(/\(/g, '\\('));
+                            tablemd.push('');
+                        }
+                        tablemd.push('|字段|类型|主键|自增|不为空|默认值|注释|');
+                        tablemd.push('|----|----|:-----:|:-----:|:-----:|:-----:|-----|');
+                    }
+                    tablemd.push('|' + x.FieldName + ' |' + x.DataTypeLength + ' |' + (x.PrimaryKey || "") + ' |' + (x.AutoAdd || "") + ' |' + (x.NotNull || "") + ' |' + (x.DefaultValue || "") + ' |' + (x.FieldComment || "").split('\n').join('</br>').replace(/\[/g, '\\[').replace(/\(/g, '\\(') + ' |');
+                }
+                var code = tablemd.join('\n');
+                var blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+                saveAs(blob, ops.filename);
+            },
+
+            /**
              * 消息提示
              * @param msg 消息
              */
@@ -1448,6 +1801,7 @@
                 mmc.children().removeClass('modal-sm').removeClass('modal-lg').addClass(ms);
                 mmc.find('.modal-body').html(msg);
                 mmc.modal();
+                return mmc;
             },
 
             /**
@@ -1460,74 +1814,14 @@
             },
 
             /**
-             * 从本地获取连接记录 */
-            getConn: function () {
-                var dkc = [];
-                try {
-                    dkc = JSON.parse(localStorage.getItem('DKC')) || [];
-                    dkc.sort(function (a, b) {
-                        if (a.type > b.type) {
-                            return 1
-                        } else if (a.type < b.type) {
-                            return -1;
-                        } else {
-                            return 0;
-                        }
-                    })
-                } catch (e) { }
-                return dkc;
-            },
-
-            /**
-             * 添加连接记录到本地
-             * @param type 数据库类型
-             * @param conn 连接字符串
-             */
-            addConn: function (type, conn) {
-                var dkc = [];
-                try {
-                    dkc = JSON.parse(localStorage.getItem('DKC')) || [];
-                } catch (e) { }
-                var has = false;
-                dkc.forEach(x => {
-                    if (x.type == type && x.conn == conn) {
-                        has = true;
-                    }
-                });
-                if (!has) {
-                    dkc.push({ type, conn });
-                    localStorage.setItem('DKC', JSON.stringify(dkc));
-                }
-            },
-
-            /**
-             * 从本地删除连接记录
-             * @param type 数据库类型
-             * @param conn 连接字符串
-             */
-            delConn: function (type, conn) {
-                var dkc = [];
-                try {
-                    dkc = JSON.parse(localStorage.getItem('DKC')) || [];
-                } catch (e) { }
-                for (var i = dkc.length - 1; i >= 0; i--) {
-                    var ci = dkc[i];
-                    if (ci.type == type && ci.conn == conn) {
-                        dkc.splice(i, 1);
-                    }
-                }
-                localStorage.setItem('DKC', JSON.stringify(dkc));
-            },
-
-            /**
              * 渲染连接记录 */
             viewConn: function () {
-                var tc = $('#txtConn');
                 //头部宽度
-                var bw = tc.parent().width() - tc.outerWidth() - 48 + 8;
+                var bw = 200;
 
-                var dm = $('#dmbox').empty();
-                var gc = dk.getConn() || [];
+                var dm = $('#dmConn').empty();
+
+                var gc = dk.arrSort(dk.lsArr('dbConn'), 'type');
                 gc = gc.concat(dk.connTemplate);
                 gc.forEach(x => {
                     if (x.type && x.conn) {
@@ -1543,6 +1837,7 @@
                         if (x.istemplate) {
                             cat.innerHTML = x.type + ' 模版';
                         } else {
+                            ca.setAttribute('data-valid', "1");
                             cat.innerHTML = '<em class="float-left" title="删除">✖</em> ' + x.type;
                         }
                         ca.appendChild(cat);
@@ -1723,6 +2018,7 @@
              */
             setTableComment: function (row, TableComment) {
                 var tc = dk.getTC();
+
                 if (tc.err.length == 0) {
                     if (dk.dc.requestActive) {
                         dk.msg('请等待处理结果的返回')
@@ -1733,9 +2029,9 @@
                     tc.TableName = row.TableName;
                     tc.TableComment = TableComment;
 
-                    $('#sb4').removeClass('d-none');
+                    $('.dkn-updateCommentWait').removeClass('invisible').addClass('visible');
 
-                    var url = dk.api + dk.apiDetail.SetTableComment;
+                    var url = dk.api + dk.apiPath.SetTableComment;
                     $.ajax({
                         url: url,
                         data: tc,
@@ -1757,7 +2053,7 @@
                         },
                         complete: function () {
                             dk.dc.requestActive = null;
-                            $('#sb4').addClass('d-none');
+                            $('.dkn-updateCommentWait').removeClass('visible').addClass('invisible');
                         }
                     })
                 }
@@ -1770,6 +2066,7 @@
              */
             setColumnComment: function (row, FieldComment) {
                 var tc = dk.getTC();
+
                 if (tc.err.length == 0) {
                     if (dk.dc.requestActive) {
                         dk.msg('请等待处理结果的返回')
@@ -1781,9 +2078,9 @@
                     tc.FieldName = row.FieldName;
                     tc.FieldComment = FieldComment;
 
-                    $('#sb4').removeClass('d-none');
+                    $('.dkn-updateCommentWait').removeClass('invisible').addClass('visible');
 
-                    var url = dk.api + dk.apiDetail.SetColumnComment;
+                    var url = dk.api + dk.apiPath.SetColumnComment;
                     $.ajax({
                         url: url,
                         data: tc,
@@ -1805,7 +2102,7 @@
                         },
                         complete: function () {
                             dk.dc.requestActive = null;
-                            $('#sb4').addClass('d-none');
+                            $('.dkn-updateCommentWait').removeClass('visible').addClass('invisible');
                         }
                     })
                 }
@@ -2358,7 +2655,7 @@
                     java: {
 
                         //实体
-                        "model-comment": "实体【未完成，等你来】",
+                        "model-comment": "实体",
                         model: function am(pa) {
 
                             //参数默认值
@@ -2440,7 +2737,7 @@
                     php: {
 
                         //实体
-                        "model-comment": "实体【未完成，等你来】",
+                        "model-comment": "实体",
                         model: function am(pa) {
 
                             //参数默认值

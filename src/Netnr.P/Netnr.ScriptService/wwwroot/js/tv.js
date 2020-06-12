@@ -7,7 +7,8 @@
             url: "/lib/m3u/tv.m3u",
             success: function (data) {
                 var ds = data.split('#EXTINF:-1'), sehtm = [];
-                ds.forEach(d => {
+                $.each(ds, function () {
+                    var d = this;
                     var matchm3u8 = /http(.*).m3u8/i.exec(d);
                     var namem3u8 = /,(.*)/.exec(d)
 

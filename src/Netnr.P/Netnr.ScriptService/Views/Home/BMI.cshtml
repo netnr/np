@@ -57,7 +57,10 @@
 </div>
 
 <script>
-    ['txt1', 'txt2'].forEach(id => {
+
+    var ids = ['txt1', 'txt2'];
+    for (var i = 0; i < ids.length; i++) {
+        var id = ids[i];
         document.getElementById(id).oninput = function () {
             var kg = document.getElementById('txt1').value,
                 m = document.getElementById('txt2').value;
@@ -78,11 +81,11 @@
                 if (bmi < 18.5) {
                     bgc = 'dark';
                 }
-                bgc = 'bg-' + bgc;
+                bgc = 'text-white bg-' + bgc;
             }
             var t3 = document.getElementById('txt3');
             t3.value = bmi;
             t3.className = 'form-control ' + bgc;
         }
-    })
+    }
 </script>

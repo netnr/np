@@ -162,7 +162,7 @@ $('#btnbox').click(function (e) {
 function InsertTemplateMd(md) {
     var docstop = $(document).scrollTop();
     $.ajax({
-        url: "/areas/doc/template/" + md + ".md?v1",
+        url: "/areas/doc/template/" + md + ".md?v2",
         success: function (data) {
             netnrmd.insertAfterText(nmd.obj.me, data);
         },

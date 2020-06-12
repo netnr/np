@@ -71,7 +71,8 @@ function loadOSinfo() {
             htm.push('<tr>');
             htm.push('<td>磁盘</td>');
             htm.push('<td>');
-            data.LogicalDisk.forEach(diskitem => {
+            $.each(data.LogicalDisk, function () {
+                var diskitem = this;
                 p1 = (diskitem.FreeSpace / 1024 / 1024 / 1024).toFixed(0);
                 p2 = (diskitem.Size / 1024 / 1024 / 1024).toFixed(0);
                 p3 = ((p2 - p1) / p2 * 100).toFixed(0);

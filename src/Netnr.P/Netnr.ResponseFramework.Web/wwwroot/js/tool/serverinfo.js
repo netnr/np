@@ -62,7 +62,9 @@ function loadOSinfo() {
             htm.push('<tr>');
             htm.push('<td>磁盘</td>');
             htm.push('<td>');
-            data.LogicalDisk.forEach(diskitem => {
+
+            $.each(data.LogicalDisk, function () {
+                var diskitem = this;
                 if (diskitem.Size > diskitem.FreeSpace && diskitem.Size >= 1024 * 1024) {
                     var dw = 'MB';
                     p1 = diskitem.Size - diskitem.FreeSpace;
@@ -81,7 +83,7 @@ function loadOSinfo() {
                     dn = dn.length > 20 ? dn.substring(0, 20) + "..." : dn;
                     htm.push(pp + '<div>' + dn + ' &nbsp; ' + p1.toFixed(0) + ' / ' + p2.toFixed(0) + ' ' + dw + '</div>');
                 }
-            });
+            })
             htm.push('</td>');
             htm.push('</tr>');
 

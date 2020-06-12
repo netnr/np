@@ -460,3 +460,23 @@ body {
         transform: rotate(360deg);
     }
 }
+
+/* Monaco Editor Full */
+.me-full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 9999;
+}
+
+.me-full-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    color: #777;
+    z-index: 201;
+    cursor: pointer;
+    font-size: 1.2em;
+}

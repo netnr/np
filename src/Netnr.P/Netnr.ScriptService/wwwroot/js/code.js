@@ -97,10 +97,10 @@ box.click(function (e) {
 
             case "GUID":
                 $.ajax({
-                    url: "https://helloacm.com/api/guid-generator/?n=16",
+                    url: "https://www.netnr.com/api/v1/api81?count=16",
                     dataType: 'json',
                     success: function (data) {
-                        t2.val(data.guid.join('\r\n'));
+                        t2.val(data.data.join('\r\n'));
                     },
                     error: function () {
                         t2.val('生成GUID失败');
