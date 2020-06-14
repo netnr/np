@@ -13,7 +13,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// </summary>
     [ResponseCache(Duration = 3)]
     [Route("[controller]/[action]")]
-    [Filters.FilterConfigs.AllowCors]
     public class DKController : Controller
     {
         public ContextBase db;
@@ -35,15 +34,72 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 return Content("不支持内存数据库，请切换其它数据库");
             }
 
-            var uinfo = Application.CommonService.GetLoginUserInfo(HttpContext);
-            ViewData["token"] = Application.CommonService.TokenMake(uinfo);
-
             if (Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out TypeDB tdb))
             {
                 ViewData["dbi"] = (int)tdb;
             }
 
             return View();
+        }
+
+        /// <summary>
+        /// Netnr.DataKit UI
+        /// </summary>
+        /// <returns></returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IActionResult UI()
+        {
+            var dkui = GlobalTo.GetValue("DataKitUI");
+
+            string crContent;
+            try
+            {
+                //非完整路径，相对项目路径，即 UI 静态页面放置到项目资源目录下
+                if (!dkui.StartsWith("http"))
+                {
+                    var currHost = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                    if (dkui.StartsWith("/") && currHost.EndsWith("/"))
+                    {
+                        currHost = currHost.TrimEnd('/');
+                    }
+                    dkui = currHost + dkui;
+                }
+
+                //优先取缓存
+                var cacheDkui = Core.CacheTo.Get("DataKitUI") as string;
+                if (string.IsNullOrWhiteSpace(cacheDkui))
+                {
+                    crContent = Core.HttpTo.Get(dkui);
+                    Core.CacheTo.Set("DataKitUI", crContent);
+                }
+                else
+                {
+                    crContent = cacheDkui;
+
+                    System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+                    {
+                        try
+                        {
+                            Core.CacheTo.Set("DataKitUI", Core.HttpTo.Get(dkui));
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    });
+                }                
+            }
+            catch (Exception ex)
+            {
+                crContent = "请求 UI 地址异常，错误信息：" + ex.Message;
+            }
+
+            return new ContentResult()
+            {
+                StatusCode = 200,
+                ContentType = "text/html",
+                Content = crContent
+            };
         }
 
         #region DK API
@@ -171,16 +227,17 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="sort">排序字段</param>
         /// <param name="order">排序方式</param>
         /// <param name="listFieldName">查询列，默认为 *</param>
+        /// <param name="whereSql">条件</param>
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
         [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName)
+        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
         {
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = new DataKitUseService().GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName);
+                vm = new DataKitUseService().GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
             }
             return vm;
         }
@@ -229,7 +286,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 //追加
                 case 1:
                     {
-
                         var listField = db.SysTableConfig
                             .Where(x => hasTableName.Contains(x.TableName))
                             .Select(x => new { x.TableName, x.ColField }).ToList();
@@ -242,6 +298,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                         }
                     }
                     break;
+
                 //覆盖
                 case 2:
                     {

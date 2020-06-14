@@ -34,7 +34,7 @@ namespace Netnr.DataKit.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        public ActionResultVM GetColumn([FromForm]TypeDB? tdb, [FromForm]string conn, [FromForm]string filterTableName = "")
+        public ActionResultVM GetColumn([FromForm] TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
         {
             var vm = new DataKitUseService().GetColumn(tdb, conn, filterTableName);
             return vm;
@@ -84,12 +84,13 @@ namespace Netnr.DataKit.Web.Controllers
         /// <param name="sort">排序字段</param>
         /// <param name="order">排序方式</param>
         /// <param name="listFieldName">查询列，默认为 *</param>
+        /// <param name="whereSql">条件</param>
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
-        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName)
+        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
         {
-            var vm = new DataKitUseService().GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName);
+            var vm = new DataKitUseService().GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
             return vm;
         }
     }

@@ -1,23 +1,23 @@
-﻿ss.bmob.init();
+﻿ss.bmobInit();
 var mg = {
     page: 1,
     pageNumber: 999,
     bquery: Bmob.Query("NetnrMessage"),
     messageObjectSave: function () { return new mg.MessageObject() },
     list: function () {
-        loading();
+        ss.loading();
         var query = mg.bquery;
         query.limit(mg.pageNumber);
         query.skip((mg.page - 1) * mg.pageNumber);
         query.find().then(res => {
-            loading(0);
+            ss.loading(0);
             var htm = [];
             $(res).each(function (i) {
                 var id = 'mi' + (i + 1);
                 htm.push('<li class="media" id="' + id + '">');
                 htm.push('<a href="#' + id + '"><img class="mr-3" src="/images/photo.svg"></a>');
-                htm.push('<div class="media-body"><h6 class="mt-0 mb-2">' + htmlEncode(this.UserNickname) + '<small class="ml-3">' + this.createdAt + '</small></h6>');
-                htm.push('<pre class="bg-light border py-2 px-2 small">' + htmlEncode(this.Content) + '</pre></div></li>');
+                htm.push('<div class="media-body"><h6 class="mt-0 mb-2">' + ss.htmlEncode(this.UserNickname) + '<small class="ml-3">' + this.createdAt + '</small></h6>');
+                htm.push('<pre class="bg-light border py-2 px-2 small">' + ss.htmlEncode(this.Content) + '</pre></div></li>');
             });
             if (htm.length) {
                 $('#messagelist').html(htm.join(''));
@@ -27,7 +27,7 @@ var mg = {
         }).catch(err => {
             jz.alert("查询失败");
             console.log(err);
-            loading(0);
+            ss.loading(0);
         })
     }
 }
@@ -55,15 +55,14 @@ $('#btnSave').click(function () {
             jz.msg("操作成功");
             uc.val('');
             mg.list();
-            localStorage["message_nickname"] = objv.UserNickname;
+            ss.ls["nickname"] = objv.UserNickname;
+            ss.lsSave();
         }).catch(err => {
             jz.alert("查询失败");
             console.log(err);
-            loading(0);
+            ss.loading(0);
         });
     }
 });
 
-if (localStorage["message_nickname"]) {
-    $('input[name="UserNickname"]').val(localStorage["message_nickname"]);
-}
+$('input[name="UserNickname"]').val(ss.lsStr("nickname"));

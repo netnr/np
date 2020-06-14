@@ -84,7 +84,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Application.DataKitMySQLService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.Int32@)">
+        <member name="M:Netnr.DataKit.Application.DataKitMySQLService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
             <summary>
             查询数据
             </summary>
@@ -94,6 +94,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <param name="total">返回总条数</param>
             <returns></returns>
         </member>
@@ -172,7 +173,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Application.DataKitOracleService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.Int32@)">
+        <member name="M:Netnr.DataKit.Application.DataKitOracleService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
             <summary>
             查询数据
             </summary>
@@ -182,6 +183,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <param name="total">返回总条数</param>
             <returns></returns>
         </member>
@@ -260,7 +262,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Application.DataKitPostgreSQLService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.Int32@)">
+        <member name="M:Netnr.DataKit.Application.DataKitPostgreSQLService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
             <summary>
             查询数据
             </summary>
@@ -270,6 +272,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <param name="total">返回总条数</param>
             <returns></returns>
         </member>
@@ -331,7 +334,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Application.DataKitSQLiteService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.Int32@)">
+        <member name="M:Netnr.DataKit.Application.DataKitSQLiteService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
             <summary>
             查询数据
             </summary>
@@ -341,6 +344,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <param name="total">返回总条数</param>
             <returns></returns>
         </member>
@@ -419,7 +423,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Application.DataKitSQLServerService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.Int32@)">
+        <member name="M:Netnr.DataKit.Application.DataKitSQLServerService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
             <summary>
             查询数据
             </summary>
@@ -429,6 +433,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <param name="total">返回总条数</param>
             <returns></returns>
         </member>
@@ -482,7 +487,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Application.DataKitUseService.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String)">
+        <member name="M:Netnr.DataKit.Application.DataKitUseService.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
             <summary>
             查询数据
             </summary>
@@ -494,6 +499,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.DataKit.Application.DataKitUseService.SHA128ToLong(System.String)">
@@ -538,7 +544,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Application.IDataKitService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.Int32@)">
+        <member name="M:Netnr.DataKit.Application.IDataKitService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
             <summary>
             查询数据
             </summary>
@@ -548,6 +554,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <param name="total">返回总条数</param>
             <returns></returns>
         </member>

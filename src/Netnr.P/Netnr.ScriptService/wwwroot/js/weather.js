@@ -21,7 +21,7 @@
 //请求天气预报信息
 QueryWeather(101040100);
 function QueryWeather(cityCode) {
-    loading();
+    ss.loading();
     ss.ajax({
         url: "http://wthrcdn.etouch.cn/weather_mini?citykey=" + cityCode,
         dataType: "json",
@@ -54,11 +54,11 @@ function QueryWeather(cityCode) {
             }
         },
         error: function () {
-            loading(0);
+            ss.loading(0);
             jz.msg("网络错误");
         },
         complete: function () {
-            loading(0);
+            ss.loading(0);
         }
     });
 }

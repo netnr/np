@@ -72,8 +72,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             db.SysTableConfig.UpdateRange(listRow);
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;
@@ -111,8 +111,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             db.SysTableConfig.UpdateRange(listRow);
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;

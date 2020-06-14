@@ -103,7 +103,8 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                                 x.DsdTitle,
                                 x.DsdContentHtml,
                                 x.DsdCreateTime,
-                                x.DsdUpdateTime
+                                x.DsdUpdateTime,
+                                x.DsdOrder
                             }).FirstOrDefault();
 
                         if (queryView != null)
@@ -112,6 +113,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                             vm.DsdContentHtml = queryView.DsdContentHtml;
                             vm.DsdCreateTime = queryView.DsdCreateTime;
                             vm.DsdUpdateTime = queryView.DsdUpdateTime;
+                            vm.DsdOrder = queryView.DsdOrder;
                         }
                     }
                 }

@@ -217,6 +217,14 @@ module.exports = {
             listFieldName = '"' + listFieldName.split(',').join('","') + '"';
         }
 
+        var whereSql = dk.pars.whereSql;
+        if (dk.isNullOrWhiteSpace(whereSql)) {
+            whereSql = "";
+        }
+        else {
+            whereSql = "WHERE " + whereSql;
+        }
+
         var TableName = '"' + dk.pars.TableName + '"';
         var sort = '"' + dk.pars.sort + '"';
         var order = ((dk.pars.order || "") + "").toLowerCase() == "desc" ? "desc" : "asc";
@@ -227,7 +235,7 @@ module.exports = {
                     SELECT
                         ` + listFieldName + `
                     FROM
-                        ` + TableName + `
+                        ` + TableName + ` ` + whereSql + `
                     ORDER BY
                         ` + sort + ` ` + order + `
                     LIMIT
@@ -235,7 +243,7 @@ module.exports = {
 
         var cmds = [];
         cmds.push(cmd);
-        cmds.push(`select count(1) as total from ` + TableName);
+        cmds.push(`select count(1) as total from ` + TableName + ` ` + whereSql);
 
         return this.QueryData(dk, cmds);
     }

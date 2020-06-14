@@ -202,21 +202,27 @@ namespace Netnr.DataKit.Application
         /// <param name="sort">排序字段</param>
         /// <param name="order">排序方式</param>
         /// <param name="listFieldName">查询列，默认为 *</param>
+        /// <param name="whereSql">条件</param>
         /// <param name="total">返回总条数</param>
         /// <returns></returns>
-        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, out int total)
+        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, out int total)
         {
-            var sql = @"
-                        SELECT
-                            " + listFieldName + @"
-                        FROM
-                            " + TableName + @"
-                        ORDER BY
-                            " + sort + " " + order + @"
-                        LIMIT
-                            " + (page - 1) * rows + "," + rows;
+            if (string.IsNullOrWhiteSpace(whereSql))
+            {
+                whereSql = "";
+            }
+            else
+            {
+                whereSql = "WHERE " + whereSql;
+            }
 
-            sql += ";select count(1) as total from " + TableName;
+            var sql = $@"
+                        SELECT {listFieldName}
+                        FROM {TableName} {whereSql}
+                        ORDER BY {sort} {order}
+                        LIMIT {(page - 1) * rows},{rows}";
+
+            sql += $";select count(1) as total from {TableName} {whereSql}";
 
             var ds = new Data.MySQL.MySQLHelper(connectionString).Query(sql);
 

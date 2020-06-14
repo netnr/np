@@ -20,46 +20,30 @@
     </style>
 </head>
 <body>
+    <partial name="_QuotePartial" model="@("loading")" />
+
     <!--UI-->
-    <iframe src="https://ss.netnr.com/dk" scrolling="no"></iframe>
+    <iframe src="/dk/ui" scrolling="no"></iframe>
 
     <!-- 扩展脚本 -->
     <script data-dk="true">
         if (window.dk) {
-            dk.dc.loadingMask = dk.msg('正在加载扩展 . . .');
-
             $('.dkn-menu').hide();
 
-            //修改默认接口
-            dk.api = '{{location.origin}}';
+            dk.api = location.origin;
 
             //接口地址
             dk.apiPath["QueryTableConfig"] = "/DK/QueryTableConfig";
             dk.apiPath["SaveTableConfig"] = "/DK/SaveTableConfig";
-
-            //全局设置头部授权信息
-            dk.apiHeaders = { Authorization: '@ViewData["token"]' };
 
             //设定为后台数据库连接信息
             dk.dc.backConn = true;
             //默认数据库
             $('#seti').val('@ViewData["dbi"]');
             $('#btnQueryTable').addClass('d-none');
-        }
-    </script>
 
-    <script data-dk="true">
-        if (window.dk) {
             //载入文件注入
-            $.ajax({
-                url: '{{location.origin}}/js/tool/dk_ext.js',
-                success: function (js) {
-                    $.globalEval(js);
-                },
-                error: function () {
-                    dk.msg("载入文件注入失败");
-                }
-            })
+            $.getScript('/js/dk/dk_ext.js');
         }
     </script>
 
@@ -76,6 +60,11 @@
                 //加载扩展
                 dke.iframe.onload = function () {
                     dke.runScript();
+
+                    //隐藏加载
+                    setTimeout(function () {
+                        document.getElementById("LoadingMask").style.display = "none";
+                    }, 500);
                 }
             },
 

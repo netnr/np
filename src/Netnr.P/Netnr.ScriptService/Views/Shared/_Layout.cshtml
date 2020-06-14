@@ -1,5 +1,5 @@
 ﻿@{
-    var mj = Netnr.Extend.ToJObject(System.IO.File.ReadAllText(GlobalTo.WebRootPath + "/js/data/favorite.json"));
+    var mj = Netnr.Extend.ToJArray(System.IO.File.ReadAllText(GlobalTo.WebRootPath + "/js/data/favorite.json"));
     string title = string.Empty;
     string remark = string.Empty;
     string icon = "/favicon.svg";
@@ -10,7 +10,7 @@
     }
     else
     {
-        foreach (var gi in mj["links"])
+        foreach (var gi in mj)
         {
             foreach (Newtonsoft.Json.Linq.JToken jt in gi["items"])
             {
@@ -39,13 +39,13 @@ endfor: TempData["Title"] = title;
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>@(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(TempData["Title"].ToString())) NET牛人</title>
-    <meta name="keywords" content="netnr,NET牛人,@(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(title))" />
-    <meta name="description" content="netnr,NET牛人,@(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(remark))" />
+    <title>@Html.Raw(TempData["Title"]) NET牛人</title>
+    <meta name="keywords" content="netnr,NET牛人,@Html.Raw(title)" />
+    <meta name="description" content="netnr,NET牛人,@Html.Raw(remark)" />
 
 </head>
 <body>
-    <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js")" />
+    <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js")" />
 
     <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
 
@@ -95,6 +95,6 @@ endfor: TempData["Title"] = title;
         @RenderBody()
     </div>
 
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+    <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>

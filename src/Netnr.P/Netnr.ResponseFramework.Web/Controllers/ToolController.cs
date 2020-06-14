@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Netnr.ResponseFramework.Web.Controllers

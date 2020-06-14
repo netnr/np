@@ -1,0 +1,39 @@
+﻿<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group input-group-lg">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">长度</span>
+                </div>
+                <div class="input-group-prepend">
+                    <input class="form-control form-control-lg nrLen" title="长度" type="number" name="name" value="16" min="1" max="99" step="1" />
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning nrGk">刷新</button>
+                </div>
+                <input type="text" class="form-control nrRcv">
+            </div>
+            <div class="my-3 clearfix">
+                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
+                    <input type="checkbox" class="custom-control-input" id="chkUpper" value="A" checked>
+                    <label class="custom-control-label" for="chkUpper">ABC</label>
+                </div>
+                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
+                    <input type="checkbox" class="custom-control-input" id="chkLower" value="a" checked>
+                    <label class="custom-control-label" for="chkLower">abc</label>
+                </div>
+                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
+                    <input type="checkbox" class="custom-control-input" id="chkNumber" value="0" checked>
+                    <label class="custom-control-label" for="chkNumber">123</label>
+                </div>
+                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
+                    <input type="checkbox" class="custom-control-input" id="chkSymbol" value="!" checked>
+                    <label class="custom-control-label" for="chkSymbol">!@@#</label>
+                </div>
+                <input class="form-control form-control-sm float-left nrExclude" title="排除" placeholder="排除字符，如：0oOiIlL1" style="width:initial" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/randomcode.js" asp-append-version="true"></script>

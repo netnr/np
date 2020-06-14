@@ -22,8 +22,10 @@
     <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui/1.9.0/jquery.easyui.min.js"></script>
     <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
 
-    <script src="https://code.bdstatic.com/npm/exceljs@3.6.0/dist/exceljs.min.js"></script>
-    <script src="https://code.bdstatic.com/npm/jszip@3.2.2/dist/jszip.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/@babel/polyfill@7.10.1/dist/polyfill.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/exceljs@3.9.0/dist/exceljs.min.js"></script>
+
+    <script src="https://code.bdstatic.com/npm/jszip@3.4.0/dist/jszip.min.js"></script>
     <script src="https://code.bdstatic.com/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
 
     <script src="https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs/loader.js"></script>
@@ -53,8 +55,8 @@
         /* Bootstrap Ext */
         .modal-full {
             width: auto;
+            max-width: none;
             margin: 8px 8px 0;
-            max-width: initial;
         }
 
         .modal-open .modal {
@@ -216,17 +218,22 @@
 
                     <div class="btn-group btn-group-sm">
                         <div style="width:320px">
-                            <input type="text" class="form-control" id="txtBuild" placeholder="请选择构建模版">
+                            <input type="text" class="form-control form-control-sm" id="txtBuild" placeholder="请选择构建模版">
                         </div>
-                        <button class="btn btn-info" title="构建语言模版并直接下载" id="btnBuild">
-                            <i class="fa fa-fw fa-forward"></i>生成
+                        <button type="button" class="btn btn-secondary dropdown-toggle-split" data-toggle="dropdown">
+                            <i class="fa fa-fw fa-caret-down"></i>
                         </button>
-                        <button class="btn btn-warning" title="调试语言模版" id="btnDebug">
-                            <i class="fa fa-fw fa-play"></i>调试
-                        </button>
-                        <button class="btn btn-primary" title="拓展语言模版，自定义构建" id="btnExtendJs">
-                            <i class="fa fa-fw fa-plug"></i>拓展
-                        </button>
+                        <div class="dropdown-menu" style="min-width:5em">
+                            <a class="dropdown-item p-2 text-info" href="javascript:void(0);" title="构建语言模版并直接下载" id="btnBuild">
+                                <i class="fa fa-fw fa-forward"></i>生成
+                            </a>
+                            <a class="dropdown-item p-2 text-warning" href="javascript:void(0);" title="调试语言模版" id="btnDebug">
+                                <i class="fa fa-fw fa-play"></i>调试
+                            </a>
+                            <a class="dropdown-item p-2 text-primary" href="javascript:void(0);" title="拓展语言模版，自定义构建" id="btnExtendJs">
+                                <i class="fa fa-fw fa-plug"></i>拓展
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -255,7 +262,7 @@
                             <i class="fa fa-fw fa-server"></i>设置服务接口<i class="fa fa-fw fa-caret-down"></i>
                         </button>
                         <input type="text" id="txtDkApi" class="form-control" placeholder="新增服务接口地址，空格添加备注，回车">
-                        <div class="dropdown-menu dropdown-menu-right border-info dmbox" id="dmDkApi"></div>
+                        <div class="dropdown-menu border-info dmbox" id="dmDkApi"></div>
                     </div>
                     <p class="form-text text-muted">当前接口 <a target="_blank" id="aapi" href="/swagger"></a></p>
                     <hr />
@@ -346,24 +353,32 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-12 mb-1">
-                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle-split" data-toggle="dropdown">
-                                <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForField">
-                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（字段 为标题）
-                                </a>
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForTitle">
-                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释 为标题）
-                                </a>
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForFieldTitle">
-                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释:注释 为标题）
-                                </a>
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForJson">
-                                    <i class="fa fa-fw fa-file-text"></i>导出 JSON
-                                </a>
+
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-secondary dropdown-toggle-split" data-toggle="dropdown">
+                                    <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForField">
+                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（字段 为标题）
+                                    </a>
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForTitle">
+                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释 为标题）
+                                    </a>
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForFieldTitle">
+                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释:注释 为标题）
+                                    </a>
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForJson">
+                                        <i class="fa fa-fw fa-file-text"></i>导出 JSON
+                                    </a>
+                                </div>
+                                <div class="input-group-prepend">
+                                    <input class="form-control form-control-sm dkn-queryDataWhereSql" placeholder="条件 SQL" maxlength="500">
+                                </div>
+                                <button class="btn btn-success dkn-loadFilterData">
+                                    <i class="fa fa-fw fa-refresh"></i>过滤
+                                </button>
                             </div>
-                            <div class="spinner-border spinner-border-sm invisible mt-1 dkn-queryDataWait"></div>
 
                             <button type="button" class="btn btn-sm btn-danger float-right" data-dismiss="modal">
                                 <i class="fa fa-fw fa-close"></i>关闭
@@ -514,7 +529,7 @@
                     if (e.keyCode == 13 && na != "") {
                         var ah = dk.lsArr('apiHost');
                         var nas = na.split(' ');
-                        if (!ah.filter(x => x.host == nas[0]).length) {
+                        if (!$(ah).filter(function () { return this.host == nas[0] }).length) {
                             ah.push({ host: nas[0], remark: nas[1] })
                             dk.ls["apiHost"] = ah;
                             dk.lsSave();
@@ -657,7 +672,9 @@
                     if (rowDatas.length) {
                         var arrTable = [];
                         if (dk.dc.table.data.length != rowDatas.length) {
-                            rowDatas.forEach(x => arrTable.push(x.TableName));
+                            $.each(rowDatas, function () {
+                                arrTable.push(this.TableName)
+                            });
                         }
 
                         dk.loadColumn(arrTable.join(','), function () {
@@ -783,8 +800,8 @@
                             //输出结果
                             var arro = [];
 
-                            tbv.forEach(tv => {
-                                var vis = tv.split('/');
+                            $.each(tbv, function () {
+                                var vis = this.split('/');
 
                                 //构建参数
                                 var pa = dk.build.pa();
@@ -842,7 +859,9 @@
                         $('#btnRunDebug')[0].click();
                     } else {
                         require(['vs/editor/editor.main'], function () {
-                            var modesIds = monaco.languages.getLanguages().map(function (lang) { return lang.id }).sort();
+                            var modesIds = $.map(monaco.languages.getLanguages(), function (lang) {
+                                return lang.id
+                            }).sort();
 
                             //输出语言
                             var languagehtm = [];
@@ -994,14 +1013,11 @@
                 //加载示例
                 $('#btnExtendLoadDemo').click(function () {
                     var uri = 'https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/netnr-datakit-extension/0.0.1/demo.js';
-                    fetch(uri).then(x => x.text()).then(res => {
-                        dk.dc.EditorExtendJs.setValue(res);
-                    }).catch(_ => {
-                        fetch('https://cors.zme.ink/' + uri).then(x => x.text()).then(res => {
+                    $.ajax({
+                        url: uri,
+                        success: function (res) {
                             dk.dc.EditorExtendJs.setValue(res);
-                        }).catch(_ => {
-                            dk.msg('加载失败');
-                        })
+                        }
                     })
                 });
 
@@ -1072,12 +1088,28 @@
                         dk.dc.dataWhere.column = column2.length > 0 ? column2 : column1;
                         dk.dc.dataWhere.sort = sort;
                         dk.dc.dataWhere.order = "asc";
+                        $('.dkn-queryDataWhereSql').val('');
 
                         $('#dataModalCenter').modal();
                         //加载空表
                         dk.dc.dataWhere.result = { data: [], total: 0 };
                         dk.viewData();
 
+                        dk.loadData(function () {
+                            dk.viewData();
+                        })
+                    }
+                });
+
+                //查询数据条件过滤
+                $('.dkn-loadFilterData').click(function () {
+                    dk.loadData(function () {
+                        dk.viewData();
+                    })
+                });
+                $('.dkn-queryDataWhereSql').keydown(function (e) {
+                    e = e || window.event;
+                    if (e.keyCode == 13) {
                         dk.loadData(function () {
                             dk.viewData();
                         })
@@ -1180,7 +1212,9 @@
                 //头部宽度
                 var bw = 94;
 
-                ahosts.forEach(x => {
+                $.each(ahosts, function () {
+                    var x = this;
+
                     var ca = document.createElement('a');
                     ca.href = "javascript:void(0)";
                     ca.className = "dropdown-item small py-2";
@@ -1208,9 +1242,19 @@
 
                     dm.append(ca);
                 })
-                //默认第一个服务接口
+                //默认服务接口
                 if (dk.api == null) {
-                    dk.api = ahosts[0].host;
+                    var dhost = ahosts[0].host;
+                    //本地默认当前接口
+                    if (location.hostname == "localhost") {
+                        $.each(ahosts, function () {
+                            if (this.remark == "当前") {
+                                dhost = this.host;
+                                return false;
+                            }
+                        })
+                    }
+                    dk.api = dhost;
                 }
 
                 //选择标记
@@ -1228,8 +1272,8 @@
             addDbConn: function (type, conn) {
                 var lsdc = dk.lsArr('dbConn');
 
-                if (!lsdc.filter(x => x.type == type && x.conn == conn).length) {
-                    lsdc.push({ type, conn });
+                if (!$(lsdc).filter(function () { return this.type == type && this.conn == conn }).length) {
+                    lsdc.push({ type: type, conn: conn });
                     dk.ls["dbConn"] = lsdc;
                     dk.lsSave();
 
@@ -1367,8 +1411,9 @@
                     tc.sort = dk.dc.dataWhere.sort;
                     tc.order = dk.dc.dataWhere.order || "asc";
                     tc.listFieldName = dk.dc.dataWhere.fields.join(',');
+                    tc.whereSql = $('.dkn-queryDataWhereSql').val();
 
-                    $('.dkn-queryDataWait').removeClass('invisible').addClass('visible');
+                    $('.dkn-loadFilterData').children('i').addClass('fa-spin');
                     try { $('#Grid3').datagrid("loading") } catch (e) { }
                     var url = dk.api + dk.apiPath.GetData;
                     $.ajax({
@@ -1392,7 +1437,7 @@
                             dk.msgError(url)
                         },
                         complete: function () {
-                            $('.dkn-queryDataWait').removeClass('visible').addClass('invisible');
+                            $('.dkn-loadFilterData').children('i').removeClass('fa-spin');
                         }
                     })
                 }
@@ -1468,7 +1513,9 @@
                     { field: "FieldComment", title: "注释", width: 420 }
                 ];
                 if ((dk.dc.column.data || []).length <= dk.dc.autoWidthRow) {
-                    cols.forEach(c => (delete c.width));
+                    $.each(cols, function () {
+                        delete this.width
+                    })
                 }
 
                 $('#Grid2').datagrid({
@@ -1514,7 +1561,9 @@
             viewData: function () {
 
                 var cols = [{ field: "ck", checkbox: true }];
-                dk.dc.dataWhere.column.forEach(oi => {
+                $.each(dk.dc.dataWhere.column, function () {
+                    var oi = this;
+
                     cols.push({
                         field: oi.FieldName,
                         title: oi.FieldComment || oi.FieldName,
@@ -1656,7 +1705,9 @@
 
                 //填充头部;
                 var heads = [], colfield = [], dgo = $(ops.id).datagrid('options');
-                dgo.columns[0].forEach(col => {
+                $.each(dgo.columns[0], function () {
+                    var col = this;
+
                     if (!col.checkbox && !col.hidden) {
                         colfield.push(col.field);
                         var hd = col.field;
@@ -1685,8 +1736,8 @@
 
                 //填充数据行
                 var rows = [], sgi = [], cr;
-                rowDatas.forEach(x => {
-                    var row = [];
+                $.each(rowDatas, function () {
+                    var x = this, row = [];
                     //分组
                     if (dgo.showGroup) {
                         if (cr == null || x[dgo.groupField] != cr[dgo.groupField]) {
@@ -1713,7 +1764,8 @@
                 }
 
                 //分组行合并
-                sgi.forEach(si => {
+                $.each(sgi, function () {
+                    var si = this;
                     worksheet.mergeCells('A' + si + ':' + dk.excelColumnIndexAsLetter(colfield.length - 1) + si);
                     worksheet.getCell('A' + si).fill = {
                         type: 'pattern',
@@ -1765,10 +1817,8 @@
                         cr = x;
                         tablemd.push('### ' + cr[dgo.groupField]);
                         tablemd.push('');
-                        if (cr.TableComment) {
-                            tablemd.push(cr.TableComment.split('\n').join('</br>').replace(/\[/g, '\\[').replace(/\(/g, '\\('));
-                            tablemd.push('');
-                        }
+                        tablemd.push((cr.TableComment || "").split('\n').join('</br>').replace(/\[/g, '\\[').replace(/\(/g, '\\('));
+                        tablemd.push('');
                         tablemd.push('|字段|类型|主键|自增|不为空|默认值|注释|');
                         tablemd.push('|----|----|:-----:|:-----:|:-----:|:-----:|-----|');
                     }
@@ -1823,7 +1873,8 @@
 
                 var gc = dk.arrSort(dk.lsArr('dbConn'), 'type');
                 gc = gc.concat(dk.connTemplate);
-                gc.forEach(x => {
+                $.each(gc, function () {
+                    var x = this;
                     if (x.type && x.conn) {
                         var ca = document.createElement('a');
                         ca.href = "javascript:void(0)";
@@ -2040,7 +2091,7 @@
                         success: function (data) {
                             if (data.code == 200) {
                                 $('#Grid1').datagrid("updateRow", {
-                                    index: dk.dc.rowIndex, row: { TableComment }
+                                    index: dk.dc.rowIndex, row: { TableComment: TableComment }
                                 });
 
                                 $('#commentModalCenter').modal('hide');
@@ -2090,7 +2141,7 @@
                             if (data.code == 200) {
                                 $('#Grid2').datagrid('updateRow', {
                                     index: dk.dc.rowIndex,
-                                    row: { FieldComment }
+                                    row: { FieldComment: FieldComment }
                                 });
                                 $('#commentModalCenter').modal('hide');
                             } else {
@@ -2269,8 +2320,8 @@
                                 //类注释
                                 if (pa.comment) {
                                     ts.push('\t' + '/// <summary>');
-                                    (rs[0].TableComment || "").split('\n').forEach(tc => {
-                                        ts.push('\t' + '/// ' + tc);
+                                    $.each((rs[0].TableComment || "").split('\n'), function () {
+                                        ts.push('\t' + '/// ' + this);
                                     });
                                     ts.push('\t' + '/// </summary>');
                                 }
@@ -2285,8 +2336,8 @@
                                     //项注释
                                     if (pa.comment) {
                                         ts.push('\t\t' + '/// <summary>');
-                                        (ri.FieldComment || "").split('\n').forEach(fc => {
-                                            ts.push('\t\t' + '/// ' + fc);
+                                        $.each((ri.FieldComment || "").split('\n'), function () {
+                                            ts.push('\t\t' + '/// ' + this);
                                         });
                                         ts.push('\t\t' + '/// </summary>');
                                     }
@@ -2383,8 +2434,8 @@
                                 //类注释
                                 if (pa.comment) {
                                     ts.push('\t' + '/// <summary>');
-                                    (rs[0].TableComment || "").split('\n').forEach(tc => {
-                                        ts.push('\t' + '/// ' + tc);
+                                    $.each((rs[0].TableComment || "").split('\n'), function () {
+                                        ts.push('\t' + '/// ' + this);
                                     });
                                     ts.push('\t' + '/// </summary>');
                                 }
@@ -2404,7 +2455,7 @@
                                     var ri = rs[i];
                                     fields.push(ri.FieldName);
                                     var dbm = dk.build.typeMapping.csharp[tdbname];
-                                    ri.omi = dbm.filter(x => x.db.toLowerCase() == ri.DataType.toLowerCase())[0] || {};
+                                    ri.omi = $(dbm).filter(function () { return this.db.toLowerCase() == ri.DataType.toLowerCase() })[0] || {};
                                     if (ri.PrimaryKey == "YES") {
                                         pkcolumn = ri;
                                     }
@@ -2681,8 +2732,8 @@
                                 //类注释
                                 if (pa.comment) {
                                     ts.push('/**');
-                                    (rs[0].TableComment || "").split('\n').forEach(tc => {
-                                        ts.push(' * ' + tc);
+                                    $.each((rs[0].TableComment || "").split('\n'), function () {
+                                        ts.push(' * ' + this);
                                     });
                                     ts.push(' */');
                                 }
@@ -2696,8 +2747,8 @@
                                     //项注释
                                     if (pa.comment) {
                                         ts.push('\t' + '/**');
-                                        (ri.FieldComment || "").split('\n').forEach(fc => {
-                                            ts.push('\t' + ' * ' + fc);
+                                        $.each((ri.FieldComment || "").split('\n'), function () {
+                                            ts.push('\t' + ' * ' + this);
                                         });
                                         ts.push('\t' + ' */');
                                     }

@@ -24,9 +24,11 @@
             <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
             <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+            <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
+            <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
 
 
-    <link href="/css/global.css?v=jX4aC16PbVBajgFqmZiFWZXgNe9blHpS4ZMZF70KRFw" rel="stylesheet" />
+    <link href="/css/global.css?v=cAuqwHf0JYDQbhk83hHZ_7lN1X2l2n1-Ltac1NR5iqM" rel="stylesheet" />
 
         <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
             <span class="fa fa-align-justify fa-2x"></span>
@@ -57,26 +59,20 @@
             </div>
         </div>
 
-    <script src="/js/global.js?v=xYnLPncCGdwopIu-ETpzRKLPUDYBvYBsPkGjtl0yEB8"></script>
+    <script src="/js/global.js?v=ahFm2vpOxeXz7gkqO9R2iSVS0McHhcK7ZMRE8hdgPqk"></script>
 
         <h4 class="text-center mt-3 mb-4">
-            <img src="/icon/sqlformatter.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
+            <img src="/icon/sql.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
             SQL&#x683C;&#x5F0F;&#x5316;
         </h4>
 
     <div class="min300">
-        <div class="container">
+        <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-3 col-md-6">
+        <div class="col-md-12">
             <div class="input-group">
-                <button class="btn btn-warning" id="btnSqlFormatter">格式化</button>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="selanguage">
-                        <option value="sql">SQL</option>
-                        <option value="n1ql">N1QL</option>
-                        <option value="db2">DB2</option>
-                    </select>
-                </div>
+                <button class="btn btn-info" id="btnSqlFormatter" title="基于开源项目 sql-formatter 本地提供格式化">本地格式化</button>
+                <button class="btn btn-warning" id="btnPgFormatter" title="基于开源项目 pgFormatter 服务端提供格式化，效果更佳">服务端格式化</button>
             </div>
         </div>
         <div class="col-md-12 mt-2">
@@ -105,9 +101,9 @@
             </script>
 
 
-<script src="/js/sqlformatter.js?v=s6U9fnEE5DlldWNE1_Jr6qU_99pqe_1m53htcDiDiHI"></script>
+<script src="/js/sqlformatter.js?v=riVZQDd81pLWH6JGONCR-BsHFOFBCJmxf58CDwxpYpg"></script>
     </div>
 
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+    <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>

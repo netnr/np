@@ -1,7 +1,7 @@
 ﻿var editor,
-    defaultLang = localStorage["vscode-lang"] || 'javascript',
-    defaultContent = localStorage["vscode-content"] || 'console.log("Hello world!");',
-    defaultTheme = localStorage["vscode-theme"] || 'vs';
+    defaultLang = ss.lsStr("vscode-lang") || 'javascript',
+    defaultContent = ss.lsStr("vscode-content") || 'console.log("Hello world!");',
+    defaultTheme = ss.lsStr("vscode-theme") || 'vs';
 
 require(['vs/editor/editor.main'], function () {
     var modesIds = monaco.languages.getLanguages().map(function (lang) { return lang.id }).sort();
@@ -35,7 +35,8 @@ require(['vs/editor/editor.main'], function () {
         if (oldModel) {
             oldModel.dispose();
         }
-        localStorage["vscode-lang"] = this.value;
+        ss.ls["vscode-lang"] = this.value;
+        ss.lsSave();
 
         if (this.value == "javascript") {
             $('#btnRun').removeClass('d-none');
@@ -51,13 +52,15 @@ require(['vs/editor/editor.main'], function () {
 
     $('#setheme').change(function () {
         monaco.editor.setTheme(this.value);
-        localStorage["vscode-theme"] = this.value;
+        ss.ls["vscode-theme"] = this.value;
+        ss.lsSave();
     }).val(defaultTheme);
 
     editor.onDidChangeModelContent(function (e) {
         clearTimeout(window.defer1);
         window.defer1 = setTimeout(function () {
-            localStorage["vscode-content"] = editor.getValue();
+            ss.ls["vscode-content"] = editor.getValue();
+            ss.lsSave();
         }, 1000 * 1)
     });
 });

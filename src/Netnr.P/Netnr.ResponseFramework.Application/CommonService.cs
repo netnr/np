@@ -351,6 +351,11 @@ namespace Netnr.ResponseFramework.Application
             public const string SysMenu = "GlobalSysMenu";
 
             /// <summary>
+            /// 角色缓存KEY
+            /// </summary>
+            public const string SysRole = "GlobalSysRole";
+
+            /// <summary>
             /// 按钮缓存KEY
             /// </summary>
             public const string SysButton = "GlobalSysButton";
@@ -362,12 +367,13 @@ namespace Netnr.ResponseFramework.Application
         public static void GlobalCacheRmove()
         {
             Core.CacheTo.Remove(GlobalCacheKey.SysMenu);
+            Core.CacheTo.Remove(GlobalCacheKey.SysRole);
             Core.CacheTo.Remove(GlobalCacheKey.SysButton);
         }
 
         #endregion
 
-        #region 查询系统表
+        #region 查询
 
         /// <summary>
         /// 查询配置信息
@@ -421,15 +427,45 @@ namespace Netnr.ResponseFramework.Application
         /// 查询角色信息
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="cache"></param>
         /// <returns></returns>
-        public static SysRole QuerySysRoleEntity(Expression<Func<SysRole, bool>> predicate)
+        public static SysRole QuerySysRoleEntity(Func<SysRole, bool> predicate, bool cache = true)
         {
-            using var db = new ContextBase(ContextBase.DCOB().Options);
-            var mo = db.SysRole.Where(predicate).FirstOrDefault();
+            if (!cache || !(Core.CacheTo.Get(GlobalCacheKey.SysRole) is List<SysRole> list))
+            {
+                using var db = new ContextBase(ContextBase.DCOB().Options);
+                list = db.SysRole.ToList();
+                Core.CacheTo.Set(GlobalCacheKey.SysRole, list, 300, false);
+            }
+            var mo = list.FirstOrDefault(predicate);
             return mo;
         }
 
-        #endregion
+        /// <summary>
+        /// 查询配置的菜单是否有权限访问（仅针对配置的菜单）
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <param name="url">链接</param>
+        /// <returns></returns>
+        public static bool QueryMenuIsAuth(string roleId, string url)
+        {
+            var ia = false;
 
+            //是配置的菜单
+            var menuMo = QuerySysMenuList(x => x.SmUrl?.ToLower() == url.ToLower()).FirstOrDefault();
+            if (menuMo != null)
+            {
+                //检测该角色是否勾选菜单
+                ia = QuerySysRoleEntity(x => x.SrId == roleId)?.SrMenus.Contains(menuMo.SmId) ?? false;
+            }
+            else
+            {
+                ia = true;
+            }
+
+            return ia;
+        }
+
+        #endregion
     }
 }

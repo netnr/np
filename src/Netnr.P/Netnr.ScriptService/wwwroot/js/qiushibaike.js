@@ -35,7 +35,7 @@ QueryJoke();
 function QueryJoke() {
     queryP();
 
-    loading();
+    ss.loading();
 
     ss.ajax({
         url: "http://m2.qiushibaike.com/article/list/" + type + "?type=refresh&page=" + page + "&count=" + pageSize,
@@ -91,11 +91,11 @@ function QueryJoke() {
             }
         },
         error: function () {
-            loading(0);
+            ss.loading(0);
             jz.msg("网络错误");
         },
         complete: function () {
-            loading(0);
+            ss.loading(0);
         }
     })
 }

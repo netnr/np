@@ -1,108 +1,3 @@
-/*
- * netnrnav v1.1.0
- * 
- * https://github.com/netnr/nav
- * 
- * Fork: https://github.com/zhoufengjob/SuiNav
- * 
- * Date: 2019-08-18
- * 
- */
-
-(function (window) {
-
-    var netnrnav = function (se) { return new netnrnav.fn.init(se); };
-
-    netnrnav.fn = netnrnav.prototype = {
-        init: function (se) {
-            var that = this;
-            this.ele = $(se);
-            this.eventCount = 0;
-            this.isHiding = false;
-
-            if (that.ele.hasClass('horizontal')) {
-                that.ele.find('li').hover(function () {
-                    $(this).children('ul').show();
-                }, function () {
-                    $(this).children('ul').hide();
-                });
-            } else {
-                that.ele.find('li').click(function () {
-                    if (that.eventCount != 0) {
-                        if ($(this).parent().parent().parent().hasClass('netnrnav')) {
-                            that.eventCount = 0;
-                        }
-                        return;
-                    }
-                    if ($(this).children('ul').is(":hidden"))
-                        $(this).children('ul').show();
-                    else {
-                        $(this).find('ul').hide();
-                    }
-                    that.eventCount++;
-                    if ($(this).parent().parent().parent().hasClass('netnrnav')) {
-                        that.eventCount = 0;
-                    }
-                });
-            }
-            return this;
-        }
-    };
-
-    netnrnav.show = function (that) {
-        if (!that.isHiding) {
-            $(document.body).append('<div class="netnrnav slide-netnrnav"></div><div class="netnrnav netnrnav-mask"></div>');
-            $('.slide-netnrnav').html(that.ele.html()).find('li').click(function () {
-                if (that.eventCount != 0) {
-                    if ($(this).parent().parent().parent().hasClass('netnrnav')) {
-                        that.eventCount = 0;
-                    }
-                    return;
-                }
-                if ($(this).children('ul').is(":hidden"))
-                    $(this).children('ul').show();
-                else {
-                    $(this).find('ul').hide();
-                }
-                that.eventCount++;
-                if ($(this).parent().parent().parent().hasClass('netnrnav')) {
-                    that.eventCount = 0;
-                }
-            });
-            $('.netnrnav-mask').click(function () {
-                netnrnav.hide(that);
-            });
-            setTimeout(function () {
-                $('.slide-netnrnav').toggleClass('active');
-                $('.netnrnav-mask').toggleClass('active');
-            }, 20);
-        }
-    };
-
-    netnrnav.hide = function (that) {
-        if (!that.isHiding) {
-            that.isHiding = true;
-            $('.slide-netnrnav').find('li').unbind();
-            $('.slide-netnrnav').removeClass('active');
-            $('.netnrnav-mask').removeClass('active');
-            setTimeout(function () {
-                $('.slide-netnrnav').remove();
-                $('.netnrnav-mask').remove();
-                that.isHiding = false;
-            }, 600);
-        }
-    };
-
-    netnrnav.toggle = function (that) {
-        $('.slide-netnrnav').length > 0 ? netnrnav.hide(that) : netnrnav.show(that)
-    }
-
-    netnrnav.fn.init.prototype = netnrnav.fn;
-
-    window.netnrnav = netnrnav;
-
-})(window);
-
 if (!Array.prototype.forEach) {
     Array.prototype.forEach = function forEach(callback, thisArg) {
         var T, k;
@@ -128,14 +23,6 @@ if (!Array.prototype.forEach) {
         }
     };
 }
-
-$(function () {
-    $.nrnav = netnrnav(".netnrnav");
-    $('.MenuToggle').click(function () {
-        netnrnav.toggle($.nrnav);
-    });
-});
-
 
 /*
     upstream: From nginx upstream
@@ -191,67 +78,115 @@ $(function () {
 })(window);
 
 
-
-/* ScriptServices */
+/* ScriptService */
 var ss = {
-    ajax: function (obj) {
-        var hosts = ["https://cors.zme.ink/", "https://bird.ioliu.cn/v2?url="];
-        upstream(hosts, function (fast, ok, bad) {
-            obj.url = fast + obj.url;
-            $.ajax(obj);
-        }, 1);
+    init: function () {
+        ss.lsInit();
+
+        $(function () {
+            $('#LoadingMask').fadeOut();
+
+            //Monaco Editor 编辑器全屏切换
+            $('.me-full-btn').click(function () {
+                var mebox = $(this).parent();
+                if (mebox.hasClass('me-full')) {
+                    mebox.removeClass('me-full')
+                    mebox.addClass('position-relative')
+                } else {
+                    mebox.addClass('me-full')
+                    mebox.removeClass('position-relative')
+                }
+            })
+        })
     },
+
+    bmobInit: function () {
+        //比目初始化
+        window.Bmob && Bmob.initialize("59a522843b951532546934352166df80", "97fcbeae1457621def948aba1db01821");
+    },
+
+    /**
+     * 代理请求
+     * @param {any} obj 请求参数
+     * @param {any} hi 指定代理
+     */
+    ajax: function (obj, hi) {
+        var hosts = ["https://cors.zme.ink/", "https://bird.ioliu.cn/v2?url="];
+        if (hi != null) {
+            obj.url = hosts[hi] + obj.url;
+            $.ajax(obj)
+        } else {
+            upstream(hosts, function (fast) {
+                obj.url = fast + obj.url;
+                $.ajax(obj);
+            }, 1);
+        }
+    },
+
+    /**
+     * 代理数据处理
+     * @param {any} data
+     */
     datalocation: function (data) {
         return data || {};
-        loading(0);
+        ss.loading(0);
     },
-    csqm: function (q) {
-        return q.replace(/\'/g, "\\'");
-    },
-    bmob: {
-        init: function () {
-            Bmob && Bmob.initialize("59a522843b951532546934352166df80", "97fcbeae1457621def948aba1db01821");
-        }
-    }
-}
 
-function loading(close) {
-    if (close === 0 || close === false) {
-        if (window.loading) {
+    /**
+     * html 编码
+     * @param {any} html
+     */
+    htmlEncode: function (html) {
+        return document.createElement('a').appendChild(document.createTextNode(html)).parentNode.innerHTML;
+    },
+
+    /**
+     * 回到顶部
+     */
+    toTop: function () {
+        $('html,body').animate({ scrollTop: 0 }, 400)
+    },
+
+    /**
+     * 加载
+     * @param {any} close
+     */
+    loading: function (close) {
+        if (close === 0 || close === false) {
             clearTimeout(window.loadingdefer);
             window.loadingdom.hide();
+        } else {
+            if (!window.loadingdom) {
+                window.loadingdom = $('<div class="loading"></div>').appendTo(document.body);
+            }
+            window.loadingdom.hide();
+            window.loadingdefer = setTimeout(function () {
+                window.loadingdom.show();
+            }, 1000);
         }
-    } else {
-        if (!window.loadingdom) {
-            window.loadingdom = $('<div class="loading"></div>').appendTo(document.body);
+    },
+
+    /* localStorage */
+    lsKey: location.pathname,
+    ls: {},
+    lsInit: function () {
+        var lsv = localStorage.getItem(this.lsKey);
+        if (lsv && (lsv = JSON.parse(lsv))) {
+            this.ls = lsv;
         }
-        window.loadingdom.hide();
-        window.loadingdefer = setTimeout(function () {
-            window.loadingdom.show();
-        }, 1000);
+    },
+    lsArr: function (key) {
+        return this.ls[key] = this.ls[key] || [];
+    },
+    lsObj: function (key) {
+        return this.ls[key] = this.ls[key] || {};
+    },
+    lsStr: function (key) {
+        return this.ls[key] = this.ls[key] || "";
+    },
+    lsSave: function () {
+        localStorage.setItem(this.lsKey, JSON.stringify(this.ls));
     }
 }
 
-function totop() {
-    $('html,body').animate({ scrollTop: 0 }, 400)
-};
-
-function htmlEncode(html) {
-    return document.createElement('a').appendChild(document.createTextNode(html)).parentNode.innerHTML;
-};
-
-$(function () {
-    $('#LoadingMask').fadeOut();
-
-    //Monaco Editor 编辑器全屏切换
-    $('.me-full-btn').click(function () {
-        var mebox = $(this).parent();
-        if (mebox.hasClass('me-full')) {
-            mebox.removeClass('me-full')
-            mebox.addClass('position-relative')
-        } else {
-            mebox.addClass('me-full')
-            mebox.removeClass('position-relative')
-        }
-    })
-})
+ss.init();

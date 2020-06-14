@@ -86,6 +86,11 @@
             菜单缓存KEY
             </summary>
         </member>
+        <member name="F:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey.SysRole">
+            <summary>
+            角色缓存KEY
+            </summary>
+        </member>
         <member name="F:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey.SysButton">
             <summary>
             按钮缓存KEY
@@ -119,11 +124,20 @@
             <param name="cache"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysRoleEntity(System.Linq.Expressions.Expression{System.Func{Netnr.ResponseFramework.Domain.SysRole,System.Boolean}})">
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysRoleEntity(System.Func{Netnr.ResponseFramework.Domain.SysRole,System.Boolean},System.Boolean)">
             <summary>
             查询角色信息
             </summary>
             <param name="predicate"></param>
+            <param name="cache"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QueryMenuIsAuth(System.String,System.String)">
+            <summary>
+            查询配置的菜单是否有权限访问（仅针对配置的菜单）
+            </summary>
+            <param name="roleId">角色ID</param>
+            <param name="url">链接</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.ResponseFramework.Application.DataMirrorService">
@@ -196,23 +210,30 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status01(System.String)">
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs01(System.String)">
             <summary>
-            状态格式化
+            字典格式化
             </summary>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status02(System.String)">
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs02(System.String)">
             <summary>
-            状态格式化
+            字典格式化
             </summary>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status03(System.String)">
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs03(System.String)">
             <summary>
-            状态格式化
+            字典格式化
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs04(System.String)">
+            <summary>
+            字典格式化
             </summary>
             <param name="value"></param>
             <returns></returns>

@@ -165,6 +165,16 @@ module.exports = {
             listFieldName = "t.*";
         }
 
+        var whereSql = dk.pars.whereSql;
+        var countWhere = '';
+        if (dk.isNullOrWhiteSpace(whereSql)) {
+            whereSql = "";
+        }
+        else {
+            countWhere = "WHERE " + whereSql;
+            whereSql = "AND " + whereSql;
+        }
+
         var TableName = dk.pars.TableName;
         var sort = dk.pars.sort;
         var order = ((dk.pars.order || "") + "").toLowerCase() == "desc" ? "desc" : "asc";
@@ -181,7 +191,7 @@ module.exports = {
                         FROM
                             ` + TableName + ` t
                         WHERE
-                            ROWNUM <= ` + (page * rows) + `
+                            ROWNUM <= ` + (page * rows) + ` ` + whereSql + `
                         ORDER BY ` + sort + ` ` + order + `
                         ) table_alias
                     WHERE
@@ -189,7 +199,7 @@ module.exports = {
 
         var cmds = [];
         cmds.push(cmd);
-        cmds.push(`select count(1) as total from ` + TableName);
+        cmds.push(`select count(1) as total from ` + TableName + ` ` + countWhere);
 
         return this.QueryData(dk, cmds);
     }

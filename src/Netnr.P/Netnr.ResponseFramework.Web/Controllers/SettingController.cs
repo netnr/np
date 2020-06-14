@@ -48,7 +48,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             var list = db.SysButton.OrderBy(x => x.SbBtnOrder).ToList();
             var tree = Core.TreeTo.ListToTree(list, "SbPid", "SbId", new List<string> { Guid.Empty.ToString() });
-            ovm.Data =  tree.ToJArray();
+            ovm.Data = tree.ToJArray();
 
             //列
             if (ivm.ColumnsExists != 1)
@@ -90,7 +90,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             int num = db.SaveChanges();
-
             vm.Set(num > 0);
 
             //清理缓存
@@ -111,8 +110,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             var mo = db.SysButton.Find(id);
             db.SysButton.Remove(mo);
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;
@@ -145,7 +144,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             var list = db.SysMenu.OrderBy(x => x.SmOrder).ToList();
             var tree = Core.TreeTo.ListToTree(list, "SmPid", "SmId", new List<string> { Guid.Empty.ToString() });
-            ovm.Data =  tree.ToJArray();
+            ovm.Data = tree.ToJArray();
 
             //列
             if (ivm.ColumnsExists != 1)
@@ -181,8 +180,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 db.SysMenu.Update(mo);
             }
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             //清理缓存
@@ -205,7 +204,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
             db.SysMenu.Remove(mo);
 
             int num = db.SaveChanges();
-
             vm.Set(num > 0);
 
             return vm;
@@ -263,7 +261,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 db.SysRole.Update(mo);
             }
+
             int num = db.SaveChanges();
+            if (num > 0)
+            {
+                //清理缓存
+                Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysRole);
+            }
 
             vm.Set(num > 0);
 
@@ -289,7 +293,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 item.SrButtons = copymo.SrButtons;
             }
             db.SysRole.UpdateRange(list);
+
             int num = db.SaveChanges();
+            if (num > 0)
+            {
+                //清理缓存
+                Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysRole);
+            }
 
             vm.Set(num > 0);
 
@@ -314,7 +324,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 var mo = db.SysRole.Find(id);
                 db.SysRole.Remove(mo);
+
                 int num = db.SaveChanges();
+                if (num > 0)
+                {
+                    //清理缓存
+                    Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysRole);
+                }
 
                 vm.Set(num > 0);
             }
@@ -409,8 +425,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     db.SysUser.Update(mo);
                 }
             }
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;
@@ -428,6 +444,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             var mo = db.SysUser.Find(id);
             db.SysUser.Remove(mo);
+
             int num = db.SaveChanges();
             vm.Set(num > 0);
 
@@ -517,8 +534,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 db.SysDictionary.Update(mo);
             }
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;
@@ -537,8 +554,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var mo = db.SysDictionary.Find(id);
             mo.SdStatus = -1;
             db.SysDictionary.Update(mo);
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;
@@ -598,8 +615,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 db.SysTableConfig.Update(mo);
             }
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;
@@ -617,8 +634,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             var mo = db.SysTableConfig.Find(id);
             db.SysTableConfig.Remove(mo);
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;

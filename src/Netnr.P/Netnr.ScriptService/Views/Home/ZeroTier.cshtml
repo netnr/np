@@ -1,0 +1,27 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Token</span>
+                </div>
+                <input class="form-control" id="txtToken" placeholder="请粘贴 API token" maxlength="32" />
+                <div class="input-group-prepend">
+                    <span class="input-group-text">NetworkId</span>
+                </div>
+                <input class="form-control" id="txtNetworkId" placeholder="请粘贴 NetworkId" maxlength="16" />
+                <div class="input-group-prepend">
+                    <span class="input-group-btn">
+                        <a class="btn btn-link" target="_blank" href="https://my.zerotier.com">ZeroTier</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mt-3" id="PGrid">
+            <table id="table" class="text-nowrap"></table>
+        </div>
+    </div>
+</div>
+
+<partial name="_PartialQuote" model="@("bootstrap-table.css,bootstrap-table.js")" />
+<script src="/js/zerotier.js" asp-append-version="true"></script>

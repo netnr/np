@@ -1,47 +1,31 @@
-/**
- * 2020-05-10
- * rf.netnr.com 扩展
- */
-
-dk_netnrf(function (dk) {
-
-    //设定接口
-    var netnrfapi = location.origin;
-    for (var i in dk.apiDetail) {
-        dk.apiDetail[i] = "/Tool/" + i;
-    }
-
-    //设定为后台数据库连接信息
-    dk.dc.backConn = true;
-    //默认SQLServer数据库
-    $('#seti').val(3);
-    $('#btnQueryTable').addClass('d-none');
-
+if (window.dk) {
     /**
      * 加载已生成虚拟表
      */
     dk.loadHasTableConfig = function () {
-        return new Promise(function (resolve, reject) {
-            $.ajax({
-                url: netnrfapi + '/Tool/QueryTableConfig',
-                dataType: 'json', success: function (data) {
-                    dk.dc.hasTableConfig = data.code == 200 ? data.data : [];
-                    resolve(dk.dc.hasTableConfig);
-                },
-                error: function (err) {
-                    reject(err);
-                }
-            })
-        });
+        $('.dkn-loadTableConfigWait').addClass('fa-spin');
+        var url = dk.api + dk.apiPath["QueryTableConfig"];
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            headers: dk.apiHeaders,
+            success: function (data) {
+                dk.dc.hasTableConfig = data.code == 200 ? data.data : [];
+                $('#btnQueryTable')[0].click();
+            },
+            error: function () {
+                $('#btnQueryTable')[0].click();
+            },
+            complete: function () {
+                $('.dkn-loadTableConfigWait').removeClass('fa-spin');
+            }
+        })
     }
-    //渲染表信息
-    dk.loadHasTableConfig().then(_htc => {
-        $('#btnQueryTable')[0].click();
-    });
+    dk.loadHasTableConfig();
 
     /**
      * 生成表配置
-     * @param {any} t 追加或覆盖
+     * @@param {any} t 追加或覆盖
      */
     dk.buildTableConfig = function (t) {
         var rowDatas = $('#Grid2').datagrid('getSelections');
@@ -52,8 +36,8 @@ dk_netnrf(function (dk) {
                     "Id": null,
                     "TableName": row.TableName,
                     "ColField": row.FieldName,
-                    "DvTitle": row.TableComment || row.FieldName,
-                    "ColTitle": row.TableComment || row.FieldName,
+                    "DvTitle": row.FieldComment || row.FieldName,
+                    "ColTitle": row.FieldComment || row.FieldName,
                     "ColWidth": 100,
                     "ColAlign": 1,
                     "ColHide": 0,
@@ -80,24 +64,26 @@ dk_netnrf(function (dk) {
             });
 
             //保存表配置
+            var url = dk.api + dk.apiPath['SaveTableConfig'];
             $.ajax({
-                url: netnrfapi + '/Tool/SaveTableConfig',
+                url: url,
                 data: {
                     rows: JSON.stringify(tcrows),
                     buildType: t
                 },
-                type: "post", dataType: 'json', success: function (data) {
+                type: "post",
+                dataType: 'json',
+                headers: dk.apiHeaders,
+                success: function (data) {
                     //渲染表信息
                     if (data.code == 200) {
-                        dk.loadHasTableConfig().then(_htc => {
-                            dk.viewTable();
-                        });
+                        dk.loadHasTableConfig();
                     }
                     dk.msg(data.msg);
                 },
                 error: function (err) {
                     console.log(err);
-                    dk.msg("网络错误");
+                    dk.msgError(url);
                 }
             })
         } else {
@@ -114,20 +100,17 @@ dk_netnrf(function (dk) {
     }
 
     //添加刷新表配置按钮
-    $(`<button class="btn btn-sm btn-primary" >刷新</button>`).insertAfter($('#btnQueryTable')).click(function () {
-        //渲染表信息
-        dk.loadHasTableConfig().then(_htc => {
-            $('#btnQueryTable')[0].click();
-        });
+    $('<button class="btn btn-sm btn-primary"><i class="fa fa-fw fa-refresh dkn-loadTableConfigWait"></i>刷新</button>').insertAfter($('#btnQueryTable')).click(function () {
+        dk.loadHasTableConfig();
     });
     //添加生成表配置按钮
-    $(`<div class="btn-group btn-group-sm">
-            <button class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">生成表配置</button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item py-1" href="javascript:void(0);" id="btnBuildTableConfigForAdd">追加不存在的字段</a>
-                <a class="dropdown-item py-1" href="javascript:void(0);" id="btnBuildTableConfigForCover">覆盖更新</a>
-            </div>
-         </div>`).insertAfter($('#btnQueryColumn'));
+    $(['<div class="btn-group btn-group-sm">',
+        '<button class="btn btn-sm btn-primary" data-toggle="dropdown">生成表配置<i class="fa fa-fw fa-caret-down"></i></button>',
+        '<div class="dropdown-menu">',
+        '<a class="dropdown-item p-2" href="javascript:void(0);" id="btnBuildTableConfigForAdd"><i class="fa fa-fw fa-plus"></i>追加不存在的字段</a>',
+        '<a class="dropdown-item p-2" href="javascript:void(0);" id="btnBuildTableConfigForCover"><i class="fa fa-fw fa-eraser"></i>覆盖更新</a>',
+        '</div>',
+        '</div>'].join('')).insertAfter($('#btnQueryColumn'));
     $('#btnBuildTableConfigForAdd').click(function () {
         dk.buildTableConfig(1);
     });
@@ -136,15 +119,13 @@ dk_netnrf(function (dk) {
     });
 
 
-    //仅保留 csharp
-    for (var i in dk.build.language) {
-        if (i != "csharp") {
-            delete dk.build.language[i];
-        } else {
-            dk.build.language[i] = {};
-        }
+    //重构
+    dk.build.language = {
+        csharp: {},
+        "csharp-comment": "（netnrf 生成通用代码）",
+        javascript: {},
+        "javascript-comment": "（netnrf 生成通用代码）",
     }
-    dk.build.language["csharp-comment"] = "（netnrf 生成通用代码）";
 
     //构建控制器
     dk.build.language.csharp["controller"] = function am(pa) {
@@ -168,6 +149,7 @@ dk_netnrf(function (dk) {
                 var ri = rs[i];
                 if (ri.PrimaryKey == "YES") {
                     pkcolumn = ri;
+                    break;
                 }
             }
             //无主键列，默认第一个字段
@@ -176,11 +158,11 @@ dk_netnrf(function (dk) {
             }
 
             //构建代码
+            ts.push('using System;');
             ts.push('using Microsoft.AspNetCore.Authorization;');
             ts.push('using Microsoft.AspNetCore.Mvc;');
             ts.push('using ' + modelNamespace + ';');
             ts.push('using ' + dataNamespace + ';');
-            ts.push('using System;');
             ts.push('');
             ts.push('namespace ' + pa.namespace + '.Controllers');
             ts.push('{');
@@ -219,7 +201,7 @@ dk_netnrf(function (dk) {
             ts.push('\t\t\t' + 'var ovm = new QueryDataOutputVM();');
             ts.push('');
             ts.push('\t\t\t' + 'var query = db.' + gn + ';');
-            ts.push('\t\t\t' + 'Application.Common.QueryJoin(query, ivm, db, ref ovm);');
+            ts.push('\t\t\t' + 'Application.CommonService.QueryJoin(query, ivm, db, ref ovm);');
             ts.push('');
             ts.push('\t\t\t' + 'return ovm;');
             ts.push('\t\t' + '}');
@@ -317,7 +299,7 @@ dk_netnrf(function (dk) {
     }
 
     //构建js
-    dk.build.language.csharp["js"] = function am(pa) {
+    dk.build.language.javascript["js"] = function am(pa) {
         //参数默认值
         pa.project = pa.project || "Netnr.ResponseFramework.Web";
         pa.namespace = pa.namespace || "Netnr.ResponseFramework.Web";
@@ -335,6 +317,7 @@ dk_netnrf(function (dk) {
                 var ri = rs[i];
                 if (ri.PrimaryKey == "YES") {
                     pkcolumn = ri;
+                    break;
                 }
             }
             //无主键列，默认第一个字段
@@ -352,13 +335,18 @@ dk_netnrf(function (dk) {
             ts.push('}');
             ts.push('gd1.load();');
             ts.push('');
+            ts.push('//查询');
+            ts.push('z.button(\'query\', function () {');
+            ts.push('\t' + 'gd1.QueryOpen();');
+            ts.push('});');
+            ts.push('');
             ts.push('//刷新');
-            ts.push('z.button(\'reload\'); function () {');
+            ts.push('z.button(\'reload\', function () {');
             ts.push('\t' + 'gd1.load();');
             ts.push('});');
             ts.push('');
             ts.push('//新增');
-            ts.push('z.button(\'add\'); function () {');
+            ts.push('z.button(\'add\', function () {');
             ts.push('\t' + '//表单标题');
             ts.push('\t' + 'z.FormTitle({');
             ts.push('\t\t' + 'icon: 0,');
@@ -369,7 +357,7 @@ dk_netnrf(function (dk) {
             ts.push('});');
             ts.push('');
             ts.push('//查看');
-            ts.push('z.button(\'see\'); function () {');
+            ts.push('z.button(\'see\', function () {');
             ts.push('\t' + '//获取选中行');
             ts.push('\t' + 'var rowData = gd1.func("getSelected");');
             ts.push('\t' + 'if (rowData) {');
@@ -378,7 +366,7 @@ dk_netnrf(function (dk) {
             ts.push('\t\t' + '//表单标题');
             ts.push('\t\t' + 'z.FormTitle({');
             ts.push('\t\t\t' + 'icon: 2,');
-            ts.push('\t\t\t' + 'title: \'查看' + tableComment + '\');');
+            ts.push('\t\t\t' + 'title: \'查看' + tableComment + '\',');
             ts.push('\t\t\t' + 'required: false');
             ts.push('\t\t' + '});');
             ts.push('\t\t' + '//禁用');
@@ -391,7 +379,7 @@ dk_netnrf(function (dk) {
             ts.push('});');
             ts.push('');
             ts.push('//关闭模态框后');
-            ts.push('$(\'#fv_modal_1\').on(\'hidden.bs.modal\'); function () {');
+            ts.push('$(\'#fv_modal_1\').on(\'hidden.bs.modal\', function () {');
             ts.push('\t' + '//是查看时，解除禁用');
             ts.push('\t' + 'if (z.btnTrigger == "see") {');
             ts.push('\t\t' + 'z.FormDisabled(false);');
@@ -399,7 +387,7 @@ dk_netnrf(function (dk) {
             ts.push('});');
             ts.push('');
             ts.push('//修改');
-            ts.push('z.button(\'edit\'); function () {');
+            ts.push('z.button(\'edit\', function () {');
             ts.push('\t' + '//获取选中行');
             ts.push('\t' + 'var rowData = gd1.func("getSelected");');
             ts.push('\t' + 'if (rowData) {');
@@ -426,7 +414,7 @@ dk_netnrf(function (dk) {
             ts.push('\t\t\t' + 'url: "/' + gn + '/Save' + gn + '?savetype=" + z.btnTrigger,');
             ts.push('\t\t\t' + 'type: "post",');
             ts.push('\t\t\t' + 'data: $("#fv_form_1").serialize(),');
-            ts.push('\t\t\t' + 'dataType: \'json\');');
+            ts.push('\t\t\t' + 'dataType: \'json\',');
             ts.push('\t\t\t' + 'success: function (data) {');
             ts.push('\t\t\t\t' + 'if (data.code == 200) {');
             ts.push('\t\t\t\t\t' + 'gd1.load();');
@@ -444,17 +432,16 @@ dk_netnrf(function (dk) {
             ts.push('});');
             ts.push('');
             ts.push('//删除');
-            ts.push('z.button(\'del\'); function () {');
+            ts.push('z.button(\'del\', function () {');
             ts.push('\t' + 'var rowData = gd1.func("getSelected");');
             ts.push('\t' + 'if (!rowData) {');
             ts.push('\t\t' + 'art(\'select\');');
             ts.push('\t\t' + 'return false;');
             ts.push('\t' + '}');
-            ts.push('\t' + 'art(\'确定删除选中的行\'); function () {');
+            ts.push('\t' + 'art(\'确定删除选中的行\', function () {');
             ts.push('\t\t' + '$.ajax({');
             ts.push('\t\t\t' + 'url: "/' + gn + '/Del' + gn + '?id=" + rowData.' + pkcolumn.FieldName + ',');
-            ts.push('\t\t\t' + 'type: "post",');
-            ts.push('\t\t\t' + 'dataType: \'json\');');
+            ts.push('\t\t\t' + 'dataType: \'json\',');
             ts.push('\t\t\t' + 'success: function (data) {');
             ts.push('\t\t\t\t' + 'if (data.code == 200) {');
             ts.push('\t\t\t\t\t' + 'gd1.load();');
@@ -472,5 +459,4 @@ dk_netnrf(function (dk) {
 
     //重新渲染构建
     dk.viewBuild();
-
-});
+}

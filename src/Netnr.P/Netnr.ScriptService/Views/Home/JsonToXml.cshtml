@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row" id="tobox">
         <div class="col-sm-6">
             <div class="input-group mb-2">
@@ -64,7 +64,7 @@
 
 <script>
     function AutoHeight() {
-        var ch = $(window).height() - $('#txt1').offset().top - 20;
+        var ch = $(window).height() - $('#txt1').offset().top - 15;
         $('#txt1').css('height', Math.max(200, ch));
         $('#txt2').css('height', Math.max(200, ch));
     }

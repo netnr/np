@@ -47,7 +47,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.DataKit.Web.Controllers.DKController.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String)">
+        <member name="M:Netnr.DataKit.Web.Controllers.DKController.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
             <summary>
             查询数据
             </summary>
@@ -59,6 +59,7 @@
             <param name="sort">排序字段</param>
             <param name="order">排序方式</param>
             <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.DataKit.Web.Filters.FilterConfigs">

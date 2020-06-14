@@ -1,6 +1,6 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row" id="tobox">
-        <div class="col-sm-12 mb-3">
+        <div class="col-sm-12 mb-2">
             <div class="input-group">
                 <button class="btn btn-warning" id="btnJsonToEntity">生成实体</button>
                 <div class="input-group-append">
@@ -71,7 +71,7 @@
 
 <script>
     function AutoHeight() {
-        var ch = $(window).height() - $('#txt1').offset().top - 20;
+        var ch = $(window).height() - $('#txt1').offset().top - 15;
         $('#txt1').css('height', Math.max(200, ch));
         $('#txt2').css('height', Math.max(200, ch));
     }

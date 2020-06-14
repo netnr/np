@@ -50,7 +50,7 @@
                 console.log(ex);
             },
             complete: function () {
-                loading(0);
+                ss.loading(0);
             }
         });
     },
@@ -144,7 +144,7 @@ $('#dmType').click(function (e) {
         config.cid = target.hash.substring(1);
         rt.LoadList();
         document.title = target.innerHTML + " 在线壁纸 NET牛人";
-        loading();
+        ss.loading();
     }
 });
 
@@ -167,7 +167,7 @@ $(window).on('load', function () {
             return false;
         }
     });
-    loading();
+    ss.loading();
     rt.LoadList();
 }).on('scroll mousewheel DOMMouseScroll', function () {
     var sb = $(document).height() - $(this).height() - $(this).scrollTop();

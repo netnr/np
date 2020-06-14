@@ -17,7 +17,7 @@ function QueryDomainName() {
         return
     }
 
-    loading();
+    ss.loading();
     ss.ajax({
         url: "http://icp.chinaz.com/info?q=" + encodeURIComponent($("#txtSearch").val()),
         success: function (data) {
@@ -37,11 +37,11 @@ function QueryDomainName() {
             $('#dn').html('').append(mb);
         },
         error: function () {
-            loading(0);
+            ss.loading(0);
             jz.msg("网络错误");
         },
         complete: function () {
-            loading(0);
+            ss.loading(0);
         }
     })
 }

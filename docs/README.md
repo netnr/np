@@ -5,7 +5,7 @@ netnr@netnr.com
 
 ---
 
-### 站点
+### 站点（Site）
 - [zme.ink](https://zme.ink)
     - [cors.zme.ink](https://cors.zme.ink "跨域请求代理")
     - [api.zme.ink](https://api.zme.ink "API")
@@ -34,6 +34,8 @@ netnr@netnr.com
 
 ---
 
-### 捐赠
+### 赞助（Sponsors）
 <img src="static/donate/alipay.jpg" alt="支付宝" title="支付宝" width="300" />
 <img src="static/donate/wechat.jpg" alt="微信" title="微信" width="300" />
+
+[名单](SPONSORS.md)

@@ -37,6 +37,10 @@ namespace Netnr.Blog.Application.ViewModel
         /// </summary>
         public DateTime? DsdUpdateTime { get; set; }
         /// <summary>
+        /// 文档页排序
+        /// </summary>
+        public int? DsdOrder { get; set; }
+        /// <summary>
         /// 显示编号
         /// </summary>
         public string DsdNumber { get; set; }

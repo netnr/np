@@ -44,7 +44,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             //文件名
-            string filename = title.Replace(" ", "").Trim() + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
+            string filename = $"{title.Replace(" ", "").Trim()}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
 
             //导出的表数据
             var dtReport = new DataTable();
@@ -95,7 +95,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     //生成
                     if (Fast.NpoiTo.DataTableToExcel(dtReport, vpath + filename))
                     {
-                        vm.Data =  path + filename;
+                        vm.Data = path + filename;
 
                         //生成的Excel继续操作
                         ExportService.ExcelDraw(vpath + filename, ivm);

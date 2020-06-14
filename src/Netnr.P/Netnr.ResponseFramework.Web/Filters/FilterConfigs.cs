@@ -31,7 +31,9 @@ namespace Netnr.ResponseFramework.Web.Filters
         }
 
         private static Dictionary<string, string> _dicDescription;
-
+        /// <summary>
+        /// 提取 XML 注释为字典
+        /// </summary>
         public static Dictionary<string, string> DicDescription
         {
             get
@@ -82,7 +84,7 @@ namespace Netnr.ResponseFramework.Web.Filters
                                     remark = xnm.SelectSingleNode("summary").InnerText.ToString().Trim();
                                 }
 
-                                var action = (conll.Name.Replace("Controller", "/") + item.Name).ToLower();
+                                var action = "/" + (conll.Name.Replace("Controller", "/") + item.Name).ToLower();
                                 if (!dic.ContainsKey(action))
                                 {
                                     dic.Add(action, remark);
@@ -109,29 +111,38 @@ namespace Netnr.ResponseFramework.Web.Filters
             public override void OnActionExecuting(ActionExecutingContext context)
             {
                 var hc = context.HttpContext;
+                string controller = context.RouteData.Values["controller"].ToString().ToLower();
+                string action = context.RouteData.Values["action"].ToString().ToLower();
+                var ca = "/" + controller + "/" + action;
+                string url = hc.Request.Path.ToString() + hc.Request.QueryString.Value;
+
+                //用户信息
+                var userinfo = Application.CommonService.GetLoginUserInfo(hc);
+
+                //角色有权限访问配置的菜单
+                if (!Application.CommonService.QueryMenuIsAuth(userinfo.RoleId, ca))
+                {
+                    context.Result = new ContentResult()
+                    {
+                        Content = "unauthorized",
+                        StatusCode = 401
+                    };
+                }
 
                 //日志记录，设置“__nolog”参数可忽略日志记录，为压力测试等环境考虑（即一些不需要记录请求日志的需求）
-
                 if (GlobalTo.GetValue<bool>("logs:enable") && string.IsNullOrWhiteSpace(hc.Request.Query["__nolog"].ToString()))
                 {
-                    string controller = context.RouteData.Values["controller"].ToString().ToLower();
-                    string action = context.RouteData.Values["action"].ToString().ToLower();
-                    string url = hc.Request.Path.ToString() + hc.Request.QueryString.Value;
-
                     try
                     {
                         //客户端信息
-                        var ct = new Fast.ClientTo(hc);
-
-                        //用户信息
-                        var userinfo = Application.CommonService.GetLoginUserInfo(hc);
+                        var ct = new ClientTo(hc);
 
                         //日志保存
                         var mo = new Domain.SysLog()
                         {
                             SuName = userinfo.UserName,
                             SuNickname = userinfo.Nickname,
-                            LogAction = controller + "/" + action,
+                            LogAction = ca,
                             LogUrl = url,
                             LogIp = ct.IPv4,
                             LogUserAgent = ct.UserAgent,
@@ -140,7 +151,10 @@ namespace Netnr.ResponseFramework.Web.Filters
                             LogLevel = "I"
                         };
 
-                        mo.LogContent = DicDescription[mo.LogAction.ToLower()];
+                        if (DicDescription.ContainsKey(ca))
+                        {
+                            mo.LogContent = DicDescription[ca];
+                        }
 
                         #region 分批写入日志
 

@@ -353,6 +353,11 @@
             更新时间
             </summary>
         </member>
+        <member name="P:Netnr.Blog.Application.ViewModel.DocTreeViewVM.DsdOrder">
+            <summary>
+            文档页排序
+            </summary>
+        </member>
         <member name="P:Netnr.Blog.Application.ViewModel.DocTreeViewVM.DsdNumber">
             <summary>
             显示编号

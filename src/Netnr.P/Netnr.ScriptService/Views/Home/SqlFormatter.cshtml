@@ -1,15 +1,9 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-3 col-md-6">
+        <div class="col-md-12">
             <div class="input-group">
-                <button class="btn btn-warning" id="btnSqlFormatter">格式化</button>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="selanguage">
-                        <option value="sql">SQL</option>
-                        <option value="n1ql">N1QL</option>
-                        <option value="db2">DB2</option>
-                    </select>
-                </div>
+                <button class="btn btn-info" id="btnSqlFormatter" title="基于开源项目 sql-formatter 本地提供格式化">本地格式化</button>
+                <button class="btn btn-warning" id="btnPgFormatter" title="基于开源项目 pgFormatter 服务端提供格式化，效果更佳">服务端格式化</button>
             </div>
         </div>
         <div class="col-md-12 mt-2">

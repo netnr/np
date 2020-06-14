@@ -3,7 +3,7 @@
     Layout = null;
     ViewData["Title"] = Model.RunRemark + " NetnrRun";
 }
-@(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(Model.RunContent1))
+@Html.Raw(Model.RunContent1)
 @if (string.IsNullOrWhiteSpace(ViewData["pure"]?.ToString()))
 {
     <div style="position:fixed;top:10px;right:10px;z-index:999;opacity:.5;filter:alpha(opacity=50)" title="The addition parameter {pure=1} is removed">
@@ -13,9 +13,9 @@
 }
 
 <style>
-    @(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(Model.RunContent3))
+    @Html.Raw(Model.RunContent3)
 </style>
 
 <script>
-    @(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(Model.RunContent2))
+    @Html.Raw(Model.RunContent2)
 </script>

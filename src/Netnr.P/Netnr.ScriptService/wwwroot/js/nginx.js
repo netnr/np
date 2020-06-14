@@ -18,13 +18,10 @@ var cme = CodeMirror.fromTextArea(ebox.children()[0], {
     mode: 'nginx',
     lineNumbers: true
 })
-
-var lseg = localStorage.getItem("editor_nginx");
-if (lseg && lseg != "") {
-    cme.setValue(lseg);
-}
+cme.setValue(ss.lsStr("txt"));
 cme.on("change", function () {
-    localStorage.setItem("editor_nginx", cme.getValue())
+    ss.ls.txt = cme.getValue();
+    ss.lsSave();
 });
 
 $(window).on('load resize', function () {

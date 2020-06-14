@@ -147,9 +147,32 @@ module.exports = {
      */
     SetTableComment: function (dk) {
 
-        var cmd = `EXECUTE sp_updateextendedproperty 'MS_Description',N'@Comment@','user','dbo','table','@DataTableName@',NULL,NULL`;
+        var cmd = `
+                    IF NOT EXISTS
+                    (
+                        SELECT A.name,
+                                C.value
+                        FROM sys.tables A
+                            INNER JOIN sys.extended_properties C
+                                ON C.major_id = A.object_id
+                                    AND minor_id = 0
+                        WHERE A.name = N'{dataTableName}'
+                    )
+                        EXEC sys.sp_addextendedproperty @name = N'MS_Description',
+                                                        @value = N'{comment}',
+                                                        @level0type = N'SCHEMA',
+                                                        @level0name = N'dbo',
+                                                        @level1type = N'TABLE',
+                                                        @level1name = N'{dataTableName}';
 
-        cmd = cmd.replace("@DataTableName@", dk.pars.TableName.replace("'", "")).replace("@Comment@", dk.pars.TableComment.replace("'", "''"));
+                    EXEC sp_updateextendedproperty @name = N'MS_Description',
+                                                    @value = N'{comment}',
+                                                    @level0type = N'SCHEMA',
+                                                    @level0name = N'dbo',
+                                                    @level1type = N'TABLE',
+                                                    @level1name = N'{dataTableName}'`;
+
+        cmd = cmd.replace(/{dataTableName}/g, dk.pars.TableName.replace("'", "")).replace(/{comment}/g, dk.pars.TableComment.replace("'", "''"));
 
         return this.Query(dk, cmd);
     },
@@ -160,9 +183,38 @@ module.exports = {
      */
     SetColumnComment: function (dk) {
 
-        var cmd = `EXECUTE sp_updateextendedproperty 'MS_Description',N'@Comment@','user','dbo','table',N'@DataTableName@','column',N'@DataColumnName@'`;
+        var cmd = `
+                    IF NOT EXISTS
+                    (
+                        SELECT C.value AS column_description
+                        FROM sys.tables A
+                            INNER JOIN sys.columns B
+                                ON B.object_id = A.object_id
+                            INNER JOIN sys.extended_properties C
+                                ON C.major_id = B.object_id
+                                    AND C.minor_id = B.column_id
+                        WHERE A.name = N'{dataTableName}'
+                                AND B.name = N'{dataColumnName}'
+                    )
+                        EXEC sys.sp_addextendedproperty @name = N'MS_Description',
+                                                        @value = N'{comment}',
+                                                        @level0type = N'SCHEMA',
+                                                        @level0name = N'dbo',
+                                                        @level1type = N'TABLE',
+                                                        @level1name = N'{dataTableName}',
+                                                        @level2type = N'COLUMN',
+                                                        @level2name = N'{dataColumnName}';
 
-        cmd = cmd.replace("@DataTableName@", dk.pars.TableName.replace("'", "")).replace("@DataColumnName@", dk.pars.FieldName.replace("'", "")).replace("@Comment@", dk.pars.FieldComment.replace("'", "''"));
+                    EXEC sp_updateextendedproperty @name = N'MS_Description',
+                                                    @value = N'{comment}',
+                                                    @level0type = N'SCHEMA',
+                                                    @level0name = N'dbo',
+                                                    @level1type = N'TABLE',
+                                                    @level1name = N'{dataTableName}',
+                                                    @level2type = N'COLUMN',
+                                                    @level2name = N'{dataColumnName}'`;
+
+        cmd = cmd.replace(/{dataTableName}/g, dk.pars.TableName.replace("'", "")).replace(/dataColumnName/g, dk.pars.FieldName.replace("'", "")).replace(/{comment}/g, dk.pars.FieldComment.replace("'", "''"));
 
         return this.Query(dk, cmd);
     },
@@ -176,6 +228,14 @@ module.exports = {
         var listFieldName = dk.pars.listFieldName;
         if (dk.isNullOrWhiteSpace(listFieldName)) {
             listFieldName = "*";
+        }
+
+        var whereSql = dk.pars.whereSql;
+        if (dk.isNullOrWhiteSpace(whereSql)) {
+            whereSql = "";
+        }
+        else {
+            whereSql = "WHERE " + whereSql;
         }
 
         var TableName = dk.pars.TableName;
@@ -194,14 +254,14 @@ module.exports = {
                                 ` + sort + ` ` + order + `
                             ) as NumId,` + listFieldName + `
                         from
-                            ` + TableName + `
+                            ` + TableName + ` ` + whereSql + `
                         ) as t
                     where
                         NumId between ` + ((page - 1) * rows + 1) + ` and ` + (page * rows);
 
         var cmds = [];
         cmds.push(cmd);
-        cmds.push(`select count(1) as total from ` + TableName);
+        cmds.push(`select count(1) as total from ` + TableName + ` ` + whereSql);
 
         return this.QueryData(dk, cmds);
     }

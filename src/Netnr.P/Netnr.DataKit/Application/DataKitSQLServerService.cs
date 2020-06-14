@@ -120,7 +120,30 @@ namespace Netnr.DataKit.Application
         /// <returns></returns>
         public string SetTableCommentSQL(string dataTableName, string comment)
         {
-            return $"EXECUTE sp_updateextendedproperty 'MS_Description',N'{comment}','user','dbo','table','{dataTableName}',NULL,NULL";
+            return $@"
+                        IF NOT EXISTS
+                        (
+                            SELECT A.name,
+                                   C.value
+                            FROM sys.tables A
+                                INNER JOIN sys.extended_properties C
+                                    ON C.major_id = A.object_id
+                                       AND minor_id = 0
+                            WHERE A.name = N'{dataTableName}'
+                        )
+                            EXEC sys.sp_addextendedproperty @name = N'MS_Description',
+                                                            @value = N'{comment}',
+                                                            @level0type = N'SCHEMA',
+                                                            @level0name = N'dbo',
+                                                            @level1type = N'TABLE',
+                                                            @level1name = N'{dataTableName}';
+
+                        EXEC sp_updateextendedproperty @name = N'MS_Description',
+                                                       @value = N'{comment}',
+                                                       @level0type = N'SCHEMA',
+                                                       @level0name = N'dbo',
+                                                       @level1type = N'TABLE',
+                                                       @level1name = N'{dataTableName}';";
         }
 
         /// <summary>
@@ -132,7 +155,36 @@ namespace Netnr.DataKit.Application
         /// <returns></returns>
         public string SetColumnCommentSQL(string dataTableName, string dataColumnName, string comment)
         {
-            return $"EXECUTE sp_updateextendedproperty 'MS_Description',N'{comment}','user','dbo','table',N'{dataTableName}','column',N'{dataColumnName}'";
+            return $@"
+                       IF NOT EXISTS
+                        (
+                            SELECT C.value AS column_description
+                            FROM sys.tables A
+                                INNER JOIN sys.columns B
+                                    ON B.object_id = A.object_id
+                                INNER JOIN sys.extended_properties C
+                                    ON C.major_id = B.object_id
+                                        AND C.minor_id = B.column_id
+                            WHERE A.name = N'{dataTableName}'
+                                    AND B.name = N'{dataColumnName}'
+                        )
+                            EXEC sys.sp_addextendedproperty @name = N'MS_Description',
+                                                            @value = N'{comment}',
+                                                            @level0type = N'SCHEMA',
+                                                            @level0name = N'dbo',
+                                                            @level1type = N'TABLE',
+                                                            @level1name = N'{dataTableName}',
+                                                            @level2type = N'COLUMN',
+                                                            @level2name = N'{dataColumnName}';
+
+                        EXEC sp_updateextendedproperty @name = N'MS_Description',
+                                                        @value = N'{comment}',
+                                                        @level0type = N'SCHEMA',
+                                                        @level0name = N'dbo',
+                                                        @level1type = N'TABLE',
+                                                        @level1name = N'{dataTableName}',
+                                                        @level2type = N'COLUMN',
+                                                        @level2name = N'{dataColumnName}';";
         }
 
         /// <summary>
@@ -180,6 +232,7 @@ namespace Netnr.DataKit.Application
         /// <returns></returns>
         public bool SetTableComment(string TableName, string TableComment)
         {
+            TableComment ??= "";
             var sql = SetTableCommentSQL(TableName.Replace("'", ""), TableComment.Replace("'", "''"));
             new Data.SQLServer.SQLServerHelper(connectionString).ExecuteNonQuery(sql);
             return true;
@@ -194,6 +247,7 @@ namespace Netnr.DataKit.Application
         /// <returns></returns>
         public bool SetColumnComment(string TableName, string FieldName, string FieldComment)
         {
+            FieldComment ??= "";
             var sql = SetColumnCommentSQL(TableName.Replace("'", ""), FieldName.Replace("'", ""), FieldComment.Replace("'", "''"));
             new Data.SQLServer.SQLServerHelper(connectionString).ExecuteNonQuery(sql);
             return true;
@@ -208,26 +262,36 @@ namespace Netnr.DataKit.Application
         /// <param name="sort">排序字段</param>
         /// <param name="order">排序方式</param>
         /// <param name="listFieldName">查询列，默认为 *</param>
+        /// <param name="whereSql">条件</param>
         /// <param name="total">返回总条数</param>
         /// <returns></returns>
-        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, out int total)
+        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, out int total)
         {
-            var sql = @"
+            if (string.IsNullOrWhiteSpace(whereSql))
+            {
+                whereSql = "";
+            }
+            else
+            {
+                whereSql = "WHERE " + whereSql;
+            }
+
+            var sql = $@"
                         select
                             *
                         from(
                             select
                                 row_number() over(
                                 order by
-                                    " + sort + " " + order + @"
-                                ) as NumId," + listFieldName + @"
+                                    {sort} {order}
+                                ) as NumId,{listFieldName}
                             from
-                                " + TableName + @"
+                                {TableName} {whereSql}
                             ) as t
                         where
-                            NumId between " + ((page - 1) * rows + 1) + " and " + (page * rows);
+                            NumId between {((page - 1) * rows + 1)} and {(page * rows)}";
 
-            sql += ";select count(1) as total from " + TableName;
+            sql += $";select count(1) as total from {TableName} {whereSql}";
 
             var ds = new Data.SQLServer.SQLServerHelper(connectionString).Query(sql);
 

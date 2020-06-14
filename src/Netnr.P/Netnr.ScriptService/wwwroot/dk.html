@@ -353,24 +353,32 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-12 mb-1">
-                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle-split" data-toggle="dropdown">
-                                <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForField">
-                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（字段 为标题）
-                                </a>
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForTitle">
-                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释 为标题）
-                                </a>
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForFieldTitle">
-                                    <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释:注释 为标题）
-                                </a>
-                                <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForJson">
-                                    <i class="fa fa-fw fa-file-text"></i>导出 JSON
-                                </a>
+
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-secondary dropdown-toggle-split" data-toggle="dropdown">
+                                    <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForField">
+                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（字段 为标题）
+                                    </a>
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForTitle">
+                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释 为标题）
+                                    </a>
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForFieldTitle">
+                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释:注释 为标题）
+                                    </a>
+                                    <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForJson">
+                                        <i class="fa fa-fw fa-file-text"></i>导出 JSON
+                                    </a>
+                                </div>
+                                <div class="input-group-prepend">
+                                    <input class="form-control form-control-sm dkn-queryDataWhereSql" placeholder="条件 SQL" maxlength="500">
+                                </div>
+                                <button class="btn btn-success dkn-loadFilterData">
+                                    <i class="fa fa-fw fa-refresh"></i>过滤
+                                </button>
                             </div>
-                            <div class="spinner-border spinner-border-sm invisible mt-1 dkn-queryDataWait"></div>
 
                             <button type="button" class="btn btn-sm btn-danger float-right" data-dismiss="modal">
                                 <i class="fa fa-fw fa-close"></i>关闭
@@ -1080,12 +1088,28 @@
                         dk.dc.dataWhere.column = column2.length > 0 ? column2 : column1;
                         dk.dc.dataWhere.sort = sort;
                         dk.dc.dataWhere.order = "asc";
+                        $('.dkn-queryDataWhereSql').val('');
 
                         $('#dataModalCenter').modal();
                         //加载空表
                         dk.dc.dataWhere.result = { data: [], total: 0 };
                         dk.viewData();
 
+                        dk.loadData(function () {
+                            dk.viewData();
+                        })
+                    }
+                });
+
+                //查询数据条件过滤
+                $('.dkn-loadFilterData').click(function () {
+                    dk.loadData(function () {
+                        dk.viewData();
+                    })
+                });
+                $('.dkn-queryDataWhereSql').keydown(function (e) {
+                    e = e || window.event;
+                    if (e.keyCode == 13) {
                         dk.loadData(function () {
                             dk.viewData();
                         })
@@ -1218,9 +1242,19 @@
 
                     dm.append(ca);
                 })
-                //默认第一个服务接口
+                //默认服务接口
                 if (dk.api == null) {
-                    dk.api = ahosts[0].host;
+                    var dhost = ahosts[0].host;
+                    //本地默认当前接口
+                    if (location.hostname == "localhost") {
+                        $.each(ahosts, function () {
+                            if (this.remark == "当前") {
+                                dhost = this.host;
+                                return false;
+                            }
+                        })
+                    }
+                    dk.api = dhost;
                 }
 
                 //选择标记
@@ -1377,8 +1411,9 @@
                     tc.sort = dk.dc.dataWhere.sort;
                     tc.order = dk.dc.dataWhere.order || "asc";
                     tc.listFieldName = dk.dc.dataWhere.fields.join(',');
+                    tc.whereSql = $('.dkn-queryDataWhereSql').val();
 
-                    $('.dkn-queryDataWait').removeClass('invisible').addClass('visible');
+                    $('.dkn-loadFilterData').children('i').addClass('fa-spin');
                     try { $('#Grid3').datagrid("loading") } catch (e) { }
                     var url = dk.api + dk.apiPath.GetData;
                     $.ajax({
@@ -1402,7 +1437,7 @@
                             dk.msgError(url)
                         },
                         complete: function () {
-                            $('.dkn-queryDataWait').removeClass('visible').addClass('invisible');
+                            $('.dkn-loadFilterData').children('i').removeClass('fa-spin');
                         }
                     })
                 }

@@ -316,8 +316,9 @@ namespace Netnr.DataKit.Application
         /// <param name="sort">排序字段</param>
         /// <param name="order">排序方式</param>
         /// <param name="listFieldName">查询列，默认为 *</param>
+        /// <param name="whereSql">条件</param>
         /// <returns></returns>
-        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName)
+        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
         {
             var vm = new ActionResultVM();
 
@@ -339,7 +340,7 @@ namespace Netnr.DataKit.Application
                             {
                                 vm.Data = new
                                 {
-                                    data = new DataKitMySQLService(conn).GetData(TableName, page, rows, sort, order, listFieldName, out int total),
+                                    data = new DataKitMySQLService(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
                                     total
                                 };
                             }
@@ -348,7 +349,7 @@ namespace Netnr.DataKit.Application
                             {
                                 vm.Data = new
                                 {
-                                    data = new DataKitSQLiteService(conn).GetData(TableName, page, rows, sort, order, listFieldName, out int total),
+                                    data = new DataKitSQLiteService(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
                                     total
                                 };
                             }
@@ -357,7 +358,7 @@ namespace Netnr.DataKit.Application
                             {
                                 vm.Data = new
                                 {
-                                    data = new DataKitOracleService(conn).GetData(TableName, page, rows, sort, order, listFieldName, out int total),
+                                    data = new DataKitOracleService(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
                                     total
                                 };
                             }
@@ -366,7 +367,7 @@ namespace Netnr.DataKit.Application
                             {
                                 vm.Data = new
                                 {
-                                    data = new DataKitSQLServerService(conn).GetData(TableName, page, rows, sort, order, listFieldName, out int total),
+                                    data = new DataKitSQLServerService(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
                                     total
                                 };
                             }
@@ -375,7 +376,7 @@ namespace Netnr.DataKit.Application
                             {
                                 vm.Data = new
                                 {
-                                    data = new DataKitPostgreSQLService(conn).GetData(TableName, page, rows, sort, order, listFieldName, out int total),
+                                    data = new DataKitPostgreSQLService(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
                                     total
                                 };
                             }

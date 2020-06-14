@@ -18,7 +18,7 @@ if (console) {
     outs.push(oi);
 
     oi = fi();
-    oi.msg = "\r\n源码：\r\nhttps://github.com/netnr/np\r\n\r\nGitHub：\r\nhttps://github.com/netnr\r\n\r\n码云：\r\nhttps://gitee.com/netnr\r\n\r\nQ群：83084426";
+    oi.msg = "\r\n源码：\r\nhttps://github.com/netnr/np\r\n\r\nGitHub：\r\nhttps://github.com/netnr\r\n\r\n码云：\r\nhttps://gitee.com/netnr\r\n";
     outs.push(oi);
 
     if (!("ActiveXObject" in window)) {
@@ -32,11 +32,11 @@ if (console) {
         window.funsi = setInterval(function () {
             var t = performance.timing;
             if (t.loadEventEnd) {
-                console.table({
+                console.log(JSON.stringify({
                     load: t.loadEventEnd - t.navigationStart,
                     ready: t.domComplete - t.responseEnd,
                     request: t.responseEnd - t.requestStart
-                })
+                }))
                 clearInterval(window.funsi);
             }
         }, 10)

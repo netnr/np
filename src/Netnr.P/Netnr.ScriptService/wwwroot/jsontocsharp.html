@@ -24,9 +24,11 @@
             <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
             <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+            <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
+            <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
 
 
-    <link href="/css/global.css?v=jX4aC16PbVBajgFqmZiFWZXgNe9blHpS4ZMZF70KRFw" rel="stylesheet" />
+    <link href="/css/global.css?v=cAuqwHf0JYDQbhk83hHZ_7lN1X2l2n1-Ltac1NR5iqM" rel="stylesheet" />
 
         <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
             <span class="fa fa-align-justify fa-2x"></span>
@@ -57,7 +59,7 @@
             </div>
         </div>
 
-    <script src="/js/global.js?v=xYnLPncCGdwopIu-ETpzRKLPUDYBvYBsPkGjtl0yEB8"></script>
+    <script src="/js/global.js?v=ahFm2vpOxeXz7gkqO9R2iSVS0McHhcK7ZMRE8hdgPqk"></script>
 
         <h4 class="text-center mt-3 mb-4">
             <img src="/icon/csharp.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
@@ -65,9 +67,9 @@
         </h4>
 
     <div class="min300">
-        <div class="container">
+        <div class="container-fluid">
     <div class="row" id="tobox">
-        <div class="col-sm-12 mb-3">
+        <div class="col-sm-12 mb-2">
             <div class="input-group">
                 <button class="btn btn-warning" id="btnJsonToEntity">生成实体</button>
                 <div class="input-group-append">
@@ -138,7 +140,7 @@
 
 <script>
     function AutoHeight() {
-        var ch = $(window).height() - $('#txt1').offset().top - 20;
+        var ch = $(window).height() - $('#txt1').offset().top - 15;
         $('#txt1').css('height', Math.max(200, ch));
         $('#txt2').css('height', Math.max(200, ch));
     }
@@ -157,6 +159,6 @@
 <script src="/js/jsontocsharp.js?v=qd5FYKqS3JjDdiFkhyU8hASQJGEkJRjBsdbcESqZpRs"></script>
     </div>
 
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+    <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>

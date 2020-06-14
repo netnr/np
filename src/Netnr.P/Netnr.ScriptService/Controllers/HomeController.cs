@@ -332,5 +332,23 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// ZeroTier Web Manager
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult ZeroTier()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 生成密钥
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult RandomCode()
+        {
+            return View();
+        }
     }
 }

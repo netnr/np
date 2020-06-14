@@ -190,32 +190,44 @@ namespace Netnr.DataKit.Application
         /// <param name="sort">排序字段</param>
         /// <param name="order">排序方式</param>
         /// <param name="listFieldName">查询列，默认为 *</param>
+        /// <param name="whereSql">条件</param>
         /// <param name="total">返回总条数</param>
         /// <returns></returns>
-        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, out int total)
+        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, out int total)
         {
             if (listFieldName == "*")
             {
                 listFieldName = "t.*";
             }
 
-            var sql = @"
+            var countWhere = string.Empty;
+            if (string.IsNullOrWhiteSpace(whereSql))
+            {
+                whereSql = "";
+            }
+            else
+            {
+                countWhere = "WHERE " + whereSql;
+                whereSql = "AND " + whereSql;
+            }
+
+            var sql = $@"
                         SELECT
                           *
                         FROM
                           (
                             SELECT
-                              ROWNUM AS rowno," + listFieldName + @"
+                              ROWNUM AS rowno,{listFieldName}
                             FROM
-                              " + TableName + @" t
+                              {TableName} t
                             WHERE
-                              ROWNUM <= " + (page * rows) + @"
-                            ORDER BY " + sort + " " + order + @"
+                              ROWNUM <= {(page * rows)} {whereSql}
+                            ORDER BY {sort} {order}
                           ) table_alias
                         WHERE
-                          table_alias.rowno >= " + ((page - 1) * rows + 1);
+                          table_alias.rowno >= {((page - 1) * rows + 1)}";
 
-            var sqlTotal = "select count(1) as total from " + TableName;
+            var sqlTotal = $"select count(1) as total from {TableName} {countWhere}";
 
             var dt = new Data.Oracle.OracleHelper(connectionString).Query(sql).Tables[0];
             var dtTotal = new Data.Oracle.OracleHelper(connectionString).Query(sqlTotal).Tables[0].Rows[0][0].ToString();

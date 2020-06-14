@@ -2,7 +2,7 @@
 $("#seLotteryType").change(QueryLottery);
 
 function QueryLottery() {
-    loading();
+    ss.loading();
 
     ss.ajax({
         url: "http://cp.zgzcw.com/lottery/hisnumber.action?lotteryId=" + $("#seLotteryType").val() + "&issueLen=18",
@@ -36,11 +36,11 @@ function QueryLottery() {
             }
         },
         error: function () {
-            loading(0);
+            ss.loading(0);
             jz.msg("网络错误");
         },
         complete: function () {
-            loading(0);
+            ss.loading(0);
         }
     })
 }

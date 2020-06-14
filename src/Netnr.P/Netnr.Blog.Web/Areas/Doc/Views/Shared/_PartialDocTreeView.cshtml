@@ -28,10 +28,17 @@
                             更新于：@VisualFormatService.Duration(Model.DsdUpdateTime.Value)
                         </span>
                     }
+                    @if (Model.DsdOrder.HasValue)
+                    {
+                        <span class="text-nowrap mr-3">
+                            <i class="fa fa-sort-amount-asc text-muted"></i>
+                            排序号：@Model.DsdOrder
+                        </span>
+                    }
                 </div>
                 <hr />
                 <div class="markdown-body">
-                    @(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(Model.DsdContentHtml))
+                    @Html.Raw(Model.DsdContentHtml)
                 </div>
             }
         </div>

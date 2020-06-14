@@ -563,9 +563,10 @@ $(function () {
     updateTotalProgress();
 
     //记录 上传的源
-    var lsup = localStorage.getItem('seup');
+    var lsup = ss.lsStr("uploadProvider");
     $('#seup').change(function () {
-        localStorage.setItem('seup', this.value);
+        ss.ls["uploadProvider"] = this.value;
+        ss.lsSave();
     }).find('option').each(function () {
         if (this.value == lsup) {
             $('#seup').val(lsup);
@@ -575,14 +576,14 @@ $(function () {
 
     //获取 token
     uploader.tokens = {};
-    fetch('https://cors.zme.ink/imgbb.com').then(x => x.text()).then(html => {
+    $.get('https://cors.zme.ink/imgbb.com', null, function (html) {
         html.replace(/auth_token=".*";/, function (at) {
             uploader.tokens.imgbbcom = at.split('"')[1];
         })
     })
 
-    fetch('https://cors.zme.ink/jpg.dog').then(x => x.text()).then(html => {
-        html.replace(/auth_token=".*";/, function (at) {
+    $.get('https://cors.zme.ink/jpg.dog', null, function (html) {
+        html.replace(/auth_token = ".*";/, function (at) {
             uploader.tokens.jpgdog = at.split('"')[1];
         })
     })
