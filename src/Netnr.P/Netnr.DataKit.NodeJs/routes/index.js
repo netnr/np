@@ -7,4 +7,8 @@ router.get('/', function(req, res, next) {
     res.sendfile('./public/index.html');
 });
 
+router.get('/swagger', function (req, res, next) {
+    res.sendfile('./public/swagger.html');
+});
+
 module.exports = router;

@@ -1,8 +1,10 @@
 ﻿//跨列
 z.DC["dataurl_cf_colspan"] = {
     data: [
-        { value: 1, text: "一半排" },
-        { value: 2, text: "一整排" }
+        { value: 1, text: "占一半" },
+        { value: 2, text: "占一整" },
+        { value: 3, text: "占三分之一" },
+        { value: 4, text: "占三分之二" }
     ],
     init: function () {
         this.value = 1;
@@ -88,7 +90,7 @@ $('#list_Config_Form').click(function () {
 
                 //当前值
                 var etitle = sib.first().html(),
-                    espan = z.ConfigForm.editcol.hasClass('col-md-12') ? 2 : 1,
+                    espan = colStyleToSpan(z.ConfigForm.editcol[0].className),
                     eorder = sib.last().html();
                 z.ConfigForm.earea = 1;
                 //所在区域
@@ -116,7 +118,12 @@ $('#list_Config_Form').click(function () {
                                         z.ConfigForm.editcol.find('label').first().html(this.value);
                                         break;
                                     case "span":
-                                        evspan = (this.value || 1) * 6;
+                                        switch (this.value) {
+                                            case "2": evspan = 12; break;
+                                            case "3": evspan = 4; break;
+                                            case "4": evspan = 8; break;
+                                            default: evspan = 6; break;
+                                        }
                                         z.ConfigForm.editcol[0].className = "col-md-" + evspan + " col-sm-" + evspan;
                                         break;
                                     case "area":
@@ -195,11 +202,13 @@ $('#list_Config_Form').click(function () {
                     var cf_cb1 = z.Combo();
                     cf_cb1.id = cfeinput.eq(1);
                     cf_cb1.data = [
-                        { value: 1, text: "一半排" },
-                        { value: 2, text: "一整排" }
+                        { value: 1, text: "占一半" },
+                        { value: 2, text: "占一整" },
+                        { value: 3, text: "占三分之一" },
+                        { value: 4, text: "占三分之二" }
                     ];
                     cf_cb1.value = 1;
-                    cf_cb1.panelHeight = 100;
+                    cf_cb1.panelHeight = 135;
                     cf_cb1.editable = false;
                     cf_cb1.bind();
                     //区域
@@ -373,7 +382,7 @@ function CFgetJson() {
                     var item = {};
                     item.field = $(this).find('input,textarea').first().attr('data-field');
                     item.title = $(this).find('label').first().html();
-                    item.span = this.className.indexOf('col-md-6') >= 0 ? 1 : 2;
+                    item.span = colStyleToSpan(this.className);
                     item.area = i + 1;
                     data.push(item);
                 }
@@ -385,11 +394,25 @@ function CFgetJson() {
                 var item = {};
                 item.field = $(this).find('input,textarea').first().attr('data-field');
                 item.title = $(this).find('label').first().html();
-                item.span = this.className.indexOf('col-md-6') >= 0 ? 1 : 2;
+                item.span = colStyleToSpan(this.className);
                 item.area = 1;
                 data.push(item);
             }
         });
     }
     return data;
+}
+
+function colStyleToSpan(classname) {
+    var coln = 1;
+    if (classname.indexOf('col-md-12') >= 0) {
+        coln = 2;
+    }
+    if (classname.indexOf('col-md-4') >= 0) {
+        coln = 3;
+    }
+    if (classname.indexOf('col-md-8') >= 0) {
+        coln = 4;
+    }
+    return coln;
 }

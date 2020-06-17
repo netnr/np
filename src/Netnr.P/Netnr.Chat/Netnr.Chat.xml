@@ -21,7 +21,7 @@
         </member>
         <member name="F:Netnr.Chat.Application.ChatContextService.OnlineGroup1">
             <summary>
-            在线组，组ID 对应 组信息
+            组，组ID 对应 组信息
             </summary>
         </member>
         <member name="F:Netnr.Chat.Application.ChatContextService.UserMessage1">
@@ -34,7 +34,7 @@
             组消息记录，接收组ID 对应 发送消息
             </summary>
         </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.HandleMessageToUser(Netnr.Chat.Application.ViewModel.ChatMessageVM,Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.SignalR.IHubClients)">
+        <member name="M:Netnr.Chat.Application.ChatContextService.HandleMessageToUsers(Netnr.Chat.Application.ViewModel.ChatMessageVM,Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.SignalR.IHubClients)">
             <summary>
             处理用户消息发送
             </summary>
@@ -134,13 +134,6 @@
             根据用户ID找到在线用户信息
             </summary>
             <param name="UserId">用户ID</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.FindGroup(System.String)">
-            <summary>
-            根据组ID找到组信息
-            </summary>
-            <param name="GroupId">组ID</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Chat.Application.ChatContextService.FindGroup(System.Collections.Generic.List{System.String})">
@@ -395,7 +388,7 @@
             <param name="cm">推送消息</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Chat.Controllers.ChatController.PushMessageToGroups(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
+        <member name="M:Netnr.Chat.Controllers.ChatController.PushMessageToGroup(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
             <summary>
             推送消息到组
             </summary>

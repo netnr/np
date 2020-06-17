@@ -23,8 +23,8 @@ namespace Netnr.Blog.Application
             try
             {
                 var message = new MimeMessage();
-                message.From.Add(new MailboxAddress(GlobalTo.GetValue("MailKit:FromAddress")));
-                message.To.Add(new MailboxAddress(ToMail));
+                message.From.Add(MailboxAddress.Parse(GlobalTo.GetValue("MailKit:FromAddress")));
+                message.To.Add(MailboxAddress.Parse(ToMail));
                 message.Subject = Title;
                 message.Body = new BodyBuilder()
                 {

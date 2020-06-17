@@ -214,7 +214,7 @@ module.exports = {
                                                     @level2type = N'COLUMN',
                                                     @level2name = N'{dataColumnName}'`;
 
-        cmd = cmd.replace(/{dataTableName}/g, dk.pars.TableName.replace("'", "")).replace(/dataColumnName/g, dk.pars.FieldName.replace("'", "")).replace(/{comment}/g, dk.pars.FieldComment.replace("'", "''"));
+        cmd = cmd.replace(/{dataTableName}/g, dk.pars.TableName.replace("'", "")).replace(/{dataColumnName}/g, dk.pars.FieldName.replace("'", "")).replace(/{comment}/g, dk.pars.FieldComment.replace("'", "''"));
 
         return this.Query(dk, cmd);
     },

@@ -10,7 +10,7 @@ module.exports = {
     Query: function (dk, cmd) {
 
         return dk.connectionOptions().then(config => {
-            console.log(config.filename)
+
             var db = new sqlite3.Database(config.filename);
 
             return new Promise(function (resolve, reject) {
