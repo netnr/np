@@ -1,7 +1,7 @@
 # Netnr.Login
 第三方 OAuth 授权登录，QQ、微信（WeChat）、微博（Weibo）、GitHub、码云（Gitee）、淘宝（天猫）、微软（Microsoft ）、钉钉（DingTalk）、谷歌（Google）、支付宝（AliPay）、StackOverflow
 
-> 演示：https://www.netnr.com/account/login
+> 演示：<https://www.netnr.com/account/login>
 
 ### 安装 (NuGet)
 ```
@@ -66,7 +66,7 @@ Install-Package Netnr.Login
 ```csharp
 /*
  * 这是测试代码，只为调通每一个接口，拿到 唯一标识
- * 实际应用中还要处理昵称、邮箱、头像等，可参考个站开源项目：https://github.com/netnr/blog
+ * 实际应用中还要处理昵称、邮箱、头像等
  */
 
 using System;

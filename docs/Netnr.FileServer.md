@@ -3,9 +3,8 @@
 
 ---
 
-### 正式环境在创建 App 之后需设置 `IsDev:false`，设置直接生效不用重启服务，`appsettings.json` 为配置文件  
-
-### 文件数据库 和 上传目录 赋予读写权限
+> 生产环境在创建 App 之后需设置 `IsDev:false`，设置直接生效不用重启服务，`appsettings.json` 为配置文件  
+> 文件数据库 和 上传目录 赋予读写权限
 
 ---
 
@@ -30,10 +29,10 @@
 Token 可根据配置设置有效期，默认30分钟有效，缓存20分钟（即20分钟内请求Token返回结果相同）
 
 ### 接口
-- `/api/createapp` 创建App，**非正式环境使用**
-- `/api/getapplist` 获取App列表，**非正式环境使用**
-- `/api/resetall` 清空数据库和上传目录，**非正式环境使用**
-- 在正式环境下一定要修改配置 `IsDev:false` , 关闭以上接口
+- `/api/createapp` 创建App，**非生产环境使用**
+- `/api/getapplist` 获取App列表，**非生产环境使用**
+- `/api/resetall` 清空数据库和上传目录，**非生产环境使用**
+- 在生产环境下一定要修改配置 `IsDev:false` , 关闭以上接口
 
 ---
 

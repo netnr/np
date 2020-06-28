@@ -19,22 +19,20 @@ function QueryDomainName() {
 
     ss.loading();
     ss.ajax({
-        url: "http://icp.chinaz.com/info?q=" + encodeURIComponent($("#txtSearch").val()),
+        url: "https://icp.aizhan.com/" + encodeURIComponent($("#txtSearch").val()),
         success: function (data) {
-            var tbs = $(data).find('table');
-            var mb = tbs.eq(1);
-            mb.find('tr').last().remove();
-            mb.addClass('table table-bordered table-sm');
-            var ws = tbs.eq(3);
-            ws.find('tr').last().remove();
-            var wstr = ws.find('tr');
+            var jw = $(data);
 
-            var tdfix = wstr.eq(1).find('td').last();
-            tdfix.html(tdfix.find('div').html());
+            var v1 = jw.find('#icp-html')
+            v1.find('tr').eq(5).remove();
 
-            mb.append(wstr)
+            var v2 = jw.find('#icp-company');
 
-            $('#dn').html('').append(mb);
+            if (v1.find('table').length && v2.find('table').length) {
+                $('#dn').html('').append(v1).append($('<hr/>')).append(v2);
+            } else {
+                $('#dn').html('<p class="text-muted">无备案信息</p>');
+            }
         },
         error: function () {
             ss.loading(0);

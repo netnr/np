@@ -11,7 +11,6 @@
     - [Netnr.Core （公共类库）](Netnr.Core.md)
     - [Netnr.Logging （日志）](Netnr.Logging.md)
     - [Netnr.Login （第三方登录）](Netnr.Login.md)
-    - [Netnr.TencentAI （腾讯AI）](Netnr.TencentAI.md)
     - [Netnr.WeChat （微信公众号）](Netnr.WeChat.md)
 
 - ClassApplication （应用类）

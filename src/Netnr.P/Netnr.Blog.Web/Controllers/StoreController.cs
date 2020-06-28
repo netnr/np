@@ -14,6 +14,7 @@ namespace Netnr.Blog.Web.Controllers
     /// <summary>
     /// 存储
     /// </summary>
+    [FilterConfigs.IsAdmin]
     public class StoreController : Controller
     {
         /// <summary>
@@ -31,7 +32,6 @@ namespace Netnr.Blog.Web.Controllers
         /// QQ对象存储
         /// </summary>
         /// <returns></returns>
-        [FilterConfigs.LocalAuth]
         public IActionResult QQCos()
         {
             return View();
@@ -295,7 +295,6 @@ namespace Netnr.Blog.Web.Controllers
         /// NOS 对象存储
         /// </summary>
         /// <returns></returns>
-        [FilterConfigs.LocalAuth]
         public IActionResult NENos()
         {
             return View();
@@ -391,16 +390,9 @@ namespace Netnr.Blog.Web.Controllers
         /// Qiniu对象存储
         /// </summary>
         /// <returns></returns>
-        [FilterConfigs.LocalAuth]
         public IActionResult QNKodo()
         {
             ViewData["DateUnix"] = DateTime.Now.AddHours(1).ToTimestamp();
-
-            if (FilterConfigs.HelpFuncTo.LocalIsAuth(Request.Cookies["sk"] ?? ""))
-            {
-                ViewData["LocalIsAuth"] = 1;
-            }
-
             return View();
         }
 

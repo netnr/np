@@ -136,22 +136,15 @@ namespace Netnr.Blog.Web.Controllers
                     }
                     else
                     {
-                        //自定义路径
-                        if (!string.IsNullOrWhiteSpace(cp))
-                        {
-                            cp = cp.TrimStart('/').TrimEnd('/') + '/';
-                        }
-
-                        var path = cp + now.ToString("yyyy/MM/dd/");
-                        var rootdir = GlobalTo.WebRootPath + "/" + (GlobalTo.GetValue("StaticResource:RootDir") + "/");
-                        string fullpath = rootdir + path;
+                        var path = Path.Combine(cp, now.ToString("yyyy/MM/dd/"));
+                        var fullpath = Path.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"), path);
 
                         if (!Directory.Exists(fullpath))
                         {
                             Directory.CreateDirectory(fullpath);
                         }
 
-                        using (var fs = new FileStream(fullpath + filename + ext, FileMode.CreateNew))
+                        using (var fs = new FileStream(Path.Combine(fullpath, filename + ext), FileMode.CreateNew))
                         {
                             file.CopyTo(fs);
                             fs.Flush();

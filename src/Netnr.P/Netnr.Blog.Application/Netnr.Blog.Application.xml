@@ -250,16 +250,9 @@
             备份数据库
             </summary>
         </member>
-        <member name="M:Netnr.Blog.Application.TaskService.GistSync(System.Int32)">
+        <member name="M:Netnr.Blog.Application.TaskService.GistSync">
             <summary>
             Gist代码片段，同步到GitHub、Gitee
-            </summary>
-            <param name="UserId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Application.TaskService.ReplaceLink">
-            <summary>
-            替换链接
             </summary>
             <returns></returns>
         </member>

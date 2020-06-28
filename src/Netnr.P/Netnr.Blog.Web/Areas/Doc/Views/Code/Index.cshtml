@@ -44,6 +44,9 @@
             <a target="_blank" href="/doc/code/export/@Model.DsCode" data-toggle="tooltip" data-placement="left" title="Export">
                 <i class="fa fa-fw fa-lg fa-file-word-o text-primary"></i>
             </a>
+            <a href="javascript:void(0)" id="aprint" data-toggle="tooltip" data-placement="left" title="Print">
+                <i class="fa fa-fw fa-lg fa-print text-danger"></i>
+            </a>
             <a href="javascript:void(0)" id="switchsize" data-toggle="tooltip" data-placement="left" title="Switch size">
                 <i class="fa fa-fw fa-lg fa-compress text-info"></i>
             </a>
@@ -70,6 +73,14 @@
     }
     $('#switchsize').click(function () {
         SwitchSize($(this).children().hasClass('fa-compress') ? 1 : 0);
+    });
+
+    $('#aprint').click(function () {
+        $(document.documentElement).addClass('print');
+        window.print();
+        setTimeout(function () {
+            $(document.documentElement).removeClass('print');
+        }, 1000)
     });
 
     //提示

@@ -417,24 +417,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.BulkInsert">
-            <summary>
-            批量新增
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.BulkUpdate">
-            <summary>
-            批量修改
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.RFController.BulkDelete">
-            <summary>
-            批量删除
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.ResponseFramework.Web.Controllers.ServicesController">
             <summary>
             服务

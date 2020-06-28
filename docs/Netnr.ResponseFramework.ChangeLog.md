@@ -104,7 +104,7 @@
 - 添加 表格列标题快捷打开定位条件查询面板
 - 调整 首次运行项目，自动创建数据库、调重置数据库（`scripts/table-reset` 目录需有对应的数据库脚本）
 - 修复 datetime日期时间输入类型查询面板赋值存在的问题（没阻止冒泡，先结束编辑再赋值造成赋值失败）
-- 调整 `Netnr.Core` 类库项目从NuGet引入，新增 `Netnr.Fast` 项目，具体看 https://github.com/netnr/Netnr.ClassLibrary
+- 调整 `Netnr.Core` 类库项目从NuGet引入，新增 `Netnr.Fast` 项目
 - 调整 支持多表单生成（页面的表单、表格配置默认第一个，暂不支持多表单、表格配置）
 
 ### [v2.2.0] - 2019-01-17

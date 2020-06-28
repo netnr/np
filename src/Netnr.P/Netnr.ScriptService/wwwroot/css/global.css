@@ -28,12 +28,8 @@ body {
 }
 
 /*顶部导航*/
-.navtop {
-    z-index: 9;
-    background: #FFFCF5;
-    margin-bottom: 30px;
-    font-family: 'Microsoft YaHei';
-    box-shadow: 0 0 8px 0 rgba(0,0,0,0.1), 0 1px rgba(0,0,0,0.1);
+.netnrnav.horizontal .netnrnav-wrapper {
+    width: 100% !important;
 }
 
 .CodeMirror {

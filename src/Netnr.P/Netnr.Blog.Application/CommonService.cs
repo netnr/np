@@ -193,9 +193,10 @@ namespace Netnr.Blog.Application
             {
                 try
                 {
-                    var jt = KeyValuesQuery(new List<string> { TagName }).FirstOrDefault().KeyValue.ToJObject();
-
-                    var tags = new List<object>
+                    var jt = KeyValuesQuery(new List<string> { TagName }).FirstOrDefault()?.KeyValue.ToJObject();
+                    if (jt != null)
+                    {
+                        var tags = new List<object>
                         {
                             new
                             {
@@ -204,15 +205,16 @@ namespace Netnr.Blog.Application
                             }
                         };
 
-                    vm.Temp = new
-                    {
-                        abs = new List<string>
+                        vm.Temp = new
+                        {
+                            abs = new List<string>
                             {
                                 jt["abstract"].ToString(),
                                 jt["url"].ToString()
                             },
-                        tags
-                    }.ToJson();
+                            tags
+                        }.ToJson();
+                    }
                 }
                 catch (Exception)
                 {

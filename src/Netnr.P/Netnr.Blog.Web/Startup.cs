@@ -131,9 +131,6 @@ namespace Netnr.Blog.Web
                 });
             });
 
-            //路由小写
-            services.AddRouting(options => options.LowercaseUrls = true);
-
             //授权访问信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {

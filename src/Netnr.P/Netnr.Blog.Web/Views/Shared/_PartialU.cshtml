@@ -14,9 +14,7 @@
             <div class="row duib">
                 <div class="col-md-2">
                     @{
-                        var server = GlobalTo.GetValue("StaticResource:Server").TrimEnd('/') + '/';
-                        string path = GlobalTo.GetValue("StaticResource:AvatarPath").TrimEnd('/').TrimStart('/') + "/";
-                        string lgphoto = server + path + Model.UserPhoto?.Replace(".", "_lg.");
+                        var lgphoto = System.IO.Path.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), Model.UserPhoto?.Replace(".", "_lg."));
 
                         Model.UserSay = string.IsNullOrEmpty(Model.UserSay) ? "这个人很懒，什么也没有留下。^_^ " : Model.UserSay;
                     }

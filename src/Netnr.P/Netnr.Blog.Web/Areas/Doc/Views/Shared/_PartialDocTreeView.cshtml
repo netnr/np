@@ -17,13 +17,13 @@
             {
                 <h2 class="font-weight-bold">@Model.DsdTitle</h2>
                 <div class="text-muted small mt-3">
-                    <span class="text-nowrap mr-3">
+                    <span class="text-nowrap mr-3" title='@Model.DsdCreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss")'>
                         <i class="fa fa-clock-o text-muted"></i>
                         创建于：@VisualFormatService.Duration(Model.DsdCreateTime.Value)
                     </span>
                     @if (Model.DsdCreateTime != Model.DsdUpdateTime)
                     {
-                        <span class="text-nowrap mr-3">
+                        <span class="text-nowrap mr-3" title='@Model.DsdUpdateTime.Value.ToString("yyyy-MM-dd HH:mm:ss")'>
                             <i class="fa fa-clock-o text-muted"></i>
                             更新于：@VisualFormatService.Duration(Model.DsdUpdateTime.Value)
                         </span>

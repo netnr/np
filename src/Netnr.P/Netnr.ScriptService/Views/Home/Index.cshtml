@@ -2,9 +2,9 @@
     var mj = Netnr.Extend.ToJArray(System.IO.File.ReadAllText(GlobalTo.WebRootPath + "/js/data/favorite.json"));
     var isHtmlPath = Netnr.Core.CacheTo.Get("GlobalKey-HtmlPath") as string;
 }
-<div class="container my-4">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 mt-3">
             <div class="input-group">
                 <div class="input-group-prepend">
                     <select class="custom-select" style="width:150px;" id="seGroup">
@@ -15,23 +15,23 @@
                         }
                     </select>
                 </div>
-                <input type="text" class="form-control" placeholder="搜索" id="txtSearch">
                 <div class="input-group-prepend">
-                    <button class="btn btn-success" id="btnSearch" title="双击空白处 重置搜索条件">搜索</button>
+                    <button class="btn btn-success" id="btnSearch">搜索</button>
                 </div>
+                <input type="text" class="form-control" placeholder="双击空白处 重置搜索条件" id="txtSearch">
             </div>
         </div>
-    </div>
-    @if (string.IsNullOrWhiteSpace(isHtmlPath))
-    {
-        <div class="row">
+
+        @if (string.IsNullOrWhiteSpace(isHtmlPath))
+        {
             <div class="col-md-12 mt-3">
                 <a href="/build" target="_blank">生成静态HTML</a>
 
                 <a href="/index.html" class="mx-3" target="_blank">访问静态HTML</a>
             </div>
-        </div>
-    }
+        }
+    </div>
+
     <div class="menubox" id="favoritebox">
         @foreach (var gi in mj)
         {

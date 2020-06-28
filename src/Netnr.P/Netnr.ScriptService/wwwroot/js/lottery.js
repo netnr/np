@@ -5,7 +5,7 @@ function QueryLottery() {
     ss.loading();
 
     ss.ajax({
-        url: "http://cp.zgzcw.com/lottery/hisnumber.action?lotteryId=" + $("#seLotteryType").val() + "&issueLen=18",
+        url: "http://cp.zgzcw.com/lottery/hisnumber.action?lotteryId=" + $("#seLotteryType").val() + "&issueLen=24",
         dataType: "json",
         success: function (data) {
             data = ss.datalocation(data);
@@ -26,7 +26,7 @@ function QueryLottery() {
                     }
 
                     htm.push(
-                        '<div class="col-md-4 col-sm-6 mt-2 mb-2"><div class="card card-secondary"><div class="py-2 px-2">'
+                        '<div class="col-xl-3 col-md-4 col-sm-6 mt-2 mb-2"><div class="card card-secondary"><div class="py-2 px-2">'
                         + '<div class="et"><label class="h5 mr-2">' + this.lotteryExpect + '</label><small>' + formatDateTime(this.ernieDate).substr(0, 10) + '</small></div>'
                         + spans1 + spans2
                         + '</div></div></div>'

@@ -1,0 +1,29 @@
+{
+  "name": "vdocs",
+  "version": "0.0.1",
+  "description": "vercel docs",
+  "main": "api/vdocs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netnr/np.git"
+  },
+  "keywords": [
+    "netnr",
+    "vdocs",
+    "vercel"
+  ],
+  "author": "netnr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netnr/np/issues"
+  },
+  "homepage": "https://github.com/netnr/np#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "marked": "^1.1.0",
+    "mime": "^2.4.6"
+  }
+}

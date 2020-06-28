@@ -194,7 +194,7 @@ namespace Netnr.Blog.Web.Filters
             public void OnAuthorization(AuthorizationFilterContext context)
             {
                 //验证登录标记是最新，不是则注销登录（即同一用户不允许同时在线，按缓存时间生效）
-                if (context.HttpContext.User.Identity.IsAuthenticated && GlobalTo.GetValue<bool>("SingleSignOn"))
+                if (context.HttpContext.User.Identity.IsAuthenticated && GlobalTo.GetValue<bool>("Common:SingleSignOn"))
                 {
                     var uinfo = new Application.UserAuthService(context.HttpContext).Get();
 
@@ -269,7 +269,7 @@ namespace Netnr.Blog.Web.Filters
                 if (context.HttpContext.User.Identity.IsAuthenticated)
                 {
                     var uinfo = new Application.UserAuthService(context.HttpContext).Get();
-                    isv = uinfo.UserId == GlobalTo.GetValue<int>("AdminId");
+                    isv = uinfo.UserId == GlobalTo.GetValue<int>("Common:AdminId");
                 }
 
                 if (!isv)
@@ -295,9 +295,9 @@ namespace Netnr.Blog.Web.Filters
 
             public void OnActionExecuting(ActionExecutingContext context)
             {
-                bool isv = false;
+                bool isv = GlobalTo.GetValue<bool>("Common:MailValid");
 
-                if (context.HttpContext.User.Identity.IsAuthenticated)
+                if (!isv && context.HttpContext.User.Identity.IsAuthenticated)
                 {
                     var uinfo = new Application.UserAuthService(context.HttpContext).Get();
 
@@ -343,79 +343,10 @@ namespace Netnr.Blog.Web.Filters
             }
         }
 
-        /// <summary>
-        /// LocalAuth 过滤，本地授权
-        /// </summary>
-        public class LocalAuth : Attribute, IActionFilter
-        {
-            public void OnActionExecuted(ActionExecutedContext context)
-            {
-
-            }
-
-            public void OnActionExecuting(ActionExecutingContext context)
-            {
-                var sk = context.HttpContext.Request.Cookies["sk"] ?? "";
-                bool br = HelpFuncTo.LocalIsAuth(sk);
-
-                if (!br)
-                {
-                    var url = "/home/auth?returnUrl=" + System.Web.HttpUtility.UrlEncode(context.HttpContext.Request.Path);
-                    context.Result = new RedirectResult(url);
-                }
-            }
-        }
-
         #region 辅助方法
+
         public class HelpFuncTo
         {
-            /// <summary>
-            /// 本地授权：被减数与当前小时、分钟分别求差，满足容错分钟数即有效的KEY
-            /// 
-            /// 举例：
-            /// 配置 小时被减数80，分钟被减数80，假定现在时间是 16:50
-            /// 那么对应的KEY是 80-16=64,80-50=30 即 6430
-            /// 
-            /// </summary>
-            /// <param name="sk"></param>
-            /// <returns></returns>
-            public static bool LocalIsAuth(string sk)
-            {
-                bool b = false;
-                if (sk.Length == 4)
-                {
-                    try
-                    {
-                        //小时被减数，24小时制
-                        int bh = GlobalTo.GetValue<int>("LocalAuth:BeHour");
-                        //分钟被减数
-                        int bm = GlobalTo.GetValue<int>("LocalAuth:BeMinute");
-                        //容错分钟数
-                        int rm = GlobalTo.GetValue<int>("LocalAuth:RangeMinute");
-
-                        string h = (bh - Convert.ToInt32(sk.Substring(0, 2))).ToString().PadLeft(2, '0');
-
-                        int mm = bm - Convert.ToInt32(sk.Substring(2));
-                        string m = (Math.Min(mm, 59)).ToString().PadLeft(2, '0');
-
-                        DateTime dtn = DateTime.Now;
-                        if (DateTime.TryParse(dtn.ToString("yyyy-MM-dd ") + h + ":" + m, out DateTime dta))
-                        {
-                            //与当前时间容错分钟
-                            if (dta >= dtn.AddMinutes(-rm) && dta <= dtn.AddMinutes(rm))
-                            {
-                                b = true;
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-                }
-                return b;
-            }
-
             /// <summary>
             /// 获取最新登录标记，用于对比本地，踢出下线
             /// </summary>
@@ -444,6 +375,7 @@ namespace Netnr.Blog.Web.Filters
                 return result;
             }
         }
+
         #endregion
     }
 }

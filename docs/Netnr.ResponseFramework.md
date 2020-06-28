@@ -9,14 +9,15 @@
 
 ### [文档说明](Netnr.ResponseFramework.Document.md)
 
-<h3><a href="Netnr.ResponseFramework.SQLServer.pdm" title="PD设计" target="_blank">SQLServer.pdm</h3>
-<h3><a href="Netnr.ResponseFramework.SQLServer.sql" title="建表脚本" target="_blank">SQLServer.sql</h3>
+### [SQLServer.pdm](Netnr.ResponseFramework.SQLServer.pdm "PD设计")
+
+### [SQLServer.sql](Netnr.ResponseFramework.SQLServer.sql "建表脚本")
 
 ### v3.x
 - 前端采用 jQuery + Bootstrap + EasyUI + AceAdmin + fontAwesome
 - 后端采用 .NET Core + EF + SQL（SQLServer、MySQL、PostgreSQL、SQLite）
     - 数据库脚本放置于 `wwwroot/scripts/`目录下
-    - 数据库转换使用的工具：https://fishcodelib.com/DBMigration.htm
+    - 数据库转换使用的工具：<https://fishcodelib.com/DBMigration.htm>
     - 全部采用 LINQ，跨数据库、避免SQL注入
 - Visual Studio 2019 运行项目
 
@@ -83,7 +84,3 @@
 ### 第三方文档API
 - [EasyUI文档](https://ad.netnr.com/#EasyUI-1.5.2)
 - [jQuery文档](https://ad.netnr.com/#jQuery-1.11.3)
-
-### 附
-- [联系（打赏）](https://zme.ink)
-- [加入QQ群](http://qm.qq.com/cgi-bin/qm/qr?k=oLmAflGAIODgeYw9tImSvBVX1SK_warh)

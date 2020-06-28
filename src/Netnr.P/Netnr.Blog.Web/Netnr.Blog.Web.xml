@@ -300,6 +300,12 @@
             <param name="LogGroup">分组</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Blog.Web.Controllers.AdminController.KeyValues">
+            <summary>
+            字典
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Blog.Web.Controllers.APIController">
             <summary>
             公共接口
@@ -490,14 +496,6 @@
             <summary>
             阅读追加
             </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.HomeController.Auth(System.String,System.String)">
-            <summary>
-            授权访问
-            </summary>
-            <param name="returnUrl">跳转链接</param>
-            <param name="sk">密钥</param>
-            <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.HomeController.Valid">
             <summary>
@@ -696,30 +694,19 @@
             命令
             </summary>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.KeyValues">
-            <summary>
-            字典
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.Blog.Web.Controllers.ServicesController.TaskItem">
             <summary>
             任务项
             </summary>
         </member>
-        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.Backup">
+        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.BackupDataBase">
             <summary>
-            备份
+            备份数据库
             </summary>
         </member>
         <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.GistSync">
             <summary>
-            代码片段同步
-            </summary>
-        </member>
-        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.ReplaceLink">
-            <summary>
-            链接替换
+            代码片段同步到GitHub、Gitee
             </summary>
         </member>
         <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.HOR">
@@ -1014,23 +1001,6 @@
             <summary>
             有效授权（Cookie、Token）
             </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.LocalAuth">
-            <summary>
-            LocalAuth 过滤，本地授权
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Filters.FilterConfigs.HelpFuncTo.LocalIsAuth(System.String)">
-            <summary>
-            本地授权：被减数与当前小时、分钟分别求差，满足容错分钟数即有效的KEY
-            
-            举例：
-            配置 小时被减数80，分钟被减数80，假定现在时间是 16:50
-            那么对应的KEY是 80-16=64,80-50=30 即 6430
-            
-            </summary>
-            <param name="sk"></param>
-            <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Filters.FilterConfigs.HelpFuncTo.GetLogonSign(System.Int32,System.Boolean)">
             <summary>

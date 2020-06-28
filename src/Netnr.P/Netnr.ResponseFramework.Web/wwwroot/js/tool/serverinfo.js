@@ -3,16 +3,12 @@ function loadOSinfo() {
         url: "/Tool/QueryServerInfo?__nolog=true",
         dataType: 'json',
         success: function (data, _status, xhr) {
-            if (data.code != 200) {
-                return false;
-            }
 
             var arh = xhr.getAllResponseHeaders();
-
             data = data.data;
 
             var htm = [];
-            htm.push('<table class="table table-bordered mt15">');
+            htm.push('<table class="table table-bordered">');
 
             arh.replace(/server: (.*)/, function () {
                 htm.push('<tr>');
@@ -26,14 +22,16 @@ function loadOSinfo() {
             htm.push('<td>' + data.FrameworkDescription + '</td>');
             htm.push('</tr>');
 
-            htm.push('<tr>');
-            htm.push('<td>系统</td>');
-            htm.push('<td>' + data.OSDescription + '</td>');
-            htm.push('</tr>');
+            if (data.Model != "System Product Name") {
+                htm.push('<tr>');
+                htm.push('<td>型号</td>');
+                htm.push('<td>' + data.Model + '</td>');
+                htm.push('</tr>');
+            }
 
             htm.push('<tr>');
-            htm.push('<td>内核</td>');
-            htm.push('<td>' + data.OSVersion.VersionString + '</td>');
+            htm.push('<td>系统</td>');
+            htm.push('<td>' + data.OperatingSystem + ' ，' + data.OSVersion.VersionString + ' ，' + data.UserName + (data.Is64BitOperatingSystem ? " ，64Bit" : "") + '</td>');
             htm.push('</tr>');
 
             htm.push('<tr>');
@@ -43,19 +41,19 @@ function loadOSinfo() {
 
             htm.push('<tr>');
             htm.push('<td>内存</td>');
-            var p1 = (data.FreePhysicalMemory / 1024 / 1024).toFixed(0), p2 = (data.TotalPhysicalMemory / 1024 / 1024).toFixed(0);
-            var p3 = ((p2 - p1) / p2 * 100).toFixed(0);
+            var p1 = (data.FreePhysicalMemory / 1024 / 1024 / 1024).toFixed(1), p2 = (data.TotalPhysicalMemory / 1024 / 1024 / 1024).toFixed(1);
+            var p3 = ((p2 - p1) / p2 * 100).toFixed(1);
             var pp = '<div class="progress" style="margin:5px 0"><div class="progress-bar progress-bar-warning" aria-valuenow="' + p3 + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + p3 + '%;">' + p3 + '%</div></div>';
-            htm.push('<td>' + pp + (p2 - p1) + ' / ' + p2 + ' MB</td>');
+            htm.push('<td>' + pp + (p2 - p1).toFixed(1) + ' / ' + p2 + ' GB</td>');
             htm.push('</tr>');
 
             if (data.SwapTotal) {
                 htm.push('<tr>');
                 htm.push('<td>Swap</td>');
-                var p1 = (data.SwapFree / 1024 / 1024).toFixed(0), p2 = (data.SwapTotal / 1024 / 1024).toFixed(0);
-                var p3 = ((p2 - p1) / p2 * 100).toFixed(0);
+                var p1 = (data.SwapFree / 1024 / 1024 / 1024).toFixed(1), p2 = (data.SwapTotal / 1024 / 1024 / 1024).toFixed(1);
+                var p3 = ((p2 - p1) / p2 * 100).toFixed(1);
                 var pp = '<div class="progress"><div class="progress-bar progress-bar-warning" aria-valuenow="' + p3 + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + p3 + '%;">' + p3 + '%</div></div>';
-                htm.push('<td>' + pp + (p2 - p1) + ' / ' + p2 + ' MB</td>');
+                htm.push('<td>' + pp + (p2 - p1).toFixed(1) + ' / ' + p2 + ' MB</td>');
                 htm.push('</tr>');
             }
 
@@ -81,6 +79,9 @@ function loadOSinfo() {
                     pp = '<div class="progress" style="margin:5px 0"><div class="progress-bar progress-bar-warning" aria-valuenow="' + p3 + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + p3 + '%;">' + p3 + '%</div></div>';
                     var dn = diskitem.Name || "";
                     dn = dn.length > 20 ? dn.substring(0, 20) + "..." : dn;
+                    if (diskitem.VolumeName) {
+                        dn = diskitem.VolumeName + " (" + dn + ")";
+                    }
                     htm.push(pp + '<div>' + dn + ' &nbsp; ' + p1.toFixed(0) + ' / ' + p2.toFixed(0) + ' ' + dw + '</div>');
                 }
             })

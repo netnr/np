@@ -1,9 +1,9 @@
 # Netnr.Blog
 个人站点
 
-> 演示：https://www.netnr.com
+> 演示：<https://www.netnr.com>
 
-<h3><a href="Netnr.Blog.SQLServer.pdm" title="PD设计" target="_blank">SQLServer.pdm</h3>
+### [SQLServer.pdm](Netnr.Blog.SQLServer.pdm "PD设计")
 
 ### 框架组件
 - jQuery + Bootstrap4
@@ -48,17 +48,12 @@
 第一次运行项目自动写入示例数据，账号：`netnr`，密码：`123456`  
 示例数据存放在静态资源wwwroot目录下，访问地址：`{Host}/scripts/example/data.json`
 
-**什么是本地授权码（SK）**  
-
-根据当前时间的小时和分钟数结合配置文件的值进行计算得到的码，时间容差±6  
-如：现在是17:10，配置的小时被减数是33，那么33-17=16，配置的分钟被减数是66，那么66-10=56，得到的本地授权码就是1656，当本地授权码超过容差时间会失效
-
 **怎么添加文章标签**  
 
-访问 `{Host}/services/keyvalues` 添加标签，输入本地授权码才能访问，   
+访问 `{Host}/admin/keyvalues` 添加标签，管理员访问，   
 标签表(Tags)依赖键值表(KeyValues)和键值同义词表(KeyValueSynonym)  
 如输入`javascript`，从百科抓取该词描述（抓取失败机率高，需重试），（可选）添加同义词`js`，再添加 `javascript` 到标签
 
 **Markdown编辑器用的什么**
 
-请看这里：<https://md.netnr.com/>
+请看这里：<https://md.netnr.com>

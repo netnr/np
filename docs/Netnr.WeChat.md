@@ -6,7 +6,7 @@
 Install-Package Netnr.WeChat
 ```
 ### 说明
-Fork：https://github.com/night-king/weixinSDK
+Fork：<https://github.com/night-king/weixinSDK>
 
 ### 调整
 - 不使用`Dynamic`对象，所有方法返回`string`类型的`JSON`字符串

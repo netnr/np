@@ -111,13 +111,13 @@ var ss = {
      * @param {any} hi 指定代理
      */
     ajax: function (obj, hi) {
-        var hosts = ["https://cors.zme.ink/", "https://bird.ioliu.cn/v2?url="];
+        var hosts = ["https://api.zme.ink/cors/", "https://cors.zme.ink/", "https://bird.ioliu.cn/v2?url="];
         if (hi != null) {
-            obj.url = hosts[hi] + obj.url;
+            obj.url = hosts[hi] + encodeURIComponent(obj.url);
             $.ajax(obj)
         } else {
             upstream(hosts, function (fast) {
-                obj.url = fast + obj.url;
+                obj.url = fast + encodeURIComponent(obj.url);
                 $.ajax(obj);
             }, 1);
         }

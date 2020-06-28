@@ -181,7 +181,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     using var db = new Data.ContextBase();
 
-                    if (db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
+                    if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
                     {
                         vm.Code = 1;
                         vm.Msg = "请先验证邮箱";

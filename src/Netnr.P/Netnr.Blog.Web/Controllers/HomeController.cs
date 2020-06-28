@@ -111,9 +111,8 @@ namespace Netnr.Blog.Web.Controllers
 
             using (var db = new ContextBase())
             {
-                //已验证邮箱
-                uinfo = db.UserInfo.Find(uinfo.UserId);
-                if (uinfo.UserId != 1 && uinfo.UserMailValid != 1)
+                //验证邮箱
+                if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
                 {
                     vm.Set(ARTag.unauthorized);
                     vm.Msg = "请验证邮箱后再操作";
@@ -381,33 +380,6 @@ namespace Netnr.Blog.Web.Controllers
                 db.UserWriting.Update(mo);
                 db.SaveChanges();
             }
-        }
-
-        /// <summary>
-        /// 授权访问
-        /// </summary>
-        /// <param name="returnUrl">跳转链接</param>
-        /// <param name="sk">密钥</param>
-        /// <returns></returns>
-        public IActionResult Auth(string returnUrl, string sk)
-        {
-            if (!string.IsNullOrWhiteSpace(sk))
-            {
-                bool b = FilterConfigs.HelpFuncTo.LocalIsAuth(sk);
-                if (b)
-                {
-                    Response.Cookies.Append("sk", sk);
-
-                    returnUrl = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl;
-
-                    return new RedirectResult(returnUrl);
-                }
-                else
-                {
-                    ViewData["AuthResult"] = "SK无效";
-                }
-            }
-            return View();
         }
 
         /// <summary>

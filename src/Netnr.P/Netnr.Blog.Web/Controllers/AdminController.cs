@@ -298,5 +298,158 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         #endregion
+
+        #region 百科字典
+
+        /// <summary>
+        /// 字典
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult KeyValues()
+        {
+            string cmd = RouteData.Values["id"]?.ToString();
+            if (cmd != null)
+            {
+                string result = string.Empty;
+                var rt = new List<object>
+                {
+                    0,
+                    "fail"
+                };
+
+                try
+                {
+                    switch (cmd)
+                    {
+                        case "grab":
+                            {
+                                string key = Request.Form["Key"].ToString();
+                                string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToEncode()}&bk_length=600";
+                                string apirt = Core.HttpTo.Get(api);
+                                if (apirt.Length > 100)
+                                {
+                                    using var db = new Data.ContextBase();
+                                    var kvMo = db.KeyValues.Where(x => x.KeyName == key).FirstOrDefault();
+                                    if (kvMo == null)
+                                    {
+                                        kvMo = new Domain.KeyValues
+                                        {
+                                            KeyId = Guid.NewGuid().ToString(),
+                                            KeyName = key.ToLower(),
+                                            KeyValue = apirt
+                                        };
+                                        db.KeyValues.Add(kvMo);
+                                    }
+                                    else
+                                    {
+                                        kvMo.KeyValue = apirt;
+                                        db.KeyValues.Update(kvMo);
+                                    }
+
+                                    rt[0] = db.SaveChanges();
+                                    rt[1] = kvMo;
+                                }
+                                else
+                                {
+                                    rt[0] = 0;
+                                    rt[1] = apirt;
+                                }
+                            }
+                            break;
+                        case "synonym":
+                            {
+                                var keys = Request.Form["keys"].ToString().Split(',').ToList();
+
+                                string mainKey = keys.First().ToLower();
+                                keys.RemoveAt(0);
+
+                                var listkvs = new List<Domain.KeyValueSynonym>();
+                                foreach (var key in keys)
+                                {
+                                    var kvs = new Domain.KeyValueSynonym
+                                    {
+                                        KsId = Guid.NewGuid().ToString(),
+                                        KeyName = mainKey,
+                                        KsName = key.ToLower()
+                                    };
+                                    listkvs.Add(kvs);
+                                }
+
+                                using var db = new Data.ContextBase();
+                                var mo = db.KeyValueSynonym.Where(x => x.KeyName == mainKey).FirstOrDefault();
+                                if (mo != null)
+                                {
+                                    db.KeyValueSynonym.Remove(mo);
+                                }
+                                db.KeyValueSynonym.AddRange(listkvs);
+                                int oldrow = db.SaveChanges();
+                                rt[0] = 1;
+                                rt[1] = " 受影响 " + oldrow + " 行";
+                            }
+                            break;
+                        case "addtag":
+                            {
+                                var tags = Request.Form["tags"].ToString().Split(',').ToList();
+
+                                if (tags.Count > 0)
+                                {
+                                    using var db = new Data.ContextBase();
+                                    var mt = db.Tags.Where(x => tags.Contains(x.TagName)).ToList();
+                                    if (mt.Count == 0)
+                                    {
+                                        var listMo = new List<Domain.Tags>();
+                                        var tagHs = new HashSet<string>();
+                                        foreach (var tag in tags)
+                                        {
+                                            if (tagHs.Add(tag))
+                                            {
+                                                var mo = new Domain.Tags
+                                                {
+                                                    TagName = tag.ToLower(),
+                                                    TagStatus = 1,
+                                                    TagHot = 0,
+                                                    TagIcon = tag.ToLower() + ".svg"
+                                                };
+                                                listMo.Add(mo);
+                                            }
+                                        }
+                                        tagHs.Clear();
+
+                                        //新增&刷新缓存
+                                        db.Tags.AddRange(listMo);
+                                        rt[0] = db.SaveChanges();
+
+                                        Application.CommonService.TagsQuery(false);
+
+                                        rt[1] = "操作成功";
+                                    }
+                                    else
+                                    {
+                                        rt[0] = 0;
+                                        rt[1] = "标签已存在：" + mt.ToJson();
+                                    }
+                                }
+                                else
+                                {
+                                    rt[0] = 0;
+                                    rt[1] = "新增标签不能为空";
+                                }
+                            }
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt[1] = ex.Message;
+                    rt.Add(ex.StackTrace);
+                }
+
+                result = rt.ToJson();
+                return Content(result);
+            }
+            return View();
+        }
+
+        #endregion
     }
 }

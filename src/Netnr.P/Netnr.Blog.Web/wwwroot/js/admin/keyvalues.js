@@ -2,7 +2,7 @@
     grab: function (arr, len, index) {
         var ck = arr[index];
         $.ajax({
-            url: "/services/keyvalues/grab",
+            url: "/admin/keyvalues/grab",
             data: {
                 Key: ck
             },
@@ -24,7 +24,7 @@
     },
     synonym: function (arr) {
         $.ajax({
-            url: "/services/keyvalues/synonym",
+            url: "/admin/keyvalues/synonym",
             data: {
                 keys: arr.join(',')
             },
@@ -42,7 +42,7 @@
     },
     addtag: function (arr) {
         $.ajax({
-            url: "/services/keyvalues/addtag",
+            url: "/admin/keyvalues/addtag",
             data: {
                 tags: arr.join(',')
             },

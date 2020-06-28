@@ -3,8 +3,8 @@
 } catch (e) { }
 
 try {
-    fetch('https://api.zme.ink/ip').then(x => x.json()).then(res => {
-        $('#txtZme').val(res.ip);
+    fetch('https://api.zme.ink/ip').then(x => x.text()).then(res => {
+        $('#txtZme').val(res);
     })
 } catch (e) { }
 

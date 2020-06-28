@@ -1,9 +1,9 @@
 # Netnr.DataKit
 数据库构建代码（Database build code）
 
-> 前端：https://ss.netnr.com/dk	（UI）  
-> 后台：https://free-dk.zme.ink （.NET Core 版本）  
-> 后台：https://free-dk.herokuapp.com   （NodeJs 版本，注：未安装 Oracle 客户端）
+> 前端：<https://ss.netnr.com/dk>	（UI）  
+> 后台：<https://free-dk.zme.ink>	（.NET Core 版本）  
+> 后台：<https://free-dk.herokuapp.com>	（NodeJs 版本，注：未安装 Oracle 客户端）
 
 ### 功能
 - 支持的数据库：MySQL、SQLite、Oracle、SQLServer、PostgreSQL

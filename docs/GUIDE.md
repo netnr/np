@@ -63,29 +63,28 @@
     - 每项须带有注释
     - 按分类
     - 示例：
+    ```
+    {
+        //连接字符串
+        "ConnectionStrings": {
+            "MySQL": "Server=localhost;uid=root;pwd=123;database=db;",
+            "SQLServer": "Server=.;uid=sa;pwd=123;database=db;",
+            "PostgreSQL": "Host=localhost;Username=postgres;Password=123;Database=db;"
+        },
 
-```
-{
-    //连接字符串
-    "ConnectionStrings": {
-        "MySQL": "Server=localhost;uid=root;pwd=123;database=db;",
-        "SQLServer": "Server=.;uid=sa;pwd=123;database=db;",
-        "PostgreSQL": "Host=localhost;Username=postgres;Password=123;Database=db;"
-    },
-
-    //日志
-    "logs": {
-        //开启日志
-        "enable": true,
-        //路径
-        "path": "~/logs",
-        //分批写入量，满足任意一项触发
-        "CacheWriteCount": 9999,
-        //分批写入时间（秒），满足任意一项触发
-        "CacheWriteSecond": 9
+        //日志
+        "logs": {
+            //开启日志
+            "enable": true,
+            //路径
+            "path": "~/logs",
+            //分批写入量，满足任意一项触发
+            "CacheWriteCount": 9999,
+            //分批写入时间（秒），满足任意一项触发
+            "CacheWriteSecond": 9
+        }
     }
-}
-```
+    ```
 
 ### 数据库
 - 数据库设计，推荐 `PD`，或自带设计工具

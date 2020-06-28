@@ -586,9 +586,8 @@ namespace Netnr.Blog.Web.Controllers
                                         try
                                         {
                                             using var wc = new System.Net.WebClient();
-                                            var rootdir = GlobalTo.WebRootPath + "/" + (GlobalTo.GetValue("StaticResource:RootDir").TrimStart('/').TrimEnd('/') + "/");
-                                            var path = GlobalTo.GetValue("StaticResource:AvatarPath").TrimEnd('/').TrimStart('/') + '/';
-                                            var fullpath = rootdir + path;
+                                            var fullpath = System.IO.Path.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"),
+                                                GlobalTo.GetValue("StaticResource:AvatarPath"));
 
                                             if (!System.IO.Directory.Exists(fullpath))
                                             {
@@ -596,11 +595,11 @@ namespace Netnr.Blog.Web.Controllers
                                             }
                                             if (!string.IsNullOrWhiteSpace(avatar))
                                             {
-                                                wc.DownloadFile(avatar, fullpath + mo.UserPhoto);
+                                                wc.DownloadFile(avatar, System.IO.Path.Combine(fullpath, mo.UserPhoto));
                                             }
                                             if (!string.IsNullOrWhiteSpace(avatarhd))
                                             {
-                                                wc.DownloadFile(avatarhd, fullpath + mo.UserPhoto.Replace(".jpg", "_lg.jpg"));
+                                                wc.DownloadFile(avatarhd, System.IO.Path.Combine(fullpath, mo.UserPhoto.Replace(".jpg", "_lg.jpg")));
                                             }
                                         }
                                         catch (Exception)

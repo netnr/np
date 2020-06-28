@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Management;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace Netnr.Fast
 {
@@ -85,9 +84,17 @@ namespace Netnr.Fast
         /// </summary>
         public long SwapFree { get; set; }
         /// <summary>
-        /// 逻辑磁盘
+        /// 逻辑磁盘 B
         /// </summary>
         public object LogicalDisk { get; set; }
+        /// <summary>
+        /// 型号
+        /// </summary>
+        public string Model { get; set; }
+        /// <summary>
+        /// 操作系统
+        /// </summary>
+        public string OperatingSystem { get; set; }
 
         /// <summary>
         /// 构造
@@ -106,12 +113,13 @@ namespace Netnr.Fast
                 ProcessorName = PlatformForWindows.ProcessorName();
 
                 TickCount = PlatformForWindows.RunTime();
+
+                Model = PlatformForWindows.Model();
+
+                OperatingSystem = PlatformForWindows.OperatingSystem();
             }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            else
             {
-                OS = OSPlatform.Linux.ToString();
-
                 TotalPhysicalMemory = PlatformForLinux.MemInfo("MemTotal:");
                 FreePhysicalMemory = PlatformForLinux.MemInfo("MemAvailable:");
 
@@ -123,22 +131,21 @@ namespace Netnr.Fast
                 ProcessorName = PlatformForLinux.CpuInfo("model name");
 
                 TickCount = PlatformForLinux.RunTime();
+
+                Model = PlatformForLinux.Model();
+
+                OperatingSystem = PlatformForLinux.OperatingSystem();
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    OS = OSPlatform.Linux.ToString();
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    OS = OSPlatform.OSX.ToString();
+                }
             }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                OS = OSPlatform.OSX.ToString();
-
-                TotalPhysicalMemory = PlatformForLinux.MemInfo("MemTotal:");
-                FreePhysicalMemory = PlatformForLinux.MemInfo("MemAvailable:");
-
-                LogicalDisk = PlatformForLinux.LogicalDisk();
-
-                ProcessorName = PlatformForLinux.CpuInfo("model name");
-
-                TickCount = PlatformForLinux.RunTime();
-            }
-
         }
 
         /// <summary>
@@ -152,19 +159,9 @@ namespace Netnr.Fast
             /// <returns></returns>
             public static long TotalPhysicalMemory()
             {
-                long TotalPhysicalMemory = 0;
-
-                using var mc = new ManagementClass("Win32_ComputerSystem");
-                var moc = mc.GetInstances();
-                foreach (ManagementObject mo in moc)
-                {
-                    if (mo["TotalPhysicalMemory"] != null)
-                    {
-                        TotalPhysicalMemory = long.Parse(mo["TotalPhysicalMemory"].ToString());
-
-                        break;
-                    }
-                }
+                var cmd = "wmic os get TotalVisibleMemorySize /value";
+                var cr = Core.CmdTo.Run(cmd).Split('=').LastOrDefault().Trim().Split('.').First();
+                long TotalPhysicalMemory = 1024 * long.Parse(cr);
 
                 return TotalPhysicalMemory;
             }
@@ -174,18 +171,9 @@ namespace Netnr.Fast
             /// </summary>
             public static long FreePhysicalMemory()
             {
-                long FreePhysicalMemory = 0;
-
-                using var mos = new ManagementClass("Win32_OperatingSystem");
-                foreach (ManagementObject mo in mos.GetInstances())
-                {
-                    if (mo["FreePhysicalMemory"] != null)
-                    {
-                        FreePhysicalMemory = 1024 * long.Parse(mo["FreePhysicalMemory"].ToString());
-
-                        break;
-                    }
-                }
+                var cmd = "wmic os get FreePhysicalMemory /value";
+                var cr = Core.CmdTo.Run(cmd).Split('=').LastOrDefault().Trim().Split('.').First();
+                long FreePhysicalMemory = 1024 * long.Parse(cr);
 
                 return FreePhysicalMemory;
             }
@@ -198,18 +186,19 @@ namespace Netnr.Fast
             {
                 var listld = new List<object>();
 
-                using var diskClass = new ManagementClass("Win32_LogicalDisk");
-                var disks = diskClass.GetInstances();
-                foreach (ManagementObject disk in disks)
+                var cmd = "wmic logicaldisk where DriveType=3 get FreeSpace,Name,Size,VolumeName";
+                var cr = Core.CmdTo.Run(cmd).Split(Environment.NewLine.ToCharArray()).ToList();
+                foreach (var item in cr)
                 {
-                    // DriveType.Fixed 为固定磁盘(硬盘) 
-                    if (int.Parse(disk["DriveType"].ToString()) == (int)DriveType.Fixed)
+                    var mr = Regex.Match(item, @"(\d+)\s+(\w:)\s+(\d+)\s+(.*)");
+                    if (mr.Success)
                     {
                         listld.Add(new
                         {
-                            Name = disk["Name"],
-                            Size = disk["Size"],
-                            FreeSpace = disk["FreeSpace"]
+                            Name = mr.Groups[2].ToString(),
+                            VolumeName = mr.Groups[4].ToString().Trim(),
+                            Size = long.Parse(mr.Groups[3].ToString()),
+                            FreeSpace = long.Parse(mr.Groups[1].ToString()),
                         });
                     }
                 }
@@ -223,10 +212,10 @@ namespace Netnr.Fast
             /// <returns></returns>
             public static string ProcessorName()
             {
-                var cmd = "wmic cpu get name";
-                var cr = Core.CmdTo.Run(cmd).TrimEnd(Environment.NewLine.ToCharArray());
-                var pvalue = cr.Split(Environment.NewLine.ToCharArray()).LastOrDefault();
-                return pvalue;
+                var cmd = "wmic cpu get Name /value";
+                var cr = Core.CmdTo.Run(cmd).Split('=').LastOrDefault().Trim();
+
+                return cr;
             }
 
             /// <summary>
@@ -235,16 +224,37 @@ namespace Netnr.Fast
             /// <returns></returns>
             public static long RunTime()
             {
-                var cmd = "net statistics WORKSTATION";
-                var cr = Core.CmdTo.Run(cmd).Split(Environment.NewLine.ToCharArray())[14].Split(' ').ToList();
-                while (!"1234567890".Contains(cr.First()[0]))
-                {
-                    cr.RemoveAt(0);
-                }
-                DateTime.TryParse(string.Join(" ", cr), out DateTime startTime);
-                var pvalue = Convert.ToInt64((DateTime.Now - startTime).TotalMilliseconds);
+                var cmd = "wmic os get LastBootUpTime /value";
+                var cr = Core.CmdTo.Run(cmd).Split('=').LastOrDefault().Trim().Split('.').First();
+                cr = cr.Insert(12, ":").Insert(10, ":").Insert(8, " ").Insert(6, "-").Insert(4, "-");
+                DateTime.TryParse(cr, out DateTime startTime);
+                var rt = Convert.ToInt64((DateTime.Now - startTime).TotalMilliseconds);
 
-                return pvalue;
+                return rt;
+            }
+
+            /// <summary>
+            /// 获取型号
+            /// </summary>
+            /// <returns></returns>
+            public static string Model()
+            {
+                var cmd = "wmic csproduct get name /value";
+                var cr = Core.CmdTo.Run(cmd).Split('=').LastOrDefault().Trim();
+
+                return cr;
+            }
+
+            /// <summary>
+            /// 获取操作系统
+            /// </summary>
+            /// <returns></returns>
+            public static string OperatingSystem()
+            {
+                var cmd = "wmic os get Caption /value";
+                var cr = Core.CmdTo.Run(cmd).Split('=').LastOrDefault().Trim();
+
+                return cr;
             }
         }
 
@@ -334,6 +344,30 @@ namespace Netnr.Fast
                 var pvalue = Convert.ToInt64(pitem * 1000); ;
 
                 return pvalue;
+            }
+
+            /// <summary>
+            /// 获取型号
+            /// </summary>
+            /// <returns></returns>
+            public static string Model()
+            {
+                var br = Core.CmdTo.Shell("dmidecode -s system-product-name");
+                var model = br.Output.Split(Environment.NewLine.ToCharArray()).FirstOrDefault().Split(':').LastOrDefault();
+
+                return model;
+            }
+
+            /// <summary>
+            /// 获取操作系统
+            /// </summary>
+            /// <returns></returns>
+            public static string OperatingSystem()
+            {
+                var br = Core.CmdTo.Shell("hostnamectl | grep 'Operating System' | cut -d ' ' -f5-");
+                var os = br.Output.Split(Environment.NewLine.ToCharArray()).FirstOrDefault().Split(':').LastOrDefault();
+
+                return os;
             }
         }
     }

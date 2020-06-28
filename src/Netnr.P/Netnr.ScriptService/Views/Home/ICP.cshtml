@@ -1,11 +1,18 @@
-﻿<div class="container">
+﻿<style>
+    .thead {
+        color: #777;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <div class="input-group">
-                <input id="txtSearch" type="text" class="form-control" placeholder="请输入顶级域名，不带http、www" autocomplete="off">
                 <span class="input-group-append">
                     <button class="btn btn-warning" type="button" id="btnSearch">备案查询</button>
                 </span>
+                <input id="txtSearch" type="text" class="form-control" placeholder="请输入顶级域名，不带http、www" autocomplete="off">
             </div>
             <div class="mt-3" id="dn"></div>
         </div>

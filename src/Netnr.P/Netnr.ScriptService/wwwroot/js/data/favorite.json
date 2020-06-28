@@ -322,6 +322,12 @@
         "icon": "/icon/message.svg",
         "title": "留言",
         "remark": "匿名留言"
+      },
+      {
+        "url": "https://zme.ink",
+        "icon": "/icon/love.svg",
+        "title": "联系赞助",
+        "remark": "Sponsors"
       }
     ]
   }

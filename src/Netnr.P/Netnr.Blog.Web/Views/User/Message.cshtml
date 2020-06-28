@@ -27,8 +27,7 @@
                         var imgup = "/favicon.svg";
                         if (!string.IsNullOrWhiteSpace(item.Spare2))
                         {
-                            var avatarpath = GlobalTo.GetValue("StaticResource:Server") + GlobalTo.GetValue("StaticResource:AvatarPath");
-                            imgup = avatarpath += "/" + item.Spare2;
+                            imgup = System.IO.Path.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), item.Spare2);
                         }
 
                         <li class="media uwo-reply-item py-3">

@@ -150,9 +150,7 @@ namespace Netnr.Blog.Web.Controllers
 
             try
             {
-                var rootdir = GlobalTo.WebRootPath + "/" + (GlobalTo.GetValue("StaticResource:RootDir").TrimStart('/').TrimEnd('/') + "/");
-                var path = GlobalTo.GetValue("StaticResource:AvatarPath").TrimEnd('/').TrimStart('/') + '/';
-                var fullpath = rootdir + path;
+                var fullpath = Path.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"), GlobalTo.GetValue("StaticResource:AvatarPath")) + "/";
 
                 if (!Directory.Exists(fullpath))
                 {
