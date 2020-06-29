@@ -2,7 +2,7 @@
   "name": "vdocs",
   "version": "0.0.1",
   "description": "vercel docs",
-  "main": "api/vdocs.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/netnr/np#readme",
   "dependencies": {
-    "fs": "0.0.1-security",
     "marked": "^1.1.0",
     "mime": "^2.4.6"
   }

@@ -7,16 +7,17 @@ module.exports = (req, res) => {
     let vd = {
         path: req.url.substr(1).trim(),
         dc: {
-            index: "",
+            coverpage: "",
             sidebar: "",
+            index: "",
             body: "",
-            output: "",
-            ctype: null
+            output: ""
         },
         init: function () {
 
-            vd.dc.index = vd.read("index.html", 'utf-8') || "";
+            vd.dc.coverpage = vd.replaceMdLink(vd.render(vd.read("_coverpage.md", 'utf-8') || ""));
             vd.dc.sidebar = vd.replaceMdLink(vd.render(vd.read("_sidebar.md", 'utf-8') || ""));
+            vd.dc.index = vd.read("index.html", 'utf-8') || "";
 
             let nc = false,
                 ua = req.headers["user-agent"].toLowerCase(),
@@ -26,15 +27,13 @@ module.exports = (req, res) => {
                 isbot = ["bot", "spider", "daum", "curl", "postman"].filter(key => ua.indexOf(key) > -1).length > 0;
 
             if (filename == "" || filename == "index" || filename == "index.html") {
+                nc = true;
                 vd.path = "index.html";
                 vd.dc.body = vd.replaceMdLink(vd.render(vd.read('README.md', 'utf-8') || ""));
                 vd.dc.ctype = 'text/html; charset=utf-8';
-
             }
 
-            if (isbot) {
-                nc = true;
-
+            let hp = function () {
                 let tpath = vd.path, tbody = vd.read(tpath);
 
                 if (tbody != null) {
@@ -58,13 +57,22 @@ module.exports = (req, res) => {
                         }
                     }
                 }
+            }
+
+            if (isbot) {
+                nc = true;
+                hp();
             } else {
                 vd.dc.output = vd.read(vd.path);
+                if (vd.dc.output == null) {
+                    hp();
+                }
             }
 
             if (nc) {
-                vd.dc.output = vd.dc.index.replace("Loading ...", vd.dc.sidebar + vd.dc.body);
+                vd.dc.output = vd.dc.index.replace("Loading ...", vd.dc.coverpage + vd.dc.sidebar + vd.dc.body);
             }
+
             res.setHeader('content-type', vd.dc.ctype || mime.getType(vd.path));
             //Êä³ö
             res.send(vd.dc.output);

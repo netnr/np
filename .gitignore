@@ -307,5 +307,6 @@ OpenCover/
 # customer
 .ignore
 .config
+.vercel
 log.db
 ip2region.db

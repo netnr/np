@@ -1,6 +1,14 @@
 {
   "version": 2,
+
+  "functions": {
+    "api/vdocs.js": {
+      "includeFiles": "./**"
+    }
+  },
+
   "routes": [
+
     {
       "src": "/(.*)",
       "headers": {
