@@ -10,9 +10,7 @@
     <meta name="keywords" content="netnr,NET牛人" />
     <meta name="description" content="netnr,NET牛人">
 
-    <script>location.protocol != "https:" && location.hostname != "localhost" && (location.protocol = "https:")</script>
-
-    <link rel="stylesheet" href="https://code.bdstatic.com/npm/docsify@4.11.3/lib/themes/vue.css">
+    <link rel="stylesheet" href="https://code.bdstatic.com/npm/docsify@4.11.4/lib/themes/vue.css">
 </head>
 <body>
     <div id="app">Loading ...</div>
@@ -23,9 +21,15 @@
             coverpage: true,
             routerMode: 'history',
 
-            loadSidebar: true
+            loadSidebar: true,
+
+            search: {
+                placeholder: 'search',
+                depth: 6,
+            }
         };
     </script>
-    <script src="https://code.bdstatic.com/npm/docsify@4.11.3/lib/docsify.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/docsify@4.11.4/lib/docsify.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/docsify@4.11.4/lib/plugins/search.min.js"></script>
 </body>
 </html>

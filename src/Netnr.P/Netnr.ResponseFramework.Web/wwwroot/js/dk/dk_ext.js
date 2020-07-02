@@ -30,62 +30,74 @@ if (window.dk) {
     dk.buildTableConfig = function (t) {
         var rowDatas = $('#Grid2').datagrid('getSelections');
         if (rowDatas.length) {
-            var tcrows = [];
-            $.each(rowDatas, function (i, row) {
-                var tcrow = {
-                    "Id": null,
-                    "TableName": row.TableName,
-                    "ColField": row.FieldName,
-                    "DvTitle": row.FieldComment || row.FieldName,
-                    "ColTitle": row.FieldComment || row.FieldName,
-                    "ColWidth": 100,
-                    "ColAlign": 1,
-                    "ColHide": 0,
-                    "ColOrder": row.FieldOrder,
-                    "ColFrozen": 0,
-                    "ColFormat": "0",
-                    "ColSort": 0,
-                    "ColExport": 1,
-                    "ColQuery": 0,
-                    "ColRelation": "",
-                    "FormArea": 1,
-                    "FormUrl": null,
-                    "FormType": "text",
-                    "FormSpan": 1,
-                    "FormHide": 0,
-                    "FormOrder": row.FieldOrder,
-                    "FormRequired": 0,
-                    "FormPlaceholder": null,
-                    "FormValue": null,
-                    "FormText": null,
-                    "FormMaxlength": row.DataLength
-                };
-                tcrows.push(tcrow);
-            });
 
-            //保存表配置
-            var url = dk.api + dk.apiPath['SaveTableConfig'];
-            $.ajax({
-                url: url,
-                data: {
-                    rows: JSON.stringify(tcrows),
-                    buildType: t
-                },
-                type: "post",
-                dataType: 'json',
-                headers: dk.apiHeaders,
-                success: function (data) {
-                    //渲染表信息
-                    if (data.code == 200) {
-                        dk.loadHasTableConfig();
-                    }
-                    dk.msg(data.msg);
-                },
-                error: function (err) {
-                    console.log(err);
-                    dk.msgError(url);
+            var dmvt = dk.msg('<div class="input-group"><div class="input-group-prepend"><span class="input-group-text" >表名（虚拟）</span></div><input class="form-control" value="' + rowDatas[0].TableName + '" /></div>');
+            dmvt.find('.modal-dialog').removeClass('modal-sm');
+            dmvt.find('button').last().click(function () {
+                var vt = dmvt.find('input').val();
+                if (vt != null && vt != "") {
+
+                    var tcrows = [];
+                    $.each(rowDatas, function (i, row) {
+                        var tcrow = {
+                            "Id": null,
+                            "TableName": vt,
+                            "ColField": row.FieldName,
+                            "DvTitle": row.FieldComment || row.FieldName,
+                            "ColTitle": row.FieldComment || row.FieldName,
+                            "ColWidth": 100,
+                            "ColAlign": 1,
+                            "ColHide": 0,
+                            "ColOrder": row.FieldOrder,
+                            "ColFrozen": 0,
+                            "ColFormat": "0",
+                            "ColSort": 0,
+                            "ColExport": 1,
+                            "ColQuery": 0,
+                            "ColRelation": "",
+                            "FormArea": 1,
+                            "FormUrl": null,
+                            "FormType": "text",
+                            "FormSpan": 1,
+                            "FormHide": 0,
+                            "FormOrder": row.FieldOrder,
+                            "FormRequired": 0,
+                            "FormPlaceholder": null,
+                            "FormValue": null,
+                            "FormText": null,
+                            "FormMaxlength": row.DataLength
+                        };
+                        tcrows.push(tcrow);
+                    });
+
+                    //保存表配置
+                    var url = dk.api + dk.apiPath['SaveTableConfig'];
+                    $.ajax({
+                        url: url,
+                        data: {
+                            rows: JSON.stringify(tcrows),
+                            buildType: t
+                        },
+                        type: "post",
+                        dataType: 'json',
+                        headers: dk.apiHeaders,
+                        success: function (data) {
+                            //渲染表信息
+                            if (data.code == 200) {
+                                dk.loadHasTableConfig();
+                            }
+                            dk.msg(data.msg);
+                        },
+                        error: function (err) {
+                            console.log(err);
+                            dk.msgError(url);
+                        }
+                    })
+
                 }
-            })
+
+                $(this).off('click', arguments.callee);
+            });
         } else {
             dk.msg('请选择列')
         }
