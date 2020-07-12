@@ -311,6 +311,12 @@
         "url": "/randomcode",
         "icon": "/icon/key.svg",
         "title": "生成随机密码"
+      },
+      {
+        "url": "/gc",
+        "icon": "/icon/gc.svg",
+        "title": "垃圾分类",
+        "remark": "垃圾分类查询"
       }
     ]
   },

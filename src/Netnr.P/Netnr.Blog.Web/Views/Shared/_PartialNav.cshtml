@@ -57,6 +57,11 @@
                         <li><a href="/user/write"><span class="fa fa-fw fa-file-text-o text-info"></span> 我的文章</a></li>
                         <li><a href="/user/write/laud"><span class="fa fa-fw fa-thumbs-up text-success"></span> 我的点赞</a></li>
                         <li><a href="/user/write/mark"><span class="fa fa-fw fa-cube text-info"></span> 我的收藏</a></li>
+                        @if (uinfo.UserId == GlobalTo.GetValue<int>("Common:AdminId"))
+                        {
+                            <li class="divider"></li>
+                            <li><a href="/admin"><span class="fa fa-fw fa-cogs text-warning"></span> 后台管理</a></li>
+                        }
                         <li class="divider"></li>
                         <li><a href="/account/logout"><span class="fa fa-fw fa-power-off text-danger"></span> 退出</a></li>
                     </ul>

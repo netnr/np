@@ -43,11 +43,6 @@ namespace Netnr.Logging
         public static string DbRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
 
         /// <summary>
-        /// 空数据库物理路径
-        /// </summary>
-        public static string DbEmpty = Path.Combine(DbRoot, "empty.db");
-
-        /// <summary>
         /// 数据库文件名
         /// </summary>
         public static string DbFileName = "log.db";

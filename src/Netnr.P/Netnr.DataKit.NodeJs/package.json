@@ -1,22 +1,38 @@
 {
-  "name": "netnr.datakit.nodejs",
-  "version": "0.0.0",
-  "private": true,
+  "name": "dk",
+  "version": "0.0.2",
+  "description": "Netnr.DataKit",
+  "main": "app.js",
+  "devDependencies": {},
   "scripts": {
-    "start": "node ./bins/www"
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netnr/np.git"
+  },
+  "keywords": [
+    "netnr",
+    "Netnr.DataKit"
+  ],
+  "author": "netnr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netnr/np/issues"
+  },
+  "homepage": "https://github.com/netnr/np#readme",
   "dependencies": {
-    "cookie-parser": "~1.4.5",
-    "debug": "~4.1.1",
     "express": "^4.17.1",
-    "http-errors": "~1.7.3",
-    "jade": "~1.11.0",
-    "md5": "^2.2.1",
-    "morgan": "~1.10.0",
     "mssql": "^6.2.0",
     "mysql": "^2.18.1",
-    "oracledb": "^4.2.0",
-    "pg": "^8.2.1",
-    "sqlite3": "^4.2.0"
+    "oracledb": "4.2.0",
+    "pg": "^8.3.0"
+  },
+  "bin": "app.js",
+  "pkg": {
+    "assets": [
+      "public/**/*"
+    ]
   }
 }

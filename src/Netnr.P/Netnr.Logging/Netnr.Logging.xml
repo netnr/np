@@ -164,11 +164,6 @@
             数据库目录
             </summary>
         </member>
-        <member name="F:Netnr.Logging.LoggingTo.DbEmpty">
-            <summary>
-            空数据库物理路径
-            </summary>
-        </member>
         <member name="F:Netnr.Logging.LoggingTo.DbFileName">
             <summary>
             数据库文件名

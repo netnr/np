@@ -350,5 +350,14 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// 垃圾分类
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult GC()
+        {
+            return View();
+        }
     }
 }

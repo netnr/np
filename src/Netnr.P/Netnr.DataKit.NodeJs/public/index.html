@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -49,7 +50,7 @@
             width: 18px;
             height: 18px;
             margin-right: 10px;
-            vertical-align: middle;
+            vertical-align: text-bottom;
         }
 
         /* Bootstrap Ext */
@@ -98,6 +99,11 @@
         }
 
         /*表格*/
+        .datagrid-row-expander {
+            margin: auto !important;
+            height: 34px !important;
+        }
+
         .datagrid-header-check input, .datagrid-cell-check input {
             width: 18px;
         }
@@ -182,7 +188,7 @@
                         <i class="fa fa-fw fa-arrows-alt"></i>
                     </button>
                     <div class="input-group-prepend">
-                        <input class="form-control form-control-sm" id="txtSearchTable" placeholder="搜索" />
+                        <input class="form-control form-control-sm" id="txtSearchTable" placeholder="搜索，支持：a&b、a|b" title="并且搜索：a&b；或者搜索：a|b，a b" />
                     </div>
                 </div>
 
@@ -455,7 +461,7 @@
             //默认服务接口
             dapi: [
                 { istemplate: true, host: "https://free-dk.zme.ink", remark: "免费的 .NET Core 服务" },
-                { istemplate: true, host: "https://free-dk.herokuapp.com", remark: "免费的 NodeJS 服务，不支持 Oracle" },
+                { istemplate: true, host: "https://api.zme.ink", remark: "免费的 Serverless 服务，速度快，不支持 Oracle" },
                 { istemplate: true, host: location.origin, remark: "当前" }
             ],
             //接口地址
@@ -528,9 +534,9 @@
                     var na = this.value;
                     if (e.keyCode == 13 && na != "") {
                         var ah = dk.lsArr('apiHost');
-                        var nas = na.split(' ');
-                        if (!$(ah).filter(function () { return this.host == nas[0] }).length) {
-                            ah.push({ host: nas[0], remark: nas[1] })
+                        var nas = na.split(' '), host = nas[0].replace(/\/$/, '');
+                        if (!$(ah).filter(function () { return this.host == host }).length) {
+                            ah.push({ host: host, remark: nas[1] })
                             dk.ls["apiHost"] = ah;
                             dk.lsSave();
                             dk.viewApiHost();
@@ -593,7 +599,7 @@
                 dk.addDbConn("MySQL", "Data Source=den1.mysql5.gear.host;User Id=rfmysql;Password=Vr8a474!nW4!;Database=rfmysql;");
                 dk.addDbConn("SQLServer", "Server=den1.mssql7.gear.host;uid=rfmssql;pwd=Cj24-GXLO9-H;database=rfmssql;");
                 dk.addDbConn("PostgreSQL", "Host=satao.db.elephantsql.com;Username=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;");
-                dk.addDbConn("SQLite", "Data Source=https://static.netnr.com/2020/05/22/2037505934.db");
+                dk.addDbConn("SQLite", "Data Source=https://s1.zme.ink/2020/05/22/2037505934.db");
 
                 //渲染本地连接记录
                 dk.viewConn();
@@ -1460,9 +1466,40 @@
                 if (filterKey == "") {
                     filterData = dk.dc.table.data || [];
                 } else {
+                    var fks = [], sr;
+                    if (filterKey.indexOf(' ') > 0 || filterKey.indexOf('|') > 0) {
+                        fks = filterKey.replace(/\|/g, ' ').split(' ');
+                        sr = 'or';
+                    } else {
+                        fks = filterKey.split('&');
+                        sr = 'and';
+                    }
+
                     $.each(dk.dc.table.data, function () {
-                        if (this.TableName.toLowerCase().indexOf(filterKey) >= 0 || (this.TableComment || "").toLowerCase().indexOf(filterKey) >= 0) {
-                            filterData.push(this)
+                        if (sr == "or") {
+                            var fv = false;
+                            for (var i = 0; i < fks.length; i++) {
+                                var fki = fks[i];
+                                if (this.TableName.toLowerCase().indexOf(fki) >= 0 || (this.TableComment || "").toLowerCase().indexOf(fki) >= 0) {
+                                    fv = true;
+                                    break;
+                                }
+                            }
+                            if (fv) {
+                                filterData.push(this);
+                            }
+                        } else if (sr == "and") {
+                            var fv = true;
+                            for (var i = 0; i < fks.length; i++) {
+                                var fki = fks[i];
+                                if (!(this.TableName.toLowerCase().indexOf(fki) >= 0 || (this.TableComment || "").toLowerCase().indexOf(fki) >= 0)) {
+                                    fv = false;
+                                    break;
+                                }
+                            }
+                            if (fv) {
+                                filterData.push(this);
+                            }
                         }
                     })
                 }

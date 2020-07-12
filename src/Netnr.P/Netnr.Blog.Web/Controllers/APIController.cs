@@ -127,16 +127,21 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     var now = DateTime.Now;
                     string filename = now.ToString("HHmmss") + Guid.NewGuid().ToString("N").Substring(25, 4);
-                    string ext = file.FileName.Substring(file.FileName.LastIndexOf('.'));
+                    string ext = Path.GetExtension(file.FileName).ToLower();
 
-                    if (ext.ToLower() == ".exe")
+                    if (ext == ".exe" || ext == "")
                     {
                         vm.Code = 2;
                         vm.Msg = "Unsupported file format：" + ext;
                     }
                     else
                     {
-                        var path = Path.Combine(cp, now.ToString("yyyy/MM/dd/"));
+                        cp ??= "";
+                        if (cp.Contains(".."))
+                        {
+                            cp = "";
+                        }
+                        var path = Path.Combine(cp.TrimStart('/').TrimEnd('/'), now.ToString("yyyy/MM/dd/"));
                         var fullpath = Path.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"), path);
 
                         if (!Directory.Exists(fullpath))

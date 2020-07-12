@@ -95,15 +95,15 @@ box.click(function (e) {
                 t2.val(ConvertAscii(t1.val()));
                 break;
 
-            case "GUID":
+            case "UUID":
                 $.ajax({
-                    url: "https://www.netnr.com/api/v1/api81?count=16",
+                    url: "https://api.zme.ink/uuid/9",
                     dataType: 'json',
                     success: function (data) {
-                        t2.val(data.data.join('\r\n'));
+                        t2.val(data.join('\r\n'));
                     },
                     error: function () {
-                        t2.val('生成GUID失败');
+                        t2.val('生成UUID失败');
                     }
                 });
                 break;

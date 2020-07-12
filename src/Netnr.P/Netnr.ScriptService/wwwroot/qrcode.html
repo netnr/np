@@ -68,35 +68,26 @@
     <div class="row">
         <div class="col-md-12">
             <small class="text-muted">网址：需包含 http 或 https 前缀 &nbsp; &nbsp; &nbsp; 电话：tel:电话号码 &nbsp; &nbsp; &nbsp; 邮箱：mailto:邮箱地址</small>
-            <div class="input-group">
-                <span class="input-group-append">
-                    <button class="btn btn-warning" type="button" id="btnCode">生成二维码</button>
-                </span>
-                <input id="txt" type="text" class="form-control" placeholder="内容：网址、电话、邮箱" />
-            </div>
-            <div id="divCodeResult" class="mt-3" style="height:300px;"></div>
+            <input id="txt" type="text" class="form-control" placeholder="内容：网址、电话、邮箱" autofocus />
+            <div id="divCodeResult" class="mt-3 w-auto" style="height:300px;"></div>
         </div>
     </div>
 </div>
 
-            <script src="https://code.bdstatic.com/npm/jquery.qrcode@1.0.3/jquery.qrcode.min.js"></script>
-
+<script src="https://raw.zme.ink/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
 
 <script>
-    $('#txt').keydown(function (e) {
-        e = e || window.event;
-        var keys = e.keyCode || e.which || e.charCode;
-        keys == 13 && $("#btnCode")[0].click();
-    })[0].focus();
-
-    $("#btnCode").click(function () {
+    $('#txt').on('input', function () {
         if ($.trim($("#txt").val()) != "") {
             $("#divCodeResult").empty();
-            jQuery('#divCodeResult').qrcode({
-                render: "table",
-                height: 300,
+
+            new QRCode(document.getElementById("divCodeResult"), {
+                text: $("#txt").val(),
                 width: 300,
-                text: $("#txt").val()
+                height: 300,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
             });
         } else { $("#divCodeResult").html(''); }
     });
