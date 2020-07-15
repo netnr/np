@@ -11,7 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Baidu.AI" Version="3.6.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
+    <PackageReference Include="Markdig" Version="0.20.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.2.2" />
     <PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
     <PackageReference Include="Netnr.WeChat" Version="1.1.0" />
@@ -32,5 +33,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
   
 </Project>

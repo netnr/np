@@ -11,6 +11,23 @@
             <param name="code">分享码</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Blog.Web.Areas.Doc.Controllers.CodeController.TreeToMd(System.String,System.Collections.Generic.List{Netnr.Blog.Application.ViewModel.DocTreeVM},System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            树转markdown
+            </summary>
+            <param name="baseUrl"></param>
+            <param name="list"></param>
+            <param name="pid"></param>
+            <param name="listNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Doc.Controllers.CodeController.Index1(System.String)">
+            <summary>
+            目录页面
+            </summary>
+            <param name="code">分享码</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Blog.Web.Areas.Doc.Controllers.CodeController.Edit(System.String)">
             <summary>
             新增、编辑一条

@@ -26,7 +26,7 @@ public class QueryDataInputVM
     /// <summary>
     /// 查询条件
     /// </summary>
-    [JsonProperty("handleType")]
+    [JsonProperty("wheres")]
     public string Wheres { get; set; } = "";
 
     /// <summary>
