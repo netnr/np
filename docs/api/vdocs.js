@@ -70,7 +70,7 @@ module.exports = (req, res) => {
             }
 
             if (nc) {
-                vd.dc.output = vd.dc.index.replace("Loading ...", vd.dc.coverpage + vd.dc.sidebar + vd.dc.body);
+                vd.dc.output = vd.dc.index.replace("{SEO}", vd.dc.coverpage + vd.dc.sidebar + vd.dc.body);
             }
 
             res.setHeader('content-type', vd.dc.ctype || mime.getType(vd.path));

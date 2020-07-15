@@ -11,6 +11,9 @@
     <meta name="description" content="netnr,NET牛人">
 
     <style>
+        .hide {
+            display: none;
+        }
         .sidebar ul li p.active > a {
             border-right: 2px solid;
             color: var(--theme-color,#42b983);
@@ -21,8 +24,13 @@
 <body>
     <div id="app">Loading ...</div>
 
+    <!--SEO-->
+    <div class="hide">
+        {SEO}
+    </div>
+
     <link href="https://code.bdstatic.com/npm/netnrmd@2.2.3/src/netnrmd.css" rel="stylesheet" async />
-    <script src="https://code.bdstatic.com/npm/netnrmd@2.2.3/src/netnrmd.bundle.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/netnrmd@2.2.3/src/netnrmd.bundle.min.js" defer></script>
 
     <script>
         window.$docsify = {
