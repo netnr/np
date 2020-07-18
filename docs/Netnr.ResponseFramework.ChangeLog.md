@@ -1,177 +1,177 @@
-# 更新日志
+# Change log
 
 ### [v3.1.5] - 2020-06-14
-- 优化 配置菜单链接无须小写（但建议统一小写）
-- 添加 后台校验角色是否能访问已加入菜单表的链接
+- Optimization configuration menu link does not need to be lowercase (but it is recommended to uniform lowercase)
+- Added the background check whether the role can access the link that has been added to the menu table
 
 ### [v3.1.4] - 2020-05-18
-- 调整 项目结构
-- 修复 页面删除方法 `POST` 请求改为 `GET`
-- 调整 `init.js` 方法名称；标签选项卡 A标签链接为 `iframe` 地址，方便右键新窗口打开
-- 调整 日志表添加 `User-Agent`，引入 `DeviceDetector.NET` 组件，更好的解析客户端的 **操作系统**、**浏览器** 信息
-- 调整 表管理 使用 `Netnr.DataKit` 项目提供服务
+- Adjust the project structure
+- Fix page deletion method `POST` request changed to `GET`
+- Adjust the name of the `init.js` method; the link of the tag tab A is the address of the `iframe`, which is convenient for right-clicking and opening a new window
+- Adjust the log table to add `User-Agent`, and introduce the `DeviceDetector.NET` component to better analyze the **operating system** and **browser** information of the client
+- Adjust table management to provide services using the `Netnr.DataKit` project
 
 ### [v3.1.3] - 2020-04-26
-- 调整 项目结构
+- Adjust the project structure
 
 ### [v3.1.2] - 2020-04-18
-- 调整 组件CDN源
-- 调整 升级引用包
+- Adjust component CDN source
+- Adjust and upgrade the reference package
 
 ### [v3.1.1] - 2019-12-22
-- 调整 数据库上下文改为连接池托管
-- 调整 IP地址查询 改为 `IP2Region` 组件
+- Adjust database context to connection pool hosting
+- Adjust IP address query to `IP2Region` component
 
 ### [v3.1.0] - 2019-12-04
-- 调整 升级为 `.NET Core 3.1`
-- 添加 服务器信息 页面
+- Adjust and upgrade to `.NET Core 3.1`
+- Add server information page
 
 ### [v3.0.1] - 2019-11-13
-- 调整 所有非页面请求规范化为接口，并用 swagger 生成可视化接口文档，<https://rf2.netnr.com/swagger>
+- Adjust all non-page requests to be standardized into interfaces, and use swagger to generate visual interface documents, <https://rf2.netnr.com/swagger>
 
 ### [v3.0.0] - 2019-09-29
-- 调整 升级为 `.NET Core 3.0`
+- Adjust and upgrade to `.NET Core 3.0`
 
 ### [v2.2.10] - 2019-07-23
-- 添加 `QueryWhere`针对`IEnumerable`条件查询的方法重载（支持部分查询关系符）
-- 调整 表管理支持搜索（基于`IEnumerable`的查询，即内存搜索）
-- 调整 日期时间组件，支持 **placeholder** 显示
-- 修复 批处理切换方法`z.batchButtonSwitch`逻辑缺陷
-- 添加 单据（主从表展示，如：采购订单，更多的组件支持须完善）
-- 调整 表单组件传参调整，为兼容单据，即支持模态表单和页面切换单据的生成
-- 调整 `z.js` 内部方法构造调整，解决了一些问题
-- 调整 引入定时任务组件 **FluentScheduler**
-- 添加 自动生成单表增删改查代码（Controller、View、JavaScript）
+- Add `QueryWhere` method overload for `IEnumerable` conditional query (support some query relation symbols)
+- Adjusted table management to support search (query based on `IEnumerable`, ie memory search)
+- Adjust the date and time components to support **placeholder** display
+- Fix the logic defect of batch switching method `z.batchButtonSwitch`
+- Add documents (display in master-slave table, such as purchase order, more component support must be improved)
+- Adjustment Adjustment of parameter transfer of form components is compatible with documents, that is, it supports the generation of modal forms and page switching documents
+- Adjust the internal method structure of `z.js` to solve some problems
+- Adjustment Introduce timing task component **FluentScheduler**
+- Add Automatically generate single table addition, deletion, modification and query code (Controller, View, JavaScript)
 
 ### [v2.2.9] - 2019-07-05
-- 修复 未将定时任务的服务添加到容器，导致定时任务未执行
+- Fix that the service of the scheduled task is not added to the container, resulting in the scheduled task not being executed
 
 ### [v2.2.8] - 2019-06-25
-- 添加 `数据字典`
-- 添加 表单嵌入富文本示例（基于 `CKEditor4`，图片支持粘贴、拖拽上传，大小限制 **2MB** ）
-- 调整 z.Combo绑定，支持 **placeholder** 显示
+- Add `Data Dictionary`
+- Add an example of embedding rich text in a form (based on `CKEditor4`, pictures support paste, drag and drop upload, size limit **2MB**)
+- Adjust the binding of z.Combo to support **placeholder** display
 
 ### [v2.2.7] - 2019-06-23
-- 修复 公共导出（js脚本问题）
-- 添加 上传的示例（ajax上传，带上传真实进度条，表格显示格式化，查看文件，必填验证）
-- 添加 批量操作示例（依赖 Z.EntityFramework.Extensions）
+- Fix public export (js script problem)
+- Add upload example (ajax upload, with real upload progress bar, form display format, view file, required verification)
+- Add a batch operation example (depending on Z.EntityFramework.Extensions)
 
 ### [v2.2.6] - 2019-06-14
-- 调整 输入输出实体对象名，为公共导出提供支持
-- 调整 公共导出查询依赖查询，仅维护一处
-- 调整 增删改统一返回格式，维护方法返回对象
-- 调整 `appsettings.json` 配置文件设置键名 `TypeDB` 等于数据库类型
-- 添加 `PostgreSQL`生成表配置、表信息查询的脚本
+- Adjust input and output entity object names to provide support for public export
+- Adjust the public export query dependent query, only maintain one place
+- Adjustments, adding, deleting and modifying unified return format, maintenance method return object
+- Adjust the `appsettings.json` configuration file to set the key name `TypeDB` to be equal to the database type
+- Added `PostgreSQL` scripts to generate table configuration and table information query
 
 ### [v2.2.5] - 2019-06-10
-- 修复 在linux上导出、文件清理的路径问题
-- 修复 内置参数可忽略日志记录的逻辑问题
-- 修复 表单编辑，多选下拉列表值为空时赋值了一项空值的问题
-- 添加 表配置新增项：表单`maxlength`属性
-- 添加 表配置新增项：`查询条件关系符`配置，避免不支持的关系符查询出错
-- 添加 Iframe页面`全屏`功能按钮
-- 添加 低版本浏览器拦截提示页面
-- 添加 下拉列表面板高度自适应
-- 调整 DataGrid分页组件不显示调转页，启用快捷页码
-- 调整 页面表单配置，拖拽排序的方式从节点交换改为节点插入
-- 调整 窗口大小改变时从修改所有iframe标签高度改为仅修改当前iframe标签高度，切换时再触发
-- 调整 为更好的自适应效果，iframe标签设置`scrolling="no"`，子页面有需要滚动条显示用`<div class="bodyscroll">`包装，参考桌面页
+- Fix the path problem of export and file cleaning on linux
+- Fix the logic problem that the built-in parameter can ignore the log record
+- Fixed an issue where a null value was assigned when the multi-select drop-down list value was empty when editing the form
+- Added a new item for table configuration: form `maxlength` attribute
+- Added table configuration new item: `query condition relation symbol` configuration, to avoid unsupported relation symbol query error
+- Add function button of Iframe page `Full Screen`
+- Added low version browser blocking prompt page
+- Added drop-down list panel highly adaptive
+- Adjust the DataGrid paging component not to display the flip page, and enable the shortcut page number
+- Adjust the page form configuration, the drag sorting method is changed from node exchange to node insertion
+- Adjustment: When the window size changes, change from modifying the height of all iframe tags to only modifying the height of the current iframe tags, and then trigger when switching
+- Adjustment For better adaptive effect, set `scrolling="no"` in the iframe tag, and use `<div class="bodyscroll">` packaging for scroll bar display on subpages, refer to the desktop page
 
 ### [v2.2.4] - 2019-06-02
-- 添加 角色添加复制角色权限功能
-- 添加 `公共导出`，自定义查询、条件、格式化
-- 添加 定时任务，自动重置数据库、清理临时目录
-- 添加 表格示例，快捷查询与查询面板共存；注意：启用快捷查询的条件在查询面板中需关闭，避免冲突
-- 添加 表格示例，`批量删除`功能示例
-- 调整  `批处理`功能按钮优化，批处理状态功能按钮自动切换
-- 调整 查询面板 默认关系 从  **等于**  改为  **包含**
+- Added role to add copy role permissions function
+- Add `Public Export`, customize query, condition, format
+- Add timed tasks, automatically reset the database, clean up temporary directories
+- Add a table example, the quick query and the query panel coexist; note: the conditions for enabling the quick query need to be closed in the query panel to avoid conflicts
+- Add table example, `batch delete` function example
+- Adjusted the optimization of the `batch processing` function button, and the batch state function button is automatically switched
+- Adjust the default relationship of the query panel from **equal** to **include**
 
 ### [v2.2.3] - 2019-04-26
-- 调整 标签页添加控制菜单
-- 调整 圆角调整为`1px`
-- 调整 `EasyUI`默认引用`metro`主题
-- 调整 静态资源引入由局部视图统一维护
-- 添加 日志表添加IP所属的城市，离线查询IP地址，基于免费的`ipip.ipdb`
--  **据群发起投票结果，今后仅更新 `.NET Core` 版本，`.NET4` 停更** 
+- Adjust tab page to add control menu
+- Adjust the rounded corners to `1px`
+- Adjust `EasyUI` to refer to `metro` theme by default
+- Adjustment The introduction of static resources is uniformly maintained by the partial view
+- Add the log table to add the city to which the IP belongs, and to query the IP address offline, based on the free `ipip.ipdb`
+- **According to the voting results initiated by the group, only the `.NET Core` version will be updated in the future, and `.NET4` will not be updated**
 
 ### [v2.2.2] - 2019-04-18
-- 调整 日志分批写入
+- Adjust the log write in batches
 
 ### [v2.2.1] - 2019-02-28
-- 调整 导出 Excel的 `NPOITo` 类，支持 `.xls`、`.xlsx`导出
-- 调整 表格查询面板生成模式，基于表格列配置生成，支持多表格查询面板
-- 移除 快捷键 `Ctrl + Q` 打开查询面板（因存在多个查询面板）
-- 添加 表格列标题快捷打开定位条件查询面板
-- 调整 首次运行项目，自动创建数据库、调重置数据库（`scripts/table-reset` 目录需有对应的数据库脚本）
-- 修复 datetime日期时间输入类型查询面板赋值存在的问题（没阻止冒泡，先结束编辑再赋值造成赋值失败）
-- 调整 `Netnr.Core` 类库项目从NuGet引入，新增 `Netnr.Fast` 项目
-- 调整 支持多表单生成（页面的表单、表格配置默认第一个，暂不支持多表单、表格配置）
+- Adjustment Export the `NPOITo` class of Excel, support `.xls`, `.xlsx` export
+- Adjusted table query panel generation mode, based on table column configuration, supports multi-table query panel
+- Remove the shortcut key `Ctrl + Q` to open the query panel (because there are multiple query panels)
+- Add table column headings to quickly open the positioning query panel
+- Adjustment Run the project for the first time, automatically create a database, adjust and reset the database (the `scripts/table-reset` directory needs a corresponding database script)
+- Fix the problem of assignment of datetime date and time input type query panel (it did not prevent bubbling, first finish editing and then assign value causing assignment failure)
+- Adjust the `Netnr.Core` class library project imported from NuGet, and add the `Netnr.Fast` project
+- Adjustments to support multi-form generation (the form and form configuration of the page are the first by default, and multi-form and form configuration are not currently supported)
 
 ### [v2.2.0] - 2019-01-17
-- 调整 Grid行数可选列表,可选200行
-- 修复 多个Grid传参有干扰的问题,修复方式为先清空 `queryparams` 对象
-- 调整 去除日期时间插件 `bootstrap-datetimepicker`  改为 `EasyUI` 提供曰期时间组件，减少两次请求
-- 添加 Modal弹出窗设置 `autorefresh` 属性，每次打开 `iframe` 自动刷新
-- 调整 Moda1弹出窗默认为全屏弹窗
-- 调整 表单必填项提示改为红星
-- 添加 中文语言包
-- 修复 页面嵌套大于两层出现样式不一样的问题,修复方式为把 `parent` 对象改成 `top`
-- 调整 `init.css` 样式包嵌入 `z.css`
-- 调整 `easel-custom.css` 调整的样式嵌入 `z.css` ,页面直接引入原有包 `easyul.css`
-- 调整 表配置隐藏添加系统级隐藏
-- 调整 Grid行号宽度自适应
-- 修复 切换用户菜单异常的问题，菜单缓存问题，去除了菜单缓存
-- 添加 表管理导出 `Excel` 
-- 调整 数据库表字段命名，减少关联查询出现重复列的一些问题
-- 调整 演示项目数据库从 `MySQL` 迁移到 `SQLServer`,无其他原因，主要是自己用着顺手些
-- 调整 查询面板默认关系符为 “等于”，支持快捷键 `Ctrl + Q` 打开查询面板、 `Enter` 确认搜索
+- Adjust the optional list of Grid rows, 200 rows are optional
+- Fix the problem that multiple Grid parameters are interfering. The repair method is to clear the `queryparams` object first
+- Adjustment Removed the date and time plug-in `bootstrap-datetimepicker` and changed it to `EasyUI` to provide date and time components, reducing two requests
+- Add Modal pop-up window to set the `autorefresh` property, and automatically refresh every time the `iframe` is opened
+- Adjusted Moda1 pop-up window to default to full-screen pop-up window
+- Adjust the prompt of mandatory fields in the form to red star
+- Add Chinese language pack
+- Fix the problem of different styles when the page nesting is greater than two levels. The fix is ​​to change the `parent` object to `top`
+- Adjust the `init.css` style package to embed `z.css`
+- Adjust `easel-custom.css` The adjusted style is embedded in `z.css`, and the page directly imports the original package `easyul.css`
+- Adjust table configuration hiding to add system level hiding
+- Adjust Grid line number width adaptive
+- Fix the problem of abnormal switching user menu, menu cache problem, remove menu cache
+- Added table management export `Excel`
+- Adjust the naming of database table fields to reduce some problems with duplicate columns in related queries
+- Adjustment The demo project database was migrated from `MySQL` to `SQLServer`, no other reason, mainly because of your own convenience
+- Adjustment The default relation symbol in the query panel is "equal to", and the shortcut key `Ctrl + Q` is supported to open the query panel and `Enter` to confirm the search
 
 ### [v2.1.2] - 2018-11-09
-- 增加 `.NET Framework 4.5`框架源代码，同步更新Core版本
+- Add `.NET Framework 4.5` framework source code, update Core version synchronously
 
 ### [v2.1.2] - 2018-11-01
-- 修复 `DataGrid`执行`updateRow`更新有翻页时行号有问题（没设置pageNumber的原因）
-- 调整 公共查询的一些操作
+- Fix the problem of row number when the `DataGrid` executes `updateRow` to update the page (the reason why pageNumber is not set)
+- Adjust some operations of public query
 
 ### [v2.1.2] - 2018-10-27
-- 添加 `按钮管理`功能
-- 添加 `菜单管理`功能
-- 添加 `授权关联`功能（支持第三方登录）
-- 添加 `z.Combo`方法添加清除值按钮支持
-- 添加 `PostgreSQL`数据库支持
-- 调整 `Linq`查询，可不传排序列，即默认排序
-- 调整 选项卡右侧仅为刷新按钮
+- Added `Button Management` function
+- Added `Menu Management` function
+- Add `Authorization Association` function (support third-party login)
+- Add `z.Combo` method to add clear value button support
+- Add `PostgreSQL` database support
+- Adjust the `Linq` query, the sorting sequence may not be transmitted, that is, the default sorting
+- The right side of the adjustment tab is just a refresh button
 
 ### [v2.1.1] - 2018-10-13
-- 修复 方法`z.FindTreeNode`存在的问题
-- 修复 方法`z.FormEdit`存在的问题
-- 修复 `Linq`查询先分页后排序的问题
-- 修复 系统操作日志，`IP`获取始终为`127.0.0.1`的问题，原因是`nginx`代理，需要判断代理环境
+- Fix the problem of method `z.FindTreeNode`
+- Fix the problem of method `z.FormEdit`
+- Fix the problem of `Linq` query first pagination and then sorting
+- Fix the problem that the system operation log, the `IP` acquisition is always `127.0.0.1`, the reason is the `nginx` proxy, the proxy environment needs to be judged
 
 ### [v2.1.0]　2018-10
-- 添加 跨平台跨数据库支持，<https://github.com/aspnet/EntityFrameworkCore> ，已测试`SQLite`、`MySql`、`SQLServer`
-- 生成实体依赖于`Scaffold-DbContext`命令 <https://www.netnr.com/gist/code/5283651389582691979>
-- 调整 公共查询从SQL语句改为Linq
-- 修复 `z.js`若干问题
-- 添加 表管理工具，生成表配置、表字典
-- 调整 演示项目调整，从`SQLServer`改为`MySql`，服务器迁移国外搬瓦工（Centos7、Nginx、MySql、CN2线路）
----
-- 顺便说一下这段时间的体会，一直用`Windows`服务器，接触`Linux`后，认为`Linux`做服务器是挺好的，已打算全部迁移至`Linux`服务器。
-  -  `Linux`服务器便宜，相对而言
-  - 国外的`VPS`大多限流量不限速度（比如1G的带宽，每月1T的流量），当然线路也重要，不然延迟掉包严重
-  - 不用备案、可以搭梯子翻墙
-  - `Linux`开机占用`100`MB左右，跑个`dotnet`进程也才`300`MB左右
-  - `.net framework`的项目也能跑哦，`mono` 、[jexus](https://www.jexus.org/)
-  - `SQLServer`数据库已经有`Linux`版本，当然也可以改为`MySql`
-  - 上手`Linux`服务器，一脸懵逼，什么都不知道不知从何下手，怎么办，你说怎么办，凉拌，网上有大把的教程，弄懂一个算一个；这里提供一些我用到的东西：
-    - ssh命令连接服务器
-    - 安装环境：`dotnet`、`nginx`、`ftp`、`mysql`、`frp`（微信开发）、`shadowsocks`（翻墙）
-    - 学习`vi`编辑器，学习`dotnet`命令，学习`nginx`配置
-    - 存的一些干货 <https://www.netnr.com/gist/user/1>
+- Add cross-platform and cross-database support, <https://github.com/aspnet/EntityFrameworkCore>, tested `SQLite`, `MySql`, `SQLServer`
+- Generating entities depends on the `Scaffold-DbContext` command <https://www.netnr.com/gist/code/5283651389582691979>
+- Adjust the public query from SQL statement to Linq
+- Fix some issues with `z.js`
+- Add table management tool to generate table configuration and table dictionary
+- Adjustment Adjustment of the demo project, from `SQLServer` to `MySql`, server migration to foreign masonry (Centos7, Nginx, MySql, CN2 lines)
+- 
+- By the way, I have been using a `Windows` server. After contacting `Linux`, I think that `Linux` is a good server, and I plan to migrate all to the `Linux` server.
+  - `Linux` server is cheap, relatively speaking
+  - Most of the foreign `VPS` are limited to flow and speed (such as 1G bandwidth, 1T monthly flow), of course, the line is also important, otherwise the delay and packet loss will be serious
+  - No need to file, you can take a ladder over the wall
+  - `Linux` boot occupies about `100`MB, and running a `dotnet` process is only about `300`MB
+  - `.net framework` projects can also run, `mono`, [jexus](https://www.jexus.org/)
+  - `SQLServer` database already has `Linux` version, of course it can be changed to `MySql`
+  - Getting started with the `Linux` server, with a dumb face, I don’t know where to start, what to do, what do you say, salad, there are a lot of tutorials on the Internet, understand one and count one; here are some I use s things:
+    - ssh command to connect to the server
+    - Installation environment: `dotnet`, `nginx`, `ftp`, `mysql`, `frp` (WeChat development), `shadowsocks` (over the wall)
+    - Learn `vi` editor, learn `dotnet` command, learn `nginx` configuration
+    - Some dry goods in stock <https://www.netnr.com/gist/user/1>
 
 ### [v2.0.0] - 2018-07
-- 前端采用 jQuery + Bootstrap + EasyUI + AceAdmin
-- 后端采用 Asp.Net Core + EF + SQLServer
-- 全新重写 `z.js` 脚本包，与EasyUI提供的API高度保持一致（最大调整）
-- 重写iframe选项卡
-- 精简ace导航
+- The front end adopts jQuery + Bootstrap + EasyUI + AceAdmin
+- Backend adopts Asp.Net Core + EF + SQLServer
+- Brand new rewrite of `z.js` script package, consistent with the API provided by EasyUI (maximum adjustment)
+- Rewrite iframe tab
+- Streamlined ace navigation

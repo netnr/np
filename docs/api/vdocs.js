@@ -9,6 +9,7 @@ module.exports = (req, res) => {
         dc: {
             coverpage: "",
             sidebar: "",
+            navbar: "",
             index: "",
             body: "",
             output: ""
@@ -17,6 +18,7 @@ module.exports = (req, res) => {
 
             vd.dc.coverpage = vd.replaceMdLink(vd.render(vd.read("_coverpage.md", 'utf-8') || ""));
             vd.dc.sidebar = vd.replaceMdLink(vd.render(vd.read("_sidebar.md", 'utf-8') || ""));
+            vd.dc.navbar = vd.replaceMdLink(vd.render(vd.read("_navbar.md", 'utf-8') || ""));
             vd.dc.index = vd.read("index.html", 'utf-8') || "";
 
             let nc = false,
@@ -70,7 +72,7 @@ module.exports = (req, res) => {
             }
 
             if (nc) {
-                vd.dc.output = vd.dc.index.replace("{SEO}", vd.dc.coverpage + vd.dc.sidebar + vd.dc.body);
+                vd.dc.output = vd.dc.index.replace("{SEO}", vd.dc.coverpage + vd.dc.navbar + vd.dc.sidebar + vd.dc.body);
             }
 
             res.setHeader('content-type', vd.dc.ctype || mime.getType(vd.path));

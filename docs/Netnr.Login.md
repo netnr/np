@@ -1,72 +1,72 @@
 # Netnr.Login
-第三方 OAuth 授权登录，QQ、微信（WeChat）、微博（Weibo）、GitHub、码云（Gitee）、淘宝（天猫）、微软（Microsoft ）、钉钉（DingTalk）、谷歌（Google）、支付宝（AliPay）、StackOverflow
+Third-party OAuth authorized login, QQ, WeChat, Weibo, GitHub, Gitee, Taobao (Tmall), Microsoft, DingTalk, Google, Alipay, StackOverflow
 
-> 演示：<https://www.netnr.com/account/login>
+> Demo：<https://www.netnr.com/account/login>
 
-### 安装 (NuGet)
+### Install from NuGet
 ```
 Install-Package Netnr.Login
 ```
 
-### [更新日志](Netnr.Login.ChangeLog.md)
+### [CHANGELOG](Netnr.Login.ChangeLog.md)
 
-### 支持第三方登录
+### third-party login
 <table>
-    <tr><th>三方</th><th>参考文档</th></tr>
+    <tr><th>Tripartite</th><th>documents</th></tr>
     <tr>
         <td><img src="https://s1.zme.ink/static/login/qq.svg" height="30" title="QQ"></td>
-        <td><a href="https://wiki.connect.qq.com/准备工作_oauth2-0">参考文档</a></td>
+        <td><a target="_blank" href="https://wiki.connect.qq.com/准备工作_oauth2-0">documents</a></td>
     </tr>
     <tr>
-        <td><img src="https://s1.zme.ink/static/login/wechat.svg" height="30" title="微信/WeChat"></td>
-        <td><a href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN">参考文档</a></td>
+        <td><img src="https://s1.zme.ink/static/login/wechat.svg" height="30" title="WeChat"></td>
+        <td><a target="_blank" href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN">documents</a></td>
     </tr>
     <tr>
-        <td><img src="https://s1.zme.ink/static/login/weibo.svg" height="30" title="新浪微博"></td>
-        <td><a href="https://open.weibo.com/wiki/授权机制说明">参考文档</a></td>
+        <td><img src="https://s1.zme.ink/static/login/weibo.svg" height="30" title="Weibo"></td>
+        <td><a target="_blank" href="https://open.weibo.com/wiki/授权机制说明">documents</a></td>
     </tr>
     <tr>
         <td><img src="https://s1.zme.ink/static/login/github.svg" height="30" title="GitHub"></td>
-        <td><a href="https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps">参考文档</a></td>
+        <td><a target="_blank" href="https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps">documents</a></td>
     </tr>
     <tr>
-        <td><img src="https://s1.zme.ink/static/login/gitee.svg" height="30" title="码云/Gitee"></td>
-        <td><a href="https://gitee.com/api/v5/oauth_doc">参考文档</a></td>
+        <td><img src="https://s1.zme.ink/static/login/gitee.svg" height="30" title="Gitee"></td>
+        <td><a target="_blank" href="https://gitee.com/api/v5/oauth_doc">documents</a></td>
     </tr>
     <tr>
-        <td><img src="https://s1.zme.ink/static/login/taobao.svg" height="30" title="淘宝/天猫"></td>
-        <td><a href="https://open.taobao.com/doc.htm?spm=a219a.7386797.0.0.4e00669acnkQy6&source=search&docId=105590&docType=1">参考文档</a></td>
+        <td><img src="https://s1.zme.ink/static/login/taobao.svg" height="30" title="Taobao/Tmail"></td>
+        <td><a target="_blank" href="https://open.taobao.com/doc.htm?spm=a219a.7386797.0.0.4e00669acnkQy6&source=search&docId=105590&docType=1">documents</a></td>
     </tr>
     <tr>
-        <td><img src="https://s1.zme.ink/static/login/microsoft.svg" height="30" title="微软/Microsoft"></td>
-        <td><a href="https://docs.microsoft.com/zh-cn/graph/auth/">参考文档</a></td>
+        <td><img src="https://s1.zme.ink/static/login/microsoft.svg" height="30" title="Microsoft"></td>
+        <td><a target="_blank" href="https://docs.microsoft.com/zh-cn/graph/auth/">documents</a></td>
     </tr>
     <tr>
-        <td><img src="https://s1.zme.ink/static/login/dingtalk.svg" height="30" title="钉钉/DingTalk"></td>
-        <td><a href="https://ding-doc.dingtalk.com/doc#/serverapi2/kymkv6">参考文档</a></td>
+        <td><img src="https://s1.zme.ink/static/login/dingtalk.svg" height="30" title="DingTalk"></td>
+        <td><a target="_blank" href="https://ding-doc.dingtalk.com/doc#/serverapi2/kymkv6">documents</a></td>
     </tr>
     <tr>
         <td><img src="https://s1.zme.ink/static/login/google.svg" height="30" title="谷歌/Google"></td>
-        <td><a href="https://developers.google.com/identity/protocols/OpenIDConnect">参考文档</a></td>
+        <td><a target="_blank" href="https://developers.google.com/identity/protocols/OpenIDConnect">documents</a></td>
     </tr>
     <tr>
-        <td><img src="https://s1.zme.ink/static/login/alipay.svg" height="30" title="支付宝/AliPay"></td>
-        <td><a href="https://docs.open.alipay.com/263/105809">参考文档</a></td>
+        <td><img src="https://s1.zme.ink/static/login/alipay.svg" height="30" title="AliPay"></td>
+        <td><a target="_blank" href="https://docs.open.alipay.com/263/105809">documents</a></td>
     </tr>
     <tr>
         <td><img src="https://s1.zme.ink/static/login/stackoverflow.svg" height="30" title="Stack Overflow"></td>
-        <td><a href="https://api.stackexchange.com">参考文档</a></td>
+        <td><a target="_blank" href="https://api.stackexchange.com">documents</a></td>
     </tr>
 </table>
 
 
-> 提醒：一般所有第三方登录都有一个 **state** 参数，用于防止CSRF攻击（防伪），可以利用该参数添加 登录、注册 的标注前缀
+> Reminder: Generally, all third-party logins have a **state** parameter, which is used to prevent CSRF attacks (anti-counterfeiting). You can use this parameter to add the prefix of login and registration.
 
-### 使用
+### Usage
 ```csharp
 /*
- * 这是测试代码，只为调通每一个接口，拿到 唯一标识
- * 实际应用中还要处理昵称、邮箱、头像等
+ * This is the test code, just to call each interface and get the unique identification
+ * In actual applications, nicknames, mailboxes, avatars, etc. must also be processed
  */
 
 using System;
@@ -79,12 +79,12 @@ namespace Netnr.Login.Sample
         {
             var lc = new LoginClient(LoginBase.LoginType.StackOverflow);
 
-            //拷贝授权链接在浏览器打开，授权后拿到code，并手动赋值，手动赋值需解码
+            //Copy the authorization link and open it in the browser, get the code after authorization, and assign it manually. Manual assignment needs to be decoded
             var url = lc.Auth();
 
             var ar = new LoginBase.AuthorizeResult();
             ar.code = "";
-            //此处打断点，赋值上面拿到的code再继续
+            //Break here, assign the code obtained above and continue
             ar.code = ar.code.ToDecode();
 
             lc.AuthCallback(ar);
@@ -98,10 +98,10 @@ namespace Netnr.Login.Sample
             {
                 loginType = _loginType;
 
-                // 配置
+                // Configuration
                 QQConfig.APPID = "XXX";
                 QQConfig.APPKey = "XXX";
-                //回调地址，与申请填写的地址保持一致
+                //Callback address, consistent with the address filled in in the application
                 QQConfig.Redirect_Uri = "https://rf2.netnr.com/account/authcallback/qq";
 
                 WeChatConfig.AppId = "";
@@ -115,7 +115,7 @@ namespace Netnr.Login.Sample
                 GitHubConfig.ClientID = "";
                 GitHubConfig.ClientSecret = "";
                 GitHubConfig.Redirect_Uri = "";
-                //申请的应用名称，非常重要
+                //The application name of the application is very important
                 GitHubConfig.ApplicationName = "netnrf";
 
                 TaoBaoConfig.AppKey = "";
@@ -149,9 +149,9 @@ namespace Netnr.Login.Sample
             }
 
             /// <summary>
-            /// 生成请求链接
+            /// Generate request link
             /// </summary>
-            /// <param name="authType">在防伪参数追加信息（可用于登录、注册、绑定、解绑区分）</param>
+            /// <param name="authType">Additional information in anti-counterfeiting parameters (can be used to distinguish between login, registration, binding, and unbinding)</param>
             /// <returns></returns>
             public string Auth(string authType = "")
             {
@@ -279,9 +279,9 @@ namespace Netnr.Login.Sample
             }
 
             /// <summary>
-            /// 回调方法
+            /// Callback method
             /// </summary>
-            /// <param name="authorizeResult">接收授权码、防伪参数</param>
+            /// <param name="authorizeResult">Receive authorization code, anti-counterfeiting parameters</param>
             public void AuthCallback(LoginBase.AuthorizeResult authorizeResult)
             {
                 if (string.IsNullOrWhiteSpace(authorizeResult.code))
@@ -290,7 +290,7 @@ namespace Netnr.Login.Sample
                 }
                 else
                 {
-                    //唯一标示
+                    //Uniquely identifies
                     string OpenId = string.Empty;
 
                     switch (loginType)
@@ -489,7 +489,7 @@ namespace Netnr.Login.Sample
                             break;
                     }
 
-                    //拿到登录标识
+                    //Get the openid
                     if (string.IsNullOrWhiteSpace(OpenId))
                     {
                         //TO DO
@@ -502,6 +502,6 @@ namespace Netnr.Login.Sample
 }
 ```
 
-### 框架
+### Frame
 - .NETStandard 2.1
 - .NETFramework 4.0

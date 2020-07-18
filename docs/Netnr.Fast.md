@@ -1,16 +1,16 @@
 # Netnr.Fast
-应用基础常用
+Common application foundation
 
-### 类
-- PublicClass　　公用类，无命名空间
-    - ActionResultVM.cs　　通用请求方法返回对象
-    - CommonEnum.cs　　常用枚举
-    - GlobalTo.cs　　Core环境`IConfiguration` `IHostEnvironment` 对象，`appsettings.json`配置文件
-    - PageVM.cs　　分页视图
-    - PaginationVM.cs　　分页参数
-    - QueryDataInputVM.cs　　输入参数
-    - QueryDataOutputVM.cs　　输出信息
-    - TreeNodeVM.cs　　层级树
-    - ValueTextVM.cs　　键值
-- ParsingTo.cs　　解析（正则验证、数据处理）
-- QueryableTo.cs　　IQueryable对象的拓展，如排序拼接
+### Class
+- PublicClass　　public class, no namespace
+     - ActionResultVM.cs　　general request method returns object
+     - CommonEnum.cs　　common enumeration
+     - GlobalTo.cs　　Core environment `IConfiguration` `IHostEnvironment` object, `appsettings.json` configuration file
+     - PageVM.cs　　paging view
+     - PaginationVM.cs　　pagination parameters
+     - QueryDataInputVM.cs　　input parameters
+     - QueryDataOutputVM.cs　　output information
+     - TreeNodeVM.cs　　hierarchy tree
+     - ValueTextVM.cs　　key value
+- ParsingTo.cs　　parsing (regular verification, data processing)
+- QueryableTo.cs　　Extension of IQueryable objects, such as sorting and stitching

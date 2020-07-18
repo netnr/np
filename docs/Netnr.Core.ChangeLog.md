@@ -1,11 +1,11 @@
-# 更新日志
+# Change log
 
 ### [v1.3.0] - 2020-05-16
-- 调整 `FileTo` 类 读取/写入方法传参，原来是分开传文件路径和文件名，现一起传完整物理路径
-- 删除 `CmdTo` 类 Linux上执行Shell的一些方法，仅保留基础方法
+- Adjusted the `FileTo` class read/write method to pass parameters, the original file path and file name were transferred separately, and now the complete physical path is transferred together
+- Removed some methods of executing Shell on `CmdTo` class, leaving only basic methods
 
 ### [v1.2.3] - 2020-01-06
-- 调整 支持 `.NETStandard2.0` ，为支持 `.NET Framework 4.6` + 的引用
+- Adjust to support `.NET Standard 2.0`, to support `.NET Framework 4.6` + references
 
 ### [v1.2.2] - 2019-12-22
-- 调整 `ConsoleTo` 类 添加类型判断，修复换行符被序列化为字符串
+- Adjusted the `ConsoleTo` class to add type judgments, fixed newline characters being serialized as strings

@@ -1,40 +1,40 @@
 # Netnr
-周华，男，1992.7 生，2012 参工，大专，single 🤣  
+Zhou Hua, male, 1992.7 students, 2012 part-time job, junior college, single 🤣  
 netnr@netnr.com  
 .NET Core、SQL、JavaScript、Linux
 
 ---
 
-### 站点（Site）
+### Site
 - [zme.ink](https://zme.ink)
     - [api.zme.ink](https://api.zme.ink "API")
-    - [cors.zme.ink](https://cors.zme.ink "跨域请求代理")
-    - [ub.zme.ink](http://ub.zme.ink "浏览器升级提示")
-    - [v.zme.ink](https://v.zme.ink "VIP视频")
-- [guff.ltd](https://guff.ltd "尬服")
-- [uuid.fun](https://uuid.fun "书签")
+    - [cors.zme.ink](https://cors.zme.ink "Cross-domain request proxy")
+    - [ub.zme.ink](http://ub.zme.ink "Browser upgrade tips")
+    - [v.zme.ink](https://v.zme.ink "VIP video")
+- [guff.ltd](https://guff.ltd)
+- [uuid.fun](https://uuid.fun "Bookmark")
 - [netnr.top](https://netnr.top)
 - [gitee.com/netnr](https://gitee.com/netnr)
 - [github.com/netnr](https://github.com/netnr)
 - [www.netnr.com](https://www.netnr.com)
-    - [脚本服务](https://ss.netnr.com)
-    - [JSON编辑器](https://json.netnr.com)
-    - [NetnrMD编辑器](https://md.netnr.com "Markdown编辑器")
-    - [KMS](https://kms.netnr.com "Windows激活服务")
-    - [jz弹窗](https://jz.netnr.com "一个轻量、简单的弹窗插件")
-    - [Emoji表情](https://emoji.netnr.com)
-    - [jCute脚本](https://jcute.netnr.com)
-    - [响应式导航栏](https://nav.netnr.com)
-    - [聊天室](https://chat.netnr.com)
-    - [API文档](https://ad.netnr.com "帮助文档")
-    - [FontAwesome图标](https://fa.netnr.com "Font Awesome 镜像")
-    - [Squoosh图片压缩](https://tiny.netnr.com)
-    - [字典](https://zidian.netnr.com "字、词、成语")
+    - [Script service](https://ss.netnr.com)
+    - [JSON editor](https://json.netnr.com)
+    - [NetnrMD](https://md.netnr.com "Markdown editor")
+    - [KMS](https://kms.netnr.com "Windows activation service")
+    - [jz pop-up](https://jz.netnr.com "A lightweight, simple pop-up plugin")
+    - [Emoji](https://emoji.netnr.com)
+    - [jCute script](https://jcute.netnr.com)
+    - [Responsive navigation bar](https://nav.netnr.com)
+    - [Chat](https://chat.netnr.com)
+    - [API docs](https://ad.netnr.com)
+    - [FontAwesome icon](https://fa.netnr.com "Font Awesome Mirror")
+    - [Squoosh](https://tiny.netnr.com "Picture compression")
+    - [Mandarin dictionary](https://zidian.netnr.com)
 
 ---
 
-### 赞助（Sponsors）
-<img src="static/donate/alipay.jpg" alt="支付宝" title="支付宝" width="300" />
-<img src="static/donate/wechat.jpg" alt="微信" title="微信" width="300" />
+### <font color=crimson>❤</font> Sponsors
+<img src="static/donate/alipay.jpg" alt="AliPay" title="AliPay" width="300" />
+<img src="static/donate/wechat.jpg" alt="WeChat" title="WeChat" width="300" />
 
-[名单](SPONSORS.md)
+[Sponsor List](SPONSORS.md)

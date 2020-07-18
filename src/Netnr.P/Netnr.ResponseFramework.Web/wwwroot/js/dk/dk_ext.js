@@ -105,7 +105,7 @@ if (window.dk) {
 
     //表渲染前回调
     dk.viewTableBefore = function (dgo) {
-        dgo.columns[0].splice(2, 0, { field: "HasTableConfig", title: "表配置", align: "center", formatter: function (value) { return value ? "✔" : "" } });
+        dgo.columns[0].splice(2, 0, { field: "HasTableConfig", title: "表配置", align: "center", formatter: function (value) { return value ? '<i class="fa fa-lg fa-check text-success"></i>' : "" } });
         $.each(dgo.data, function () {
             this.HasTableConfig = dk.dc.hasTableConfig.indexOf(this.TableName) >= 0;
         });

@@ -223,7 +223,7 @@ namespace Netnr.Login.Sample
             {
                 if (!string.IsNullOrWhiteSpace(authorizeResult.code) || !string.IsNullOrWhiteSpace(authorizeResult.auth_code))
                 {
-                    //唯一标示
+                    //唯一标识
                     string OpenId = string.Empty;
 
                     switch (loginType)

@@ -1,10 +1,10 @@
 # Netnr.Fast.Extend
-Netnr.Fast 的拓展
+Netnr.Fast expansion
 
-### 类
-- ClientTo.cs　　获取客户端的一些信息（需要传入 `HttpContext`）
-- DownTo.cs　　流下载文件（需要传入 `HttpResponse`）
-- ImageTo.cs　　图片操作（生成验证码、缩略图、水印）
-- NpoiTo.cs　　操作Excel（依赖 `NPOI`，Excel文件与DataTable相互转换，支持 .xls、.xlsx）
-- OSInfoTo.cs　　获取系统信息（依赖`Cmd`、`Shell`命令）
-- PinyinTo.cs　　中文转拼音（NPinyin）
+### Class
+- ClientTo.cs　　Get some information of the client (need to pass in `HttpContext`)
+- DownTo.cs 　　 stream download file (need to pass in `HttpResponse`)
+- ImageTo.cs 　　 picture operation (generate verification code, thumbnail, watermark)
+- NpoiTo.cs 　　 operation Excel (depending on `NPOI`, Excel file and DataTable are converted between each other, support .xls, .xlsx)
+- OSInfoTo.cs 　　 to obtain system information (depends on `Cmd`, `Shell` commands)
+- PinyinTo.cs　　Chinese to Pinyin (NPinyin)

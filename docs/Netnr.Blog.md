@@ -1,59 +1,59 @@
 # Netnr.Blog
-个人站点
+Personal site
 
-> 演示：<https://www.netnr.com>
+> Demo: <https://www.netnr.com>
 
-<h3><a href="Netnr.Blog.SQLServer.pdm" title="PD设计" target="_blank">Netnr.Blog.SQLServer.pdm</a></h3>
+<h3><a href="static/pd/Netnr.Blog.SQLServer.pdm" title="PD design" target="_blank">Netnr.Blog.SQLServer.pdm</a></h3>
 
-### 框架组件
+### Framework components
 - jQuery + Bootstrap4
 - .NET Core (latest)
 - EF + Linq
-- 支持：SQLServer、MySQL、PostgreSQL、SQLite、InMemory等
+- Support: SQLServer, MySQL, PostgreSQL, SQLite, InMemory, etc.
 - ==========================================
-- Baidu.AI（实验室）
-- FluentScheduler（定时任务）
-- MailKit（邮箱验证）
-- Netease.Cloud.Nos（网易对象存储）
-- Netnr.Core（公共类库）
-- Netnr.Login（第三方登录）
-- Netnr.WeChat（微信公众号）
-- Qcloud.Shared.NetCore（腾讯对象存储）
-- Qiniu.Shared（七牛对象存储）
-- sqlite-net-pcl（SQLite，日志）
-- Swashbuckle.AspNetCore（Swagger 生成接口）
+- Baidu.AI (Lab)
+- FluentScheduler (timed task)
+- MailKit (mailbox verification)
+- Netease.Cloud.Nos (NetEase Object Storage)
+- Netnr.Core (public class library)
+- Netnr.Login (third-party login)
+- Netnr.WeChat (WeChat public account)
+- Qcloud.Shared.NetCore (Tencent Object Storage)
+- Qiniu.Shared (seven cattle object storage)
+- sqlite-net-pcl (SQLite, log)
+- Swashbuckle.AspNetCore (Swagger generation interface)
 
-### 功能模块
-- 登录、注册（第三方直接登录：QQ、微博、GitHub、淘宝、Microsoft）
-- 文章：发布文章（Markdown编辑器）
-- 文章留言：支持匿名留言，根据邮箱从 Gravatar 获取头像
-- 公众号：（玩具）
-- Gist：代码片段，自动同步GitHub、Gitee
-- Run：在线运行HTML代码，写demo用
-- Doc：文档管理，API说明文档
-- Draw：绘制，集成开源项目 mxGraph、百度脑图
-- Note：记事本（Markdown编辑器）
-- 存储：云存储，对象存储
-- 备份：自动备份数据库
-- 日志：访问日志记录、统计
+### Functional module
+- Login, register (third party direct login: QQ, Weibo, GitHub, Taobao, Microsoft)
+- Article: Post an article (Markdown Editor)
+- Article message: Support anonymous message, get avatar from Gravatar according to mailbox
+- WeChat public number: (toy)
+- Gist: code snippet, automatically sync GitHub, Gitee
+- Run: Run HTML code online and write demo
+- Doc: document management, API documentation
+- Draw: draw, integrate open source project mxGraph, Baidu brain map
+- Note: Notepad (Markdown editor)
+- Storage: Cloud storage, object storage
+- Backup: automatic database backup
+- Log: access log records, statistics
 
-### 更新日志
+### Changelog
 - <https://www.netnr.com/home/list/131>
-- 个站更新后才会更新源代码，非同步更新
+- The source code will be updated only after the station is updated, asynchronous update
 
 ### FQA
 
-**示例数据**
+**Sample data**
 
-第一次运行项目自动写入示例数据，账号：`netnr`，密码：`123456`  
-示例数据存放在静态资源wwwroot目录下，访问地址：`{Host}/scripts/example/data.json`
+The first run of the project automatically writes sample data, account: `netnr`, password: `123456`  
+The sample data is stored in the static resource wwwroot directory, access address: `{Host}/scripts/example/data.json`
 
-**怎么添加文章标签**  
+**How ​​to add article tags**
 
-访问 `{Host}/admin/keyvalues` 添加标签，管理员访问，   
-标签表(Tags)依赖键值表(KeyValues)和键值同义词表(KeyValueSynonym)  
-如输入`javascript`，从百科抓取该词描述（抓取失败机率高，需重试），（可选）添加同义词`js`，再添加 `javascript` 到标签
+Visit `{Host}/admin/keyvalues` to add tags, administrator access,  
+Tags depend on KeyValues ​​and KeyValueSynonym  
+If you enter `javascript`, grab the description of the word from Wikipedia (the probability of grabbing failure is high, you need to try again), (optional) add the synonym `js`, then add `javascript` to the tag
 
-**Markdown编辑器用的什么**
+**What the Markdown editor uses**
 
-请看这里：<https://md.netnr.com>
+Please see here: <https://md.netnr.com>

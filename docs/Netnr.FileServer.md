@@ -1,64 +1,55 @@
 # Netnr.FileServer
-基于 .NET Core 的简单文件服务器，数据库为 SQLite
+Simple file server based on .NET Core, database is SQLite
 
----
+> After creating the App in the production environment, you need to set `IsDev:false`  
+> the setting will take effect directly without restarting the service, `appsettings.json` is the configuration file  
+> File database and upload directory grant read and write permissions
 
-> 生产环境在创建 App 之后需设置 `IsDev:false`，设置直接生效不用重启服务，`appsettings.json` 为配置文件  
-> 文件数据库 和 上传目录 赋予读写权限
-
----
-
-### 运行
-
-- 有环境依赖
-    - 在根目录运行：`dotnet Netnr.FileServer.dll "http://*:55"`
-    - Linux后台运行：`nohup dotnet Netnr.FileServer.dll "http://*:55" &`
-- 无环境依赖
-    - Linux运行：`chmod +x Netnr.FileServer` 先给运行权限，`./Netnr.FileServer "http://*:55"` 再运行
+### Run
+- Environment dependent
+    - Run in the root directory: `dotnet Netnr.FileServer.dll "http://*:55"`
+    - Linux background running: `nohup dotnet Netnr.FileServer.dll "http://*:55" &`
+- No environment dependence
+    - Linux operation: `chmod +x Netnr.FileServer` first give the permission to run, `./Netnr.FileServer "http://*:55"` then run
 - Windows
-    - Windows可直接双击`Netnr.FileServer.exe`，或命令运行`Netnr.FileServer.exe "http://*:55"`
-    - 挂载IIS
+    - Windows can directly double click `Netnr.FileServer.exe`, or command to run `Netnr.FileServer.exe "http://*:55"`
+    - Mount IIS
 
-### 访问
+### Visit
+After the service is running, visit `{Host}/swagger`, you can use all the interfaces directly
 
-服务运行后，访问 `{Host}/swagger`，可以直接使用所有的接口
+### Authorization
+First create App to get AppId and AppKey, and then get Token according to AppId and AppKey request,  
+Token can set the validity period according to the configuration, the default is 30 minutes, and the cache is 20 minutes (that is, the request token returns the same result within 20 minutes)
 
-### 授权
+### Interface
+- `/api/createapp` create App, **use in non-production environment**
+- `/api/getapplist` Get App list, **use in non-production environment**
+- `/api/resetall` to clear the database and upload the directory, **for non-production environment use**
+- Be sure to modify the configuration `IsDev:false` in the production environment and close the above interface
+- 
+- `/api/gettoken` request Token based on AppId and AppKey
+- `/api/upload` upload files
+- `/api/copy` to copy files
+- `/api/cover` upload file coverage
+- `/api/delete` delete files
 
-首先创建 App 得到 AppId 、AppKey，然后根据 AppId、AppKey 请求得到 Token，  
-Token 可根据配置设置有效期，默认30分钟有效，缓存20分钟（即20分钟内请求Token返回结果相同）
+### Upload
+Upload to the directory **wwwroot/static/** by default, `/static/` can be configured according to the configuration file
 
-### 接口
-- `/api/createapp` 创建App，**非生产环境使用**
-- `/api/getapplist` 获取App列表，**非生产环境使用**
-- `/api/resetall` 清空数据库和上传目录，**非生产环境使用**
-- 在生产环境下一定要修改配置 `IsDev:false` , 关闭以上接口
-
----
-
-- `/api/gettoken` 根据AppId、AppKey请求Token
-- `/api/upload` 上传文件
-- `/api/copy` 复制文件
-- `/api/cover` 上传文件覆盖
-- `/api/delete` 删除文件
-
-### 上传
-默认上传到目录 **wwwroot/static/** ， `/static/`可根据配置文件配置
-
-### 分离
-为了更好的维护或数据的安全，需要分离文件数据库和上传的静态目录，  
-可以用 `软链接` 的方式来做，`非` Windows的快捷方式  
+### Separation
+For better maintenance or data security, it is necessary to separate the file database and the uploaded static directory,
+It can be done with `soft link`, `non-` Windows shortcut
 ```
-// Windows 软链接
-// 命令格式
-mklink /d 软链接目录 物理目录 
-// 示例 在当前创建 static 目录 指向 D盘的 static 目录
+// Windows soft link
+// Command format
+mklink /d soft <link directory> <physical directory>
+// Example Create a static directory in the current point to the static directory of the D drive
 mklink /d static D:\static
 ```
-
 ```
-# Linux 软链接
-ln -s 源文件 软链接文件 # 命令格式
-# 示例 gs 指向 /netnr/site/static 目录
+# Linux soft link
+ln -s source <file soft> <link file> # command format
+# Example gs points to the /netnr/site/static directory
 ln -s /netnr/site/static /netnr/site/www/wwwroot/gs
 ```

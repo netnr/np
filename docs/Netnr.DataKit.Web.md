@@ -1,2 +1,2 @@
 # Netnr.DataKit.Web
-前端构建
+Front-end build

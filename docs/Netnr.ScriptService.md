@@ -1,4 +1,8 @@
 # Netnr.ScriptService
-脚本服务，使用 <https://github.com/netnr/workers> 提供跨域请求服务
+No backend provides services based on cross-domain proxy requests
 
-> 演示：<https://ss.netnr.com>
+> Demo：<https://ss.netnr.com>
+
+### Cross-domain service
+- <https://github.com/netnr/workers>
+- <https://github.com/netnr/serverless>

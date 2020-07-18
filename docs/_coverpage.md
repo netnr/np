@@ -2,7 +2,7 @@
 
 # Netnr.P <small>0.0.1</small>
 
-> 开源项目集合（Netnr Project）
+> Open source project collection（Netnr Project）
 
-[GitHub](https://github.com/netnr)
+[GitHub](https://github.com/netnr/np)
 [Netnr](#Netnr)

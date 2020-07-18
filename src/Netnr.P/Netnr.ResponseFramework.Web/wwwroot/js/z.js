@@ -333,12 +333,15 @@
             case "col_custom_":
                 try { return eval("col_custom_" + v.ColField.toLowerCase())(value, row, v); } catch (e) { return value; }
                 break;
+            //1笑 0禁
             case "19":
-                return value = value == "1" ? '正常' : '<span style="background-color:#F89406;color:#fff;padding:4px">停用</span>';
+                return value = '<i class="fa fa-lg ' + (value == '1' ? 'fa-smile-o text-success' : 'fa-ban text-danger') + '"></i>';
+            //1× 0√
             case "18":
-                return value = value == "1" ? "✘" : "✔";
+                return value = '<i class="fa fa-lg ' + (value == '1' ? 'fa-remove text-danger' : 'fa-check text-success') + '"></i>';
+            //1√ 0×
             case "17":
-                return value = value == "1" ? "✔" : "✘";
+                return value = '<i class="fa fa-lg ' + (value == '1' ? 'fa-check text-success' : 'fa-remove text-danger') + '"></i>';
             //精确两位  带￥
             case "16":
                 if (value != undefined && value != "") {
