@@ -523,7 +523,7 @@ namespace Netnr.Blog.Web.Controllers
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
             using (var db = new Data.ContextBase())
             {
-                var mo = db.UserWriting.Where(x => x.Uid == uid && x.UwId == id).FirstOrDefault();
+                var mo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == id);
                 var listTags = db.UserWritingTags.Where(x => x.UwId == id).ToList();
 
                 vm.Data = new
@@ -557,7 +557,7 @@ namespace Netnr.Blog.Web.Controllers
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
             using (var db = new Data.ContextBase())
             {
-                var oldmo = db.UserWriting.Where(x => x.Uid == uid && x.UwId == UwId).FirstOrDefault();
+                var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == UwId);
 
                 if (oldmo.UwStatus == -1)
                 {
@@ -612,7 +612,7 @@ namespace Netnr.Blog.Web.Controllers
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
             using (var db = new Data.ContextBase())
             {
-                var mo1 = db.UserWriting.Where(x => x.Uid == uid && x.UwId == id).FirstOrDefault();
+                var mo1 = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == id);
                 if (mo1.UwStatus == -1)
                 {
                     vm.Set(ARTag.unauthorized);

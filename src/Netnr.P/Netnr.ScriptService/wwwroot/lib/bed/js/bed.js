@@ -166,16 +166,6 @@ $(function () {
                     file.type = "file";
                 }
                 break;
-            case "https://jpg.dog/json":
-                {
-                    uploader.options.fileVal = "source";
-
-                    uploader.options.formData.auth_token = uploader.tokens.jpgdog;
-                    uploader.options.formData.timestamp = new Date().valueOf();
-                    uploader.options.formData.action = "upload";
-                    file.type = "file";
-                }
-                break;
             case "https://uploadbeta.com/api/pictures/upload/file/":
                 {
                     uploader.options.formData.title = "netnr-bed";
@@ -195,7 +185,6 @@ $(function () {
 
         switch (up) {
             case "https://imgbb.com/json":
-            case "https://jpg.dog/json":
                 {
                     if (res.status_code == 200) {
                         vurl = res.image.url
@@ -579,12 +568,6 @@ $(function () {
     $.get('https://cors.zme.ink/imgbb.com', null, function (html) {
         html.replace(/auth_token=".*";/, function (at) {
             uploader.tokens.imgbbcom = at.split('"')[1];
-        })
-    })
-
-    $.get('https://cors.zme.ink/jpg.dog', null, function (html) {
-        html.replace(/auth_token = ".*";/, function (at) {
-            uploader.tokens.jpgdog = at.split('"')[1];
         })
     })
 });

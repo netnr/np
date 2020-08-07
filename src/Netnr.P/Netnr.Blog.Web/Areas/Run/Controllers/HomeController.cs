@@ -58,7 +58,7 @@ namespace Netnr.Web.Areas.Run.Controllers
                 }
                 else
                 {
-                    var oldmo = db.Run.Where(x => x.RunCode == mo.RunCode).FirstOrDefault();
+                    var oldmo = db.Run.FirstOrDefault(x => x.RunCode == mo.RunCode);
 
                     if (oldmo != null)
                     {

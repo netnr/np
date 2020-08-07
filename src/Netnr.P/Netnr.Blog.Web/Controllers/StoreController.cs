@@ -23,7 +23,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            return Redirect("/store/qnkodo");
+            return View();
         }
 
         #region QQ对象存储

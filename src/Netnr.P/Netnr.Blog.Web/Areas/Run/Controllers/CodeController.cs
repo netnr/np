@@ -24,7 +24,7 @@ namespace Netnr.Web.Areas.Run.Controllers
             {
                 id = id.Replace(".json", "");
                 using var db = new Blog.Data.ContextBase();
-                var mo = db.Run.Where(x => x.RunCode == id && x.RunOpen == 1 && x.RunStatus == 1).FirstOrDefault();
+                var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.RunOpen == 1 && x.RunStatus == 1);
                 if (mo != null)
                 {
                     return Content(new
@@ -46,7 +46,7 @@ namespace Netnr.Web.Areas.Run.Controllers
                 case "edit":
                     {
                         using var db = new Blog.Data.ContextBase();
-                        var mo = db.Run.Where(x => x.RunCode == id).FirstOrDefault();
+                        var mo = db.Run.FirstOrDefault(x => x.RunCode == id);
                         //有记录且为当前用户
                         if (mo != null)
                         {
@@ -60,7 +60,7 @@ namespace Netnr.Web.Areas.Run.Controllers
                         {
                             using var db = new Blog.Data.ContextBase();
                             var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
-                            var mo = db.Run.Where(x => x.RunCode == id && x.Uid == uinfo.UserId).FirstOrDefault();
+                            var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.Uid == uinfo.UserId);
                             db.Run.Remove(mo);
                             int num = db.SaveChanges();
                             if (num > 0)
@@ -81,7 +81,7 @@ namespace Netnr.Web.Areas.Run.Controllers
 
             using (var db = new Blog.Data.ContextBase())
             {
-                var mo = db.Run.Where(x => x.RunCode == id && x.RunStatus == 1 && x.RunOpen == 1).FirstOrDefault();
+                var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.RunStatus == 1 && x.RunOpen == 1);
                 ViewData["pure"] = pure;
                 return View(mo);
             }

@@ -21,13 +21,6 @@
             <param name="listNo"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Areas.Doc.Controllers.CodeController.Index1(System.String)">
-            <summary>
-            目录页面
-            </summary>
-            <param name="code">分享码</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.Blog.Web.Areas.Doc.Controllers.CodeController.Edit(System.String)">
             <summary>
             新增、编辑一条
@@ -472,11 +465,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.HomeController.TagSelectSearch(System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.HomeController.TagSelect">
             <summary>
-            搜索标签
+            标签
             </summary>
-            <param name="keys">搜索内容</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.HomeController.WriteSave(Netnr.Blog.Domain.UserWriting,System.String)">

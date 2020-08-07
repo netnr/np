@@ -48,7 +48,7 @@ namespace Netnr.Web.Areas.Gist.Controllers
                 }
                 else
                 {
-                    var oldmo = db.Gist.Where(x => x.GistCode == mo.GistCode).FirstOrDefault();
+                    var oldmo = db.Gist.FirstOrDefault(x => x.GistCode == mo.GistCode);
                     if (oldmo != null)
                     {
                         if (oldmo.Uid == uinfo.UserId)
@@ -71,7 +71,7 @@ namespace Netnr.Web.Areas.Gist.Controllers
                         }
                         else
                         {
-                            vm.Set(ARTag.refuse);
+                            vm.Set(ARTag.unauthorized);
                         }
                     }
                     else

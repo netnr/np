@@ -47,8 +47,8 @@ a.tag {
     font-weight: 400;
     border-radius: 4px;
     display: inline-block;
+    background-color: #efefef;
     border: 1px solid rgba(1,126,102,0.08);
-    background-color: rgba(1,126,102,0.08);
 }
 
     a.tag:hover {
@@ -62,6 +62,11 @@ a.tag {
         max-height: 18px;
         vertical-align: sub;
     }
+
+/*selectpage*/
+.sp_result_area {
+    z-index: 8888 !important;
+}
 
 /*返回顶部*/
 .totop {

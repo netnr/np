@@ -329,7 +329,7 @@ namespace Netnr.Blog.Web.Controllers
                                 if (apirt.Length > 100)
                                 {
                                     using var db = new Data.ContextBase();
-                                    var kvMo = db.KeyValues.Where(x => x.KeyName == key).FirstOrDefault();
+                                    var kvMo = db.KeyValues.FirstOrDefault(x => x.KeyName == key);
                                     if (kvMo == null)
                                     {
                                         kvMo = new Domain.KeyValues
@@ -376,7 +376,7 @@ namespace Netnr.Blog.Web.Controllers
                                 }
 
                                 using var db = new Data.ContextBase();
-                                var mo = db.KeyValueSynonym.Where(x => x.KeyName == mainKey).FirstOrDefault();
+                                var mo = db.KeyValueSynonym.FirstOrDefault(x => x.KeyName == mainKey);
                                 if (mo != null)
                                 {
                                     db.KeyValueSynonym.Remove(mo);

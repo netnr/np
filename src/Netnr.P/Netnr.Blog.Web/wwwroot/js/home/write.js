@@ -32,16 +32,42 @@ require(['vs/editor/editor.main'], function () {
     })
 });
 
+//标签
+$.ajax({
+    url: "/Home/TagSelect",
+    dataType: 'json',
+    success: function (data) {
+        $('#tags').selectPage({
+            showField: 'TagName',
+            keyField: 'TagId',
+            data: data,
+            eSelect: function () {
+                $('#tags').selectPageRefresh()
+            },
+            formatItem: function (node) {
+                var fi = node.TagName;
+                if (node.TagIcon) {
+                    fi = '<img style="height:18px;margin-right:5px" onerror="this.src=\'/favicon.svg\';" src="/gs/static/tag/' + node.TagIcon + '" />' + fi;
+                }
+                return fi;
+            },
+            multiple: true,
+            maxSelectLimit: 3,
+            selectToCloseList: false
+        });
+    },
+    error: function () {
+        jz.alert("初始化标签失败");
+    }
+})
+
 //保存（新增）
 $('#btnSave').click(function () {
     var wtitle = $.trim($('#wtitle').val());
     var wcategory = $('#wcategory').val();
     var wcontentMd = nmd.getmd();
     var wcontent = nmd.gethtml();
-    var tagids = [];
-    $('#tags').parent().find('span.tb-tags-i').each(function () {
-        tagids.push(this.getAttribute('data-id'));
-    });
+    var tagids = $('#tags').val();
     var errmsg = [];
     if (wtitle == "") {
         errmsg.push("请输入 标题");
@@ -49,7 +75,7 @@ $('#btnSave').click(function () {
     if (wcategory == "") {
         errmsg.push("请选择 分类");
     }
-    if (tagids.length == 0) {
+    if (tagids == "") {
         errmsg.push("请选择 标签");
     }
     if (wcontentMd.length < 20) {
@@ -70,7 +96,7 @@ $('#btnSave').click(function () {
             UwCategory: wcategory,
             UwContent: wcontent,
             UwContentMd: wcontentMd,
-            TagIds: tagids.join(',')
+            TagIds: tagids
         },
         dataType: 'json',
         success: function (data) {
@@ -78,7 +104,7 @@ $('#btnSave').click(function () {
                 nmd.clear();
                 location.href = "/home/list/" + data.data;
             } else {
-                jz.msg(data.data);
+                jz.msg(data.msg);
             }
         },
         error: function (ex) {
@@ -102,10 +128,7 @@ $('#btnSaveEdit').click(function () {
     var wcategory = $('#wcategory').val();
     var wcontentMd = nmd.getmd();
     var wcontent = nmd.gethtml();
-    var tagids = [];
-    $('#tags').parent().find('span.tb-tags-i').each(function () {
-        tagids.push(this.getAttribute('data-id'));
-    });
+    var tagids = $('#tags').val();
 
     var errmsg = [];
     if (wtitle == "") {
@@ -114,7 +137,7 @@ $('#btnSaveEdit').click(function () {
     if (wcategory == "") {
         errmsg.push("请选择 分类");
     }
-    if (tagids.length == 0) {
+    if (tagids == "") {
         errmsg.push("请选择 标签");
     }
     if (wcontentMd.length < 20) {
@@ -140,7 +163,7 @@ $('#btnSaveEdit').click(function () {
             UwCategory: wcategory,
             UwContent: wcontent,
             UwContentMd: wcontentMd,
-            TagIds: tagids.join(','),
+            TagIds: tagids,
         },
         dataType: 'json',
         success: function (data) {

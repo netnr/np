@@ -84,10 +84,8 @@ function SaveGist(type, that) {
         success: function (data) {
             if (data.code == 200) {
                 location.href = "/gist/code/" + data.data;
-            } else if (data.code == 403) {
-                alert("It's not belongs to you");
             } else {
-                alert('fail');
+                alert(data.msg);
             }
         },
         error: function (ex) {

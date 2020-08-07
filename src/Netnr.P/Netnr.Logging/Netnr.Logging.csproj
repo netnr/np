@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <PackageReference Include="IP2Region" Version="1.2.0" />
-    <PackageReference Include="DeviceDetector.NET" Version="4.1.0" />
+    <PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>

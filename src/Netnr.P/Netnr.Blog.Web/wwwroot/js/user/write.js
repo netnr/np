@@ -76,10 +76,12 @@ $('#btnEdit').click(function () {
                     nmd.setmd(data.UwContentMd);
                     nmd.render();
 
-                    TagsClear();
+                    var tagids = [];
                     $(tags).each(function () {
-                        TagsAdd(this.TagId, this.TagName)
+                        tagids.push(this.TagId);
                     });
+                    $('#tags').val(tagids.join(','));
+                    $('#tags').selectPageRefresh()
 
                     $('#ModalWrite').modal();
                 } else {

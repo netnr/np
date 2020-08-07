@@ -46,7 +46,7 @@ namespace Netnr.Core
 
                 var pis = dr.GetType().GetProperties();
 
-                var pi = pis.Where(x => x.Name == idField).FirstOrDefault();
+                var pi = pis.FirstOrDefault(x => x.Name == idField);
                 startPid.Clear();
                 var id = pi.GetValue(dr, null).ToString();
                 startPid.Add(id);
@@ -98,7 +98,7 @@ namespace Netnr.Core
 
                 var pis = dr.GetType().GetProperties();
 
-                var pi = pis.Where(x => x.Name == idField).FirstOrDefault();
+                var pi = pis.FirstOrDefault(x => x.Name == idField);
                 startPid.Clear();
                 var id = pi.GetValue(dr, null).ToString();
                 startPid.Add(id);

@@ -87,7 +87,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     return vm;
                 }
 
-                outMo = db.SysUser.Where(x => x.SuName == mo.SuName && x.SuPwd == Core.CalcTo.MD5(mo.SuPwd, 32)).FirstOrDefault();
+                outMo = db.SysUser.FirstOrDefault(x => x.SuName == mo.SuName && x.SuPwd == Core.CalcTo.MD5(mo.SuPwd, 32));
             }
 
             if (outMo == null || string.IsNullOrWhiteSpace(outMo.SuId))

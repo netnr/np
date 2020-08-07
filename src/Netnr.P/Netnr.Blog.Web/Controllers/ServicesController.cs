@@ -125,7 +125,7 @@ namespace Netnr.Blog.Web.Controllers
             public string Execute(WeChatMessage message)
             {
                 var myDomain = "https://www.netnr.com";//请更改成你的域名
-                string myPic = myDomain + "/favicon.ico";
+                string myPic = myDomain + "/favicon.svg";
 
                 var mb = message.Body;
                 var openId = mb.GetText("FromUserName");
@@ -161,6 +161,14 @@ namespace Netnr.Blog.Web.Controllers
                             else if ("note".Split(' ').ToList().Contains(Content))
                             {
                                 repmsg = "记事\n" + myDomain + "/tool/note";
+                            }
+                            else if ("gist".Split(' ').ToList().Contains(Content))
+                            {
+                                repmsg = "代码片段\n" + myDomain + "/gist/discover";
+                            }
+                            else if ("doc".Split(' ').ToList().Contains(Content))
+                            {
+                                repmsg = "文档\n" + myDomain + "/doc/discover";
                             }
                             else if ("cp lottery".Split(' ').ToList().Contains(Content))
                             {

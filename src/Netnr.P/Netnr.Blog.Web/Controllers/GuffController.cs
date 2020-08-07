@@ -265,6 +265,10 @@ namespace Netnr.Blog.Web.Controllers
                     {
                         vm.Set(ARTag.invalid);
                     }
+                    else if (currMo.Uid != uinfo.UserId)
+                    {
+                        vm.Set(ARTag.unauthorized);
+                    }
                     else
                     {
                         currMo.GrTypeName = Fast.ParsingTo.JsSafeJoin(mo.GrTypeName);

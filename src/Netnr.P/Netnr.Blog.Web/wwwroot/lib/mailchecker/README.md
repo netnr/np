@@ -6,4 +6,4 @@ https://github.com/FGRibreau/mailchecker
 ### CDN 
 https://cdn.jsdelivr.net/gh/FGRibreau/mailchecker/list.txt
 
-更新时间 2019-12-04
+更新时间 2020-08-01

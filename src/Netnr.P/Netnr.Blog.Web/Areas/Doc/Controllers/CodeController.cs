@@ -248,7 +248,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             if (!string.IsNullOrWhiteSpace(dsdid))
             {
                 using var db = new ContextBase();
-                mo = db.DocSetDetail.Where(x => x.DsdId == dsdid).FirstOrDefault();
+                mo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == dsdid);
             }
 
             return View(mo);
@@ -404,7 +404,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             }
             else
             {
-                var currmo = db.DocSetDetail.Where(x => x.DsdId == mo.DsdId).FirstOrDefault();
+                var currmo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == mo.DsdId);
                 currmo.DsdTitle = mo.DsdTitle;
                 currmo.DsdOrder = mo.DsdOrder;
                 currmo.DsdPid = mo.DsdPid;
@@ -440,7 +440,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             var listdsd = db.DocSetDetail.Where(x => x.DsCode == code && string.IsNullOrEmpty(x.DsdContentMd)).ToList();
             var removelist = Core.TreeTo.FindToTree(listdsd, "DsdPid", "DsdId", new List<string> { id });
-            removelist.Add(listdsd.Where(x => x.DsdId == id).FirstOrDefault());
+            removelist.Add(listdsd.FirstOrDefault(x => x.DsdId == id));
             db.DocSetDetail.RemoveRange(removelist);
 
             int num = db.SaveChanges();
@@ -530,7 +530,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
                 var pis = drgt.GetProperties();
 
-                var pi = pis.Where(x => x.Name == idField).FirstOrDefault();
+                var pi = pis.FirstOrDefault(x => x.Name == idField);
                 startPid.Clear();
                 var id = pi.GetValue(dr, null).ToString();
                 startPid.Add(id);

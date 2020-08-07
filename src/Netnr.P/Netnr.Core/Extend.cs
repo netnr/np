@@ -170,7 +170,7 @@ namespace Netnr
                 {
                     object drValue = dr[dc.ColumnName];
 
-                    var pi = model.GetType().GetProperties().Where(x => x.Name.ToLower() == dc.ColumnName.ToLower()).FirstOrDefault();
+                    var pi = model.GetType().GetProperties().FirstOrDefault(x => x.Name.ToLower() == dc.ColumnName.ToLower());
 
                     Type type = pi.PropertyType;
                     if (pi.PropertyType.FullName.Contains("System.Nullable"))

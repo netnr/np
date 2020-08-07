@@ -20,7 +20,7 @@ namespace Netnr.Web.Areas.Gist.Controllers
             if (!string.IsNullOrWhiteSpace(id))
             {
                 using var db = new Blog.Data.ContextBase();
-                var mo = db.Gist.Where(x => x.GistCode == id && x.GistStatus == 1 && x.GistOpen == 1).FirstOrDefault();
+                var mo = db.Gist.FirstOrDefault(x => x.GistCode == id && x.GistStatus == 1 && x.GistOpen == 1);
                 if (mo != null)
                 {
                     result = mo.GistContent;

@@ -81,19 +81,13 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 搜索标签
+        /// 标签
         /// </summary>
-        /// <param name="keys">搜索内容</param>
         /// <returns></returns>
-        public string TagSelectSearch(string keys)
+        public List<Tags> TagSelect()
         {
-            var list = new List<Tags>();
-            if (!string.IsNullOrWhiteSpace(keys))
-            {
-                keys = keys.ToLower();
-                list = Application.CommonService.TagsQuery().Where(x => x.TagName.Contains(keys)).Take(7).ToList();
-            }
-            return list.ToJson();
+            var list = Application.CommonService.TagsQuery();
+            return list;
         }
 
         /// <summary>
@@ -156,7 +150,7 @@ namespace Netnr.Blog.Web.Controllers
                     {
                         UwId = mo.UwId,
                         TagId = tag,
-                        TagName = lisTagName.Where(x => x.TagId == tag).FirstOrDefault().TagName
+                        TagName = lisTagName.FirstOrDefault(x => x.TagId == tag).TagName
                     };
 
                     listwt.Add(wtmo);
@@ -317,7 +311,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 var uw = db.UserWriting.Find(wid);
 
-                var uc = db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetId == wid.ToString() && x.UconnAction == a).FirstOrDefault();
+                var uc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == wid.ToString() && x.UconnAction == a);
                 if (uc == null)
                 {
                     uc = new UserConnection()

@@ -33,6 +33,11 @@
             <script src="/lib/jquery-easyui-z/z.js" asp-append-version="true"></script>
             break;
 
+        case "selectpage":
+            <link href="https://code.bdstatic.com/npm/selectpage@2.19.0/selectpage.css" rel="stylesheet" />
+            <script src="https://code.bdstatic.com/npm/selectpage@2.19.0/selectpage.min.js"></script>
+            break;
+
         case "netnrmd.css":
             <link href="https://code.bdstatic.com/npm/netnrmd@2.4.1/src/netnrmd.css" rel="stylesheet" />
             break;
@@ -54,10 +59,10 @@
             break;
 
         case "monaco-editor":
-            <script src="https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs/loader.js"></script>
+            <script src="https://code.bdstatic.com/npm/monaco-editor@0.20.0/min/vs/loader.js"></script>
             <script>
                 require.config({
-                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs" },
+                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.20.0/min/vs" },
                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                 });
             </script>

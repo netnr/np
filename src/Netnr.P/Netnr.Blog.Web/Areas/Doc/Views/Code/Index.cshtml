@@ -103,26 +103,22 @@
 
     <script>
         window.$docsify = {
-            routerMode: 'history',
-            loadSidebar: true,
             noEmoji: true,
+            auto2top: true,
+            loadSidebar: true,
+            routerMode: 'history',
             markdown: {
                 renderer: {
                     code: function (str, lang) {
                         var ch = [];
                         ch.push("<pre><code>");
-                        if (window.hljs) {
-                            try {
-                                var hv = hljs.highlight(lang, str).value;
-                                ch.push(hv);
-                            } catch (__) {
-                                try {
-                                    var hv = hljs.highlightAuto(str).value;
-                                    ch.push(hv);
-                                } catch (__) {
-                                    ch.push(str);
-                                }
-                            }
+                        try {
+                            str = hljs.getLanguage(lang)
+                                ? hljs.highlight(lang, str).value
+                                : hljs.highlightAuto(str).value;
+                            ch.push(str);
+                        } catch (__) {
+                            ch.push(str);
                         }
                         ch.push("</code></pre>");
                         return ch.join('');

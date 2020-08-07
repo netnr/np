@@ -60,7 +60,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 string id = jt["Id"].ToString();
 
-                var mo = listRow.Where(x => x.Id == id).FirstOrDefault();
+                var mo = listRow.FirstOrDefault(x => x.Id == id);
 
                 mo.ColTitle = jt["ColTitle"].ToStringOrEmpty();
                 mo.ColAlign = string.IsNullOrWhiteSpace(jt["ColAlign"].ToStringOrEmpty()) ? 1 : Convert.ToInt32(jt["ColAlign"].ToStringOrEmpty());
@@ -102,7 +102,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             foreach (JToken jt in ja)
             {
                 string field = jt["field"].ToStringOrEmpty();
-                var mo = listRow.Where(x => x.ColField == field).FirstOrDefault();
+                var mo = listRow.FirstOrDefault(x => x.ColField == field);
 
                 mo.ColTitle = jt["title"].ToStringOrEmpty();
                 mo.FormSpan = string.IsNullOrWhiteSpace(jt["span"].ToStringOrEmpty()) ? 1 : Convert.ToInt32(jt["span"].ToStringOrEmpty());

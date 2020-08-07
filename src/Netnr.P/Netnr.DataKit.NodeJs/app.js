@@ -756,7 +756,7 @@ var dk = {
                     FROM
                         USER_TABLES A
                         LEFT JOIN USER_TAB_COMMENTS B ON A.TABLE_NAME = B.TABLE_NAME
-                        LEFT JOIN ALL_TAB_COLUMNS C ON A.TABLE_NAME = C.TABLE_NAME
+                        LEFT JOIN USER_TAB_COLUMNS C ON A.TABLE_NAME = C.TABLE_NAME
                         LEFT JOIN USER_COL_COMMENTS D ON A.TABLE_NAME = D.TABLE_NAME
                         AND C.COLUMN_NAME = D.COLUMN_NAME
                         LEFT JOIN (
@@ -1443,6 +1443,6 @@ app.all('/dk*', function (req, res) {
     dk.init(req, res);
 });
 
-app.listen(654, () => {
-    console.log(`http://localhost:654`);
+app.listen(process.env.PORT || '654', () => {
+    console.log('http://localhost:' + (process.env.PORT || '654'));
 })
