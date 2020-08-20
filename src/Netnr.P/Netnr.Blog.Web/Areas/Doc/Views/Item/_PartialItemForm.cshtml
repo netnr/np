@@ -1,4 +1,4 @@
-﻿@model Netnr.Blog.Domain.DocSet
+@model Netnr.Blog.Domain.DocSet
 @{
     ViewData["Title"] = ViewContext.RouteData.Values["action"].ToString() + " Doc";
     var uinfo = new UserAuthService(ViewContext.HttpContext).Get();

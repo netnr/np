@@ -700,7 +700,7 @@ namespace Netnr.Blog.Web.Controllers
                                             var txt = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/template/sendmailverify.html");
                                             txt = txt.Replace("@ToMail@", ToMail).Replace("@VerifyLink@", VerifyLink);
 
-                                            vm = Application.MailService.Send(ToMail, "[Netnr] 验证你的邮箱", txt);
+                                            vm = Application.MailService.Send(ToMail, $"[{GlobalTo.GetValue("Common:EnglishName")}] 验证你的邮箱", txt);
 
                                             if (vm.Code == 200)
                                             {

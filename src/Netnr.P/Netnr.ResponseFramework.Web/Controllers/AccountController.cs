@@ -35,7 +35,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public FileResult Captcha()
         {
             string num = Core.RandomTo.NumCode(4);
-            byte[] bytes = Fast.ImageTo.CreateImg(num);
+            byte[] bytes = Fast.CaptchaTo.CreateImg(num);
             HttpContext.Session.SetString("captcha", Core.CalcTo.MD5(num.ToLower()));
             return File(bytes, "image/jpeg");
         }

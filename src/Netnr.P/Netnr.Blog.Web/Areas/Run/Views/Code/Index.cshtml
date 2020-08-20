@@ -1,14 +1,14 @@
-﻿@model Netnr.Blog.Domain.Run
+@model Netnr.Blog.Domain.Run
 @{
     Layout = null;
-    ViewData["Title"] = Model.RunRemark + " NetnrRun";
+    ViewData["Title"] = Model.RunRemark + GlobalTo.GetValue("Common:EnglishName") + " Run";
 }
 @Html.Raw(Model.RunContent1)
 @if (string.IsNullOrWhiteSpace(ViewData["pure"]?.ToString()))
 {
     <div style="position:fixed;top:10px;right:10px;z-index:999;opacity:.5;filter:alpha(opacity=50)" title="The addition parameter {pure=1} is removed">
         <a href="/run/code/@Model.RunCode/edit" style="color:#777;text-decoration:underline;">Source</a>
-        <a href="/run" style="color:#777;text-decoration:underline;">NetnrRun</a>
+        <a href="/run" style="color:#777;text-decoration:underline;">@GlobalTo.GetValue("Common:EnglishName") Run</a>
     </div>
 }
 

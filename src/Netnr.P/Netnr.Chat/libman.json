@@ -10,20 +10,18 @@
       ]
     },
     {
-      "provider": "jsdelivr",
-      "library": "bootstrap@4.4.1",
-      "destination": "wwwroot/lib/bootstrap/",
+      "library": "microsoft-signalr@3.1.6",
+      "destination": "wwwroot/lib/microsoft-signalr/",
       "files": [
-        "dist/css/bootstrap.min.css",
-        "dist/js/bootstrap.bundle.min.js"
+        "signalr.min.js"
       ]
     },
     {
-      "provider": "jsdelivr",
-      "library": "@microsoft/signalr@3.1.3",
-      "destination": "wwwroot/lib/signalr/",
+      "library": "twitter-bootstrap@4.5.0",
+      "destination": "wwwroot/lib/twitter-bootstrap/",
       "files": [
-        "dist/browser/signalr.min.js"
+        "js/bootstrap.bundle.min.js",
+        "css/bootstrap.min.css"
       ]
     }
   ]

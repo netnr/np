@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Netnr.DataKit API",
-    "version": "v1"
+    "description": "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a> &nbsp; <b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
   },
   "paths": {
     "/DK/GetTable": {

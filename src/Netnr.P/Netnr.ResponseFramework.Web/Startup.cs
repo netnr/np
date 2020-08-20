@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.OpenApi.Models;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Netnr.ResponseFramework.Web
 {
@@ -30,17 +31,18 @@ namespace Netnr.ResponseFramework.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddControllersWithViews(options =>
+            IMvcBuilder builder = services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
                 options.Filters.Add(new Filters.FilterConfigs.ErrorActionFilter());
 
                 //注册全局过滤器
                 options.Filters.Add(new Filters.FilterConfigs.GlobalActionAttribute());
-            })/*.AddRazorRuntimeCompilation()*/;
-            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
-            //发布时：建议删除该包，会生成一堆“垃圾”
-            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+            });
+
+#if DEBUG
+            builder.AddRazorRuntimeCompilation();
+#endif
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -55,7 +57,12 @@ namespace Netnr.ResponseFramework.Web
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "RF API"
+                    Title = "RF API",
+                    Description = string.Join(" &nbsp; ", new List<string>
+                    {
+                        "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
+                    })
                 });
 
                 "ResponseFramework.Web,ResponseFramework.Application,Fast".Split(',').ToList().ForEach(x =>

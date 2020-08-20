@@ -153,7 +153,7 @@ namespace Netnr.Blog.Web.Filters
             //日志保存
             var mo = new Logging.LoggingModel()
             {
-                LogApp = "netnr.com",
+                LogApp = GlobalTo.GetValue("Common:EnglishName"),
                 LogUid = userinfo?.UserName,
                 LogNickname = userinfo?.Nickname,
                 LogAction = reqPath,

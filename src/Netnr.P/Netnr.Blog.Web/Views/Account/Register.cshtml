@@ -1,4 +1,4 @@
-﻿@model ActionResultVM
+@model ActionResultVM
 @{
     ViewData["Title"] = "注册";
 }
@@ -12,10 +12,10 @@
 
 <div class="vbox">
     <div class="mt-4 text-center d-none d-md-block">
-        <a href="/"><img src="/favicon.svg" alt="netnr" /></a>
+        <a href="/"><img src="/favicon.svg" alt="@GlobalTo.GetValue("Common:EnglishName")" /></a>
     </div>
     <div class="my-4 text-center">
-        <h4>Join Netnr</h4>
+        <h4>Join @GlobalTo.GetValue("Common:EnglishName")</h4>
     </div>
     @if (!string.IsNullOrWhiteSpace(Model?.Msg))
     {
@@ -58,7 +58,7 @@
     </div>
     <div class="mt-5 text-center pt-4">
         <a class="mx-2" href="/mix/terms">条款</a>
-        <a class="mx-2" href="https://ss.netnr.com/contact">联系</a>
+        <a class="mx-2" href="https://zme.ink">联系</a>
         |
         <a class="mx-2" href="/">首页</a>
         <a class="mx-2" href="/account/login">登录</a>

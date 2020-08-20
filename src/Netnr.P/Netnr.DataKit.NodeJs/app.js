@@ -9,14 +9,14 @@ const initSqlJs = require('./public/sql-wasm.js');
 
 var dk = {
 
-    //Êý¾Ý¿âÀàÐÍ
+    //æ•°æ®åº“ç±»åž‹
     typeDB: ["MySQL", "SQLite", "Oracle", "SQLServer", "PostgreSQL"],
 
-    //½Ó¿ÚÃû³Æ
+    //æŽ¥å£åç§°
     interfaceName: ["GetTable", "GetColumn", "SetTableComment", "SetColumnComment", "GetData"],
 
     /**
-     * ÅÐ¶ÏÊÇ NULL¡¢¿Õ×Ö·û´®
+     * åˆ¤æ–­æ˜¯ NULLã€ç©ºå­—ç¬¦ä¸²
      * @param {any} obj
      */
     isNullOrWhiteSpace: function (obj) {
@@ -27,8 +27,8 @@ var dk = {
     },
 
     /**
-     * »ñÈ¡Ê±¼ä
-     * @param {any} timezone Ê±Çø£¬Ä¬ÈÏÖÐ¹ú ¶«8Çø
+     * èŽ·å–æ—¶é—´
+     * @param {any} timezone æ—¶åŒºï¼Œé»˜è®¤ä¸­å›½ ä¸œ8åŒº
      */
     time: function (timezone) {
         timezone = timezone == null ? 8 : timezone;
@@ -36,9 +36,9 @@ var dk = {
     },
 
     /**
-     * È¥³ýÄ©Î²Æ¥Åä×Ö·û
-     * @param {any} str ×Ö·û´®
-     * @param {any} c Æ¥Åä×Ö·û
+     * åŽ»é™¤æœ«å°¾åŒ¹é…å­—ç¬¦
+     * @param {any} str å­—ç¬¦ä¸²
+     * @param {any} c åŒ¹é…å­—ç¬¦
      */
     trimEnd: function (str, c) {
         if (!c) { return this; }
@@ -52,12 +52,12 @@ var dk = {
     },
 
     /**
-     * Êý¾Ý¿âÁ¬½Ó×Ö·û´®½âÎö
+     * æ•°æ®åº“è¿žæŽ¥å­—ç¬¦ä¸²è§£æž
      */
     connectionOptions: function () {
         var ops = {
-            code: null, //´íÎóÂë
-            msg: null   //´íÎóÏûÏ¢
+            code: null, //é”™è¯¯ç 
+            msg: null   //é”™è¯¯æ¶ˆæ¯
         }
 
         try {
@@ -170,7 +170,7 @@ var dk = {
                 }
             } else {
                 ops.code = 1;
-                ops.msg = "Á¬½Ó×Ö·û´®ËÆºõÓÐÎÊÌâ£¿";
+                ops.msg = "è¿žæŽ¥å­—ç¬¦ä¸²ä¼¼ä¹Žæœ‰é—®é¢˜ï¼Ÿ";
             }
         } catch (e) {
             ops.code = -1;
@@ -180,13 +180,13 @@ var dk = {
         return ops;
     },
 
-    //Êý¾Ý¿â
+    //æ•°æ®åº“
     db: {
 
         MySQL: {
 
             /**
-             * ²éÑ¯
+             * æŸ¥è¯¢
              * @param {any} dk
              * @param {any} cmd
              */
@@ -210,9 +210,9 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯Êý¾Ý
+             * æŸ¥è¯¢æ•°æ®
              * @param {any} dk
-             * @param {any} cmds SQL½Å±¾Êý×é
+             * @param {any} cmds SQLè„šæœ¬æ•°ç»„
              */
             QueryData: function (dk, cmds) {
 
@@ -231,7 +231,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐ±íÃû¼°×¢ÊÍ
+             * èŽ·å–æ‰€æœ‰è¡¨ååŠæ³¨é‡Š
              * @param {any} dk
              */
             GetTable: function (dk) {
@@ -252,7 +252,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐÁÐ
+             * èŽ·å–æ‰€æœ‰åˆ—
              * @param {any} dk
              */
             GetColumn: function (dk) {
@@ -320,7 +320,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃ±í×¢ÊÍ
+             * è®¾ç½®è¡¨æ³¨é‡Š
              * @param {any} dk
              */
             SetTableComment: function (dk) {
@@ -333,7 +333,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃÁÐ×¢ÊÍ
+             * è®¾ç½®åˆ—æ³¨é‡Š
              * @param {any} dk
              */
             SetColumnComment: function (dk) {
@@ -345,7 +345,7 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯Êý¾Ý
+             * æŸ¥è¯¢æ•°æ®
              * @param {any} dk
              */
             GetData: function (dk) {
@@ -388,7 +388,7 @@ var dk = {
         SQLite: {
 
             /**
-             * ²éÑ¯
+             * æŸ¥è¯¢
              * @param {any} dk
              * @param {any} cmd
              */
@@ -402,7 +402,7 @@ var dk = {
                                 var sqlitedb = new SQL.Database(sdo);
                                 var sr = sqlitedb.exec(cmd);
 
-                                //´¦Àí½á¹û
+                                //å¤„ç†ç»“æžœ
                                 var rows = [], columns = sr[0].columns, values = sr[0].values;
                                 values.forEach(value => {
                                     var row = {};
@@ -415,7 +415,7 @@ var dk = {
                             });
                         }
 
-                        //Ô¶³ÌÊý¾Ý¿âÎÄ¼þ»ò±¾µØÎÄ¼þ
+                        //è¿œç¨‹æ•°æ®åº“æ–‡ä»¶æˆ–æœ¬åœ°æ–‡ä»¶
                         dk.dc = dk.dc || {};
                         if (config.type == "link") {
                             var sdo = dk.dc[config.filename];
@@ -441,9 +441,9 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯ ¶à¸ö
+             * æŸ¥è¯¢ å¤šä¸ª
              * @param {any} dk
-             * @param {any} cmds SQL½Å±¾Êý×é
+             * @param {any} cmds SQLè„šæœ¬æ•°ç»„
              */
             Querys: function (dk, cmds) {
 
@@ -459,9 +459,9 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯ Êý¾Ý
+             * æŸ¥è¯¢ æ•°æ®
              * @param {any} dk
-             * @param {any} cmds SQL½Å±¾Êý×é
+             * @param {any} cmds SQLè„šæœ¬æ•°ç»„
              */
             QueryData: function (dk, cmds) {
 
@@ -474,7 +474,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐ±íÃû¼°×¢ÊÍ
+             * èŽ·å–æ‰€æœ‰è¡¨ååŠæ³¨é‡Š
              * @param {any} dk
              */
             GetTable: function (dk) {
@@ -494,7 +494,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐÁÐ
+             * èŽ·å–æ‰€æœ‰åˆ—
              * @param {any} dk
              */
             GetColumn: function (dk) {
@@ -526,7 +526,7 @@ var dk = {
                         cmds.push(cmd.replace("@DataTableName@", tn));
                     })
 
-                    //×ÔÔöÐÅÏ¢
+                    //è‡ªå¢žä¿¡æ¯
                     var aasql = "SELECT name, sql from SQLITE_MASTER WHERE 1=1";
                     if (tns.length > 0) {
                         aasql += " AND name IN('" + tns.join("','") + "')";
@@ -542,12 +542,12 @@ var dk = {
                         var dt = ds[i];
                         var tableName = aadt[i].name;
 
-                        //±í´´½¨SQL £¨·ÖÎö¸ÃSQLÓï¾ä»ñÈ¡×ÔÔöÁÐÐÅÏ¢£©
+                        //è¡¨åˆ›å»ºSQL ï¼ˆåˆ†æžè¯¥SQLè¯­å¥èŽ·å–è‡ªå¢žåˆ—ä¿¡æ¯ï¼‰
                         var aacreate = aadt.filter(x => x["name"] == tableName)[0]["sql"];
                         var aasi = aacreate.indexOf('(');
                         var aaei = aacreate.lastIndexOf(')');
                         aacreate = aacreate.substring(aasi, aaei - aasi);
-                        //ÓÐ×ÔÔö
+                        //æœ‰è‡ªå¢ž
                         var hasaa = aacreate.toUpperCase().indexOf("AUTOINCREMENT") >= 0;
 
                         var ti = 1;
@@ -590,7 +590,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃ±í×¢ÊÍ
+             * è®¾ç½®è¡¨æ³¨é‡Š
              * @param {any} dk
              */
             SetTableComment: function (dk) {
@@ -604,7 +604,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃÁÐ×¢ÊÍ
+             * è®¾ç½®åˆ—æ³¨é‡Š
              * @param {any} dk
              */
             SetColumnComment: function (dk) {
@@ -618,7 +618,7 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯Êý¾Ý
+             * æŸ¥è¯¢æ•°æ®
              * @param {any} dk
              */
             GetData: function (dk) {
@@ -663,9 +663,9 @@ var dk = {
         Oracle: {
 
             /**
-             * ²éÑ¯
+             * æŸ¥è¯¢
              * @param {any} dk
-             * @param {any} cmd SQL½Å±¾
+             * @param {any} cmd SQLè„šæœ¬
              */
             Query: function (dk, cmd) {
 
@@ -685,9 +685,9 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯ Êý¾Ý
+             * æŸ¥è¯¢ æ•°æ®
              * @param {any} dk
-             * @param {any} cmds SQL½Å±¾Êý×é
+             * @param {any} cmds SQLè„šæœ¬æ•°ç»„
              */
             QueryData: function (dk, cmds) {
 
@@ -706,7 +706,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐ±íÃû¼°×¢ÊÍ
+             * èŽ·å–æ‰€æœ‰è¡¨ååŠæ³¨é‡Š
              * @param {any} dk
              */
             GetTable: function (dk) {
@@ -727,7 +727,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐÁÐ
+             * èŽ·å–æ‰€æœ‰åˆ—
              * @param {any} dk
              */
             GetColumn: function (dk) {
@@ -789,7 +789,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃ±í×¢ÊÍ
+             * è®¾ç½®è¡¨æ³¨é‡Š
              * @param {any} dk
              */
             SetTableComment: function (dk) {
@@ -802,7 +802,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃÁÐ×¢ÊÍ
+             * è®¾ç½®åˆ—æ³¨é‡Š
              * @param {any} dk
              */
             SetColumnComment: function (dk) {
@@ -815,7 +815,7 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯Êý¾Ý
+             * æŸ¥è¯¢æ•°æ®
              * @param {any} dk
              */
             GetData: function (dk) {
@@ -868,9 +868,9 @@ var dk = {
         PostgreSQL: {
 
             /**
-             * ²éÑ¯
+             * æŸ¥è¯¢
              * @param {any} dk
-             * @param {any} cmd SQL½Å±¾
+             * @param {any} cmd SQLè„šæœ¬
              */
             Query: function (dk, cmd) {
 
@@ -892,9 +892,9 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯ Êý¾Ý
+             * æŸ¥è¯¢ æ•°æ®
              * @param {any} dk
-             * @param {any} cmds SQL½Å±¾Êý×é
+             * @param {any} cmds SQLè„šæœ¬æ•°ç»„
              */
             QueryData: function (dk, cmds) {
 
@@ -913,7 +913,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐ±íÃû¼°×¢ÊÍ
+             * èŽ·å–æ‰€æœ‰è¡¨ååŠæ³¨é‡Š
              * @param {any} dk
              */
             GetTable: function (dk) {
@@ -938,7 +938,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐÁÐ
+             * èŽ·å–æ‰€æœ‰åˆ—
              * @param {any} dk
              */
             GetColumn: function (dk) {
@@ -1044,7 +1044,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃ±í×¢ÊÍ
+             * è®¾ç½®è¡¨æ³¨é‡Š
              * @param {any} dk
              */
             SetTableComment: function (dk) {
@@ -1057,7 +1057,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃÁÐ×¢ÊÍ
+             * è®¾ç½®åˆ—æ³¨é‡Š
              * @param {any} dk
              */
             SetColumnComment: function (dk) {
@@ -1070,7 +1070,7 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯Êý¾Ý
+             * æŸ¥è¯¢æ•°æ®
              * @param {any} dk
              */
             GetData: function (dk) {
@@ -1116,9 +1116,9 @@ var dk = {
         SQLServer: {
 
             /**
-             * ²éÑ¯
+             * æŸ¥è¯¢
              * @param {any} dk
-             * @param {any} cmd SQL½Å±¾
+             * @param {any} cmd SQLè„šæœ¬
              */
             Query: function (dk, cmd) {
 
@@ -1133,9 +1133,9 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯ Êý¾Ý
+             * æŸ¥è¯¢ æ•°æ®
              * @param {any} dk
-             * @param {any} cmds SQL½Å±¾Êý×é
+             * @param {any} cmds SQLè„šæœ¬æ•°ç»„
              */
             QueryData: function (dk, cmds) {
 
@@ -1154,7 +1154,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐ±íÃû¼°×¢ÊÍ
+             * èŽ·å–æ‰€æœ‰è¡¨ååŠæ³¨é‡Š
              * @param {any} dk
              */
             GetTable: function (dk) {
@@ -1173,7 +1173,7 @@ var dk = {
             },
 
             /**
-             * »ñÈ¡ËùÓÐÁÐ
+             * èŽ·å–æ‰€æœ‰åˆ—
              * @param {any} dk
              */
             GetColumn: function (dk) {
@@ -1255,7 +1255,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃ±í×¢ÊÍ
+             * è®¾ç½®è¡¨æ³¨é‡Š
              * @param {any} dk
              */
             SetTableComment: function (dk) {
@@ -1291,7 +1291,7 @@ var dk = {
             },
 
             /**
-             * ÉèÖÃÁÐ×¢ÊÍ
+             * è®¾ç½®åˆ—æ³¨é‡Š
              * @param {any} dk
              */
             SetColumnComment: function (dk) {
@@ -1333,7 +1333,7 @@ var dk = {
             },
 
             /**
-             * ²éÑ¯Êý¾Ý
+             * æŸ¥è¯¢æ•°æ®
              * @param {any} dk
              */
             GetData: function (dk) {
@@ -1379,31 +1379,31 @@ var dk = {
                 return this.QueryData(dk, cmds);
             }
         }
+
     },
 
     /**
-     * ³õÊ¼»¯
+     * åˆå§‹åŒ–
      * @param {any} req
      * @param {any} res
      */
     init: function (req, res) {
 
-        //·µ»Ø¶ÔÏó
+        //è¿”å›žå¯¹è±¡
         var vm = {
             code: 0,
             msg: null,
             data: null,
-            startTime: dk.time(),
-            endTime: null,
             useTime: null
         };
+        var st = Date.now();
 
         try {
 
             dk.pars = req.method == "POST" ? req.body : req.query;
             var tdb = dk.typeDB[Number(dk.pars.tdb)];
 
-            //·½·¨Ãû
+            //æ–¹æ³•å
             var iname = req.url.split('?')[0].split('/')[2];
 
             dk.db[tdb][iname](dk).then(ret => {
@@ -1411,10 +1411,9 @@ var dk = {
                 vm.code = 200;
                 vm.msg = "success";
                 vm.data = ret;
-                vm.endTime = dk.time();
-                vm.useTime = new Date(vm.endTime) - new Date(vm.startTime);
+                vm.useTime = Date.now() - st;
 
-                //Êä³ö½á¹û
+                //è¾“å‡ºç»“æžœ
                 res.json(vm);
             })
         } catch (e) {
@@ -1422,8 +1421,9 @@ var dk = {
 
             vm.code = -1;
             vm.msg = e
+            vm.useTime = Date.now() - st;
 
-            //Êä³ö½á¹û
+            //è¾“å‡ºç»“æžœ
             res.json(vm);
         }
     }
@@ -1435,7 +1435,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.all('/swagger', function (req, res) {
+app.all('/swagger', function (_req, res) {
     res.sendFile(path.join(__dirname, 'public/swagger.html'));
 });
 

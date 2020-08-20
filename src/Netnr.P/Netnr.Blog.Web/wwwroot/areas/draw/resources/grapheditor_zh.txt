@@ -1,4 +1,4 @@
-﻿alreadyConnected=节点已连接
+alreadyConnected=节点已连接
 cancel=取消
 close=关闭
 collapse-expand=点击折叠 / 展开\nShift-点击以移动周边图形 \nAlt-点击以保护组别尺寸

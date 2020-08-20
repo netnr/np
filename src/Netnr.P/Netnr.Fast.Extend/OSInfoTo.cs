@@ -101,10 +101,10 @@ namespace Netnr.Fast
         /// </summary>
         public OSInfoTo()
         {
+            OS = GetOSPlatform();
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                OS = OSPlatform.Windows.ToString();
-
                 TotalPhysicalMemory = PlatformForWindows.TotalPhysicalMemory();
                 FreePhysicalMemory = PlatformForWindows.FreePhysicalMemory();
 
@@ -135,17 +135,35 @@ namespace Netnr.Fast
                 Model = PlatformForLinux.Model();
 
                 OperatingSystem = PlatformForLinux.OperatingSystem();
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    OS = OSPlatform.Linux.ToString();
-                }
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    OS = OSPlatform.OSX.ToString();
-                }
             }
+        }
+
+        /// <summary>
+        /// 获取平台
+        /// </summary>
+        /// <returns></returns>
+        public static string GetOSPlatform()
+        {
+            string osp = string.Empty;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                osp = "Windows";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                osp = "Linux";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                osp = "OSX";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+            {
+                osp = "FreeBSD";
+            }
+
+            return osp;
         }
 
         /// <summary>
@@ -352,9 +370,7 @@ namespace Netnr.Fast
             /// <returns></returns>
             public static string Model()
             {
-                var br = Core.CmdTo.Shell("dmidecode -s system-product-name");
-                var model = br.Output.Split(Environment.NewLine.ToCharArray()).FirstOrDefault().Split(':').LastOrDefault();
-
+                var model = Core.FileTo.ReadText("/sys/class/dmi/id/product_name")?.Trim();
                 return model;
             }
 

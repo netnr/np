@@ -25,7 +25,7 @@ namespace Netnr.Tool.Items
 
                 DirectoryTree(rootPath);
 
-                Console.WriteLine("Complete");
+                Console.WriteLine("Done");
             }
             catch (Exception ex)
             {

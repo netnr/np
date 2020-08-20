@@ -27,7 +27,7 @@ gd1.queryData   //The query condition item, the title column is extracted by def
 gd1.QueryBuild()    //Create a query panel (including initializing the query panel and assigning gd1.query, it will only be created when the gd1.query object is empty)
 gd1.QueryOpen(field)    //Open the query panel (automatically call the gd1.QueryBuild method); field, optional, point to the query condition field name, locate the row and enable editing
 gd1.QueryWhere()    //Get the conditions of the query panel
-gd1.QueryOk = function () {}    //Click the callback of the query panel confirmation, optional, customize the confirmation event, if you don’t write this event, the first page of the query panel condition request will be obtained by default
+gd1.QueryOk = function () {}    //Click the callback of the query panel confirmation, optional, customize the confirmation event, if you donâ€™t write this event, the first page of the query panel condition request will be obtained by default
 gd1.query   //The query object is the query panel object; it will have a value after calling gd1.QueryBuild() or gd1.QueryOpen()
 z.queryin   //Point to the open query panel, when calling gd1.QueryOpen() method, z.queryin = gd1.query, open other query panels will point to the corresponding
 gd1.query.grid  //Query panel table, the same type of object as gd1

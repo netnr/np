@@ -24,10 +24,10 @@
   "homepage": "https://github.com/netnr/np#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mssql": "^6.2.0",
+    "mssql": "^6.2.1",
     "mysql": "^2.18.1",
-    "oracledb": "4.2.0",
-    "pg": "^8.3.0"
+    "oracledb": "5.0.0",
+    "pg": "^8.3.2"
   },
   "bin": "app.js",
   "pkg": {

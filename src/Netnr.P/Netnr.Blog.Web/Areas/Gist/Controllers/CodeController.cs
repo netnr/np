@@ -65,6 +65,7 @@ namespace Netnr.Web.Gist.Controllers
                 var query = from a in db.Gist
                             join b in db.GistSync on a.GistCode equals b.GistCode into bg
                             from b in bg.DefaultIfEmpty()
+                            join c in db.UserInfo on a.Uid equals c.UserId
                             where a.GistCode == id && a.GistStatus == 1 && a.GistOpen == 1
                             select new Blog.Domain.Gist
                             {
@@ -84,7 +85,8 @@ namespace Netnr.Web.Gist.Controllers
                                 GistTheme = a.GistTheme,
 
                                 Spare1 = b.GsGitHubId,
-                                Spare2 = b.GsGiteeId
+                                Spare2 = b.GsGiteeId,
+                                Spare3 = c.Nickname
                             };
                 var mo = query.FirstOrDefault();
                 if (isjs)

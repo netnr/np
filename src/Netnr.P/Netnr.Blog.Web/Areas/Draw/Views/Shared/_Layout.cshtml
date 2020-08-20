@@ -1,4 +1,4 @@
-﻿<partial name="_PartialQuote" model="@("the")" />
+<partial name="_PartialQuote" model="@("the")" />
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -32,7 +32,7 @@
 
             <div class="navbar-brand dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    <i class="fa fa-fw fa-paint-brush"></i> <b>Netnr</b> Draw
+                    <i class="fa fa-fw fa-paint-brush"></i> <b>@GlobalTo.GetValue("Common:EnglishName")</b> Draw
                 </a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="/draw">绘图（Draw）</a>
@@ -55,7 +55,7 @@
                         <a class="nav-link" href="/draw/discover"><i class="fa fa-fw fa-file-text"></i>Discover</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>Netnr</a>
+                        <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>@GlobalTo.GetValue("Common:EnglishName")</a>
                     </li>
                 </ul>
 

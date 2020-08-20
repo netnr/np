@@ -48,7 +48,7 @@ var rt = {
             for (; i < len;) {
                 var stype = rt.type(arrobj[i++]);
                 if ("Object Array".indexOf(stype) >= 0) {
-                    isOA = "Object";
+                    isOA = "Array";
                     break;
                 }
             }

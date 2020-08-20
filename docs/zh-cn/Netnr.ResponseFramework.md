@@ -3,7 +3,7 @@
 
 
 > 演示一：<https://rf2.netnr.com>  
-> 演示二：<https://free-rf.zme.ink>
+> 演示二：<https://netnr-rf.herokuapp.com>
 
 ### [更新日志](Netnr.ResponseFramework.ChangeLog.md)
 

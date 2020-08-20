@@ -41,6 +41,11 @@
             通用请求方法返回对象
             </summary>
         </member>
+        <member name="M:ActionResultVM.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
         <member name="P:ActionResultVM.Code">
             <summary>
             错误码，200 表示成功，-1 表示异常，其它自定义建议从 1 开始累加
@@ -56,19 +61,9 @@
             主体数据
             </summary>
         </member>
-        <member name="P:ActionResultVM.StartTime">
-            <summary>
-            开始时间
-            </summary>
-        </member>
         <member name="P:ActionResultVM.UseTime">
             <summary>
-            用时，毫秒（在endTime上面，否则非序列化返回endTime值为null）
-            </summary>
-        </member>
-        <member name="P:ActionResultVM.EndTime">
-            <summary>
-            结束时间
+            用时，毫秒
             </summary>
         </member>
         <member name="M:ActionResultVM.Set(ARTag)">

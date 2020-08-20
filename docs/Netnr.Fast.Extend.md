@@ -2,6 +2,7 @@
 Netnr.Fast expansion
 
 ### Class
+- CaptchaTo.cs　　generate verification code
 - ClientTo.cs　　Get some information of the client (need to pass in `HttpContext`)
 - DownTo.cs 　　 stream download file (need to pass in `HttpResponse`)
 - ImageTo.cs 　　 picture operation (generate verification code, thumbnail, watermark)

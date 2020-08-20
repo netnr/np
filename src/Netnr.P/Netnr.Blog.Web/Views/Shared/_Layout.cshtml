@@ -1,4 +1,4 @@
-﻿<partial name="_PartialQuote" model="@("the")" />
+<partial name="_PartialQuote" model="@("the")" />
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 
-    <title>@ViewData["Title"] NET牛人</title>
+    <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
 
     <partial name="_PartialQuote" model="@("seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js")" />
 

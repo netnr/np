@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = null;
 
     var dscode = ViewContext.RouteData.Values["id"]?.ToString();
@@ -10,7 +10,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>@ViewData["Title"] NetnrDoc</title>
+    <title>@ViewData["Title"] @GlobalTo.GetValue("Common:EnglishName") Doc</title>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 

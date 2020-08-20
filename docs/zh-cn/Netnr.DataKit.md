@@ -2,8 +2,8 @@
 数据库构建代码（Database build code）
 
 > 前端：<https://ss.netnr.com/dk>	（UI）  
-> 后台：<https://free-dk.zme.ink>	（.NET Core 版本）  
-> 后台：<https://api.zme.ink>	（NodeJs 版本，注：未安装 Oracle 客户端）
+> 后台：<https://api.zme.ink>	（部署在 Vercel 的 Serverless 服务，不支持 Oracle）  
+> 后台：<https://free-dk.herokuapp.com>	（部署在 Heroku 的服务）  
 
 ### 功能
 - 支持的数据库：MySQL、SQLite、Oracle、SQLServer、PostgreSQL

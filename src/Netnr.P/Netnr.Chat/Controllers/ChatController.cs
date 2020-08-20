@@ -76,7 +76,7 @@ namespace Netnr.Chat.Controllers
         /// </summary>
         /// <param name="cm">推送消息</param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         public ActionResultVM UserMessageReceipt([FromBody] ChatMessageVM cm)
         {
             var vm = new ActionResultVM();
@@ -106,6 +106,52 @@ namespace Netnr.Chat.Controllers
             try
             {
                 vm = ccs.HandleMessageToGroup(cm, HttpContext, Clients);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 获取未读用户消息数量
+        /// </summary>
+        /// <param name="UserId">用户ID</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResultVM GetUnreadUserMessageCount(string UserId)
+        {
+            var vm = new ActionResultVM();
+
+            try
+            {
+                vm.Data = ccs.GetUnreadUserMessageCount(db, UserId);
+                vm.Set(ARTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 获取未读组消息数量
+        /// </summary>
+        /// <param name="UserId">用户ID</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResultVM GetUnreadGroupMessageCount(string UserId)
+        {
+            var vm = new ActionResultVM();
+
+            try
+            {
+                vm.Data = ccs.GetUnreadGroupMessageCount(db, UserId);
+                vm.Set(ARTag.success);
             }
             catch (Exception ex)
             {

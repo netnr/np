@@ -137,9 +137,9 @@ namespace Netnr.Chat.Application
 
                         //写入消息
                         var cs = isonline ? 2 : 1;
-                        var wcm = SaveAsUserMessage(cm);
+                        var wcm = WriteMessageForUser(cm);
                         wcm.ForEach(x => x.CmuStatus = cs);
-                        AddMessage(wcm);
+                        WriteMessageToCache(wcm);
                     }
 
                     //发送成功，返回消息ID
@@ -275,8 +275,8 @@ namespace Netnr.Chat.Application
                     Clients.Groups(groupids).SendAsync(rme, cm);
 
                     //写入消息
-                    var wcm = SaveAsGroupMessage(cm);
-                    AddMessage(wcm);
+                    var wcm = WriteMessageForGroup(cm);
+                    WriteMessageToCache(wcm);
 
                     //发送成功，返回消息ID
                     vm.Data = cm.CmId;
@@ -363,7 +363,7 @@ namespace Netnr.Chat.Application
                     CgStatus = 1
                 });
                 db.NChatGroupMember.AddRange(listgm);
-                db.SaveChangesAsync();
+                db.SaveChanges();
 
                 //成功
                 vm.Data = cg.GroupId;
@@ -558,7 +558,7 @@ namespace Netnr.Chat.Application
         /// </summary>
         public static void UserOnline(ChatUserVM ou)
         {
-            var user = FindOnlineUser(ou.UserId);
+            var user = UserIsOnline(ou.UserId);
             if (user == null)
             {
                 OnlineUser2.Add(ou.UserId, ou);
@@ -575,7 +575,7 @@ namespace Netnr.Chat.Application
         /// </summary>
         public static void UserOffline(ChatUserVM ou)
         {
-            var user = FindOnlineUser(ou?.UserId);
+            var user = UserIsOnline(ou?.UserId);
             if (user != null)
             {
                 var cu = OnlineUser2[ou.UserId];
@@ -605,7 +605,7 @@ namespace Netnr.Chat.Application
         /// 推送消息转存储消息
         /// </summary>
         /// <param name="cm"></param>
-        public static List<Domain.NChatMessageToUser> SaveAsUserMessage(ChatMessageVM cm)
+        public static List<Domain.NChatMessageToUser> WriteMessageForUser(ChatMessageVM cm)
         {
             var listCm = new List<Domain.NChatMessageToUser>();
 
@@ -629,10 +629,41 @@ namespace Netnr.Chat.Application
         }
 
         /// <summary>
+        /// 推送消息转存储消息（反转）
+        /// </summary>
+        /// <param name="listCmo"></param>
+        /// <returns></returns>
+        public static List<ChatMessageVM> WriteMessageForUserReverse(List<Domain.NChatMessageToUser> listCmo)
+        {
+            var cms = new List<ChatMessageVM>();
+
+            foreach (var cmo in listCmo)
+            {
+                cms.Add(new ChatMessageVM()
+                {
+                    CmId = cmo.CmuId,
+                    CmFromId = cmo.CmuPushUserId,
+                    CmToIds = new List<string> { cmo.CmuPullUserId },
+                    CmContent = cmo.CmuContent,
+                    CmWhich = cmo.CmuPushWhich,
+                    CmType = cmo.CmuPushType,
+                    CmTime = cmo.CmuCreateTime,
+                    CmFromConn = new ChatConnectionVM
+                    {
+                        UserDevice = cmo.CmuPushUserDevice,
+                        ConnSign = cmo.CmuPushUserSign
+                    }
+                });
+            }
+
+            return cms;
+        }
+
+        /// <summary>
         /// 推送消息转存储消息
         /// </summary>
         /// <param name="cm"></param>
-        public static List<Domain.NChatMessageToGroup> SaveAsGroupMessage(ChatMessageVM cm)
+        public static List<Domain.NChatMessageToGroup> WriteMessageForGroup(ChatMessageVM cm)
         {
             var listCm = new List<Domain.NChatMessageToGroup>();
 
@@ -656,10 +687,40 @@ namespace Netnr.Chat.Application
         }
 
         /// <summary>
-        /// 新增用户消息
+        /// 推送消息转存储消息（反转）
+        /// </summary>
+        /// <param name="listCmo"></param>
+        public static List<ChatMessageVM> WriteMessageForGroupReverse(List<Domain.NChatMessageToGroup> listCmo)
+        {
+            var cms = new List<ChatMessageVM>();
+
+            foreach (var cmo in listCmo)
+            {
+                cms.Add(new ChatMessageVM()
+                {
+                    CmId = cmo.CmgId,
+                    CmFromId = cmo.CmgPushUserId,
+                    CmToIds = new List<string> { cmo.CmgPullGroupId },
+                    CmContent = cmo.CmgContent,
+                    CmWhich = cmo.CmgPushWhich,
+                    CmType = cmo.CmgPushType,
+                    CmTime = cmo.CmgCreateTime,
+                    CmFromConn = new ChatConnectionVM
+                    {
+                        UserDevice = cmo.CmgPushUserDevice,
+                        ConnSign = cmo.CmgPushUserSign
+                    }
+                });
+            }
+
+            return cms;
+        }
+
+        /// <summary>
+        /// 写入用户消息到缓存
         /// </summary>
         /// <param name="cms"></param>
-        public static void AddMessage(List<Domain.NChatMessageToUser> cms)
+        public static void WriteMessageToCache(List<Domain.NChatMessageToUser> cms)
         {
             cms.ForEach(cm =>
             {
@@ -675,10 +736,10 @@ namespace Netnr.Chat.Application
         }
 
         /// <summary>
-        /// 新增组消息
+        /// 写入组消息到缓存
         /// </summary>
         /// <param name="cms"></param>
-        public static void AddMessage(List<Domain.NChatMessageToGroup> cms)
+        public static void WriteMessageToCache(List<Domain.NChatMessageToGroup> cms)
         {
             cms.ForEach(cm =>
             {
@@ -691,6 +752,262 @@ namespace Netnr.Chat.Application
                     GroupMessage1.Add(cm.CmgPullGroupId, new List<Domain.NChatMessageToGroup> { cm });
                 }
             });
+        }
+
+        /// <summary>
+        /// 保存用户消息
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="second">发送消息已超过分钟数，默认5分钟，0为全部写入</param>
+        public static int SaveUserMessage(Data.ContextBase db, int second = 5)
+        {
+            //待写入的消息
+            var listMessage = new List<Domain.NChatMessageToUser>();
+
+            foreach (var key in UserMessage1.Keys)
+            {
+                var msgs = UserMessage1[key];
+
+                //全部写入
+                if (second <= 0)
+                {
+                    listMessage.AddRange(msgs);
+                    UserMessage1[key].Clear();
+                }
+                else
+                {
+                    //已超过分钟的消息
+                    var mt = DateTime.Now.AddSeconds(second);
+
+                    foreach (var m in msgs)
+                    {
+                        if (m.CmuCreateTime > mt)
+                        {
+                            listMessage.Add(m);
+                            msgs.Remove(m);
+                        }
+                    }
+                }
+            }
+
+            int batchRows = GlobalTo.GetValue<int>("NetnrChat:BatchSaveDataBase");
+            int num = 0;
+            while (listMessage.Count > 0)
+            {
+                var listm = listMessage.Take(batchRows);
+                db.NChatMessageToUser.AddRange(listm);
+                num += db.SaveChanges();
+                listMessage.RemoveRange(0, batchRows);
+            }
+
+            return num;
+        }
+
+        /// <summary>
+        /// 保存组消息
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="second">发送消息已超过分钟数，默认5分钟，0为全部写入</param>
+        public static int SaveGroupMessage(Data.ContextBase db, int second = 5)
+        {
+            //待写入的消息
+            var listMessage = new List<Domain.NChatMessageToGroup>();
+
+            foreach (var key in GroupMessage1.Keys)
+            {
+                var msgs = GroupMessage1[key];
+
+                //全部写入
+                if (second <= 0)
+                {
+                    listMessage.AddRange(msgs);
+                    GroupMessage1[key].Clear();
+                }
+                else
+                {
+                    //已超过分钟的消息
+                    var mt = DateTime.Now.AddSeconds(second);
+
+                    foreach (var m in msgs)
+                    {
+                        if (m.CmgCreateTime > mt)
+                        {
+                            listMessage.Add(m);
+                            msgs.Remove(m);
+                        }
+                    }
+                }
+            }
+
+            int batchRows = GlobalTo.GetValue<int>("NetnrChat:BatchSaveDataBase");
+            int num = 0;
+            while (listMessage.Count > 0)
+            {
+                var listm = listMessage.Take(batchRows);
+                db.NChatMessageToGroup.AddRange(listm);
+                num += db.SaveChanges();
+                listMessage.RemoveRange(0, batchRows);
+            }
+
+            return num;
+        }
+
+        /// <summary>
+        /// 获取未读用户消息数量
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="UserId">接收用户ID</param>
+        /// <returns></returns>
+        public static int GetUnreadUserMessageCount(Data.ContextBase db, string UserId)
+        {
+            //库的消息
+            int num = db.NChatMessageToUser.Where(x => x.CmuStatus >= 1 && x.CmuStatus <= 3).Count();
+            //缓存的消息
+            if (UserMessage1.ContainsKey(UserId))
+            {
+                num += UserMessage1[UserId].Where(x => x.CmuStatus >= 1 && x.CmuStatus <= 3).Count();
+            }
+            return num;
+        }
+
+        /// <summary>
+        /// 获取未读组消息数量
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="UserId">接收用户ID</param>
+        /// <returns></returns>
+        public static object GetUnreadGroupMessageCount(Data.ContextBase db, string UserId)
+        {
+            //库里面的消息
+            var query1 = from a in db.NChatGroup
+                         join b1 in db.NChatMessageGroupPull on a.CgOwnerId equals b1.CuUserId into bg
+                         from b in bg.DefaultIfEmpty()
+                         where a.CgOwnerId == UserId
+                         select new
+                         {
+                             a.CgId,
+                             b.GpUpdateTime
+                         };
+
+            var query = from a in query1
+                        join b1 in db.NChatMessageToGroup on a.CgId equals b1.CmgPullGroupId into bg
+                        from b in bg.DefaultIfEmpty()
+                        where b.CmgCreateTime > a.GpUpdateTime
+                        group a by new { a.CgId, a.GpUpdateTime } into g
+                        select new
+                        {
+                            GroupId = g.Key.CgId,
+                            UpdateTime = g.Key.GpUpdateTime,
+                            Count = g.Count()
+                        };
+
+            var list = query.ToList();
+            var gk = new Dictionary<string, int>();
+            //缓存的消息
+            foreach (var gi in list)
+            {
+                gk.Add(gi.GroupId, gi.Count);
+                if (GroupMessage1.ContainsKey(gi.GroupId))
+                {
+                    gk[gi.GroupId] += GroupMessage1[gi.GroupId].Where(x => x.CmgCreateTime > gi.UpdateTime).Count();
+                }
+            }
+
+            return new
+            {
+                Count = gk.Values.Sum(),
+                Detail = gk
+            };
+        }
+
+        /// <summary>
+        /// 获取用户历史消息
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="UserId">用户ID</param>
+        /// <param name="page">页码</param>
+        /// <param name="size">页量</param>
+        /// <returns></returns>
+        public static List<ChatMessageVM> GetHistoryUserMessage(Data.ContextBase db, string UserId, int page, int size)
+        {
+            var begin = (page - 1) * size;
+            var end = page * size;
+
+            var listOut = new List<Domain.NChatMessageToUser>();
+            if (UserMessage1.ContainsKey(UserId))
+            {
+                var msgs = UserMessage1[UserId];
+                //够
+                if (msgs.Count >= end)
+                {
+                    listOut = msgs.Skip(begin).Take(size).ToList();
+                }
+                else
+                {
+                    var sb = begin - msgs.Count;
+                    if (sb < 0)
+                    {
+                        listOut.AddRange(msgs.TakeLast(Math.Abs(sb)));
+                    }
+                    sb = Math.Max(sb, 0);
+
+                    var list = db.NChatMessageToUser.Where(x => x.CmuPullUserId == UserId)
+                        .OrderByDescending(x => x.CmuCreateTime)
+                        .Skip(sb).Take(end - msgs.Count)
+                        .ToList();
+
+                    listOut.AddRange(list);
+                }
+            }
+
+            var listvm = WriteMessageForUserReverse(listOut);
+
+            return listvm;
+        }
+
+        /// <summary>
+        /// 获取组历史消息
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="GroupId">组ID</param>
+        /// <param name="page">页码</param>
+        /// <param name="size">页量</param>
+        /// <returns></returns>
+        public static List<ChatMessageVM> GetHistoryGroupMessage(Data.ContextBase db, string GroupId, int page, int size)
+        {
+            var begin = (page - 1) * size;
+            var end = page * size;
+
+            var listOut = new List<Domain.NChatMessageToGroup>();
+            if (GroupMessage1.ContainsKey(GroupId))
+            {
+                var msgs = GroupMessage1[GroupId];
+                //够
+                if (msgs.Count >= end)
+                {
+                    listOut = msgs.Skip(begin).Take(size).ToList();
+                }
+                else
+                {
+                    var sb = begin - msgs.Count;
+                    if (sb < 0)
+                    {
+                        listOut.AddRange(msgs.TakeLast(Math.Abs(sb)));
+                    }
+                    sb = Math.Max(sb, 0);
+
+                    var list = db.NChatMessageToGroup.Where(x => x.CmgPullGroupId == GroupId)
+                        .OrderByDescending(x => x.CmgCreateTime)
+                        .Skip(sb).Take(end - msgs.Count)
+                        .ToList();
+
+                    listOut.AddRange(list);
+                }
+            }
+
+            var listvm = WriteMessageForGroupReverse(listOut);
+
+            return listvm;
         }
 
         /// <summary>
@@ -739,20 +1056,6 @@ namespace Netnr.Chat.Application
         }
 
         /// <summary>
-        /// 根据用户ID找到在线用户信息
-        /// </summary>
-        /// <param name="UserId">用户ID</param>
-        /// <returns></returns>
-        public static ChatUserVM FindOnlineUser(string UserId)
-        {
-            if (!string.IsNullOrEmpty(UserId) && OnlineUser2.ContainsKey(UserId))
-            {
-                return OnlineUser2[UserId];
-            }
-            return null;
-        }
-
-        /// <summary>
         /// 根据组ID找到组信息
         /// </summary>
         /// <param name="GroupId">组ID</param>
@@ -770,6 +1073,20 @@ namespace Netnr.Chat.Application
             });
 
             return groups;
+        }
+
+        /// <summary>
+        /// 用户是否在线
+        /// </summary>
+        /// <param name="UserId">用户ID</param>
+        /// <returns></returns>
+        public static ChatUserVM UserIsOnline(string UserId)
+        {
+            if (!string.IsNullOrEmpty(UserId) && OnlineUser2.ContainsKey(UserId))
+            {
+                return OnlineUser2[UserId];
+            }
+            return null;
         }
 
         #endregion

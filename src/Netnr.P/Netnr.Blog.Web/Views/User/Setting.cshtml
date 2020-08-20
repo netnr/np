@@ -19,7 +19,7 @@
                         账号
                         <i class="fa fa-fw text-muted fa-question-circle-o" data-toggle="tooltip" title="登录账号，个性网址，唯一"></i>
                     </td>
-                    <td class="text-muted">https://www.netnr.com/u/<b class="text-primary">@Model.UserName</b></td>
+                    <td class="text-muted">@GlobalTo.GetValue("Common:Domain")/u/<b class="text-primary">@Model.UserName</b></td>
                 </tr>
                 <tr>
                     <td>昵称</td>

@@ -124,8 +124,8 @@ namespace Netnr.Blog.Web.Controllers
             /// <returns>已经打包成xml的用于回复用户的消息包</returns>
             public string Execute(WeChatMessage message)
             {
-                var myDomain = "https://www.netnr.com";//请更改成你的域名
-                string myPic = myDomain + "/favicon.svg";
+                var myDomain = GlobalTo.GetValue("Common:Domain");
+                string myPic = $"{myDomain}/favicon.svg";
 
                 var mb = message.Body;
                 var openId = mb.GetText("FromUserName");
@@ -133,8 +133,8 @@ namespace Netnr.Blog.Web.Controllers
 
                 var news = new WeChatNews
                 {
-                    title = "NET牛人（Gist,Run,Doc,Draw）",
-                    description = "NET牛人，技术分享博客、代码片段、在线运行代码、接口文档、绘制 等等",
+                    title = GlobalTo.GetValue("Common:ChineseName") + "（Gist,Run,Doc,Draw）",
+                    description = GlobalTo.GetValue("Common:ChineseName") + "，技术分享博客、代码片段、在线运行代码、接口文档、绘制 等等",
                     picurl = myPic,
                     url = myDomain
                 };
@@ -160,15 +160,15 @@ namespace Netnr.Blog.Web.Controllers
                             }
                             else if ("note".Split(' ').ToList().Contains(Content))
                             {
-                                repmsg = "记事\n" + myDomain + "/tool/note";
+                                repmsg = $"记事\n{myDomain}/tool/note";
                             }
                             else if ("gist".Split(' ').ToList().Contains(Content))
                             {
-                                repmsg = "代码片段\n" + myDomain + "/gist/discover";
+                                repmsg = $"代码片段\n{myDomain}/gist/discover";
                             }
                             else if ("doc".Split(' ').ToList().Contains(Content))
                             {
-                                repmsg = "文档\n" + myDomain + "/doc/discover";
+                                repmsg = $"文档\n{myDomain}/doc/discover";
                             }
                             else if ("cp lottery".Split(' ').ToList().Contains(Content))
                             {

@@ -1,3 +1,3 @@
 # Netnr.Guff
 
-> Demo：<https://guff.ltd>
+> Demo: <https://guff.ltd>

@@ -1,4 +1,4 @@
-﻿# 临时邮件目录列表
+# 临时邮件目录列表
 
 ### GitHub 仓库
 https://github.com/FGRibreau/mailchecker

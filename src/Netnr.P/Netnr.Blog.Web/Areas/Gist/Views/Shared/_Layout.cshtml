@@ -1,4 +1,4 @@
-﻿<partial name="_PartialQuote" model="@("the")" />
+<partial name="_PartialQuote" model="@("the")" />
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -17,7 +17,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <a class="navbar-brand" href="/gist"><i class="fa fa-fw fa-file-code-o"></i> <b>Netnr</b> Gist</a>
+        <a class="navbar-brand" href="/gist"><i class="fa fa-fw fa-file-code-o"></i> <b>@GlobalTo.GetValue("Common:EnglishName")</b> Gist</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#gistnavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -41,7 +41,7 @@
                     <a class="nav-link" href="/gist/discover"><i class="fa fa-fw fa-file-text"></i>Discover</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>Netnr</a>
+                    <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>@GlobalTo.GetValue("Common:EnglishName")</a>
                 </li>
             </ul>
 

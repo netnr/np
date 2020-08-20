@@ -18,7 +18,6 @@ namespace Netnr.DataKit.Web.Controllers
         /// <param name="conn">连接字符串</param>
         /// <returns></returns>
         [HttpGet]
-        [HttpOptions]
         public ActionResultVM GetTable(TypeDB? tdb, string conn)
         {
             var vm = new DataKitUseService().GetTable(tdb, conn);
@@ -33,7 +32,6 @@ namespace Netnr.DataKit.Web.Controllers
         /// <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
         /// <returns></returns>
         [HttpPost]
-        [HttpOptions]
         public ActionResultVM GetColumn([FromForm] TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
         {
             var vm = new DataKitUseService().GetColumn(tdb, conn, filterTableName);
@@ -49,7 +47,6 @@ namespace Netnr.DataKit.Web.Controllers
         /// <param name="TableComment">表注释</param>
         /// <returns></returns>
         [HttpGet]
-        [HttpOptions]
         public ActionResultVM SetTableComment(TypeDB? tdb, string conn, string TableName, string TableComment)
         {
             var vm = new DataKitUseService().SetTableComment(tdb, conn, TableName, TableComment);
@@ -66,7 +63,6 @@ namespace Netnr.DataKit.Web.Controllers
         /// <param name="FieldComment">列注释</param>
         /// <returns></returns>
         [HttpGet]
-        [HttpOptions]
         public ActionResultVM SetColumnComment(TypeDB? tdb, string conn, string TableName, string FieldName, string FieldComment)
         {
             var vm = new DataKitUseService().SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
@@ -87,7 +83,6 @@ namespace Netnr.DataKit.Web.Controllers
         /// <param name="whereSql">条件</param>
         /// <returns></returns>
         [HttpGet]
-        [HttpOptions]
         public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
         {
             var vm = new DataKitUseService().GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);

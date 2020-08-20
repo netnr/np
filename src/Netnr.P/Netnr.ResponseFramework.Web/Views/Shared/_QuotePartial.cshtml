@@ -1,4 +1,4 @@
-﻿@model string
+@model string
 @{
     var listQuote = Model.Split(',').ToList();
 }
@@ -50,16 +50,6 @@
 
         case "ckeditor.js":
             <script src="https://code.bdstatic.com/npm/ckeditor@4.12.1/ckeditor.js"></script>
-            break;
-
-        case "monaco-editor":
-            <script src="https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs/loader.js"></script>
-            <script>
-                require.config({
-                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs" },
-                    'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
-                });
-            </script>
             break;
 
         case "loading":

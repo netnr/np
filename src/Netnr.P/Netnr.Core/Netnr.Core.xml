@@ -9,6 +9,11 @@
             缓存
             </summary>
         </member>
+        <member name="F:Netnr.Core.CacheTo.memoryCache">
+            <summary>
+            缓存
+            </summary>
+        </member>
         <member name="M:Netnr.Core.CacheTo.Get(System.String)">
             <summary>
             获取数据缓存
@@ -104,10 +109,6 @@
         <member name="M:Netnr.Core.CalcTo.HMAC_SHA1(System.String,System.String)">
             <summary>
             HMAC_SHA1 加密
-            </summary>
-            <param name="str">内容</param>
-            <param name="key">密钥</param>
-            <reSHA1 加密
             </summary>
             <param name="str">内容</param>
             <param name="key">密钥</param>
@@ -300,7 +301,72 @@
             <param name="url">地址</param>
             <param name="charset">编码，默认utf-8</param>
             <returns></returns>
-   am name="propertyValue">数据值</param>
+        </member>
+        <member name="M:Netnr.Core.HttpTo.Post(System.String,System.String,System.String)">
+            <summary>
+            POST请求
+            </summary>
+            <param name="url">地址</param>
+            <param name="data">发送数据</param>
+            <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Core.LamdaTo">
+            <summary>
+            动态生成lamda表达式
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.LamdaTo.True``1">
+            <summary>
+            创建lambda表达式：p=>true
+            </summary>
+            <typeparam name="T">对象名称（类名）</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.LamdaTo.False``1">
+            <summary>
+            创建lambda表达式：p=>false
+            </summary>
+            <typeparam name="T">对象名称（类名）</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.LamdaTo.OrderExpression``2(System.String)">
+            <summary>
+            创建lambda表达式：p=>p.propertyName
+            </summary>
+            <typeparam name="T">对象名称（类名）</typeparam>
+            <typeparam name="TKey">参数类型</typeparam>
+            <param name="propertyName">字段名称（数据库中字段名称）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.LamdaTo.Equal``2(System.String,``1)">
+            <summary>
+            创建lambda表达式：p=>p.propertyName == propertyValue
+            </summary>
+            <typeparam name="T">对象名称（类名）</typeparam>
+            <typeparam name="S">参数类型</typeparam>
+            <param name="propertyName">字段名称（数据库中字段名称）</param>
+            <param name="propertyValue">数据值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.LamdaTo.NotEqual``2(System.String,``1)">
+            <summary>
+            创建lambda表达式：p=>p.propertyName != propertyValue
+            </summary>
+            <typeparam name="T">对象名称（类名）</typeparam>
+            <typeparam name="S">参数类型</typeparam>
+            <param name="propertyName">字段名称（数据库中字段名称）</param>
+            <param name="propertyValue">数据值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.LamdaTo.GreaterThan``2(System.String,``1)">
+            <summary>
+            创建lambda表达式：p=>p.propertyName > propertyValue
+            </summary>
+            <typeparam name="T">对象名称（类名）</typeparam>
+            <typeparam name="S">参数类型</typeparam>
+            <param name="propertyName">字段名称（数据库中字段名称）</param>
+            <param name="propertyValue">数据值</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Core.LamdaTo.LessThan``2(System.String,``1)">
@@ -558,83 +624,6 @@
             根据Guid获取唯一数字序列，19位
             </summary>
             <returns></returns>
-        </member>
-        <member name="M:Netnr.Core.UniqueTo.DayId(System.Nullable{System.DateTime})">
-            <summary>
-            根据天生成唯一ID
-            </summary>
-        </member>
-        <member name="T:Netnr.Extend">
-            <summary>
-            常用方法拓展
-            </summary>
-        </member>
-        <member name="M:Netnr.Extend.ToJson(System.Object,System.String)">
-            <summary>
-            object 转 JSON 字符串
-            </summary>
-            <param name="obj"></param>
-            <param name="DateTimeFormat">时间格式化</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Extend.ToJObject(System.String)">
-            <summary>
-            解析 JSON字符串 为JObject对象
-            </summary>
-            <param name="      <returns></returns>
-        </member>
-        <member name="M:Netnr.Core.RsaTo.SignatureDeformatter(System.String,System.String,System.String)">
-            <summary>
-            RSA 签名验证
-            </summary>
-            <param name="p_strKeyPublic"></param>
-            <param name="p_strHashbyteDeformatter"></param>
-            <param name="p_strDeformatterData"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.Core.TreeTo">
-            <summary>
-            Tree常用方法
-            </summary>
-        </member>
-        <member name="M:Netnr.Core.TreeTo.ListToTree``1(System.Collections.Generic.List{``0},System.String,System.String,System.Collections.Generic.List{System.String},System.String)">
-            <summary>
-            数据集合转JSON
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="list"></param>
-            <param name="pidField">父ID键</param>
-            <param name="idField">ID键</param>
-            <param name="startPid">开始的PID</param>
-            <param name="childrenNodeName">子节点名称，默认children</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Core.TreeTo.FindToTree``1(System.Collections.Generic.List{``0},System.String,System.String,System.Collections.Generic.List{System.String})">
-            <summary>
-            根据节点找到所有子节点（不包含自身节点）
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="list"></param>
-            <param name="pidField">父ID键</param>
-            <param name="idField">ID键</param>
-            <param name="startPid">开始的PID</param>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.Core.UniqueTo">
-            <summary>
-            生成唯一标识
-            </summary>
-        </member>
-        <member name="M:Netnr.Core.UniqueTo.LongId">
-            <summary>
-            根据Guid获取唯一数字序列，19位
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Core.UniqueTo.DayId(System.Nullable{System.DateTime})">
-            <summary>
-            根据天生成唯一ID
-            </summary>
         </member>
         <member name="T:Netnr.Extend">
             <summary>

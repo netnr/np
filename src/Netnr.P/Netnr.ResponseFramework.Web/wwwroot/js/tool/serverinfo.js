@@ -22,7 +22,7 @@ function loadOSinfo() {
             htm.push('<td>' + data.FrameworkDescription + '</td>');
             htm.push('</tr>');
 
-            if (data.Model != "System Product Name") {
+            if (data.Model && data.Model != "System Product Name") {
                 htm.push('<tr>');
                 htm.push('<td>型号</td>');
                 htm.push('<td>' + data.Model + '</td>');
@@ -31,7 +31,7 @@ function loadOSinfo() {
 
             htm.push('<tr>');
             htm.push('<td>系统</td>');
-            htm.push('<td>' + data.OperatingSystem + ' ，' + data.OSVersion.VersionString + ' ，' + data.UserName + (data.Is64BitOperatingSystem ? " ，64Bit" : "") + '</td>');
+            htm.push('<td>' + (data.OperatingSystem || data.OS) + ' ，' + data.OSVersion.VersionString + ' ，' + data.UserName + (data.Is64BitOperatingSystem ? " ，64Bit" : "") + '</td>');
             htm.push('</tr>');
 
             htm.push('<tr>');

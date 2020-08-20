@@ -1,6 +1,9 @@
 # Netnr.FileServer
 Simple file server based on .NET Core, database is SQLite
 
+> Demo: <https://netnr-fileserver.herokuapp.com>
+
+
 > After creating the App in the production environment, you need to set `IsDev:false`  
 > the setting will take effect directly without restarting the service, `appsettings.json` is the configuration file  
 > File database and upload directory grant read and write permissions

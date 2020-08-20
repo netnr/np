@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
     <title>Netnr.DataKit</title>
 
@@ -460,8 +460,8 @@
             ],
             //默认服务接口
             dapi: [
-                { istemplate: true, host: "https://free-dk.zme.ink", remark: "免费的 .NET Core 服务" },
-                { istemplate: true, host: "https://api.zme.ink", remark: "免费的 Serverless 服务，速度快，不支持 Oracle" },
+                { istemplate: true, host: "https://api.zme.ink", remark: "部署在 Vercel 的 Serverless 服务，不支持 Oracle" },
+                { istemplate: true, host: "https://free-dk.herokuapp.com", remark: "部署在 Heroku 的服务" },
                 { istemplate: true, host: location.origin, remark: "当前" }
             ],
             //接口地址
@@ -2568,8 +2568,8 @@
 
                                     var newpm = 'new ' + dbpm + '("' + pmprefix + ri.FieldName + '", ' + dbtypeEnum + '.' + pm;
 
-                                    //Oracle CLOB 不指定长度
-                                    var isoc = tdbname == "Oracle" && pm == "Clob";
+                                    //Oracle Large Object 不指定长度
+                                    var isoc = tdbname == "Oracle" && pm.slice(-3) == "lob";
                                     if (!isNaN(parseInt(ri.DataLength)) && !isoc) {
                                         newpm += ', ' + ri.DataLength + ')';
                                     } else {
@@ -2620,8 +2620,8 @@
 
                                     var newpm = 'new ' + dbpm + '("' + pmprefix + ri.FieldName + '", ' + dbtypeEnum + '.' + pm;
 
-                                    //Oracle CLOB 不指定长度
-                                    var isoc = tdbname == "Oracle" && pm == "Clob";
+                                    //Oracle Large Object 不指定长度
+                                    var isoc = tdbname == "Oracle" && pm.slice(-3) == "lob";
                                     if (!isNaN(parseInt(ri.DataLength)) && !isoc) {
                                         newpm += ', ' + ri.DataLength + ')';
                                     } else {

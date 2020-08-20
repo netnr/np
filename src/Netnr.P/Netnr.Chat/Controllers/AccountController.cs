@@ -29,25 +29,54 @@ namespace Netnr.Chat.Controllers
         /// <param name="chatLogin">登录信息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM Token([FromBody]ChatLoginVM chatLogin)
+        public ActionResultVM Token([FromBody] ChatLoginVM chatLogin)
         {
             var vm = new ActionResultVM();
 
             try
             {
-                if (string.IsNullOrWhiteSpace(chatLogin.UserName) || string.IsNullOrWhiteSpace(chatLogin.Password))
+                Domain.NChatUser uo = null;
+
+                //有账号、密码
+                if (!string.IsNullOrWhiteSpace(chatLogin.UserName) && !string.IsNullOrWhiteSpace(chatLogin.Password))
+                {
+                    var pw = Core.CalcTo.MD5(chatLogin.Password);
+
+                    uo = db.NChatUser.FirstOrDefault(x => x.CuUserName == chatLogin.UserName && x.CuPassword == pw);
+                    if (uo == null)
+                    {
+                        vm.Set(ARTag.unauthorized);
+                        vm.Msg = "账号或密码错误";
+                        return vm;
+                    }
+                }
+                //启用来宾用户
+                else if (GlobalTo.GetValue<bool>("NetnrChat:EnableGuestUsers"))
+                {
+                    //新增
+                    if (string.IsNullOrWhiteSpace(chatLogin.GuestId))
+                    {
+                        var uid = Core.UniqueTo.LongId();
+
+                        uo = new Domain.NChatUser
+                        {
+                            CuUserId = "G_" + uid,
+                            CuUserName = "Guest-" + uid,
+                            CuPassword = Core.CalcTo.MD5("Guest"),
+                            CuUserNickname = "Guest",
+                            CuCreateTime = DateTime.Now,
+                            CuStatus = 1                            
+                        };
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else
                 {
                     vm.Set(ARTag.invalid);
                     vm.Msg = "账号或密码不能为空";
-                    return vm;
-                }
-
-                var pw = Core.CalcTo.MD5(chatLogin.Password);
-                var uo = db.NChatUser.FirstOrDefault(x => x.CuUserName == chatLogin.UserName && x.CuPassword == pw);
-                if (uo == null)
-                {
-                    vm.Set(ARTag.unauthorized);
-                    vm.Msg = "账号或密码错误";
                     return vm;
                 }
 
@@ -56,10 +85,7 @@ namespace Netnr.Chat.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, uo.CuUserId),
                     new Claim(ClaimTypes.Name, uo.CuUserName),
-                    new Claim(ClaimTypes.UserData, new{
-                        chatLogin.Device,
-                        chatLogin.Sign
-                    }.ToJson())
+                    new Claim(ClaimTypes.UserData, new { chatLogin.Device, chatLogin.Sign }.ToJson())
                 };
 
                 var expireDate = GlobalTo.GetValue<int>("TokenManagement:AccessExpiration");

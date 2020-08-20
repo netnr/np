@@ -98,40 +98,96 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.SaveAsUserMessage(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
+        <member name="M:Netnr.Chat.Application.ChatContextService.WriteMessageForUser(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
             <summary>
             推送消息转存储消息
             </summary>
             <param name="cm"></param>
         </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.SaveAsGroupMessage(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
+        <member name="M:Netnr.Chat.Application.ChatContextService.WriteMessageForUserReverse(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToUser})">
+            <summary>
+            推送消息转存储消息（反转）
+            </summary>
+            <param name="listCmo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.WriteMessageForGroup(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
             <summary>
             推送消息转存储消息
             </summary>
             <param name="cm"></param>
         </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.AddMessage(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToUser})">
+        <member name="M:Netnr.Chat.Application.ChatContextService.WriteMessageForGroupReverse(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToGroup})">
             <summary>
-            新增用户消息
+            推送消息转存储消息（反转）
+            </summary>
+            <param name="listCmo"></param>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.WriteMessageToCache(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToUser})">
+            <summary>
+            写入用户消息到缓存
             </summary>
             <param name="cms"></param>
         </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.AddMessage(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToGroup})">
+        <member name="M:Netnr.Chat.Application.ChatContextService.WriteMessageToCache(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToGroup})">
             <summary>
-            新增组消息
+            写入组消息到缓存
             </summary>
             <param name="cms"></param>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.SaveUserMessage(Netnr.Chat.Data.ContextBase,System.Int32)">
+            <summary>
+            保存用户消息
+            </summary>
+            <param name="db"></param>
+            <param name="second">发送消息已超过分钟数，默认5分钟，0为全部写入</param>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.SaveGroupMessage(Netnr.Chat.Data.ContextBase,System.Int32)">
+            <summary>
+            保存组消息
+            </summary>
+            <param name="db"></param>
+            <param name="second">发送消息已超过分钟数，默认5分钟，0为全部写入</param>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.GetUnreadUserMessageCount(Netnr.Chat.Data.ContextBase,System.String)">
+            <summary>
+            获取未读用户消息数量
+            </summary>
+            <param name="db"></param>
+            <param name="UserId">接收用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.GetUnreadGroupMessageCount(Netnr.Chat.Data.ContextBase,System.String)">
+            <summary>
+            获取未读组消息数量
+            </summary>
+            <param name="db"></param>
+            <param name="UserId">接收用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.GetHistoryUserMessage(Netnr.Chat.Data.ContextBase,System.String,System.Int32,System.Int32)">
+            <summary>
+            获取用户历史消息
+            </summary>
+            <param name="db"></param>
+            <param name="UserId">用户ID</param>
+            <param name="page">页码</param>
+            <param name="size">页量</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.GetHistoryGroupMessage(Netnr.Chat.Data.ContextBase,System.String,System.Int32,System.Int32)">
+            <summary>
+            获取组历史消息
+            </summary>
+            <param name="db"></param>
+            <param name="GroupId">组ID</param>
+            <param name="page">页码</param>
+            <param name="size">页量</param>
+            <returns></returns>
         </member>
         <member name="M:Netnr.Chat.Application.ChatContextService.FindUsers(System.Collections.Generic.List{System.String})">
             <summary>
             根据用户ID找到用户信息
-            </summary>
-            <param name="UserId">用户ID</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.FindOnlineUser(System.String)">
-            <summary>
-            根据用户ID找到在线用户信息
             </summary>
             <param name="UserId">用户ID</param>
             <returns></returns>
@@ -141,6 +197,13 @@
             根据组ID找到组信息
             </summary>
             <param name="GroupId">组ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatContextService.UserIsOnline(System.String)">
+            <summary>
+            用户是否在线
+            </summary>
+            <param name="UserId">用户ID</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Chat.Application.ChatHubService.OnConnectedAsync">
@@ -254,6 +317,11 @@
         <member name="T:Netnr.Chat.Application.ViewModel.ChatLoginVM">
             <summary>
             登录授权
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatLoginVM.GuestId">
+            <summary>
+            来宾ID（来宾用户再次获取Token需要）
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatLoginVM.UserName">
@@ -393,6 +461,20 @@
             推送消息到组
             </summary>
             <param name="cm">推送消息</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetUnreadUserMessageCount(System.String)">
+            <summary>
+            获取未读用户消息数量
+            </summary>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetUnreadGroupMessageCount(System.String)">
+            <summary>
+            获取未读组消息数量
+            </summary>
+            <param name="UserId">用户ID</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Chat.Controllers.ChatController.GroupNew(Netnr.Chat.Application.ViewModel.ChatGroupVM)">

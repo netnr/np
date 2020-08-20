@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Netnr.Blog.Web
 {
@@ -93,7 +94,7 @@ namespace Netnr.Blog.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddControllersWithViews(options =>
+            IMvcBuilder builder = services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
                 options.Filters.Add(new Filters.FilterConfigs.ErrorActionFilter());
@@ -103,10 +104,11 @@ namespace Netnr.Blog.Web
 
                 //注册全局授权访问时登录标记是否有效
                 options.Filters.Add(new Filters.FilterConfigs.LoginSignValid());
-            })/*.AddRazorRuntimeCompilation()*/;
-            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
-            //发布时：建议删除该包，会生成一堆“垃圾”
-            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+            });
+
+#if DEBUG
+            builder.AddRazorRuntimeCompilation();
+#endif
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -121,13 +123,17 @@ namespace Netnr.Blog.Web
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "Netnr API",
-                    Version = "v1"
+                    Title = $"{GlobalTo.GetValue("Common:EnglishName")} API",
+                    Description = string.Join(" &nbsp; ", new List<string>
+                    {
+                        "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
+                    })
                 });
 
                 "Blog.Web,Blog.Application,Fast".Split(',').ToList().ForEach(x =>
                 {
-                    c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
+                    c.IncludeXmlComments(System.AppContext.BaseDirectory + $"Netnr.{x}.xml", true);
                 });
             });
 
@@ -167,7 +173,7 @@ namespace Netnr.Blog.Web
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "Netnr API";
+                c.DocumentTitle = $"{GlobalTo.GetValue("Common:EnglishName")} API";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
             });
 

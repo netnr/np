@@ -1,7 +1,7 @@
-﻿@model Netnr.Blog.Domain.Run
+@model Netnr.Blog.Domain.Run
 
 <nav class="navbar navbar-expand-md @((Model.RunTheme=="vs"||string.IsNullOrWhiteSpace(Model.RunTheme)) ?"navbar-light":"navbar-dark") @("bg-"+(string.IsNullOrWhiteSpace(Model.RunTheme)?"vs":Model.RunTheme))" id="runav">
-    <a class="navbar-brand" href="/run"><i class="fa fa-fw fa-play"></i> <b>Netnr</b> Run</a>
+    <a class="navbar-brand" href="/run"><i class="fa fa-fw fa-play"></i> <b>@GlobalTo.GetValue("Common:EnglishName")</b> Run</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#runavbar">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -33,7 +33,7 @@
                 <a class="nav-link" href="/run/discover"><i class="fa fa-fw fa-file-text"></i>Discover</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>Netnr</a>
+                <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>@GlobalTo.GetValue("Common:EnglishName")</a>
             </li>
         </ul>
 

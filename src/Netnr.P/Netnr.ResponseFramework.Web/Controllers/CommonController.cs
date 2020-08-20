@@ -176,7 +176,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        pathPrefix += path + "/" + date.Year + "/" + date.ToString("yyyyMM") + "/";
+                        pathPrefix += path + date.ToString("/yyyy/MM/");
                     }
 
                     //物理路径
@@ -203,11 +203,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                     if (listPath.Count == 1)
                     {
-                        vm.Data =  listPath.FirstOrDefault();
+                        vm.Data = listPath.FirstOrDefault();
                     }
                     else
                     {
-                        vm.Data =  listPath;
+                        vm.Data = listPath;
                     }
                     vm.Set(ARTag.success);
                 }

@@ -1,11 +1,23 @@
 ﻿using System;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 /// <summary>
 /// 通用请求方法返回对象
 /// </summary>
 public class ActionResultVM
 {
+    private readonly Stopwatch sw;
+
+    /// <summary>
+    /// 构造
+    /// </summary>
+    public ActionResultVM()
+    {
+        sw = new Stopwatch();
+        sw.Start();
+    }
+
     /// <summary>
     /// 错误码，200 表示成功，-1 表示异常，其它自定义建议从 1 开始累加
     /// </summary>
@@ -25,29 +37,16 @@ public class ActionResultVM
     public object Data { get; set; }
 
     /// <summary>
-    /// 开始时间
-    /// </summary>
-    [JsonProperty("startTime")]
-    public DateTime StartTime { get; set; } = DateTime.Now;
-
-    /// <summary>
-    /// 用时，毫秒（在endTime上面，否则非序列化返回endTime值为null）
+    /// 用时，毫秒
     /// </summary>
     [JsonProperty("useTime")]
     public double UseTime
     {
         get
         {
-            EndTime ??= DateTime.Now;
-            return (EndTime.Value - StartTime).TotalMilliseconds;
+            return sw.Elapsed.TotalMilliseconds;
         }
     }
-
-    /// <summary>
-    /// 结束时间
-    /// </summary>
-    [JsonProperty("endTime")]
-    public DateTime? EndTime { get; set; }
 
     /// <summary>
     /// 设置快捷标签，赋值code、msg
@@ -57,8 +56,6 @@ public class ActionResultVM
     {
         Code = Convert.ToInt32(tag);
         Msg = tag.ToString();
-
-        EndTime = DateTime.Now;
     }
 
     /// <summary>
@@ -90,8 +87,6 @@ public class ActionResultVM
         {
             Msg += "，错误消息：" + ex.Message;
         }
-
-        EndTime = DateTime.Now;
     }
 }
 

@@ -1,4 +1,4 @@
-﻿@model string
+@model string
 @{
     var listQuote = Model.Split(',').ToList();
 }
@@ -69,8 +69,8 @@
             break;
 
         case "seo":
-            <meta name="keywords" content="netnr,NET牛人,Gist,Run,Doc,Draw" />
-            <meta name="description" content="netnr,NET牛人,Gist,Run,Doc,Draw" />
+            <meta name="keywords" content="@Html.Raw(GlobalTo.GetValue("Common:ChineseName")),@GlobalTo.GetValue("Common:EnglishName"),Gist,Run,Doc,Draw" />
+            <meta name="description" content="@Html.Raw(GlobalTo.GetValue("Common:ChineseName")),@GlobalTo.GetValue("Common:EnglishName"),Gist,Run,Doc,Draw" />
             break;
 
         case "the":

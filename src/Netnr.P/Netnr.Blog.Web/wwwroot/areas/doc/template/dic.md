@@ -1,4 +1,4 @@
-﻿### SysUser
+### SysUser
 
 用户表，储存用户信息
 

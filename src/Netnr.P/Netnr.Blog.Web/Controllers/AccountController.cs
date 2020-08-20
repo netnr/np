@@ -72,7 +72,7 @@ namespace Netnr.Blog.Web.Controllers
             //生成验证码
             string num = Core.RandomTo.NumCode(4);
             HttpContext.Session.SetString("RegisterCode", num);
-            byte[] bytes = Fast.ImageTo.CreateImg(num);
+            byte[] bytes = Fast.CaptchaTo.CreateImg(num);
             return File(bytes, "image/jpeg");
         }
 

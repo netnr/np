@@ -86,8 +86,15 @@ z.GridQueryDataConvert = function (data) {
     $.each(data, function () {
         if (this.ColQuery == 1) {
             var rl = this.ColRelation.split(',');
+            var ft = this.FormType;
+            switch (this.FormType) {
+                case "password":
+                case "textarea":
+                    ft = "text";
+                    break;
+            }
             arrdata.push({
-                FormType: this.FormType || "text",
+                FormType: ft,
                 FormUrl: this.FormUrl,
                 field: this.field || this.ColField,
                 relation: rl[0],
@@ -98,7 +105,6 @@ z.GridQueryDataConvert = function (data) {
     });
     return arrdata;
 }
-
 
 /**
  * 创建查询标记
