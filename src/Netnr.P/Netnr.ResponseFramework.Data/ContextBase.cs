@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Text.RegularExpressions;
 
 namespace Netnr.ResponseFramework.Data
 {
@@ -76,7 +78,10 @@ namespace Netnr.ResponseFramework.Data
                         });
                         break;
                     case TypeDB.PostgreSQL:
-                        optionsBuilder.UseNpgsql(GlobalTo.Configuration.GetConnectionString(TDB.ToString()));
+                        {
+                            optionsBuilder.UseNpgsql(GlobalTo.Configuration.GetConnectionString(TDB.ToString()));
+                        }
+
                         break;
                 }
 

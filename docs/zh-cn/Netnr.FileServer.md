@@ -1,7 +1,7 @@
 # Netnr.FileServer
 基于 .NET Core 的简单文件服务器，数据库为 SQLite
 
-> 演示：<https://netnr-fileserver.herokuapp.com>
+> 演示：<https://d-fileserver.zme.ink>
 
 
 > 生产环境在创建 App 之后需设置 `IsDev:false`，设置直接生效不用重启服务，`appsettings.json` 为配置文件  

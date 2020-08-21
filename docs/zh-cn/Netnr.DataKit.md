@@ -3,7 +3,7 @@
 
 > 前端：<https://ss.netnr.com/dk>	（UI）  
 > 后台：<https://api.zme.ink>	（部署在 Vercel 的 Serverless 服务，不支持 Oracle）  
-> 后台：<https://free-dk.herokuapp.com>	（部署在 Heroku 的服务）  
+> 后台：<https://d-datakit.zme.ink>	（部署在 Heroku 的服务）  
 
 ### 功能
 - 支持的数据库：MySQL、SQLite、Oracle、SQLServer、PostgreSQL

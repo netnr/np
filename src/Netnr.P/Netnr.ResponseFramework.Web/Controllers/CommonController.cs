@@ -41,9 +41,16 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(userinfo.RoleId))
                 {
                     var role = Application.CommonService.QuerySysRoleEntity(x => x.SrId == userinfo.RoleId);
-                    var menuArray = role.SrMenus.Split(',').ToList();
+                    if (role != null)
+                    {
+                        var menuArray = role.SrMenus.Split(',').ToList();
 
-                    listMenu = listMenu.Where(x => menuArray.Contains(x.SmId)).ToList();
+                        listMenu = listMenu.Where(x => menuArray.Contains(x.SmId)).ToList();
+                    }
+                    else
+                    {
+                        listMenu = new List<Domain.SysMenu>();
+                    }
                 }
                 else
                 {

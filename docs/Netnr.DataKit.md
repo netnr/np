@@ -3,7 +3,7 @@ Database build code
 
 > Frontend: <https://ss.netnr.com/dk> (UI)  
 > Background: <https://api.zme.ink> (Serverless service deployed in Vercel, does not support Oracle)  
-> Background: <https://free-dk.herokuapp.com> (service deployed on Heroku)  
+> Background: <https://d-datakit.zme.ink> (service deployed on Heroku)  
 
 ### Functional
 - Supported databases: MySQL, SQLite, Oracle, SQLServer, PostgreSQL

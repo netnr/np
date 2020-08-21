@@ -1,7 +1,7 @@
 # Netnr.CaptchaDemo
 验证码示例
 
-> 演示：<https://netnr-captcha.herokuapp.com>
+> 演示：<https://d-captcha.zme.ink>
 
 ### 测验
 - `System.Drawing.Common` 最快，Windows 首选，Linux 需依赖 **libgdiplus** 组件

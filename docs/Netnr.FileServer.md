@@ -1,7 +1,7 @@
 # Netnr.FileServer
 Simple file server based on .NET Core, database is SQLite
 
-> Demo: <https://netnr-fileserver.herokuapp.com>
+> Demo: <https://d-fileserver.zme.ink>
 
 
 > After creating the App in the production environment, you need to set `IsDev:false`  

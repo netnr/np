@@ -1005,7 +1005,7 @@ var dk = {
                         SELECT
                             T1.relname,
                             T2.attname,
-                            T3.adsrc
+                            pg_get_expr(T3.adbin,T3.adrelid) as adsrc
                         FROM
                             pg_class T1,
                             pg_attribute T2,

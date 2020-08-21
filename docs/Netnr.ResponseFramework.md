@@ -2,7 +2,7 @@
 .NET Core responsive framework, based on Ace Admin framework menu navigation, Bootstrap layout, fontAwesome icon, embedded Iframe, data binding with EasyUI, dynamic configuration list, dynamic configuration form
 
 > Demo 1: <https://rf2.netnr.com>  
-> Demo 2: <https://netnr-rf.herokuapp.com>
+> Demo 2: <https://d-rf.zme.ink>
 
 ### [CHANGELOG](Netnr.ResponseFramework.ChangeLog.md)
 
