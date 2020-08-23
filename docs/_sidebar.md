@@ -45,7 +45,4 @@
 
 - [Netnr.Chat](Netnr.Chat.md)
 
-- Demo
-    - [Netnr.CaptchaDemo](Netnr.CaptchaDemo.md)
-
 - [Guide](GUIDE.md)

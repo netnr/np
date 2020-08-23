@@ -5,3 +5,4 @@
 
 ### 跨域服务
 - <https://github.com/netnr/workers>
+- <https://github.com/netnr/serverless>

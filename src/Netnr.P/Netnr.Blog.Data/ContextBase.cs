@@ -42,7 +42,7 @@ namespace Netnr.Blog.Data
                 if (_loggerFactory == null)
                 {
                     var sc = new ServiceCollection();
-                    sc.AddLogging(builder => builder.AddConsole().AddFilter(level => level >= LogLevel.Warning));
+                    sc.AddLogging(builder => builder.AddFilter(level => level >= LogLevel.Warning));
                     _loggerFactory = sc.BuildServiceProvider().GetService<ILoggerFactory>();
                 }
                 return _loggerFactory;

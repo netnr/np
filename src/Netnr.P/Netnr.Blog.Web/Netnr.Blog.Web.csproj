@@ -25,15 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Netnr.Blog.Application\Netnr.Blog.Application.csproj" />
-    <ProjectReference Include="..\Netnr.Blog.Data\Netnr.Blog.Data.csproj" />
-    <ProjectReference Include="..\Netnr.Blog.Domain\Netnr.Blog.Domain.csproj" />
     <ProjectReference Include="..\Netnr.Logging\Netnr.Logging.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Netnr.Blog.Web.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ProjectExtensions>

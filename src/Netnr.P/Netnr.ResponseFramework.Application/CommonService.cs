@@ -145,15 +145,14 @@ namespace Netnr.ResponseFramework.Application
                         case "GreaterThanOrEqual":
                             {
                                 string val = vqm + value.ToStringOrEmpty() + vqm;
-                                string iwhere = string.Format(rel, field, val);
-                                query = DynamicQueryableExtensions.Where(query, iwhere);
+                                query = query.Where(string.Format(rel, field, val));
                             }
                             break;
                         case "Contains":
                         case "StartsWith":
                         case "EndsWith":
                             {
-                                query = DynamicQueryableExtensions.Where(query, field + "." + relation + "(@0)", value.ToStringOrEmpty());
+                                query = query.Where(field + "." + relation + "(@0)", value.ToStringOrEmpty());
                             }
                             break;
                         case "BetweenAnd":
@@ -162,8 +161,7 @@ namespace Netnr.ResponseFramework.Application
                                 var v1 = vqm + value[0].ToString() + vqm;
                                 var v2 = vqm + value[1].ToString() + vqm;
 
-                                var iwhere = string.Format(rel, field, v1, v2);
-                                query = DynamicQueryableExtensions.Where(query, iwhere);
+                                query = query.Where(string.Format(rel, field, v1, v2));
                             }
                             break;
                     }

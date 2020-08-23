@@ -13,15 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Netnr.Core" Version="1.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Netnr.Fast.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="Netnr.Core" Version="1.4.0" />
   </ItemGroup>
 
 </Project>

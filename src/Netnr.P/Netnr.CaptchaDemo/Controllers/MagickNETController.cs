@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Threading;
 using ImageMagick;
 using Microsoft.AspNetCore.Mvc;
 

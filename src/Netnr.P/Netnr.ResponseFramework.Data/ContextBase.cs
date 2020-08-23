@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Text.RegularExpressions;
 
 namespace Netnr.ResponseFramework.Data
 {
@@ -67,9 +65,6 @@ namespace Netnr.ResponseFramework.Data
                     case TypeDB.SQLite:
                         optionsBuilder.UseSqlite(GlobalTo.Configuration.GetConnectionString(TDB.ToString()).Replace("~", GlobalTo.ContentRootPath));
                         break;
-                    case TypeDB.InMemory:
-                        optionsBuilder.UseInMemoryDatabase(GlobalTo.Configuration.GetConnectionString(TDB.ToString()));
-                        break;
                     case TypeDB.SQLServer:
                         optionsBuilder.UseSqlServer(GlobalTo.Configuration.GetConnectionString(TDB.ToString()), options =>
                         {
@@ -81,7 +76,9 @@ namespace Netnr.ResponseFramework.Data
                         {
                             optionsBuilder.UseNpgsql(GlobalTo.Configuration.GetConnectionString(TDB.ToString()));
                         }
-
+                        break;
+                    case TypeDB.InMemory:
+                        optionsBuilder.UseInMemoryDatabase(GlobalTo.Configuration.GetConnectionString(TDB.ToString()));
                         break;
                 }
 

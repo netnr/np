@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Netnr.Fast\Netnr.Fast.csproj" />
+    <ProjectReference Include="..\Netnr.Fast.Extend\Netnr.Fast.Extend.csproj" />
   </ItemGroup>
 
   <ItemGroup>

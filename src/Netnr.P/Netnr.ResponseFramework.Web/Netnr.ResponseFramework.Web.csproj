@@ -22,8 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Netnr.DataKit\Netnr.DataKit.csproj" />
     <ProjectReference Include="..\Netnr.ResponseFramework.Application\Netnr.ResponseFramework.Application.csproj" />
-    <ProjectReference Include="..\Netnr.ResponseFramework.Data\Netnr.ResponseFramework.Data.csproj" />
-    <ProjectReference Include="..\Netnr.ResponseFramework.Domain\Netnr.ResponseFramework.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,9 +32,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="logs\README.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Netnr.ResponseFramework.Web.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -1154,7 +1154,7 @@ namespace Netnr.Blog.Data
                 entity.Property(e => e.UwStatus).HasComment("收藏，标记 数量");
 
                 entity.Property(e => e.UwTitle)
-                    .HasMaxLength(100)
+                    .HasMaxLength(200)
                     .HasComment("标题");
 
                 entity.Property(e => e.UwUpdateTime)

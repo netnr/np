@@ -1,15 +1,22 @@
-﻿/*
- * 这是测试代码，只为调通每一个接口，拿到 唯一标识
- * 实际应用中还要处理昵称、邮箱、头像等，可参考个站开源项目：https://github.com/netnr/blog
- */
-
+﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Login;
 using System;
 
-namespace Netnr.Login.Sample
+namespace Netnr.Test.Controllers
 {
-    class Program
+    /// <summary>
+    /// Netnr.Login
+    /// </summary>
+    public class LoginController : Controller
     {
-        static void Main(string[] args)
+        public IActionResult Index()
+        {
+            Test1();
+
+            return Ok();
+        }
+
+        public void Test1()
         {
             var lc = new LoginClient(LoginBase.LoginType.AliPay);
 
@@ -153,7 +160,7 @@ namespace Netnr.Login.Sample
                             {
                                 reqe.state = authType + reqe.state;
                             }
-                            url = WeChat.AuthorizationHref(reqe);
+                            url = Login.WeChat.AuthorizationHref(reqe);
                         }
                         break;
                     case LoginBase.LoginType.DingTalk:
@@ -280,13 +287,13 @@ namespace Netnr.Login.Sample
                         case LoginBase.LoginType.WeChat:
                             {
                                 //获取 access_token
-                                var tokenEntity = WeChat.AccessToken(new WeChat_AccessToken_RequestEntity()
+                                var tokenEntity = Login.WeChat.AccessToken(new WeChat_AccessToken_RequestEntity()
                                 {
                                     code = authorizeResult.code
                                 });
 
                                 //获取 user
-                                _ = WeChat.Get_User_Info(new WeChat_OpenAPI_RequestEntity()
+                                _ = Login.WeChat.Get_User_Info(new WeChat_OpenAPI_RequestEntity()
                                 {
                                     access_token = tokenEntity.access_token,
                                     openid = tokenEntity.openid

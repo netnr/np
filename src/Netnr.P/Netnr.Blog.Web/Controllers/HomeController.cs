@@ -101,72 +101,80 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ActionResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
-
-            using (var db = new ContextBase())
+            try
             {
-                //验证邮箱
-                if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
+                var uinfo = new Application.UserAuthService(HttpContext).Get();
+
+                using (var db = new ContextBase())
                 {
-                    vm.Set(ARTag.unauthorized);
-                    vm.Msg = "请验证邮箱后再操作";
-
-                    return vm;
-                }
-
-                //有昵称
-                if (string.IsNullOrWhiteSpace(uinfo.Nickname))
-                {
-                    vm.Set(ARTag.refuse);
-                    vm.Msg = "请填写昵称后再操作";
-
-                    return vm;
-                }
-
-                var lisTagId = new List<int>();
-                TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-
-                var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
-
-                mo.Uid = uinfo.UserId;
-                mo.UwCreateTime = DateTime.Now;
-                mo.UwUpdateTime = mo.UwCreateTime;
-                mo.UwLastUid = mo.Uid;
-                mo.UwLastDate = mo.UwCreateTime;
-                mo.UwReplyNum = 0;
-                mo.UwReadNum = 0;
-                mo.UwOpen = 1;
-                mo.UwLaud = 0;
-                mo.UwMark = 0;
-                mo.UwStatus = 1;
-
-                db.UserWriting.Add(mo);
-                db.SaveChanges();
-
-                var listwt = new List<UserWritingTags>();
-                foreach (var tag in lisTagId)
-                {
-                    var wtmo = new UserWritingTags
+                    //验证邮箱
+                    if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
                     {
-                        UwId = mo.UwId,
-                        TagId = tag,
-                        TagName = lisTagName.FirstOrDefault(x => x.TagId == tag).TagName
-                    };
+                        vm.Set(ARTag.unauthorized);
+                        vm.Msg = "请验证邮箱后再操作";
 
-                    listwt.Add(wtmo);
+                        return vm;
+                    }
+
+                    //有昵称
+                    if (string.IsNullOrWhiteSpace(uinfo.Nickname))
+                    {
+                        vm.Set(ARTag.refuse);
+                        vm.Msg = "请填写昵称后再操作";
+
+                        return vm;
+                    }
+
+                    var lisTagId = new List<int>();
+                    TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
+
+                    var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
+
+                    mo.Uid = uinfo.UserId;
+                    mo.UwCreateTime = DateTime.Now;
+                    mo.UwUpdateTime = mo.UwCreateTime;
+                    mo.UwLastUid = mo.Uid;
+                    mo.UwLastDate = mo.UwCreateTime;
+                    mo.UwReplyNum = 0;
+                    mo.UwReadNum = 0;
+                    mo.UwOpen = 1;
+                    mo.UwLaud = 0;
+                    mo.UwMark = 0;
+                    mo.UwStatus = 1;
+
+                    db.UserWriting.Add(mo);
+                    db.SaveChanges();
+
+                    var listwt = new List<UserWritingTags>();
+                    foreach (var tag in lisTagId)
+                    {
+                        var wtmo = new UserWritingTags
+                        {
+                            UwId = mo.UwId,
+                            TagId = tag,
+                            TagName = lisTagName.FirstOrDefault(x => x.TagId == tag).TagName
+                        };
+
+                        listwt.Add(wtmo);
+                    }
+                    db.UserWritingTags.AddRange(listwt);
+
+                    //标签热点+1
+                    var listTagId = listwt.Select(x => x.TagId.Value);
+                    var listTags = db.Tags.Where(x => listTagId.Contains(x.TagId)).ToList();
+                    listTags.ForEach(x => x.TagHot += 1);
+                    db.Tags.UpdateRange(listTags);
+
+                    int num = db.SaveChanges();
+
+                    vm.Data = mo.UwId;
+                    vm.Set(num > 0);
                 }
-                db.UserWritingTags.AddRange(listwt);
-
-                //标签热点+1
-                var listTagId = listwt.Select(x => x.TagId.Value);
-                var listTags = db.Tags.Where(x => listTagId.Contains(x.TagId)).ToList();
-                listTags.ForEach(x => x.TagHot += 1);
-                db.Tags.UpdateRange(listTags);
-
-                int num = db.SaveChanges();
-
-                vm.Data = mo.UwId;
-                vm.Set(num > 0);
+            }
+            catch (Exception ex)
+            {
+                Core.ConsoleTo.Log(ex);
+                vm.Set(ex);
             }
 
             return vm;

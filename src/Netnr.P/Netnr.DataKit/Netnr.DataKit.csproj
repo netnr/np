@@ -17,11 +17,5 @@
     <ProjectReference Include="..\Netnr.Data.SQLServer\Netnr.Data.SQLServer.csproj" />
     <ProjectReference Include="..\Netnr.Fast\Netnr.Fast.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="Netnr.DataKit.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
 </Project>

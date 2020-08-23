@@ -19,25 +19,25 @@ namespace Netnr.FileServer.Application
         /// <summary>
         /// 创建App
         /// </summary>
+        /// <param name="owner">用户，唯一，文件夹名</param>
         /// <returns></returns>
-        public static ActionResultVM CreateApp()
+        public static ActionResultVM CreateApp(string owner)
         {
             var vm = new ActionResultVM();
 
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<SysKey>();
 
                 var mo = new SysKey()
                 {
                     SkAppId = Core.UniqueTo.LongId().ToString(),
                     SkAppKey = Core.UniqueTo.LongId().ToString() + Core.UniqueTo.LongId().ToString(),
                     SkCreateTime = DateTime.Now,
-                    SkName = "默认",
-                    SkToken = Core.CalcTo.MD5(Core.UniqueTo.LongId().ToString()),
+                    SkOwner = owner,
+                    SkToken = NewToken(),
                     SkTokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired")),
-                    SkRemark = "系统自动生成"
+                    SkRemark = "通过接口创建"
                 };
 
                 int num = db.Insert(mo);
@@ -66,11 +66,10 @@ namespace Netnr.FileServer.Application
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<SysKey>();
                 var sk = db.Table<SysKey>().FirstOrDefault(x => x.SkAppId == AppId && x.SkAppKey == AppKey);
                 if (sk != null)
                 {
-                    sk.SkToken = Core.CalcTo.MD5(Core.UniqueTo.LongId().ToString());
+                    sk.SkToken = NewToken();
                     sk.SkTokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired"));
 
                     int num = db.Update(sk);
@@ -91,6 +90,15 @@ namespace Netnr.FileServer.Application
         }
 
         /// <summary>
+        /// 创建 Token
+        /// </summary>
+        /// <returns></returns>
+        public static string NewToken()
+        {
+            return (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
+        }
+
+        /// <summary>
         /// 获取App列表
         /// </summary>
         /// <param name="pageNumber">页码，默认1</param>
@@ -103,7 +111,6 @@ namespace Netnr.FileServer.Application
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<SysKey>();
                 var sk = db.Table<SysKey>().OrderByDescending(x => x.SkCreateTime).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
                 vm.Data = sk;
@@ -135,10 +142,18 @@ namespace Netnr.FileServer.Application
                 else
                 {
                     using var db = new SQLiteConnection(SQLiteConn);
-                    db.CreateTable<SysKey>();
                     var sk = db.Table<SysKey>().FirstOrDefault(x => x.SkToken == token);
 
-                    vm.Set(sk?.SkTokenExpireTime > DateTime.Now);
+                    if (sk?.SkTokenExpireTime > DateTime.Now)
+                    {
+                        vm.Set(ARTag.success);
+                        vm.Data = sk.SkOwner;
+                    }
+                    else
+                    {
+                        vm.Set(ARTag.unauthorized);
+                        vm.Msg = "token 无效或已过期";
+                    }
                 }
             }
             catch (Exception ex)
@@ -160,7 +175,6 @@ namespace Netnr.FileServer.Application
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<FileRecord>();
                 int num = db.InsertAll(list);
 
                 vm.Set(num > 0);

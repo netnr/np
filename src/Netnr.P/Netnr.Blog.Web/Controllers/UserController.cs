@@ -549,51 +549,59 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ActionResultVM();
 
-            var lisTagId = new List<int>();
-            TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-
-            var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
-
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
+            try
             {
-                var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == UwId);
+                var lisTagId = new List<int>();
+                TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
 
-                if (oldmo.UwStatus == -1)
+                var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
+
+                int uid = new Application.UserAuthService(HttpContext).Get().UserId;
+                using (var db = new Data.ContextBase())
                 {
-                    vm.Set(ARTag.unauthorized);
-                }
-                else if (oldmo != null)
-                {
-                    oldmo.UwTitle = mo.UwTitle;
-                    oldmo.UwCategory = mo.UwCategory;
-                    oldmo.UwContentMd = mo.UwContentMd;
-                    oldmo.UwContent = mo.UwContent;
-                    oldmo.UwUpdateTime = DateTime.Now;
+                    var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == UwId);
 
-                    db.UserWriting.Update(oldmo);
-
-                    var wt = db.UserWritingTags.Where(x => x.UwId == UwId).ToList();
-                    db.UserWritingTags.RemoveRange(wt);
-
-                    var listwt = new List<Domain.UserWritingTags>();
-                    foreach (var tag in lisTagId)
+                    if (oldmo.UwStatus == -1)
                     {
-                        var wtmo = new Domain.UserWritingTags
-                        {
-                            UwId = mo.UwId,
-                            TagId = tag,
-                            TagName = lisTagName.Where(x => x.TagId == tag).FirstOrDefault().TagName
-                        };
-
-                        listwt.Add(wtmo);
+                        vm.Set(ARTag.unauthorized);
                     }
-                    db.UserWritingTags.AddRange(listwt);
+                    else if (oldmo != null)
+                    {
+                        oldmo.UwTitle = mo.UwTitle;
+                        oldmo.UwCategory = mo.UwCategory;
+                        oldmo.UwContentMd = mo.UwContentMd;
+                        oldmo.UwContent = mo.UwContent;
+                        oldmo.UwUpdateTime = DateTime.Now;
 
-                    int num = db.SaveChanges();
+                        db.UserWriting.Update(oldmo);
 
-                    vm.Set(num > 0);
+                        var wt = db.UserWritingTags.Where(x => x.UwId == UwId).ToList();
+                        db.UserWritingTags.RemoveRange(wt);
+
+                        var listwt = new List<Domain.UserWritingTags>();
+                        foreach (var tag in lisTagId)
+                        {
+                            var wtmo = new Domain.UserWritingTags
+                            {
+                                UwId = mo.UwId,
+                                TagId = tag,
+                                TagName = lisTagName.Where(x => x.TagId == tag).FirstOrDefault().TagName
+                            };
+
+                            listwt.Add(wtmo);
+                        }
+                        db.UserWritingTags.AddRange(listwt);
+
+                        int num = db.SaveChanges();
+
+                        vm.Set(num > 0);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Core.ConsoleTo.Log(ex);
+                vm.Set(ex);
             }
 
             return vm;

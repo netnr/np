@@ -1,11 +1,6 @@
 ﻿//非嵌套显示
 top != self && (top.location = self.location);
 
-//HTTP => HTTPS
-if (location.protocol == "http:" && location.host != "localhost") {
-    top.location.href = top.location.href.replace("http:", "https:");
-}
-
 //低版本跳转
 if (typeof document.createElement == "object" || !window.localStorage) {
     top.location = "/home/updatebrowser";

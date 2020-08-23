@@ -4,8 +4,7 @@ Common application foundation
 ### Class
 - PublicClass　　public class, no namespace
      - ActionResultVM.cs　　general request method returns object
-     - CommonEnum.cs　　common enumeration
-     - GlobalTo.cs　　Core environment `IConfiguration` `IHostEnvironment` object, `appsettings.json` configuration file
+     - CommonEnum.cs　　common enumeration     
      - PageVM.cs　　paging view
      - PaginationVM.cs　　pagination parameters
      - QueryDataInputVM.cs　　input parameters

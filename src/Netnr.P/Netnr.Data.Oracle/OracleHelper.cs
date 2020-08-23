@@ -29,16 +29,14 @@ namespace Netnr.Data.Oracle
         /// <returns>DataTable</returns>
         public DataSet Query(string sql)
         {
-            using (OracleConnection connection = new OracleConnection(connectionString))
-            {
-                connection.Open();
+            using OracleConnection connection = new OracleConnection(connectionString);
+            connection.Open();
 
-                OracleDataAdapter command = new OracleDataAdapter(sql, connection);
-                DataSet ds = new DataSet();
-                command.Fill(ds, "ds");
+            OracleDataAdapter command = new OracleDataAdapter(sql, connection);
+            DataSet ds = new DataSet();
+            command.Fill(ds, "ds");
 
-                return ds;
-            }
+            return ds;
         }
 
         /// <summary>
@@ -50,23 +48,19 @@ namespace Netnr.Data.Oracle
         /// <returns>影响的记录数</returns>
         public int ExecuteNonQuery(string sql, OracleParameter[] parameters = null, CommandType commandType = CommandType.Text)
         {
-            using (OracleConnection connection = new OracleConnection(connectionString))
+            using OracleConnection connection = new OracleConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            cmd.CommandText = sql;
+            cmd.CommandType = commandType;
+            if (parameters != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    cmd.CommandText = sql;
-                    cmd.CommandType = commandType;
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    int rows = cmd.ExecuteNonQuery();
-
-                    return rows;
-                }
+                cmd.Parameters.AddRange(parameters);
             }
+            int rows = cmd.ExecuteNonQuery();
+
+            return rows;
         }
 
         /// <summary>
@@ -78,23 +72,19 @@ namespace Netnr.Data.Oracle
         /// <returns></returns>
         public object ExecuteScalar(string sql, OracleParameter[] parameters = null, CommandType commandType = CommandType.Text)
         {
-            using (OracleConnection connection = new OracleConnection(connectionString))
+            using OracleConnection connection = new OracleConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            cmd.CommandText = sql;
+            cmd.CommandType = commandType;
+            if (parameters != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    cmd.CommandText = sql;
-                    cmd.CommandType = commandType;
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    var obj = cmd.ExecuteScalar();
-
-                    return obj;
-                }
+                cmd.Parameters.AddRange(parameters);
             }
+            var obj = cmd.ExecuteScalar();
+
+            return obj;
         }
     }
 }

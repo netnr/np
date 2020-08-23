@@ -14,10 +14,11 @@
             连接字符串
             </summary>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.CreateApp">
+        <member name="M:Netnr.FileServer.Application.FileServerService.CreateApp(System.String)">
             <summary>
             创建App
             </summary>
+            <param name="owner">用户，唯一，文件夹名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.GetToken(System.String,System.String)">
@@ -26,6 +27,12 @@
             </summary>
             <param name="AppId">分配的应用ID</param>
             <param name="AppKey">分配的应用密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.NewToken">
+            <summary>
+            创建 Token
+            </summary>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.GetAppList(System.Int32,System.Int32)">
@@ -68,26 +75,28 @@
             API接口
             </summary>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.CreateApp(System.String)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.CreateApp(System.String,System.String)">
             <summary>
             创建App，仅限开发环境调用
             </summary>
-            <param name="password">密码，必填，默认密码：nr</param>
+            <param name="owner">用户，唯一，文件夹名</param>
+            <param name="password">密码，必填</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.GetAppList(System.Int32,System.Int32)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.GetAppList(System.Int32,System.Int32,System.String)">
             <summary>
             获取App列表，仅限开发环境调用
             </summary>
             <param name="pageNumber">页码，默认1</param>
             <param name="pageSize">页量，默认20</param>
+            <param name="password">密码</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.ResetAll(System.String)">
             <summary>
             清空数据库和上传文件，仅限开发环境调用
             </summary>
-            <param name="password"></param>
+            <param name="password">密码，必填</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.GetToken(System.String,System.String)">
@@ -98,13 +107,12 @@
             <param name="AppKey">分配的应用密钥</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String,System.String)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.Upload(Microsoft.AspNetCore.Http.IFormFileCollection,System.String,System.String)">
             <summary>
             上传文件，文件流
             </summary>
-            <param name="file">文件流</param>
+            <param name="files">文件流</param>
             <param name="token">token，授权验证，必填</param>
-            <param name="owner">所属者，一个应用对应一个所属者，必填</param>
             <param name="subdir">子目录，可选</param>
             <returns></returns>
         </member>
@@ -225,7 +233,7 @@
         </member>
         <member name="P:Netnr.FileServer.Model.SysKey.SkAppId">
             <summary>
-            AppId   取Guid转成long，长度19位
+            AppId
             </summary>
         </member>
         <member name="P:Netnr.FileServer.Model.SysKey.SkAppKey">
@@ -233,9 +241,9 @@
             SkAppKey    密钥，取Guid的MD5值
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkName">
+        <member name="P:Netnr.FileServer.Model.SysKey.SkOwner">
             <summary>
-            名称、用户
+            所属用户，唯一，文件夹名
             </summary>
         </member>
         <member name="P:Netnr.FileServer.Model.SysKey.SkCreateTime">
@@ -287,7 +295,7 @@
         <member name="M:Netnr.FileServer.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             This method gets called by the runtime. Use this method to add services to the container.
         </member>
-        <member name="M:Netnr.FileServer.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
+        <member name="M:Netnr.FileServer.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         </member>
     </members>

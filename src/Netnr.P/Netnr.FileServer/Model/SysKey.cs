@@ -9,21 +9,22 @@ namespace Netnr.FileServer.Model
     public class SysKey
     {
         /// <summary>
-        /// AppId   取Guid转成long，长度19位
+        /// AppId
         /// </summary>
-        [PrimaryKey]
+        [PrimaryKey, MaxLength(50)]
         public string SkAppId { get; set; }
 
         /// <summary>
         /// SkAppKey    密钥，取Guid的MD5值
         /// </summary>
-        [Unique]
+        [Unique, MaxLength(50)]
         public string SkAppKey { get; set; }
 
         /// <summary>
-        /// 名称、用户
+        /// 所属用户，唯一，文件夹名
         /// </summary>
-        public string SkName { get; set; }
+        [Unique, MaxLength(50)]
+        public string SkOwner { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -33,7 +34,7 @@ namespace Netnr.FileServer.Model
         /// <summary>
         /// 生成的Token
         /// </summary>
-        [Unique]
+        [Unique, MaxLength(100)]
         public string SkToken { get; set; }
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace Netnr.FileServer.Model
         /// <summary>
         /// 备注
         /// </summary>
+        [MaxLength(200)]
         public string SkRemark { get; set; }
     }
 }

@@ -95,18 +95,7 @@ namespace Netnr.Core
         /// </summary>
         public class Bash
         {
-            private static bool Plinux { get; }
-            private static bool Pmac { get; }
-            private static bool Pwindows { get; }
-            private static string PbashPath { get; }
-
-            /// <summary>Determines whether bash is running in a native OS (Linux/MacOS).</summary>
-            /// <returns>True if in *nix, else false.</returns>
-            public static bool Native { get; }
-
-            /// <summary>Determines if using Windows and if Linux subsystem is installed.</summary>
-            /// <returns>True if in Windows and bash detected.</returns>
-            public static bool Subsystem => Pwindows && File.Exists(@"C:\Windows\System32\bash.exe");
+            private static string PbashPath { get; } = "bash";
 
             /// <summary>Stores output of the previous command if redirected.</summary>
             public string Output { get; private set; }
@@ -121,25 +110,12 @@ namespace Netnr.Core
             /// <summary>Stores the error message of the previous command if redirected.</summary>
             public string ErrorMsg { get; private set; }
 
-            static Bash()
-            {
-                Plinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux);
-                Pmac = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX);
-                Pwindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
-
-                Native = Plinux || Pmac ? true : false;
-                PbashPath = Native ? "bash" : "bash.exe";
-            }
-
             /// <summary>Execute a new Bash command.</summary>
             /// <param name="input">The command to execute.</param>
             /// <param name="redirect">Print output to terminal if false.</param>
             /// <returns>A `BashResult` containing the command's output information.</returns>
             public BashResult Command(string input, bool redirect = true)
             {
-                if (!Native && !Subsystem)
-                    throw new PlatformNotSupportedException();
-
                 using (var bash = new System.Diagnostics.Process { StartInfo = BashInfo(input, redirect) })
                 {
                     bash.Start();

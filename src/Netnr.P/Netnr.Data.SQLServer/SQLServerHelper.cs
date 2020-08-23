@@ -29,16 +29,14 @@ namespace Netnr.Data.SQLServer
         /// <returns>DataTable</returns>
         public DataSet Query(string sql)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
+            using SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
 
-                SqlDataAdapter sda = new SqlDataAdapter(sql, connection);
-                DataSet ds = new DataSet();
-                sda.Fill(ds, "ds");
+            SqlDataAdapter sda = new SqlDataAdapter(sql, connection);
+            DataSet ds = new DataSet();
+            sda.Fill(ds, "ds");
 
-                return ds;
-            }
+            return ds;
         }
 
         /// <summary>
@@ -50,23 +48,19 @@ namespace Netnr.Data.SQLServer
         /// <returns>影响的记录数</returns>
         public int ExecuteNonQuery(string sql, SqlParameter[] parameters = null, CommandType commandType = CommandType.Text)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using SqlConnection connection = new SqlConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            cmd.CommandText = sql;
+            cmd.CommandType = commandType;
+            if (parameters != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    cmd.CommandText = sql;
-                    cmd.CommandType = commandType;
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    int rows = cmd.ExecuteNonQuery();
-
-                    return rows;
-                }
+                cmd.Parameters.AddRange(parameters);
             }
+            int rows = cmd.ExecuteNonQuery();
+
+            return rows;
         }
 
         /// <summary>
@@ -78,23 +72,19 @@ namespace Netnr.Data.SQLServer
         /// <returns></returns>
         public object ExecuteScalar(string sql, SqlParameter[] parameters = null, CommandType commandType = CommandType.Text)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using SqlConnection connection = new SqlConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            cmd.CommandText = sql;
+            cmd.CommandType = commandType;
+            if (parameters != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    cmd.CommandText = sql;
-                    cmd.CommandType = commandType;
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    var obj = cmd.ExecuteScalar();
-
-                    return obj;
-                }
+                cmd.Parameters.AddRange(parameters);
             }
+            var obj = cmd.ExecuteScalar();
+
+            return obj;
         }
 
         /// <summary>
@@ -105,25 +95,21 @@ namespace Netnr.Data.SQLServer
         /// <returns></returns>
         public int BulkCopy(DataTable sourceDataTable, string targetTableName)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using SqlConnection connection = new SqlConnection(connectionString);
+            using var bulk = new SqlBulkCopy(connection);
+            connection.Open();
+
+            bulk.DestinationTableName = targetTableName;
+            bulk.BatchSize = sourceDataTable.Rows.Count;
+
+            foreach (DataColumn dc in sourceDataTable.Columns)
             {
-                using (var bulk = new SqlBulkCopy(connection))
-                {
-                    connection.Open();
-
-                    bulk.DestinationTableName = targetTableName;
-                    bulk.BatchSize = sourceDataTable.Rows.Count;
-
-                    foreach (DataColumn dc in sourceDataTable.Columns)
-                    {
-                        bulk.ColumnMappings.Add(dc.ColumnName, dc.ColumnName);
-                    }
-
-                    bulk.WriteToServer(sourceDataTable);
-
-                    return sourceDataTable.Rows.Count;
-                }
+                bulk.ColumnMappings.Add(dc.ColumnName, dc.ColumnName);
             }
+
+            bulk.WriteToServer(sourceDataTable);
+
+            return sourceDataTable.Rows.Count;
         }
     }
 }

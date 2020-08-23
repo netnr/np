@@ -16,13 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Netnr.ResponseFramework.Data\Netnr.ResponseFramework.Data.csproj" />
-    <ProjectReference Include="..\Netnr.ResponseFramework.Domain\Netnr.ResponseFramework.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Netnr.ResponseFramework.Application.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

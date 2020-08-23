@@ -31,31 +31,27 @@ namespace Netnr.Data.SQLite
         /// <returns></returns>
         public DataSet Query(string sql, List<string> listPreSql = null)
         {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            using SQLiteConnection connection = new SQLiteConnection(connectionString);
+            connection.Open();
+
+            //前置SQL
+            if (listPreSql != null)
             {
-                connection.Open();
-
-                //前置SQL
-                if (listPreSql != null)
+                var cmd = connection.CreateCommand();
+                using var transaction = connection.BeginTransaction();
+                foreach (var preSql in listPreSql)
                 {
-                    var cmd = connection.CreateCommand();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        foreach (var preSql in listPreSql)
-                        {
-                            cmd.CommandText = preSql;
-                            cmd.ExecuteNonQuery();
-                        }
-                        transaction.Commit();
-                    }
+                    cmd.CommandText = preSql;
+                    cmd.ExecuteNonQuery();
                 }
-
-                SQLiteDataAdapter sda = new SQLiteDataAdapter(sql, connection);
-                DataSet ds = new DataSet();
-                sda.Fill(ds, "ds");
-
-                return ds;
+                transaction.Commit();
             }
+
+            SQLiteDataAdapter sda = new SQLiteDataAdapter(sql, connection);
+            DataSet ds = new DataSet();
+            sda.Fill(ds, "ds");
+
+            return ds;
         }
 
         /// <summary>
@@ -66,22 +62,18 @@ namespace Netnr.Data.SQLite
         /// <returns>影响的记录数</returns>
         public int ExecuteNonQuery(string sql, SQLiteParameter[] parameters = null)
         {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            using SQLiteConnection connection = new SQLiteConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            cmd.CommandText = sql;
+            if (parameters != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    cmd.CommandText = sql;
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    int rows = cmd.ExecuteNonQuery();
-
-                    return rows;
-                }
+                cmd.Parameters.AddRange(parameters);
             }
+            int rows = cmd.ExecuteNonQuery();
+
+            return rows;
         }
 
         /// <summary>
@@ -91,34 +83,28 @@ namespace Netnr.Data.SQLite
         /// <returns></returns>
         public bool ExecuteNonQuery(List<string> listSql)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using var connection = new SQLiteConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var result = false;
+            try
             {
-                using (var cmd = connection.CreateCommand())
+                foreach (var sql in listSql)
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        var result = false;
-                        try
-                        {
-                            foreach (var sql in listSql)
-                            {
-                                cmd.CommandText = sql;
-                                cmd.ExecuteNonQuery();
-                            }
-                            transaction.Commit();
-
-                            result = true;
-                        }
-                        catch (System.Exception)
-                        {
-                            transaction.Rollback();
-                        }
-
-                        return result;
-                    }
+                    cmd.CommandText = sql;
+                    cmd.ExecuteNonQuery();
                 }
+                transaction.Commit();
+
+                result = true;
             }
+            catch (System.Exception)
+            {
+                transaction.Rollback();
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -129,31 +115,25 @@ namespace Netnr.Data.SQLite
         /// <returns>DataTable</returns>
         public object ExecuteScalar(string sql, List<string> listPreSql = null)
         {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            using SQLiteConnection connection = new SQLiteConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            if (listPreSql != null)
             {
-                using (var cmd = connection.CreateCommand())
+                using var transaction = connection.BeginTransaction();
+                foreach (var preSql in listPreSql)
                 {
-                    connection.Open();
-
-                    if (listPreSql != null)
-                    {
-                        using (var transaction = connection.BeginTransaction())
-                        {
-                            foreach (var preSql in listPreSql)
-                            {
-                                cmd.CommandText = preSql;
-                                cmd.ExecuteNonQuery();
-                            }
-                            transaction.Commit();
-                        }
-                    }
-
-                    cmd.CommandText = sql;
-                    var result = cmd.ExecuteScalar();
-
-                    return result;
+                    cmd.CommandText = preSql;
+                    cmd.ExecuteNonQuery();
                 }
+                transaction.Commit();
             }
+
+            cmd.CommandText = sql;
+            var result = cmd.ExecuteScalar();
+
+            return result;
         }
     }
 }

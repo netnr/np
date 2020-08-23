@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Netnr.DataKit\Netnr.DataKit.csproj" />
+    <ProjectReference Include="..\Netnr.Fast.Extend\Netnr.Fast.Extend.csproj" />
   </ItemGroup>
 
   <ItemGroup>

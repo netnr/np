@@ -5,3 +5,4 @@ No backend provides services based on cross-domain proxy requests
 
 ### Cross-domain service
 - <https://github.com/netnr/workers>
+- <https://github.com/netnr/serverless>

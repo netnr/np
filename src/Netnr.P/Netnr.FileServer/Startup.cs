@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -63,9 +62,6 @@ namespace Netnr.FileServer
                 });
             });
 
-            //路由小写
-            services.AddRouting(options => options.LowercaseUrls = true);
-
             //配置上传文件大小限制（详细信息：FormOptions）
             services.Configure<FormOptions>(options =>
             {
@@ -74,15 +70,17 @@ namespace Netnr.FileServer
         }
 
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMemoryCache memoryCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //缓存
-            Core.CacheTo.memoryCache = memoryCache;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //初始化库
+            using var db = new SQLite.SQLiteConnection(Application.FileServerService.SQLiteConn);
+            db.CreateTable<Model.SysKey>();
+            db.CreateTable<Model.FileRecord>();
 
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>

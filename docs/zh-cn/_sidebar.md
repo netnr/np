@@ -45,7 +45,4 @@
 
 - [Netnr.Chat （基于 SignalR 的聊天）](Netnr.Chat.md)
 
-- Demo （示例）
-    - [Netnr.CaptchaDemo （验证码）](Netnr.CaptchaDemo.md)
-
 - [Guide （开发指南）](GUIDE.md)

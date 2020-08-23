@@ -1,5 +1,9 @@
 # Change log
 
+### [v1.4.0] - 2020-08-23
+- Adjust the `CacheTo` class to depend on the `System.Runtime.Caching` component
+- Adjust the framework version to `NET45`, `.NETStandard2.0`
+
 ### [v1.3.0] - 2020-05-16
 - Adjusted the `FileTo` class read/write method to pass parameters, the original file path and file name were transferred separately, and now the complete physical path is transferred together
 - Removed some methods of executing Shell on `CmdTo` class, leaving only basic methods

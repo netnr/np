@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using System;
-using System.Collections.Generic;
 using Netnr.ResponseFramework.Domain;
 
 namespace Netnr.ResponseFramework.Web.Controllers

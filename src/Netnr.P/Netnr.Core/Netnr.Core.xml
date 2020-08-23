@@ -18,23 +18,23 @@
             <summary>
             获取数据缓存
             </summary>
-            <param name="CacheKey">键</param>
+            <param name="key">键</param>
         </member>
         <member name="M:Netnr.Core.CacheTo.Set(System.String,System.Object,System.Int32,System.Boolean)">
             <summary>
             设置数据缓存
             变化时间过期（平滑过期）。表示缓存连续2个小时没有访问就过期（TimeSpan.FromSeconds(7200)）。
             </summary>
-            <param name="CacheKey">键</param>
-            <param name="objObject">值</param>
-            <param name="Second">过期时间，默认7200秒 </param>
-            <param name="Sliding">是否相对过期，默认是；否，则固定时间过期</param>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <param name="second">过期时间，默认7200秒 </param>
+            <param name="sliding">是否相对过期，默认是；否，则固定时间过期</param>
         </member>
         <member name="M:Netnr.Core.CacheTo.Remove(System.String)">
             <summary>
             移除指定数据缓存
             </summary>
-            <param name="CacheKey">键</param>
+            <param name="key">键</param>
         </member>
         <member name="M:Netnr.Core.CacheTo.RemoveAll">
             <summary>
@@ -187,14 +187,6 @@
             <summary>
             执行
             </summary>
-        </member>
-        <member name="P:Netnr.Core.CmdTo.Bash.Native">
-            <summary>Determines whether bash is running in a native OS (Linux/MacOS).</summary>
-            <returns>True if in *nix, else false.</returns>
-        </member>
-        <member name="P:Netnr.Core.CmdTo.Bash.Subsystem">
-            <summary>Determines if using Windows and if Linux subsystem is installed.</summary>
-            <returns>True if in Windows and bash detected.</returns>
         </member>
         <member name="P:Netnr.Core.CmdTo.Bash.Output">
             <summary>Stores output of the previous command if redirected.</summary>

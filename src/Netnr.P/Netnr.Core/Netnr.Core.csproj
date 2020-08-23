@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net40;netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Description>开发常用的核心类库；使用文档看GitHub（Gitee）项目说明。</Description>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <Description>开发常用的核心类库；文档：https://zme.ink</Description>
     <Copyright>netnr</Copyright>
     <PackageIconUrl></PackageIconUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -10,10 +10,10 @@
     <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageTags>netnr</PackageTags>
-    <PackageReleaseNotes>调整 `FileTo` 类 读取/写入方法传参，原来是分开传文件路径和文件名，现一起传完整物理路径
-删除 `CmdTo` 类 Linux上执行Shell的一些方法，仅保留基础方法</PackageReleaseNotes>
+    <PackageReleaseNotes>- 调整 `CacheTo`类 依赖 `System.Runtime.Caching` 组件
+- 调整 框架版本为 `NET45`、`.NETStandard2.0`</PackageReleaseNotes>
     <Authors>netnr</Authors>
-    <Version>1.3.0</Version>
+    <Version>1.4.0</Version>
     <DocumentationFile>Netnr.Core.xml</DocumentationFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <LangVersion>8.0</LangVersion>
@@ -28,34 +28,15 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions">
-      <Version>3.1.7</Version>
+    <PackageReference Include="System.Runtime.Caching">
+      <Version>4.7.0</Version>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions">
-      <Version>3.1.7</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-    <Reference Include="System.Web" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="favicon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Netnr.Core.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

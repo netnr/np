@@ -23,7 +23,7 @@
     <ProjectReference Include="..\Netnr.Data.PostgreSQL\Netnr.Data.PostgreSQL.csproj" />
     <ProjectReference Include="..\Netnr.Data.SQLite\Netnr.Data.SQLite.csproj" />
     <ProjectReference Include="..\Netnr.Data.SQLServer\Netnr.Data.SQLServer.csproj" />
-    <ProjectReference Include="..\Netnr.Fast\Netnr.Fast.csproj" />
+    <ProjectReference Include="..\Netnr.Fast.Extend\Netnr.Fast.Extend.csproj" />
   </ItemGroup>
 
   <ItemGroup>

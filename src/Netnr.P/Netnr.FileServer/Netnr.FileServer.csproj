@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <!--<SatelliteResourceLanguages>ignore</SatelliteResourceLanguages>-->
-    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     <UserSecretsId>be59f0e1-ec32-4814-99f6-99085b992efb</UserSecretsId>
   </PropertyGroup>
 
@@ -13,10 +11,6 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\README.md" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Netnr.Fast\Netnr.Fast.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +40,10 @@
     <None Include="wwwroot\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Netnr.Fast.Extend\Netnr.Fast.Extend.csproj" />
   </ItemGroup>
 
   <ProjectExtensions>

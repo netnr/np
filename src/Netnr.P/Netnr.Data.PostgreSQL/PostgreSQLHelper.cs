@@ -30,16 +30,14 @@ namespace Netnr.Data.PostgreSQL
         /// <returns>DataTable</returns>
         public DataSet Query(string sql)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
-            {
-                connection.Open();
+            using NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+            connection.Open();
 
-                NpgsqlDataAdapter command = new NpgsqlDataAdapter(sql, connection);
-                DataSet ds = new DataSet();
-                command.Fill(ds, "ds");
+            NpgsqlDataAdapter command = new NpgsqlDataAdapter(sql, connection);
+            DataSet ds = new DataSet();
+            command.Fill(ds, "ds");
 
-                return ds;
-            }
+            return ds;
         }
 
         /// <summary>
@@ -51,23 +49,19 @@ namespace Netnr.Data.PostgreSQL
         /// <returns>影响的记录数</returns>
         public int ExecuteNonQuery(string sql, NpgsqlParameter[] parameters = null, CommandType commandType = CommandType.Text)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            cmd.CommandText = sql;
+            cmd.CommandType = commandType;
+            if (parameters != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    cmd.CommandText = sql;
-                    cmd.CommandType = commandType;
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    int rows = cmd.ExecuteNonQuery();
-
-                    return rows;
-                }
+                cmd.Parameters.AddRange(parameters);
             }
+            int rows = cmd.ExecuteNonQuery();
+
+            return rows;
         }
 
         /// <summary>
@@ -79,23 +73,19 @@ namespace Netnr.Data.PostgreSQL
         /// <returns></returns>
         public object ExecuteScalar(string sql, NpgsqlParameter[] parameters = null, CommandType commandType = CommandType.Text)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+            using var cmd = connection.CreateCommand();
+            connection.Open();
+
+            cmd.CommandText = sql;
+            cmd.CommandType = commandType;
+            if (parameters != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    cmd.CommandText = sql;
-                    cmd.CommandType = commandType;
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    var obj = cmd.ExecuteScalar();
-
-                    return obj;
-                }
+                cmd.Parameters.AddRange(parameters);
             }
+            var obj = cmd.ExecuteScalar();
+
+            return obj;
         }
 
         /// <summary>
@@ -106,40 +96,38 @@ namespace Netnr.Data.PostgreSQL
         /// <returns></returns>
         public int BulkCopy(DataTable sourceDataTable, string targetTableName)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+
+            var columns = sourceDataTable.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
+
+            string copyString = "COPY " + "\"" + targetTableName + "\"" + " (\"" + string.Join("\",\"", columns) + "\") FROM STDIN (FORMAT BINARY)";
+            using (var writer = connection.BeginTextImport(copyString))
             {
-                connection.Open();
-
-                var columns = sourceDataTable.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
-
-                string copyString = "COPY " + "\"" + targetTableName + "\"" + " (\"" + string.Join("\",\"", columns) + "\") FROM STDIN (FORMAT BINARY)";
-                using (var writer = connection.BeginTextImport(copyString))
+                foreach (DataRow dr in sourceDataTable.Rows)
                 {
-                    foreach (DataRow dr in sourceDataTable.Rows)
+                    var rv = string.Empty;
+                    for (int i = 0; i < columns.Count; i++)
                     {
-                        var rv = string.Empty;
-                        for (int i = 0; i < columns.Count; i++)
+                        if (i > 0)
                         {
-                            if (i > 0)
-                            {
-                                rv += ",";
-                            }
-
-                            var rc = dr[columns[i]].ToString();
-                            if (rc.Contains(","))
-                            {
-                                rc = "\"" + rc.Replace("\"", "\"\"") + "\"";
-                            }
-
-                            rv += rc;
+                            rv += ",";
                         }
 
-                        writer.WriteLine(rv);
-                    }
-                }
+                        var rc = dr[columns[i]].ToString();
+                        if (rc.Contains(","))
+                        {
+                            rc = "\"" + rc.Replace("\"", "\"\"") + "\"";
+                        }
 
-                return sourceDataTable.Rows.Count;
+                        rv += rc;
+                    }
+
+                    writer.WriteLine(rv);
+                }
             }
+
+            return sourceDataTable.Rows.Count;
         }
     }
 }
