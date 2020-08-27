@@ -372,7 +372,7 @@
                                         <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释 为标题）
                                     </a>
                                     <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForFieldTitle">
-                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（注释:注释 为标题）
+                                        <i class="fa fa-fw fa-file-excel-o"></i>导出 Excel（字段 & 注释 为标题）
                                     </a>
                                     <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportDataForJson">
                                         <i class="fa fa-fw fa-file-text"></i>导出 JSON
@@ -753,7 +753,7 @@
                         filename: "data_" + dk.dc.dataWhere.table + ".xlsx"
                     })
                 });
-                //导出数据 Excel（字段:注释为标题）
+                //导出数据 Excel（字段注释为标题）
                 $('#btnExportDataForFieldTitle').click(function () {
                     dk.exportGrid({
                         id: "#Grid3",
@@ -1750,7 +1750,7 @@
                         var hd = col.field;
                         switch (ops.headerType) {
                             case 2: hd = col.title; break;
-                            case 3: hd = col.field + ":" + col.title; break;
+                            case 3: hd = col.field + " & " + col.title; break;
                         }
                         heads.push({
                             header: hd, key: col.field, width: col.width / 7, style: {

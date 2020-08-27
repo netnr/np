@@ -1,5 +1,7 @@
 - [Netnr （我）](README.md)
 
+- [Change Log （变更日志）](CHANGELOG.md)
+
 - DataBase （数据库访问）
     - [Netnr.Data.MySQL](Netnr.Data.MySQL.md)
     - [Netnr.Data.Oracle](Netnr.Data.Oracle.md)

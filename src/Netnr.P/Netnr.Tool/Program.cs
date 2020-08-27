@@ -7,6 +7,12 @@ namespace Netnr.Tool
 {
     class Program
     {
+        static void enable()
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.Write("\xfeff"); // bom = byte order mark
+        }
+
         static void Main()
         {
             Console.Title = MethodBase.GetCurrentMethod().DeclaringType.Namespace + "  v0.0.1";
@@ -22,7 +28,8 @@ namespace Netnr.Tool
             {
                 { 1,"Git Pull （拉取指定目录下的所有项目，检测 .git 文件夹是否存在）"},
                 { 2,"OSInfoTo （获取系统信息）"},
-                { 3,"Clear Project （清理项目 bin 、obj 目录）"}
+                { 3,"OSInfoTo （获取系统信息，可视化输出）"},
+                { 4,"Clear Project （清理项目 bin 、obj 目录）"}
             };
             foreach (var key in dic.Keys)
             {
@@ -63,6 +70,9 @@ namespace Netnr.Tool
                     Console.WriteLine(new OSInfoTo().ToJson());
                     break;
                 case 3:
+                    Console.WriteLine(new OSInfoTo().ToView());
+                    break;
+                case 4:
                     ClearProject.Run();
                     break;
                 default:

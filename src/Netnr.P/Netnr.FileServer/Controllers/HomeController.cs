@@ -13,13 +13,7 @@ namespace Netnr.FileServer.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            Test();
             return Redirect("/swagger");
-        }
-
-        public IActionResult Test()
-        {
-            return Content("");
         }
     }
 }

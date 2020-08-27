@@ -11,7 +11,7 @@
       {
         "url": "/vscode",
         "icon": "/icon/vscode.svg",
-        "title": "VSCode 编辑器",
+        "title": "VSCode编辑器",
         "remark": "Monaco Editor 编辑器"
       },
       {
@@ -169,7 +169,7 @@
       {
         "url": "//c.runoob.com/more/svgeditor/",
         "icon": "/icon/svg.svg",
-        "title": "SVG在线编辑器"
+        "title": "SVG编辑器"
       },
       {
         "url": "/icp",
@@ -234,7 +234,7 @@
         "remark": "查询地区、性别，纠正尾数"
       },
       {
-        "url": "//ps.gaoding.com",
+        "url": "/ps",
         "icon": "/icon/ps.svg",
         "title": "Photoshop",
         "remark": "在线PS"
@@ -266,8 +266,14 @@
       {
         "url": "/symbol",
         "icon": "/icon/symbol.svg",
-        "title": "符号大全",
+        "title": "特殊符号",
         "remark": "特殊符号"
+      },
+      {
+        "url": "/emoji",
+        "icon": "/icon/emoji.svg",
+        "title": "Emoji符号",
+        "remark": "Emoji表情"
       },
       {
         "url": "/express",
@@ -286,14 +292,14 @@
         "title": "人民币转大写"
       },
       {
+        "url": "/randomcode",
+        "icon": "/icon/key.svg",
+        "title": "生成随机密码"
+      },
+      {
         "url": "/qiushibaike",
         "icon": "/icon/qsbk.svg",
         "title": "糗事百科笑话"
-      },
-      {
-        "url": "/purine",
-        "icon": "/icon/purine.svg",
-        "title": "食物嘌呤含量"
       },
       {
         "url": "/tv",
@@ -302,15 +308,15 @@
         "remark": "m3u8源播放"
       },
       {
+        "url": "/purine",
+        "icon": "/icon/purine.svg",
+        "title": "食物嘌呤含量"
+      },
+      {
         "url": "/bmi",
         "icon": "/icon/bmi.svg",
         "title": "体重标准",
         "remark": "中国成人超重和肥胖标准"
-      },
-      {
-        "url": "/randomcode",
-        "icon": "/icon/key.svg",
-        "title": "生成随机密码"
       },
       {
         "url": "/gc",

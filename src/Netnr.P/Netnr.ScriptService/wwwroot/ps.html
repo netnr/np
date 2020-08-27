@@ -1,0 +1,90 @@
+﻿            <!--
+            https://github.com/netnr
+            https://gitee.com/netnr
+            https://www.netnr.com
+            https://zme.ink
+            -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>Photoshop NET牛人</title>
+    <meta name="keywords" content="netnr,NET牛人,Photoshop" />
+    <meta name="description" content="netnr,NET牛人,在线PS" />
+
+</head>
+<body>
+<script>
+    /*
+     * 1. 修改图片路径，搜索替换 images/sprites.png 为 /images/sprites.png
+     * 2. 设置默认中文
+     */
+    if (!localStorage["/ps/init"]) {
+        localStorage["/ps/init"] = 1;
+        document.cookie = 'config={"active_tool":"brush","language":"zh"}' + ';expires=' + new Date(new Date().valueOf() + 1000 * 3600 * 24 * 365).toGMTString();
+    }
+</script>
+
+<script src="/js/plus/miniPaint.js?v=tapwTvMUP3OHs81AialJIrDMeWRIFPWrNaWgYqVPi_g"></script>
+
+<div class="wrapper">
+    <div class="submenu">
+        <a class="logo" href="">miniPaint</a>
+        <div class="block attributes" id="action_attributes"></div>
+        <div class="clear"></div>
+    </div>
+    <div class="sidebar_left" id="tools_container"></div>
+
+    <div class="main_wrapper" id="main_wrapper">
+        <div class="canvas_wrapper" id="canvas_wrapper">
+            <div id="mouse"></div>
+            <div class="transparent-grid" id="canvas_minipaint_background"></div>
+            <canvas id="canvas_minipaint">
+                Your browser does not support canvas or JavaScript is not enabled.
+            </canvas>
+        </div>
+    </div>
+
+    <div class="sidebar_right">
+        <div class="preview block">
+            <h2 class="trn toggle" data-target="toggle_preview">Preview</h2>
+            <div id="toggle_preview"></div>
+        </div>
+
+        <div class="colors block">
+            <h2 class="trn toggle" data-target="toggle_colors">Colors</h2>
+            <input title="Click to change color"
+                   type="color"
+                   class="color_area"
+                   id="main_color"
+                   value="#0000ff" />
+            <div class="content" id="toggle_colors"></div>
+        </div>
+
+        <div class="block" id="info_base">
+            <h2 class="trn toggle toggle-full" data-target="toggle_info">Information</h2>
+            <div class="content" id="toggle_info"></div>
+        </div>
+
+        <div class="details block" id="details_base">
+            <h2 class="trn toggle toggle-full" data-target="toggle_details">Layer details</h2>
+            <div class="content" id="toggle_details"></div>
+        </div>
+
+        <div class="layers block">
+            <h2 class="trn">Layers</h2>
+            <div class="content" id="layers_base"></div>
+        </div>
+    </div>
+</div>
+<div class="mobile_menu">
+    <button class="right_mobile_menu" id="mobile_menu_button" type="button"></button>
+</div>
+<div class="ddsmoothmenu" id="main_menu"></div>
+<div class="hidden" id="tmp"></div>
+<div id="popup"></div></body>
+</html>

@@ -1,5 +1,7 @@
 - [Netnr（me）](README.md)
 
+- [Change Log](CHANGELOG.md)
+
 - DataBase Access
     - [Netnr.Data.MySQL](Netnr.Data.MySQL.md)
     - [Netnr.Data.Oracle](Netnr.Data.Oracle.md)

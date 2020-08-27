@@ -14,9 +14,11 @@ namespace Netnr.Test.Controllers
             return Ok();
         }
 
-        public void Test1()
+        public IActionResult Test1()
         {
+            var osi = new Fast.OSInfoTo();
             
+            return Content(osi.ToView());
         }
     }
 }

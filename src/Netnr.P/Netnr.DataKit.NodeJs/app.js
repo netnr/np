@@ -764,7 +764,7 @@ var dk = {
                             E.TABLE_NAME,
                             F.COLUMN_NAME
                         FROM
-                            ALL_CONSTRAINTS E
+                            USER_CONSTRAINTS E
                             LEFT JOIN USER_CONS_COLUMNS F ON E.TABLE_NAME = F.TABLE_NAME
                             AND E.CONSTRAINT_NAME = F.CONSTRAINT_NAME
                         WHERE

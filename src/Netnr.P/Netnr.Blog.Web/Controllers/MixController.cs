@@ -26,7 +26,7 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ActionResultVM
             {
-                Data = new Fast.OSInfoTo()
+                Data = new Fast.OSInfoTo().ToView()
             };
             return vm;
         }

@@ -154,10 +154,19 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 符号
+        /// 特殊符号
         /// </summary>
         /// <returns></returns>
         public IActionResult Symbol()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Emoji
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Emoji()
         {
             return View();
         }
@@ -356,6 +365,15 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult GC()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// PS
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult PS()
         {
             return View();
         }

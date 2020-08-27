@@ -32,6 +32,10 @@ namespace Netnr.Tool.Items
         /// </summary>
         public string ProcessorName { get; set; }
         /// <summary>
+        /// 处理器使用率
+        /// </summary>
+        public decimal ProcessorUsage { get; set; }
+        /// <summary>
         /// 获取系统目录的标准路径
         /// </summary>
         public string SystemDirectory { get; set; } = Environment.SystemDirectory;
@@ -111,6 +115,7 @@ namespace Netnr.Tool.Items
                 LogicalDisk = PlatformForWindows.LogicalDisk();
 
                 ProcessorName = PlatformForWindows.ProcessorName();
+                ProcessorUsage = PlatformForWindows.CPUUsage();
 
                 TickCount = PlatformForWindows.RunTime();
 
@@ -129,6 +134,7 @@ namespace Netnr.Tool.Items
                 LogicalDisk = PlatformForLinux.LogicalDisk();
 
                 ProcessorName = PlatformForLinux.CpuInfo("model name");
+                ProcessorUsage = PlatformForLinux.CPUUsage();
 
                 TickCount = PlatformForLinux.RunTime();
 
@@ -237,6 +243,19 @@ namespace Netnr.Tool.Items
             }
 
             /// <summary>
+            /// 获取CPU使用率 %
+            /// </summary>
+            /// <returns></returns>
+            public static decimal CPUUsage()
+            {
+                var cr = Core.CmdTo.Run("PowerShell \"Get-Counter '\\Processor(_Total)\\% Processor Time'\"");
+                var list = cr.Trim().Split(Environment.NewLine.ToCharArray());
+                var cu = Math.Ceiling(Convert.ToDecimal(list.LastOrDefault().ToString().Trim()));
+
+                return cu;
+            }
+
+            /// <summary>
             /// 运行时长
             /// </summary>
             /// <returns></returns>
@@ -340,14 +359,14 @@ namespace Netnr.Tool.Items
             /// 获取CPU使用率 %
             /// </summary>
             /// <returns></returns>
-            public static float CPULoad()
+            public static decimal CPUUsage()
             {
                 var br = Core.CmdTo.Shell("vmstat 1 2");
                 var cpuitems = br.Output.Split(Environment.NewLine.ToCharArray()).LastOrDefault().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 var usi = cpuitems.Count - 5;
                 var us = cpuitems[usi];
 
-                return float.Parse(us);
+                return decimal.Parse(us);
             }
 
             /// <summary>
@@ -385,6 +404,90 @@ namespace Netnr.Tool.Items
 
                 return os;
             }
+        }
+
+        /// <summary>
+        /// 可视化输出
+        /// </summary>
+        /// <returns></returns>
+        public string ToView()
+        {
+            var dic = new Dictionary<int, string>
+            {
+                { 0, "" },
+                { 1, $"  🎨 框架： {FrameworkDescription}" },
+                { 2, $"  🔵 开机： {Math.Round(TickCount*1.0/1000/24/3600,2)} 天" },
+                { 3, $"  🌟 系统： {(OperatingSystem ?? OS)}{(Is64BitOperatingSystem ? " ，64Bit" : "")}" },
+                { 4, $"  📌 内核： {OSVersion.VersionString}" },
+                { 5, $"  😳 用户： {UserName}" },
+                { 6, $"  📊  CPU： {ProcessorName} ，{ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
+                { 7, $"  📀 内存： {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
+            };
+            if (SwapTotal > 0)
+            {
+                dic.Add(8, $"  💿 Swap： {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
+            }
+
+            var lgds = LogicalDisk.ToJson().ToJArray();
+            var listlgd = new List<string>();
+            for (int i = 0; i < lgds.Count; i++)
+            {
+                var lgdi = lgds[i];
+                var fs = Convert.ToInt64(lgdi["FreeSpace"].ToString());
+                var size = Convert.ToInt64(lgdi["Size"].ToString());
+                var name = lgdi["Name"].ToString();
+                listlgd.Add(ProgressBar(size - fs, size, true, name));
+            }
+            dic.Add(9, $"  💿 磁盘： {string.Join(" ", listlgd)}");
+
+            //排序
+            var list = dic.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value).Values.ToList();
+
+            return string.Join("\r\n\r\n", list);
+        }
+
+        /// <summary>
+        /// 进度条
+        /// </summary>
+        /// <param name="m">分子</param>
+        /// <param name="d">分母</param>
+        /// <param name="isc">是否转换</param>
+        /// <param name="desc">说明</param>
+        /// <returns></returns>
+        private string ProgressBar(long m, long d, bool isc = true, string desc = "")
+        {
+            var vt = 20;
+            var v1 = m * 1.0;
+            var v2 = d * 1.0;
+            var v3 = Math.Round(vt * (v1 / v2));
+            var unit = string.Empty;
+            if (isc)
+            {
+                v1 = Math.Round(m * 1.0 / 1024 / 1024 / 1024, 1);
+                v2 = Math.Round(d * 1.0 / 1024 / 1024 / 1024, 1);
+                unit = $"（{v1}/{v2} GB） ";
+            }
+
+            if (!string.IsNullOrWhiteSpace(desc) && desc.Length > 20)
+            {
+                desc = desc.Substring(0, 20) + "...";
+            }
+
+            var listpb = new List<string>()
+            {
+                "\r\n\r\n "
+            };
+            while (v3-- > 0)
+            {
+                listpb.Add("▒");
+            }
+            while (listpb.Count < vt)
+            {
+                listpb.Add("░");
+            }
+            listpb.Add($" {Math.Round((v1 / v2) * 100, 0)}% {unit}{desc}");
+
+            return string.Join("", listpb);
         }
     }
 }

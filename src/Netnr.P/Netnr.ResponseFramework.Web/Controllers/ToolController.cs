@@ -33,7 +33,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             try
             {
-                vm.Data = new Fast.OSInfoTo();
+                vm.Data = new Fast.OSInfoTo().ToView();
                 vm.Set(ARTag.success);
             }
             catch (Exception ex)

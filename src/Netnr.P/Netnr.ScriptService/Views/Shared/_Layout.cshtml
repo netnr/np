@@ -1,4 +1,4 @@
-@{
+﻿@{
     var mj = Netnr.Extend.ToJArray(System.IO.File.ReadAllText(GlobalTo.WebRootPath + "/js/data/favorite.json"));
     string title = string.Empty;
     string remark = string.Empty;
@@ -30,6 +30,7 @@ endfor: TempData["Title"] = title;
     string ca = ViewContext.RouteData.Values["controller"].ToString().ToLower() + "/" + ViewContext.RouteData.Values["action"].ToString().ToLower();
 
     var canav = "home/wallpaper,home/contact".Split(',');
+    var caempty = "home/ps".Split(',');
 }
 <partial name="_PartialQuote" model="@("the")" />
 <!DOCTYPE html>
@@ -45,53 +46,60 @@ endfor: TempData["Title"] = title;
 
 </head>
 <body>
-    <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js")" />
-
-    <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
-
-    @if (!canav.Contains(ca))
+    @if (!caempty.Contains(ca))
     {
-        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
-            <span class="fa fa-align-justify fa-2x"></span>
-        </button>
-        <div class="netnrnav horizontal">
-            <div class="netnrnav-wrapper">
-                <ul>
-                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
-                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                    <li>
-                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                        <ul>
-                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
-                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
-                            <li class="divider"></li>
-                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                        </ul>
-                    </li>
-                </ul>
+        <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js")" />
+
+        <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
+
+        @if (!canav.Contains(ca))
+        {
+            <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+                <span class="fa fa-align-justify fa-2x"></span>
+            </button>
+            <div class="netnrnav horizontal">
+                <div class="netnrnav-wrapper">
+                    <ul>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                        <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li>
+                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                            <ul>
+                                <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
+                                <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
+                                <li class="divider"></li>
+                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
+        }
+
+        <script src="/js/global.js" asp-append-version="true"></script>
+
+        @if (!canav.Contains(ca) && ca != "home/index")
+        {
+            <h4 class="m-3">
+                <img src="@icon" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
+                @title
+            </h4>
+        }
+
+        <div class="min300">
+            @RenderBody()
         </div>
+
+        <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
     }
-
-    <script src="/js/global.js" asp-append-version="true"></script>
-
-    @if (!canav.Contains(ca) && ca != "home/index")
+    else
     {
-        <h4 class="m-3">
-            <img src="@icon" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
-            @title
-        </h4>
-    }
-
-    <div class="min300">
         @RenderBody()
-    </div>
-
-    <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
+    }
 </body>
 </html>
