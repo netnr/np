@@ -9,16 +9,19 @@ namespace Netnr.Test.Controllers
     {
         public IActionResult Index()
         {
-            Test1();
-
             return Ok();
         }
 
         public IActionResult Test1()
         {
             var osi = new Fast.OSInfoTo();
-            
             return Content(osi.ToView());
+        }
+
+        public IActionResult Test2()
+        {
+            var osi = new Fast.OSInfoTo();
+            return Content(osi.ToJson());
         }
     }
 }

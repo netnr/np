@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,45 +8,44 @@ namespace Netnr.ScriptService.Controllers
     public class BuildController : Controller
     {
         /// <summary>
-        /// 生成静态文件
+        /// 构建静态文件
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index()
+        public ActionResultVM Index()
         {
-            var startNow = DateTime.Now;
+            var vm = new ActionResultVM();
 
-            var url = Request.Scheme + "://" + Request.Host.ToString() + "/home/";
-            var path = GlobalTo.WebRootPath + "/";
-            var pageTotal = 0;
+            //设置是构建访问
+            var cacheKey = GlobalTo.GetValue("Common:BuildHtmlKey");
+            Core.CacheTo.Set(cacheKey, true);
 
-            var listOut = new List<string>();
-            var cacheKey = "GlobalKey-HtmlPath";
-            Core.CacheTo.Set(cacheKey, "yes");
-
-            //反射action
-            var type = typeof(HomeController);
-            var methods = type.GetMethods();
-            //并行请求
-            Parallel.ForEach(methods, mh =>
+            try
             {
-                if (mh.DeclaringType == type)
-                {
-                    string html = Core.HttpTo.Get(url + mh.Name);
-                    Core.FileTo.WriteText(html, path + mh.Name.ToLower() + ".html", false);
-                    pageTotal++;
-                }
+                var urlPrefix = $"{Request.Scheme}://{Request.Host}/home/";
+                var path = GlobalTo.WebRootPath + "/";
 
-            });
+                //反射action
+                var type = typeof(HomeController);
+                var methods = type.GetMethods().Where(x => x.DeclaringType == type).ToList();
+
+                //并行请求
+                Parallel.ForEach(methods, mh =>
+                {
+                    string html = Core.HttpTo.Get(urlPrefix + mh.Name);
+                    Core.FileTo.WriteText(html, path + mh.Name.ToLower() + ".html", false);
+                });
+
+                vm.Set(ARTag.success);
+                vm.Data = "Count：" + methods.Count;
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
             Core.CacheTo.Remove(cacheKey);
 
-            listOut.Add("Starting time：" + startNow.ToString("yyyy-MM-dd HH:mm:ss"));
-
-            listOut.Add("Time：" + (DateTime.Now - startNow).TotalMilliseconds + " ms");
-            listOut.Add("Count：" + pageTotal);
-            listOut.Add("Successful");
-
-            return Content(string.Join(Environment.NewLine, listOut));
+            return vm;
         }
     }
 }

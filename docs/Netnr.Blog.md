@@ -11,7 +11,6 @@ Personal site
 - EF + Linq
 - Support: SQLServer, MySQL, PostgreSQL, SQLite, InMemory, etc.
 - ==========================================
-- Baidu.AI (Lab)
 - FluentScheduler (timed task)
 - MailKit (mailbox verification)
 - Netease.Cloud.Nos (NetEase Object Storage)

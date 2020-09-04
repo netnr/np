@@ -1,4 +1,4 @@
-<link href="/lib/bed/css/bed.css" rel="stylesheet" asp-append-version="true" />
+<link href="/lib/webuploader/css/webuploader.css" rel="stylesheet" asp-append-version="true" />
 
 <div class="container-fluid">
     <div class="row">
@@ -11,8 +11,8 @@
                     <span class="input-group-text">请选择上传的托管商</span>
                 </div>
                 <select class="custom-select" id="seup">
-                    <option value="https://imgbb.com/json">imgbb.com</option>
-                    <option value="https://uploadbeta.com/api/pictures/upload/file/">uploadbeta.com</option>
+                    <option value="https://imgbb.com/json">imgbb.com（Max 32MB）</option>
+                    <option value="https://uploadbeta.com/api/pictures/upload/file/">uploadbeta.com（Max 5MB）</option>
                 </select>
             </div>
 
@@ -63,5 +63,4 @@
 </div>
 
 <partial name="_PartialQuote" model="@("webuploader.js")" />
-
-<script src="/lib/bed/js/bed.js" asp-append-version="true"></script>
+<script src="/js/bed.js" asp-append-version="true"></script>

@@ -151,8 +151,7 @@
       {
         "url": "/pinyin",
         "icon": "/icon/translate.svg",
-        "title": "汉字转拼音",
-        "remark": "汉字转拼音"
+        "title": "汉字转拼音"
       },
       {
         "url": "//zidian.netnr.com",
@@ -237,7 +236,8 @@
         "url": "/ps",
         "icon": "/icon/ps.svg",
         "title": "Photoshop",
-        "remark": "在线PS"
+        "remark": "在线PS",
+        "target": "_blank"
       },
       {
         "url": "//kms.netnr.com",
@@ -327,8 +327,14 @@
     ]
   },
   {
-    "group": "About",
+    "group": "关于",
     "items": [
+      {
+        "url": "/overview",
+        "icon": "/icon/overview.svg",
+        "title": "概述",
+        "remark": "脚本服务"
+      },
       {
         "url": "/message",
         "icon": "/icon/message.svg",
@@ -336,7 +342,7 @@
         "remark": "匿名留言"
       },
       {
-        "url": "https://zme.ink",
+        "url": "//zme.ink",
         "icon": "/icon/love.svg",
         "title": "联系赞助",
         "remark": "Sponsors"

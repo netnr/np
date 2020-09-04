@@ -214,7 +214,7 @@ namespace Netnr.FileServer.Controllers
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        public ActionResultVM Upload(IFormFileCollection files, string token, string subdir)
+        public ActionResultVM Upload([FromForm] IFormFileCollection files, [FromForm]string token, [FromForm]string subdir)
         {
             var vm = new ActionResultVM();
 

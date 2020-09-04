@@ -100,16 +100,16 @@ body {
     border: 1px solid #009a61;
 }
 
-/*menu*/
-.menubox .card:hover {
+/*nav*/
+.navbox .card:hover {
     border-color: green;
 }
 
-.menubox .card-body {
+.navbox .card-body {
     padding: .5rem;
 }
 
-.menubox a > * {
+.navbox a > * {
     display: block;
     overflow-x: hidden;
     white-space: nowrap;
@@ -117,17 +117,17 @@ body {
     text-overflow: ellipsis;
 }
 
-.menubox a {
+.navbox a {
     color: #777;
     display: block;
 }
 
-    .menubox a:hover {
+    .navbox a:hover {
         color: #333;
         text-decoration: none;
     }
 
-    .menubox a img {
+    .navbox a img {
         float: left;
         width: 48px;
         height: 48px;

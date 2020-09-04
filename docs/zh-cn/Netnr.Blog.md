@@ -11,7 +11,6 @@
 - EF + Linq
 - 支持：SQLServer、MySQL、PostgreSQL、SQLite、InMemory等
 - ==========================================
-- Baidu.AI（实验室）
 - FluentScheduler（定时任务）
 - MailKit（邮箱验证）
 - Netease.Cloud.Nos（网易对象存储）

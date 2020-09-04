@@ -11,11 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Baidu.AI" Version="3.6.14" />
     <PackageReference Include="Markdig" Version="0.21.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.7" Condition="'$(Configuration)' == 'Debug'" />
-    <PackageReference Include="Microsoft.OpenApi" Version="1.2.2" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
     <PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
     <PackageReference Include="Netnr.WeChat" Version="1.1.0" />
     <PackageReference Include="Qcloud.Shared.NetCore" Version="1.0.0" />

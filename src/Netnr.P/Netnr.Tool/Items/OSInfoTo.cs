@@ -415,17 +415,17 @@ namespace Netnr.Tool.Items
             var dic = new Dictionary<int, string>
             {
                 { 0, "" },
-                { 1, $"  🎨 框架： {FrameworkDescription}" },
-                { 2, $"  🔵 开机： {Math.Round(TickCount*1.0/1000/24/3600,2)} 天" },
-                { 3, $"  🌟 系统： {(OperatingSystem ?? OS)}{(Is64BitOperatingSystem ? " ，64Bit" : "")}" },
-                { 4, $"  📌 内核： {OSVersion.VersionString}" },
-                { 5, $"  😳 用户： {UserName}" },
-                { 6, $"  📊  CPU： {ProcessorName} ，{ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
-                { 7, $"  📀 内存： {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
+                { 1, $" 🎨  框架： {FrameworkDescription}" },
+                { 2, $" 🔵  开机： {Math.Round(TickCount*1.0/1000/24/3600,2)} 天" },
+                { 3, $" 🌟  系统： {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " ，64Bit" : "")}" },
+                { 4, $" 📌  内核： {OSVersion.VersionString}" },
+                { 5, $" 😳  用户： {UserName}" },
+                { 6, $" 📊   CPU： {ProcessorName} ，{ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
+                { 7, $" 📀  内存： {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
             };
             if (SwapTotal > 0)
             {
-                dic.Add(8, $"  💿 Swap： {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
+                dic.Add(8, $" 💿  Swap： {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
             }
 
             var lgds = LogicalDisk.ToJson().ToJArray();
@@ -438,7 +438,7 @@ namespace Netnr.Tool.Items
                 var name = lgdi["Name"].ToString();
                 listlgd.Add(ProgressBar(size - fs, size, true, name));
             }
-            dic.Add(9, $"  💿 磁盘： {string.Join(" ", listlgd)}");
+            dic.Add(9, $" 💿  磁盘： {string.Join(" ", listlgd)}");
 
             //排序
             var list = dic.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value).Values.ToList();

@@ -217,15 +217,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// JC滚动条
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult JScroll()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 网络测速
         /// </summary>
         /// <returns></returns>
@@ -374,6 +365,15 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult PS()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 概述
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Overview()
         {
             return View();
         }

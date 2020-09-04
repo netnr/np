@@ -127,7 +127,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Netnr.DataKit.NodeJs", "Net
 		SlnRelativePath = "Netnr.DataKit.NodeJs\"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

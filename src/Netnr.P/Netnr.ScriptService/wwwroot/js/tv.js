@@ -4,7 +4,7 @@
 
     init: function () {
         $.ajax({
-            url: "/lib/m3u/tv.m3u",
+            url: "/lib/m3u8/tv.txt",
             success: function (data) {
                 var ds = data.split('#EXTINF:-1'), sehtm = [];
                 $.each(ds, function () {

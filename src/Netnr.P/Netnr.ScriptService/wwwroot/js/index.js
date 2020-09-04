@@ -1,6 +1,6 @@
 function search(group, keywords) {
     keywords = keywords.trim().toLowerCase();
-    var fb = $('#favoritebox');
+    var fb = $('.navbox');
     fb.find('a').each(function () {
         var col = $(this).parent().parent().parent();
         if (keywords != "") {
@@ -59,14 +59,14 @@ $('#seGroup').find('option').each(function () {
     }
 });
 
-$('#favoritebox').find('img').each(function () {
+$('.navbox').find('img').each(function () {
     var that = this;
     this.onerror = function () { this.src = '/favicon.svg'; this.onerror = null; }
     var ci = new Image();
     ci.onload = function () { that.src = this.src; }
     ci.src = that.getAttribute('data-icon');
 
-    //鏈湴鐜鍏煎
+    //兼容本地生成的静态页面
     var na = that.parentNode;
     if (na.href.indexOf("//localhost") >= 0 && na.href.indexOf("/home/") == -1) {
         na.href += ".html";

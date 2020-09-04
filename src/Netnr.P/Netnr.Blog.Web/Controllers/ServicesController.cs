@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using Netnr.Blog.Web.Filters;
 using System.IO;
 using Netnr.WeChat;
 using Netnr.WeChat.Entities;
-using System.Threading;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -205,7 +203,7 @@ namespace Netnr.Blog.Web.Controllers
                     Request.Body.CopyTo(ms);
                     string postStr = System.Text.Encoding.UTF8.GetString(ms.ToArray());
 
-                    //new WebHookService(postStr);
+                    //TO DO
 
                     vm.Data = postStr;
                     vm.Set(ARTag.success);
@@ -213,116 +211,11 @@ namespace Netnr.Blog.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 vm.Set(ex);
-                FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
-        }
-
-        public class WebHookService
-        {
-            /// <summary>
-            /// 推送的JSON包
-            /// </summary>
-            public JObject JoPush { get; set; }
-
-            /// <summary>
-            /// 邮箱
-            /// </summary>
-            public string Pemail { get; set; }
-
-            /// <summary>
-            /// 仓库名
-            /// </summary>
-            public string PrepositoryName { get; set; }
-
-            /// <summary>
-            /// 提交的信息
-            /// </summary>
-            public string PcommitMessage { get; set; }
-
-            /// <summary>
-            /// clone url
-            /// </summary>
-            public string PgitUrl { get; set; }
-
-            /// <summary>
-            /// 仓库主页链接
-            /// </summary>
-            public string PhomePage { get; set; }
-
-            /// <summary>
-            /// 构造 部署
-            /// </summary>
-            /// <param name="postStr">推送的JSON包</param>
-            public WebHookService(string postStr)
-            {
-                JoPush = JObject.Parse(postStr);
-                if (JoPush.ContainsKey("pusher"))
-                {
-                    Pemail = JoPush["pusher"]["email"].ToString();
-                    PrepositoryName = JoPush["repository"]["name"].ToString();
-                    PcommitMessage = JoPush["commits"][0]["message"].ToString();
-                    PgitUrl = JoPush["repository"]["clone_url"].ToString();
-                    PhomePage = JoPush["repository"]["homepage"].ToString();
-                    string configEmail = GlobalTo.GetValue("WebHook:GitHub:Email");
-                    string configNotDeploy = GlobalTo.GetValue("WebHook:GitHub:NotDeploy");
-                    if (Pemail == configEmail && !PcommitMessage.ToLower().Contains(configNotDeploy))
-                    {
-                        Deploy();
-                    }
-                }
-            }
-
-            /// <summary>
-            /// 部署
-            /// </summary>
-            public void Deploy()
-            {
-                //根目录
-                string domainPath = GlobalTo.GetValue("WebHook:GitHub:DomainRootPath");
-
-                //子域名&文件夹
-                string subdomain = PrepositoryName;
-                if (!string.IsNullOrWhiteSpace(PhomePage))
-                {
-                    subdomain = PhomePage.Replace("//", "^").Split('^')[1].Split('.')[0];
-                }
-
-                string path = domainPath + subdomain;
-
-                //异步
-                ThreadPool.QueueUserWorkItem(callBack =>
-                {
-                    if (!Directory.Exists(path))
-                    {
-                        string cmd = CmdFor.GitClone(PgitUrl, path);
-                        Core.CmdTo.Shell(cmd);
-                    }
-                    else
-                    {
-                        string cmd = CmdFor.GitPull(path);
-                        Core.CmdTo.Shell(cmd);
-                    }
-                });
-            }
-
-            /// <summary>
-            /// 命令
-            /// </summary>
-            public class CmdFor
-            {
-                public static string GitClone(string giturl, string path)
-                {
-                    return $"git clone {giturl} {path}";
-                }
-
-                public static string GitPull(string path)
-                {
-                    return $"cd {path} && git pull origin master";
-                }
-            }
         }
 
         #endregion

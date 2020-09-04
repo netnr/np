@@ -519,47 +519,6 @@
             <param name="msg">错误消息</param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Web.Controllers.LabController">
-            <summary>
-            实验室
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.LabController.Index">
-            <summary>
-            实验室
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.LabController.Speech">
-            <summary>
-            语音合成页面
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.LabController.SpeechAPI(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
-            <summary>
-            语音合成接口
-            txt String 合成的文本，使用UTF-8编码，请注意文本长度必须小于1024字节
-            spd	Int	语速，取值0-9，默认为5中语速
-            pit Int 音调，取值0-9，默认为5中语调
-            vol Int 音量，取值0-15，默认为5中音量
-            per Int 发音人选择, 0为女声，1为男声，3为情感合成-度逍遥，4为情感合成-度丫丫，默认为普通女
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.LabController.Ocr">
-            <summary>
-            文字识别页面
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.LabController.OcrAPI(System.String,System.String)">
-            <summary>
-            文字识别接口
-            </summary>
-            <param name="image_base64">图片base64编码</param>
-            <param name="image_url">图片链接</param>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.Blog.Web.Controllers.MixController">
             <summary>
             混合、综合、其它
@@ -656,52 +615,6 @@
             WebHook
             </summary>
             <returns></returns>
-        </member>
-        <member name="P:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.JoPush">
-            <summary>
-            推送的JSON包
-            </summary>
-        </member>
-        <member name="P:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.Pemail">
-            <summary>
-            邮箱
-            </summary>
-        </member>
-        <member name="P:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.PrepositoryName">
-            <summary>
-            仓库名
-            </summary>
-        </member>
-        <member name="P:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.PcommitMessage">
-            <summary>
-            提交的信息
-            </summary>
-        </member>
-        <member name="P:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.PgitUrl">
-            <summary>
-            clone url
-            </summary>
-        </member>
-        <member name="P:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.PhomePage">
-            <summary>
-            仓库主页链接
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.#ctor(System.String)">
-            <summary>
-            构造 部署
-            </summary>
-            <param name="postStr">推送的JSON包</param>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.Deploy">
-            <summary>
-            部署
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Controllers.ServicesController.WebHookService.CmdFor">
-            <summary>
-            命令
-            </summary>
         </member>
         <member name="T:Netnr.Blog.Web.Controllers.ServicesController.TaskItem">
             <summary>

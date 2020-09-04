@@ -1,59 +1,48 @@
 ﻿@{
-    var mj = Netnr.Extend.ToJArray(System.IO.File.ReadAllText(GlobalTo.WebRootPath + "/js/data/favorite.json"));
-    string title = string.Empty;
-    string remark = string.Empty;
-    string icon = "/favicon.svg";
     string action = ViewContext.RouteData.Values["action"].ToString().ToLower();
-    if (action == "index")
-    {
-        title = "服务";
-    }
-    else
-    {
-        foreach (var gi in mj)
-        {
-            foreach (Newtonsoft.Json.Linq.JToken jt in gi["items"])
-            {
-                if (jt["url"].ToString().TrimStart('/').ToLower() == action)
-                {
-                    title = jt["title"].ToString();
-                    remark = jt["remark"]?.ToString() ?? title;
-                    icon = jt["icon"].ToString();
-                    goto endfor;
-                }
-            }
-        }
-    }
-endfor: TempData["Title"] = title;
-}
-@{
-    string ca = ViewContext.RouteData.Values["controller"].ToString().ToLower() + "/" + ViewContext.RouteData.Values["action"].ToString().ToLower();
+    var nav = NavService.Find(action);
 
-    var canav = "home/wallpaper,home/contact".Split(',');
-    var caempty = "home/ps".Split(',');
+    string title = nav?["title"].ToString();
+    string remark = nav?["remark"]?.ToString() ?? title;
+    string icon = nav?["icon"].ToString();
+
+    //仅body主体
+    var onlybody = "ps".Split(',');
+
+    //无导航
+    var nonav = "wallpaper,contact".Split(',');
 }
 <partial name="_PartialQuote" model="@("the")" />
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>@Html.Raw(TempData["Title"]) NET牛人</title>
-    <meta name="keywords" content="netnr,NET牛人,@Html.Raw(title)" />
-    <meta name="description" content="netnr,NET牛人,@Html.Raw(remark)" />
+
+    <title>@Html.Raw(title) 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 @Html.Raw(title)" />
+    <meta name="description" content="Script Services @Html.Raw(remark)" />
 
 </head>
 <body>
-    @if (!caempty.Contains(ca))
+    @if (onlybody.Contains(action))
+    {
+        @RenderBody()
+    }
+    else
     {
         <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js")" />
-
         <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
+        <script src="/js/global.js" asp-append-version="true"></script>
 
-        @if (!canav.Contains(ca))
+        @if (!nonav.Contains(action))
         {
+            <!--导航-->
+
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
             </button>
@@ -65,13 +54,10 @@ endfor: TempData["Title"] = title;
                         <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
                         <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
                         <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
                         <li>
                             <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
                             <ul>
-                                <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
-                                <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
-                                <li class="divider"></li>
                                 <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
                                 <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
@@ -79,16 +65,14 @@ endfor: TempData["Title"] = title;
                     </ul>
                 </div>
             </div>
-        }
 
-        <script src="/js/global.js" asp-append-version="true"></script>
-
-        @if (!canav.Contains(ca) && ca != "home/index")
-        {
-            <h4 class="m-3">
-                <img src="@icon" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
-                @title
-            </h4>
+            <!--标题-->
+            @if (action != "index")
+            {
+                <h4 class="m-3">
+                    <img src="@icon" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" /> @title
+                </h4>
+            }
         }
 
         <div class="min300">
@@ -96,10 +80,6 @@ endfor: TempData["Title"] = title;
         </div>
 
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
-    }
-    else
-    {
-        @RenderBody()
     }
 </body>
 </html>

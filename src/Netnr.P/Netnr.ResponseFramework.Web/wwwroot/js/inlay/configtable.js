@@ -77,6 +77,8 @@ gdct.onComplete(function () {
         $.getScript('/lib/jquery-easyui/ext/datagrid-dnd.min.js', function () {
             gdct.func('enableDnd');
         })
+    } else {
+        gdct.func('enableDnd');
     }
 })
 
