@@ -15,6 +15,10 @@ namespace Netnr.Guff.Controllers
         {
             var vm = new ActionResultVM();
 
+            //设置是构建访问
+            var cacheKey = GlobalTo.GetValue("Common:BuildHtmlKey");
+            Core.CacheTo.Set(cacheKey, true);
+
             try
             {
                 var urlPrefix = $"{Request.Scheme}://{Request.Host}/home/";
@@ -38,6 +42,8 @@ namespace Netnr.Guff.Controllers
             {
                 vm.Set(ex);
             }
+
+            Core.CacheTo.Remove(cacheKey);
 
             return vm;
         }

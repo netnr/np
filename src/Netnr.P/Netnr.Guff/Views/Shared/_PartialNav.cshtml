@@ -1,9 +1,6 @@
 @{
-    var cacheKey = "GlobalKey-HtmlPath";
-
-    //是html路径
-    var ishp = CacheTo.Get(cacheKey) as string == "yes";
-    var hp = ishp ? "" : "/home";
+    var isbh = Netnr.Core.CacheTo.Get(GlobalTo.GetValue("Common:BuildHtmlKey")) as bool? ?? false;
+    var hp = isbh ? "" : "/home";
 }
 
 <partial name="_PartialQuote" model="@("netnrnav.css,netnrnav.js")" />

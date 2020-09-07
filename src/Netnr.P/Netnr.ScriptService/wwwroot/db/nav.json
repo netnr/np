@@ -191,7 +191,8 @@
         "url": "/dk",
         "icon": "/icon/db.svg",
         "title": "DataKit",
-        "remark": "数据库工具及代码构建"
+        "remark": "数据库工具及代码构建",
+        "target": "_blank"
       },
       {
         "url": "/zerotier",
