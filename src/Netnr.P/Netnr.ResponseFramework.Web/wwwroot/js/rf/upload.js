@@ -221,10 +221,10 @@ $("#txtFile").change(function () {
 //上传
 function UploadFile(file) {
     var formData = new FormData();
-    formData.append("file1", file);
+    formData.append("files", file);
 
     //Common/Upload?temp=1 上传到临时文件夹，用于导入等，文件会被定时清理
-    //Common/Upload?path=doc 上传自定义文件夹路径，永久路径，在 upload 文件夹下 创建 doc 文件夹
+    //Common/Upload?subdir=doc 上传自定义文件夹路径，永久路径，在根目录下创建 doc 子文件夹
 
     $.ajax({
         url: "/Common/Upload?temp=1",

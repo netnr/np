@@ -1,9 +1,9 @@
-﻿            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+﻿<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
 
 <!DOCTYPE html>
 <html>
@@ -14,10 +14,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 
-    <title>免费托管 脚本服务</title>
+    <title>免费 脚本服务</title>
 
-    <meta name="keywords" content="netnr NET牛人 免费托管" />
-    <meta name="description" content="Script Services 免费的托管空间" />
+    <meta name="keywords" content="netnr NET牛人 免费" />
+    <meta name="description" content="Script Services 免费的资源" />
 
 </head>
 <body>
@@ -29,8 +29,17 @@
             <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
             <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
             <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
+            <script>
+                $.ajax({
+                    url: "/images/icon.svg",
+                    dataType: 'text',
+                    success: function (data) {
+                        $('body').append('<div class="d-none">' + data + '</div>')
+                    }
+                })
+            </script>
 
-        <link href="/css/global.css?v=GNuNSw0PiQ99cqDLe4k4sz0zU6qdo2FN6Zw_SWve7HA" rel="stylesheet" />
+        <link href="/css/global.css?v=DE0bvfxeaNrv9kM04k3iwLx3LJtPPzAo5IWIj2LN6vE" rel="stylesheet" />
         <script src="/js/global.js?v=83bE557i4FM8eaqzTNVIZ3fbAAVZlAFDY06346DgWok"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
@@ -57,30 +66,36 @@
             </div>
             <!--标题-->
                 <h4 class="m-3">
-                    <img src="/icon/hosting.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" /> &#x514D;&#x8D39;&#x6258;&#x7BA1;
+                    <svg class="titleicon"><use xlink:href="#free"></use></svg> &#x514D;&#x8D39;
                 </h4>
         <div class="min300">
-            <div class="container-fluid">
+            
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <h3>Csharp</h3>
-            <ul>
-                <li>
-                    <a href="https://somee.com">https://somee.com</a>
-                    <ul>
-                        <li>支持 .NET Framework (v2.0 - v4.8) 和 .NET Core (v3.1)</li>
-                        <li>SQLServer 15MB</li>
-                        <li>支持 HTTPS</li>
-                        <li>免费子域名，无广告</li>
-                        <li>可自定义域名，强制广告</li>
-                    </ul>
-                </li>
-            </ul>
-            <h3>NodeJs</h3>
-            <ul>
-                <li><a href="https://cloudno.de">https://cloudno.de</a></li>
-                <li><a href="https://www.heroku.com/">https://www.heroku.com/</a></li>
-            </ul>
+            <p>MySQL</p>
+<ul>
+<li><a href="https://remotemysql.com">https://remotemysql.com</a></li>
+<li><a href="https://www.db4free.net">https://www.db4free.net</a></li>
+</ul>
+<p>SQLServer</p>
+<ul>
+<li><a href="https://www.gearhost.com">https://www.gearhost.com</a></li>
+</ul>
+<p>PostgresqlSQL</p>
+<ul>
+<li><a href="https://www.elephantsql.com">https://www.elephantsql.com</a></li>
+</ul>
+<p>Csharp</p>
+<ul>
+<li><a href="https://somee.com">https://somee.com</a></li>
+</ul>
+<p>NodeJs</p>
+<ul>
+<li><a href="https://cloudno.de">https://cloudno.de</a></li>
+<li><a href="https://www.heroku.com">https://www.heroku.com</a></li>
+</ul>
+
         </div>
     </div>
 </div>

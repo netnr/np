@@ -1,0 +1,239 @@
+﻿<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+    <title>图片审查 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 图片审查" />
+    <meta name="description" content="Script Services 绘画、变态、中立、色情、性感" />
+
+</head>
+<body>
+                    <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
+            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+            <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
+            <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
+            <script>
+                $.ajax({
+                    url: "/images/icon.svg",
+                    dataType: 'text',
+                    success: function (data) {
+                        $('body').append('<div class="d-none">' + data + '</div>')
+                    }
+                })
+            </script>
+
+        <link href="/css/global.css?v=DE0bvfxeaNrv9kM04k3iwLx3LJtPPzAo5IWIj2LN6vE" rel="stylesheet" />
+        <script src="/js/global.js?v=83bE557i4FM8eaqzTNVIZ3fbAAVZlAFDY06346DgWok"></script>
+            <!--导航-->
+            <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+                <span class="fa fa-align-justify fa-2x"></span>
+            </button>
+            <div class="netnrnav horizontal">
+                <div class="netnrnav-wrapper">
+                    <ul>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li>
+                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                            <ul>
+                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--标题-->
+                <h4 class="m-3">
+                    <svg class="titleicon"><use xlink:href="#nsfw"></use></svg> &#x56FE;&#x7247;&#x5BA1;&#x67E5;
+                </h4>
+        <div class="min300">
+            <style>
+    .sbox {
+        position: relative;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+        .sbox .sbox-screen {
+            height: 400px;
+            line-height: 400px;
+        }
+
+            .sbox .sbox-screen img {
+                max-width: 98%;
+                max-height: 98%;
+                vertical-align: middle;
+            }
+
+        .sbox .sbox-scanner {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            z-index: 9999;
+            background-color: rgba(0,0,0,.8);
+            -moz-animation: scan 1s infinite;
+            -webkit-animation: scan 1s infinite;
+            animation: scan 1s infinite;
+            -webkit-animation-direction: alternate-reverse;
+            box-shadow: 0px 0px 30px rgba(255,204,102,.5);
+        }
+
+    @-webkit-keyframes scan {
+        0%, 100% {
+            -webkit-transform: translateY(0);
+            transform: translateY(0);
+        }
+
+        100% {
+            -webkit-transform: translateY(370px);
+            transform: translateY(390px);
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="custom-file">
+                    <input id="txtFile" type="file" class="custom-file-input" accept="image/*">
+                    <label class="custom-file-label">选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片</label>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="sbox">
+                    <div class="sbox-scanner d-none"></div>
+                    <div class="sbox-screen">
+                        <img src="https://api.zme.ink/svg/400*200" id="imgview" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <input class="form-control text-white bg-success" value="Drawing（绘画）" title="无害的艺术，或艺术绘画">
+                <input class="form-control text-white bg-dark" value="Hentai（变态）" title="色情艺术，不适合大多数工作环境">
+                <input class="form-control text-white bg-info" value="Neutral（中立）" title="一般，无害的内容">
+                <input class="form-control text-white bg-danger" value="Porn（色情）" title="不雅的内容和行为，通常涉及生殖器">
+                <input class="form-control text-white bg-warning" value="Sexy（性感）" title="不合时宜的挑衅内容">
+            </div>
+            <textarea class="form-control mt-3" style="height:400px" id="txtResult"></textarea>
+        </div>
+    </div>
+</div>
+
+            <script src="https://code.bdstatic.com/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/@nsfw-filter/nsfwjs@2.2.0/dist/nsfwjs.min.js"></script>
+
+
+<script>
+    var pg = {
+        isgif: false,
+        init: function () {
+
+            $('#txtFile').change(function () {
+                pg.preview();
+            });
+
+            //粘贴图片
+            document.addEventListener('paste', function (event) {
+                if (event.clipboardData || event.originalEvent) {
+                    var clipboardData = (event.clipboardData || event.originalEvent.clipboardData);
+                    if (clipboardData.items) {
+                        var items = clipboardData.items, len = items.length;
+                        for (var i = 0; i < len; i++) {
+                            if (items[i].type.indexOf("image") !== -1) {
+                                var blob = items[i].getAsFile();
+                                pg.iv.src = URL.createObjectURL(blob);
+
+                                pg.isgif = false;
+                                pg.scan();
+                            }
+                        }
+                    }
+                }
+            })
+        },
+        iv: document.getElementById('imgview'),
+
+        /**预览图片 */
+        preview: function () {
+            var file = document.querySelector('input[type=file]').files[0];
+            if (file) {
+                console.log(file);
+                if (file.type.indexOf('image') != 0) {
+                    jz.alert('不是图片哦');
+                    return false;
+                }
+                pg.isgif = file.type == "image/gif";
+                var reader = new FileReader();
+                reader.onload = function () {
+                    pg.iv.src = reader.result;
+
+                    pg.scan();
+                }
+                reader.readAsDataURL(file);
+            } else {
+                pg.iv.src = "https://api.zme.ink/svg/400*200";
+            }
+        },
+
+        scan: function () {
+            $('.sbox-scanner').removeClass('d-none');
+            nsfwjs.load('https://code.bdstatic.com/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
+                var mf = pg.isgif ? "classifyGif" : "classify";
+                model[mf](pg.iv).then(function (predictions) {
+                    console.log(predictions);
+
+                    if (pg.isgif) {
+                        var oarr = [];
+                        predictions.forEach(parr => {
+                            var ro = {};
+                            parr.forEach(p => {
+                                ro[p.className] = p.probability.toFixed(20);
+                            });
+                            oarr.push(ro);
+                        });
+                        $('#txtResult').val(JSON.stringify(oarr, null, 4))
+                    } else {
+                        var ro = {};
+                        predictions.forEach(p => {
+                            ro[p.className] = p.probability.toFixed(20);
+                        });
+                        $('#txtResult').val(JSON.stringify(ro, null, 4))
+                    }
+
+                    $('.sbox-scanner').addClass('d-none');
+                })
+            })
+        }
+    }
+
+    pg.init();
+</script>
+        </div>
+        <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

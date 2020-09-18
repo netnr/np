@@ -21,7 +21,7 @@ namespace Netnr.ResponseFramework.Application
 
             try
             {
-                string directoryPath = Path.Combine(GlobalTo.WebRootPath, "upload/temp");
+                string directoryPath = Fast.PathTo.Combine(GlobalTo.WebRootPath, "upload/temp");
 
                 var listLog = new List<string>();
 

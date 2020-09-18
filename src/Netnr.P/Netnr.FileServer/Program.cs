@@ -17,7 +17,7 @@ namespace Netnr.FileServer
             CreateHostBuilder(args).Build().Run();
         }
 
-        /// dotnet Netnr.FileServer.dll "http://*:55"
+        /// dotnet Netnr.FileServer.dll "https://*:55"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

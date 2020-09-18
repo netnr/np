@@ -25,7 +25,7 @@ namespace Netnr.FileServer.Filters
             }
 
             /// <summary>
-            /// 
+            /// action 执行之前
             /// </summary>
             /// <param name="context"></param>
             public void OnActionExecuting(ActionExecutingContext context)

@@ -18,7 +18,7 @@ namespace Netnr.Test.Controllers
 
         public void Test1()
         {
-            var lc = new LoginClient(LoginBase.LoginType.AliPay);
+            var lc = new LoginClient(LoginBase.LoginType.GitHub);
 
             //拷贝授权链接在浏览器打开，授权后拿到code，并手动赋值，手动赋值需解码
             var URL = lc.Auth();

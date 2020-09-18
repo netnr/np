@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "个人设置";
 
-    var loginpath = GlobalTo.GetValue("StaticResource:Server") + GlobalTo.GetValue("StaticResource:LoginPath");
+    var listQuickLogin = ViewData["listQuickLogin"] as List<Netnr.Blog.Application.ViewModel.QuickLoginVM>;
 }
 
 <div class="container">
@@ -106,84 +106,22 @@
             <h4 class="mt-5">授权关联</h4>
             <table class="table">
                 <colgroup><col style="width:30%" /></colgroup>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/qq.svg")" />QQ</td>
-                    <td>
-                        @if (Model.OpenId1?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/qq">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/qq">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/weibo.svg")" />微博</td>
-                    <td>
-                        @if (Model.OpenId2?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/weibo">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/weibo">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/github.svg")" />GitHub</td>
-                    <td>
-                        @if (Model.OpenId3?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/github">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/github">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/taobao.svg")" />淘宝</td>
-                    <td>
-                        @if (Model.OpenId4?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/taobao">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/taobao">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/microsoft.svg")" />Microsoft</td>
-                    <td>
-                        @if (Model.OpenId5?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/microsoft">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/microsoft">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/dingtalk.svg")" />钉钉</td>
-                    <td>
-                        @if (Model.OpenId6?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/dingtalk">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/dingtalk">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
+                @foreach (var login in listQuickLogin)
+                {
+                    <tr>
+                        <td class="siteIcon"><img class="mr-2" src="@login.Icon" />@login.Name</td>
+                        <td>
+                            @if (login.Bind)
+                            {
+                                <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/@login.Key">解除</a>
+                            }
+                            else
+                            {
+                                <a href="/user/oauth/@login.Key">立即绑定账号</a>
+                            }
+                        </td>
+                    </tr>
+                }
             </table>
 
             <h4 class="mt-5">更改密码</h4>

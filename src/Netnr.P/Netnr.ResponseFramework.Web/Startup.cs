@@ -117,6 +117,7 @@ namespace Netnr.ResponseFramework.Web
             {
                 c.DocumentTitle = "RF API";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             //默认起始页index.html

@@ -1,0 +1,11 @@
+@{
+    var html = Markdig.Markdown.ToHtml(Netnr.Core.FileTo.ReadText(Netnr.Fast.PathTo.Combine(GlobalTo.WebRootPath, "db/free.md")));
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            @Html.Raw(html)
+        </div>
+    </div>
+</div>

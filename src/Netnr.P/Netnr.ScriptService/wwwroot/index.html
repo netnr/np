@@ -1,9 +1,9 @@
-﻿            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+﻿<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
 
 <!DOCTYPE html>
 <html>
@@ -29,8 +29,17 @@
             <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
             <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
             <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
+            <script>
+                $.ajax({
+                    url: "/images/icon.svg",
+                    dataType: 'text',
+                    success: function (data) {
+                        $('body').append('<div class="d-none">' + data + '</div>')
+                    }
+                })
+            </script>
 
-        <link href="/css/global.css?v=GNuNSw0PiQ99cqDLe4k4sz0zU6qdo2FN6Zw_SWve7HA" rel="stylesheet" />
+        <link href="/css/global.css?v=DE0bvfxeaNrv9kM04k3iwLx3LJtPPzAo5IWIj2LN6vE" rel="stylesheet" />
         <script src="/js/global.js?v=83bE557i4FM8eaqzTNVIZ3fbAAVZlAFDY06346DgWok"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
@@ -69,6 +78,7 @@
                         <option value="">全部</option>
                             <option value="&#x5F00;&#x53D1;">&#x5F00;&#x53D1;</option>
                             <option value="&#x751F;&#x6D3B;">&#x751F;&#x6D3B;</option>
+                            <option value="AI">AI</option>
                             <option value="&#x5173;&#x4E8E;">&#x5173;&#x4E8E;</option>
                     </select>
                 </div>
@@ -87,8 +97,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/code" >
-                                    <img src="/favicon.svg" data-icon="/icon/encrypt.svg" />
-                                    <h5>&#x52A0;&#x5BC6;&#x8F6C;&#x7801;</h5>
+                                    <svg><use xlink:href="#encrypt"></use></svg>
+                                    <h5>加密转码</h5>
                                     <small>加密、解密、编码、转码</small>
                                 </a>
                             </div>
@@ -98,8 +108,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/vscode" >
-                                    <img src="/favicon.svg" data-icon="/icon/vscode.svg" />
-                                    <h5>VSCode&#x7F16;&#x8F91;&#x5668;</h5>
+                                    <svg><use xlink:href="#vscode"></use></svg>
+                                    <h5>VSCode编辑器</h5>
                                     <small>Monaco Editor 编辑器</small>
                                 </a>
                             </div>
@@ -109,8 +119,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//md.netnr.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/markdown.svg" />
-                                    <h5>Markdown&#x7F16;&#x8F91;&#x5668;</h5>
+                                    <svg><use xlink:href="#markdown"></use></svg>
+                                    <h5>Markdown编辑器</h5>
                                     <small>Markdown编辑器</small>
                                 </a>
                             </div>
@@ -120,8 +130,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//json.netnr.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/json.svg" />
-                                    <h5>JSON&#x7F16;&#x8F91;&#x5668;</h5>
+                                    <svg><use xlink:href="#json"></use></svg>
+                                    <h5>JSON编辑器</h5>
                                     <small>JSON编辑器</small>
                                 </a>
                             </div>
@@ -131,8 +141,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/nginx" >
-                                    <img src="/favicon.svg" data-icon="/icon/nginx.svg" />
-                                    <h5>Nginx&#x7F16;&#x8F91;&#x5668;</h5>
+                                    <svg><use xlink:href="#nginx"></use></svg>
+                                    <h5>Nginx编辑器</h5>
                                     <small>Nginx配置文件格式化</small>
                                 </a>
                             </div>
@@ -142,8 +152,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/diff" >
-                                    <img src="/favicon.svg" data-icon="/icon/diff.svg" />
-                                    <h5>&#x6587;&#x672C;&#x5BF9;&#x6BD4;</h5>
+                                    <svg><use xlink:href="#diff"></use></svg>
+                                    <h5>文本对比</h5>
                                     <small>Monaco Editor 文件对比</small>
                                 </a>
                             </div>
@@ -153,8 +163,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/filetobase64" >
-                                    <img src="/favicon.svg" data-icon="/icon/code.svg" />
-                                    <h5>&#x6587;&#x4EF6;&#x8F6C;Base64</h5>
+                                    <svg><use xlink:href="#code"></use></svg>
+                                    <h5>文件转Base64</h5>
                                     <small>Base64编码转换</small>
                                 </a>
                             </div>
@@ -164,8 +174,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/sqlformatter" >
-                                    <img src="/favicon.svg" data-icon="/icon/sql.svg" />
-                                    <h5>SQL&#x683C;&#x5F0F;&#x5316;</h5>
+                                    <svg><use xlink:href="#sql"></use></svg>
+                                    <h5>SQL格式化</h5>
                                     <small>美化SQL语句</small>
                                 </a>
                             </div>
@@ -175,8 +185,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/jsontocsharp" >
-                                    <img src="/favicon.svg" data-icon="/icon/csharp.svg" />
-                                    <h5>JSON&#x751F;&#x6210;C#&#x5B9E;&#x4F53;&#x7C7B;</h5>
+                                    <svg><use xlink:href="#csharp"></use></svg>
+                                    <h5>JSON生成C#实体类</h5>
                                     <small>根据JSON生成Model</small>
                                 </a>
                             </div>
@@ -186,8 +196,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/jsontoxml" >
-                                    <img src="/favicon.svg" data-icon="/icon/xml.svg" />
-                                    <h5>JSON&#x8F6C;&#x6362;XML</h5>
+                                    <svg><use xlink:href="#xml"></use></svg>
+                                    <h5>JSON转换XML</h5>
                                     <small>JSON与XML相互转换</small>
                                 </a>
                             </div>
@@ -197,8 +207,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//tiny.netnr.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/tiny.svg" />
-                                    <h5>&#x56FE;&#x7247;&#x538B;&#x7F29;</h5>
+                                    <svg><use xlink:href="#tiny"></use></svg>
+                                    <h5>图片压缩</h5>
                                     <small>图片压缩</small>
                                 </a>
                             </div>
@@ -208,8 +218,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//www.css-js.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/js.svg" />
-                                    <h5>JS&#x538B;&#x7F29;</h5>
+                                    <svg><use xlink:href="#js"></use></svg>
+                                    <h5>JS压缩</h5>
                                     <small>JS压缩、CSS压缩</small>
                                 </a>
                             </div>
@@ -219,8 +229,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//getman.cn" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/http.svg" />
-                                    <h5>HTTP&#x8BF7;&#x6C42;</h5>
+                                    <svg><use xlink:href="#http"></use></svg>
+                                    <h5>HTTP请求</h5>
                                     <small>在线HTTP请求</small>
                                 </a>
                             </div>
@@ -230,8 +240,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/pingcloud" >
-                                    <img src="/favicon.svg" data-icon="/icon/pingcloud.svg" />
-                                    <h5>Ping&#x4E91;</h5>
+                                    <svg><use xlink:href="#pingcloud"></use></svg>
+                                    <h5>Ping云</h5>
                                     <small>Ping各大云服务节点</small>
                                 </a>
                             </div>
@@ -241,7 +251,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//ping.pe" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/ping.svg" />
+                                    <svg><use xlink:href="#ping"></use></svg>
                                     <h5>Ping</h5>
                                     <small>Ping测试</small>
                                 </a>
@@ -252,8 +262,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//check-host.net" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/host.svg" />
-                                    <h5>&#x68C0;&#x6D4B;&#x4E3B;&#x673A;</h5>
+                                    <svg><use xlink:href="#host"></use></svg>
+                                    <h5>检测主机</h5>
                                     <small>CHECK-HOST</small>
                                 </a>
                             </div>
@@ -263,7 +273,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/ip" >
-                                    <img src="/favicon.svg" data-icon="/icon/ip.svg" />
+                                    <svg><use xlink:href="#ip"></use></svg>
                                     <h5>IP</h5>
                                     <small>客户端IP地址</small>
                                 </a>
@@ -274,8 +284,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/localhost" >
-                                    <img src="/favicon.svg" data-icon="/icon/dns.svg" />
-                                    <h5>&#x57DF;&#x540D;&#x672C;&#x5730;&#x89E3;&#x6790;</h5>
+                                    <svg><use xlink:href="#dns"></use></svg>
+                                    <h5>域名本地解析</h5>
                                     <small>域名解析127.0.0.1</small>
                                 </a>
                             </div>
@@ -285,8 +295,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//zijian.aliyun.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/detect.svg" />
-                                    <h5>&#x57DF;&#x540D;&#x68C0;&#x6D4B;</h5>
+                                    <svg><use xlink:href="#detect"></use></svg>
+                                    <h5>域名检测</h5>
                                     <small>检测域名状态、DNS、站点</small>
                                 </a>
                             </div>
@@ -296,8 +306,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//whois.aliyun.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/whois.svg" />
-                                    <h5>Whois&#x67E5;&#x8BE2;</h5>
+                                    <svg><use xlink:href="#whois"></use></svg>
+                                    <h5>Whois查询</h5>
                                     <small>域名信息查询</small>
                                 </a>
                             </div>
@@ -307,7 +317,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/useragent" >
-                                    <img src="/favicon.svg" data-icon="/icon/info.svg" />
+                                    <svg><use xlink:href="#info"></use></svg>
                                     <h5>UserAgent</h5>
                                     <small>客户端信息</small>
                                 </a>
@@ -318,8 +328,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//www.chinassl.net/ssltools/convert-ssl.html" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/ssl.svg" />
-                                    <h5>SSL&#x8BC1;&#x4E66;&#x8F6C;&#x6362;</h5>
+                                    <svg><use xlink:href="#ssl"></use></svg>
+                                    <h5>SSL证书转换</h5>
                                     <small>格式转换</small>
                                 </a>
                             </div>
@@ -329,8 +339,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//tool.chinaz.com/regex/" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/regex.svg" />
-                                    <h5>&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;</h5>
+                                    <svg><use xlink:href="#regex"></use></svg>
+                                    <h5>正则表达式</h5>
                                     <small>正则表达式</small>
                                 </a>
                             </div>
@@ -340,8 +350,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/bed" >
-                                    <img src="/favicon.svg" data-icon="/icon/img.svg" />
-                                    <h5>&#x56FE;&#x5E8A;</h5>
+                                    <svg><use xlink:href="#img"></use></svg>
+                                    <h5>图床</h5>
                                     <small>图床大集合</small>
                                 </a>
                             </div>
@@ -351,8 +361,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/zoning" >
-                                    <img src="/favicon.svg" data-icon="/icon/zoning.svg" />
-                                    <h5>&#x884C;&#x653F;&#x533A;&#x5212;</h5>
+                                    <svg><use xlink:href="#zoning"></use></svg>
+                                    <h5>行政区划</h5>
                                     <small>五级行政区划</small>
                                 </a>
                             </div>
@@ -362,8 +372,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/pinyin" >
-                                    <img src="/favicon.svg" data-icon="/icon/translate.svg" />
-                                    <h5>&#x6C49;&#x5B57;&#x8F6C;&#x62FC;&#x97F3;</h5>
+                                    <svg><use xlink:href="#translate"></use></svg>
+                                    <h5>汉字转拼音</h5>
                                     <small>汉字转拼音</small>
                                 </a>
                             </div>
@@ -373,8 +383,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//zidian.netnr.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/dictionary.svg" />
-                                    <h5>&#x5B57;&#x5178;</h5>
+                                    <svg><use xlink:href="#dictionary"></use></svg>
+                                    <h5>字典</h5>
                                     <small>字、词、成语</small>
                                 </a>
                             </div>
@@ -384,8 +394,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//www.iconfont.cn" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/vector.svg" />
-                                    <h5>&#x963F;&#x91CC;&#x77E2;&#x91CF;&#x56FE;&#x6807;</h5>
+                                    <svg><use xlink:href="#vector"></use></svg>
+                                    <h5>阿里矢量图标</h5>
                                     <small>矢量图标库</small>
                                 </a>
                             </div>
@@ -395,8 +405,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//c.runoob.com/more/svgeditor/" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/svg.svg" />
-                                    <h5>SVG&#x7F16;&#x8F91;&#x5668;</h5>
+                                    <svg><use xlink:href="#svg"></use></svg>
+                                    <h5>SVG编辑器</h5>
                                     <small>SVG编辑器</small>
                                 </a>
                             </div>
@@ -406,8 +416,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/icp" >
-                                    <img src="/favicon.svg" data-icon="/icon/icp.svg" />
-                                    <h5>ICP&#x5907;&#x6848;&#x67E5;&#x8BE2;</h5>
+                                    <svg><use xlink:href="#icp"></use></svg>
+                                    <h5>ICP备案查询</h5>
                                     <small>ICP备案查询</small>
                                 </a>
                             </div>
@@ -416,10 +426,10 @@
                     <div class="col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/freedb" >
-                                    <img src="/favicon.svg" data-icon="/icon/freedb.svg" />
-                                    <h5>&#x514D;&#x8D39;&#x6570;&#x636E;&#x5E93;</h5>
-                                    <small>在线免费的数据库</small>
+                                <a href="/free" >
+                                    <svg><use xlink:href="#free"></use></svg>
+                                    <h5>免费</h5>
+                                    <small>免费的资源</small>
                                 </a>
                             </div>
                         </div>
@@ -427,10 +437,10 @@
                     <div class="col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/freehosting" >
-                                    <img src="/favicon.svg" data-icon="/icon/hosting.svg" />
-                                    <h5>&#x514D;&#x8D39;&#x6258;&#x7BA1;</h5>
-                                    <small>免费的托管空间</small>
+                                <a href="/officeview" >
+                                    <svg><use xlink:href="#office"></use></svg>
+                                    <h5>Office文档查看</h5>
+                                    <small>Word、Excel、PPT</small>
                                 </a>
                             </div>
                         </div>
@@ -439,7 +449,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/dk" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/db.svg" />
+                                    <svg><use xlink:href="#db"></use></svg>
                                     <h5>DataKit</h5>
                                     <small>数据库工具及代码构建</small>
                                 </a>
@@ -450,7 +460,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/zerotier" >
-                                    <img src="/favicon.svg" data-icon="/icon/p2p.svg" />
+                                    <svg><use xlink:href="#p2p"></use></svg>
                                     <h5>ZeroTier</h5>
                                     <small>ZeroTier 管理</small>
                                 </a>
@@ -464,8 +474,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/wallpaper" >
-                                    <img src="/favicon.svg" data-icon="/icon/wallpaper.svg" />
-                                    <h5>&#x58C1;&#x7EB8;</h5>
+                                    <svg><use xlink:href="#wallpaper"></use></svg>
+                                    <h5>壁纸</h5>
                                     <small>360高清壁纸</small>
                                 </a>
                             </div>
@@ -475,8 +485,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/speedtest" >
-                                    <img src="/favicon.svg" data-icon="/icon/speed.svg" />
-                                    <h5>&#x7F51;&#x7EDC;&#x6D4B;&#x901F;</h5>
+                                    <svg><use xlink:href="#speed"></use></svg>
+                                    <h5>网络测速</h5>
                                     <small>资源下载速率</small>
                                 </a>
                             </div>
@@ -486,8 +496,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/qrcode" >
-                                    <img src="/favicon.svg" data-icon="/icon/qrcode.svg" />
-                                    <h5>&#x751F;&#x6210;&#x4E8C;&#x7EF4;&#x7801;</h5>
+                                    <svg><use xlink:href="#qrcode"></use></svg>
+                                    <h5>生成二维码</h5>
                                     <small>生成二维码</small>
                                 </a>
                             </div>
@@ -497,8 +507,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/lottery" >
-                                    <img src="/favicon.svg" data-icon="/icon/lottery.svg" />
-                                    <h5>&#x5F69;&#x7968;&#x67E5;&#x8BE2;</h5>
+                                    <svg><use xlink:href="#lottery"></use></svg>
+                                    <h5>彩票查询</h5>
                                     <small>彩票查询</small>
                                 </a>
                             </div>
@@ -508,8 +518,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/idcard" >
-                                    <img src="/favicon.svg" data-icon="/icon/idcard.svg" />
-                                    <h5>&#x8EAB;&#x4EFD;&#x8BC1;&#x53F7;&#x7801;&#x67E5;&#x8BE2;</h5>
+                                    <svg><use xlink:href="#idcard"></use></svg>
+                                    <h5>身份证号码查询</h5>
                                     <small>查询地区、性别，纠正尾数</small>
                                 </a>
                             </div>
@@ -519,7 +529,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/ps" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/ps.svg" />
+                                    <svg><use xlink:href="#ps"></use></svg>
                                     <h5>Photoshop</h5>
                                     <small>在线PS</small>
                                 </a>
@@ -530,8 +540,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//kms.netnr.com" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/microsoft.svg" />
-                                    <h5>KMS&#x670D;&#x52A1;</h5>
+                                    <svg><use xlink:href="#microsoft"></use></svg>
+                                    <h5>KMS服务</h5>
                                     <small>激活Windows系统</small>
                                 </a>
                             </div>
@@ -541,8 +551,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//v.zme.ink" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/video.svg" />
-                                    <h5>VIP&#x89C6;&#x9891;&#x89E3;&#x6790;</h5>
+                                    <svg><use xlink:href="#video"></use></svg>
+                                    <h5>VIP视频解析</h5>
                                     <small>免费看会员视频</small>
                                 </a>
                             </div>
@@ -552,8 +562,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/tempsms" >
-                                    <img src="/favicon.svg" data-icon="/icon/sms.svg" />
-                                    <h5>&#x4E34;&#x65F6;&#x77ED;&#x4FE1;</h5>
+                                    <svg><use xlink:href="#sms"></use></svg>
+                                    <h5>临时短信</h5>
                                     <small>接收临时短信</small>
                                 </a>
                             </div>
@@ -563,8 +573,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/tempmail" >
-                                    <img src="/favicon.svg" data-icon="/icon/email.svg" />
-                                    <h5>&#x4E34;&#x65F6;&#x90AE;&#x7BB1;</h5>
+                                    <svg><use xlink:href="#email"></use></svg>
+                                    <h5>临时邮箱</h5>
                                     <small>接收临时邮件</small>
                                 </a>
                             </div>
@@ -574,8 +584,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/symbol" >
-                                    <img src="/favicon.svg" data-icon="/icon/symbol.svg" />
-                                    <h5>&#x7279;&#x6B8A;&#x7B26;&#x53F7;</h5>
+                                    <svg><use xlink:href="#symbol"></use></svg>
+                                    <h5>特殊符号</h5>
                                     <small>特殊符号</small>
                                 </a>
                             </div>
@@ -585,8 +595,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/emoji" >
-                                    <img src="/favicon.svg" data-icon="/icon/emoji.svg" />
-                                    <h5>Emoji&#x7B26;&#x53F7;</h5>
+                                    <svg><use xlink:href="#emoji"></use></svg>
+                                    <h5>Emoji符号</h5>
                                     <small>Emoji表情</small>
                                 </a>
                             </div>
@@ -596,8 +606,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/express" >
-                                    <img src="/favicon.svg" data-icon="/icon/express.svg" />
-                                    <h5>&#x5FEB;&#x9012;&#x67E5;&#x8BE2;</h5>
+                                    <svg><use xlink:href="#express"></use></svg>
+                                    <h5>快递查询</h5>
                                     <small>一键查询快递</small>
                                 </a>
                             </div>
@@ -607,8 +617,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/weather" >
-                                    <img src="/favicon.svg" data-icon="/icon/weather.svg" />
-                                    <h5>&#x5929;&#x6C14;&#x9884;&#x62A5;</h5>
+                                    <svg><use xlink:href="#weather"></use></svg>
+                                    <h5>天气预报</h5>
                                     <small>天气预报</small>
                                 </a>
                             </div>
@@ -618,8 +628,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/rmb" >
-                                    <img src="/favicon.svg" data-icon="/icon/rmb.svg" />
-                                    <h5>&#x4EBA;&#x6C11;&#x5E01;&#x8F6C;&#x5927;&#x5199;</h5>
+                                    <svg><use xlink:href="#rmb"></use></svg>
+                                    <h5>人民币转大写</h5>
                                     <small>人民币转大写</small>
                                 </a>
                             </div>
@@ -629,8 +639,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/randomcode" >
-                                    <img src="/favicon.svg" data-icon="/icon/key.svg" />
-                                    <h5>&#x751F;&#x6210;&#x968F;&#x673A;&#x5BC6;&#x7801;</h5>
+                                    <svg><use xlink:href="#key"></use></svg>
+                                    <h5>生成随机密码</h5>
                                     <small>生成随机密码</small>
                                 </a>
                             </div>
@@ -640,8 +650,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/qiushibaike" >
-                                    <img src="/favicon.svg" data-icon="/icon/qsbk.svg" />
-                                    <h5>&#x7CD7;&#x4E8B;&#x767E;&#x79D1;&#x7B11;&#x8BDD;</h5>
+                                    <svg><use xlink:href="#qsbk"></use></svg>
+                                    <h5>糗事百科笑话</h5>
                                     <small>糗事百科笑话</small>
                                 </a>
                             </div>
@@ -651,8 +661,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/tv" >
-                                    <img src="/favicon.svg" data-icon="/icon/tv.svg" />
-                                    <h5>&#x5728;&#x7EBF;&#x7535;&#x89C6;</h5>
+                                    <svg><use xlink:href="#tv"></use></svg>
+                                    <h5>在线电视</h5>
                                     <small>m3u8源播放</small>
                                 </a>
                             </div>
@@ -662,8 +672,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/purine" >
-                                    <img src="/favicon.svg" data-icon="/icon/purine.svg" />
-                                    <h5>&#x98DF;&#x7269;&#x560C;&#x5464;&#x542B;&#x91CF;</h5>
+                                    <svg><use xlink:href="#purine"></use></svg>
+                                    <h5>食物嘌呤含量</h5>
                                     <small>食物嘌呤含量</small>
                                 </a>
                             </div>
@@ -673,8 +683,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/bmi" >
-                                    <img src="/favicon.svg" data-icon="/icon/bmi.svg" />
-                                    <h5>&#x4F53;&#x91CD;&#x6807;&#x51C6;</h5>
+                                    <svg><use xlink:href="#bmi"></use></svg>
+                                    <h5>体重标准</h5>
                                     <small>中国成人超重和肥胖标准</small>
                                 </a>
                             </div>
@@ -684,9 +694,34 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/gc" >
-                                    <img src="/favicon.svg" data-icon="/icon/gc.svg" />
-                                    <h5>&#x5783;&#x573E;&#x5206;&#x7C7B;</h5>
+                                    <svg><use xlink:href="#gc"></use></svg>
+                                    <h5>垃圾分类</h5>
                                     <small>垃圾分类查询</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>AI</div>
+                    <div class="col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/ocr" >
+                                    <svg><use xlink:href="#ocr"></use></svg>
+                                    <h5>OCR</h5>
+                                    <small>识别图片内容</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/nsfw" >
+                                    <svg><use xlink:href="#nsfw"></use></svg>
+                                    <h5>图片审查</h5>
+                                    <small>绘画、变态、中立、色情、性感</small>
                                 </a>
                             </div>
                         </div>
@@ -698,8 +733,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/overview" >
-                                    <img src="/favicon.svg" data-icon="/icon/overview.svg" />
-                                    <h5>&#x6982;&#x8FF0;</h5>
+                                    <svg><use xlink:href="#overview"></use></svg>
+                                    <h5>概述</h5>
                                     <small>脚本服务</small>
                                 </a>
                             </div>
@@ -709,8 +744,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="/message" >
-                                    <img src="/favicon.svg" data-icon="/icon/message.svg" />
-                                    <h5>&#x7559;&#x8A00;</h5>
+                                    <svg><use xlink:href="#message"></use></svg>
+                                    <h5>留言</h5>
                                     <small>匿名留言</small>
                                 </a>
                             </div>
@@ -720,8 +755,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <a href="//zme.ink" target='_blank'>
-                                    <img src="/favicon.svg" data-icon="/icon/love.svg" />
-                                    <h5>&#x8054;&#x7CFB;&#x8D5E;&#x52A9;</h5>
+                                    <svg><use xlink:href="#love"></use></svg>
+                                    <h5>联系赞助</h5>
                                     <small>Sponsors</small>
                                 </a>
                             </div>
@@ -731,7 +766,7 @@
     </div>
 </div>
 
-<script src="/js/index.js?v=yOnUryFKm95mLTIIl0wM3BfL5G7DUD9IPyRVTplUF_s"></script>
+<script src="/js/index.js?v=snrE9mH-PEfeCZB1dLgqcsBP708sHNYuszCvLdld-d0"></script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>

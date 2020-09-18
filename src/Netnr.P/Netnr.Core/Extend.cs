@@ -253,5 +253,16 @@ namespace Netnr
             var tc = t / (isms ? 10000 : 10000000);
             return tc;
         }
+
+        /// <summary>
+        /// 将Datetime转换成从UTC开始计算的总天数
+        /// </summary>
+        /// <param name="datetime"></param>
+        /// <returns></returns>
+        public static int ToUtcTotalDays(this DateTime datetime)
+        {
+            var d = datetime.ToTimestamp() * 1.0 / 3600 / 24;
+            return (int)Math.Ceiling(d);
+        }
     }
 }

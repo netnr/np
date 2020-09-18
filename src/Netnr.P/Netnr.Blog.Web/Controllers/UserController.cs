@@ -150,11 +150,10 @@ namespace Netnr.Blog.Web.Controllers
 
             try
             {
-                var fullpath = Path.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"), GlobalTo.GetValue("StaticResource:AvatarPath")) + "/";
-
-                if (!Directory.Exists(fullpath))
+                var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
+                if (!Directory.Exists(ppath))
                 {
-                    Directory.CreateDirectory(fullpath);
+                    Directory.CreateDirectory(ppath);
                 }
 
                 if (string.IsNullOrWhiteSpace(uinfo.UserPhoto))
@@ -172,9 +171,7 @@ namespace Netnr.Blog.Web.Controllers
                             byte[] bytes = Convert.FromBase64String(source);
                             using var ms = new MemoryStream(bytes);
                             using var bmp = new System.Drawing.Bitmap(ms);
-                            var hp = fullpath + upname.Replace(".", "_lg.");
-                            bmp.Save(hp, ImageFormat.Jpeg);
-                            Fast.ImageTo.MinImg(hp, fullpath, upname, 40, 40, "wh");
+                            bmp.Save(Fast.PathTo.Combine(ppath, upname), ImageFormat.Jpeg);
 
                             using (var db = new Data.ContextBase())
                             {
@@ -195,9 +192,7 @@ namespace Netnr.Blog.Web.Controllers
                     case "link":
                         {
                             using var wc = new System.Net.WebClient();
-                            var hp = fullpath + upname.Replace(".", "_lg.");
-                            wc.DownloadFile(source, hp);
-                            Fast.ImageTo.MinImg(hp, fullpath, upname, 40, 40, "wh");
+                            wc.DownloadFile(source, Fast.PathTo.Combine(ppath, upname));
 
                             using (var db = new Data.ContextBase())
                             {
@@ -241,6 +236,47 @@ namespace Netnr.Blog.Web.Controllers
             using (var db = new Data.ContextBase())
             {
                 var mo = db.UserInfo.Find(uinfo.UserId);
+
+                ViewData["listQuickLogin"] = new List<Application.ViewModel.QuickLoginVM>
+                {
+                    new Application.ViewModel.QuickLoginVM
+                    {
+                        Key = "qq",
+                        Name = "QQ",
+                        Bind = mo.OpenId1?.Length > 1
+                    },
+                    new Application.ViewModel.QuickLoginVM
+                    {
+                        Key = "weibo",
+                        Name = "微博",
+                        Bind = mo.OpenId2?.Length > 1
+                    },
+                    new Application.ViewModel.QuickLoginVM
+                    {
+                        Key = "github",
+                        Name = "GitHub",
+                        Bind = mo.OpenId3?.Length > 1
+                    },
+                    new Application.ViewModel.QuickLoginVM
+                    {
+                        Key = "taobao",
+                        Name = "淘宝",
+                        Bind = mo.OpenId4?.Length > 1
+                    },
+                    new Application.ViewModel.QuickLoginVM
+                    {
+                        Key = "microsoft",
+                        Name = "Microsoft",
+                        Bind = mo.OpenId5?.Length > 1
+                    },
+                    new Application.ViewModel.QuickLoginVM
+                    {
+                        Key = "dingtalk",
+                        Name = "钉钉",
+                        Bind = mo.OpenId6?.Length > 1
+                    }
+                };
+
                 return View(mo);
             };
         }
@@ -557,45 +593,43 @@ namespace Netnr.Blog.Web.Controllers
                 var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                 int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-                using (var db = new Data.ContextBase())
+                using var db = new Data.ContextBase();
+                var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == UwId);
+
+                if (oldmo.UwStatus == -1)
                 {
-                    var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == UwId);
+                    vm.Set(ARTag.unauthorized);
+                }
+                else if (oldmo != null)
+                {
+                    oldmo.UwTitle = mo.UwTitle;
+                    oldmo.UwCategory = mo.UwCategory;
+                    oldmo.UwContentMd = mo.UwContentMd;
+                    oldmo.UwContent = mo.UwContent;
+                    oldmo.UwUpdateTime = DateTime.Now;
 
-                    if (oldmo.UwStatus == -1)
+                    db.UserWriting.Update(oldmo);
+
+                    var wt = db.UserWritingTags.Where(x => x.UwId == UwId).ToList();
+                    db.UserWritingTags.RemoveRange(wt);
+
+                    var listwt = new List<Domain.UserWritingTags>();
+                    foreach (var tag in lisTagId)
                     {
-                        vm.Set(ARTag.unauthorized);
-                    }
-                    else if (oldmo != null)
-                    {
-                        oldmo.UwTitle = mo.UwTitle;
-                        oldmo.UwCategory = mo.UwCategory;
-                        oldmo.UwContentMd = mo.UwContentMd;
-                        oldmo.UwContent = mo.UwContent;
-                        oldmo.UwUpdateTime = DateTime.Now;
-
-                        db.UserWriting.Update(oldmo);
-
-                        var wt = db.UserWritingTags.Where(x => x.UwId == UwId).ToList();
-                        db.UserWritingTags.RemoveRange(wt);
-
-                        var listwt = new List<Domain.UserWritingTags>();
-                        foreach (var tag in lisTagId)
+                        var wtmo = new Domain.UserWritingTags
                         {
-                            var wtmo = new Domain.UserWritingTags
-                            {
-                                UwId = mo.UwId,
-                                TagId = tag,
-                                TagName = lisTagName.Where(x => x.TagId == tag).FirstOrDefault().TagName
-                            };
+                            UwId = mo.UwId,
+                            TagId = tag,
+                            TagName = lisTagName.Where(x => x.TagId == tag).FirstOrDefault().TagName
+                        };
 
-                            listwt.Add(wtmo);
-                        }
-                        db.UserWritingTags.AddRange(listwt);
-
-                        int num = db.SaveChanges();
-
-                        vm.Set(num > 0);
+                        listwt.Add(wtmo);
                     }
+                    db.UserWritingTags.AddRange(listwt);
+
+                    int num = db.SaveChanges();
+
+                    vm.Set(num > 0);
                 }
             }
             catch (Exception ex)

@@ -391,6 +391,31 @@
             是目录
             </summary>
         </member>
+        <member name="T:Netnr.Blog.Application.ViewModel.QuickLoginVM">
+            <summary>
+            快捷登录
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Application.ViewModel.QuickLoginVM.Key">
+            <summary>
+            路径名，标识
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Application.ViewModel.QuickLoginVM.Name">
+            <summary>
+            显示名称
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Application.ViewModel.QuickLoginVM.Icon">
+            <summary>
+            图标
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Application.ViewModel.QuickLoginVM.Bind">
+            <summary>
+            是否绑定
+            </summary>
+        </member>
         <member name="T:Netnr.Blog.Application.VisualFormatService">
             <summary>
             可视 格式化

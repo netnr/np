@@ -1,22 +1,15 @@
 ﻿using Newtonsoft.Json.Linq;
-using System.IO;
 
 namespace Netnr.ScriptService.Application
 {
     public class NavService
     {
-        private static JArray _nav;
-
         public static JArray Nav
         {
             get
             {
-                if (_nav == null)
-                {
-                    var fullPath = Path.Combine(GlobalTo.WebRootPath, "db/nav.json");
-                    _nav = Core.FileTo.ReadText(fullPath).ToJArray();
-                }
-                return _nav;
+                var fullPath = Fast.PathTo.Combine(GlobalTo.WebRootPath, "db/nav.json");
+                return Core.FileTo.ReadText(fullPath).ToJArray();
             }
         }
 

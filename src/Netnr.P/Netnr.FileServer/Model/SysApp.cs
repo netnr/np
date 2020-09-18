@@ -4,48 +4,53 @@ using System;
 namespace Netnr.FileServer.Model
 {
     /// <summary>
-    /// token管理
+    /// App管理
     /// </summary>
-    public class SysKey
+    public class SysApp
     {
         /// <summary>
-        /// AppId
+        /// 应用ID
         /// </summary>
         [PrimaryKey, MaxLength(50)]
-        public string SkAppId { get; set; }
+        public string AppId { get; set; }
 
         /// <summary>
-        /// SkAppKey    密钥，取Guid的MD5值
+        /// 密钥
         /// </summary>
         [Unique, MaxLength(50)]
-        public string SkAppKey { get; set; }
+        public string AppKey { get; set; }
 
         /// <summary>
         /// 所属用户，唯一，文件夹名
         /// </summary>
         [Unique, MaxLength(50)]
-        public string SkOwner { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime? SkCreateTime { get; set; }
+        public string Owner { get; set; }
 
         /// <summary>
         /// 生成的Token
         /// </summary>
-        [Unique, MaxLength(100)]
-        public string SkToken { get; set; }
+        [Unique, MaxLength(200)]
+        public string Token { get; set; }
+
+        /// <summary>
+        /// 固定Token
+        /// </summary>
+        public string FixToken { get; set; }
 
         /// <summary>
         /// Token过期时间
         /// </summary>
-        public DateTime? SkTokenExpireTime { get; set; }
+        public DateTime? TokenExpireTime { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime? CreateTime { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         [MaxLength(200)]
-        public string SkRemark { get; set; }
+        public string Remark { get; set; }
     }
 }

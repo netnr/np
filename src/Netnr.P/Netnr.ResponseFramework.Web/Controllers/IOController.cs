@@ -34,13 +34,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             var vm = new ActionResultVM();
 
-            //文件路径
-            string path = "/upload/temp/";
-            var vpath = GlobalTo.WebRootPath + path;
-
-            if (!Directory.Exists(vpath))
+            //虚拟路径
+            string vpath = GlobalTo.GetValue("StaticResource:TmpDir");
+            //物理路径
+            var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+            if (!Directory.Exists(ppath))
             {
-                Directory.CreateDirectory(vpath);
+                Directory.CreateDirectory(ppath);
             }
 
             //文件名
@@ -93,12 +93,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 if (vm.Msg != ARTag.invalid.ToString())
                 {
                     //生成
-                    if (Fast.NpoiTo.DataTableToExcel(dtReport, vpath + filename))
+                    if (Fast.NpoiTo.DataTableToExcel(dtReport, Fast.PathTo.Combine(ppath, filename)))
                     {
-                        vm.Data = path + filename;
+                        vm.Data = Fast.PathTo.Combine(vpath, filename);
 
                         //生成的Excel继续操作
-                        ExportService.ExcelDraw(vpath + filename, ivm);
+                        ExportService.ExcelDraw(Fast.PathTo.Combine(ppath, filename), ivm);
 
                         vm.Set(ARTag.success);
                     }

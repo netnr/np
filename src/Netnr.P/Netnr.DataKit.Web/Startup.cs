@@ -61,6 +61,7 @@ namespace Netnr.DataKit.Web
             {
                 c.DocumentTitle = "Netnr.DataKit API";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             app.UseStaticFiles();

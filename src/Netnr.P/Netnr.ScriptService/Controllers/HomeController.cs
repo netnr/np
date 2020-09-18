@@ -289,19 +289,10 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 免费数据库
+        /// 免费
         /// </summary>
         /// <returns></returns>
-        public IActionResult FreeDB()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 免费托管
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult FreeHosting()
+        public IActionResult Free()
         {
             return View();
         }
@@ -374,6 +365,33 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Overview()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 查看Office文档
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult OfficeView()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// OCR 识别图片内容
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult OCR()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// NSFW 图片审查
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult NSFW()
         {
             return View();
         }

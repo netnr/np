@@ -1,12 +1,5 @@
 @model string
 @{
-    var cacheKey = "GlobalKey-HtmlPath";
-
-    //是html路径
-    var ishp = CacheTo.Get(cacheKey) as string == "yes";
-    var hp = ishp ? "" : "/home";
-
-
     switch (Model)
     {
         case "me":

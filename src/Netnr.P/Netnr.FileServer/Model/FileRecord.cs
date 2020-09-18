@@ -12,53 +12,53 @@ namespace Netnr.FileServer.Model
         /// ID
         /// </summary>
         [PrimaryKey, MaxLength(50)]
-        public string FrId { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// 所属用户
         /// </summary>
         [Indexed, MaxLength(50)]
-        public string FrOwnerUser { get; set; }
+        public string OwnerUser { get; set; }
 
         /// <summary>
         /// 分类
         /// </summary>
         [MaxLength(100)]
-        public string FrType { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// 文件名
         /// </summary>
         [MaxLength(500)]
-        public string FrName { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 文件路径
         /// </summary>
         [MaxLength(200)]
-        public string FrPath { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// 文件Hash，SHA1
         /// </summary>
         [MaxLength(100)]
-        public string FrHash { get; set; }
+        public string Hash { get; set; }
 
         /// <summary>
         /// 文件大小，单位B
         /// </summary>
-        public long FrSize { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime? FrCreateTime { get; set; } = DateTime.Now;
+        public DateTime? CreateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 备注
         /// </summary>
         [MaxLength(200)]
-        public string FrRemark { get; set; }
+        public string Remark { get; set; }
 
     }
 }

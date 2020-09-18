@@ -219,11 +219,12 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 var msg = "fail";
                 var url = "";
 
-                var vm = new Blog.Web.Controllers.APIController().API98(Request.Form.Files[0], GlobalTo.GetValue("StaticResource:DrawPath"));
+                var subdir = GlobalTo.GetValue("StaticResource:DrawPath").Replace(GlobalTo.GetValue("StaticResource:RootDir"), "");
+                var vm = new Blog.Web.Controllers.APIController().API98(Request.Form.Files[0], subdir);
 
                 if (vm.Code == 200)
                 {
-                    var jd = ((JObject)vm.Data);
+                    var jd = vm.Data.ToJson().ToJObject();
                     url = jd["server"].ToString() + jd["path"].ToString();
                     errno = 0;
                     msg = "ok";

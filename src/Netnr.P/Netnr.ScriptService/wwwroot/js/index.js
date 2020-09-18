@@ -59,15 +59,9 @@ $('#seGroup').find('option').each(function () {
     }
 });
 
-$('.navbox').find('img').each(function () {
-    var that = this;
-    this.onerror = function () { this.src = '/favicon.svg'; this.onerror = null; }
-    var ci = new Image();
-    ci.onload = function () { that.src = this.src; }
-    ci.src = that.getAttribute('data-icon');
-
+$('.navbox').find('a').each(function () {
     //兼容本地生成的静态页面
-    var na = that.parentNode;
+    var na = this;
     if (na.href.indexOf("//localhost") >= 0 && na.href.indexOf("/home/") == -1) {
         na.href += ".html";
     }

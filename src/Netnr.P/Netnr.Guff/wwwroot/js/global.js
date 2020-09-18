@@ -349,14 +349,14 @@
         if (item.GrAudio) {
             var urls = item.GrAudio.split(',') || [];
             $.each(urls, function () {
-                htm.push('<div class="mb-3"><audio class="w-100" src="' + u.replace(/"/g, "") + '" controls /></div>');
+                htm.push('<div class="mb-3"><audio class="w-100" src="' + this.replace(/"/g, "") + '" controls /></div>');
             })
         }
 
         if (item.GrVideo) {
             var urls = item.GrVideo.split(',') || [];
             $.each(urls, function () {
-                htm.push('<div class="mb-3"><video class="w-100" src="' + u.replace(/"/g, "") + '" controls /></div>');
+                htm.push('<div class="mb-3"><video class="w-100" src="' + this.replace(/"/g, "") + '" controls /></div>');
             })
         }
 

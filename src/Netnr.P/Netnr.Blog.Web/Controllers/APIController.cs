@@ -46,76 +46,17 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 获取GUID
-        /// </summary>
-        /// <param name="count">条数，默认10</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResultVM API81(int? count = 10)
-        {
-            var vm = new ActionResultVM();
-
-            try
-            {
-                var list = new List<string>();
-                for (int i = 0; i < count; i++)
-                {
-                    list.Add(Guid.NewGuid().ToString());
-                }
-                vm.Data = list;
-                vm.Set(ARTag.success);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 获取GUID To long
-        /// </summary>
-        /// <param name="count">条数，默认10</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResultVM API82(int? count = 10)
-        {
-            var vm = new ActionResultVM();
-
-            try
-            {
-                var list = new List<long>();
-                for (int i = 0; i < count; i++)
-                {
-                    list.Add(Core.UniqueTo.LongId());
-                }
-                vm.Data = list;
-                vm.Set(ARTag.success);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
         /// 公共上传
         /// </summary>
         /// <param name="file">文件</param>
-        /// <param name="cp">可选，自定义路径，如：static/draw</param>
+        /// <param name="subdir">可选，自定义子路径，如：/static/draw</param>
         /// <returns></returns>
         [HttpPost]
-        [HttpOptions]
-        public ActionResultVM API98(IFormFile file, string cp = null)
+        public ActionResultVM API98(IFormFile file, string subdir = null)
         {
             var vm = new ActionResultVM();
 
-            if (Request.Method == "OPTIONS")
+            if (Request?.Method == "OPTIONS")
             {
                 vm.Set(ARTag.success);
                 return vm;
@@ -125,10 +66,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 if (file != null)
                 {
-                    var now = DateTime.Now;
-                    string filename = now.ToString("HHmmss") + Guid.NewGuid().ToString("N").Substring(25, 4);
                     string ext = Path.GetExtension(file.FileName).ToLower();
-
                     if (ext == ".exe" || ext == "")
                     {
                         vm.Code = 2;
@@ -136,36 +74,41 @@ namespace Netnr.Blog.Web.Controllers
                     }
                     else
                     {
-                        cp ??= "";
-                        if (cp.Contains(".."))
+                        var now = DateTime.Now;
+                        string filename = now.ToString("HHmmss") + Core.RandomTo.NumCode() + ext;
+
+                        if (!string.IsNullOrWhiteSpace(subdir) && !Fast.ParsingTo.IsLinkPath(subdir))
                         {
-                            cp = "";
+                            vm.Set(ARTag.invalid);
+                            vm.Msg = "subdir 仅为字母、数字";
                         }
-                        var path = Path.Combine(cp.TrimStart('/').TrimEnd('/'), now.ToString("yyyy/MM/dd/"));
-                        var fullpath = Path.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"), path);
-
-                        if (!Directory.Exists(fullpath))
+                        else
                         {
-                            Directory.CreateDirectory(fullpath);
+                            var vpath = Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), subdir, now.ToString("yyyy'/'MM'/'dd"));
+                            
+                            var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+
+                            if (!Directory.Exists(ppath))
+                            {
+                                Directory.CreateDirectory(ppath);
+                            }
+
+                            using (var fs = new FileStream(Fast.PathTo.Combine(ppath, filename), FileMode.CreateNew))
+                            {
+                                file.CopyTo(fs);
+                                fs.Flush();
+                            }
+
+                            var jo = new
+                            {
+                                server = GlobalTo.GetValue("StaticResource:Server"),
+                                path = Fast.PathTo.Combine(vpath, filename)
+                            };
+
+                            vm.Data = jo;
+
+                            vm.Set(ARTag.success);
                         }
-
-                        using (var fs = new FileStream(Path.Combine(fullpath, filename + ext), FileMode.CreateNew))
-                        {
-                            file.CopyTo(fs);
-                            fs.Flush();
-                        }
-
-                        var FilePath = path + filename + ext;
-
-                        var jo = new
-                        {
-                            server = GlobalTo.GetValue("StaticResource:Server").TrimEnd('/') + '/',
-                            path = FilePath
-                        };
-
-                        vm.Data = jo;
-
-                        vm.Set(ARTag.success);
                     }
                 }
                 else
@@ -176,6 +119,7 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
+                Console.WriteLine(ex);
                 Filters.FilterConfigs.WriteLog(HttpContext, ex);
             }
 

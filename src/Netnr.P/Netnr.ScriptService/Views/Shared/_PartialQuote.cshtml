@@ -67,6 +67,16 @@
             <script src="https://code.bdstatic.com/npm/hls.js@0.13.2/dist/hls.min.js"></script>
             break;
 
+        case "nsfwjs":
+            <script src="https://code.bdstatic.com/npm/@@tensorflow/tfjs@1.7.4/dist/tf.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/@@nsfw-filter/nsfwjs@2.2.0/dist/nsfwjs.min.js"></script>
+            break;
+
+        case "cropperjs":
+            <link href="https://code.bdstatic.com/npm/cropperjs@1.5.9/dist/cropper.css" rel="stylesheet" />
+            <script src="https://code.bdstatic.com/npm/cropperjs@1.5.9/dist/cropper.min.js"></script>
+            break;
+
         case "monaco-editor":
             <script src="https://code.bdstatic.com/npm/monaco-editor@0.20.0/min/vs/loader.js"></script>
             <script>
@@ -81,13 +91,25 @@
             <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
             break;
 
+        case "icon":
+            <script>
+                $.ajax({
+                    url: "/images/icon.svg",
+                    dataType: 'text',
+                    success: function (data) {
+                        $('body').append('<div class="d-none">' + data + '</div>')
+                    }
+                })
+            </script>
+            break;
+
         case "the":
-            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
             break;
     }
 }

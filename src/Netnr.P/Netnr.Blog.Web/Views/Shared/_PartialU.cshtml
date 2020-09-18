@@ -12,13 +12,17 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="row duib">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     @{
-                        var lgphoto = System.IO.Path.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), Model.UserPhoto?.Replace(".", "_lg."));
+                        var lgphoto = "/favicon.svg";
+                        if (!string.IsNullOrWhiteSpace(Model.UserPhoto))
+                        {
+                            lgphoto = Netnr.Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), Model.UserPhoto);
+                        }
 
                         Model.UserSay = string.IsNullOrEmpty(Model.UserSay) ? "这个人很懒，什么也没有留下。^_^ " : Model.UserSay;
                     }
-                    <img class="rounded-circle mw-100" id="userp" src="@lgphoto" onerror="this.src = '/favicon.png'; this.onerror = null;" />
+                    <img class="rounded-circle mw-100" id="userp" src="@lgphoto" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
                 </div>
                 <div class="col-md-4">
                     <h2>@Model.Nickname</h2>
@@ -40,7 +44,7 @@
                         }
                     </p>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div class="card border-info">
                         <div class="card-header">
                             <button class='btn btn-light btn-min float-right @(isme?"":"d-none")' id="btnsayedit">

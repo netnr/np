@@ -127,7 +127,7 @@ body {
         text-decoration: none;
     }
 
-    .navbox a img {
+    .navbox a svg {
         float: left;
         width: 48px;
         height: 48px;

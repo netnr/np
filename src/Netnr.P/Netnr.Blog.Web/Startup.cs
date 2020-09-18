@@ -171,6 +171,7 @@ namespace Netnr.Blog.Web
             {
                 c.DocumentTitle = $"{GlobalTo.GetValue("Common:EnglishName")} API";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             //默认起始页index.html

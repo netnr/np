@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "登录";
 
-    var loginpath = GlobalTo.GetValue("StaticResource:Server") + GlobalTo.GetValue("StaticResource:LoginPath");
+    var listQuickLogin = ViewData["listQuickLogin"] as List<Netnr.Blog.Application.ViewModel.QuickLoginVM>;
 }
 
 <link href="/css/account/login.css" rel="stylesheet" asp-append-version="true" />
@@ -42,24 +42,12 @@
             @if (GlobalTo.GetValue<bool>("OAuthLogin:enable"))
             {
                 <div class="otherlogin">
-                    <a href="/account/auth/qq">
-                        <img src="@(loginpath+"/qq.svg")" title="QQ" />
-                    </a>
-                    <a href="/account/auth/weibo">
-                        <img src="@(loginpath+"/weibo.svg")" title="微博" />
-                    </a>
-                    <a href="/account/auth/github">
-                        <img src="@(loginpath+"/github.svg")" title="GitHub" />
-                    </a>
-                    <a href="/account/auth/taobao">
-                        <img src="@(loginpath+"/taobao.svg")" title="淘宝/天猫" />
-                    </a>
-                    <a href="/account/auth/microsoft">
-                        <img src="@(loginpath+"/microsoft.svg")" title="微软" />
-                    </a>
-                    <a href="/account/auth/dingtalk">
-                        <img src="@(loginpath+"/dingtalk.svg")" title="钉钉" />
-                    </a>
+                    @foreach (var login in listQuickLogin)
+                    {
+                        <a href="/account/auth/@login.Key">
+                            <img src="@login.Icon" title="@login.Name" />
+                        </a>
+                    }
                 </div>
             }
         </div>

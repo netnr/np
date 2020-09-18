@@ -16,11 +16,30 @@
             <param name="txt"></param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Fast.ParsingTo.IsLinkPath(System.String)">
+            <summary>
+            是合法链接路径（数字、字母、下划线）；可为多级路径，如：abc/xyz ；为空时返回不合法
+            </summary>
+            <param name="txt"></param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Fast.ParsingTo.JsSafeJoin(System.String)">
             <summary>
             JS安全拼接
             </summary>
             <param name="txt">内容</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Fast.PathTo">
+            <summary>
+            路径
+            </summary>
+        </member>
+        <member name="M:Netnr.Fast.PathTo.Combine(System.String[])">
+            <summary>
+            路径结合，默认 / 拼接
+            </summary>
+            <param name="args"></param>
             <returns></returns>
         </member>
         <member name="T:Netnr.Fast.QueryableTo">

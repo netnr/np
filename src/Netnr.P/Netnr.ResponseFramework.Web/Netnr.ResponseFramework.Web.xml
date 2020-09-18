@@ -104,18 +104,20 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.Upload(System.Nullable{System.Int32},System.String)">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.Upload(Microsoft.AspNetCore.Http.IFormFileCollection,System.Nullable{System.Int32},System.String)">
             <summary>
             公共上传，支持同时上传多个
             </summary>
+            <param name="files">文件</param>
             <param name="temp">temp=1,表示临时文件</param>
-            <param name="path">upload下自定义子目录，如：doc</param>
+            <param name="subdir">自定义子目录，如：doc</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.UploadRich">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.CommonController.UploadRich(Microsoft.AspNetCore.Http.IFormFileCollection)">
             <summary>
             公共上传，富文本附件，限制大小2MB
             </summary>
+            <param name="upload">一个文件</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.ResponseFramework.Web.Controllers.DKController">
@@ -250,6 +252,12 @@
         <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.Guide">
             <summary>
             向导
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.SwaggerCustomStyle">
+            <summary>
+            Swagger自定义样式
             </summary>
             <returns></returns>
         </member>

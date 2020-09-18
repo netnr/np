@@ -131,6 +131,40 @@ namespace Netnr.Blog.Web.Controllers
             //记录登录跳转
             Response.Cookies.Append("ReturnUrl", ReturnUrl ?? "");
 
+            ViewData["listQuickLogin"] = new List<Application.ViewModel.QuickLoginVM>
+            {
+                new Application.ViewModel.QuickLoginVM
+                {
+                    Key = "qq",
+                    Name = "QQ"
+                },
+                new Application.ViewModel.QuickLoginVM
+                {
+                    Key = "weibo",
+                    Name = "微博"
+                },
+                new Application.ViewModel.QuickLoginVM
+                {
+                    Key = "github",
+                    Name = "GitHub"
+                },
+                new Application.ViewModel.QuickLoginVM
+                {
+                    Key = "taobao",
+                    Name = "淘宝"
+                },
+                new Application.ViewModel.QuickLoginVM
+                {
+                    Key = "microsoft",
+                    Name = "Microsoft"
+                },
+                new Application.ViewModel.QuickLoginVM
+                {
+                    Key = "dingtalk",
+                    Name = "钉钉"
+                }
+            };
+
             return View();
         }
 
@@ -586,20 +620,20 @@ namespace Netnr.Blog.Web.Controllers
                                         try
                                         {
                                             using var wc = new System.Net.WebClient();
-                                            var fullpath = System.IO.Path.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"),
-                                                GlobalTo.GetValue("StaticResource:AvatarPath"));
+                                            var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
-                                            if (!System.IO.Directory.Exists(fullpath))
+                                            if (!System.IO.Directory.Exists(ppath))
                                             {
-                                                System.IO.Directory.CreateDirectory(fullpath);
+                                                System.IO.Directory.CreateDirectory(ppath);
                                             }
-                                            if (!string.IsNullOrWhiteSpace(avatar))
-                                            {
-                                                wc.DownloadFile(avatar, System.IO.Path.Combine(fullpath, mo.UserPhoto));
-                                            }
+
                                             if (!string.IsNullOrWhiteSpace(avatarhd))
                                             {
-                                                wc.DownloadFile(avatarhd, System.IO.Path.Combine(fullpath, mo.UserPhoto.Replace(".jpg", "_lg.jpg")));
+                                                wc.DownloadFile(avatar, Fast.PathTo.Combine(ppath, mo.UserPhoto));
+                                            }
+                                            else if (!string.IsNullOrWhiteSpace(avatar))
+                                            {
+                                                wc.DownloadFile(avatar, Fast.PathTo.Combine(ppath, mo.UserPhoto));
                                             }
                                         }
                                         catch (Exception)

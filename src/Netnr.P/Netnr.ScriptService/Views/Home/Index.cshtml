@@ -53,15 +53,15 @@
                     {
                         target = "target='_blank'";
                     }
-                    var title = Html.Raw(item["title"].ToString()).ToString();
-                    var remark = Html.Raw(item["remark"]?.ToString() ?? title);
+                    var title = Html.Raw(item["title"].ToString());
+                    var remark = Html.Raw(item["remark"]?.ToString() ?? title.ToString());
 
                     <div class="col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="@href" @Html.Raw(target)>
-                                    <img src="/favicon.svg" data-icon="@item["icon"]?.ToString()" />
-                                    <h5>@title</h5>
+                                    <svg><use xlink:href="#@item["icon"].ToString()"></use></svg>
+                                    <h5 class="ov">@title</h5>
                                     <small>@remark</small>
                                 </a>
                             </div>

@@ -20,6 +20,10 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+video {
+    max-height: 500px;
+}
+
 .form-control:focus, .custom-select:focus {
     box-shadow: none;
 }

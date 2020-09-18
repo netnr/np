@@ -21,20 +21,6 @@
             <param name="owner">用户，唯一，文件夹名</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.GetToken(System.String,System.String)">
-            <summary>
-            获取Token
-            </summary>
-            <param name="AppId">分配的应用ID</param>
-            <param name="AppKey">分配的应用密钥</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.NewToken">
-            <summary>
-            创建 Token
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.GetAppList(System.Int32,System.Int32)">
             <summary>
             获取App列表
@@ -43,12 +29,68 @@
             <param name="pageSize">页量，默认20</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.ValidToken(System.String)">
+        <member name="M:Netnr.FileServer.Application.FileServerService.GetAppInfo(System.String,System.String)">
+            <summary>
+            获取App信息
+            </summary>
+            <param name="AppId">分配的应用ID</param>
+            <param name="AppKey">分配的应用密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.GetToken(System.String,System.String)">
+            <summary>
+            获取Token
+            </summary>
+            <param name="AppId">分配的应用ID</param>
+            <param name="AppKey">分配的应用密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.CreateFixToken(System.String,System.String,System.String,System.String)">
+            <summary>
+            创建FixToken
+            </summary>
+            <param name="AppId">分配的应用ID</param>
+            <param name="AppKey">分配的应用密钥</param>
+            <param name="Name">名称</param>
+            <param name="AuthMethod">授权接口</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.DelFixToken(System.String,System.String,System.String)">
+            <summary>
+            删除FixToken
+            </summary>
+            <param name="AppId">分配的应用ID</param>
+            <param name="AppKey">分配的应用密钥</param>
+            <param name="FixToken">固定Token</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.NewToken(System.Boolean)">
+            <summary>
+            创建 Token
+            </summary>
+            <param name="IsFixToken">是固定Token，默认否</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.ValidToken(System.String,System.String)">
             <summary>
             验证Token
             </summary>
             <param name="token"></param>
+            <param name="MethodName">方法名</param>
             <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.ValidFixToken(System.String)">
+            <summary>
+            验证FixToken
+            </summary>
+            <param name="fixToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.InsertFile(Netnr.FileServer.Model.FileRecord)">
+            <summary>
+            新增
+            </summary>
+            <param name="model"></param>
         </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.InsertFile(System.Collections.Generic.List{Netnr.FileServer.Model.FileRecord})">
             <summary>
@@ -56,19 +98,25 @@
             </summary>
             <param name="list"></param>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.QueryFile(System.String,System.Boolean)">
+        <member name="M:Netnr.FileServer.Application.FileServerService.QueryFile(System.String,System.String)">
             <summary>
             查询
             </summary>
-            <param name="path">路径，传ID时需传 isid=true</param>
-            <param name="isid">是ID</param>
+            <param name="owner">所属</param>
+            <param name="IdOrPath">文件ID或路径</param>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.DeleteFile(System.String,System.Boolean)">
+        <member name="M:Netnr.FileServer.Application.FileServerService.UpdateFile(Netnr.FileServer.Model.FileRecord)">
+            <summary>
+            更新
+            </summary>
+            <param name="model">实体</param>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.DeleteFile(System.String,System.String)">
             <summary>
             删除
             </summary>
-            <param name="path">路径，传ID时需传 isid=true</param>
-            <param name="isid">是ID</param>
+            <param name="owner">所属</param>
+            <param name="IdOrPath">文件ID或路径</param>
         </member>
         <member name="T:Netnr.FileServer.Controllers.APIController">
             <summary>
@@ -77,26 +125,42 @@
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.CreateApp(System.String,System.String)">
             <summary>
-            创建App，仅限开发环境调用
+            【管理】创建App
             </summary>
-            <param name="owner">用户，唯一，文件夹名</param>
             <param name="password">密码，必填</param>
+            <param name="owner">用户，唯一，文件夹名，推荐小写字母</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.GetAppList(System.Int32,System.Int32,System.String)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.GetAppList(System.String,System.Int32,System.Int32)">
             <summary>
-            获取App列表，仅限开发环境调用
+            【管理】获取App列表
             </summary>
+            <param name="password">密码</param>
             <param name="pageNumber">页码，默认1</param>
             <param name="pageSize">页量，默认20</param>
-            <param name="password">密码</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.GetAppInfo(System.String,System.String)">
+            <summary>
+            获取App信息
+            </summary>
+            <param name="AppId">分配的应用ID</param>
+            <param name="AppKey">分配的应用密钥</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.ResetAll(System.String)">
             <summary>
-            清空数据库和上传文件，仅限开发环境调用
+            【管理】清空数据库和上传文件
             </summary>
             <param name="password">密码，必填</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.ClearTmp(System.String,System.Int32)">
+            <summary>
+            【管理】清理临时目录
+            </summary>
+            <param name="password">密码，必填</param>
+            <param name="keepTime">保留最近文件，超过时间被清理，0为全部清理，单位：分</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.GetToken(System.String,System.String)">
@@ -105,6 +169,31 @@
             </summary>
             <param name="AppId">分配的应用ID</param>
             <param name="AppKey">分配的应用密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.CreateFixToken(System.String,System.String,System.String,System.String)">
+            <summary>
+            创建FixToken
+            </summary>
+            <param name="AppId">分配的应用ID</param>
+            <param name="AppKey">分配的应用密钥</param>
+            <param name="Name">名称</param>
+            <param name="AuthMethod">授权接口名，多个用逗号分割，区分大小写</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.DelFixToken(System.String,System.String,System.String)">
+            <summary>
+            删除FixToken
+            </summary>
+            <param name="AppId">分配的应用ID</param>
+            <param name="AppKey">分配的应用密钥</param>
+            <param name="FixToken">固定Token</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.AuthMethodList">
+            <summary>
+            授权方法列表（即需要传Token验证的方法名）
+            </summary>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.Upload(Microsoft.AspNetCore.Http.IFormFileCollection,System.String,System.String)">
@@ -116,31 +205,48 @@
             <param name="subdir">子目录，可选</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.UploadChunk(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            分块上传
+            </summary>
+            <param name="file">分片文件</param>
+            <param name="token">token，授权验证，必填</param>
+            <param name="ts">唯一标识</param>
+            <param name="subdir">子目录，可选</param>
+            <param name="chunk">当前分片索引</param>
+            <param name="chunks">总分片数</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.Copy(System.String,System.String)">
             <summary>
             复制文件
             </summary>
-            <param name="token"></param>
-            <param name="path"></param>
+            <param name="token">token，授权验证，必填</param>
+            <param name="path">文件路径或文件ID，必填</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.Cover(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String,System.String)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.Cover(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String)">
             <summary>
             覆盖文件，文件流
             </summary>
             <param name="file">文件流</param>
             <param name="token">token，授权验证，必填</param>
-            <param name="path">原路径（任选一）</param>
-            <param name="id">文件ID（任选一）</param>
+            <param name="path">文件路径或文件ID，必填</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.Delete(System.String,System.String,System.String)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.Delete(System.String,System.String)">
             <summary>
             删除文件
             </summary>
             <param name="token">token，授权验证，必填</param>
-            <param name="path">原路径（任选一）</param>
-            <param name="id">文件ID（任选一）</param>
+            <param name="path">文件路径或文件ID，必填</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.UploadTmp(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            上传临时文件，不记录数据库
+            </summary>
+            <param name="file">文件流</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.FileServer.Controllers.HomeController">
@@ -151,6 +257,18 @@
         <member name="M:Netnr.FileServer.Controllers.HomeController.Index">
             <summary>
             首页
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.HomeController.Status">
+            <summary>
+            服务器状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.HomeController.SwaggerCustomStyle">
+            <summary>
+            Swagger自定义样式
             </summary>
             <returns></returns>
         </member>
@@ -172,7 +290,7 @@
         </member>
         <member name="M:Netnr.FileServer.Filters.FilterConfigs.AllowCors.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
             <summary>
-            
+            action 执行之前
             </summary>
             <param name="context"></param>
         </member>
@@ -181,89 +299,144 @@
             文件记录
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrId">
+        <member name="P:Netnr.FileServer.Model.FileRecord.Id">
             <summary>
             ID
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrOwnerUser">
+        <member name="P:Netnr.FileServer.Model.FileRecord.OwnerUser">
             <summary>
             所属用户
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrType">
+        <member name="P:Netnr.FileServer.Model.FileRecord.Type">
             <summary>
             分类
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrName">
+        <member name="P:Netnr.FileServer.Model.FileRecord.Name">
             <summary>
             文件名
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrPath">
+        <member name="P:Netnr.FileServer.Model.FileRecord.Path">
             <summary>
             文件路径
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrHash">
+        <member name="P:Netnr.FileServer.Model.FileRecord.Hash">
             <summary>
             文件Hash，SHA1
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrSize">
+        <member name="P:Netnr.FileServer.Model.FileRecord.Size">
             <summary>
             文件大小，单位B
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrCreateTime">
+        <member name="P:Netnr.FileServer.Model.FileRecord.CreateTime">
             <summary>
             创建时间
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FileRecord.FrRemark">
+        <member name="P:Netnr.FileServer.Model.FileRecord.Remark">
             <summary>
             备注
             </summary>
         </member>
-        <member name="T:Netnr.FileServer.Model.SysKey">
+        <member name="T:Netnr.FileServer.Model.FixTokenJson">
             <summary>
-            token管理
+            固定Token JSON实体
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkAppId">
+        <member name="P:Netnr.FileServer.Model.FixTokenJson.Name">
             <summary>
-            AppId
+            名称
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkAppKey">
+        <member name="P:Netnr.FileServer.Model.FixTokenJson.Token">
             <summary>
-            SkAppKey    密钥，取Guid的MD5值
+            Token
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkOwner">
+        <member name="P:Netnr.FileServer.Model.FixTokenJson.AuthMethod">
+            <summary>
+            授权方法名
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.FixTokenJson.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.FixTokenJson.Owner">
+            <summary>
+            所属用户
+            </summary>
+        </member>
+        <member name="T:Netnr.FileServer.Model.SysApp">
+            <summary>
+            App管理
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysApp.AppId">
+            <summary>
+            应用ID
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysApp.AppKey">
+            <summary>
+            密钥
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysApp.Owner">
             <summary>
             所属用户，唯一，文件夹名
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkCreateTime">
-            <summary>
-            创建时间
-            </summary>
-        </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkToken">
+        <member name="P:Netnr.FileServer.Model.SysApp.Token">
             <summary>
             生成的Token
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkTokenExpireTime">
+        <member name="P:Netnr.FileServer.Model.SysApp.FixToken">
+            <summary>
+            固定Token
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysApp.TokenExpireTime">
             <summary>
             Token过期时间
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysKey.SkRemark">
+        <member name="P:Netnr.FileServer.Model.SysApp.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysApp.Remark">
             <summary>
             备注
+            </summary>
+        </member>
+        <member name="T:Netnr.FileServer.Model.SysToken">
+            <summary>
+            生成Token
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysToken.Owner">
+            <summary>
+            所属用户，唯一，文件夹名
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysToken.Token">
+            <summary>
+            生成的Token
+            </summary>
+        </member>
+        <member name="P:Netnr.FileServer.Model.SysToken.TokenExpireTime">
+            <summary>
+            Token过期时间
             </summary>
         </member>
         <member name="T:Netnr.FileServer.Program">
@@ -278,7 +451,7 @@
             <param name="args"></param>
         </member>
         <member name="M:Netnr.FileServer.Program.CreateHostBuilder(System.String[])">
-            dotnet Netnr.FileServer.dll "http://*:55"
+            dotnet Netnr.FileServer.dll "https://*:55"
         </member>
         <member name="T:Netnr.FileServer.Startup">
             <summary>

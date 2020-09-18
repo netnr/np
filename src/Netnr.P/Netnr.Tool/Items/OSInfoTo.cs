@@ -479,11 +479,11 @@ namespace Netnr.Tool.Items
             };
             while (v3-- > 0)
             {
-                listpb.Add("▒");
+                listpb.Add("◼");
             }
             while (listpb.Count < vt)
             {
-                listpb.Add("░");
+                listpb.Add("◻");
             }
             listpb.Add($" {Math.Round((v1 / v2) * 100, 0)}% {unit}{desc}");
 

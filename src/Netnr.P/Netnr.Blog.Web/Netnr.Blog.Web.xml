@@ -327,26 +327,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.APIController.API81(System.Nullable{System.Int32})">
-            <summary>
-            获取GUID
-            </summary>
-            <param name="count">条数，默认10</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.APIController.API82(System.Nullable{System.Int32})">
-            <summary>
-            获取GUID To long
-            </summary>
-            <param name="count">条数，默认10</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.Blog.Web.Controllers.APIController.API98(Microsoft.AspNetCore.Http.IFormFile,System.String)">
             <summary>
             公共上传
             </summary>
             <param name="file">文件</param>
-            <param name="cp">可选，自定义路径，如：static/draw</param>
+            <param name="subdir">可选，自定义子路径，如：/static/draw</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.APIController.API9999">
@@ -517,6 +503,12 @@
             全局错误页面
             </summary>
             <param name="msg">错误消息</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.HomeController.SwaggerCustomStyle">
+            <summary>
+            Swagger自定义样式
+            </summary>
             <returns></returns>
         </member>
         <member name="T:Netnr.Blog.Web.Controllers.MixController">
@@ -931,6 +923,9 @@
             <param name="UserId">登录的UserId</param>
             <param name="Cache">优先取缓存</param>
             <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Program.CreateHostBuilder(System.String[])">
+            dotnet Netnr.Web.dll "https://*:50"
         </member>
         <member name="M:Netnr.Web.Areas.Draw.Controllers.CodeController.Index(System.String,System.String,Netnr.Blog.Domain.Draw)">
             <summary>

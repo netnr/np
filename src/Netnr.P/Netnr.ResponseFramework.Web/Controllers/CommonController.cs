@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 
@@ -161,60 +162,61 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <summary>
         /// 公共上传，支持同时上传多个
         /// </summary>
+        /// <param name="files">文件</param>
         /// <param name="temp">temp=1,表示临时文件</param>
-        /// <param name="path">upload下自定义子目录，如：doc</param>
+        /// <param name="subdir">自定义子目录，如：doc</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResultVM> Upload(int? temp, string path)
+        public async Task<ActionResultVM> Upload(IFormFileCollection files, int? temp, string subdir)
         {
             var vm = new ActionResultVM();
 
             try
             {
-                if (Request.Form.Files.Count > 0)
+                if (files.Count > 0)
                 {
-                    var date = DateTime.Now;
+                    var now = DateTime.Now;
 
                     //虚拟路径
-                    var pathPrefix = "/upload/";
+                    var vpath = GlobalTo.GetValue("StaticResource:RootDir");
                     if (temp == 1)
                     {
-                        pathPrefix += "temp/";
+                        vpath = GlobalTo.GetValue("StaticResource:TmpDir");
                     }
                     else
                     {
-                        pathPrefix += path + "/" + date.Year + "/" + date.ToString("yyyyMM") + "/";
+                        vpath = Fast.PathTo.Combine(vpath, subdir, now.ToString("yyyy'/'MM'/'dd"));
                     }
 
                     //物理路径
-                    var mappath = (GlobalTo.WebRootPath + pathPrefix).Replace("\\", "/");
-                    if (!Directory.Exists(mappath))
+                    var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                    if (!Directory.Exists(ppath))
                     {
-                        Directory.CreateDirectory(mappath);
+                        Directory.CreateDirectory(ppath);
                     }
 
                     var listPath = new List<string>();
-                    for (int i = 0; i < Request.Form.Files.Count; i++)
+                    for (int i = 0; i < files.Count; i++)
                     {
-                        var file = Request.Form.Files[i];
-                        var ext = file.FileName.Substring(file.FileName.LastIndexOf('.'));
-                        var name = Core.UniqueTo.LongId().ToString() + ext;
+                        var file = files[i];
+                        var ext = Path.GetExtension(file.FileName);
+                        var filename = now.ToString("HHmmss") + Core.RandomTo.NumCode() + ext;
 
-                        using (var stream = new FileStream(mappath + name, FileMode.Create))
+                        using (var stream = new FileStream(Fast.PathTo.Combine(ppath, filename), FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                         }
 
-                        listPath.Add(pathPrefix + name);
+                        listPath.Add(Fast.PathTo.Combine(vpath, filename));
                     }
 
                     if (listPath.Count == 1)
                     {
-                        vm.Data =  listPath.FirstOrDefault();
+                        vm.Data = listPath.FirstOrDefault();
                     }
                     else
                     {
-                        vm.Data =  listPath;
+                        vm.Data = listPath;
                     }
                     vm.Set(ARTag.success);
                 }
@@ -230,13 +232,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <summary>
         /// 公共上传，富文本附件，限制大小2MB
         /// </summary>
+        /// <param name="upload">一个文件</param>
         /// <returns></returns>
         [HttpPost]
         [RequestFormLimits(MultipartBodyLengthLimit = 1024 * 1024 * 2)]
-        public async Task<string> UploadRich()
+        public async Task<string> UploadRich(IFormFileCollection upload)
         {
-            //调用通用的上传接口，富文本文件存放根目录：/upload/rich/
-            var vm = await Upload(null, "rich");
+            //调用通用的上传接口，富文本文件存放子目录：rich
+            var vm = await Upload(upload, null, "rich");
 
             //返回富文本支持的接口信息
             if (vm.Code == 200)

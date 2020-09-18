@@ -35,7 +35,7 @@
     }
     else
     {
-        <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js")" />
+        <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js,icon")" />
         <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
         <script src="/js/global.js" asp-append-version="true"></script>
 
@@ -70,7 +70,7 @@
             @if (action != "index")
             {
                 <h4 class="m-3">
-                    <img src="@icon" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" /> @title
+                    <svg class="titleicon"><use xlink:href="#@icon"></use></svg> @title
                 </h4>
             }
         }

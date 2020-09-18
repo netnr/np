@@ -1,0 +1,194 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="custom-file">
+                    <input id="txtFile" type="file" class="custom-file-input" accept="image/*">
+                    <label class="custom-file-label" id="pr">选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片</label>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-info" title="逆时针旋转 5°" id="btnRotateLeft"><i class="fa fa-rotate-left"></i></button>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-info" title="顺时针旋转 5°" id="btnRotateRight"><i class="fa fa-rotate-right"></i></button>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-info" title="重置" id="btnReset"><i class="fa fa-refresh"></i></button>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning" id="btnOcr">识别</button>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="img-container" style="height:400px">
+                    <img id="imgview">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <textarea class="form-control" style="height:454px" id="txtResult"></textarea>
+        </div>
+    </div>
+</div>
+
+<partial name="_PartialQuote" model="@("cropperjs")" />
+
+<script>
+    var pg = {
+        init: function () {
+
+            $('#txtFile').change(function () {
+                pg.preview();
+            });
+
+            $('#btnRotateLeft').click(function () {
+                if (pg.cp) {
+                    pg.cp.rotate(-5)
+                }
+            });
+
+            $('#btnRotateRight').click(function () {
+                if (pg.cp) {
+                    pg.cp.rotate(5)
+                }
+            });
+
+            $('#btnReset').click(function () {
+                if (pg.cp) {
+                    pg.cp.reset()
+                }
+            });
+
+            $('#btnOcr').click(function () {
+                pg.scan();
+            });
+
+            //粘贴图片
+            document.addEventListener('paste', function (event) {
+                if (event.clipboardData || event.originalEvent) {
+                    var clipboardData = (event.clipboardData || event.originalEvent.clipboardData);
+                    if (clipboardData.items) {
+                        var items = clipboardData.items, len = items.length;
+                        for (var i = 0; i < len; i++) {
+                            if (items[i].type.indexOf("image") !== -1) {
+                                var blob = items[i].getAsFile();
+                                pg.iv.src = URL.createObjectURL(blob);
+
+                                pg.crop();
+                            }
+                        }
+                    }
+                }
+            })
+        },
+
+        iv: document.getElementById('imgview'),
+
+        preview: function () {
+            var file = document.querySelector('input[type=file]').files[0];
+            if (file) {
+                console.log(file);
+                if (file.type.indexOf('image') != 0) {
+                    jz.alert('不是图片哦');
+                    return false;
+                }
+                var reader = new FileReader();
+                reader.onload = function () {
+                    pg.iv.src = reader.result;
+
+                    pg.crop();
+                }
+                reader.readAsDataURL(file);
+            } else {
+                pg.iv.src = "https://api.zme.ink/svg/400*200";
+            }
+        },
+
+        crop: function () {
+            if (pg.cp) {
+                pg.cp.destroy();
+            }
+            pg.cp = new Cropper(pg.iv, { aspectRatio: NaN });
+        },
+
+        //将base64转换为blob
+        dataURLtoBlob: function (dataurl) {
+            var arr = dataurl.split(','),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        },
+        //将blob转换为file
+        blobToFile: function (theBlob, fileName) {
+            theBlob.lastModifiedDate = new Date();
+            theBlob.name = fileName;
+            return theBlob;
+        },
+
+        //描述
+        dodesc: function (msg) {
+            $('#pr').html(msg == null ? '选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片' : msg);
+        },
+
+        //扫码识别
+        scan: function () {
+            if (pg.cp) {
+                pg.dodesc('正在上传...');
+
+                var base64Data = pg.cp.getCroppedCanvas().toDataURL('image/jpeg');
+                var blob = pg.dataURLtoBlob(base64Data);
+                var file = pg.blobToFile(blob, "ocr.jpg");
+
+                //上传
+                var formData = new FormData();
+                formData.append("file", file);
+
+                $.ajax({
+                    url: "https://api.zme.ink/aip/ocr",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    xhr: function () {
+                        xhr = $.ajaxSettings.xhr();
+                        xhr.upload.addEventListener('progress', function (e) {
+                            var rate = ((e.loaded / e.total) * 100).toFixed();
+                            if (rate < 100) {
+                                pg.dodesc('已上传 ' + rate + '%');
+                            } else {
+                                pg.dodesc('正在识别...');
+                            }
+                        })
+                        return xhr;
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.words_result) {
+                            var wrs = [];
+                            $.each(data.words_result, function () {
+                                wrs.push(this.words);
+                            });
+                            $('#txtResult').val(wrs.join('\r\n'));
+                        } else {
+                            jz.alert('OCR接口异常')
+                        }
+                    },
+                    error: function () {
+                        jz.alert("上传出错");
+                    },
+                    complete: function () {
+                        pg.dodesc();
+                    }
+                });
+            }
+        }
+    }
+
+    pg.init();
+</script>

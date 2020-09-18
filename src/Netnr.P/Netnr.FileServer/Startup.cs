@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,8 @@ namespace Netnr.FileServer
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
                         "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>",
-                        $"文件上传大小限制：<b>{GlobalTo.GetValue<int>("StaticResource:MaxSize")}</b> MB"
+                        $"文件上传大小限制：<b>{GlobalTo.GetValue<int>("StaticResource:MaxSize")}</b> MB",
+                        "管理员默认密码：<b>nr</b>"
                     })
                 });
 
@@ -79,7 +81,7 @@ namespace Netnr.FileServer
 
             //初始化库
             using var db = new SQLite.SQLiteConnection(Application.FileServerService.SQLiteConn);
-            db.CreateTable<Model.SysKey>();
+            db.CreateTable<Model.SysApp>();
             db.CreateTable<Model.FileRecord>();
 
             //配置swagger
@@ -87,6 +89,7 @@ namespace Netnr.FileServer
             {
                 c.DocumentTitle = "FileServer API";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileServer API");
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             //静态资源允许跨域
@@ -95,7 +98,23 @@ namespace Netnr.FileServer
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                }
+                },
+                ServeUnknownFileTypes = true
+            });
+
+            //目录浏览
+            string vrootdir = GlobalTo.GetValue("StaticResource:RootDir");
+            string prootdir = Fast.PathTo.Combine(GlobalTo.WebRootPath, vrootdir);
+            if (!System.IO.Directory.Exists(prootdir))
+            {
+                System.IO.Directory.CreateDirectory(prootdir);
+            }
+            app.UseFileServer(new FileServerOptions()
+            {
+                FileProvider = new PhysicalFileProvider(prootdir),
+                RequestPath = new Microsoft.AspNetCore.Http.PathString(vrootdir),
+                EnableDirectoryBrowsing = GlobalTo.GetValue<bool>("Safe:EnableDirectoryBrowsing"),
+                EnableDefaultFiles = false
             });
 
             app.UseRouting();

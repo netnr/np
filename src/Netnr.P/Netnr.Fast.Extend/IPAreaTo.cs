@@ -13,7 +13,7 @@ namespace Netnr.Fast
         /// <summary>
         /// 数据库完整物理路径
         /// </summary>
-        public string DbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "ip2region.db");
+        public string DbPath = PathTo.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "ip2region.db");
 
         public IPAreaTo()
         {

@@ -123,10 +123,10 @@ namespace Netnr.Logging
                     ctf = "yyyy";
                     break;
                 case DBPartType.Month:
-                    ctf = "yyyy/MM";
+                    ctf = "yyyy'/'MM";
                     break;
                 case DBPartType.Day:
-                    ctf = "yyyy/MM/dd";
+                    ctf = "yyyy'/'MM'/'dd";
                     break;
             }
 

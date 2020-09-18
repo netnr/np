@@ -4,199 +4,199 @@
     "items": [
       {
         "url": "/code",
-        "icon": "/icon/encrypt.svg",
+        "icon": "encrypt",
         "title": "加密转码",
         "remark": "加密、解密、编码、转码"
       },
       {
         "url": "/vscode",
-        "icon": "/icon/vscode.svg",
+        "icon": "vscode",
         "title": "VSCode编辑器",
         "remark": "Monaco Editor 编辑器"
       },
       {
         "url": "//md.netnr.com",
-        "icon": "/icon/markdown.svg",
+        "icon": "markdown",
         "title": "Markdown编辑器"
       },
       {
         "url": "//json.netnr.com",
-        "icon": "/icon/json.svg",
+        "icon": "json",
         "title": "JSON编辑器"
       },
       {
         "url": "/nginx",
-        "icon": "/icon/nginx.svg",
+        "icon": "nginx",
         "title": "Nginx编辑器",
         "remark": "Nginx配置文件格式化"
       },
       {
         "url": "/diff",
-        "icon": "/icon/diff.svg",
+        "icon": "diff",
         "title": "文本对比",
         "remark": "Monaco Editor 文件对比"
       },
       {
         "url": "/filetobase64",
-        "icon": "/icon/code.svg",
+        "icon": "code",
         "title": "文件转Base64",
         "remark": "Base64编码转换"
       },
       {
         "url": "/sqlformatter",
-        "icon": "/icon/sql.svg",
+        "icon": "sql",
         "title": "SQL格式化",
         "remark": "美化SQL语句"
       },
       {
         "url": "/jsontocsharp",
-        "icon": "/icon/csharp.svg",
+        "icon": "csharp",
         "title": "JSON生成C#实体类",
         "remark": "根据JSON生成Model"
       },
       {
         "url": "/jsontoxml",
-        "icon": "/icon/xml.svg",
+        "icon": "xml",
         "title": "JSON转换XML",
         "remark": "JSON与XML相互转换"
       },
       {
         "url": "//tiny.netnr.com",
-        "icon": "/icon/tiny.svg",
+        "icon": "tiny",
         "title": "图片压缩"
       },
       {
         "url": "//www.css-js.com",
-        "icon": "/icon/js.svg",
+        "icon": "js",
         "title": "JS压缩",
         "remark": "JS压缩、CSS压缩"
       },
       {
         "url": "//getman.cn",
-        "icon": "/icon/http.svg",
+        "icon": "http",
         "title": "HTTP请求",
         "remark": "在线HTTP请求"
       },
       {
         "url": "/pingcloud",
-        "icon": "/icon/pingcloud.svg",
+        "icon": "pingcloud",
         "title": "Ping云",
         "remark": "Ping各大云服务节点"
       },
       {
         "url": "//ping.pe",
-        "icon": "/icon/ping.svg",
+        "icon": "ping",
         "title": "Ping",
         "remark": "Ping测试"
       },
       {
         "url": "//check-host.net",
-        "icon": "/icon/host.svg",
+        "icon": "host",
         "title": "检测主机",
         "remark": "CHECK-HOST"
       },
       {
         "url": "/ip",
-        "icon": "/icon/ip.svg",
+        "icon": "ip",
         "title": "IP",
         "remark": "客户端IP地址"
       },
       {
         "url": "/localhost",
-        "icon": "/icon/dns.svg",
+        "icon": "dns",
         "title": "域名本地解析",
         "remark": "域名解析127.0.0.1"
       },
       {
         "url": "//zijian.aliyun.com",
-        "icon": "/icon/detect.svg",
+        "icon": "detect",
         "title": "域名检测",
         "remark": "检测域名状态、DNS、站点"
       },
       {
         "url": "//whois.aliyun.com",
-        "icon": "/icon/whois.svg",
+        "icon": "whois",
         "title": "Whois查询",
         "remark": "域名信息查询"
       },
       {
         "url": "/useragent",
-        "icon": "/icon/info.svg",
+        "icon": "info",
         "title": "UserAgent",
         "remark": "客户端信息"
       },
       {
         "url": "//www.chinassl.net/ssltools/convert-ssl.html",
-        "icon": "/icon/ssl.svg",
+        "icon": "ssl",
         "title": "SSL证书转换",
         "remark": "格式转换"
       },
       {
         "url": "//tool.chinaz.com/regex/",
-        "icon": "/icon/regex.svg",
+        "icon": "regex",
         "title": "正则表达式"
       },
       {
         "url": "/bed",
-        "icon": "/icon/img.svg",
+        "icon": "img",
         "title": "图床",
         "remark": "图床大集合"
       },
       {
         "url": "/zoning",
-        "icon": "/icon/zoning.svg",
+        "icon": "zoning",
         "title": "行政区划",
         "remark": "五级行政区划"
       },
       {
         "url": "/pinyin",
-        "icon": "/icon/translate.svg",
+        "icon": "translate",
         "title": "汉字转拼音"
       },
       {
         "url": "//zidian.netnr.com",
-        "icon": "/icon/dictionary.svg",
+        "icon": "dictionary",
         "title": "字典",
         "remark": "字、词、成语"
       },
       {
         "url": "//www.iconfont.cn",
-        "icon": "/icon/vector.svg",
+        "icon": "vector",
         "title": "阿里矢量图标",
         "remark": "矢量图标库"
       },
       {
         "url": "//c.runoob.com/more/svgeditor/",
-        "icon": "/icon/svg.svg",
+        "icon": "svg",
         "title": "SVG编辑器"
       },
       {
         "url": "/icp",
-        "icon": "/icon/icp.svg",
+        "icon": "icp",
         "title": "ICP备案查询"
       },
       {
-        "url": "/freedb",
-        "icon": "/icon/freedb.svg",
-        "title": "免费数据库",
-        "remark": "在线免费的数据库"
+        "url": "/free",
+        "icon": "free",
+        "title": "免费",
+        "remark": "免费的资源"
       },
       {
-        "url": "/freehosting",
-        "icon": "/icon/hosting.svg",
-        "title": "免费托管",
-        "remark": "免费的托管空间"
+        "url": "/officeview",
+        "icon": "office",
+        "title": "Office文档查看",
+        "remark": "Word、Excel、PPT"
       },
       {
         "url": "/dk",
-        "icon": "/icon/db.svg",
+        "icon": "db",
         "title": "DataKit",
         "remark": "数据库工具及代码构建",
         "target": "_blank"
       },
       {
         "url": "/zerotier",
-        "icon": "/icon/p2p.svg",
+        "icon": "p2p",
         "title": "ZeroTier",
         "remark": "ZeroTier 管理"
       }
@@ -207,123 +207,140 @@
     "items": [
       {
         "url": "/wallpaper",
-        "icon": "/icon/wallpaper.svg",
+        "icon": "wallpaper",
         "title": "壁纸",
         "remark": "360高清壁纸"
       },
       {
         "url": "/speedtest",
-        "icon": "/icon/speed.svg",
+        "icon": "speed",
         "title": "网络测速",
         "remark": "资源下载速率"
       },
       {
         "url": "/qrcode",
-        "icon": "/icon/qrcode.svg",
+        "icon": "qrcode",
         "title": "生成二维码"
       },
       {
         "url": "/lottery",
-        "icon": "/icon/lottery.svg",
+        "icon": "lottery",
         "title": "彩票查询"
       },
       {
         "url": "/idcard",
-        "icon": "/icon/idcard.svg",
+        "icon": "idcard",
         "title": "身份证号码查询",
         "remark": "查询地区、性别，纠正尾数"
       },
       {
         "url": "/ps",
-        "icon": "/icon/ps.svg",
+        "icon": "ps",
         "title": "Photoshop",
         "remark": "在线PS",
         "target": "_blank"
       },
       {
         "url": "//kms.netnr.com",
-        "icon": "/icon/microsoft.svg",
+        "icon": "microsoft",
         "title": "KMS服务",
         "remark": "激活Windows系统"
       },
       {
         "url": "//v.zme.ink",
-        "icon": "/icon/video.svg",
+        "icon": "video",
         "title": "VIP视频解析",
         "remark": "免费看会员视频"
       },
       {
         "url": "/tempsms",
-        "icon": "/icon/sms.svg",
+        "icon": "sms",
         "title": "临时短信",
         "remark": "接收临时短信"
       },
       {
         "url": "/tempmail",
-        "icon": "/icon/email.svg",
+        "icon": "email",
         "title": "临时邮箱",
         "remark": "接收临时邮件"
       },
       {
         "url": "/symbol",
-        "icon": "/icon/symbol.svg",
+        "icon": "symbol",
         "title": "特殊符号",
         "remark": "特殊符号"
       },
       {
         "url": "/emoji",
-        "icon": "/icon/emoji.svg",
+        "icon": "emoji",
         "title": "Emoji符号",
         "remark": "Emoji表情"
       },
       {
         "url": "/express",
-        "icon": "/icon/express.svg",
+        "icon": "express",
         "title": "快递查询",
         "remark": "一键查询快递"
       },
       {
         "url": "/weather",
-        "icon": "/icon/weather.svg",
+        "icon": "weather",
         "title": "天气预报"
       },
       {
         "url": "/rmb",
-        "icon": "/icon/rmb.svg",
+        "icon": "rmb",
         "title": "人民币转大写"
       },
       {
         "url": "/randomcode",
-        "icon": "/icon/key.svg",
+        "icon": "key",
         "title": "生成随机密码"
       },
       {
         "url": "/qiushibaike",
-        "icon": "/icon/qsbk.svg",
+        "icon": "qsbk",
         "title": "糗事百科笑话"
       },
       {
         "url": "/tv",
-        "icon": "/icon/tv.svg",
+        "icon": "tv",
         "title": "在线电视",
         "remark": "m3u8源播放"
       },
       {
         "url": "/purine",
-        "icon": "/icon/purine.svg",
+        "icon": "purine",
         "title": "食物嘌呤含量"
       },
       {
         "url": "/bmi",
-        "icon": "/icon/bmi.svg",
+        "icon": "bmi",
         "title": "体重标准",
         "remark": "中国成人超重和肥胖标准"
       },
       {
         "url": "/gc",
-        "icon": "/icon/gc.svg",
+        "icon": "gc",
         "title": "垃圾分类",
         "remark": "垃圾分类查询"
+      }
+    ]
+  },
+  {
+    "group": "AI",
+    "items": [
+      {
+        "url": "/ocr",
+        "icon": "ocr",
+        "title": "OCR",
+        "remark": "识别图片内容"
+      },
+      {
+        "url": "/nsfw",
+        "icon": "nsfw",
+        "title": "图片审查",
+        "remark": "绘画、变态、中立、色情、性感"
       }
     ]
   },
@@ -332,19 +349,19 @@
     "items": [
       {
         "url": "/overview",
-        "icon": "/icon/overview.svg",
+        "icon": "overview",
         "title": "概述",
         "remark": "脚本服务"
       },
       {
         "url": "/message",
-        "icon": "/icon/message.svg",
+        "icon": "message",
         "title": "留言",
         "remark": "匿名留言"
       },
       {
         "url": "//zme.ink",
-        "icon": "/icon/love.svg",
+        "icon": "love",
         "title": "联系赞助",
         "remark": "Sponsors"
       }

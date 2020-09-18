@@ -718,5 +718,12 @@
             <param name="isms">毫秒，默认false为秒，设为true，返回13位，毫秒</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Extend.ToUtcTotalDays(System.DateTime)">
+            <summary>
+            将Datetime转换成从UTC开始计算的总天数
+            </summary>
+            <param name="datetime"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

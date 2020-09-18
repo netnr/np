@@ -1,6 +1,6 @@
 /*                      *\
     Author：netnr
-    Date：2018-01-08
+    Date：2019-09-14
 \*                      */
 
 var rt = {
@@ -120,7 +120,7 @@ var rt = {
         switch (vtype) {
             case "String":
                 outType = "string";
-                if (rt.config.typeMapStringToDateTime && value.length > 3 && value.length < 30) {
+                if (rt.config.typeMapStringToDateTime && value.length > 8 && value.length < 30) {
                     var dt = new Date(value);
                     if (dt != "Invalid Date") {
                         outType = "DateTime";
