@@ -10,6 +10,20 @@ using Microsoft.Extensions.Hosting;
 public class GlobalTo
 {
     /// <summary>
+    /// 数据库类型
+    /// </summary>
+    public static TypeDB TDB;
+
+    /// <summary>
+    /// 根据数据库类型获取连接字符串
+    /// </summary>
+    /// <returns></returns>
+    public static string GetConn()
+    {
+        return Configuration.GetConnectionString(TDB.ToString());
+    }
+
+    /// <summary>
     /// 全局配置
     /// </summary>
     public static IConfiguration Configuration;

@@ -1,12 +1,20 @@
 ﻿using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
 namespace Netnr.Web.Areas.Gist.Controllers
 {
     [Area("Gist")]
     public class RawController : Controller
     {
+        public ContextBase db;
+
+        public RawController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 原始数据
         /// </summary>
@@ -19,7 +27,6 @@ namespace Netnr.Web.Areas.Gist.Controllers
             string id = RouteData.Values["id"]?.ToString();
             if (!string.IsNullOrWhiteSpace(id))
             {
-                using var db = new Blog.Data.ContextBase();
                 var mo = db.Gist.FirstOrDefault(x => x.GistCode == id && x.GistStatus == 1 && x.GistOpen == 1);
                 if (mo != null)
                 {

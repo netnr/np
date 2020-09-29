@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 using Netnr.Login;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,13 @@ namespace Netnr.Blog.Web.Controllers
     /// </summary>
     public class AccountController : Controller
     {
+        public ContextBase db;
+
+        public AccountController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         #region 注册
 
         /// <summary>
@@ -85,32 +93,29 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ActionResultVM();
 
-            using (var db = new Data.ContextBase())
+            var isok = true;
+
+            //邮箱注册
+            if (!string.IsNullOrWhiteSpace(mo.UserMail))
             {
-                var isok = true;
+                isok = !db.UserInfo.Any(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail);
 
-                //邮箱注册
-                if (!string.IsNullOrWhiteSpace(mo.UserMail))
-                {
-                    isok = !db.UserInfo.Any(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail);
+                vm.Set(ARTag.exist);
+                vm.Msg = "该邮箱已经注册";
+            }
+            else
+            {
+                isok = !db.UserInfo.Any(x => x.UserName == mo.UserName);
 
-                    vm.Set(ARTag.exist);
-                    vm.Msg = "该邮箱已经注册";
-                }
-                else
-                {
-                    isok = !db.UserInfo.Any(x => x.UserName == mo.UserName);
+                vm.Set(ARTag.exist);
+                vm.Msg = "该账号已经注册";
+            }
 
-                    vm.Set(ARTag.exist);
-                    vm.Msg = "该账号已经注册";
-                }
-
-                if (isok)
-                {
-                    db.UserInfo.Add(mo);
-                    int num = db.SaveChanges();
-                    vm.Set(num > 0);
-                }
+            if (isok)
+            {
+                db.UserInfo.Add(mo);
+                int num = db.SaveChanges();
+                vm.Set(num > 0);
             }
 
             return vm;
@@ -219,7 +224,6 @@ namespace Netnr.Blog.Web.Controllers
 
             string sql = string.Empty;
 
-            using var db = new Data.ContextBase();
             var uiR = db.UserInfo;
             Domain.UserInfo outMo = new Domain.UserInfo();
 
@@ -523,68 +527,64 @@ namespace Netnr.Blog.Web.Controllers
                         {
                             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
 
-                            using (var db = new Data.ContextBase())
+                            //检测是否绑定其它账号
+                            var queryIsBind = db.UserInfo.Where(x => x.UserId != uid);
+                            switch (vtype)
                             {
-                                //检测是否绑定其它账号
-                                var queryIsBind = db.UserInfo.Where(x => x.UserId != uid);
-                                switch (vtype)
-                                {
-                                    case ValidateloginType.qq:
-                                        queryIsBind = queryIsBind.Where(x => x.OpenId1 == openId);
-                                        break;
-                                    case ValidateloginType.weibo:
-                                        queryIsBind = queryIsBind.Where(x => x.OpenId2 == openId);
-                                        break;
-                                    case ValidateloginType.github:
-                                        queryIsBind = queryIsBind.Where(x => x.OpenId3 == openId);
-                                        break;
-                                    case ValidateloginType.taobao:
-                                        queryIsBind = queryIsBind.Where(x => x.OpenId4 == openId);
-                                        break;
-                                    case ValidateloginType.microsoft:
-                                        queryIsBind = queryIsBind.Where(x => x.OpenId5 == openId);
-                                        break;
-                                    case ValidateloginType.dingtalk:
-                                        queryIsBind = queryIsBind.Where(x => x.OpenId6 == openId);
-                                        break;
-                                }
-                                if (queryIsBind.Count() > 0)
-                                {
-                                    return Content("已绑定其它账号，不能重复绑定");
-                                }
-
-                                var userInfo = db.UserInfo.Find(uid);
-
-                                switch (vtype)
-                                {
-                                    case ValidateloginType.qq:
-                                        userInfo.OpenId1 = openId;
-                                        break;
-                                    case ValidateloginType.weibo:
-                                        userInfo.OpenId2 = openId;
-                                        break;
-                                    case ValidateloginType.github:
-                                        userInfo.OpenId3 = openId;
-                                        break;
-                                    case ValidateloginType.taobao:
-                                        userInfo.OpenId4 = openId;
-                                        break;
-                                    case ValidateloginType.microsoft:
-                                        userInfo.OpenId5 = openId;
-                                        break;
-                                    case ValidateloginType.dingtalk:
-                                        userInfo.OpenId6 = openId;
-                                        break;
-                                }
-                                db.UserInfo.Update(userInfo);
-                                db.SaveChanges();
+                                case ValidateloginType.qq:
+                                    queryIsBind = queryIsBind.Where(x => x.OpenId1 == openId);
+                                    break;
+                                case ValidateloginType.weibo:
+                                    queryIsBind = queryIsBind.Where(x => x.OpenId2 == openId);
+                                    break;
+                                case ValidateloginType.github:
+                                    queryIsBind = queryIsBind.Where(x => x.OpenId3 == openId);
+                                    break;
+                                case ValidateloginType.taobao:
+                                    queryIsBind = queryIsBind.Where(x => x.OpenId4 == openId);
+                                    break;
+                                case ValidateloginType.microsoft:
+                                    queryIsBind = queryIsBind.Where(x => x.OpenId5 == openId);
+                                    break;
+                                case ValidateloginType.dingtalk:
+                                    queryIsBind = queryIsBind.Where(x => x.OpenId6 == openId);
+                                    break;
                             }
+                            if (queryIsBind.Count() > 0)
+                            {
+                                return Content("已绑定其它账号，不能重复绑定");
+                            }
+
+                            var userInfo = db.UserInfo.Find(uid);
+
+                            switch (vtype)
+                            {
+                                case ValidateloginType.qq:
+                                    userInfo.OpenId1 = openId;
+                                    break;
+                                case ValidateloginType.weibo:
+                                    userInfo.OpenId2 = openId;
+                                    break;
+                                case ValidateloginType.github:
+                                    userInfo.OpenId3 = openId;
+                                    break;
+                                case ValidateloginType.taobao:
+                                    userInfo.OpenId4 = openId;
+                                    break;
+                                case ValidateloginType.microsoft:
+                                    userInfo.OpenId5 = openId;
+                                    break;
+                                case ValidateloginType.dingtalk:
+                                    userInfo.OpenId6 = openId;
+                                    break;
+                            }
+                            db.UserInfo.Update(userInfo);
+                            db.SaveChanges();
 
                             return Redirect("/user/setting");
                         }
                         else
                         {
-                            using var db = new Data.ContextBase();
                             Domain.UserInfo vmo = null;
                             switch (vtype)
                             {

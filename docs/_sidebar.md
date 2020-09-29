@@ -2,12 +2,7 @@
 
 - [Change Log](CHANGELOG.md)
 
-- DataBase Access
-    - [Netnr.Data.MySQL](Netnr.Data.MySQL.md)
-    - [Netnr.Data.Oracle](Netnr.Data.Oracle.md)
-    - [Netnr.Data.PostgreSQL](Netnr.Data.PostgreSQL.md)
-    - [Netnr.Data.SQLite](Netnr.Data.SQLite.md)
-    - [Netnr.Data.SQLServer](Netnr.Data.SQLServer.md)
+- [DataBase Access](Netnr.Data.md)
 
 - Class Library SDK
     - [Netnr.Core](Netnr.Core.md)
@@ -36,7 +31,6 @@
 - [Netnr.Guff](Netnr.Guff.md)
 
 - [Netnr.DataKit](Netnr.DataKit.md)
-    - [Netnr.DataKit.Web](Netnr.DataKit.Web.md)
     - [Netnr.DataKit.NodeJs](Netnr.DataKit.NodeJs.md)
 
 - [Netnr.FileServer](Netnr.FileServer.md)

@@ -83,28 +83,18 @@ https://zme.ink
                     </div>
                     <div class="form-group">
                         <label>
-                            <a href="https://api.ip.sb/jsonip?callback=CallBack_Ipsb" target="_blank">IP.SB</a>
-                        </label>
-                        <input class="form-control" id="txtIpsb">
-                    </div>
-                    <div class="form-group">
-                        <label>
                             <a href="https://api.zme.ink/ip" target="_blank">api.zme.ink</a>
                         </label>
                         <input class="form-control" id="txtZme">
                     </div>
                     <div>
                         <label>更多：</label>
+                        <a href="https://api.ip.sb/ip" target="_blank">IP.SB</a>
+                        &nbsp;
                         <a href="http://dyact.vip.xunlei.com/iface.php?c=telecomip&a=getIp&d=telecomip&callback=fn" target="_blank">迅雷</a>
                         &nbsp;
-                        <a href="https://only.nstool.netease.com/" target="_blank">网易</a>
+                        <a href="https://only.nstool.netease.com" target="_blank">网易</a>
                     </div>
-                </div>
-            </div>
-            <div class="card card-default my-4">
-                <div class="card-header">内网IP</div>
-                <div class="card-body">
-                    <input class="form-control" id="txIntranet" placeholder="仅支持Chrome、Firefox">
                 </div>
             </div>
         </div>
@@ -112,8 +102,16 @@ https://zme.ink
 </div>
 
 <script src="https://pv.sohu.com/cityjson"></script>
-<script src="/js/ip.js?v=yBOnjfq1TmV-CUsaHvSkhJ4V5surVUbVf95ye0oS47A"></script>
-<script src="https://api.ip.sb/jsonip?callback=CallBack_Ipsb"></script>
+<script>
+    try {
+        $('#txtSohu').val(returnCitySN.cip);
+
+        $.get('https://api.zme.ink/ip', null, function (data) {
+            $('#txtZme').val(data);
+        });
+    } catch (e) { }
+</script>
+
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>

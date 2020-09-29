@@ -105,16 +105,79 @@ https://zme.ink
     </div>
 </div>
 
-            <script src="https://code.bdstatic.com/npm/monaco-editor@0.20.0/min/vs/loader.js"></script>
+            <script src="https://code.bdstatic.com/npm/monaco-editor@0.21.0/min/vs/loader.js"></script>
             <script>
                 require.config({
-                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.20.0/min/vs" },
+                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.21.0/min/vs" },
                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                 });
             </script>
 
 
-<script src="/js/diff.js?v=BlkSH8uY51dUL08bOslYQuvKMrIfZa6XSuGZLVI5ptg"></script>
+<script>
+    var editor, originContent = '', varyContent = '';
+
+    $('#chkDiffMode').click(changeDiffMode);
+    function changeDiffMode() {
+        if (editor) {
+            editor.updateOptions({
+                renderSideBySide: !$('#chkDiffMode').is(':checked')
+            });
+        }
+    }
+    function createDiffEditor(text1, text2) {
+        $('#editor').empty();
+        require(['vs/editor/editor.main'], function () {
+            var originalModel = monaco.editor.createModel(text1 || "", "text/plain");
+            var modifiedModel = monaco.editor.createModel(text2 || "", "text/plain");
+            editor = monaco.editor.createDiffEditor(document.getElementById("editor"), {
+                automaticLayout: true,
+                scrollbar: {
+                    verticalScrollbarSize: 6,
+                    horizontalScrollbarSize: 6
+                },
+                minimap: {
+                    enabled: false
+                }
+            });
+            editor.setModel({
+                original: originalModel,
+                modified: modifiedModel
+            });
+            changeDiffMode();
+        });
+    }
+    $('#fileOrigin').change(function () {
+        if (this.files.length) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                createDiffEditor(originContent = this.result, varyContent);
+            };
+            reader.readAsText(this.files[0]);
+        }
+    });
+    $('#txtOrigin').on('input', function () {
+        createDiffEditor(originContent = this.value, varyContent);
+    });
+    $('#fileVary').change(function () {
+        if (this.files.length) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                createDiffEditor(originContent, varyContent = this.result);
+            };
+            reader.readAsText(this.files[0]);
+        }
+    });
+    $('#txtVary').on('input', function () {
+        createDiffEditor(originContent, varyContent = this.value);
+    });
+
+    function AutoHeight() {
+        var ch = $(window).height() - $('#editor').offset().top - 15;
+        $('#editor').css('height', Math.max(200, ch));
+    }
+    $(window).on('load resize', AutoHeight);
+</script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>

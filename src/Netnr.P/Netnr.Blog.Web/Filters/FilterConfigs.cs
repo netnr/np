@@ -302,7 +302,7 @@ namespace Netnr.Blog.Web.Filters
                     var uinfo = new Application.UserAuthService(context.HttpContext).Get();
 
                     //已验证邮箱
-                    using var db = new ContextBase();
+                    using var db = ContextBaseFactory.CreateDbContext();
                     uinfo = db.UserInfo.Find(uinfo.UserId);
                     if (uinfo.UserId == 1 || uinfo.UserMailValid == 1)
                     {
@@ -364,7 +364,7 @@ namespace Netnr.Blog.Web.Filters
                 }
                 else
                 {
-                    using var db = new ContextBase();
+                    using var db = ContextBaseFactory.CreateDbContext();
                     var uiMo = db.UserInfo.Find(UserId);
                     if (uiMo != null)
                     {

@@ -280,7 +280,7 @@
             <param name="end">结束时间</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Logging.LoggingTo.GetSqlForQuery(System.DateTime,System.DateTime,Netnr.Data.SQLite.SQLiteHelper@,System.Int32@,System.Collections.Generic.List{System.String}@)">
+        <member name="M:Netnr.Logging.LoggingTo.GetSqlForQuery(System.DateTime,System.DateTime,Netnr.Logging.SQLiteHelper@,System.Int32@,System.Collections.Generic.List{System.String}@)">
             <summary>
             拿到最终查询语句
             </summary>
@@ -345,6 +345,53 @@
             <summary>
               查找 System.Byte[] 类型的本地化资源。
             </summary>
+        </member>
+        <member name="T:Netnr.Logging.SQLiteHelper">
+            <summary>
+            SQLite操作类
+            </summary>
+        </member>
+        <member name="F:Netnr.Logging.SQLiteHelper.connectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="M:Netnr.Logging.SQLiteHelper.#ctor(System.String)">
+            <summary>
+            构造，初始化字符串
+            </summary>
+            <param name="conn"></param>
+        </member>
+        <member name="M:Netnr.Logging.SQLiteHelper.Query(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            执行查询语句，返回DataSet
+            </summary>
+            <param name="sql">查询SQL</param>
+            <param name="listPreSql">前置执行SQL</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Logging.SQLiteHelper.ExecuteNonQuery(System.String,System.Data.SQLite.SQLiteParameter[])">
+            <summary>
+            执行SQL语句，返回影响的记录数
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parameters">参数</param>
+            <returns>影响的记录数</returns>
+        </member>
+        <member name="M:Netnr.Logging.SQLiteHelper.ExecuteNonQuery(System.Collections.Generic.List{System.String})">
+            <summary>
+            批量执行SQL
+            </summary>
+            <param name="listSql"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Logging.SQLiteHelper.ExecuteScalar(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            执行查询语句，返回DataSet
+            </summary>
+            <param name="sql">查询语句</param>
+            <param name="listPreSql">前置执行SQL</param>
+            <returns>DataTable</returns>
         </member>
     </members>
 </doc>

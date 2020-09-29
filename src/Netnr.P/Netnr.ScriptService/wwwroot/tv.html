@@ -90,7 +90,71 @@ https://zme.ink
             <script src="https://code.bdstatic.com/npm/hls.js@0.13.2/dist/hls.min.js"></script>
 
 
-<script src="/js/tv.js?v=0Z6ns5WvTII7IQ_kdtQi1OqKILMwbm54sGQBCE0tt2c"></script>
+<script>
+    var vd = {
+        m3u8: function () { return document.getElementById('seM3u8').value },
+        video: document.getElementById('video'),
+
+        init: function () {
+            $.ajax({
+                url: "/lib/m3u8/tv.txt",
+                success: function (data) {
+                    var ds = data.split('#EXTINF:-1'), sehtm = [];
+                    $.each(ds, function () {
+                        var d = this;
+                        var matchm3u8 = /http(.*).m3u8/i.exec(d);
+                        var namem3u8 = /,(.*)/.exec(d)
+
+                        if (matchm3u8 && namem3u8) {
+                            sehtm.push('<option value="' + matchm3u8[0] + '">' + namem3u8[1] + '</option>')
+                        }
+                    })
+
+                    $('#seM3u8').html(sehtm.join(''));
+
+                    vd.play(vd.m3u8(), 1);
+                }
+            })
+
+            document.getElementById('txtM3u8').oninput = function () {
+                if (this.value.toLowerCase().indexOf('.m3u8') >= 0) {
+                    vd.play(this.value, 1);
+                }
+            }
+
+            document.getElementById('seM3u8').onchange = function () {
+                vd.play(this.value, 1);
+            }
+
+            vd.autoSize();
+            window.onresize = vd.autoSize;
+        },
+        play(m3u8, isplay) {
+            if (Hls.isSupported()) {
+                var hls = new Hls();
+                hls.loadSource(m3u8);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    isplay && video.play();
+                });
+            }
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = m3u8;
+                video.addEventListener('loadedmetadata', function () {
+                    isplay && video.play();
+                });
+            } else {
+                vd.video.parentNode.innerHTML = "您的浏览器不支持，请换Chrome浏览器、Firefox浏览器";
+            }
+        },
+        autoSize: function () {
+            var vh = document.documentElement.clientHeight - vd.video.getBoundingClientRect().top - 10;
+            vd.video.style.maxHeight = vh + "px";
+        }
+    }
+
+    vd.init();
+</script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>

@@ -33,10 +33,7 @@
   <ItemGroup>
     <PackageReference Include="IP2Region" Version="1.2.0" />
     <PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Netnr.Data.SQLite\Netnr.Data.SQLite.csproj" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.1" />
   </ItemGroup>
 
   <ItemGroup>

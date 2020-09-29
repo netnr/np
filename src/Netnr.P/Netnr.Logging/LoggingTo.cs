@@ -1,6 +1,5 @@
 ﻿using DeviceDetectorNET;
 using DeviceDetectorNET.Parser;
-using Netnr.Data.SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -93,7 +92,7 @@ namespace Netnr.Logging
         /// <summary>
         /// 当前缓存日志
         /// </summary>
-        public static List<LoggingModel> CurrentCacheLog { get; set; } = new List<LoggingModel>();
+        public static Queue<LoggingModel> CurrentCacheLog { get; set; } = new Queue<LoggingModel>();
 
         /// <summary>
         /// 当前缓存写入时间
@@ -142,7 +141,10 @@ namespace Netnr.Logging
             var now = DateTime.Now;
 
             //当前缓存的日志
-            CurrentCacheLog.AddRange(logs);
+            foreach (var log in logs)
+            {
+                CurrentCacheLog.Enqueue(log);
+            }
 
             //满足缓存条数写入 或 满足写入时间间隔
             if (CurrentCacheLog.Count > CacheWriteCount || (now - CurrentCacheWriteTime).TotalSeconds > CacheWriteSecond)
@@ -150,14 +152,12 @@ namespace Netnr.Logging
                 //写入日志
                 System.Threading.ThreadPool.QueueUserWorkItem(_ =>
                 {
-                    var listLm = new List<LoggingModel>();
-                    int cclen = CurrentCacheLog.Count;
-                    while (--cclen > 0 && CurrentCacheLog.Count > 0)
+                    var listMo = new List<LoggingModel>();
+                    while (CurrentCacheLog.Count>0)
                     {
-                        listLm.Add(CurrentCacheLog[0]);
-                        CurrentCacheLog.RemoveAt(0);
+                        listMo.Add(CurrentCacheLog.Dequeue());
                     }
-                    AddNow(listLm);
+                    AddNow(listMo);
 
                     CurrentCacheWriteTime = now;
                 });
@@ -694,7 +694,7 @@ namespace Netnr.Logging
                     sql = $"select {field} as field,count({field}) as total from ({sql}) where {whereSql} LogCreateTime>={begin.Date.Ticks} and LogCreateTime<={end.Ticks} group by {field} order by total desc";
 
                     var dt = db.Query(sql, listPreSql).Tables[0];
-                    while (dt.Rows.Count > 20)
+                    while (dt.Rows.Count > 50)
                     {
                         dt.Rows.RemoveAt(dt.Rows.Count - 1);
                     }

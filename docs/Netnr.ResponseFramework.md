@@ -1,8 +1,7 @@
 # netnrf responsive framework
 .NET Core responsive framework, based on Ace Admin framework menu navigation, Bootstrap layout, fontAwesome icon, embedded Iframe, data binding with EasyUI, dynamic configuration list, dynamic configuration form
 
-> Demo 1: <https://rf2.netnr.com>  
-> Demo 2: <https://d-rf.zme.ink>
+> Demo: <https://d-rf.zme.ink>
 
 ### [CHANGELOG](Netnr.ResponseFramework.ChangeLog.md)
 
@@ -45,7 +44,7 @@
 - Tasks: execute tasks regularly, clean up the temporary directory, reset the demo database
 - Export: public export Excel table, custom query body, support condition query, column formatting, support additional operations, etc.
 - Upload: Universal upload interface
-- Interface: All non-page requests are standardized into interfaces, and swagger is used to generate visual interface documents, <https://rf2.netnr.com/swagger>
+- Interface: All non-page requests are standardized into interfaces, and swagger is used to generate visual interface documents
 
 ### Instructions for use
 1. Create a table (primary key must be set), write field comments (used to generate table configuration)

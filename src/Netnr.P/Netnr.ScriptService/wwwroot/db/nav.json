@@ -61,9 +61,17 @@
         "remark": "JSON与XML相互转换"
       },
       {
-        "url": "//tiny.netnr.com",
-        "icon": "tiny",
-        "title": "图片压缩"
+        "url": "/dk",
+        "icon": "db",
+        "title": "DataKit",
+        "remark": "数据库工具及代码构建",
+        "target": "_blank"
+      },
+      {
+        "url": "/zerotier",
+        "icon": "p2p",
+        "title": "ZeroTier",
+        "remark": "ZeroTier 管理"
       },
       {
         "url": "//www.css-js.com",
@@ -72,40 +80,9 @@
         "remark": "JS压缩、CSS压缩"
       },
       {
-        "url": "//getman.cn",
-        "icon": "http",
-        "title": "HTTP请求",
-        "remark": "在线HTTP请求"
-      },
-      {
-        "url": "/pingcloud",
-        "icon": "pingcloud",
-        "title": "Ping云",
-        "remark": "Ping各大云服务节点"
-      },
-      {
-        "url": "//ping.pe",
-        "icon": "ping",
-        "title": "Ping",
-        "remark": "Ping测试"
-      },
-      {
-        "url": "//check-host.net",
-        "icon": "host",
-        "title": "检测主机",
-        "remark": "CHECK-HOST"
-      },
-      {
-        "url": "/ip",
-        "icon": "ip",
-        "title": "IP",
-        "remark": "客户端IP地址"
-      },
-      {
-        "url": "/localhost",
-        "icon": "dns",
-        "title": "域名本地解析",
-        "remark": "域名解析127.0.0.1"
+        "url": "//tiny.netnr.com",
+        "icon": "tiny",
+        "title": "图片压缩"
       },
       {
         "url": "//zijian.aliyun.com",
@@ -120,10 +97,28 @@
         "remark": "域名信息查询"
       },
       {
-        "url": "/useragent",
-        "icon": "info",
-        "title": "UserAgent",
-        "remark": "客户端信息"
+        "url": "//check-host.net",
+        "icon": "host",
+        "title": "检测主机",
+        "remark": "CHECK-HOST"
+      },
+      {
+        "url": "/ip",
+        "icon": "ip",
+        "title": "IP",
+        "remark": "客户端IP地址"
+      },
+      {
+        "url": "//ping.pe",
+        "icon": "ping",
+        "title": "Ping",
+        "remark": "Ping测试"
+      },
+      {
+        "url": "/pingcloud",
+        "icon": "pingcloud",
+        "title": "Ping云",
+        "remark": "Ping各大云服务节点"
       },
       {
         "url": "//www.chinassl.net/ssltools/convert-ssl.html",
@@ -132,21 +127,32 @@
         "remark": "格式转换"
       },
       {
-        "url": "//tool.chinaz.com/regex/",
-        "icon": "regex",
-        "title": "正则表达式"
+        "url": "//getman.cn",
+        "icon": "http",
+        "title": "HTTP请求",
+        "remark": "在线HTTP请求"
       },
       {
-        "url": "/bed",
-        "icon": "img",
-        "title": "图床",
-        "remark": "图床大集合"
+        "url": "/useragent",
+        "icon": "info",
+        "title": "UserAgent",
+        "remark": "客户端信息"
+      },
+      {
+        "url": "/icp",
+        "icon": "icp",
+        "title": "ICP备案查询"
       },
       {
         "url": "/zoning",
         "icon": "zoning",
         "title": "行政区划",
         "remark": "五级行政区划"
+      },
+      {
+        "url": "//tool.chinaz.com/regex/",
+        "icon": "regex",
+        "title": "正则表达式"
       },
       {
         "url": "/pinyin",
@@ -160,6 +166,12 @@
         "remark": "字、词、成语"
       },
       {
+        "url": "/bed",
+        "icon": "img",
+        "title": "图床",
+        "remark": "图床大集合"
+      },
+      {
         "url": "//www.iconfont.cn",
         "icon": "vector",
         "title": "阿里矢量图标",
@@ -169,11 +181,6 @@
         "url": "//c.runoob.com/more/svgeditor/",
         "icon": "svg",
         "title": "SVG编辑器"
-      },
-      {
-        "url": "/icp",
-        "icon": "icp",
-        "title": "ICP备案查询"
       },
       {
         "url": "/free",
@@ -186,19 +193,6 @@
         "icon": "office",
         "title": "Office文档查看",
         "remark": "Word、Excel、PPT"
-      },
-      {
-        "url": "/dk",
-        "icon": "db",
-        "title": "DataKit",
-        "remark": "数据库工具及代码构建",
-        "target": "_blank"
-      },
-      {
-        "url": "/zerotier",
-        "icon": "p2p",
-        "title": "ZeroTier",
-        "remark": "ZeroTier 管理"
       }
     ]
   },
@@ -210,6 +204,24 @@
         "icon": "wallpaper",
         "title": "壁纸",
         "remark": "360高清壁纸"
+      },
+      {
+        "url": "//kms.netnr.com",
+        "icon": "microsoft",
+        "title": "KMS服务",
+        "remark": "激活Windows系统"
+      },
+      {
+        "url": "/symbol",
+        "icon": "symbol",
+        "title": "特殊符号",
+        "remark": "特殊符号"
+      },
+      {
+        "url": "/emoji",
+        "icon": "emoji",
+        "title": "Emoji符号",
+        "remark": "Emoji表情"
       },
       {
         "url": "/speedtest",
@@ -241,40 +253,10 @@
         "target": "_blank"
       },
       {
-        "url": "//kms.netnr.com",
-        "icon": "microsoft",
-        "title": "KMS服务",
-        "remark": "激活Windows系统"
-      },
-      {
         "url": "//v.zme.ink",
         "icon": "video",
         "title": "VIP视频解析",
         "remark": "免费看会员视频"
-      },
-      {
-        "url": "/tempsms",
-        "icon": "sms",
-        "title": "临时短信",
-        "remark": "接收临时短信"
-      },
-      {
-        "url": "/tempmail",
-        "icon": "email",
-        "title": "临时邮箱",
-        "remark": "接收临时邮件"
-      },
-      {
-        "url": "/symbol",
-        "icon": "symbol",
-        "title": "特殊符号",
-        "remark": "特殊符号"
-      },
-      {
-        "url": "/emoji",
-        "icon": "emoji",
-        "title": "Emoji符号",
-        "remark": "Emoji表情"
       },
       {
         "url": "/express",

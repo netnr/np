@@ -1,6 +1,5 @@
 using FluentScheduler;
 using Microsoft.EntityFrameworkCore;
-using Netnr.Blog.Data;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -90,8 +89,7 @@ namespace Netnr.Blog.Application
                 if (GlobalTo.GetValue<bool>(kp + "enable") == true)
                 {
                     //执行命令
-                    using var db = new ContextBase();
-                    using var conn = db.Database.GetDbConnection();
+                    using var conn = Data.ContextBaseFactory.CreateDbContext().Database.GetDbConnection();
                     conn.Open();
                     var connCmd = conn.CreateCommand();
                     connCmd.CommandText = GlobalTo.GetValue(kp + "cmd");
@@ -127,13 +125,14 @@ namespace Netnr.Blog.Application
             {
                 if (GlobalTo.GetValue<bool>("Work:GistSync:enable"))
                 {
+                    using var db = Data.ContextBaseFactory.CreateDbContext();
+
                     //同步用户ID
                     int UserId = GlobalTo.GetValue<int>("Work:GistSync:UserId");
 
                     //日志
                     var listLog = new List<object>();
 
-                    using var db = new ContextBase();
                     var listGist = db.Gist.Where(x => x.Uid == UserId).OrderBy(x => x.GistCreateTime).ToList();
 
                     var codes = listGist.Select(x => x.GistCode).ToList();
@@ -369,7 +368,7 @@ namespace Netnr.Blog.Application
             {
                 if (GlobalTo.GetValue<bool>("Work:HOR:enable"))
                 {
-                    using var db = new ContextBase();
+                    using var db = Data.ContextBaseFactory.CreateDbContext();
 
                     //处理Guff查询记录数
                     var ctype = EnumService.ConnectionType.GuffRecord.ToString();

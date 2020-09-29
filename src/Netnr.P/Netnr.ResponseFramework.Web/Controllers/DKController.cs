@@ -87,7 +87,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                         }
                     });
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -123,7 +123,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 //没指定连接字符串时取后台连接信息
                 if (string.IsNullOrWhiteSpace(conn))
                 {
-                    tdb = ContextBase.TDB;
+                    tdb = GlobalTo.TDB;
                     conn = db.Database.GetDbConnection().ConnectionString;
                     if (db.Database.IsSqlite())
                     {

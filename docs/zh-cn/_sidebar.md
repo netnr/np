@@ -2,12 +2,7 @@
 
 - [Change Log （变更日志）](CHANGELOG.md)
 
-- DataBase （数据库访问）
-    - [Netnr.Data.MySQL](Netnr.Data.MySQL.md)
-    - [Netnr.Data.Oracle](Netnr.Data.Oracle.md)
-    - [Netnr.Data.PostgreSQL](Netnr.Data.PostgreSQL.md)
-    - [Netnr.Data.SQLite](Netnr.Data.SQLite.md)
-    - [Netnr.Data.SQLServer](Netnr.Data.SQLServer.md)
+- [Netnr.Data （数据库访问）](Netnr.Data.md)
 
 - ClassLibrary （SDK）
     - [Netnr.Core （公共类库）](Netnr.Core.md)
@@ -36,7 +31,6 @@
 - [Netnr.Guff（尬服）](Netnr.Guff.md)
 
 - [Netnr.DataKit （数据库工具及代码构建）](Netnr.DataKit.md)
-    - [Netnr.DataKit.Web](Netnr.DataKit.Web.md)
     - [Netnr.DataKit.NodeJs](Netnr.DataKit.NodeJs.md)
 
 - [Netnr.FileServer （上传文件服务器）](Netnr.FileServer.md)

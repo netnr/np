@@ -83,7 +83,7 @@ namespace Netnr.ResponseFramework.Web
             //数据库连接池
             services.AddDbContextPool<Data.ContextBase>(options =>
             {
-                Data.ContextBase.DCOB(options);
+                Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
             }, 99);
 
             //定时任务

@@ -1,12 +1,19 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+using Netnr.Blog.Data;
 
 namespace Netnr.Web.Areas.Draw.Controllers
 {
     [Area("Draw")]
     public class CodeController : Controller
     {
+        public ContextBase db;
+
+        public CodeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 首页
         /// </summary>
@@ -38,7 +45,6 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 if (!string.IsNullOrWhiteSpace(sid))
                 {
                     var vm = new ActionResultVM();
-                    using var db = new Blog.Data.ContextBase();
                     var mo = db.Draw.Find(sid);
                     if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId)
                     {
@@ -61,7 +67,6 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 {
                     if (!string.IsNullOrWhiteSpace(sid))
                     {
-                        using var db = new Blog.Data.ContextBase();
                         var mo = db.Draw.Find(sid);
                         if (mo.Uid == uinfo.UserId)
                         {
@@ -78,7 +83,6 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 var vm = new ActionResultVM();
                 if (User.Identity.IsAuthenticated)
                 {
-                    using var db = new Blog.Data.ContextBase();
                     int num = 0;
                     if (string.IsNullOrWhiteSpace(mof.DrId))
                     {
@@ -126,7 +130,6 @@ namespace Netnr.Web.Areas.Draw.Controllers
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    using var db = new Blog.Data.ContextBase();
                     //新增
                     if (string.IsNullOrWhiteSpace(sid))
                     {
@@ -184,7 +187,6 @@ namespace Netnr.Web.Areas.Draw.Controllers
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    using var db = new Blog.Data.ContextBase();
                     var mo = db.Draw.Find(sid);
                     if (mo.Uid == uinfo.UserId)
                     {

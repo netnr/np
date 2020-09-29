@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Logging;
 using Netnr.Blog.Web.Filters;
+using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -15,6 +16,13 @@ namespace Netnr.Blog.Web.Controllers
     [FilterConfigs.IsAdmin]
     public class AdminController : Controller
     {
+        public ContextBase db;
+
+        public AdminController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 后台管理
         /// </summary>
@@ -44,37 +52,34 @@ namespace Netnr.Blog.Web.Controllers
         {
             var ovm = new QueryDataOutputVM();
 
-            using (var db = new Data.ContextBase())
+            var query = from a in db.UserWriting
+                        join b in db.UserInfo on a.Uid equals b.UserId
+                        select new
+                        {
+                            a.UwId,
+                            a.UwTitle,
+                            a.UwCreateTime,
+                            a.UwUpdateTime,
+                            a.UwReadNum,
+                            a.UwReplyNum,
+                            a.UwOpen,
+                            a.UwStatus,
+                            a.UwLaud,
+                            a.UwMark,
+                            a.UwCategory,
+
+                            b.UserId,
+                            b.Nickname,
+                            b.UserName,
+                            b.UserMail
+                        };
+
+            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
             {
-                var query = from a in db.UserWriting
-                            join b in db.UserInfo on a.Uid equals b.UserId
-                            select new
-                            {
-                                a.UwId,
-                                a.UwTitle,
-                                a.UwCreateTime,
-                                a.UwUpdateTime,
-                                a.UwReadNum,
-                                a.UwReplyNum,
-                                a.UwOpen,
-                                a.UwStatus,
-                                a.UwLaud,
-                                a.UwMark,
-                                a.UwCategory,
-
-                                b.UserId,
-                                b.Nickname,
-                                b.UserName,
-                                b.UserMail
-                            };
-
-                if (!string.IsNullOrWhiteSpace(ivm.Pe1))
-                {
-                    query = query.Where(x => x.UwTitle.Contains(ivm.Pe1));
-                }
-
-                Application.CommonService.QueryJoin(query, ivm, ref ovm);
+                query = query.Where(x => x.UwTitle.Contains(ivm.Pe1));
             }
+
+            Application.CommonService.QueryJoin(query, ivm, ref ovm);
 
             return ovm;
         }
@@ -90,25 +95,22 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new Data.ContextBase())
+            var oldmo = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
+
+            if (oldmo != null)
             {
-                var oldmo = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
+                oldmo.UwStatus = mo.UwStatus;
+                oldmo.UwReplyNum = mo.UwReplyNum;
+                oldmo.UwReadNum = mo.UwReadNum;
+                oldmo.UwLaud = mo.UwLaud;
+                oldmo.UwMark = mo.UwMark;
+                oldmo.UwOpen = mo.UwOpen;
 
-                if (oldmo != null)
-                {
-                    oldmo.UwStatus = mo.UwStatus;
-                    oldmo.UwReplyNum = mo.UwReplyNum;
-                    oldmo.UwReadNum = mo.UwReadNum;
-                    oldmo.UwLaud = mo.UwLaud;
-                    oldmo.UwMark = mo.UwMark;
-                    oldmo.UwOpen = mo.UwOpen;
+                db.UserWriting.Update(oldmo);
 
-                    db.UserWriting.Update(oldmo);
+                int num = db.SaveChanges();
 
-                    int num = db.SaveChanges();
-
-                    vm.Set(num > 0);
-                }
+                vm.Set(num > 0);
             }
 
             return vm;
@@ -136,42 +138,39 @@ namespace Netnr.Blog.Web.Controllers
         {
             var ovm = new QueryDataOutputVM();
 
-            using (var db = new Data.ContextBase())
+            var query = from a in db.UserReply
+                        join b1 in db.UserInfo on a.Uid equals b1.UserId into bg
+                        from b in bg.DefaultIfEmpty()
+                        select new
+                        {
+                            a.UrId,
+                            a.Uid,
+                            a.UrAnonymousName,
+                            a.UrAnonymousLink,
+                            a.UrAnonymousMail,
+                            a.UrTargetType,
+                            a.UrTargetId,
+                            a.UrContent,
+                            a.UrContentMd,
+                            a.UrCreateTime,
+                            a.UrStatus,
+                            a.UrTargetPid,
+                            a.Spare1,
+                            a.Spare2,
+                            a.Spare3,
+
+                            b.UserId,
+                            b.Nickname,
+                            b.UserName,
+                            b.UserMail
+                        };
+
+            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
             {
-                var query = from a in db.UserReply
-                            join b1 in db.UserInfo on a.Uid equals b1.UserId into bg
-                            from b in bg.DefaultIfEmpty()
-                            select new
-                            {
-                                a.UrId,
-                                a.Uid,
-                                a.UrAnonymousName,
-                                a.UrAnonymousLink,
-                                a.UrAnonymousMail,
-                                a.UrTargetType,
-                                a.UrTargetId,
-                                a.UrContent,
-                                a.UrContentMd,
-                                a.UrCreateTime,
-                                a.UrStatus,
-                                a.UrTargetPid,
-                                a.Spare1,
-                                a.Spare2,
-                                a.Spare3,
-
-                                b.UserId,
-                                b.Nickname,
-                                b.UserName,
-                                b.UserMail
-                            };
-
-                if (!string.IsNullOrWhiteSpace(ivm.Pe1))
-                {
-                    query = query.Where(x => x.UrContent.Contains(ivm.Pe1));
-                }
-
-                Application.CommonService.QueryJoin(query, ivm, ref ovm);
+                query = query.Where(x => x.UrContent.Contains(ivm.Pe1));
             }
+
+            Application.CommonService.QueryJoin(query, ivm, ref ovm);
 
             return ovm;
         }
@@ -187,24 +186,21 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new Data.ContextBase())
+            var oldmo = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
+
+            if (oldmo != null)
             {
-                var oldmo = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
+                oldmo.UrAnonymousName = mo.UrAnonymousName;
+                oldmo.UrAnonymousMail = mo.UrAnonymousMail;
+                oldmo.UrAnonymousLink = mo.UrAnonymousLink;
 
-                if (oldmo != null)
-                {
-                    oldmo.UrAnonymousName = mo.UrAnonymousName;
-                    oldmo.UrAnonymousMail = mo.UrAnonymousMail;
-                    oldmo.UrAnonymousLink = mo.UrAnonymousLink;
+                oldmo.UrStatus = mo.UrStatus;
 
-                    oldmo.UrStatus = mo.UrStatus;
+                db.UserReply.Update(oldmo);
 
-                    db.UserReply.Update(oldmo);
+                int num = db.SaveChanges();
 
-                    int num = db.SaveChanges();
-
-                    vm.Set(num > 0);
-                }
+                vm.Set(num > 0);
             }
 
             return vm;
@@ -328,7 +324,6 @@ namespace Netnr.Blog.Web.Controllers
                                 string apirt = Core.HttpTo.Get(api);
                                 if (apirt.Length > 100)
                                 {
-                                    using var db = new Data.ContextBase();
                                     var kvMo = db.KeyValues.FirstOrDefault(x => x.KeyName == key);
                                     if (kvMo == null)
                                     {
@@ -375,7 +370,6 @@ namespace Netnr.Blog.Web.Controllers
                                     listkvs.Add(kvs);
                                 }
 
-                                using var db = new Data.ContextBase();
                                 var mo = db.KeyValueSynonym.FirstOrDefault(x => x.KeyName == mainKey);
                                 if (mo != null)
                                 {
@@ -393,7 +387,6 @@ namespace Netnr.Blog.Web.Controllers
 
                                 if (tags.Count > 0)
                                 {
-                                    using var db = new Data.ContextBase();
                                     var mt = db.Tags.Where(x => tags.Contains(x.TagName)).ToList();
                                     if (mt.Count == 0)
                                     {

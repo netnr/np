@@ -380,7 +380,7 @@ namespace Netnr.ResponseFramework.Application
         /// <returns></returns>
         public static List<SysTableConfig> QuerySysTableConfigList(Expression<Func<SysTableConfig, bool>> predicate)
         {
-            using var db = new ContextBase(ContextBase.DCOB().Options);
+            using var db = ContextBaseFactory.CreateDbContext();
             var list = db.SysTableConfig.Where(predicate).OrderBy(x => x.ColOrder).ToList();
             return list;
         }
@@ -395,7 +395,7 @@ namespace Netnr.ResponseFramework.Application
         {
             if (!cache || !(Core.CacheTo.Get(GlobalCacheKey.SysMenu) is List<SysMenu> list))
             {
-                using var db = new ContextBase(ContextBase.DCOB().Options);
+                using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysMenu.OrderBy(x => x.SmOrder).ToList();
                 Core.CacheTo.Set(GlobalCacheKey.SysMenu, list, 300, false);
             }
@@ -413,7 +413,7 @@ namespace Netnr.ResponseFramework.Application
         {
             if (!cache || !(Core.CacheTo.Get(GlobalCacheKey.SysButton) is List<SysButton> list))
             {
-                using var db = new ContextBase(ContextBase.DCOB().Options);
+                using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysButton.OrderBy(x => x.SbBtnOrder).ToList();
                 Core.CacheTo.Set(GlobalCacheKey.SysButton, list, 300, false);
             }
@@ -431,7 +431,7 @@ namespace Netnr.ResponseFramework.Application
         {
             if (!cache || !(Core.CacheTo.Get(GlobalCacheKey.SysRole) is List<SysRole> list))
             {
-                using var db = new ContextBase(ContextBase.DCOB().Options);
+                using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysRole.ToList();
                 Core.CacheTo.Set(GlobalCacheKey.SysRole, list, 300, false);
             }

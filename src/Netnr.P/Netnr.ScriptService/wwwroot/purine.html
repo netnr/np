@@ -98,7 +98,44 @@ https://zme.ink
             <script src="https://code.bdstatic.com/npm/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
             <script src="https://code.bdstatic.com/npm/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 
-<script src="/js/purine.js?v=A2bQbiLLXKfMXGkRkt-Fy523EUbRIKiQjRXezG7rnMQ"></script>
+
+<script>
+    var purine = {
+        rowStyle: function (row) {
+            var classes = [
+                'text-success',
+                'text-warning',
+                'text-danger'
+            ], ci = 0;
+            if (row.number > 25) {
+                ci = 1;
+            }
+            if (row.number > 150) {
+                ci = 2;
+            }
+            return {
+                classes: classes[ci]
+            }
+        },
+        resize: function () {
+            $('#table').bootstrapTable('resetView', {
+                height: $(window).height() - $('#PGrid').offset().top - 15
+            });
+        },
+        load: function () {
+            $('#table').bootstrapTable({
+                classes: 'table table-sm table-bordered',
+                data: JSON.parse($('#source').html())
+            });
+
+            $(window).resize(purine.resize);
+
+            purine.resize();
+        }
+    }
+
+    purine.load();
+</script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>

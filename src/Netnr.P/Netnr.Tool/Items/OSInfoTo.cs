@@ -463,8 +463,8 @@ namespace Netnr.Tool.Items
             var unit = string.Empty;
             if (isc)
             {
-                v1 = Math.Round(m * 1.0 / 1024 / 1024 / 1024, 1);
-                v2 = Math.Round(d * 1.0 / 1024 / 1024 / 1024, 1);
+                v1 = Math.Round(m * 1.0 / 1024 / 1024 / 1024, 2);
+                v2 = Math.Round(d * 1.0 / 1024 / 1024 / 1024, 2);
                 unit = $"（{v1}/{v2} GB） ";
             }
 

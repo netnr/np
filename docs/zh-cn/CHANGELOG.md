@@ -6,6 +6,9 @@
 - 更新 Netnr.Guff 附件托管
 - 升级 Netnr.FileServer 项目 支持限时Token和永久Token授权
 - 调整 Netnr.ScriptService 项目 SVG 图标合并
+- 调整 Netnr.ResponseFramework.Web 项目 日志缓存为队列 Queue
+- 调整 Netnr.Logging 项目 日志缓存为队列 Queue
+- 整合 数据库访问为一个类库 Netnr.Data
 
 ### 2020-08
 - 新增 Netnr.Fast.Extend 项目的 OSInfoTo.cs 类库新增 `ToView()` 方法，可视化输出

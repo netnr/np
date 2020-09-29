@@ -15,6 +15,13 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
     [Area("Doc")]
     public class CodeController : Controller
     {
+        public ContextBase db;
+
+        public CodeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 目录页面
         /// </summary>
@@ -49,95 +56,93 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             var baseUrl = string.Join("/", Request.Path.Value.Split('/').ToList().Take(4)) + "/";
 
-            using (var db = new ContextBase())
+            var ds = db.DocSet.Find(DsCode);
+            if (ds == null)
             {
-                var ds = db.DocSet.Find(DsCode);
-                if (ds == null)
-                {
-                    return Content("bad");
-                }
+                return Content("bad");
+            }
 
-                //分享码
-                var isShare = !string.IsNullOrWhiteSpace(code) && ds.Spare1 == code;
+            //分享码
+            var isShare = !string.IsNullOrWhiteSpace(code) && ds.Spare1 == code;
 
-                if (!isShare && ds.DsOpen != 1)
+            if (!isShare && ds.DsOpen != 1)
+            {
+                if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    if (HttpContext.User.Identity.IsAuthenticated)
-                    {
-                        var uinfo = new Application.UserAuthService(HttpContext).Get();
-                        if (uinfo.UserId != ds.Uid)
-                        {
-                            return Content("unauthorized");
-                        }
-                    }
-                    else
+                    var uinfo = new Application.UserAuthService(HttpContext).Get();
+                    if (uinfo.UserId != ds.Uid)
                     {
                         return Content("unauthorized");
                     }
                 }
-
-
-                var ismd = DsdId.EndsWith(".md");
-                var listSeo = new List<string>();
-
-                if (DsdId.StartsWith("README") || string.IsNullOrWhiteSpace(DsdId))
+                else
                 {
-                    var ct = new List<string>
+                    return Content("unauthorized");
+                }
+            }
+
+
+            var ismd = DsdId.EndsWith(".md");
+            var listSeo = new List<string>();
+
+            if (DsdId.StartsWith("README") || string.IsNullOrWhiteSpace(DsdId))
+            {
+                var ct = new List<string>
                     {
                         "# " + ds.DsName,
                         ds.DsRemark,
                         "",
                         ds.DsCreateTime.Value.ToString("yyyy-MM-dd")
                     };
-                    var ctmd = string.Join(Environment.NewLine, ct);
-                    listSeo.Add(Markdown.ToHtml(ctmd));
+                var ctmd = string.Join(Environment.NewLine, ct);
+                listSeo.Add(Markdown.ToHtml(ctmd));
 
-                    if (ismd)
-                    {
-                        return Content(ctmd);
-                    }
-                }
-
-                if (DsdId.StartsWith("_sidebar") || DsdId.Length == 19)
+                if (ismd)
                 {
-                    //文档集目录
-                    var DocTree = db.DocSetDetail
-                        .Where(x => x.DsCode == DsCode)
-                        .OrderBy(x => x.DsdOrder)
-                        .Select(x => new DocTreeVM
-                        {
-                            DsdId = x.DsdId,
-                            DsdPid = x.DsdPid,
-                            DsCode = x.DsCode,
-                            DsdTitle = x.DsdTitle,
-                            DsdOrder = x.DsdOrder,
-                            IsCatalog = string.IsNullOrEmpty(x.DsdContentMd)
-                        }).ToList();
-
-                    var ct = TreeToMd(baseUrl, DocTree, Guid.Empty.ToString());
-                    //ct.RemoveRange(0, 10);
-                    var ctmd = string.Join(Environment.NewLine, ct);
-                    listSeo.Add(Markdown.ToHtml(ctmd).Replace(".md\"", "\""));
-
-                    if (ismd)
-                    {
-                        return Content(ctmd);
-                    }
+                    return Content(ctmd);
                 }
+            }
 
-                if (DsdId.Length == 19 || DsdId.Length == 22)
-                {
-                    var mdid = DsdId.Replace(".md", "");
-
-                    var mdmo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == mdid);
-
-                    var uptime = "<span title='" + mdmo.DsdCreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'><i class='fa fa-clock-o'></i> 创建于：" + mdmo.DsdCreateTime.Value.ToString("yyyy年MM月dd日") + "</span>";
-                    if (mdmo.DsdUpdateTime != mdmo.DsdCreateTime)
+            if (DsdId.StartsWith("_sidebar") || DsdId.Length == 19)
+            {
+                //文档集目录
+                var DocTree = db.DocSetDetail
+                    .Where(x => x.DsCode == DsCode)
+                    .OrderBy(x => x.DsdOrder)
+                    .Select(x => new DocTreeVM
                     {
-                        uptime += " &nbsp; <span title='" + mdmo.DsdUpdateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'><i class='fa fa-clock-o'></i> 更新于：" + mdmo.DsdUpdateTime.Value.ToString("yyyy年MM月dd日") + "</span>";
-                    }
-                    uptime += " &nbsp; <span><i class='fa fa-sort-amount-asc'></i> 排序号：" + mdmo.DsdOrder + "</span>";
-                    var mdtitle = string.Join(Environment.NewLine, new List<string>()
+                        DsdId = x.DsdId,
+                        DsdPid = x.DsdPid,
+                        DsCode = x.DsCode,
+                        DsdTitle = x.DsdTitle,
+                        DsdOrder = x.DsdOrder,
+                        IsCatalog = string.IsNullOrEmpty(x.DsdContentMd)
+                    }).ToList();
+
+                var ct = TreeToMd(baseUrl, DocTree, Guid.Empty.ToString());
+                //ct.RemoveRange(0, 10);
+                var ctmd = string.Join(Environment.NewLine, ct);
+                listSeo.Add(Markdown.ToHtml(ctmd).Replace(".md\"", "\""));
+
+                if (ismd)
+                {
+                    return Content(ctmd);
+                }
+            }
+
+            if (DsdId.Length == 19 || DsdId.Length == 22)
+            {
+                var mdid = DsdId.Replace(".md", "");
+
+                var mdmo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == mdid);
+
+                var uptime = "<span title='" + mdmo.DsdCreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'><i class='fa fa-clock-o'></i> 创建于：" + mdmo.DsdCreateTime.Value.ToString("yyyy年MM月dd日") + "</span>";
+                if (mdmo.DsdUpdateTime != mdmo.DsdCreateTime)
+                {
+                    uptime += " &nbsp; <span title='" + mdmo.DsdUpdateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'><i class='fa fa-clock-o'></i> 更新于：" + mdmo.DsdUpdateTime.Value.ToString("yyyy年MM月dd日") + "</span>";
+                }
+                uptime += " &nbsp; <span><i class='fa fa-sort-amount-asc'></i> 排序号：" + mdmo.DsdOrder + "</span>";
+                var mdtitle = string.Join(Environment.NewLine, new List<string>()
                     {
                         "<h1>"+mdmo.DsdTitle+"</h1>",
                         uptime,
@@ -146,18 +151,17 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                         ""
                     });
 
-                    listSeo.Add(mdtitle + mdmo.DsdContentHtml);
+                listSeo.Add(mdtitle + mdmo.DsdContentHtml);
 
-                    if (ismd)
-                    {
-                        return Content(mdtitle + mdmo.DsdContentMd);
-                    }
+                if (ismd)
+                {
+                    return Content(mdtitle + mdmo.DsdContentMd);
                 }
-
-                //文档标题
-                ViewData["Title"] = ds.DsName;
-                ViewData["DocSeo"] = string.Join(Environment.NewLine, listSeo);
             }
+
+            //文档标题
+            ViewData["Title"] = ds.DsName;
+            ViewData["DocSeo"] = string.Join(Environment.NewLine, listSeo);
 
             return View();
         }
@@ -231,13 +235,10 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new ContextBase())
+            var ds = db.DocSet.Find(code);
+            if (ds?.Uid != uinfo.UserId)
             {
-                var ds = db.DocSet.Find(code);
-                if (ds?.Uid != uinfo.UserId)
-                {
-                    return Content("unauthorized");
-                }
+                return Content("unauthorized");
             }
 
             var mo = new DocSetDetail
@@ -247,7 +248,6 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             if (!string.IsNullOrWhiteSpace(dsdid))
             {
-                using var db = new ContextBase();
                 mo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == dsdid);
             }
 
@@ -266,48 +266,45 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new ContextBase())
+            var ds = db.DocSet.Find(mo.DsCode);
+            if (ds?.Uid != uinfo.UserId)
             {
-                var ds = db.DocSet.Find(mo.DsCode);
-                if (ds?.Uid != uinfo.UserId)
+                vm.Set(ARTag.unauthorized);
+            }
+            else
+            {
+                mo.DsdUpdateTime = DateTime.Now;
+                mo.Uid = uinfo.UserId;
+
+                if (string.IsNullOrWhiteSpace(mo.DsdPid))
                 {
-                    vm.Set(ARTag.unauthorized);
+                    mo.DsdPid = Guid.Empty.ToString();
+                }
+
+                if (!mo.DsdOrder.HasValue)
+                {
+                    mo.DsdOrder = 99;
+                }
+
+                if (string.IsNullOrWhiteSpace(mo.DsdId))
+                {
+                    mo.DsdId = Core.UniqueTo.LongId().ToString();
+                    mo.DsdCreateTime = mo.DsdUpdateTime;
+
+                    db.DocSetDetail.Add(mo);
                 }
                 else
                 {
-                    mo.DsdUpdateTime = DateTime.Now;
-                    mo.Uid = uinfo.UserId;
+                    //查询原创建时间
+                    var currmo = db.DocSetDetail.AsNoTracking().FirstOrDefault(x => x.DsdId == mo.DsdId);
+                    mo.DsdCreateTime = currmo.DsdCreateTime;
 
-                    if (string.IsNullOrWhiteSpace(mo.DsdPid))
-                    {
-                        mo.DsdPid = Guid.Empty.ToString();
-                    }
-
-                    if (!mo.DsdOrder.HasValue)
-                    {
-                        mo.DsdOrder = 99;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(mo.DsdId))
-                    {
-                        mo.DsdId = Core.UniqueTo.LongId().ToString();
-                        mo.DsdCreateTime = mo.DsdUpdateTime;
-
-                        db.DocSetDetail.Add(mo);
-                    }
-                    else
-                    {
-                        //查询原创建时间
-                        var currmo = db.DocSetDetail.AsNoTracking().FirstOrDefault(x => x.DsdId == mo.DsdId);
-                        mo.DsdCreateTime = currmo.DsdCreateTime;
-
-                        db.DocSetDetail.Update(mo);
-                    }
-
-                    int num = db.SaveChanges();
-                    vm.Set(num > 0);
-                    vm.Data = mo.DsdId;
+                    db.DocSetDetail.Update(mo);
                 }
+
+                int num = db.SaveChanges();
+                vm.Set(num > 0);
+                vm.Data = mo.DsdId;
             }
 
             return vm;
@@ -327,7 +324,6 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             if (!string.IsNullOrWhiteSpace(dsdid))
             {
-                using var db = new ContextBase();
                 var ds = db.DocSet.Find(code);
                 if (ds?.Uid != uinfo.UserId)
                 {
@@ -354,13 +350,10 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new ContextBase())
+            var ds = db.DocSet.Find(code);
+            if (ds?.Uid != uinfo.UserId)
             {
-                var ds = db.DocSet.Find(code);
-                if (ds?.Uid != uinfo.UserId)
-                {
-                    return Content("unauthorized");
-                }
+                return Content("unauthorized");
             }
 
             return View();
@@ -378,7 +371,6 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using var db = new ContextBase();
             var ds = db.DocSet.Find(mo.DsCode);
             if (ds?.Uid != uinfo.UserId)
             {
@@ -430,7 +422,6 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using var db = new ContextBase();
             var ds = db.DocSet.Find(code);
             if (ds?.Uid != uinfo.UserId)
             {
@@ -455,7 +446,6 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         public FileResult Export()
         {
             var code = RouteData.Values["id"]?.ToString();
-            using var db = new ContextBase();
             var list = db.DocSetDetail.Where(x => x.DsCode == code).OrderBy(x => x.DsdOrder).Select(x => new
             {
                 x.DsdId,
@@ -567,7 +557,6 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             {
                 var code = RouteData.Values["id"]?.ToString();
 
-                using var db = new ContextBase();
                 var list = db.DocSetDetail.Where(x => x.DsCode == code).OrderBy(x => x.DsdOrder).Select(x => new
                 {
                     x.DsdId,

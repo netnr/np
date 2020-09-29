@@ -16,4 +16,10 @@
     <PackageReference Include="Netnr.Core" Version="1.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Netnr.Fast.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

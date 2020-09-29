@@ -244,33 +244,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 本地主机
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Localhost()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 临时短信
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult TempSMS()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 临时邮箱
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult TempMail()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// Ping云服务
         /// </summary>
         /// <returns></returns>

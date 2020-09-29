@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -13,6 +14,13 @@ namespace Netnr.Blog.Web.Controllers
     /// </summary>
     public class UserController : Controller
     {
+        public ContextBase db;
+
+        public UserController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         #region 消息
 
         /// <summary>
@@ -31,7 +39,6 @@ namespace Netnr.Blog.Web.Controllers
 
             if (page == 1)
             {
-                using var db = new Data.ContextBase();
                 var listum = db.UserMessage.Where(x => x.UmType == Application.EnumService.MessageType.UserWriting.ToString() && x.UmAction == 2 && x.UmStatus == 1).ToList();
                 if (listum.Count > 0)
                 {
@@ -58,7 +65,6 @@ namespace Netnr.Blog.Web.Controllers
             {
                 var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-                using var db = new Data.ContextBase();
                 var um = db.UserMessage.Find(id);
                 if (um == null)
                 {
@@ -99,7 +105,6 @@ namespace Netnr.Blog.Web.Controllers
         {
             if (int.TryParse(RouteData.Values["id"]?.ToString(), out int uid))
             {
-                using var db = new Data.ContextBase();
                 var usermo = db.UserInfo.Find(uid);
                 if (usermo != null)
                 {
@@ -121,16 +126,14 @@ namespace Netnr.Blog.Web.Controllers
             var vm = new ActionResultVM();
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
-            using (var db = new Data.ContextBase())
-            {
-                var currmo = db.UserInfo.Find(uinfo.UserId);
-                currmo.UserSay = mo.UserSay;
-                db.UserInfo.Update(currmo);
 
-                int num = db.SaveChanges();
+            var currmo = db.UserInfo.Find(uinfo.UserId);
+            currmo.UserSay = mo.UserSay;
+            db.UserInfo.Update(currmo);
 
-                vm.Set(num > 0);
-            }
+            int num = db.SaveChanges();
+
+            vm.Set(num > 0);
 
             return vm;
         }
@@ -173,17 +176,14 @@ namespace Netnr.Blog.Web.Controllers
                             using var bmp = new System.Drawing.Bitmap(ms);
                             bmp.Save(Fast.PathTo.Combine(ppath, upname), ImageFormat.Jpeg);
 
-                            using (var db = new Data.ContextBase())
+                            var usermo = db.UserInfo.Find(uinfo.UserId);
+                            usermo.UserPhoto = npnew;
+                            db.UserInfo.Update(usermo);
+                            int num = db.SaveChanges();
+                            if (num > 0)
                             {
-                                var usermo = db.UserInfo.Find(uinfo.UserId);
-                                usermo.UserPhoto = npnew;
-                                db.UserInfo.Update(usermo);
-                                int num = db.SaveChanges();
-                                if (num > 0)
-                                {
-                                    using var ac = new AccountController();
-                                    ac.SetAuth(HttpContext, usermo);
-                                }
+                                using var ac = new AccountController(db);
+                                ac.SetAuth(HttpContext, usermo);
                             }
 
                             vm.Set(ARTag.success);
@@ -194,17 +194,14 @@ namespace Netnr.Blog.Web.Controllers
                             using var wc = new System.Net.WebClient();
                             wc.DownloadFile(source, Fast.PathTo.Combine(ppath, upname));
 
-                            using (var db = new Data.ContextBase())
+                            var usermo = db.UserInfo.Find(uinfo.UserId);
+                            usermo.UserPhoto = npnew;
+                            db.UserInfo.Update(usermo);
+                            int num = db.SaveChanges();
+                            if (num > 0)
                             {
-                                var usermo = db.UserInfo.Find(uinfo.UserId);
-                                usermo.UserPhoto = npnew;
-                                db.UserInfo.Update(usermo);
-                                int num = db.SaveChanges();
-                                if (num > 0)
-                                {
-                                    using var ac = new AccountController();
-                                    ac.SetAuth(HttpContext, usermo);
-                                }
+                                using var ac = new AccountController(db);
+                                ac.SetAuth(HttpContext, usermo);
                             }
 
                             vm.Set(ARTag.success);
@@ -233,11 +230,9 @@ namespace Netnr.Blog.Web.Controllers
         {
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new Data.ContextBase())
-            {
-                var mo = db.UserInfo.Find(uinfo.UserId);
+            var mo = db.UserInfo.Find(uinfo.UserId);
 
-                ViewData["listQuickLogin"] = new List<Application.ViewModel.QuickLoginVM>
+            ViewData["listQuickLogin"] = new List<Application.ViewModel.QuickLoginVM>
                 {
                     new Application.ViewModel.QuickLoginVM
                     {
@@ -277,8 +272,7 @@ namespace Netnr.Blog.Web.Controllers
                     }
                 };
 
-                return View(mo);
-            };
+            return View(mo);
         }
 
         /// <summary>
@@ -300,72 +294,70 @@ namespace Netnr.Blog.Web.Controllers
             }
 
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
-            {
-                var usermo = db.UserInfo.Find(uid);
 
-                //变更账号
-                if (!string.IsNullOrWhiteSpace(mo.UserName) && usermo.UserNameChange != 1 && usermo.UserName != mo.UserName)
+            var usermo = db.UserInfo.Find(uid);
+
+            //变更账号
+            if (!string.IsNullOrWhiteSpace(mo.UserName) && usermo.UserNameChange != 1 && usermo.UserName != mo.UserName)
+            {
+                //账号重复
+                if (db.UserInfo.Any(x => x.UserName == mo.UserName))
                 {
-                    //账号重复
-                    if (db.UserInfo.Any(x => x.UserName == mo.UserName))
+                    vm.Set(ARTag.exist);
+                    vm.Msg = "账号已经存在";
+
+                    return vm;
+                }
+                else
+                {
+                    usermo.UserName = mo.UserName;
+                    usermo.UserNameChange = 1;
+                }
+            }
+
+            //变更邮箱
+            if (mo.UserMail != usermo.UserMail)
+            {
+                usermo.UserMailValid = 0;
+
+                //邮箱正则验证
+                if (!string.IsNullOrWhiteSpace(mo.UserMail))
+                {
+                    if (!Fast.ParsingTo.IsMail(mo.UserMail))
                     {
-                        vm.Set(ARTag.exist);
-                        vm.Msg = "账号已经存在";
+                        vm.Set(ARTag.invalid);
+                        vm.Msg = "邮箱格式有误";
 
                         return vm;
                     }
                     else
                     {
-                        usermo.UserName = mo.UserName;
-                        usermo.UserNameChange = 1;
-                    }
-                }
-
-                //变更邮箱
-                if (mo.UserMail != usermo.UserMail)
-                {
-                    usermo.UserMailValid = 0;
-
-                    //邮箱正则验证
-                    if (!string.IsNullOrWhiteSpace(mo.UserMail))
-                    {
-                        if (!Fast.ParsingTo.IsMail(mo.UserMail))
+                        if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
                         {
-                            vm.Set(ARTag.invalid);
-                            vm.Msg = "邮箱格式有误";
+                            vm.Set(ARTag.exist);
+                            vm.Msg = "邮箱已经存在";
 
                             return vm;
                         }
-                        else
-                        {
-                            if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
-                            {
-                                vm.Set(ARTag.exist);
-                                vm.Msg = "邮箱已经存在";
-
-                                return vm;
-                            }
-                        }
                     }
                 }
+            }
 
-                usermo.UserMail = mo.UserMail;
-                usermo.Nickname = mo.Nickname;
-                usermo.UserPhone = mo.UserPhone;
-                usermo.UserUrl = mo.UserUrl;
+            usermo.UserMail = mo.UserMail;
+            usermo.Nickname = mo.Nickname;
+            usermo.UserPhone = mo.UserPhone;
+            usermo.UserUrl = mo.UserUrl;
 
-                db.UserInfo.Update(usermo);
-                var num = db.SaveChanges();
+            db.UserInfo.Update(usermo);
+            var num = db.SaveChanges();
 
-                //更新授权信息
-                using (var ac = new AccountController())
-                {
-                    ac.SetAuth(HttpContext, usermo, true);
-                }
+            //更新授权信息
+            using (var ac = new AccountController(db))
+            {
+                ac.SetAuth(HttpContext, usermo, true);
+            }
 
-                vm.Set(num > 0);
-            };
+            vm.Set(num > 0);
 
             return vm;
         }
@@ -392,7 +384,6 @@ namespace Netnr.Blog.Web.Controllers
             if (Enum.TryParse(RouteData.Values["id"]?.ToString().ToLower(), out AccountController.ValidateloginType vtype))
             {
                 int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-                using var db = new Data.ContextBase();
                 var mo = db.UserInfo.Find(uid);
 
                 switch (vtype)
@@ -435,22 +426,20 @@ namespace Netnr.Blog.Web.Controllers
             var vm = new ActionResultVM();
 
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
-            {
-                var userinfo = db.UserInfo.Find(uid);
-                if (userinfo.UserPwd == Core.CalcTo.MD5(oldpwd))
-                {
-                    userinfo.UserPwd = Core.CalcTo.MD5(newpwd);
-                    db.UserInfo.Update(userinfo);
-                    var num = db.SaveChanges();
 
-                    vm.Set(num > 0);
-                }
-                else
-                {
-                    vm.Set(ARTag.unauthorized);
-                }
-            };
+            var userinfo = db.UserInfo.Find(uid);
+            if (userinfo.UserPwd == Core.CalcTo.MD5(oldpwd))
+            {
+                userinfo.UserPwd = Core.CalcTo.MD5(newpwd);
+                db.UserInfo.Update(userinfo);
+                var num = db.SaveChanges();
+
+                vm.Set(num > 0);
+            }
+            else
+            {
+                vm.Set(ARTag.unauthorized);
+            }
 
             return vm;
         }
@@ -509,7 +498,6 @@ namespace Netnr.Blog.Web.Controllers
 
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
 
-            using var db = new Data.ContextBase();
             var query = from a in db.UserWriting
                         where a.Uid == uid
                         select new
@@ -557,18 +545,16 @@ namespace Netnr.Blog.Web.Controllers
             var vm = new ActionResultVM();
 
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
-            {
-                var mo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == id);
-                var listTags = db.UserWritingTags.Where(x => x.UwId == id).ToList();
 
-                vm.Data = new
-                {
-                    item = mo,
-                    tags = listTags
-                };
-                vm.Set(ARTag.success);
-            }
+            var mo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == id);
+            var listTags = db.UserWritingTags.Where(x => x.UwId == id).ToList();
+
+            vm.Data = new
+            {
+                item = mo,
+                tags = listTags
+            };
+            vm.Set(ARTag.success);
 
             return vm;
         }
@@ -593,7 +579,7 @@ namespace Netnr.Blog.Web.Controllers
                 var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                 int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-                using var db = new Data.ContextBase();
+
                 var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == UwId);
 
                 if (oldmo.UwStatus == -1)
@@ -652,23 +638,21 @@ namespace Netnr.Blog.Web.Controllers
             var vm = new ActionResultVM();
 
             int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
-            {
-                var mo1 = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == id);
-                if (mo1.UwStatus == -1)
-                {
-                    vm.Set(ARTag.unauthorized);
-                }
-                else
-                {
-                    db.UserWriting.Remove(mo1);
-                    var mo2 = db.UserWritingTags.Where(x => x.UwId == id).ToList();
-                    db.UserWritingTags.RemoveRange(mo2);
-                    var mo3 = db.UserReply.Where(x => x.UrTargetId == id.ToString()).ToList();
-                    db.UserReply.RemoveRange(mo3);
 
-                    vm.Set(db.SaveChanges() > 0);
-                }
+            var mo1 = db.UserWriting.FirstOrDefault(x => x.Uid == uid && x.UwId == id);
+            if (mo1.UwStatus == -1)
+            {
+                vm.Set(ARTag.unauthorized);
+            }
+            else
+            {
+                db.UserWriting.Remove(mo1);
+                var mo2 = db.UserWritingTags.Where(x => x.UwId == id).ToList();
+                db.UserWritingTags.RemoveRange(mo2);
+                var mo3 = db.UserReply.Where(x => x.UrTargetId == id.ToString()).ToList();
+                db.UserReply.RemoveRange(mo3);
+
+                vm.Set(db.SaveChanges() > 0);
             }
 
             return vm;
@@ -699,7 +683,6 @@ namespace Netnr.Blog.Web.Controllers
                         {
                             if (User.Identity.IsAuthenticated)
                             {
-                                using var db = new Data.ContextBase();
                                 var usermo = db.UserInfo.Find(uinfo.UserId);
                                 if (usermo.UserMailValid == 1)
                                 {
@@ -774,7 +757,6 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
-                                    using var db = new Data.ContextBase();
                                     var usermo = db.UserInfo.FirstOrDefault(x => x.UserMail == mail);
                                     if (usermo != null)
                                     {

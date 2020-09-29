@@ -69,7 +69,54 @@ https://zme.ink
                     <svg class="titleicon"><use xlink:href="#weather"></use></svg> &#x5929;&#x6C14;&#x9884;&#x62A5;
                 </h4>
         <div class="min300">
-            <link href="/css/weather.css?v=EuTEd2V0hUlmp__IJpw6r7J2IM0DT05wHSKhwJ_ULOw" rel="stylesheet" />
+            <style>
+    #divweather h4 {
+        font-weight: 400;
+        text-indent: 5px;
+        margin: 30px 0 30px 10px;
+    }
+
+    #divweather em {
+        color: #0066ff;
+        margin-right: 30px;
+        font-style: normal;
+    }
+
+    #divweather > div {
+        margin: 20px 0;
+        line-height: 1.8;
+    }
+
+        #divweather > div strong {
+            color: #009a61;
+            margin-left: 20px;
+        }
+
+        #divweather > div span {
+            margin-right: 20px;
+        }
+
+    #divWeatherCode {
+        left: 0;
+        right: 0;
+        top: 45px;
+        z-index: 8;
+        display: none;
+        font-size: 1.1em;
+        overflow-y: auto;
+        position: absolute;
+        border-radius: 5px;
+        border: 2px solid #ddd;
+        padding: 20px 20px 10px;
+        background-color: white;
+    }
+
+        #divWeatherCode a {
+            float: left;
+            white-space: nowrap;
+            margin: 0 15px 5px 0;
+        }
+</style>
 
 <div class="container-fluid">
     <div class="row">
@@ -85,7 +132,119 @@ https://zme.ink
 </div>
 
 <script src="/js/weathercode.js?v=y7-jJWQii7AlqQoBRPkmraN4ALgpW3FLj3eG-zScFKg"></script>
-<script src="/js/weather.js?v=qpmW4CdWzI8Fef-Ii_qvIvjTpjQEZlD0BAvePY8JhQ0"></script>
+
+<script>
+    //请求天气预报信息
+    QueryWeather(101040100);
+    function QueryWeather(cityCode) {
+        ss.loading();
+        ss.ajax({
+            url: "http://wthrcdn.etouch.cn/weather_mini?citykey=" + cityCode,
+            dataType: "json",
+            success: function (data) {
+                data = ss.datalocation(data);
+                if (data.desc == "OK") {
+                    var jsons = data.data.forecast,
+                        htm = '<div class="col-sm-12"><em>' + data.data.city + '</em>实时温度：<b>' + data.data.wendu + '℃</b></div>';
+                    for (var i in jsons) {
+                        var lx = jsons[i].type,
+                            fx = jsons[i].fengxiang,
+                            fl = jsons[i].fengli,
+                            gw = jsons[i].high,
+                            dw = jsons[i].low,
+                            rq = jsons[i].date;
+                        i == 0 && (rq = '今日天气');
+
+                        htm += '<div class="col-md-4 col-sm-6">'
+                            + '<b>' + rq + '</b>'
+                            + '<strong>' + lx + '</strong><br/>'
+                            + '<span>' + fl + '</span>'
+                            + '<span>' + dw + '</span>'
+                            + '<span>' + gw + '</span>'
+                            + '</div>';
+                    }
+                    htm += '<div class="col-md-4 col-sm-6">' + data.data.ganmao + '</div>';
+                    $("#divweather").html(htm);
+                } else {
+                    jz.alert("查询失败")
+                }
+            },
+            error: function () {
+                ss.loading(0);
+                jz.msg("网络错误");
+            },
+            complete: function () {
+                ss.loading(0);
+            }
+        });
+    }
+
+    //城市联动查询
+    $('#txtSearch').on('input', function () {
+        AutoLoadWeatherCode(this.value);
+    }).focus(function () {
+        $('#divWeatherCode').show();
+        AutoLoadWeatherCode(this.value);
+    });
+    function AutoLoadWeatherCode(value) {
+        var htmls = [];
+        if (value == "") {
+            $(WeatherCode).each(function () {
+                htmls.push('<div class="card mb-3">');
+                htmls.push('<div class="card-body">');
+                htmls.push('<h5 class="card-title">' + this.city + '</h4>');
+                $(this.citys).each(function () {
+                    htmls.push('<a href="javascript:void(0)" data-code="' + this.code + '" >' + this.name + '</a>');
+                });
+                htmls.push('</div></div>');
+            });
+        } else {
+            $(WeatherCode).each(function () {
+                var children = [];
+                $(this.citys).each(function () {
+                    if (this.name.indexOf(value) >= 0 || this.py.indexOf(value.toUpperCase()) >= 0) {
+                        children.push('<a href="javascript:void(0)" data-code="' + this.code + '" >' + this.name + '</a>');
+                    }
+                });
+                if (children.length) {
+                    htmls.push('<div class="card mb-3">');
+                    htmls.push('<div class="card-body">');
+                    htmls.push('<h5 class="card-title">' + this.city + '</h4>');
+                    htmls.push(children.join(''));
+                    htmls.push('</div></div>');
+                }
+            });
+        }
+        if (htmls.length) {
+            $('#divWeatherCode').html(htmls.join(''));
+        } else {
+            $('#divWeatherCode').html('( ⊙ o ⊙ ) ， 没有相关城市信息');
+        }
+    }
+    //点击城市发起查询
+    $('#divWeatherCode').click(function (e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        if (target.nodeName == "A") {
+            var code = target.getAttribute('data-code');
+            QueryWeather(code, target.innerHTML);
+            $('#divWeatherCode').hide();
+        }
+    }).css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 80 + "px");
+    //自适应高度
+    $(window).resize(function () {
+        $('#divWeatherCode').css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 80 + "px");
+    });
+
+    //点击空白关闭城市浮动层
+    $(document).click(function (e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        if (!$('#divWeatherCode')[0].contains(target) && target.id != "txtSearch") {
+            $('#divWeatherCode').hide();
+        }
+    });
+</script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>

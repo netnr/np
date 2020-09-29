@@ -14,6 +14,13 @@ namespace Netnr.Blog.Web.Controllers
     /// </summary>
     public class HomeController : Controller
     {
+        public ContextBase db;
+
+        public HomeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 首页
         /// </summary>
@@ -105,71 +112,68 @@ namespace Netnr.Blog.Web.Controllers
             {
                 var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-                using (var db = new ContextBase())
+                //验证邮箱
+                if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
                 {
-                    //验证邮箱
-                    if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
-                    {
-                        vm.Set(ARTag.unauthorized);
-                        vm.Msg = "请验证邮箱后再操作";
+                    vm.Set(ARTag.unauthorized);
+                    vm.Msg = "请验证邮箱后再操作";
 
-                        return vm;
-                    }
-
-                    //有昵称
-                    if (string.IsNullOrWhiteSpace(uinfo.Nickname))
-                    {
-                        vm.Set(ARTag.refuse);
-                        vm.Msg = "请填写昵称后再操作";
-
-                        return vm;
-                    }
-
-                    var lisTagId = new List<int>();
-                    TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-
-                    var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
-
-                    mo.Uid = uinfo.UserId;
-                    mo.UwCreateTime = DateTime.Now;
-                    mo.UwUpdateTime = mo.UwCreateTime;
-                    mo.UwLastUid = mo.Uid;
-                    mo.UwLastDate = mo.UwCreateTime;
-                    mo.UwReplyNum = 0;
-                    mo.UwReadNum = 0;
-                    mo.UwOpen = 1;
-                    mo.UwLaud = 0;
-                    mo.UwMark = 0;
-                    mo.UwStatus = 1;
-
-                    db.UserWriting.Add(mo);
-                    db.SaveChanges();
-
-                    var listwt = new List<UserWritingTags>();
-                    foreach (var tag in lisTagId)
-                    {
-                        var wtmo = new UserWritingTags
-                        {
-                            UwId = mo.UwId,
-                            TagId = tag,
-                            TagName = lisTagName.FirstOrDefault(x => x.TagId == tag).TagName
-                        };
-
-                        listwt.Add(wtmo);
-                    }
-                    db.UserWritingTags.AddRange(listwt);
-
-                    //标签热点+1
-                    var listTagId = listwt.Select(x => x.TagId.Value);
-                    var listTags = db.Tags.Where(x => listTagId.Contains(x.TagId)).ToList();
-                    listTags.ForEach(x => x.TagHot += 1);
-                    db.Tags.UpdateRange(listTags);
-
-                    int num = db.SaveChanges();
-
-                    vm.Data = mo.UwId;
-                    vm.Set(num > 0);
+                    return vm;
                 }
+
+                //有昵称
+                if (string.IsNullOrWhiteSpace(uinfo.Nickname))
+                {
+                    vm.Set(ARTag.refuse);
+                    vm.Msg = "请填写昵称后再操作";
+
+                    return vm;
+                }
+
+                var lisTagId = new List<int>();
+                TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
+
+                var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
+
+                mo.Uid = uinfo.UserId;
+                mo.UwCreateTime = DateTime.Now;
+                mo.UwUpdateTime = mo.UwCreateTime;
+                mo.UwLastUid = mo.Uid;
+                mo.UwLastDate = mo.UwCreateTime;
+                mo.UwReplyNum = 0;
+                mo.UwReadNum = 0;
+                mo.UwOpen = 1;
+                mo.UwLaud = 0;
+                mo.UwMark = 0;
+                mo.UwStatus = 1;
+
+                db.UserWriting.Add(mo);
+                db.SaveChanges();
+
+                var listwt = new List<UserWritingTags>();
+                foreach (var tag in lisTagId)
+                {
+                    var wtmo = new UserWritingTags
+                    {
+                        UwId = mo.UwId,
+                        TagId = tag,
+                        TagName = lisTagName.FirstOrDefault(x => x.TagId == tag).TagName
+                    };
+
+                    listwt.Add(wtmo);
+                }
+                db.UserWritingTags.AddRange(listwt);
+
+                //标签热点+1
+                var listTagId = listwt.Select(x => x.TagId.Value);
+                var listTags = db.Tags.Where(x => listTagId.Contains(x.TagId)).ToList();
+                listTags.ForEach(x => x.TagHot += 1);
+                db.Tags.UpdateRange(listTags);
+
+                int num = db.SaveChanges();
+
+                vm.Data = mo.UwId;
+                vm.Set(num > 0);
             }
             catch (Exception ex)
             {
@@ -214,7 +218,6 @@ namespace Netnr.Blog.Web.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var uinfo = new Application.UserAuthService(HttpContext).Get();
-                    using var db = new ContextBase();
                     var listuc = db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == Application.EnumService.ConnectionType.UserWriting.ToString() && x.UconnTargetId == wid.ToString()).ToList();
 
                     ViewData["uca1"] = listuc.Any(x => x.UconnAction == 1) ? "yes" : "";
@@ -263,40 +266,37 @@ namespace Netnr.Blog.Web.Controllers
             um.UmContent = mo.UrContent;
             um.UmCreateTime = now;
 
-            using (var db = new ContextBase())
+            //回复内容
+            mo.UrCreateTime = now;
+            mo.UrStatus = 1;
+            mo.UrTargetPid = 0;
+            mo.UrTargetType = Application.EnumService.ReplyType.UserWriting.ToString();
+
+            mo.UrAnonymousLink = Fast.ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
+
+            db.UserReply.Add(mo);
+
+            //回填文章最新回复记录
+            var mow = db.UserWriting.FirstOrDefault(x => x.UwId.ToString() == mo.UrTargetId);
+            if (mow != null)
             {
-                //回复内容
-                mo.UrCreateTime = now;
-                mo.UrStatus = 1;
-                mo.UrTargetPid = 0;
-                mo.UrTargetType = Application.EnumService.ReplyType.UserWriting.ToString();
+                mow.UwReplyNum += 1;
+                mow.UwLastUid = mo.Uid;
+                mow.UwLastDate = now;
 
-                mo.UrAnonymousLink = Fast.ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
+                um.UmTargetIndex = mow.UwReplyNum;
 
-                db.UserReply.Add(mo);
-
-                //回填文章最新回复记录
-                var mow = db.UserWriting.FirstOrDefault(x => x.UwId.ToString() == mo.UrTargetId);
-                if (mow != null)
-                {
-                    mow.UwReplyNum += 1;
-                    mow.UwLastUid = mo.Uid;
-                    mow.UwLastDate = now;
-
-                    um.UmTargetIndex = mow.UwReplyNum;
-
-                    db.UserWriting.Update(mow);
-                }
-
-                if (um.Uid != um.UmTriggerUid)
-                {
-                    db.UserMessage.Add(um);
-                }
-
-                int num = db.SaveChanges();
-
-                vm.Set(num > 0);
+                db.UserWriting.Update(mow);
             }
+
+            if (um.Uid != um.UmTriggerUid)
+            {
+                db.UserMessage.Add(um);
+            }
+
+            int num = db.SaveChanges();
+
+            vm.Set(num > 0);
 
             return vm;
         }
@@ -315,56 +315,52 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new ContextBase())
+            var uw = db.UserWriting.Find(wid);
+
+            var uc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == wid.ToString() && x.UconnAction == a);
+            if (uc == null)
             {
-                var uw = db.UserWriting.Find(wid);
-
-                var uc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == wid.ToString() && x.UconnAction == a);
-                if (uc == null)
+                uc = new UserConnection()
                 {
-                    uc = new UserConnection()
-                    {
-                        UconnId = Core.UniqueTo.LongId().ToString(),
-                        UconnAction = a,
-                        UconnCreateTime = DateTime.Now,
-                        UconnTargetId = wid.ToString(),
-                        UconnTargetType = Application.EnumService.ConnectionType.UserWriting.ToString(),
-                        Uid = uinfo.UserId
-                    };
-                    db.UserConnection.Add(uc);
-                    if (a == 1)
-                    {
-                        uw.UwLaud += 1;
-                    }
-                    if (a == 2)
-                    {
-                        uw.UwMark += 1;
-                    }
-                    db.UserWriting.Update(uw);
-
-                    vm.Data = "1";
-                }
-                else
+                    UconnId = Core.UniqueTo.LongId().ToString(),
+                    UconnAction = a,
+                    UconnCreateTime = DateTime.Now,
+                    UconnTargetId = wid.ToString(),
+                    UconnTargetType = Application.EnumService.ConnectionType.UserWriting.ToString(),
+                    Uid = uinfo.UserId
+                };
+                db.UserConnection.Add(uc);
+                if (a == 1)
                 {
-                    db.UserConnection.Remove(uc);
-                    if (a == 1)
-                    {
-                        uw.UwLaud -= 1;
-                    }
-                    if (a == 2)
-                    {
-                        uw.UwMark -= 1;
-                    }
-                    db.UserWriting.Update(uw);
-
-                    vm.Data = "0";
+                    uw.UwLaud += 1;
                 }
+                if (a == 2)
+                {
+                    uw.UwMark += 1;
+                }
+                db.UserWriting.Update(uw);
 
-                int num = db.SaveChanges();
+                vm.Data = "1";
+            }
+            else
+            {
+                db.UserConnection.Remove(uc);
+                if (a == 1)
+                {
+                    uw.UwLaud -= 1;
+                }
+                if (a == 2)
+                {
+                    uw.UwMark -= 1;
+                }
+                db.UserWriting.Update(uw);
 
-                vm.Set(num > 0);
+                vm.Data = "0";
             }
 
+            int num = db.SaveChanges();
+
+            vm.Set(num > 0);
             return vm;
         }
 
@@ -374,7 +370,6 @@ namespace Netnr.Blog.Web.Controllers
         public void ListReadPlus()
         {
             int wid = Convert.ToInt32(RouteData.Values["id"]?.ToString());
-            using var db = new ContextBase();
             var mo = db.UserWriting.Find(wid);
             if (mo != null)
             {

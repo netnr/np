@@ -1,9 +1,7 @@
 # netnrf 响应式框架
 .NET Core 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
 
-
-> 演示一：<https://rf2.netnr.com>  
-> 演示二：<https://d-rf.zme.ink>
+> 演示：<https://d-rf.zme.ink>
 
 ### [更新日志](Netnr.ResponseFramework.ChangeLog.md)
 
@@ -46,7 +44,7 @@
 - 任务：定时执行任务，清理临时目录、重置演示数据库
 - 导出：公共导出Excel表，自定义查询主体，支持条件查询、列格式化，支持追加操作等
 - 上传：通用的上传接口
-- 接口：所有非页面请求规范化为接口，并用 swagger 生成可视化接口文档，<https://rf2.netnr.com/swagger>
+- 接口：所有非页面请求规范化为接口，并用 swagger 生成可视化接口文档
 
 ### 使用说明
 1. 创建表（须设主键）、写字段注释（用于生成表配置）

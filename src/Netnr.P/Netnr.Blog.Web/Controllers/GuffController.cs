@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -11,8 +12,15 @@ namespace Netnr.Blog.Web.Controllers
     /// </summary>
     [Route("api/v1/[controller]/[action]")]
     [Filters.FilterConfigs.AllowCors]
-    public partial class GuffController : ControllerBase
+    public class GuffController : ControllerBase
     {
+        public ContextBase db;
+
+        public GuffController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 列表
         /// </summary>
@@ -99,7 +107,6 @@ namespace Netnr.Blog.Web.Controllers
 
                     var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-                    using var db = new Data.ContextBase();
                     var query = from a in db.GuffRecord
                                 join b in db.UserInfo on a.Uid equals b.UserId
                                 join c in db.UserConnection.Where(x => x.UconnTargetType == ctype && x.UconnAction == 1 && x.Uid == uinfo.UserId) on a.GrId equals c.UconnTargetId into cg
@@ -179,8 +186,6 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    using var db = new Data.ContextBase();
-
                     if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
                     {
                         vm.Code = 1;
@@ -258,7 +263,6 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    using var db = new Data.ContextBase();
                     var currMo = db.GuffRecord.Find(mo.GrId);
 
                     if (currMo == null)
@@ -340,7 +344,6 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    using var db = new Data.ContextBase();
                     var currMo = db.GuffRecord.Find(id);
 
                     if (currMo == null)
@@ -475,7 +478,6 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    using var db = new Data.ContextBase();
                     var guffmo = db.GuffRecord.Find(id);
                     if (guffmo == null)
                     {
@@ -581,7 +583,6 @@ namespace Netnr.Blog.Web.Controllers
                     var uinfo = new Application.UserAuthService(HttpContext).Get();
                     if (uinfo.UserId != 0)
                     {
-                        using var db = new Data.ContextBase();
                         var mo = db.GuffRecord.Find(id);
 
                         if (mo == null)
@@ -634,7 +635,6 @@ namespace Netnr.Blog.Web.Controllers
 
             try
             {
-                using var db = new Data.ContextBase();
                 var listTags = db.GuffRecord.OrderByDescending(x => x.GrCreateTime).Select(x => x.GrTag).Take(1000).ToList();
                 var orderTags = string.Join(",", listTags).Split(',').GroupBy(x => x).OrderByDescending(x => x.Count()).Select(x => x.Key).Take(20).ToList();
 

@@ -1,11 +1,19 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
 namespace Netnr.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class UserController : Controller
     {
+        public ContextBase db;
+
+        public UserController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 用户
         /// </summary>
@@ -22,15 +30,12 @@ namespace Netnr.Web.Areas.Run.Controllers
 
             int uid = Convert.ToInt32(id);
 
-            using (var db = new Blog.Data.ContextBase())
+            var mu = db.UserInfo.Find(uid);
+            if (mu == null)
             {
-                var mu = db.UserInfo.Find(uid);
-                if (mu == null)
-                {
-                    return Content("Account is empty");
-                }
-                ViewData["Nickname"] = mu.Nickname;
+                return Content("Account is empty");
             }
+            ViewData["Nickname"] = mu.Nickname;
 
             var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
 

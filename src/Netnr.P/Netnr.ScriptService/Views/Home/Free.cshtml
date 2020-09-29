@@ -1,5 +1,6 @@
 @{
-    var html = Markdig.Markdown.ToHtml(Netnr.Core.FileTo.ReadText(Netnr.Fast.PathTo.Combine(GlobalTo.WebRootPath, "db/free.md")));
+    var md = Netnr.Core.FileTo.ReadText(Netnr.Fast.PathTo.Combine(GlobalTo.WebRootPath, "db/free.md"));
+    var html = Markdig.Markdown.ToHtml(md);
 }
 
 <div class="container-fluid">

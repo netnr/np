@@ -104,6 +104,11 @@ namespace Netnr.ResponseFramework.Web.Filters
         }
 
         /// <summary>
+        /// 当前缓存日志
+        /// </summary>
+        public static Queue<Domain.SysLog> CurrentCacheLog { get; set; } = new Queue<Domain.SysLog>();
+
+        /// <summary>
         /// 全局访问过滤器
         /// </summary>
         public class GlobalActionAttribute : ActionFilterAttribute
@@ -158,29 +163,22 @@ namespace Netnr.ResponseFramework.Web.Filters
 
                         #region 分批写入日志
 
+                        CurrentCacheLog.Enqueue(mo);
+
                         //分批写入满足的条件：缓存的日志数量
                         int cacheLogCount = GlobalTo.GetValue<int>("logs:CacheWriteCount");
                         //分批写入满足的条件：缓存的时长，单位秒
                         int cacheLogTime = GlobalTo.GetValue<int>("logs:CacheWriteSecond");
 
-                        //日志记录
-                        var cacheLogsKey = "Global_Logs";
                         //上次写入的时间
                         var cacheLogWriteKey = "Global_Logs_Write";
-
-                        if (!(Core.CacheTo.Get(cacheLogsKey) is List<Domain.SysLog> cacheLogs))
-                        {
-                            cacheLogs = new List<Domain.SysLog>();
-                        }
-                        cacheLogs.Add(mo);
-
                         var cacheLogWrite = Core.CacheTo.Get(cacheLogWriteKey) as DateTime?;
                         if (!cacheLogWrite.HasValue)
                         {
-                            cacheLogWrite = DateTime.Now;
+                            Core.CacheTo.Set(cacheLogWriteKey, cacheLogWrite = DateTime.Now);
                         }
 
-                        if (cacheLogs?.Count > cacheLogCount || DateTime.Now.ToTimestamp() - cacheLogWrite.Value.ToTimestamp() > cacheLogTime)
+                        if (CurrentCacheLog.Count > cacheLogCount || DateTime.Now.ToTimestamp() - cacheLogWrite.Value.ToTimestamp() > cacheLogTime)
                         {
                             //异步写入日志
                             System.Threading.ThreadPool.QueueUserWorkItem(_ =>
@@ -188,9 +186,13 @@ namespace Netnr.ResponseFramework.Web.Filters
                                 try
                                 {
                                     var ipto = new IPAreaTo();
+
                                     //写入日志前
-                                    foreach (var log in cacheLogs)
+                                    var listMo = new List<Domain.SysLog>();
+                                    while (CurrentCacheLog.Count > 0)
                                     {
+                                        var log = CurrentCacheLog.Dequeue();
+
                                         log.LogId = Core.UniqueTo.LongId().ToString();
                                         log.LogArea = ipto.Parse(log.LogIp);
 
@@ -201,29 +203,22 @@ namespace Netnr.ResponseFramework.Web.Filters
                                         {
                                             log.LogGroup = 2;
                                         }
+
+                                        listMo.Add(log);
                                     }
 
-                                    using var db = new Data.ContextBase(Data.ContextBase.DCOB().Options);
-                                    db.SysLog.AddRange(cacheLogs);
+                                    using var db = Data.ContextBaseFactory.CreateDbContext();
+                                    db.SysLog.AddRange(listMo);
                                     db.SaveChanges();
 
-                                    //清空数据及更新时间
-                                    cacheLogs = null;
-                                    cacheLogWrite = DateTime.Now;
-
-                                    Core.CacheTo.Set(cacheLogsKey, cacheLogs);
-                                    Core.CacheTo.Set(cacheLogWriteKey, cacheLogWrite);
+                                    //更新时间
+                                    Core.CacheTo.Set(cacheLogWriteKey, cacheLogWrite = DateTime.Now);
                                 }
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine("写入日志出错：" + ex.Message);
                                 }
                             });
-                        }
-                        else
-                        {
-                            Core.CacheTo.Set(cacheLogsKey, cacheLogs);
-                            Core.CacheTo.Set(cacheLogWriteKey, cacheLogWrite);
                         }
 
                         #endregion

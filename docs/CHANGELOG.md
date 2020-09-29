@@ -6,6 +6,9 @@
 - Update Netnr.Guff attachment hosting
 - Upgrade Netnr.FileServer project to support time-limited token and permanent token authorization
 - Adjusted SVG icon merge of Netnr.ScriptService project
+- Adjust the log cache of Netnr.ResponseFramework.Web project to Queue
+- Adjusted Netnr.Logging project log cache to Queue
+- Integrated database access as a class library Netnr.Data
 
 ### 2020-08
 - Added a new `ToView()` method to the OSInfoTo.cs class library of the Netnr.Fast.Extend project to visualize output

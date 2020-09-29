@@ -15,8 +15,6 @@ namespace Netnr.ResponseFramework.Application
     /// </summary>
     public class DataMirrorService
     {
-        public ContextBase db;
-
         /// <summary>
         /// JSON存储路径
         /// </summary>
@@ -34,7 +32,7 @@ namespace Netnr.ResponseFramework.Application
 
         public DataMirrorService()
         {
-            db = new ContextBase(ContextBase.DCOB().Options);
+            using var db = ContextBaseFactory.CreateDbContext();
 
             Tsb = db.SysButton;
             Tsd = db.SysDictionary;
@@ -106,6 +104,8 @@ namespace Netnr.ResponseFramework.Application
                 var jte = objs["TempExample"].ToString().ToEntitys<TempExample>();
                 var jtid = objs["TempInvoiceDetail"].ToString().ToEntitys<TempInvoiceDetail>();
                 var jtim = objs["TempInvoiceMain"].ToString().ToEntitys<TempInvoiceMain>();
+
+                using var db = ContextBaseFactory.CreateDbContext();
 
                 Tsb = db.SysButton;
                 Tsd = db.SysDictionary;

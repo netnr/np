@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -11,6 +12,13 @@ namespace Netnr.Blog.Web.Controllers
     /// </summary>
     public class NoteController : Controller
     {
+        public ContextBase db;
+
+        public NoteController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 记事本
         /// </summary>
@@ -33,30 +41,28 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new Data.ContextBase())
+            var query = from a in db.Notepad
+                        join b in db.UserInfo on a.Uid equals b.UserId
+                        orderby a.NoteCreateTime descending
+                        where a.Uid == uinfo.UserId
+                        select new Domain.Notepad
+                        {
+                            NoteId = a.NoteId,
+                            NoteTitle = a.NoteTitle,
+                            NoteCreateTime = a.NoteCreateTime,
+                            NoteUpdateTime = a.NoteUpdateTime,
+                            Uid = a.Uid,
+
+                            Spare3 = b.Nickname
+                        };
+
+            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
             {
-                var query = from a in db.Notepad
-                            join b in db.UserInfo on a.Uid equals b.UserId
-                            orderby a.NoteCreateTime descending
-                            where a.Uid == uinfo.UserId
-                            select new Domain.Notepad
-                            {
-                                NoteId = a.NoteId,
-                                NoteTitle = a.NoteTitle,
-                                NoteCreateTime = a.NoteCreateTime,
-                                NoteUpdateTime = a.NoteUpdateTime,
-                                Uid = a.Uid,
-
-                                Spare3 = b.Nickname
-                            };
-
-                if (!string.IsNullOrWhiteSpace(ivm.Pe1))
-                {
-                    query = query.Where(x => x.NoteTitle.Contains(ivm.Pe1));
-                }
-
-                Application.CommonService.QueryJoin(query, ivm, ref ovm);
+                query = query.Where(x => x.NoteTitle.Contains(ivm.Pe1));
             }
+
+            Application.CommonService.QueryJoin(query, ivm, ref ovm);
+
             return ovm;
         }
 
@@ -78,7 +84,6 @@ namespace Netnr.Blog.Web.Controllers
             {
                 var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-                using var db = new Data.ContextBase();
                 var now = DateTime.Now;
                 if (mo.NoteId == 0)
                 {
@@ -129,22 +134,19 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new Data.ContextBase())
+            var mo = db.Notepad.Find(id);
+            if (mo == null)
             {
-                var mo = db.Notepad.Find(id);
-                if (mo == null)
-                {
-                    vm.Set(ARTag.invalid);
-                }
-                else if (mo.Uid == uinfo.UserId)
-                {
-                    vm.Set(ARTag.success);
-                    vm.Data = mo;
-                }
-                else
-                {
-                    vm.Set(ARTag.unauthorized);
-                }
+                vm.Set(ARTag.invalid);
+            }
+            else if (mo.Uid == uinfo.UserId)
+            {
+                vm.Set(ARTag.success);
+                vm.Data = mo;
+            }
+            else
+            {
+                vm.Set(ARTag.unauthorized);
             }
 
             return vm;
@@ -162,20 +164,17 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = new Application.UserAuthService(HttpContext).Get();
 
-            using (var db = new Data.ContextBase())
+            var mo = db.Notepad.Find(id);
+            if (mo.Uid == uinfo.UserId)
             {
-                var mo = db.Notepad.Find(id);
-                if (mo.Uid == uinfo.UserId)
-                {
-                    db.Notepad.Remove(mo);
-                    int num = db.SaveChanges();
+                db.Notepad.Remove(mo);
+                int num = db.SaveChanges();
 
-                    vm.Set(num > 0);
-                }
-                else
-                {
-                    vm.Set(ARTag.unauthorized);
-                }
+                vm.Set(num > 0);
+            }
+            else
+            {
+                vm.Set(ARTag.unauthorized);
             }
 
             return vm;

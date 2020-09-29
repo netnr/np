@@ -10,12 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentScheduler" Version="5.5.0" />
+    <PackageReference Include="FluentScheduler" Version="5.5.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Netnr.ResponseFramework.Data\Netnr.ResponseFramework.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Netnr.ResponseFramework.Application.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

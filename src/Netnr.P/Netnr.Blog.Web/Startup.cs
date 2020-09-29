@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.Blog.Web
 {
@@ -50,37 +51,6 @@ namespace Netnr.Blog.Web
             DingTalkConfig.appSecret = GlobalTo.GetValue("OAuthLogin:DingTalk:AppSecret");
             DingTalkConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:DingTalk:Redirect_Uri");
             #endregion
-
-            //无创建，有忽略
-            using var db = new Data.ContextBase();
-            if (db.Database.EnsureCreated())
-            {
-                var jodb = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/scripts/example/data.json").ToJObject();
-
-                db.UserInfo.AddRange(jodb["UserInfo"].ToString().ToEntitys<Domain.UserInfo>());
-
-                db.Tags.AddRange(jodb["Tags"].ToString().ToEntitys<Domain.Tags>());
-
-                db.UserWriting.AddRange(jodb["UserWriting"].ToString().ToEntitys<Domain.UserWriting>());
-
-                db.UserWritingTags.AddRange(jodb["UserWritingTags"].ToString().ToEntitys<Domain.UserWritingTags>());
-
-                db.UserReply.AddRange(jodb["UserReply"].ToString().ToEntitys<Domain.UserReply>());
-
-                db.Run.AddRange(jodb["Run"].ToString().ToEntitys<Domain.Run>());
-
-                db.KeyValues.AddRange(jodb["KeyValues"].ToString().ToEntitys<Domain.KeyValues>());
-
-                db.Gist.AddRange(jodb["Gist"].ToString().ToEntitys<Domain.Gist>());
-
-                db.Draw.AddRange(jodb["Draw"].ToString().ToEntitys<Domain.Draw>());
-
-                db.DocSet.AddRange(jodb["DocSet"].ToString().ToEntitys<Domain.DocSet>());
-
-                db.DocSetDetail.AddRange(jodb["DocSetDetail"].ToString().ToEntitys<Domain.DocSetDetail>());
-
-                db.SaveChanges();
-            }
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -148,6 +118,12 @@ namespace Netnr.Blog.Web
             //session
             services.AddSession();
 
+            //数据库连接池
+            services.AddDbContextPool<Data.ContextBase>(options =>
+            {
+                Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
+            }, 99);
+
             //定时任务
             FluentScheduler.JobManager.Initialize(new Application.TaskService.TaskComponent.Reg());
 
@@ -159,11 +135,41 @@ namespace Netnr.Blog.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Data.ContextBase db)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+
+            //数据库不存在则创建，创建后返回true
+            if (db.Database.EnsureCreated())
+            {
+                var jodb = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/scripts/example/data.json").ToJObject();
+
+                db.UserInfo.AddRange(jodb["UserInfo"].ToString().ToEntitys<Domain.UserInfo>());
+
+                db.Tags.AddRange(jodb["Tags"].ToString().ToEntitys<Domain.Tags>());
+
+                db.UserWriting.AddRange(jodb["UserWriting"].ToString().ToEntitys<Domain.UserWriting>());
+
+                db.UserWritingTags.AddRange(jodb["UserWritingTags"].ToString().ToEntitys<Domain.UserWritingTags>());
+
+                db.UserReply.AddRange(jodb["UserReply"].ToString().ToEntitys<Domain.UserReply>());
+
+                db.Run.AddRange(jodb["Run"].ToString().ToEntitys<Domain.Run>());
+
+                db.KeyValues.AddRange(jodb["KeyValues"].ToString().ToEntitys<Domain.KeyValues>());
+
+                db.Gist.AddRange(jodb["Gist"].ToString().ToEntitys<Domain.Gist>());
+
+                db.Draw.AddRange(jodb["Draw"].ToString().ToEntitys<Domain.Draw>());
+
+                db.DocSet.AddRange(jodb["DocSet"].ToString().ToEntitys<Domain.DocSet>());
+
+                db.DocSetDetail.AddRange(jodb["DocSetDetail"].ToString().ToEntitys<Domain.DocSetDetail>());
+
+                db.SaveChanges();
             }
 
             //配置swagger

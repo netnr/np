@@ -1,11 +1,19 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
 namespace Netnr.Web.Gist.Controllers
 {
     [Area("Gist")]
     public class CodeController : Controller
     {
+        public ContextBase db;
+
+        public CodeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// Gist一条操作
         /// </summary>
@@ -30,7 +38,6 @@ namespace Netnr.Web.Gist.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
-                using var db = new Blog.Data.ContextBase();
                 switch (cmd)
                 {
                     case "edit":
@@ -60,43 +67,40 @@ namespace Netnr.Web.Gist.Controllers
                 }
             }
 
-            using (var db = new Blog.Data.ContextBase())
-            {
-                var query = from a in db.Gist
-                            join b in db.GistSync on a.GistCode equals b.GistCode into bg
-                            from b in bg.DefaultIfEmpty()
-                            join c in db.UserInfo on a.Uid equals c.UserId
-                            where a.GistCode == id && a.GistStatus == 1 && a.GistOpen == 1
-                            select new Blog.Domain.Gist
-                            {
-                                GistId = a.GistId,
-                                Uid = a.Uid,
-                                GistCode = a.GistCode,
-                                GistContent = a.GistContent,
-                                GistCreateTime = a.GistCreateTime,
-                                GistUpdateTime = a.GistUpdateTime,
-                                GistFilename = a.GistFilename,
-                                GistLanguage = a.GistLanguage,
-                                GistOpen = a.GistOpen,
-                                GistRemark = a.GistRemark,
-                                GistRow = a.GistRow,
-                                GistStatus = a.GistStatus,
-                                GistTags = a.GistTags,
-                                GistTheme = a.GistTheme,
+            var query = from a in db.Gist
+                        join b in db.GistSync on a.GistCode equals b.GistCode into bg
+                        from b in bg.DefaultIfEmpty()
+                        join c in db.UserInfo on a.Uid equals c.UserId
+                        where a.GistCode == id && a.GistStatus == 1 && a.GistOpen == 1
+                        select new Blog.Domain.Gist
+                        {
+                            GistId = a.GistId,
+                            Uid = a.Uid,
+                            GistCode = a.GistCode,
+                            GistContent = a.GistContent,
+                            GistCreateTime = a.GistCreateTime,
+                            GistUpdateTime = a.GistUpdateTime,
+                            GistFilename = a.GistFilename,
+                            GistLanguage = a.GistLanguage,
+                            GistOpen = a.GistOpen,
+                            GistRemark = a.GistRemark,
+                            GistRow = a.GistRow,
+                            GistStatus = a.GistStatus,
+                            GistTags = a.GistTags,
+                            GistTheme = a.GistTheme,
 
-                                Spare1 = b.GsGitHubId,
-                                Spare2 = b.GsGiteeId,
-                                Spare3 = c.Nickname
-                            };
-                var mo = query.FirstOrDefault();
-                if (isjs)
-                {
-                    return Content(mo.GistContent);
-                }
-                else
-                {
-                    return View(mo);
-                }
+                            Spare1 = b.GsGitHubId,
+                            Spare2 = b.GsGiteeId,
+                            Spare3 = c.Nickname
+                        };
+            var moout = query.FirstOrDefault();
+            if (isjs)
+            {
+                return Content(moout.GistContent);
+            }
+            else
+            {
+                return View(moout);
             }
         }
     }

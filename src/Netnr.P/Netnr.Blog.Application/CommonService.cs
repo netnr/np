@@ -50,7 +50,7 @@ namespace Netnr.Blog.Application
         {
             if (!(Core.CacheTo.Get("Table_Tags_List") is List<Tags> lt) || !FirtCache)
             {
-                using var db = new ContextBase();
+                using var db = ContextBaseFactory.CreateDbContext();
                 lt = db.Tags.Where(x => x.TagStatus == 1).OrderByDescending(x => x.TagHot).ToList();
                 Core.CacheTo.Set("Table_Tags_List", lt, 300, false);
             }
@@ -66,7 +66,7 @@ namespace Netnr.Blog.Application
         {
             if (!(Core.CacheTo.Get("Table_WritingTags_GroupBy") is Dictionary<string, int> rt) || !FirtCache)
             {
-                using var db = new ContextBase();
+                using var db = ContextBaseFactory.CreateDbContext();
                 var query = from a in db.UserWritingTags
                             group a by a.TagName into m
                             orderby m.Count() descending
@@ -106,14 +106,11 @@ namespace Netnr.Blog.Application
                 PageSize = 20
             };
 
-            var dicQs = new Dictionary<string, string>
-            {
-                { "k", KeyWords }
-            };
+            var dicQs = new Dictionary<string, string> { { "k", KeyWords } };
 
-            using var db = new ContextBase();
             IQueryable<UserWriting> query;
 
+            using var db = ContextBaseFactory.CreateDbContext();
             if (!string.IsNullOrWhiteSpace(TagName))
             {
                 query = from a in db.UserWritingTags.Where(x => x.TagName == TagName)
@@ -241,7 +238,7 @@ namespace Netnr.Blog.Application
                 PageSize = 20
             };
 
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             IQueryable<UserWriting> query = null;
 
             switch (connectionType)
@@ -321,7 +318,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static UserWriting UserWritingOneQuery(int UwId)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var one = db.UserWriting.Find(UwId);
             if (one == null)
             {
@@ -355,7 +352,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static List<UserReply> ReplyOneQuery(EnumService.ReplyType replyType, string UrTargetId, PaginationVM pag)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserReply
                         join b in db.UserInfo on a.Uid equals b.UserId into bg
                         from b1 in bg.DefaultIfEmpty()
@@ -394,7 +391,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static List<KeyValues> KeyValuesQuery(List<string> ListKeyName)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var listKv = db.KeyValues.Where(x => ListKeyName.Contains(x.KeyName)).ToList();
             if (listKv.Count != ListKeyName.Count)
             {
@@ -440,7 +437,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static PageVM MessageQuery(int UserId, EnumService.MessageType? messageType, int? action, int page = 1)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserMessage
                         join b in db.UserInfo on a.UmTriggerUid equals b.UserId into bg
                         from b1 in bg.DefaultIfEmpty()
@@ -502,7 +499,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static int NewMessageQuery(int UserId)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             int num = db.UserMessage.Where(x => x.Uid == UserId && x.UmStatus == 1).Count();
             return num;
         }
@@ -517,7 +514,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static PageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.DocSet
                         join b in db.UserInfo on a.Uid equals b.UserId
                         where a.DsStatus == 1
@@ -563,10 +560,7 @@ namespace Netnr.Blog.Application
                 PageSize = 9
             };
 
-            var dicQs = new Dictionary<string, string>
-                {
-                    { "q", q }
-                };
+            var dicQs = new Dictionary<string, string> { { "q", q } };
 
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
@@ -592,7 +586,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static PageVM GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var query1 = from a in db.Gist
                          join b in db.UserInfo on a.Uid equals b.UserId
                          where a.GistStatus == 1
@@ -685,10 +679,7 @@ namespace Netnr.Blog.Application
                 PageSize = 10
             };
 
-            var dicQs = new Dictionary<string, string>
-                {
-                    { "q", q }
-                };
+            var dicQs = new Dictionary<string, string> { { "q", q } };
 
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
@@ -713,7 +704,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static PageVM RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Run
                         join b in db.UserInfo on a.Uid equals b.UserId
                         where a.RunStatus == 1
@@ -760,10 +751,7 @@ namespace Netnr.Blog.Application
                 PageSize = 4
             };
 
-            var dicQs = new Dictionary<string, string>
-                {
-                    { "q", q }
-                };
+            var dicQs = new Dictionary<string, string> { { "q", q } };
 
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
@@ -788,7 +776,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static PageVM DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Draw
                         join b in db.UserInfo on a.Uid equals b.UserId
                         where a.DrStatus == 1
@@ -837,10 +825,7 @@ namespace Netnr.Blog.Application
                 PageSize = 20
             };
 
-            var dicQs = new Dictionary<string, string>
-                {
-                    { "q", q }
-                };
+            var dicQs = new Dictionary<string, string> { { "q", q } };
 
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
@@ -871,7 +856,7 @@ namespace Netnr.Blog.Application
         {
             var ctype = EnumService.ConnectionType.GuffRecord.ToString();
 
-            using var db = new ContextBase();
+            using var db = ContextBaseFactory.CreateDbContext();
 
             IQueryable<GuffRecord> query = null;
 
@@ -1076,10 +1061,7 @@ namespace Netnr.Blog.Application
                 PageSize = 18
             };
 
-            var dicQs = new Dictionary<string, string>
-            {
-                { "q", q }
-            };
+            var dicQs = new Dictionary<string, string> { { "q", q } };
 
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();

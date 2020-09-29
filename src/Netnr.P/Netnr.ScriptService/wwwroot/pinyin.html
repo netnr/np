@@ -84,7 +84,18 @@ https://zme.ink
 </div>
 
 <script src="/js/pinyin.js?v=b8vigOEQQmRnMOWqPaGaYbtI3WtT7L4MfX1fWe8d2zk"></script>
-<script src="/js/cntoen.js?v=ujRQ6EFp-NdBvk8MVCkyR_dS_s16rtpy2DQ7QyWgdgA"></script>
+<script>
+    $('#txtChinese').keyup(function () {
+        var select = document.getElementById('sePinyin');
+        select.options.length = 0;
+        if (this.value != "") {
+            var arrPY = PY.QueryArray(this.value);
+            for (var i = 0; i < arrPY.length; i++) {
+                select.options.add(new Option(arrPY[i], arrPY[i]))
+            }
+        }
+    });
+</script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
