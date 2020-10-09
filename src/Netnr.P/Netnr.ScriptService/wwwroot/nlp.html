@@ -1,0 +1,144 @@
+﻿<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+    <title>自然语言处理 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 自然语言处理" />
+    <meta name="description" content="Script Services 分词、关键词" />
+
+</head>
+<body>
+                    <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
+            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+            <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
+            <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
+            <script>
+                $.ajax({
+                    url: '/images/icon.svg?200930',
+                    dataType: 'text',
+                    success: function (data) {
+                        $('body').append('<div class="d-none">' + data + '</div>')
+                    }
+                })
+            </script>
+
+        <link href="/css/global.css?v=DE0bvfxeaNrv9kM04k3iwLx3LJtPPzAo5IWIj2LN6vE" rel="stylesheet" />
+        <script src="/js/global.js?v=83bE557i4FM8eaqzTNVIZ3fbAAVZlAFDY06346DgWok"></script>
+            <!--导航-->
+            <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+                <span class="fa fa-align-justify fa-2x"></span>
+            </button>
+            <div class="netnrnav horizontal">
+                <div class="netnrnav-wrapper">
+                    <ul>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li>
+                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                            <ul>
+                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--标题-->
+                <h4 class="m-3">
+                    <svg class="titleicon"><use xlink:href="#nlp"></use></svg> &#x81EA;&#x7136;&#x8BED;&#x8A00;&#x5904;&#x7406;
+                </h4>
+        <div class="min300">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <textarea class="form-control" style="height:140px" id="txt1" placeholder="输入内容">结过婚的和尚未结过婚的</textarea>
+        </div>
+        <div class="col-md-12 my-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning" id="btnOk">提交</button>
+                </div>
+                <select class="custom-select" id="sem">
+                    <option value="0">分词</option>
+                    <option value="1">提取关键词</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <textarea class="form-control" style="height:200px" id="txt2" placeholder="处理结果"></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#btnOk').click(function () {
+        if ($('#txt1').val() != "") {
+            $('#btnOk').html('处理中');
+            $('#btnOk')[0].disabled = true;
+            $.ajax({
+                url: 'https://api.zme.ink/analysis',
+                type: 'POST',
+                data: {
+                    ctype: $('#sem').val(),
+                    content: $('#txt1').val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    var result = '';
+                    if (data.code == 200) {
+                        switch ($('#sem').val()) {
+                            case "0":
+                                result = data.data.join('\n');
+                                break;
+                            case "1":
+                                {
+                                    var arr = [];
+                                    $.each(data.data, function () {
+                                        arr.push(this.word + " ：" + this.weight.toFixed(5));
+                                    })
+                                    result = arr.join('\n');
+                                }
+                                break;
+                        }
+                    } else {
+                        result = JSON.stringify(data, null, 4);
+                    }
+                    $('#txt2').val(result);
+                },
+                error: function () {
+                    $('#txt2').val("网络错误");
+                },
+                complete: function () {
+                    $('#btnOk').html('提交');
+                    $('#btnOk')[0].disabled = false;
+                }
+            })
+        }
+    })
+</script>
+        </div>
+        <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

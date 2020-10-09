@@ -27,7 +27,7 @@ Install-Package Netnr.Login
     </tr>
     <tr>
         <td><img src="https://s1.zme.ink/static/login/github.svg" height="30" title="GitHub"></td>
-        <td><a target="_blank" href="https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps">参考文档</a></td>
+        <td><a target="_blank" href="https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps">参考文档</a></td>
     </tr>
     <tr>
         <td><img src="https://s1.zme.ink/static/login/gitee.svg" height="30" title="码云/Gitee"></td>
@@ -115,8 +115,6 @@ namespace Netnr.Login.Sample
                 GitHubConfig.ClientID = "";
                 GitHubConfig.ClientSecret = "";
                 GitHubConfig.Redirect_Uri = "";
-                //申请的应用名称，非常重要
-                GitHubConfig.ApplicationName = "netnrf";
 
                 TaoBaoConfig.AppKey = "";
                 TaoBaoConfig.AppSecret = "";
@@ -372,10 +370,7 @@ namespace Netnr.Login.Sample
                                 });
 
                                 //获取 user
-                                var userEntity = GitHub.User(new GitHub_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var userEntity = GitHub.User(tokenEntity.access_token);
 
                                 OpenId = userEntity.id.ToString();
                             }

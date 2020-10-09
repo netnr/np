@@ -82,7 +82,7 @@ namespace Netnr.Blog.Application
 
             try
             {
-                var listMsg = new List<object>();
+                var listMsg = new List<object>() { "备份数据库" };
 
                 var kp = "Work:BackupDataBase:SQLServer:";
 
@@ -131,7 +131,7 @@ namespace Netnr.Blog.Application
                     int UserId = GlobalTo.GetValue<int>("Work:GistSync:UserId");
 
                     //日志
-                    var listLog = new List<object>();
+                    var listLog = new List<object>() { "Gist代码片段同步" };
 
                     var listGist = db.Gist.Where(x => x.Uid == UserId).OrderBy(x => x.GistCreateTime).ToList();
 
@@ -390,7 +390,7 @@ namespace Netnr.Blog.Application
                         int num = db.SaveChanges();
 
                         vm.Set(num > 0);
-                        vm.Data = "受影响行数：" + num;
+                        vm.Data = "处理操作记录，受影响行数：" + num;
                     }
                     else
                     {

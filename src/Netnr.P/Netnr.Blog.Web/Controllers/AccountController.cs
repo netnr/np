@@ -441,10 +441,7 @@ namespace Netnr.Blog.Web.Controllers
                                 });
 
                                 //获取 user
-                                var userEntity = GitHub.User(new GitHub_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var userEntity = GitHub.User(tokenEntity.access_token);
 
                                 openId = userEntity.id.ToString();
                                 mo.OpenId3 = openId;

@@ -94,7 +94,7 @@
         case "icon":
             <script>
                 $.ajax({
-                    url: "/images/icon.svg",
+                    url: '/images/icon.svg?@DateTime.Now.ToString("yyMMdd")',
                     dataType: 'text',
                     success: function (data) {
                         $('body').append('<div class="d-none">' + data + '</div>')

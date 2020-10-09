@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="aliyun-net-sdk-core" Version="1.5.9" />
+    <PackageReference Include="aliyun-net-sdk-core" Version="1.5.10" />
     <PackageReference Include="FluentScheduler" Version="5.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />

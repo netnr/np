@@ -31,7 +31,7 @@ https://zme.ink
             <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
             <script>
                 $.ajax({
-                    url: "/images/icon.svg",
+                    url: '/images/icon.svg?200930',
                     dataType: 'text',
                     success: function (data) {
                         $('body').append('<div class="d-none">' + data + '</div>')
@@ -689,6 +689,17 @@ https://zme.ink
                                     <svg><use xlink:href="#nsfw"></use></svg>
                                     <h5 class="ov">图片审查</h5>
                                     <small>绘画、变态、中立、色情、性感</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/nlp" >
+                                    <svg><use xlink:href="#nlp"></use></svg>
+                                    <h5 class="ov">自然语言处理</h5>
+                                    <small>分词、关键词</small>
                                 </a>
                             </div>
                         </div>

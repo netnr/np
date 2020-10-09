@@ -1,5 +1,8 @@
 # Change log
 
+### [ⅴ3.6.0] - 2020-10-07
+- Upgraded `GitHub` interface adjustment for obtaining user information
+
 ### [ⅴ3.5.2] - 2020-01-18
 - Fixed AliPay, after changing the required verification to generate a signature
 

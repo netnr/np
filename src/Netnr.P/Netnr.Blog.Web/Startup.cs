@@ -37,7 +37,6 @@ namespace Netnr.Blog.Web
             GitHubConfig.ClientID = GlobalTo.GetValue("OAuthLogin:GitHub:ClientID");
             GitHubConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:GitHub:ClientSecret");
             GitHubConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:GitHub:Redirect_Uri");
-            GitHubConfig.ApplicationName = GlobalTo.GetValue("OAuthLogin:GitHub:ApplicationName");
 
             TaoBaoConfig.AppKey = GlobalTo.GetValue("OAuthLogin:TaoBao:AppKey");
             TaoBaoConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:TaoBao:AppSecret");

@@ -57,19 +57,18 @@ namespace Netnr.Login
         /// <summary>
         /// 获取 用户信息
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="access_token"></param>
         /// <returns></returns>
-        public static GitHub_User_ResultEntity User(GitHub_User_RequestEntity entity)
+        public static GitHub_User_ResultEntity User(string access_token)
         {
-            if (!LoginBase.IsValid(entity))
+            if (string.IsNullOrWhiteSpace(access_token))
             {
                 return null;
             }
 
-            string pars = LoginBase.EntityToPars(entity);
-
-            var hwr = Core.HttpTo.HWRequest(GitHubConfig.API_User + "?" + pars);
-            hwr.UserAgent = entity.ApplicationName;
+            var hwr = Core.HttpTo.HWRequest(GitHubConfig.API_User);
+            hwr.Headers.Add("Authorization", $"token {access_token}");
+            hwr.UserAgent = "Netnr.Login";
             string result = Core.HttpTo.Url(hwr);
 
             var outmo = LoginBase.ResultOutput<GitHub_User_ResultEntity>(result, new List<string> { "plan" });

@@ -27,9 +27,9 @@ namespace Netnr.Test.Controllers
             var ar = new LoginBase.AuthorizeResult();
 
             ar.code = "";
-            ar.auth_code = "";
             //此处打断点，赋值上面拿到的code再继续
             ar.code = ar.code.ToDecode();
+            ar.auth_code = ar.code;
 
             lc.AuthCallback(ar);
         }
@@ -59,8 +59,6 @@ namespace Netnr.Test.Controllers
                 GitHubConfig.ClientID = "";
                 GitHubConfig.ClientSecret = "";
                 GitHubConfig.Redirect_Uri = "";
-                //申请的应用名称，非常重要
-                GitHubConfig.ApplicationName = "netnrf";
 
                 TaoBaoConfig.AppKey = "";
                 TaoBaoConfig.AppSecret = "";
@@ -312,10 +310,7 @@ namespace Netnr.Test.Controllers
                                 });
 
                                 //获取 user
-                                var userEntity = GitHub.User(new GitHub_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var userEntity = GitHub.User(tokenEntity.access_token);
 
                                 OpenId = userEntity.id.ToString();
                             }

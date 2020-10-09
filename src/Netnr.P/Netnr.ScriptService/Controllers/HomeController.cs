@@ -368,5 +368,14 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// 自然语言处理
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult NLP()
+        {
+            return View();
+        }
     }
 }

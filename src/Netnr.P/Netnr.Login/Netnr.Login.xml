@@ -901,21 +901,6 @@
             
             </summary>
         </member>
-        <member name="T:Netnr.Login.GitHub_User_RequestEntity">
-            <summary>
-            user
-            </summary>
-        </member>
-        <member name="P:Netnr.Login.GitHub_User_RequestEntity.access_token">
-            <summary>
-            access_token
-            </summary>
-        </member>
-        <member name="P:Netnr.Login.GitHub_User_RequestEntity.ApplicationName">
-            <summary>
-            github 申请的应用名称
-            </summary>
-        </member>
         <member name="T:Netnr.Login.GitHub_User_ResultEntity">
             <summary>
             用户信息
@@ -1120,11 +1105,11 @@
             <param name="entity"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Login.GitHub.User(Netnr.Login.GitHub_User_RequestEntity)">
+        <member name="M:Netnr.Login.GitHub.User(System.String)">
             <summary>
             获取 用户信息
             </summary>
-            <param name="entity"></param>
+            <param name="access_token"></param>
             <returns></returns>
         </member>
         <member name="T:Netnr.Login.GitHubConfig">
@@ -1162,11 +1147,6 @@
         <member name="F:Netnr.Login.GitHubConfig.Redirect_Uri">
             <summary>
             回调
-            </summary>
-        </member>
-        <member name="F:Netnr.Login.GitHubConfig.ApplicationName">
-            <summary>
-            github 申请的应用名称
             </summary>
         </member>
         <member name="T:Netnr.Login.Google_AccessToken_RequestEntity">

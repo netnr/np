@@ -1,0 +1,69 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <textarea class="form-control" style="height:140px" id="txt1" placeholder="输入内容">结过婚的和尚未结过婚的</textarea>
+        </div>
+        <div class="col-md-12 my-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning" id="btnOk">提交</button>
+                </div>
+                <select class="custom-select" id="sem">
+                    <option value="0">分词</option>
+                    <option value="1">提取关键词</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <textarea class="form-control" style="height:200px" id="txt2" placeholder="处理结果"></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#btnOk').click(function () {
+        if ($('#txt1').val() != "") {
+            $('#btnOk').html('处理中');
+            $('#btnOk')[0].disabled = true;
+            $.ajax({
+                url: 'https://api.zme.ink/analysis',
+                type: 'POST',
+                data: {
+                    ctype: $('#sem').val(),
+                    content: $('#txt1').val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    var result = '';
+                    if (data.code == 200) {
+                        switch ($('#sem').val()) {
+                            case "0":
+                                result = data.data.join('\n');
+                                break;
+                            case "1":
+                                {
+                                    var arr = [];
+                                    $.each(data.data, function () {
+                                        arr.push(this.word + " ：" + this.weight.toFixed(5));
+                                    })
+                                    result = arr.join('\n');
+                                }
+                                break;
+                        }
+                    } else {
+                        result = JSON.stringify(data, null, 4);
+                    }
+                    $('#txt2').val(result);
+                },
+                error: function () {
+                    $('#txt2').val("网络错误");
+                },
+                complete: function () {
+                    $('#btnOk').html('提交');
+                    $('#btnOk')[0].disabled = false;
+                }
+            })
+        }
+    })
+</script>

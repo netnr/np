@@ -31,7 +31,7 @@ https://zme.ink
             <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
             <script>
                 $.ajax({
-                    url: "/images/icon.svg",
+                    url: '/images/icon.svg?200930',
                     dataType: 'text',
                     success: function (data) {
                         $('body').append('<div class="d-none">' + data + '</div>')
@@ -126,8 +126,12 @@ https://zme.ink
                     var id = 'mi' + (i + 1);
                     htm.push('<li class="media" id="' + id + '">');
                     htm.push('<a href="#' + id + '"><img class="mr-3" src="/images/photo.svg"></a>');
-                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2">' + ss.htmlEncode(this.UserNickname) + '<small class="ml-3">' + this.createdAt + '</small></h6>');
-                    htm.push('<pre class="bg-light border py-2 px-2 small">' + ss.htmlEncode(this.Content) + '</pre></div></li>');
+                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + ss.htmlEncode(this.UserNickname) + '<small class="ml-3 text-muted">' + this.createdAt + '</small></h6>');
+                    var vc = ss.htmlEncode(this.Content);
+                    vc = vc.replace(/@\S+/g, function (n) {
+                        return '<span class="text-info">' + n + '</span>'
+                    });
+                    htm.push('<pre class="bg-light border py-2 px-2 small">' + vc + '</pre></div></li>');
                 });
                 if (htm.length) {
                     $('#messagelist').html(htm.join(''));
