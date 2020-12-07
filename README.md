@@ -6,14 +6,16 @@
 - Netnr.Blog （个站）
     - <https://www.netnr.com>
 - Netnr.ResponseFramework （RF框架）
-    - <https://d-rf.zme.ink>
+    - <https://rf.netnr.eu.org>
+    - <https://rf2.netnr.com>
 - Netnr.ScriptService （脚本服务）
     - <https://ss.netnr.com>
     - <https://ss.js.org>
 - Netnr.DataKit （数据库工具及代码构建）
-    - <https://ss.netnr.com/dk> Web UI
-    - <https://d-datakit.zme.ink> Server
+    - <https://dk.netnr.eu.org>
+    - <https://netnr-dk.azurewebsites.net>
 - Netnr.FileServer （上传文件服务器）
-    - <https://d-fileserver.zme.ink>
+    - <https://fs.netnr.eu.org>
+    - <https://netnr-fs.azurewebsites.net>
 - Netnr.CaptchaDemo （验证码）
-    - <https://d-captcha.zme.ink>
+    - <https://captcha.netnr.eu.org>
