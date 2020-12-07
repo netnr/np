@@ -1,7 +1,7 @@
 # Netnr
 周华，男，1992.7 生，2012 参工，大专，single 🤣  
 netnr@netnr.com  
-.NET Core、SQL、JavaScript、Linux
+.NET、SQL、JavaScript、Linux
 
 ---
 

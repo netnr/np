@@ -1,4 +1,4 @@
-<partial name="_PartialQuote" model="@("the")" />
+﻿@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +11,8 @@
 
     <title>@ViewData["Title"] 尬服●乐天地</title>
 
-    <partial name="_PartialQuote" model="@("favicon,seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,global.css,global.js")" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon,guff-seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js"))
+    <partial name="_PartialQuote" model="@("global.css,global.js")" />
 </head>
 <body>
     @{

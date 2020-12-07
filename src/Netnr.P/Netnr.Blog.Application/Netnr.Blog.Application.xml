@@ -58,7 +58,7 @@
             <param name="UwId"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Application.CommonService.ReplyOneQuery(Netnr.Blog.Application.EnumService.ReplyType,System.String,PaginationVM)">
+        <member name="M:Netnr.Blog.Application.CommonService.ReplyOneQuery(Netnr.Blog.Application.EnumService.ReplyType,System.String,Netnr.SharedPaginationVM)">
             <summary>
             获取一个目标ID的回复
             </summary>
@@ -262,43 +262,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Application.UserAuthService">
-            <summary>
-            用户授权
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Application.UserAuthService.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            构造，拿到当前上下文
-            </summary>
-            <param name="httpContext"></param>
-        </member>
-        <member name="M:Netnr.Blog.Application.UserAuthService.Get">
-            <summary>
-            获取授权用户
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Application.UserAuthService.TokenMake(Netnr.Blog.Domain.UserInfo)">
-            <summary>
-            生成Token
-            </summary>
-            <param name="mo">授权用户信息</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Application.UserAuthService.TokenValid(System.String)">
-            <summary>
-            验证Token
-            </summary>
-            <param name="token"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.Blog.Application.UserAuthService.ThirdLogin">
+        <member name="T:Netnr.Blog.Application.ThirdLoginService">
             <summary>
             第三方登录
             </summary>
         </member>
-        <member name="M:Netnr.Blog.Application.UserAuthService.ThirdLogin.LoginLink(System.String,System.String)">
+        <member name="M:Netnr.Blog.Application.ThirdLoginService.LoginLink(System.String,System.String)">
             <summary>
             登录链接
             </summary>
@@ -436,6 +405,126 @@
             </summary>
             <param name="num"></param>
             <returns></returns>
+        </member>
+        <member name="T:QueryDataInputVM">
+            <summary>
+            输入参数
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.HandleType">
+            <summary>
+            处理类型，可选：query、export
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Uri">
+            <summary>
+            请求标识
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.TableName">
+            <summary>
+            表名
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Wheres">
+            <summary>
+            查询条件
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pagination">
+            <summary>
+            是否启用分页 1分页
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Page">
+            <summary>
+            页码 默认 1
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Rows">
+            <summary>
+            页量 默认 30
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Sort">
+            <summary>
+            排序列名
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Order">
+            <summary>
+            排序方式 默认 asc
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.SortOrderJoin">
+            <summary>
+            排序拼接
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.ColumnsExists">
+            <summary>
+            是否查询列信息 1不查询
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pe1">
+            <summary>
+            拓展参数 
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pe2">
+            <summary>
+            拓展参数 
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pe3">
+            <summary>
+            拓展参数 
+            </summary>
+        </member>
+        <member name="T:QueryDataOutputVM">
+            <summary>
+            输出信息
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Total">
+            <summary>
+            总条数
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Table">
+            <summary>
+            数据，data转换表，忽略序列化
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Columns">
+            <summary>
+            列标题
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Or1">
+            <summary>
+            拓展信息 
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Or2">
+            <summary>
+            拓展信息
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Or3">
+            <summary>
+            拓展信息 
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.QuerySql">
+            <summary>
+            查询SQL
+            </summary>
         </member>
     </members>
 </doc>

@@ -23,7 +23,7 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("bootstrap-table.css,bootstrap-table.js")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("bootstrap-table.css,bootstrap-table.js"))
 
 <script>
     var purine = {

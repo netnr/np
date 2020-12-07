@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -27,19 +28,21 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public ActionResultVM QueryServerInfo()
+        public SharedResultVM QueryServerInfo()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                vm.Data = new Fast.OSInfoTo().ToView();
-                vm.Set(ARTag.success);
+                var ss = new SystemStatusTo();
+                vm.Log.Add(ss);
+                vm.Data = ss.ToView();
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -50,12 +53,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         #region 退出
 
         /// <summary>
-        /// 关闭应用
+        /// 退出应用
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public void Close()
+        public void Exit()
         {
+            //Environment.Exit(0);
             //Process.GetCurrentProcess().Kill();
         }
 

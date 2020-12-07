@@ -1,5 +1,9 @@
 # Change log
 
+### [ⅴ4.0.0] - 2020-11-28
+- Remove `Netnr.Core` dependency
+- Adjust some interface parameters
+
 ### [ⅴ3.6.0] - 2020-10-07
 - Upgraded `GitHub` interface adjustment for obtaining user information
 

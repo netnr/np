@@ -377,5 +377,41 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// JS、CSS
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult JsCss()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 格式化
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Formatter()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 图片压缩
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Tiny()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 存储
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Storage()
+        {
+            return View();
+        }
     }
 }

@@ -1,7 +1,9 @@
 # netnrf 响应式框架
 .NET Core 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
 
-> 演示：<https://d-rf.zme.ink>
+> 演示：<https://rf.netnr.eu.org>  
+> 演示：<https://rf2.netnr.com>
+
 
 ### [更新日志](Netnr.ResponseFramework.ChangeLog.md)
 
@@ -9,7 +11,7 @@
 
 <h3><a href="../static/pd/Netnr.ResponseFramework.SQLServer.pdm" title="PD设计" target="_blank">Netnr.ResponseFramework.SQLServer.pdm</a></h3>
 
-### v3.x
+### 架构
 - 前端采用 jQuery + Bootstrap + EasyUI + AceAdmin + fontAwesome
 - 后端采用 .NET Core + EF + SQL（SQLServer、MySQL、PostgreSQL、SQLite）
     - 数据库脚本放置于 `wwwroot/scripts/`目录下

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Netnr.SharedFast;
 
 namespace Netnr.Test
 {
@@ -22,6 +23,13 @@ namespace Netnr.Test
 #if DEBUG
             builder.AddRazorRuntimeCompilation();
 #endif
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                //Action原样输出JSON
+                options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                //日期格式化
+                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

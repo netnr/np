@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Netnr.Blog.Web.Filters;
 using System.IO;
 using Netnr.WeChat;
 using Netnr.WeChat.Entities;
+using Netnr.SharedFast;
+
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -68,6 +69,8 @@ namespace Netnr.Blog.Web.Controllers
                     var decryptMsg = string.Empty;
                     string postStr = System.Text.Encoding.UTF8.GetString(myByteArray);
 
+                    Console.WriteLine(postStr);
+
                     #region 解密
                     if (safeMode)
                     {
@@ -76,7 +79,7 @@ namespace Netnr.Blog.Web.Controllers
                         //解密失败
                         if (ret != 0)
                         {
-                            FilterConfigs.WriteLog(HttpContext, new Exception("微信解密失败"));
+                            Apps.FilterConfigs.WriteLog(HttpContext, new Exception("微信解密失败"));
                         }
                     }
                     else
@@ -96,7 +99,7 @@ namespace Netnr.Blog.Web.Controllers
                     var ret = wxBizMsgCrypt.EncryptMsg(response, timestamp, nonce, ref result);
                     if (ret != 0)//加密失败
                     {
-                        FilterConfigs.WriteLog(HttpContext, new Exception("微信加密失败"));
+                        Apps.FilterConfigs.WriteLog(HttpContext, new Exception("微信加密失败"));
                     }
                 }
                 else
@@ -105,6 +108,8 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 #endregion
             }
+
+            Console.WriteLine(result);
 
             //输出
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(result);
@@ -191,9 +196,9 @@ namespace Netnr.Blog.Web.Controllers
         /// WebHook
         /// </summary>
         /// <returns></returns>
-        public ActionResultVM WebHook()
+        public SharedResultVM WebHook()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -206,7 +211,7 @@ namespace Netnr.Blog.Web.Controllers
                     //TO DO
 
                     vm.Data = postStr;
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
             }
             catch (Exception ex)
@@ -247,10 +252,10 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="ti"></param>
         /// <returns></returns>
         [ResponseCache(Duration = 60)]
-        [FilterConfigs.IsAdmin]
-        public ActionResultVM ExecTask(TaskItem? ti)
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM ExecTask(TaskItem? ti)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -262,7 +267,7 @@ namespace Netnr.Blog.Web.Controllers
                 switch (ti)
                 {
                     default:
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                         break;
 
                     case TaskItem.BackupDataBase:

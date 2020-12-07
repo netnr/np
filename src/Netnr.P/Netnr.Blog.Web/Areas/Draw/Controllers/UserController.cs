@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Draw.Controllers
+namespace Netnr.Blog.Web.Areas.Draw.Controllers
 {
     [Area("Draw")]
     public class UserController : Controller
@@ -37,9 +37,9 @@ namespace Netnr.Web.Areas.Draw.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var ps = Blog.Application.CommonService.DrawQuery(q, uid, uinfo.UserId, page);
+            var ps = Application.CommonService.DrawQuery(q, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["q"] = q;
             return View("_PartialDrawList", ps);

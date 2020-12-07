@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -11,7 +13,7 @@ namespace Netnr.Blog.Web.Controllers
     /// 尬服 guff.ltd 提供所有接口支持
     /// </summary>
     [Route("api/v1/[controller]/[action]")]
-    [Filters.FilterConfigs.AllowCors]
+    [Apps.FilterConfigs.AllowCors]
     public class GuffController : ControllerBase
     {
         public ContextBase db;
@@ -33,9 +35,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page">页码</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM List(string category, string q, int uid, string nv, string tag, string obj, int page = 1)
+        public SharedResultVM List(string category, string q, int uid, string nv, string tag, string obj, int page = 1)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -47,13 +49,13 @@ namespace Netnr.Blog.Web.Controllers
                     OwnerId = uid;
                 }
 
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
                 if (new List<string> { "me", "melaud", "mereply" }.Contains(category))
                 {
                     if (uinfo.UserId == 0)
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                     }
                     else
                     {
@@ -65,7 +67,7 @@ namespace Netnr.Blog.Web.Controllers
                         var pvm = Application.CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
                         vm.Data = pvm;
 
-                        vm.Set(ARTag.success);
+                        vm.Set(SharedEnum.RTag.success);
                     }
                 }
                 else
@@ -73,13 +75,13 @@ namespace Netnr.Blog.Web.Controllers
                     var pvm = Application.CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
                     vm.Data = pvm;
 
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -91,21 +93,21 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id">ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM Detail(string id)
+        public SharedResultVM Detail(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                 }
                 else
                 {
                     var ctype = Application.EnumService.ConnectionType.GuffRecord.ToString();
 
-                    var uinfo = new Application.UserAuthService(HttpContext).Get();
+                    var uinfo = Apps.LoginService.Get(HttpContext);
 
                     var query = from a in db.GuffRecord
                                 join b in db.UserInfo on a.Uid equals b.UserId
@@ -121,7 +123,7 @@ namespace Netnr.Blog.Web.Controllers
                     var qm = query.FirstOrDefault();
                     if (qm == null)
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                     }
                     else
                     {
@@ -138,11 +140,11 @@ namespace Netnr.Blog.Web.Controllers
 
                             vm.Data = qm.a;
 
-                            vm.Set(ARTag.success);
+                            vm.Set(SharedEnum.RTag.success);
                         }
                         else
                         {
-                            vm.Set(ARTag.unauthorized);
+                            vm.Set(SharedEnum.RTag.unauthorized);
                         }
                     }
                 }
@@ -150,7 +152,7 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -162,13 +164,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM Add(Domain.GuffRecord mo)
+        public SharedResultVM Add(Domain.GuffRecord mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
                 if (string.IsNullOrWhiteSpace(mo.GrContent) && string.IsNullOrWhiteSpace(mo.GrImage) && string.IsNullOrWhiteSpace(mo.GrAudio) && string.IsNullOrWhiteSpace(mo.GrVideo))
                 {
@@ -182,11 +184,11 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else if (uinfo.UserId == 0)
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
-                    if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
+                    if (GlobalTo.GetValue<bool>("Common:CompleteInfo") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
                     {
                         vm.Code = 1;
                         vm.Msg = "请先验证邮箱";
@@ -196,7 +198,7 @@ namespace Netnr.Blog.Web.Controllers
                         var now = DateTime.Now;
 
                         mo.Uid = uinfo.UserId;
-                        mo.GrId = Core.UniqueTo.LongId().ToString();
+                        mo.GrId = UniqueTo.LongId().ToString();
                         mo.GrCreateTime = now;
                         mo.GrUpdateTime = now;
                         mo.GrStatus = 1;
@@ -206,14 +208,14 @@ namespace Netnr.Blog.Web.Controllers
                         mo.GrReplyNum = 0;
                         mo.GrOpen ??= 1;
 
-                        mo.GrTypeName = Fast.ParsingTo.JsSafeJoin(mo.GrTypeName);
-                        mo.GrTypeValue = Fast.ParsingTo.JsSafeJoin(mo.GrTypeValue);
-                        mo.GrObject = Fast.ParsingTo.JsSafeJoin(mo.GrObject);
-                        mo.GrImage = Fast.ParsingTo.JsSafeJoin(mo.GrImage);
-                        mo.GrAudio = Fast.ParsingTo.JsSafeJoin(mo.GrAudio);
-                        mo.GrVideo = Fast.ParsingTo.JsSafeJoin(mo.GrVideo);
-                        mo.GrFile = Fast.ParsingTo.JsSafeJoin(mo.GrFile);
-                        mo.GrTag = Fast.ParsingTo.JsSafeJoin(mo.GrTag);
+                        mo.GrTypeName = ParsingTo.JsSafeJoin(mo.GrTypeName);
+                        mo.GrTypeValue = ParsingTo.JsSafeJoin(mo.GrTypeValue);
+                        mo.GrObject = ParsingTo.JsSafeJoin(mo.GrObject);
+                        mo.GrImage = ParsingTo.JsSafeJoin(mo.GrImage);
+                        mo.GrAudio = ParsingTo.JsSafeJoin(mo.GrAudio);
+                        mo.GrVideo = ParsingTo.JsSafeJoin(mo.GrVideo);
+                        mo.GrFile = ParsingTo.JsSafeJoin(mo.GrFile);
+                        mo.GrTag = ParsingTo.JsSafeJoin(mo.GrTag);
 
                         db.GuffRecord.Add(mo);
 
@@ -227,7 +229,7 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -239,13 +241,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM Update(Domain.GuffRecord mo)
+        public SharedResultVM Update(Domain.GuffRecord mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
                 if (string.IsNullOrWhiteSpace(mo.GrContent) && string.IsNullOrWhiteSpace(mo.GrImage) && string.IsNullOrWhiteSpace(mo.GrAudio) && string.IsNullOrWhiteSpace(mo.GrVideo))
                 {
@@ -259,7 +261,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else if (uinfo.UserId == 0)
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
@@ -267,25 +269,25 @@ namespace Netnr.Blog.Web.Controllers
 
                     if (currMo == null)
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                     }
                     else if (currMo.Uid != uinfo.UserId)
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                     }
                     else
                     {
-                        currMo.GrTypeName = Fast.ParsingTo.JsSafeJoin(mo.GrTypeName);
-                        currMo.GrTypeValue = Fast.ParsingTo.JsSafeJoin(mo.GrTypeValue);
-                        currMo.GrObject = Fast.ParsingTo.JsSafeJoin(mo.GrObject);
+                        currMo.GrTypeName = ParsingTo.JsSafeJoin(mo.GrTypeName);
+                        currMo.GrTypeValue = ParsingTo.JsSafeJoin(mo.GrTypeValue);
+                        currMo.GrObject = ParsingTo.JsSafeJoin(mo.GrObject);
 
                         currMo.GrContent = mo.GrContent;
                         currMo.GrContentMd = mo.GrContentMd;
 
-                        currMo.GrImage = Fast.ParsingTo.JsSafeJoin(mo.GrImage);
-                        currMo.GrAudio = Fast.ParsingTo.JsSafeJoin(mo.GrAudio);
-                        currMo.GrVideo = Fast.ParsingTo.JsSafeJoin(mo.GrVideo);
-                        currMo.GrFile = Fast.ParsingTo.JsSafeJoin(mo.GrFile);
+                        currMo.GrImage = ParsingTo.JsSafeJoin(mo.GrImage);
+                        currMo.GrAudio = ParsingTo.JsSafeJoin(mo.GrAudio);
+                        currMo.GrVideo = ParsingTo.JsSafeJoin(mo.GrVideo);
+                        currMo.GrFile = ParsingTo.JsSafeJoin(mo.GrFile);
                         currMo.GrRemark = mo.GrRemark;
 
                         currMo.GrTag = mo.GrTag;
@@ -304,7 +306,7 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -318,29 +320,29 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id">ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM Connection(string type, int ac, string id)
+        public SharedResultVM Connection(string type, int ac, string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
                 if (uinfo.UserId == 0)
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                 }
                 else if (!new List<string> { "add", "cancel" }.Contains(type))
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                 }
                 else if (!new List<int> { 1, 2 }.Contains(ac))
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                 }
                 else
                 {
@@ -348,7 +350,7 @@ namespace Netnr.Blog.Web.Controllers
 
                     if (currMo == null)
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                     }
                     else
                     {
@@ -359,14 +361,14 @@ namespace Netnr.Blog.Web.Controllers
                                 {
                                     if (db.UserConnection.Any(x => x.Uid == uinfo.UserId && x.UconnTargetType == ctype && x.UconnTargetId == id && x.UconnAction == ac))
                                     {
-                                        vm.Set(ARTag.exist);
+                                        vm.Set(SharedEnum.RTag.exist);
                                     }
                                     else
                                     {
                                         //关联记录
                                         var ucmo = new Domain.UserConnection()
                                         {
-                                            UconnId = Core.UniqueTo.LongId().ToString(),
+                                            UconnId = UniqueTo.LongId().ToString(),
                                             Uid = uinfo.UserId,
                                             UconnTargetType = Application.EnumService.ConnectionType.GuffRecord.ToString(),
                                             UconnTargetId = id,
@@ -399,7 +401,7 @@ namespace Netnr.Blog.Web.Controllers
                                     var curruc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetType == ctype && x.UconnTargetId == id && x.UconnAction == ac);
                                     if (curruc == null)
                                     {
-                                        vm.Set(ARTag.invalid);
+                                        vm.Set(SharedEnum.RTag.invalid);
                                     }
                                     else
                                     {
@@ -429,7 +431,7 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -442,13 +444,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id">ID</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM ReplyAdd(Domain.UserReply mo, string id)
+        public SharedResultVM ReplyAdd(Domain.UserReply mo, string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
@@ -456,9 +458,9 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    if (string.IsNullOrWhiteSpace(mo.UrAnonymousName) || !Fast.ParsingTo.IsMail(mo.UrAnonymousMail))
+                    if (string.IsNullOrWhiteSpace(mo.UrAnonymousName) || !ParsingTo.IsMail(mo.UrAnonymousMail))
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                         vm.Msg = "昵称、邮箱不能为空";
 
                         return vm;
@@ -469,11 +471,11 @@ namespace Netnr.Blog.Web.Controllers
 
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                 }
                 else if (string.IsNullOrWhiteSpace(mo.UrContent))
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                     vm.Msg = "回复内容不能为空";
                 }
                 else
@@ -481,7 +483,7 @@ namespace Netnr.Blog.Web.Controllers
                     var guffmo = db.GuffRecord.Find(id);
                     if (guffmo == null)
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                     }
                     else
                     {
@@ -492,7 +494,7 @@ namespace Netnr.Blog.Web.Controllers
                         mo.UrStatus = 1;
                         mo.UrTargetPid = 0;
 
-                        mo.UrAnonymousLink = Fast.ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
+                        mo.UrAnonymousLink = ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
 
                         db.UserReply.Add(mo);
 
@@ -507,7 +509,7 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -520,15 +522,15 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM ReplyList(string id, int page = 1)
+        public SharedResultVM ReplyList(string id, int page = 1)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-                var pag = new PaginationVM
+                var pag = new SharedPaginationVM
                 {
                     PageNumber = Math.Max(page, 1),
                     PageSize = 10
@@ -540,23 +542,23 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     if (item.Uid == 0 && !string.IsNullOrWhiteSpace(item.UrAnonymousMail))
                     {
-                        item.Spare3 = Core.CalcTo.MD5(item.UrAnonymousMail);
+                        item.Spare3 = CalcTo.MD5(item.UrAnonymousMail);
                     }
                 }
 
-                var pvm = new PageVM()
+                var pvm = new SharedPageVM()
                 {
                     Rows = list,
                     Pag = pag
                 };
                 vm.Data = pvm;
 
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -568,36 +570,36 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM Delete(string id)
+        public SharedResultVM Delete(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                 }
                 else
                 {
-                    var uinfo = new Application.UserAuthService(HttpContext).Get();
+                    var uinfo = Apps.LoginService.Get(HttpContext);
                     if (uinfo.UserId != 0)
                     {
                         var mo = db.GuffRecord.Find(id);
 
                         if (mo == null)
                         {
-                            vm.Set(ARTag.invalid);
+                            vm.Set(SharedEnum.RTag.invalid);
                         }
                         else
                         {
                             if (mo.Uid != uinfo.UserId)
                             {
-                                vm.Set(ARTag.unauthorized);
+                                vm.Set(SharedEnum.RTag.unauthorized);
                             }
                             else if (mo.GrStatus == -1)
                             {
-                                vm.Set(ARTag.refuse);
+                                vm.Set(SharedEnum.RTag.refuse);
                             }
                             else
                             {
@@ -610,14 +612,14 @@ namespace Netnr.Blog.Web.Controllers
                     }
                     else
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                     }
                 }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;
@@ -629,9 +631,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 60)]
-        public ActionResultVM HotTag()
+        public SharedResultVM HotTag()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -639,12 +641,12 @@ namespace Netnr.Blog.Web.Controllers
                 var orderTags = string.Join(",", listTags).Split(',').GroupBy(x => x).OrderByDescending(x => x.Count()).Select(x => x.Key).Take(20).ToList();
 
                 vm.Data = orderTags;
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;

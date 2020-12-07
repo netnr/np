@@ -47,9 +47,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="tablename">虚拟表名</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveConfigTable(string rows, string tablename)
+        public SharedResultVM SaveConfigTable(string rows, string tablename)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             JArray ja = JArray.Parse(rows);
 
@@ -90,9 +90,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="tablename">虚拟表名</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveConfigForm(string rows, string tablename)
+        public SharedResultVM SaveConfigForm(string rows, string tablename)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             JArray ja = JArray.Parse(rows);
 

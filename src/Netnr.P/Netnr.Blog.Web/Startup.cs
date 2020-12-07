@@ -1,4 +1,3 @@
-using Netnr.Login;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -7,9 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Linq;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using Netnr.Login;
+using Netnr.SharedFast;
+using Netnr.SharedLogging;
 
 namespace Netnr.Blog.Web
 {
@@ -21,14 +22,18 @@ namespace Netnr.Blog.Web
             GlobalTo.HostEnvironment = env;
 
             //设置日志
-            Logging.LoggingTo.DbRoot = GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath);
-            Logging.LoggingTo.CacheWriteCount = GlobalTo.GetValue<int>("logs:CacheWriteCount");
-            Logging.LoggingTo.CacheWriteSecond = GlobalTo.GetValue<int>("logs:CacheWriteSecond");
+            LoggingTo.OptionsDbRoot = GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath);
+            LoggingTo.OptionsCacheWriteCount = GlobalTo.GetValue<int>("logs:CacheWriteCount");
+            LoggingTo.OptionsCacheWriteSecond = GlobalTo.GetValue<int>("logs:CacheWriteSecond");
 
             #region 第三方登录
             QQConfig.APPID = GlobalTo.GetValue("OAuthLogin:QQ:APPID");
             QQConfig.APPKey = GlobalTo.GetValue("OAuthLogin:QQ:APPKey");
             QQConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:QQ:Redirect_Uri");
+
+            WeChatConfig.AppId = GlobalTo.GetValue("OAuthLogin:WeChat:AppId"); ;
+            WeChatConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:WeChat:AppSecret"); ;
+            WeChatConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:WeChat:Redirect_Uri"); ;
 
             WeiboConfig.AppKey = GlobalTo.GetValue("OAuthLogin:Weibo:AppKey");
             WeiboConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:Weibo:AppSecret");
@@ -37,6 +42,10 @@ namespace Netnr.Blog.Web
             GitHubConfig.ClientID = GlobalTo.GetValue("OAuthLogin:GitHub:ClientID");
             GitHubConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:GitHub:ClientSecret");
             GitHubConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:GitHub:Redirect_Uri");
+
+            GiteeConfig.ClientID = GlobalTo.GetValue("OAuthLogin:Gitee:ClientID");
+            GiteeConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:Gitee:ClientSecret");
+            GiteeConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:Gitee:Redirect_Uri");
 
             TaoBaoConfig.AppKey = GlobalTo.GetValue("OAuthLogin:TaoBao:AppKey");
             TaoBaoConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:TaoBao:AppSecret");
@@ -49,6 +58,19 @@ namespace Netnr.Blog.Web
             DingTalkConfig.appId = GlobalTo.GetValue("OAuthLogin:DingTalk:AppId");
             DingTalkConfig.appSecret = GlobalTo.GetValue("OAuthLogin:DingTalk:AppSecret");
             DingTalkConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:DingTalk:Redirect_Uri");
+
+            GoogleConfig.ClientID = GlobalTo.GetValue("OAuthLogin:Google:ClientID");
+            GoogleConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:Google:ClientSecret");
+            GoogleConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:Google:Redirect_Uri");
+
+            AliPayConfig.AppId = GlobalTo.GetValue("OAuthLogin:AliPay:AppId");
+            AliPayConfig.AppPrivateKey = GlobalTo.GetValue("OAuthLogin:AliPay:AppPrivateKey");
+            AliPayConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:AliPay:Redirect_Uri");
+
+            StackOverflowConfig.ClientId = GlobalTo.GetValue("OAuthLogin:StackOverflow:ClientId");
+            StackOverflowConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:StackOverflow:ClientSecret");
+            StackOverflowConfig.Key = GlobalTo.GetValue("OAuthLogin:StackOverflow:Key");
+            StackOverflowConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:StackOverflow:Redirect_Uri");
             #endregion
         }
 
@@ -65,13 +87,13 @@ namespace Netnr.Blog.Web
             IMvcBuilder builder = services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
-                options.Filters.Add(new Filters.FilterConfigs.ErrorActionFilter());
+                options.Filters.Add(new Apps.FilterConfigs.ErrorActionFilter());
 
                 //注册全局过滤器
-                options.Filters.Add(new Filters.FilterConfigs.GlobalFilter());
+                options.Filters.Add(new Apps.FilterConfigs.GlobalFilter());
 
                 //注册全局授权访问时登录标记是否有效
-                options.Filters.Add(new Filters.FilterConfigs.LoginSignValid());
+                options.Filters.Add(new Apps.FilterConfigs.LoginSignValid());
             });
 
 #if DEBUG
@@ -99,7 +121,7 @@ namespace Netnr.Blog.Web
                     })
                 });
 
-                "Blog.Web,Blog.Application,Fast".Split(',').ToList().ForEach(x =>
+                "Blog.Web,Blog.Application".Split(',').ToList().ForEach(x =>
                 {
                     c.IncludeXmlComments(System.AppContext.BaseDirectory + $"Netnr.{x}.xml", true);
                 });
@@ -109,7 +131,9 @@ namespace Netnr.Blog.Web
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 //允许其他站点携带授权Cookie访问，会出现伪造
+                //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
                 options.Cookie.SameSite = SameSiteMode.None;
+
                 options.Cookie.Name = "netnr_auth";
                 options.LoginPath = "/account/login";
             });
@@ -139,6 +163,11 @@ namespace Netnr.Blog.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                // The default HSTS value is 30 days. https://aka.ms/aspnetcore-hsts
+                app.UseHsts();
             }
 
             //数据库不存在则创建，创建后返回true

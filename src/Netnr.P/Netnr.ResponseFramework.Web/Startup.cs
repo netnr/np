@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.OpenApi.Models;
 using System.Linq;
-using System.Collections.Generic;
+using Netnr.ResponseFramework.Data;
+using Newtonsoft.Json.Converters;
+using Netnr.SharedFast;
 
 namespace Netnr.ResponseFramework.Web
 {
@@ -33,10 +34,10 @@ namespace Netnr.ResponseFramework.Web
             IMvcBuilder builder = services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
-                options.Filters.Add(new Filters.FilterConfigs.ErrorActionFilter());
+                options.Filters.Add(new Apps.FilterConfigs.ErrorActionFilter());
 
                 //注册全局过滤器
-                options.Filters.Add(new Filters.FilterConfigs.GlobalActionAttribute());
+                options.Filters.Add(new Apps.FilterConfigs.GlobalActionAttribute());
             });
 
 #if DEBUG
@@ -49,22 +50,27 @@ namespace Netnr.ResponseFramework.Web
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 //日期格式化
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+
+                //swagger枚举显示名称
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
+            //swagger枚举显示名称
+            services.AddSwaggerGenNewtonsoftSupport();
 
             //配置swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
                     Title = "RF API",
-                    Description = string.Join(" &nbsp; ", new List<string>
+                    Description = string.Join(" &nbsp; ", new string[]
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
                         "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
                     })
                 });
 
-                "ResponseFramework.Web,ResponseFramework.Application,Fast".Split(',').ToList().ForEach(x =>
+                "ResponseFramework.Web,ResponseFramework.Application".Split(',').ToList().ForEach(x =>
                 {
                     c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
                 });
@@ -81,9 +87,9 @@ namespace Netnr.ResponseFramework.Web
             services.AddSession();
 
             //数据库连接池
-            services.AddDbContextPool<Data.ContextBase>(options =>
+            services.AddDbContextPool<ContextBase>(options =>
             {
-                Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
+                ContextBaseFactory.CreateDbContextOptionsBuilder(options);
             }, 99);
 
             //定时任务
@@ -97,19 +103,24 @@ namespace Netnr.ResponseFramework.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Data.ContextBase db)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ContextBase db)
         {
             //是开发环境
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // The default HSTS value is 30 days. https://aka.ms/aspnetcore-hsts
+                app.UseHsts();
+            }
 
             //数据库不存在则创建，创建后返回true
             if (db.Database.EnsureCreated())
             {
-                //调用重置数据库（实际开发中，你可能不需要，或只初始化一些表数据）
-                new Controllers.DKController(db).ResetDataBaseForJson();
+                //重置数据库
+                Application.TaskService.DatabaseAsJson.ReadToJson();
             }
 
             //配置swagger（生产环境不需要，把该代码移至 是开发环境 条件里面）

@@ -1,9 +1,9 @@
 # Netnr.DataKit
 Database build code
 
-> Frontend: <https://ss.netnr.com/dk> (UI)  
-> Background: <https://api.zme.ink> (Serverless service deployed in Vercel, does not support Oracle)  
-> Background: <https://d-datakit.zme.ink> (service deployed on Heroku)  
+> <https://dk.netnr.eu.org>  
+> <https://netnr-dk.azurewebsites.net>
+
 
 ### Functional
 - Supported databases: MySQL, SQLite, Oracle, SQLServer, PostgreSQL

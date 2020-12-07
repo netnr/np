@@ -1,6 +1,7 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
+using Netnr.SharedUserAgent;
+using Netnr.SharedApp;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -16,59 +17,70 @@ namespace Netnr.ResponseFramework.Web.Controllers
             db = cb;
         }
 
-        #region 定时任务
-
-        //帮助文档：https://github.com/fluentscheduler/FluentScheduler
-
         /// <summary>
-        /// 任务项
+        /// 服务项
         /// </summary>
-        public enum TaskItem
+        public enum ServiceItem
         {
             /// <summary>
-            /// 重置数据库
+            /// 重置数据库（读取JSON文件）
             /// </summary>
-            ResetDataBase,
+            DatabaseReset,
+
+            /// <summary>
+            /// 备份数据库（写入JSON文件）
+            /// </summary>
+            DatabaseBackup,
 
             /// <summary>
             /// 清理临时目录
             /// </summary>
-            ClearTemp
+            ClearTmp
         }
 
         /// <summary>
-        /// 执行任务项，支持名称或索引
+        /// 服务
         /// </summary>
+        /// <param name="ti">服务项</param>
         /// <returns></returns>
-        [HttpGet("{id}")]
-        public ActionResultVM ExecTask()
+        [HttpGet]
+        public SharedResultVM Index(ServiceItem ti)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            Enum.TryParse(typeof(TaskItem), RouteData.Values["id"]?.ToString(), true, out object ti);
-
-            switch (ti as TaskItem?)
+            switch (ti)
             {
-                default:
-                    vm.Set(ARTag.invalid);
-                    break;
-
-                case TaskItem.ResetDataBase:
+                case ServiceItem.DatabaseReset:
                     {
-                        vm = new Application.DataMirrorService().AddForJson();
+                        if (new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
+                        {
+                            vm.Set(SharedEnum.RTag.refuse);
+                            vm.Msg = "are you human？";
+                        }
+                        else
+                        {
+                            vm = Application.TaskService.DatabaseAsJson.ReadToJson();
+                        }
                     }
                     break;
 
-                case TaskItem.ClearTemp:
+                case ServiceItem.DatabaseBackup:
                     {
-                        vm = Application.TaskService.ClearTemp();
+                        //是否覆盖JSON文件，默认不覆盖，避免线上重置功能被破坏
+                        var CoverJson = false;
+
+                        vm = Application.TaskService.DatabaseAsJson.WriteToJson(CoverJson);
+                    }
+                    break;
+
+                case ServiceItem.ClearTmp:
+                    {
+                        vm = Application.TaskService.ClearTmp();
                     }
                     break;
             }
 
             return vm;
         }
-
-        #endregion
     }
 }

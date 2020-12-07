@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
-using Netnr.Chat.Application.ViewModel;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
+using Netnr.Chat.Application.ViewModel;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.Chat.Application
 {
@@ -72,40 +74,40 @@ namespace Netnr.Chat.Application
         /// <param name="cm">发送消息</param>
         /// <param name="hc">上下文</param>
         /// <param name="Clients">连接客户端对象</param>
-        public static ActionResultVM HandleMessageToUsers(ChatMessageVM cm, HttpContext hc, IHubClients Clients)
+        public static SharedResultVM HandleMessageToUsers(ChatMessageVM cm, HttpContext hc, IHubClients Clients)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
             var pmax = GlobalTo.GetValue<int>("NetnrChat:BatchPushUserMax");
             var rme = GlobalTo.GetValue("NetnrChat:ReceiveMessage");
 
             if (cm == null)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "消息主体不能为空";
             }
             else if (string.IsNullOrWhiteSpace(cm.CmFromId))
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "发送用户ID不能为空";
             }
             else if (cm.CmContent == null)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "发送内容不能为空";
             }
             else if (!Enum.TryParse(cm.CmType, true, out MessageType mt))
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "消息类型有误";
             }
             else if (cm.CmToIds == null || cm.CmToIds.Count == 0)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "接收用户ID不能为空";
             }
             else if (cm.CmToIds.Count > pmax)
             {
-                vm.Set(ARTag.refuse);
+                vm.Set(SharedEnum.RTag.refuse);
                 vm.Msg = $"接收用户限制为最多{pmax}";
             }
             else
@@ -144,11 +146,11 @@ namespace Netnr.Chat.Application
 
                     //发送成功，返回消息ID
                     vm.Data = cm.CmId;
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
                 else
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                     vm.Msg = "接收用户ID无效";
                 }
             }
@@ -163,23 +165,23 @@ namespace Netnr.Chat.Application
         /// <param name="hc">上下文</param>
         /// <param name="db">数据库</param>
         /// <returns></returns>
-        public static ActionResultVM HandleUserMessageReceipt(ChatMessageVM cm, HttpContext hc, Data.ContextBase db)
+        public static SharedResultVM HandleUserMessageReceipt(ChatMessageVM cm, HttpContext hc, Data.ContextBase db)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (cm == null)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "消息主体不能为空";
             }
             else if (string.IsNullOrWhiteSpace(cm.CmId))
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "消息ID不能为空";
             }
             else
             {
-                vm.Set(ARTag.invalid);
+                vm.Set(SharedEnum.RTag.invalid);
                 vm.Msg = "消息ID无效";
 
                 //用户连接信息
@@ -193,7 +195,7 @@ namespace Netnr.Chat.Application
                     {
                         mb.CmuStatus = cm.CmStatus;
 
-                        vm.Set(ARTag.success);
+                        vm.Set(SharedEnum.RTag.success);
                     }
                 }
                 else
@@ -204,7 +206,7 @@ namespace Netnr.Chat.Application
                         mb.CmuStatus = cm.CmStatus;
                         db.SaveChanges();
 
-                        vm.Set(ARTag.success);
+                        vm.Set(SharedEnum.RTag.success);
                     }
                 }
             }
@@ -218,40 +220,40 @@ namespace Netnr.Chat.Application
         /// <param name="cm">发送消息</param>
         /// <param name="hc">上下文</param>
         /// <param name="Clients">连接客户端对象</param>
-        public static ActionResultVM HandleMessageToGroup(ChatMessageVM cm, HttpContext hc, IHubClients Clients)
+        public static SharedResultVM HandleMessageToGroup(ChatMessageVM cm, HttpContext hc, IHubClients Clients)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
             var pmax = GlobalTo.GetValue<int>("NetnrChat:BatchPushGroupMax");
             var rme = GlobalTo.GetValue("NetnrChat:ReceiveMessage");
 
             if (cm == null)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "消息主体不能为空";
             }
             else if (string.IsNullOrWhiteSpace(cm.CmFromId))
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "发送用户ID不能为空";
             }
             else if (cm.CmContent == null)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "发送内容不能为空";
             }
             else if (!Enum.TryParse(cm.CmType, true, out MessageType mt))
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "消息类型有误";
             }
             else if (cm.CmToIds == null || cm.CmToIds.Count == 0)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "接收组ID不能为空";
             }
             else if (cm.CmToIds.Count > pmax)
             {
-                vm.Set(ARTag.refuse);
+                vm.Set(SharedEnum.RTag.refuse);
                 vm.Msg = $"接收组限制为最多{pmax}";
             }
             else
@@ -280,11 +282,11 @@ namespace Netnr.Chat.Application
 
                     //发送成功，返回消息ID
                     vm.Data = cm.CmId;
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
                 else
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                     vm.Msg = "接收组ID无效";
                 }
             }
@@ -299,23 +301,23 @@ namespace Netnr.Chat.Application
         /// <param name="Groups"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public static ActionResultVM HandelGroupNew(ChatGroupVM cg, IGroupManager Groups, Data.ContextBase db)
+        public static SharedResultVM HandelGroupNew(ChatGroupVM cg, IGroupManager Groups, Data.ContextBase db)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (cg == null)
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "组信息不能为空";
             }
             else if (string.IsNullOrWhiteSpace(cg.GroupName))
             {
-                vm.Set(ARTag.lack);
+                vm.Set(SharedEnum.RTag.lack);
                 vm.Msg = "组名称不能为空";
             }
             else if (cg.GroupUser.Count == 0)
             {
-                vm.Set(ARTag.fail);
+                vm.Set(SharedEnum.RTag.fail);
                 vm.Msg = "组用户至少有一个（默认第一个用户为管理员）";
             }
 
@@ -325,7 +327,7 @@ namespace Netnr.Chat.Application
             {
                 var now = DateTime.Now;
 
-                cg.GroupId = Core.UniqueTo.LongId().ToString();
+                cg.GroupId = UniqueTo.LongId().ToString();
 
                 //组成员
                 var listgm = new List<Domain.NChatGroupMember>();
@@ -341,7 +343,7 @@ namespace Netnr.Chat.Application
                     //添加组成员
                     listgm.Add(new Domain.NChatGroupMember()
                     {
-                        CgmId = Core.UniqueTo.LongId().ToString(),
+                        CgmId = UniqueTo.LongId().ToString(),
                         CgId = cg.GroupId,
                         CuUserId = user.UserId,
                         CgmCreateTime = now,
@@ -367,11 +369,11 @@ namespace Netnr.Chat.Application
 
                 //成功
                 vm.Data = cg.GroupId;
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             else
             {
-                vm.Set(ARTag.invalid);
+                vm.Set(SharedEnum.RTag.invalid);
                 vm.Msg = "组用户无效";
             }
 
@@ -383,7 +385,7 @@ namespace Netnr.Chat.Application
         ///// </summary>
         ///// <param name="groupVM">组信息</param>
         ///// <returns></returns>
-        //public static ActionResultVM HandelJoinGroup(ChatGroupVM groupVM)
+        //public static SharedResultVM HandelJoinGroup(ChatGroupVM groupVM)
         //{
         //    var group = ccs.FindGroup(groupVM.GroupId);
         //    if (group != null)
@@ -422,7 +424,7 @@ namespace Netnr.Chat.Application
         ///// </summary>
         ///// <param name="groupVM">组信息</param>
         ///// <returns></returns>
-        //public static ActionResultVM HandelLeaveGroup(ChatGroupVM groupVM)
+        //public static SharedResultVM HandelLeaveGroup(ChatGroupVM groupVM)
         //{
         //    var group = ccs.FindGroup(groupVM.GroupId);
         //    if (group != null)
@@ -461,7 +463,7 @@ namespace Netnr.Chat.Application
         ///// </summary>
         ///// <param name="groupVM">组信息</param>
         ///// <returns></returns>
-        //public static ActionResultVM HandelDelGroup(ChatGroupVM groupVM)
+        //public static SharedResultVM HandelDelGroup(ChatGroupVM groupVM)
         //{
         //    var group = ccs.FindGroup(groupVM.GroupId);
         //    if (group != null)
@@ -598,7 +600,7 @@ namespace Netnr.Chat.Application
         /// <returns></returns>
         public static string NewMessageId()
         {
-            return "m" + Core.UniqueTo.LongId();
+            return "m" + UniqueTo.LongId();
         }
 
         /// <summary>
@@ -1040,7 +1042,7 @@ namespace Netnr.Chat.Application
             //离线用户
             if (offid.Count > 0)
             {
-                using var db = new Data.ContextBase(Data.ContextBase.DCOB().Options);
+                using var db = Data.ContextBaseFactory.CreateDbContext();
 
                 var offu = db.NChatUser.Where(x => offid.Contains(x.CuUserId)).Select(x => new ChatUserVM()
                 {

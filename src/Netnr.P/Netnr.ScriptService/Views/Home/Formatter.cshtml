@@ -1,0 +1,104 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-2">
+                <div class="input-group">
+                    <button class="btn btn-warning" id="btnFormatter">格式化</button>
+                    <div class="input-group-prepend">
+                        <select class="custom-select" id="seLang">
+                            <option value="javascript">JS</option>
+                            <option value="typescript">TypeScript</option>
+                            <option value="html">HTML</option>
+                            <option value="html-vue">VUE</option>
+                            <option value="html-angular">Angular</option>
+                            <option value="css">CSS</option>
+                            <option value="less">LESS</option>
+                            <option value="scss">SCSS</option>
+                            <option value="json">JSON</option>
+                            <option value="json-json5">JSON5</option>
+                            <option value="markdown">Markdown</option>
+                            <option value="yaml">YAML</option>
+                            <option value="graphql">GraphQL</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="editor" class="border overflow-hidden position-relative">
+                <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("prettier.js,monaco-editor"))
+
+<script>
+
+    require(['vs/editor/editor.main'], function () {
+
+        var defaultContent = ss.lsStr("vscode-content") || '',
+            defaultLang = ss.lsStr("vscode-lang") || 'javascript',
+            formatterLang = ss.lsStr("formatter-lang") || 'javascript';
+
+        window.ee = monaco.editor.create(document.getElementById("editor"), {
+            value: defaultContent,
+            language: defaultLang,
+            automaticLayout: true,
+            theme: "vs",
+            scrollbar: {
+                verticalScrollbarSize: 6,
+                horizontalScrollbarSize: 6
+            },
+            minimap: {
+                enabled: false
+            }
+        });
+
+        ee.onDidChangeModelContent(function (e) {
+            clearTimeout(window.defer1);
+            window.defer1 = setTimeout(function () {
+                var txt = ee.getValue();
+                ss.ls["vscode-content"] = txt;
+                ss.lsSave();
+            }, 1000 * 1)
+        });
+
+        //切换语言
+        $('#seLang').change(function () {
+            var lang = this.value.split('-')[0];
+
+            var oldModel = ee.getModel();
+            var newModel = monaco.editor.createModel(ee.getValue(), lang);
+            ee.setModel(newModel);
+            if (oldModel) {
+                oldModel.dispose();
+            }
+
+            ss.ls["formatter-lang"] = this.value;
+            ss.ls["vscode-lang"] = lang;
+            ss.lsSave();
+        }).val(formatterLang);
+
+        //格式化
+        $('#btnFormatter').click(function () {
+            var fmlang = $('#seLang').val().split('-').pop();
+            var code = ee.getValue();
+            if (code != "") {
+                try {
+                    ee.setValue(prettier.format(code, {
+                        parser: fmlang,
+                        plugins: prettierPlugins
+                    }))
+                } catch (e) {
+                    console.log(e);
+                    jz.msg(e + "");
+                }
+            }
+        });
+
+        $(window).on('load resize', function () {
+            var ch = $(window).height() - $('#editor').offset().top - 15;
+            $('#editor').css('height', Math.max(200, ch));
+        });
+    });
+</script>

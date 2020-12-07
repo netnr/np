@@ -1,4 +1,4 @@
-@model PageVM
+@model SharedPageVM
 
 @{
     ViewData["Title"] = "Discover gists";
@@ -68,7 +68,7 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
 <script>
     var editor = null;
@@ -102,14 +102,4 @@
     $('div.gn-viewcode').dblclick(function () {
         location.href = $(this).attr('data-href');
     });
-
-    function htmlDecodeByRegExp(str) {
-        if (str.length == 0) return "";
-        return str.replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">")
-            .replace(/&nbsp;/g, " ")
-            .replace(/&#39;/g, "\'")
-            .replace(/&quot;/g, "\"")
-            .replace(/&amp;/g, "&");
-    }
 </script>

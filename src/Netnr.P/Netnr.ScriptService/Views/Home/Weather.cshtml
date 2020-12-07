@@ -159,10 +159,10 @@
             QueryWeather(code, target.innerHTML);
             $('#divWeatherCode').hide();
         }
-    }).css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 80 + "px");
+    }).css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 60 + "px");
     //自适应高度
     $(window).resize(function () {
-        $('#divWeatherCode').css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 80 + "px");
+        $('#divWeatherCode').css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 60 + "px");
     });
 
     //点击空白关闭城市浮动层

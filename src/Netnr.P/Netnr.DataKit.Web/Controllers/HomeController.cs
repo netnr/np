@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.DataKit.Web.Controllers
 {
@@ -7,14 +9,7 @@ namespace Netnr.DataKit.Web.Controllers
         [ResponseCache(Duration = 5)]
         public IActionResult Index()
         {
-            //先请求本地 /index.html，无效则从线上请求
-            string ih;
-            var uipath = Fast.PathTo.Combine(GlobalTo.WebRootPath, "index.html");
-            ih = Core.FileTo.ReadText(uipath);
-            if (string.IsNullOrEmpty(ih))
-            {
-                ih = Core.HttpTo.Get("https://ss.netnr.com/dk");
-            }
+            string ih = FileTo.ReadText(PathTo.Combine(GlobalTo.WebRootPath, "lib/dk/dk.html"));
             return new ContentResult()
             {
                 Content = ih,

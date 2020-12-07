@@ -99,7 +99,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                                 a.SmStatus,
                                 a.SmGroup,
                                 //查询是否有子集
-                                state = (from b in db.SysMenu where b.SmPid == a.SmId select b.SmId).Count() > 0 ? "closed" : "open"
+                                state = (from b in db.SysMenu where b.SmPid == a.SmId select b.SmId).Any() ? "closed" : "open"
                             };
                 var list = query.ToList();
                 return Content(list.ToJson());
@@ -250,9 +250,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="moMain"></param>
         /// <param name="rows"></param>
         /// <returns></returns>
-        public ActionResultVM SaveInvoiceForm(TempInvoiceMain moMain, string rows)
+        public SharedResultVM SaveInvoiceForm(TempInvoiceMain moMain, string rows)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             //明细反序列化为对象
             var listDetail = rows.ToEntitys<TempInvoiceDetail>();

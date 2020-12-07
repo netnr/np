@@ -1,5 +1,5 @@
+const os = require('os');
 const fs = require("fs");
-const path = require("path");
 const sql = require('mssql');
 const mysql = require('mysql');
 const request = require("request");
@@ -13,7 +13,17 @@ var dk = {
     typeDB: ["MySQL", "SQLite", "Oracle", "SQLServer", "PostgreSQL"],
 
     //接口名称
-    interfaceName: ["GetTable", "GetColumn", "SetTableComment", "SetColumnComment", "GetData"],
+    interfaceName: ["GetTable", "GetColumn", "SetTableComment", "SetColumnComment", "GetData", "GetDEI"],
+
+    //实体
+    model: {
+        dkDEI: function () {
+            let obj = {};
+            "DeiName,DeiVersion,DeiCompile,DeiDirInstall,DeiDirData,DeiEngine,DeiCharSet,DeiTimeZone,DeiDateTime,DeiMaxConn,DeiCurrConn,DeiTimeout,DeiIgnoreCase,DeiSystem"
+                .split(',').map(k => { obj[k] = null });
+            return obj;
+        }
+    },
 
     /**
      * 判断是 NULL、空字符串
@@ -77,6 +87,7 @@ var dk = {
                         "Port": /Port=(.*?);/i,
                         "(Port)": /\(Port=(.*?)\)/i,
                         "(SERVICE_NAME)": /\(SERVICE_NAME=(.*?)\)/i,
+                        "(SID)": /\(SID=(.*?)\)/i,
                         "Username": /Username=(.*?);/i,
                         "User Id": /User Id=(.*?);/i,
                         "UserId": /UserId=(.*?);/i,
@@ -129,12 +140,13 @@ var dk = {
                             var host = matchEngine.result(["(Host)"]);
                             var port = matchEngine.result(["(Port)"]);
                             port = port ? ":" + port : "";
-                            var server_name = matchEngine.result(["(SERVICE_NAME)"]);
+                            var server_name = matchEngine.result(["(SERVICE_NAME)", "(SID)"]);
 
                             ops = {
                                 user: matchEngine.result(["Username", "User Id", "UserId", "Uid"]),
                                 password: matchEngine.result(["Password", "Pwd"]),
-                                connectString: host + port + "/" + server_name
+                                connectString: host + port + "/" + server_name,
+                                _privilege: oracledb.SYSDBA
                             }
                         }
                         break;
@@ -382,7 +394,47 @@ var dk = {
                 cmds.push(`select count(1) as total from ` + TableName + ` ` + whereSql);
 
                 return this.QueryData(dk, cmds);
+            },
+
+            /**
+             * 查询数据库环境信息
+             * @param {any} dk
+             */
+            GetDEI: function (dk) {
+
+                var mo = dk.model.dkDEI();
+
+                var cmds = `show variables;select now();SELECT 'a'='A';show status like 'Threads_connected'`.split(';');
+                var pms = [];
+                for (var i = 0; i < cmds.length; i++) {
+                    pms.push(this.Query(dk, cmds[i]))
+                }
+
+                return Promise.all(pms).then(results => {
+
+                    var ts1 = results[0];
+                    mo.DeiName = ts1.filter(x => x.Variable_name == "version_comment")[0].Value;
+                    mo.DeiVersion = ts1.filter(x => x.Variable_name == "version")[0].Value;
+                    mo.DeiCompile = ts1.filter(x => x.Variable_name == "version_compile_machine")[0].Value;
+                    mo.DeiDirInstall = ts1.filter(x => x.Variable_name == "basedir")[0].Value;
+                    mo.DeiDirData = ts1.filter(x => x.Variable_name == "datadir")[0].Value;
+                    mo.DeiEngine = ts1.filter(x => x.Variable_name == "storage_engine" || x.Variable_name == "default_storage_engine")[0].Value;
+                    mo.DeiCharSet = ts1.filter(x => x.Variable_name == "collation_server")[0].Value;
+                    mo.DeiTimeZone = ts1.filter(x => x.Variable_name == "system_time_zone")[0].Value;
+                    if (dk.isNullOrWhiteSpace(mo.DeiTimeZone)) {
+                        mo.DeiTimeZone = ts1.filter(x => x.Variable_name == "time_zone")[0].Value;
+                    }
+                    mo.DeiDateTime = Object.values(results[1][0])[0];
+                    mo.DeiMaxConn = parseInt(ts1.filter(x => x.Variable_name == "max_connections")[0].Value);
+                    mo.DeiCurrConn = parseInt(results[3][0].Value);
+                    mo.DeiTimeout = parseInt(ts1.filter(x => x.Variable_name == "wait_timeout")[0].Value);
+                    mo.DeiIgnoreCase = Object.values(results[2][0]).pop() == "1";
+                    mo.DeiSystem = ts1.filter(x => x.Variable_name == "version_compile_os")[0].Value;
+
+                    return mo;
+                })
             }
+
         },
 
         SQLite: {
@@ -657,7 +709,32 @@ var dk = {
                 cmds.push(`select count(1) as total from ` + TableName + ` ` + whereSql);
 
                 return this.QueryData(dk, cmds);
+            },
+
+            /**
+             * 查询数据库环境信息
+             * @param {any} dk
+             */
+            GetDEI: function (dk) {
+
+                var mo = dk.model.dkDEI();
+
+                var cmds = `select sqlite_version();PRAGMA encoding;select datetime();select 'a'='A'`.split(';');
+
+                return this.Querys(dk, cmds).then(results => {
+
+                    mo.DeiVersion = Object.values(results[0][0])[0];
+                    mo.DeiCompile = os.arch();
+                    mo.DeiDirData = mo.DeiDirInstall;
+                    mo.DeiCharSet = Object.values(results[1][0])[0];
+                    mo.DeiDateTime = Object.values(results[2][0])[0];
+                    mo.DeiIgnoreCase = Object.values(results[3][0])[0] == "1";
+                    mo.DeiSystem = os.type();
+
+                    return mo;
+                })
             }
+
         },
 
         Oracle: {
@@ -862,7 +939,66 @@ var dk = {
                 cmds.push(`select count(1) as total from ` + TableName + ` ` + countWhere);
 
                 return this.QueryData(dk, cmds);
+            },
+
+            /**
+             * 查询数据库环境信息
+             * @param {any} dk
+             */
+            GetDEI: function (dk) {
+
+                var mo = dk.model.dkDEI();
+
+                var cmds = `select * from product_component_version;
+                            SELECT file_name
+                                FROM dba_data_files
+                            WHERE file_id = 1
+                            UNION ALL
+                            SELECT value AS CharSet
+                                FROM Nls_Database_Parameters
+                            WHERE PARAMETER = 'NLS_CHARACTERSET'
+                            UNION ALL
+                            SELECT SESSIONTIMEZONE AS TimeZone
+                                FROM DUAL
+                            UNION ALL
+                            SELECT TO_CHAR(SYSDATE, 'yyyy-mm-dd hh24:mi:ss') AS DateTime
+                                FROM DUAL
+                            UNION ALL
+                            SELECT TO_CHAR(value) AS MaxConn
+                                FROM v$parameter
+                            WHERE name = 'processes'
+                            UNION ALL
+                            SELECT TO_CHAR(count(1)) AS CurrConn
+                                FROM v$process`.split(';');
+
+                var pms = [];
+                for (var i = 0; i < cmds.length; i++) {
+                    pms.push(this.Query(dk, cmds[i]))
+                }
+
+                return Promise.all(pms).then(results => {
+
+                    var ts1 = results[0];
+                    var ts2 = results[1];
+
+                    mo.DeiName = ts1[1].PRODUCT.trim();
+                    mo.DeiVersion = ts1[1].VERSION;
+                    mo.DeiCompile = ts1[1].STATUS;
+
+                    mo.DeiDirData = Object.values(ts2[0])[0];
+                    mo.DeiDirData = mo.DeiDirData.substr(0, mo.DeiDirData.replace(/\\/g, '/').lastIndexOf('/') + 1);
+                    mo.DeiCharSet = Object.values(ts2[1])[0];
+                    mo.DeiTimeZone = Object.values(ts2[2])[0];
+                    mo.DeiDateTime = Object.values(ts2[3])[0];
+                    mo.DeiMaxConn = parseInt(Object.values(ts2[4])[0]);
+                    mo.DeiCurrConn = parseInt(Object.values(ts2[5])[0]);
+
+                    mo.DeiSystem = dk.trimEnd(ts1[3].PRODUCT.trim(), ':');
+
+                    return mo;
+                })
             }
+
         },
 
         PostgreSQL: {
@@ -889,6 +1025,41 @@ var dk = {
                         }
                     })
                 })
+            },
+
+            /**
+             * 批量查询
+             * @param {any} dk
+             * @param {any} cmds SQL脚本数组
+             */
+            Querys: function (dk, cmds) {
+
+                var config = dk.connectionOptions();
+                var client = new pgclient(config);
+
+                client.connect();
+
+                var run = function (cmd) {
+                    return new Promise(function (resolve, reject) {
+                        client.query(cmd, (err, res) => {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve(res.rows);
+                            }
+                        })
+                    })
+                }
+
+                var pms = [];
+                cmds.forEach(cmd => {
+                    pms.push(run(cmd))
+                })
+
+                return Promise.all(pms).then(results => {
+                    client.end();
+                    return results;
+                });
             },
 
             /**
@@ -1110,7 +1281,47 @@ var dk = {
                 cmds.push(`select count(1) as total from ` + TableName + ` ` + whereSql);
 
                 return this.QueryData(dk, cmds);
+            },
+
+            /**
+             * 查询数据库环境信息
+             * @param {any} dk
+             */
+            GetDEI: function (dk) {
+
+                var mo = dk.model.dkDEI();
+
+                var cmds = `
+                            SELECT version();
+                            show all;
+                            select now();
+                            select count(1) from pg_stat_activity`.split(';');
+
+                return this.Querys(dk, cmds).then(results => {
+
+                    var ts1 = results[0][0].version.split(',');
+                    var ts2 = results[1];
+
+                    mo.DeiName = ts1[0];
+                    mo.DeiVersion = ts2.filter(x => x.name == "server_version")[0].setting;
+                    mo.DeiCompile = ts1[1];
+                    mo.DeiDirInstall = ts2.filter(x => x.name == "archive_command")[0].setting;
+                    if (mo.DeiDirInstall.includes("main")) {
+                        mo.DeiDirInstall = mo.DeiDirInstall.substr(0, mo.DeiDirInstall.indexOf("main"));
+                    }
+                    mo.DeiDirData = mo.DeiDirInstall;
+                    mo.DeiCharSet = ts2.filter(x => x.name == "server_encoding")[0].setting;
+                    mo.DeiTimeZone = ts2.filter(x => x.name == "TimeZone")[0].setting;
+                    mo.DeiDateTime = results[2][0].now;
+                    mo.DeiMaxConn = parseInt(ts2.filter(x => x.name == "max_connections")[0].setting);
+                    mo.DeiCurrConn = parseInt(results[3][0].count);
+                    mo.DeiTimeout = parseInt(ts2.filter(x => x.name == "statement_timeout")[0].setting);
+                    mo.DeiSystem = ts1.pop();
+
+                    return mo;
+                })
             }
+
         },
 
         SQLServer: {
@@ -1128,6 +1339,32 @@ var dk = {
                     return pool.request().query(cmd).then(ret => {
                         return ret.recordset
                     })
+                });
+
+            },
+
+            /**
+             * 查询
+             * @param {any} dk
+             * @param {any} cmds SQL脚本
+             */
+            Querys: function (dk, cmds) {
+
+                var config = dk.connectionOptions();
+
+                return sql.connect(config).then(pool => {
+
+                    var run = function (cmd) {
+                        return pool.request().query(cmd).then(ret => {
+                            return ret.recordset
+                        })
+                    }
+                    var pms = [];
+                    cmds.forEach(cmd => {
+                        pms.push(run(cmd));
+                    })
+
+                    return Promise.all(pms);
                 });
 
             },
@@ -1377,9 +1614,46 @@ var dk = {
                 cmds.push(`select count(1) as total from ` + TableName + ` ` + whereSql);
 
                 return this.QueryData(dk, cmds);
-            }
-        }
+            },
 
+            /**
+             * 查询数据库环境信息
+             * @param {any} dk
+             */
+            GetDEI: function (dk) {
+
+                var mo = dk.model.dkDEI();
+
+                var cmds = `
+                        SELECT SUBSTRING(@@VERSION , 1, CHARINDEX(')', @@VERSION, 1))+ ' ' + cast(SERVERPROPERTY('Edition') as varchar) AS DeiName ,
+	                        SERVERPROPERTY('ProductVersion') AS DeiVersion,	
+	                        SERVERPROPERTY('InstanceDefaultDataPath') AS DeiDirData,
+	                        SERVERPROPERTY('Collation') AS DeiCharSet,
+	                        GETDATE() as DeiDateTime,
+	                        @@MAX_CONNECTIONS AS DeiMaxConn,
+	                        DeiCurrConn=(SELECT COUNT(dbid) from sys.sysprocesses),
+                            DeiIgnoreCase =(CASE WHEN 'a' = 'A' THEN 1 ELSE 0 END),
+                            REPLACE(SUBSTRING(@@VERSION , CHARINDEX(' on ', @@VERSION, 0)+ 4, LEN(@@VERSION)-CHARINDEX(' on ', @@VERSION, 1)), CHAR(10), '') AS DeiSystem
+                        ;EXEC sp_configure 'remote query timeout'
+                        ;EXEC master.dbo.xp_instance_regread N'HKEY_LOCAL_MACHINE',N'SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation',N'TimeZoneKeyName'`.split(';');
+
+                return this.Querys(dk, cmds).then(results => {
+
+                    var obj1 = results[0][0];
+                    for (var i in mo) {
+                        if (i in obj1) {
+                            mo[i] = obj1[i];
+                        }
+                    }
+                    mo.DeiTimeout = results[1][0].config_value;
+                    mo.DeiTimeZone = results[2][0].Data;
+
+                    return mo;
+                })
+
+            }
+
+        }
     },
 
     /**
@@ -1399,7 +1673,7 @@ var dk = {
         var st = Date.now();
 
         try {
-
+            console.log(oracledb.SYSDBA);
             dk.pars = req.method == "POST" ? req.body : req.query;
             var tdb = dk.typeDB[Number(dk.pars.tdb)];
 
@@ -1429,6 +1703,7 @@ var dk = {
     }
 }
 
+const path = require("path");
 const express = require('express');
 const app = express();
 

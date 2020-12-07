@@ -10,7 +10,7 @@
         var hc = ViewContext.HttpContext;
         bool IsLogin = hc.User.Identity.IsAuthenticated;
         var currurl = hc.Request.Path;
-        var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+        var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
     }
 
     <div class="collapse navbar-collapse" id="runavbar">

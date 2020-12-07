@@ -1,4 +1,7 @@
-﻿namespace Netnr.Blog.Application.ViewModel
+﻿using Netnr.Core;
+using Netnr.SharedFast;
+
+namespace Netnr.Blog.Application.ViewModel
 {
     /// <summary>
     /// 快捷登录
@@ -22,7 +25,7 @@
         {
             get
             {
-                return Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:LoginPath"), Key + ".svg");
+                return PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:LoginPath"), Key + ".svg");
             }
         }
 

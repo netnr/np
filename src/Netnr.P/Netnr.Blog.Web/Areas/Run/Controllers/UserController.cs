@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Run.Controllers
+namespace Netnr.Blog.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class UserController : Controller
@@ -37,9 +37,9 @@ namespace Netnr.Web.Areas.Run.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var ps = Blog.Application.CommonService.RunQuery(q, uid, uinfo.UserId, page);
+            var ps = Application.CommonService.RunQuery(q, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["q"] = q;
             return View("_PartialRunList", ps);

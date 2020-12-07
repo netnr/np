@@ -1,7 +1,7 @@
 # Netnr
 Zhou Hua, male, 1992.7 students, 2012 part-time job, junior college, single 🤣  
 netnr@netnr.com  
-.NET Core、SQL、JavaScript、Linux
+.NET、SQL、JavaScript、Linux
 
 ---
 

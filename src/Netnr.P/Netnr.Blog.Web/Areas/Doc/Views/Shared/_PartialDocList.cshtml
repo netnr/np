@@ -1,8 +1,8 @@
-@model PageVM
+@model SharedPageVM
 @{
     ViewData["Title"] = "Discover docs";
     var rows = Model.Rows as List<Netnr.Blog.Domain.DocSet>;
-    var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
 
     if (ViewData["Nickname"] != null)
     {

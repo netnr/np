@@ -32,14 +32,14 @@ namespace Netnr.Chat.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetOnlineAllUser()
+        public SharedResultVM GetOnlineAllUser()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 vm.Data = ccs.OnlineUser2;
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
@@ -55,9 +55,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="cm">推送消息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM PushMessageToUsers([FromBody] ChatMessageVM cm)
+        public SharedResultVM PushMessageToUsers([FromBody] ChatMessageVM cm)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -77,9 +77,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="cm">推送消息</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM UserMessageReceipt([FromBody] ChatMessageVM cm)
+        public SharedResultVM UserMessageReceipt([FromBody] ChatMessageVM cm)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -99,9 +99,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="cm">推送消息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM PushMessageToGroup([FromBody] ChatMessageVM cm)
+        public SharedResultVM PushMessageToGroup([FromBody] ChatMessageVM cm)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -121,14 +121,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetUnreadUserMessageCount(string UserId)
+        public SharedResultVM GetUnreadUserMessageCount(string UserId)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 vm.Data = ccs.GetUnreadUserMessageCount(db, UserId);
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
@@ -144,14 +144,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetUnreadGroupMessageCount(string UserId)
+        public SharedResultVM GetUnreadGroupMessageCount(string UserId)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 vm.Data = ccs.GetUnreadGroupMessageCount(db, UserId);
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
@@ -167,9 +167,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="cg">组信息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM GroupNew([FromBody] ChatGroupVM cg)
+        public SharedResultVM GroupNew([FromBody] ChatGroupVM cg)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {

@@ -7,6 +7,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using System.Linq;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.FileServer
 {
@@ -58,7 +60,7 @@ namespace Netnr.FileServer
                     })
                 });
 
-                "FileServer,Fast".Split(',').ToList().ForEach(x =>
+                "FileServer".Split(',').ToList().ForEach(x =>
                 {
                     c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
                 });
@@ -104,7 +106,7 @@ namespace Netnr.FileServer
 
             //目录浏览
             string vrootdir = GlobalTo.GetValue("StaticResource:RootDir");
-            string prootdir = Fast.PathTo.Combine(GlobalTo.WebRootPath, vrootdir);
+            string prootdir = PathTo.Combine(GlobalTo.WebRootPath, vrootdir);
             if (!System.IO.Directory.Exists(prootdir))
             {
                 System.IO.Directory.CreateDirectory(prootdir);

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -10,13 +10,13 @@
 
   <ItemGroup>
     <PackageReference Include="FluentScheduler" Version="5.5.1" />
-    <PackageReference Include="MailKit" Version="2.9.0" />
-    <PackageReference Include="Netnr.Login" Version="3.6.0" />
+    <PackageReference Include="MailKit" Version="2.10.0" />
     <PackageReference Include="Qcloud.Shared.NetCore" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Netnr.Blog.Data\Netnr.Blog.Data.csproj" />
+    <ProjectReference Include="..\Netnr.Login\Netnr.Login.csproj" />
   </ItemGroup>
 
   <ItemGroup>

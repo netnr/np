@@ -143,6 +143,15 @@
             调用cmd
             </summary>
         </member>
+        <member name="M:Netnr.Core.CmdTo.Execute(System.String,System.String,System.Action{System.String,System.Int32})">
+            <summary>
+            执行
+            </summary>
+            <param name="appName">执行程序绝对路径</param>
+            <param name="arguments">参数</param>
+            <param name="resultOutput">结果输出</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Core.CmdTo.Run(System.String,System.String)">
             <summary>  
             Windows操作系统，执行cmd命令
@@ -212,30 +221,21 @@
             输出
             </summary>
         </member>
-        <member name="M:Netnr.Core.ConsoleTo.Log(System.Exception,System.Boolean)">
-            <summary>
-            写入错误信息
-            </summary>
-            <param name="ex"></param>
-            <param name="isFull">是否全部信息，默认false</param>
-        </member>
         <member name="M:Netnr.Core.ConsoleTo.Log(System.Object)">
             <summary>
             写入消息
             </summary>
             <param name="msg"></param>
         </member>
-        <member name="M:Netnr.Core.ConsoleTo.ExceptionGet(System.Exception,System.Boolean)">
+        <member name="M:Netnr.Core.ConsoleTo.Log(System.Exception)">
             <summary>
-            获取异常信息
+            写入错误信息
             </summary>
             <param name="ex"></param>
-            <param name="isFull">是否包含堆栈所有信息，默认 false</param>
-            <returns></returns>
         </member>
         <member name="T:Netnr.Core.FileTo">
             <summary>
-            文件读写
+            文件
             </summary>
         </member>
         <member name="M:Netnr.Core.FileTo.WriteText(System.String,System.String,System.Text.Encoding,System.Boolean)">
@@ -262,6 +262,22 @@
             <param name="fileFullPath">文件完整物理路径</param>
             <param name="e">编码 默认UTF8</param>
             <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.FileTo.CopyDirectory(System.IO.DirectoryInfo,System.IO.DirectoryInfo,System.Collections.Generic.List{System.String})">
+            <summary>
+            拷贝目录
+            </summary>
+            <param name="source">源目录</param>
+            <param name="target">新目录</param>
+            <param name="ignoreFolder">忽略文件夹</param>
+        </member>
+        <member name="M:Netnr.Core.FileTo.CopyDirectory(System.String,System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            拷贝目录
+            </summary>
+            <param name="sourceDirectory">源目录</param>
+            <param name="targetDirectory">新目录</param>
+            <param name="ignoreFolder">忽略文件夹</param>
         </member>
         <member name="T:Netnr.Core.HttpTo">
             <summary>
@@ -408,6 +424,64 @@
             <param name="propertyName">字段名称（数据库中字段名称）</param>
             <param name="propertyValue">数据值</param>
             <returns></returns>
+        </member>
+        <member name="T:Netnr.Core.ParsingTo">
+            <summary>
+            解析
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.ParsingTo.RemoveComment(System.String)">
+            <summary>
+            移除注释
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.ParsingTo.IsMail(System.String)">
+            <summary>
+            是邮件地址
+            </summary>
+            <param name="txt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.ParsingTo.IsLinkPath(System.String)">
+            <summary>
+            是合法链接路径（数字、字母、下划线）；可为多级路径，如：abc/xyz ；为空时返回不合法
+            </summary>
+            <param name="txt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.ParsingTo.JsSafeJoin(System.String)">
+            <summary>
+            JS安全拼接
+            </summary>
+            <param name="txt">内容</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Core.PathTo">
+            <summary>
+            路径
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.PathTo.Combine(System.String[])">
+            <summary>
+            路径结合，默认 / 拼接
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Core.QueryableTo">
+            <summary>
+            查询支持处理
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.QueryableTo.OrderBy``1(System.Linq.IQueryable{``0},System.String,System.String)">
+            <summary>
+            排序
+            </summary>
+            <param name="query"></param>
+            <param name="sorts">排序字段，支持多个，逗号分割</param>
+            <param name="orders">排序类型，支持多个，逗号分割</param>
         </member>
         <member name="T:Netnr.Core.RandomTo">
             <summary>
@@ -578,6 +652,249 @@
             <param name="p_strDeformatterData"></param>
             <returns></returns>
         </member>
+        <member name="T:Netnr.Core.SystemStatusTo">
+            <summary>
+            系统状态
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.Is64BitOperatingSystem">
+            <summary>
+            确定当前操作系统是否为64位操作系统
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.MachineName">
+            <summary>
+            获取此本地计算机的NetBIOS名称
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.OSVersion">
+            <summary>
+            获取当前平台标识符和版本号
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.ProcessorCount">
+            <summary>
+            获取当前计算机上的处理器数量
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.ProcessorName">
+            <summary>
+            处理器名称
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.ProcessorUsage">
+            <summary>
+            处理器使用率
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.SystemDirectory">
+            <summary>
+            获取系统目录的标准路径
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.SystemPageSize">
+            <summary>
+            获取操作系统的内存页面中的字节数
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.TickCount">
+            <summary>
+            获取自系统启动以来经过的毫秒数
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.UserDomainName">
+            <summary>
+            获取与当前用户关联的网络域名
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.UserName">
+            <summary>
+            获取当前登录到操作系统的用户的用户名
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.Version">
+            <summary>
+            获取公共语言运行时的主要，次要，内部和修订版本号
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.FrameworkDescription">
+            <summary>
+            获取运行应用程序的.NET安装的名称
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.OSDescription">
+            <summary>
+            获取描述应用程序正在运行的操作系统的字符串
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.OS">
+            <summary>
+            代表操作系统平台
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.TotalPhysicalMemory">
+            <summary>
+            总物理内存 B
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.FreePhysicalMemory">
+            <summary>
+            可用物理内存 B
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.SwapTotal">
+            <summary>
+            总交换空间（Linux）B
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.SwapFree">
+            <summary>
+            可用交换空间（Linux）B
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.LogicalDisk">
+            <summary>
+            逻辑磁盘 B
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.Model">
+            <summary>
+            型号
+            </summary>
+        </member>
+        <member name="P:Netnr.Core.SystemStatusTo.OperatingSystem">
+            <summary>
+            操作系统
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.GetOSPlatform">
+            <summary>
+            获取平台
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Core.SystemStatusTo.PlatformForWindows">
+            <summary>
+            WINDOWS
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.TotalPhysicalMemory">
+            <summary>
+            获取物理内存 B
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.FreePhysicalMemory">
+            <summary>
+            获取可用内存 B
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.LogicalDisk">
+            <summary>
+            获取磁盘信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.ProcessorName">
+            <summary>
+            获取处理器名称
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.CPUUsage">
+            <summary>
+            获取CPU使用率 %
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.RunTime">
+            <summary>
+            运行时长
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.Model">
+            <summary>
+            获取型号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForWindows.OperatingSystem">
+            <summary>
+            获取操作系统
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Core.SystemStatusTo.PlatformForLinux">
+            <summary>
+            Linux系统
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForLinux.MemInfo(System.String)">
+            <summary>
+            获取 /proc/meminfo
+            </summary>
+            <param name="pkey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForLinux.CpuInfo(System.String)">
+            <summary>
+            获取 /proc/cpuinfo
+            </summary>
+            <param name="pkey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForLinux.LogicalDisk">
+            <summary>
+            获取磁盘信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForLinux.CPUUsage">
+            <summary>
+            获取CPU使用率 %
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForLinux.RunTime">
+            <summary>
+            运行时长
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForLinux.Model">
+            <summary>
+            获取型号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.PlatformForLinux.OperatingSystem">
+            <summary>
+            获取操作系统
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.ToView">
+            <summary>
+            可视化输出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.SystemStatusTo.ProgressBar(System.Int64,System.Int64,System.Boolean,System.String)">
+            <summary>
+            进度条
+            </summary>
+            <param name="m">分子</param>
+            <param name="d">分母</param>
+            <param name="isc">是否转换</param>
+            <param name="desc">说明</param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Core.TreeTo">
             <summary>
             Tree常用方法
@@ -643,6 +960,14 @@
             </summary>
             <param name="json">JSON字符串</param>
             <returns>JArray对象</returns>
+        </member>
+        <member name="M:Netnr.Extend.ToType(System.String,System.Type)">
+            <summary>
+            JSON字符串 转 类型
+            </summary>
+            <param name="json">JSON字符串</param>
+            <param name="type">类型</param>
+            <returns></returns>
         </member>
         <member name="M:Netnr.Extend.ToEntity``1(System.String)">
             <summary>

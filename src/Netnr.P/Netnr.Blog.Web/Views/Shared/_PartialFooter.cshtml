@@ -16,7 +16,7 @@
         </div>
         <div class="my-3 small text-muted">
             @{
-                var os = Netnr.Fast.OSInfoTo.GetOSPlatform();
+                var os = Netnr.Core.SystemStatusTo.GetOSPlatform();
             }
             <a class="text-muted text-nowrap mr-3" href="//dot.net">Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription on @os</a>
             <a class="text-muted text-nowrap mr-3" href="/mix/about">About</a>

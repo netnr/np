@@ -23,7 +23,7 @@
                     @{
                         var hc = ViewContext.HttpContext;
                         bool IsLogin = hc.User.Identity.IsAuthenticated;
-                        var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+                        var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
                     }
                     @if (IsLogin && Model.Uid == uinfo.UserId)
                     {
@@ -73,7 +73,7 @@
                         </div>
                         @if (Model.GistLanguage == "markdown")
                         {
-                            <partial name="_PartialQuote" model="@("netnrmd.css,netnrmd.js,monaco-editor")" />
+                            @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor"))
 
                             <div class="markdown-body px-2 py-2">@Model.GistContent</div>
                             <script>
@@ -86,7 +86,7 @@
                         else
                         {
                             <pre class="card-body monaco-editor vcln markdown-body" style="height:@((19*Model.GistRow+15).ToString()+"px");overflow-y:hidden;padding-left:65px;" data-lang="@Model.GistLanguage" data-theme="@Model.GistTheme">@Model.GistContent</pre>
-                            <partial name="_PartialQuote" model="@("monaco-editor")" />
+                            @Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
                             <script>
                                 var editor = null;
@@ -159,13 +159,4 @@
         $('#txtgistc')[0].select();
     });
 
-    function htmlDecodeByRegExp(str) {
-        if (str.length == 0) return "";
-        return str.replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">")
-            .replace(/&nbsp;/g, " ")
-            .replace(/&#39;/g, "\'")
-            .replace(/&quot;/g, "\"")
-            .replace(/&amp;/g, "&");
-    }
 </script>

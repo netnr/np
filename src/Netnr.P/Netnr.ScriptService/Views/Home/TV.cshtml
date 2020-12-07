@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("hls.js")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("hls.js"))
 
 <script>
     var vd = {
@@ -61,14 +61,14 @@
             if (Hls.isSupported()) {
                 var hls = new Hls();
                 hls.loadSource(m3u8);
-                hls.attachMedia(video);
+                hls.attachMedia(vd.video);
                 hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                    isplay && video.play();
+                    isplay && vd.video.play();
                 });
             }
-            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = m3u8;
-                video.addEventListener('loadedmetadata', function () {
+            else if (vd.video.canPlayType('application/vnd.apple.mpegurl')) {
+                vd.video.src = m3u8;
+                vd.video.addEventListener('loadedmetadata', function () {
                     isplay && video.play();
                 });
             } else {

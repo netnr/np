@@ -1,0 +1,179 @@
+﻿
+<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>存储 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 存储" />
+    <meta name="description" content="Script Services 图床存储" />
+
+</head>
+<body>
+<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
+<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
+
+<script>
+    $.ajax({
+        url: '/images/icon.svg?20201130',
+        dataType: 'text',
+        success: function (data) {
+            $('body').append('<div class="d-none">' + data + '</div>')
+        }
+    })
+</script>
+
+        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
+        <script src="/js/global.js?v=qaaC1kQbysPcrWUAIoiq9U8DkYoI35FOcNj5QmvDF6A"></script>
+            <!--导航-->
+            <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+                <span class="fa fa-align-justify fa-2x"></span>
+            </button>
+            <div class="netnrnav horizontal">
+                <div class="netnrnav-wrapper">
+                    <ul>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+                            <!--标题-->
+                                <a href='javascript:location.reload(false)' title="图床存储">
+                                    <svg class="titleicon"><use xlink:href="#storage"></use></svg> &#x5B58;&#x50A8;
+                                </a>
+                        </li>
+                        <li>
+                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                            <ul>
+                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 nrBS">
+            <h4>功能还在开发中 ...</h4>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    var bs = {
+        config: {
+            //分块大小
+            chunkSize: 1024 * 1024 * 4
+        },
+        init: function () {
+
+            //$('.nrFile').change(function () {
+            //    var file = this.files[0];
+            //    if (file) {
+            //        var blob1 = $('.nrFile1')[0].files[0];
+            //        var blob2 = file;
+
+            //        console.log(blob1);
+
+            //        let merge = new Blob([blob1, blob2], { type: "image/png" });
+            //        console.log(merge);
+
+            //        var img = new Image();
+            //        img.src = URL.createObjectURL(merge);
+            //        document.body.appendChild(img);
+            //    }
+            //})
+
+            //$('.nrFile3').change(function () {
+            //    var file = this.files[0];
+            //    if (file) {
+            //        var blob = file.slice(83);
+
+            //        let merge = new Blob([blob], { type: "video/mp4" });
+            //        console.log(merge)
+
+            //        var vnode = document.createElement("video");
+            //        vnode.controls = true;
+            //        vnode.src = URL.createObjectURL(merge);
+            //        document.body.appendChild(vnode);
+            //    }
+            //})
+
+            bs.urlToBlob("https://p1.itc.cn/images03/20201123/872be7e9af0c4be68c743069aeabe834.png").then(blob => {
+                blob = blob.slice(83, blob.size, "video/mp4");
+
+                var vnode = document.createElement("video");
+                vnode.controls = true;
+                vnode.style.maxHeight = "600px";
+                vnode.src = URL.createObjectURL(blob);
+                $('.nrBS').append(vnode);
+            })
+        },
+
+        //存储商
+        storage: [
+            { key: "jd", name: "京东" }
+        ],
+
+        //请求链接得到Blob对象
+        urlToBlob: function (url) {
+            return new Promise(function (resolve, reject) {
+                var http = new XMLHttpRequest();
+                http.open("GET", url, true);
+                http.responseType = "blob";
+                http.onload = function (e) {
+                    if (this.status == 200 || this.status === 0) {
+                        resolve(this.response);
+                    } else {
+                        reject(this);
+                    }
+                };
+                http.send();
+            });
+        },
+
+        //分片
+        splitFile: function (file) {
+            var chunks = [], start = 0, fileSize = file.size;
+            while (start < fileSize) {
+                var slen = start + bs.con.chunkSize;
+                var chunk = file.slice(start, Math.min(slen, fileSize));
+                start += bs.con.chunkSize;
+                chunks.push(chunk);
+            }
+            return chunks;
+        }
+
+    }
+    bs.init();
+</script>
+        </div>
+        <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

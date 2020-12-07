@@ -1,7 +1,8 @@
 # Netnr.FileServer (NFS)
 Simple file server based on .NET Core with SQLite database
 
-> Demo: <https://d-fileserver.zme.ink>
+> Demo: <https://fs.netnr.eu.org>  
+> Demo: <https://netnr-fs.azurewebsites.net>
 
 
 > `appsettings.json` is the configuration file, the settings take effect directly without restarting the service

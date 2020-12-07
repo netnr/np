@@ -12,19 +12,18 @@ namespace Netnr.Blog.Web.Controllers
         /// 起始页
         /// </summary>
         /// <returns></returns>
-        public ActionResultVM Index()
+        public SharedResultVM Index()
         {
-            var vm = new ActionResultVM();
-
+            var vm = new SharedResultVM();
 
             try
             {
                 //TO DO
-
             }
             catch (Exception ex)
             {
-                vm.Set(ex);
+                Console.WriteLine(ex);
+                Core.ConsoleTo.Log(ex);
             }
 
             return vm;

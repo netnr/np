@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace Netnr.Login
 {
@@ -30,7 +31,7 @@ namespace Netnr.Login
                 "&state=",
                 entity.state,
                 "&redirect_uri=",
-                entity.redirect_uri.ToEncode(),
+                NetnrCore.ToEncode(entity.redirect_uri),
                 "&scope=",
                 entity.scope });
         }
@@ -50,20 +51,24 @@ namespace Netnr.Login
             }
 
             string pars = LoginBase.EntityToPars(entity);
-            string result = Core.HttpTo.Get(AliPayConfig.API_Gateway + "?" + pars);
+            string result = NetnrCore.HttpTo.Get(AliPayConfig.API_Gateway + "?" + pars);
 
-            AliPay_AccessToken_ResultEntity outmo = null;
+            string jkey = string.Empty;
             if (result.Contains("alipay_system_oauth_token_response"))
             {
-                outmo = result.ToJObject()["alipay_system_oauth_token_response"].ToJson().ToEntity<AliPay_AccessToken_ResultEntity>();
+                jkey = "alipay_system_oauth_token_response";
             }
-
             if (result.Contains("error_response"))
             {
-                outmo = result.ToJObject()["error_response"].ToJson().ToEntity<AliPay_AccessToken_ResultEntity>();
+                jkey = "error_response";
+            }
+            if (!string.IsNullOrEmpty(jkey))
+            {
+                var outmo = NetnrCore.ToEntity<AliPay_AccessToken_ResultEntity>(NetnrCore.ToJson(JObject.Parse(result)[jkey]));
+                return outmo;
             }
 
-            return outmo;
+            return null;
         }
 
         /// <summary>
@@ -81,20 +86,24 @@ namespace Netnr.Login
             }
 
             string pars = LoginBase.EntityToPars(entity);
-            string result = Core.HttpTo.Get(AliPayConfig.API_Gateway + "?" + pars);
+            string result = NetnrCore.HttpTo.Get(AliPayConfig.API_Gateway + "?" + pars);
 
-            AliPay_User_ResultEntity outmo = null;
+            string jkey = string.Empty;
             if (result.Contains("alipay_user_info_share_response"))
             {
-                outmo = result.ToJObject()["alipay_user_info_share_response"].ToJson().ToEntity<AliPay_User_ResultEntity>();
+                jkey = "alipay_user_info_share_response";
             }
-
             if (result.Contains("error_response"))
             {
-                outmo = result.ToJObject()["error_response"].ToJson().ToEntity<AliPay_User_ResultEntity>();
+                jkey = "error_response";
+            }
+            if (!string.IsNullOrEmpty(jkey))
+            {
+                var outmo = NetnrCore.ToEntity<AliPay_User_ResultEntity>(NetnrCore.ToJson(JObject.Parse(result)[jkey]));
+                return outmo;
             }
 
-            return outmo;
+            return null;
         }
 
         #region 签名

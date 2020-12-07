@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Gist.Controllers
+namespace Netnr.Blog.Web.Areas.Gist.Controllers
 {
     [Area("Gist")]
     public class RawController : Controller

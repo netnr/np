@@ -1,10 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Netnr.SharedFast;
+using Newtonsoft.Json.Converters;
 
 namespace Netnr.DataKit.Web
 {
@@ -26,7 +28,12 @@ namespace Netnr.DataKit.Web
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 //日期格式化
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+
+                //swagger枚举显示名称
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
+            //swagger枚举显示名称
+            services.AddSwaggerGenNewtonsoftSupport();
 
             //配置swagger
             services.AddSwaggerGen(c =>
@@ -41,7 +48,7 @@ namespace Netnr.DataKit.Web
                     })
                 });
 
-                "DataKit.Web,DataKit".Split(',').ToList().ForEach(x =>
+                "DataKit.Web".Split(',').ToList().ForEach(x =>
                 {
                     c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
                 });

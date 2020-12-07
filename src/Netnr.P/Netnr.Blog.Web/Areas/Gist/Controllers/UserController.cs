@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Gist.Controllers
+namespace Netnr.Blog.Web.Areas.Gist.Controllers
 {
     [Area("Gist")]
     public class UserController : Controller
@@ -38,9 +38,9 @@ namespace Netnr.Web.Areas.Gist.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var ps = Blog.Application.CommonService.GistQuery(q, lang, uid, uinfo.UserId, page);
+            var ps = Application.CommonService.GistQuery(q, lang, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             ViewData["q"] = q;

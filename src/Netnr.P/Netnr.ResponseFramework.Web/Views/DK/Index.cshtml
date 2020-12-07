@@ -20,10 +20,10 @@
     </style>
 </head>
 <body>
-    <partial name="_QuotePartial" model="@("loading")" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading"))
 
     <!--UI-->
-    <iframe src="/dk/ui" scrolling="no"></iframe>
+    <iframe src="/lib/dk/dk.html" scrolling="no"></iframe>
 
     <!-- 扩展脚本 -->
     <script data-dk="true">
@@ -39,11 +39,11 @@
             //设定为后台数据库连接信息
             dk.dc.backConn = true;
             //默认数据库
-            $('#seti').val('@ViewData["dbi"]');
+            $('#seti').val('@ViewData["tdb"]');
             $('#btnQueryTable').addClass('d-none');
 
             //载入文件注入
-            $.getScript('/js/dk/dk_ext.js');
+            $.getScript('/lib/dk/dk_ext.js');
         }
     </script>
 

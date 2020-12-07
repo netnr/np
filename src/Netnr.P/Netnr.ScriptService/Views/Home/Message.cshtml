@@ -19,13 +19,17 @@
         </div>
         <div class="col-md-12 my-3">
             <form id="form1">
-                <div class="form-group">
-                    <label>昵称</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">昵称</span>
+                    </div>
                     <input class="form-control" placeholder="输入昵称（可选）" name="UserNickname" maxlength="50">
                 </div>
-                <div class="form-group">
-                    <label>内容</label>
-                    <textarea class="form-control" name="Content" placeholder=" 内容：写留言内容，文明点 ^_^ &#xD;&#xA;&#xD;&#xA; 快捷提交：Ctrl + Enter"></textarea>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">内容</span>
+                    </div>
+                    <textarea class="form-control" name="Content" placeholder=" 内容：写留言内容，文明点 ^_^ &#xD;&#xA; 支持 Markdown &#xD;&#xA; 快捷提交：Ctrl + Enter"></textarea>
                 </div>
             </form>
             <button class="btn btn-warning" id="btnSave">留言</button>
@@ -33,7 +37,7 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("bmob.js")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("bmob.js,netnrmd.css,netnrmd.js"))
 
 <script>
     ss.bmobInit();
@@ -52,14 +56,22 @@
                 var htm = [];
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
-                    htm.push('<li class="media" id="' + id + '">');
-                    htm.push('<a href="#' + id + '"><img class="mr-3" src="/images/photo.svg"></a>');
-                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + ss.htmlEncode(this.UserNickname) + '<small class="ml-3 text-muted">' + this.createdAt + '</small></h6>');
-                    var vc = ss.htmlEncode(this.Content);
-                    vc = vc.replace(/@@\S+/g, function (n) {
-                        return '<span class="text-info">' + n + '</span>'
-                    });
-                    htm.push('<pre class="bg-light border py-2 px-2 small">' + vc + '</pre></div></li>');
+                    htm.push('<li class="media mb-3 border-bottom" id="' + id + '">');
+                    htm.push('<a class="mr-3" href="#' + id + '"><img src="/images/photo.svg"></a>');
+                    var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
+                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + nickname + '<small class="mx-3 text-muted">' + this.createdAt + '</small><a class="text-warning" href="#' + id + '">#' + (i + 1) + '</a></h6>');
+                    if (this.IsBlock) {
+                        htm.push('<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>');
+                    } else {
+                        var vc = netnrmd.render(this.Content);
+                        vc = vc.replace(/@@\S+/g, function (n) {
+                            return '<span class="text-info">' + n + '</span>'
+                        }).replace(/#\d+/g, function (n) {
+                            return '<a href="' + n.replace("#", "#mi") + '" class="text-warning">' + n + '</a>'
+                        });
+                        htm.push('<div>' + vc + '</div>');
+                    }
+                    htm.push('</div></li>');
                 });
                 if (htm.length) {
                     $('#messagelist').html(htm.join(''));
@@ -84,7 +96,7 @@
     });
     $('#btnSave').click(function () {
         var un = $('input[name="UserNickname"]'), uc = $('textarea[name="Content"]'), objv = {};
-        objv.UserNickname = un.val().trim() == "" ? "anonymous" : un.val();
+        objv.UserNickname = un.val().trim();
         objv.Content = uc.val().substring(0, 9999);
         if (objv.Content == "") {
             jz.msg("请输入内容")

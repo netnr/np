@@ -43,7 +43,7 @@ namespace Netnr.WeChat
                 var postdata = PayUtil.GeneralPostdata(stringADict, sign);
                 var url = "https://api.mch.weixin.qq.com/secapi/pay/reverse";
 
-                var result = Core.HttpTo.Post(url, postdata);
+                var result = NetnrCore.HttpTo.Post(url, postdata);
                 return result;
             }
 
@@ -95,7 +95,7 @@ namespace Netnr.WeChat
                 var postdata = PayUtil.GeneralPostdata(stringADict, sign);
                 var url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 
-                var result = Core.HttpTo.Post(url, postdata);
+                var result = NetnrCore.HttpTo.Post(url, postdata);
                 return result;
             }
         }

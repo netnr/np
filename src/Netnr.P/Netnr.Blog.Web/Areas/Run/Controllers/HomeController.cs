@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Run.Controllers
+namespace Netnr.Blog.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class HomeController : Controller
@@ -40,56 +40,58 @@ namespace Netnr.Web.Areas.Run.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveRun(Blog.Domain.Run mo)
+        public SharedResultVM SaveRun(Domain.Run mo)
         {
-            var vm = new ActionResultVM();
-
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
-
-            //add
-            if (string.IsNullOrWhiteSpace(mo.RunCode))
+            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
-                mo.RunId = Guid.NewGuid().ToString();
-                mo.RunCreateTime = DateTime.Now;
-                mo.RunStatus = 1;
-                mo.RunOpen = 1;
-                mo.Uid = uinfo.UserId;
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-                mo.RunCode = Core.UniqueTo.LongId().ToString();
-                db.Run.Add(mo);
-                int num = db.SaveChanges();
-
-                vm.Data = mo.RunCode;
-                vm.Set(num > 0);
-            }
-            else
-            {
-                var oldmo = db.Run.FirstOrDefault(x => x.RunCode == mo.RunCode);
-
-                if (oldmo != null)
+                //add
+                if (string.IsNullOrWhiteSpace(mo.RunCode))
                 {
-                    if (oldmo.Uid == uinfo.UserId)
-                    {
-                        oldmo.RunContent1 = mo.RunContent1;
-                        oldmo.RunContent2 = mo.RunContent2;
-                        oldmo.RunContent3 = mo.RunContent3;
-                        oldmo.RunRemark = mo.RunRemark;
-                        oldmo.RunTheme = mo.RunTheme;
+                    mo.RunId = Guid.NewGuid().ToString();
+                    mo.RunCreateTime = DateTime.Now;
+                    mo.RunStatus = 1;
+                    mo.RunOpen = 1;
+                    mo.Uid = uinfo.UserId;
 
-                        db.Run.Update(oldmo);
-                        int num = db.SaveChanges();
+                    mo.RunCode = Core.UniqueTo.LongId().ToString();
+                    db.Run.Add(mo);
+                    int num = db.SaveChanges();
 
-                        vm.Data = mo.RunCode;
-                        vm.Set(num > 0);
-                    }
-                    else
-                    {
-                        vm.Set(ARTag.refuse);
-                    }
+                    vm.Data = mo.RunCode;
+                    vm.Set(num > 0);
                 }
                 else
                 {
-                    vm.Set(ARTag.invalid);
+                    var oldmo = db.Run.FirstOrDefault(x => x.RunCode == mo.RunCode);
+
+                    if (oldmo != null)
+                    {
+                        if (oldmo.Uid == uinfo.UserId)
+                        {
+                            oldmo.RunContent1 = mo.RunContent1;
+                            oldmo.RunContent2 = mo.RunContent2;
+                            oldmo.RunContent3 = mo.RunContent3;
+                            oldmo.RunRemark = mo.RunRemark;
+                            oldmo.RunTheme = mo.RunTheme;
+
+                            db.Run.Update(oldmo);
+                            int num = db.SaveChanges();
+
+                            vm.Data = mo.RunCode;
+                            vm.Set(num > 0);
+                        }
+                        else
+                        {
+                            vm.Set(SharedEnum.RTag.refuse);
+                        }
+                    }
+                    else
+                    {
+                        vm.Set(SharedEnum.RTag.invalid);
+                    }
                 }
             }
 

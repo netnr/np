@@ -88,17 +88,17 @@ else
         <div class="col-12 mt-3 text-right">
             @if (Model == null)
             {
-                <button class="btn btn-dark ml-sm-2" onclick="SaveGist(0,this)">Create public gist</button>
+                <button class="btn btn-dark nrSaveGist ml-sm-2">Create public gist</button>
             }
             else
             {
                 <a href="/gist/code/@mo.GistCode" class="btn btn-outline-danger mr-sm-2">Cancel</a>
-                <button class="btn btn-success" onclick="SaveGist(1,this)">Update public gist</button>
+                <button class="btn btn-success nrSaveGist">Update public gist</button>
             }
         </div>
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
 <script src="/areas/gist/js/home/index.js" asp-append-version="true"></script>

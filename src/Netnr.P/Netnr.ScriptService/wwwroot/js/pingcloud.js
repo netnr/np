@@ -889,13 +889,12 @@
 ]
 
 
-
 var pc = {
     init: function () {
         var htm = [], tbheader = '<tr><th style="width:40%">区域</th><th style="width:40%">别名</th><th style="width:20%">ms</th></tr>';
         $.each(PingCloud, function () {
             var p = this;
-            htm.push('<div class="col-xl-3 col-lg-4 col-md-6 py-3 px-3"><table class="table table-sm table-bordered table-hover">')
+            htm.push('<div class="col-xl-3 col-lg-4 col-md-6 px-3"><table class="table table-sm table-bordered table-hover">')
 
             var pname = p.name;
             if (p.alias != pname) {

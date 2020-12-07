@@ -1,9 +1,11 @@
-﻿<!--
+﻿
+<!--
 https://github.com/netnr
 https://gitee.com/netnr
 https://www.netnr.com
 https://zme.ink
 -->
+
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +14,8 @@ https://zme.ink
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
 
     <title>留言 脚本服务</title>
 
@@ -21,26 +24,27 @@ https://zme.ink
 
 </head>
 <body>
-                    <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
-            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
-            <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
-            <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
-            <script>
-                $.ajax({
-                    url: '/images/icon.svg?200930',
-                    dataType: 'text',
-                    success: function (data) {
-                        $('body').append('<div class="d-none">' + data + '</div>')
-                    }
-                })
-            </script>
+<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
+<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
 
-        <link href="/css/global.css?v=DE0bvfxeaNrv9kM04k3iwLx3LJtPPzAo5IWIj2LN6vE" rel="stylesheet" />
-        <script src="/js/global.js?v=83bE557i4FM8eaqzTNVIZ3fbAAVZlAFDY06346DgWok"></script>
+<script>
+    $.ajax({
+        url: '/images/icon.svg?20201130',
+        dataType: 'text',
+        success: function (data) {
+            $('body').append('<div class="d-none">' + data + '</div>')
+        }
+    })
+</script>
+
+        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
+        <script src="/js/global.js?v=qaaC1kQbysPcrWUAIoiq9U8DkYoI35FOcNj5QmvDF6A"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -54,6 +58,12 @@ https://zme.ink
                         <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
                         <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
                         <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+                            <!--标题-->
+                                <a href='javascript:location.reload(false)' title="匿名留言">
+                                    <svg class="titleicon"><use xlink:href="#message"></use></svg> &#x7559;&#x8A00;
+                                </a>
+                        </li>
                         <li>
                             <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
                             <ul>
@@ -64,11 +74,7 @@ https://zme.ink
                     </ul>
                 </div>
             </div>
-            <!--标题-->
-                <h4 class="m-3">
-                    <svg class="titleicon"><use xlink:href="#message"></use></svg> &#x7559;&#x8A00;
-                </h4>
-        <div class="min300">
+        <div class="min300 mt-3">
             <style>
     .messagebox img {
         width: 32px;
@@ -90,13 +96,17 @@ https://zme.ink
         </div>
         <div class="col-md-12 my-3">
             <form id="form1">
-                <div class="form-group">
-                    <label>昵称</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">昵称</span>
+                    </div>
                     <input class="form-control" placeholder="输入昵称（可选）" name="UserNickname" maxlength="50">
                 </div>
-                <div class="form-group">
-                    <label>内容</label>
-                    <textarea class="form-control" name="Content" placeholder=" 内容：写留言内容，文明点 ^_^ &#xD;&#xA;&#xD;&#xA; 快捷提交：Ctrl + Enter"></textarea>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">内容</span>
+                    </div>
+                    <textarea class="form-control" name="Content" placeholder=" 内容：写留言内容，文明点 ^_^ &#xD;&#xA; 支持 Markdown &#xD;&#xA; 快捷提交：Ctrl + Enter"></textarea>
                 </div>
             </form>
             <button class="btn btn-warning" id="btnSave">留言</button>
@@ -104,7 +114,9 @@ https://zme.ink
     </div>
 </div>
 
-            <script src="/lib/bmob/Bmob-1.7.0.min.js?v=0-LW9iF0b_YkA53xzL2VB0l1FTfUCnBRJH5bX1aOfOQ"></script>
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/bmob/1.7.0/bmob.min.js?170'></script>
+<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.0/src/netnrmd.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.0/src/netnrmd.bundle.js'></script>
 
 
 <script>
@@ -124,14 +136,22 @@ https://zme.ink
                 var htm = [];
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
-                    htm.push('<li class="media" id="' + id + '">');
-                    htm.push('<a href="#' + id + '"><img class="mr-3" src="/images/photo.svg"></a>');
-                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + ss.htmlEncode(this.UserNickname) + '<small class="ml-3 text-muted">' + this.createdAt + '</small></h6>');
-                    var vc = ss.htmlEncode(this.Content);
-                    vc = vc.replace(/@\S+/g, function (n) {
-                        return '<span class="text-info">' + n + '</span>'
-                    });
-                    htm.push('<pre class="bg-light border py-2 px-2 small">' + vc + '</pre></div></li>');
+                    htm.push('<li class="media mb-3 border-bottom" id="' + id + '">');
+                    htm.push('<a class="mr-3" href="#' + id + '"><img src="/images/photo.svg"></a>');
+                    var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
+                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + nickname + '<small class="mx-3 text-muted">' + this.createdAt + '</small><a class="text-warning" href="#' + id + '">#' + (i + 1) + '</a></h6>');
+                    if (this.IsBlock) {
+                        htm.push('<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>');
+                    } else {
+                        var vc = netnrmd.render(this.Content);
+                        vc = vc.replace(/@\S+/g, function (n) {
+                            return '<span class="text-info">' + n + '</span>'
+                        }).replace(/#\d+/g, function (n) {
+                            return '<a href="' + n.replace("#", "#mi") + '" class="text-warning">' + n + '</a>'
+                        });
+                        htm.push('<div>' + vc + '</div>');
+                    }
+                    htm.push('</div></li>');
                 });
                 if (htm.length) {
                     $('#messagelist').html(htm.join(''));
@@ -156,7 +176,7 @@ https://zme.ink
     });
     $('#btnSave').click(function () {
         var un = $('input[name="UserNickname"]'), uc = $('textarea[name="Content"]'), objv = {};
-        objv.UserNickname = un.val().trim() == "" ? "anonymous" : un.val();
+        objv.UserNickname = un.val().trim();
         objv.Content = uc.val().substring(0, 9999);
         if (objv.Content == "") {
             jz.msg("请输入内容")

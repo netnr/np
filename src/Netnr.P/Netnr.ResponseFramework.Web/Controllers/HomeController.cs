@@ -17,7 +17,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var vm = Application.CommonService.GetLoginUserInfo(HttpContext);
+            var vm = Apps.LoginService.GetLoginUserInfo(HttpContext);
             return View(vm);
         }
 

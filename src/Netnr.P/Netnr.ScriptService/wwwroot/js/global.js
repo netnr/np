@@ -1,29 +1,3 @@
-if (!Array.prototype.forEach) {
-    Array.prototype.forEach = function forEach(callback, thisArg) {
-        var T, k;
-        if (this == null) {
-            throw new TypeError("this is null or not defined");
-        }
-        var O = Object(this);
-        var len = O.length >>> 0;
-        if (typeof callback !== "function") {
-            throw new TypeError(callback + " is not a function");
-        }
-        if (arguments.length > 1) {
-            T = thisArg;
-        }
-        k = 0;
-        while (k < len) {
-            var kValue;
-            if (k in O) {
-                kValue = O[k];
-                callback.call(T, kValue, k, O);
-            }
-            k++;
-        }
-    };
-}
-
 /*
     upstream: From nginx upstream
     - Source must support cross-domain
@@ -186,6 +160,23 @@ var ss = {
     },
     lsSave: function () {
         localStorage.setItem(this.lsKey, JSON.stringify(this.ls));
+    },
+
+    sizeOf: function (size) {
+        var u = 'B', s = size;
+        if (size >= 1024) {
+            u = 'K';
+            s = size / 1024.0
+        }
+        if (size >= 1024 * 1024) {
+            u = 'M'
+            s = size / 1024.0 / 1024;
+        }
+        if (size >= 1024 * 1024 * 1024) {
+            u = 'G'
+            s = size / 1024.0 / 1024 / 1024;
+        }
+        return s.toFixed(1) + u;
     }
 }
 

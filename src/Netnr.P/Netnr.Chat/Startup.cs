@@ -12,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.Chat
 {
@@ -94,9 +96,9 @@ namespace Netnr.Chat
             });
 
             //数据库连接池
-            services.AddDbContextPool<Data.ContextBase>(options =>
+            services.AddDbContextPool<Data.ContextBaseFactory>(options =>
             {
-                Data.ContextBase.DCOB(options);
+                Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
             }, 99);
 
             services.AddAuthentication(options =>
@@ -135,7 +137,7 @@ namespace Netnr.Chat
             {
 
             }
-            if (db.NChatUser.Count() == 0)
+            if (!db.NChatUser.Any())
             {
                 db.NChatUser.AddRange(new List<Domain.NChatUser>()
                 {
@@ -143,7 +145,7 @@ namespace Netnr.Chat
                     {
                         CuUserId="5098247860344549548",
                         CuCreateTime=DateTime.Now,
-                        CuPassword=Core.CalcTo.MD5("netnr"),
+                        CuPassword=CalcTo.MD5("netnr"),
                         CuStatus=1,
                         CuUserName="netnr",
                         CuUserNickname="netnr",
@@ -153,7 +155,7 @@ namespace Netnr.Chat
                     {
                         CuUserId="5757526144712703761",
                         CuCreateTime=DateTime.Now,
-                        CuPassword=Core.CalcTo.MD5("123"),
+                        CuPassword=CalcTo.MD5("123"),
                         CuStatus=1,
                         CuUserName="123",
                         CuUserNickname="123",

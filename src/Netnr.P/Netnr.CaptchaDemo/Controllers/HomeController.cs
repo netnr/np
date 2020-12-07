@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace Netnr.CaptchaDemo.Controllers
 {

@@ -1,4 +1,4 @@
-<partial name="_PartialQuote" model="@("netnrnav.css,netnrnav.js")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrnav.css,netnrnav.js"))
 
 <!--顶部导航-->
 @{ bool IsLogin = ViewContext.HttpContext.User.Identity.IsAuthenticated;}
@@ -26,7 +26,7 @@
         <ul class="float-right">
             @if (IsLogin)
             {
-                var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+                var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
                 var num = CommonService.NewMessageQuery(uinfo.UserId);
 
                 <li>

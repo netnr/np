@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = Model.Nickname;
 
-    var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
 
     var isme = uinfo.UserId == Model.UserId;
 }
@@ -17,7 +17,7 @@
                         var lgphoto = "/favicon.svg";
                         if (!string.IsNullOrWhiteSpace(Model.UserPhoto))
                         {
-                            lgphoto = Netnr.Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), Model.UserPhoto);
+                            lgphoto = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), Model.UserPhoto);
                         }
 
                         Model.UserSay = string.IsNullOrEmpty(Model.UserSay) ? "这个人很懒，什么也没有留下。^_^ " : Model.UserSay;
@@ -114,4 +114,4 @@
 </div>
 
 <script src="/js/u/index.js" asp-append-version="true"></script>
-<partial name="_PartialQuote" model="@("md5.js")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("md5.js"))

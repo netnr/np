@@ -390,6 +390,56 @@
           }
         }
       }
+    },
+    "/DK/GetDEI": {
+      "get": {
+        "tags": [
+          "DK"
+        ],
+        "summary": "查询数据库环境信息",
+        "parameters": [
+          {
+            "name": "tdb",
+            "in": "query",
+            "description": "数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）",
+            "schema": {
+              "$ref": "#/components/schemas/TypeDB"
+            }
+          },
+          {
+            "name": "conn",
+            "in": "query",
+            "description": "连接字符串",
+            "schema": {
+              "type": "string",
+              "description": "连接字符串",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResultVM"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResultVM"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResultVM"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

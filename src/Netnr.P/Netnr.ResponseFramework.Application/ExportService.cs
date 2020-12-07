@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Application
 {
@@ -67,7 +68,7 @@ namespace Netnr.ResponseFramework.Application
             List<string> removeColNotExists = new List<string>();
             foreach (DataColumn dc in dt.Columns)
             {
-                if (listColumns.Where(x => x.ColField == dc.ColumnName).Count() == 0)
+                if (!listColumns.Where(x => x.ColField == dc.ColumnName).Any())
                 {
                     removeColNotExists.Add(dc.ColumnName);
                 }
@@ -88,7 +89,7 @@ namespace Netnr.ResponseFramework.Application
                     }
                     catch (Exception)
                     {
-                        dt.Columns[col.ColField].ColumnName = col.ColTitle + "-" + Core.RandomTo.NumCode();
+                        dt.Columns[col.ColField].ColumnName = col.ColTitle + "-" + RandomTo.NumCode();
                     }
                 }
             }

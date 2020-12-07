@@ -1,9 +1,11 @@
-﻿<!--
+﻿
+<!--
 https://github.com/netnr
 https://gitee.com/netnr
 https://www.netnr.com
 https://zme.ink
 -->
+
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +14,8 @@ https://zme.ink
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
 
     <title>体重标准 脚本服务</title>
 
@@ -21,26 +24,27 @@ https://zme.ink
 
 </head>
 <body>
-                    <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
-            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
-            <link href="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.css" rel="stylesheet" />
-            <script src="https://code.bdstatic.com/npm/netnrnav@1.1.0/src/netnrnav.js" defer async></script>
-            <script>
-                $.ajax({
-                    url: '/images/icon.svg?200930',
-                    dataType: 'text',
-                    success: function (data) {
-                        $('body').append('<div class="d-none">' + data + '</div>')
-                    }
-                })
-            </script>
+<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
+<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
 
-        <link href="/css/global.css?v=DE0bvfxeaNrv9kM04k3iwLx3LJtPPzAo5IWIj2LN6vE" rel="stylesheet" />
-        <script src="/js/global.js?v=83bE557i4FM8eaqzTNVIZ3fbAAVZlAFDY06346DgWok"></script>
+<script>
+    $.ajax({
+        url: '/images/icon.svg?20201130',
+        dataType: 'text',
+        success: function (data) {
+            $('body').append('<div class="d-none">' + data + '</div>')
+        }
+    })
+</script>
+
+        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
+        <script src="/js/global.js?v=qaaC1kQbysPcrWUAIoiq9U8DkYoI35FOcNj5QmvDF6A"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -54,6 +58,12 @@ https://zme.ink
                         <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
                         <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
                         <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+                            <!--标题-->
+                                <a href='javascript:location.reload(false)' title="中国成人超重和肥胖标准">
+                                    <svg class="titleicon"><use xlink:href="#bmi"></use></svg> &#x4F53;&#x91CD;&#x6807;&#x51C6;
+                                </a>
+                        </li>
                         <li>
                             <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
                             <ul>
@@ -64,11 +74,7 @@ https://zme.ink
                     </ul>
                 </div>
             </div>
-            <!--标题-->
-                <h4 class="m-3">
-                    <svg class="titleicon"><use xlink:href="#bmi"></use></svg> &#x4F53;&#x91CD;&#x6807;&#x51C6;
-                </h4>
-        <div class="min300">
+        <div class="min300 mt-3">
             <style>
     .progress {
         height: 2rem;
@@ -77,24 +83,24 @@ https://zme.ink
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md mt-3">
-            <div class="input-group">
+        <div class="col-md mb-3">
+            <div class="input-group input-group-lg">
                 <div class="input-group-prepend">
                     <span class="input-group-text">体重</span>
                 </div>
                 <input type="number" id="txt1" class="form-control" placeholder="体重（单位：千克/kg）" min="25" max="300" step="1" maxlength="3" />
             </div>
         </div>
-        <div class="col-md mt-3">
-            <div class="input-group">
+        <div class="col-md mb-3">
+            <div class="input-group input-group-lg">
                 <div class="input-group-prepend">
                     <span class="input-group-text">身高</span>
                 </div>
                 <input type="number" id="txt2" class="form-control" placeholder="身高（单位：米/m）" min="1" max="3" step="0.1" maxlength="4" />
             </div>
         </div>
-        <div class="col-md mt-3">
-            <div class="input-group">
+        <div class="col-md mb-3">
+            <div class="input-group input-group-lg">
                 <div class="input-group-prepend">
                     <span class="input-group-text">BMI</span>
                 </div>
@@ -103,7 +109,7 @@ https://zme.ink
         </div>
     </div>
 
-    <div class="row mt-5">
+    <div class="row my-3">
         <div class="col-md">
             <div class="progress">
                 <div class="progress-bar bg-dark" title="低重：BMI < 18.5" style="width: 100%">低重：BMI < 18.5</div>
@@ -123,6 +129,14 @@ https://zme.ink
             <div class="progress">
                 <div class="progress-bar bg-danger" title="肥胖：BMI ≥ 28.0" style="width: 100%">肥胖：BMI ≥ 28.0</div>
             </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <p>计算公式： BMI = 体重(KG) ÷ 身高²(M)</p>
+            <p>比如：小M是一个60公斤的人，身高是1.7米，则他的计算结果应该是：60÷1.7² =20.76</p>
+            <p>一个人的健康指数范围应该是在：18.5～24，指数在这之间是最好最正常的！</p>
         </div>
     </div>
 </div>

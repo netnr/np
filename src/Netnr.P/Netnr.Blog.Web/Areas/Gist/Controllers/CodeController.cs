@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
-namespace Netnr.Web.Gist.Controllers
+namespace Netnr.Blog.Web.Gist.Controllers
 {
     [Area("Gist")]
     public class CodeController : Controller
@@ -37,7 +37,7 @@ namespace Netnr.Web.Gist.Controllers
             string cmd = RouteData.Values["sid"]?.ToString().ToLower();
             if (User.Identity.IsAuthenticated)
             {
-                var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
                 switch (cmd)
                 {
                     case "edit":
@@ -72,7 +72,7 @@ namespace Netnr.Web.Gist.Controllers
                         from b in bg.DefaultIfEmpty()
                         join c in db.UserInfo on a.Uid equals c.UserId
                         where a.GistCode == id && a.GistStatus == 1 && a.GistOpen == 1
-                        select new Blog.Domain.Gist
+                        select new Domain.Gist
                         {
                             GistId = a.GistId,
                             Uid = a.Uid,

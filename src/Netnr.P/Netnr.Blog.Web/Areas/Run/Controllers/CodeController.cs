@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Run.Controllers
+namespace Netnr.Blog.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class CodeController : Controller
@@ -64,7 +64,8 @@ namespace Netnr.Web.Areas.Run.Controllers
                     {
                         if (User.Identity.IsAuthenticated)
                         {
-                            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+                            var uinfo = Apps.LoginService.Get(HttpContext);
+
                             var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.Uid == uinfo.UserId);
                             db.Run.Remove(mo);
                             int num = db.SaveChanges();

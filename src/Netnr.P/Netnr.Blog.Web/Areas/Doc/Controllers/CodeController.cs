@@ -1,14 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
 using Netnr.Blog.Application.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Markdig;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Areas.Doc.Controllers
 {
@@ -69,7 +70,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             {
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    var uinfo = new Application.UserAuthService(HttpContext).Get();
+                    var uinfo = Apps.LoginService.Get(HttpContext);
                     if (uinfo.UserId != ds.Uid)
                     {
                         return Content("unauthorized");
@@ -233,7 +234,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         {
             var code = RouteData.Values["id"]?.ToString();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var ds = db.DocSet.Find(code);
             if (ds?.Uid != uinfo.UserId)
@@ -260,51 +261,53 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM Save(DocSetDetail mo)
+        public SharedResultVM Save(DocSetDetail mo)
         {
-            var vm = new ActionResultVM();
-
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
-
-            var ds = db.DocSet.Find(mo.DsCode);
-            if (ds?.Uid != uinfo.UserId)
+            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
-                vm.Set(ARTag.unauthorized);
-            }
-            else
-            {
-                mo.DsdUpdateTime = DateTime.Now;
-                mo.Uid = uinfo.UserId;
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-                if (string.IsNullOrWhiteSpace(mo.DsdPid))
+                var ds = db.DocSet.Find(mo.DsCode);
+                if (ds?.Uid != uinfo.UserId)
                 {
-                    mo.DsdPid = Guid.Empty.ToString();
-                }
-
-                if (!mo.DsdOrder.HasValue)
-                {
-                    mo.DsdOrder = 99;
-                }
-
-                if (string.IsNullOrWhiteSpace(mo.DsdId))
-                {
-                    mo.DsdId = Core.UniqueTo.LongId().ToString();
-                    mo.DsdCreateTime = mo.DsdUpdateTime;
-
-                    db.DocSetDetail.Add(mo);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
-                    //查询原创建时间
-                    var currmo = db.DocSetDetail.AsNoTracking().FirstOrDefault(x => x.DsdId == mo.DsdId);
-                    mo.DsdCreateTime = currmo.DsdCreateTime;
+                    mo.DsdUpdateTime = DateTime.Now;
+                    mo.Uid = uinfo.UserId;
 
-                    db.DocSetDetail.Update(mo);
+                    if (string.IsNullOrWhiteSpace(mo.DsdPid))
+                    {
+                        mo.DsdPid = Guid.Empty.ToString();
+                    }
+
+                    if (!mo.DsdOrder.HasValue)
+                    {
+                        mo.DsdOrder = 99;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(mo.DsdId))
+                    {
+                        mo.DsdId = Core.UniqueTo.LongId().ToString();
+                        mo.DsdCreateTime = mo.DsdUpdateTime;
+
+                        db.DocSetDetail.Add(mo);
+                    }
+                    else
+                    {
+                        //查询原创建时间
+                        var currmo = db.DocSetDetail.AsNoTracking().FirstOrDefault(x => x.DsdId == mo.DsdId);
+                        mo.DsdCreateTime = currmo.DsdCreateTime;
+
+                        db.DocSetDetail.Update(mo);
+                    }
+
+                    int num = db.SaveChanges();
+                    vm.Set(num > 0);
+                    vm.Data = mo.DsdId;
                 }
-
-                int num = db.SaveChanges();
-                vm.Set(num > 0);
-                vm.Data = mo.DsdId;
             }
 
             return vm;
@@ -320,7 +323,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         {
             var code = RouteData.Values["id"]?.ToString();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             if (!string.IsNullOrWhiteSpace(dsdid))
             {
@@ -348,7 +351,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         {
             var code = RouteData.Values["id"]?.ToString();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var ds = db.DocSet.Find(code);
             if (ds?.Uid != uinfo.UserId)
@@ -365,46 +368,48 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveCatalog(DocSetDetail mo)
+        public SharedResultVM SaveCatalog(DocSetDetail mo)
         {
-            var vm = new ActionResultVM();
-
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
-
-            var ds = db.DocSet.Find(mo.DsCode);
-            if (ds?.Uid != uinfo.UserId)
+            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
-                vm.Set(ARTag.unauthorized);
-                return vm;
+                var uinfo = Apps.LoginService.Get(HttpContext);
+
+                var ds = db.DocSet.Find(mo.DsCode);
+                if (ds?.Uid != uinfo.UserId)
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                    return vm;
+                }
+
+                mo.DsdOrder ??= 99;
+                mo.DsdUpdateTime = DateTime.Now;
+                if (string.IsNullOrWhiteSpace(mo.DsdPid))
+                {
+                    mo.DsdPid = Guid.Empty.ToString();
+                }
+
+                if (string.IsNullOrWhiteSpace(mo.DsdId))
+                {
+                    mo.DsdId = Guid.NewGuid().ToString();
+                    mo.DsdCreateTime = mo.DsdUpdateTime;
+                    mo.Uid = uinfo.UserId;
+
+
+                    db.DocSetDetail.Add(mo);
+                }
+                else
+                {
+                    var currmo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == mo.DsdId);
+                    currmo.DsdTitle = mo.DsdTitle;
+                    currmo.DsdOrder = mo.DsdOrder;
+                    currmo.DsdPid = mo.DsdPid;
+
+                    db.DocSetDetail.Update(currmo);
+                }
+                int num = db.SaveChanges();
+                vm.Set(num > 0);
             }
-
-            mo.DsdOrder ??= 99;
-            mo.DsdUpdateTime = DateTime.Now;
-            if (string.IsNullOrWhiteSpace(mo.DsdPid))
-            {
-                mo.DsdPid = Guid.Empty.ToString();
-            }
-
-            if (string.IsNullOrWhiteSpace(mo.DsdId))
-            {
-                mo.DsdId = Guid.NewGuid().ToString();
-                mo.DsdCreateTime = mo.DsdUpdateTime;
-                mo.Uid = uinfo.UserId;
-
-
-                db.DocSetDetail.Add(mo);
-            }
-            else
-            {
-                var currmo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == mo.DsdId);
-                currmo.DsdTitle = mo.DsdTitle;
-                currmo.DsdOrder = mo.DsdOrder;
-                currmo.DsdPid = mo.DsdPid;
-
-                db.DocSetDetail.Update(currmo);
-            }
-            int num = db.SaveChanges();
-            vm.Set(num > 0);
 
             return vm;
         }
@@ -416,16 +421,16 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM DelCatalog(string code, string id)
+        public SharedResultVM DelCatalog(string code, string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var ds = db.DocSet.Find(code);
             if (ds?.Uid != uinfo.UserId)
             {
-                vm.Set(ARTag.unauthorized);
+                vm.Set(SharedEnum.RTag.unauthorized);
                 return vm;
             }
 
@@ -549,9 +554,9 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM MenuTree()
+        public SharedResultVM MenuTree()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -569,18 +574,18 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                 var listtree = Core.TreeTo.ListToTree(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
                 if (string.IsNullOrWhiteSpace(listtree))
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                 }
                 else
                 {
                     vm.Data = listtree.ToJArray();
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             return vm;

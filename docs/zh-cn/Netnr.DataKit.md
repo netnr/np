@@ -1,9 +1,8 @@
 # Netnr.DataKit
 数据库构建代码（Database build code）
 
-> 前端：<https://ss.netnr.com/dk>	（UI）  
-> 后台：<https://api.zme.ink>	（部署在 Vercel 的 Serverless 服务，不支持 Oracle）  
-> 后台：<https://d-datakit.zme.ink>	（部署在 Heroku 的服务）  
+> <https://dk.netnr.eu.org>  
+> <https://netnr-dk.azurewebsites.net>
 
 ### 功能
 - 支持的数据库：MySQL、SQLite、Oracle、SQLServer、PostgreSQL

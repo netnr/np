@@ -26,7 +26,7 @@ namespace Netnr.WeChat
         /// </returns>
         public static string Create(string access_token, object content)
         {
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/create?access_token={0}", access_token), content.ToJson());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/create?access_token={0}", access_token), NetnrCore.ToJson(content));
             return result;
         }
         /// <summary>
@@ -47,7 +47,7 @@ namespace Netnr.WeChat
                    .Append('"' + "product_id" + '"' + ": " + '"' + product_id + '"')
                    .Append("}");
 
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/del?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/del?access_token={0}", access_token), content.ToString());
             return result;
         }
         /// <summary>
@@ -67,7 +67,7 @@ namespace Netnr.WeChat
         /// </returns>
         public static string Update(string access_token, object content)
         {
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/update?access_token={0}", access_token), content.ToJson());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/update?access_token={0}", access_token), NetnrCore.ToJson(content));
             return result;
         }
 
@@ -85,7 +85,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "product_id" + '"' + ": " + '"' + product_id + '"')
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/get?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/get?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -107,7 +107,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "status" + '"' + ": " + status)
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/getbystatus?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/getbystatus?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -133,7 +133,7 @@ namespace Netnr.WeChat
                    .Append('"' + "product_id" + '"' + ": " + '"' + product_id + '"').Append(",")
                    .Append('"' + "status" + '"' + ": " + status)
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/modproductstatus?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/modproductstatus?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -157,7 +157,7 @@ namespace Netnr.WeChat
                 content.Append("{")
                        .Append('"' + "cate_id" + '"' + ": " + cate_id)
                        .Append("}");
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/category/getsub?access_token={0}", access_token),
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/category/getsub?access_token={0}", access_token),
                              content.ToString());
                 return result;
             }
@@ -174,7 +174,7 @@ namespace Netnr.WeChat
                 content.Append("{")
                        .Append('"' + "cate_id" + '"' + ": " + cate_id)
                        .Append("}");
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/category/getsku?access_token={0}", access_token),
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/category/getsku?access_token={0}", access_token),
                              content.ToString());
                 return result;
             }
@@ -191,7 +191,7 @@ namespace Netnr.WeChat
                 content.Append("{")
                        .Append('"' + "cate_id" + '"' + ": " + cate_id)
                        .Append("}");
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/category/getproperty?access_token={0}", access_token),
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/category/getproperty?access_token={0}", access_token),
                              content.ToString());
                 return result;
             }
@@ -223,7 +223,7 @@ namespace Netnr.WeChat
             return returnText;
         }
     }
-    
+
     /// <summary>
     /// 邮费模板管理接口
     /// </summary>
@@ -245,7 +245,7 @@ namespace Netnr.WeChat
         /// </returns>
         public static string Add(string access_token, object content)
         {
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/add?access_token={0}", access_token), content.ToJson());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/add?access_token={0}", access_token), NetnrCore.ToJson(content));
             return result;
         }
         /// <summary>
@@ -265,7 +265,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "template_id" + '"' + ": " + template_id)
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/del?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/del?access_token={0}", access_token), content.ToString());
             return result;
         }
 
@@ -286,9 +286,9 @@ namespace Netnr.WeChat
             var content = new StringBuilder();
             content.Append("{")
                    .Append('"' + "template_id" + '"' + ": " + template_id).Append(",")
-                   .Append('"' + "delivery_template" + '"' + ": ").Append(delivery_template.ToJson())
+                   .Append('"' + "delivery_template" + '"' + ": ").Append(NetnrCore.ToJson(delivery_template))
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/del?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/del?access_token={0}", access_token), content.ToString());
             return result;
         }
         /// <summary>
@@ -303,7 +303,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "template_id" + '"' + ": " + template_id)
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/del?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/express/del?access_token={0}", access_token), content.ToString());
             return result;
         }
 
@@ -314,12 +314,12 @@ namespace Netnr.WeChat
         /// <returns></returns>
         public static string GetAll(string access_token)
         {
-            var result = Core.HttpTo.Get(string.Format("https://api.weixin.qq.com/merchant/express/getall?access_token={0}", access_token));
+            var result = NetnrCore.HttpTo.Get(string.Format("https://api.weixin.qq.com/merchant/express/getall?access_token={0}", access_token));
             return result;
         }
 
     }
-    
+
     /// <summary>
     /// 分组管理接口
     /// </summary>
@@ -352,7 +352,7 @@ namespace Netnr.WeChat
         /// </returns>
         public static string Add(string access_token, object content)
         {
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/add?access_token={0}", access_token), content.ToJson());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/add?access_token={0}", access_token), NetnrCore.ToJson(content));
             return result;
         }
         /// <summary>
@@ -372,7 +372,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "group_id" + '"' + ": " + group_id)
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/del?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/del?access_token={0}", access_token), content.ToString());
             return result;
         }
         /// <summary>
@@ -394,7 +394,7 @@ namespace Netnr.WeChat
                    .Append('"' + "group_id" + '"' + ": " + group_id).Append(",")
                    .Append('"' + "group_name" + '"' + ": " + '"' + group_name + '"')
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/propertymod?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/propertymod?access_token={0}", access_token), content.ToString());
             return result;
         }
         /// <summary>
@@ -425,9 +425,9 @@ namespace Netnr.WeChat
             var content = new StringBuilder();
             content.Append("{")
                    .Append('"' + "group_id" + '"' + ": " + group_id).Append(",")
-                   .Append('"' + "product" + '"' + ": ").Append(product.ToJson())
+                   .Append('"' + "product" + '"' + ": ").Append(NetnrCore.ToJson(product))
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/productmod?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/productmod?access_token={0}", access_token), content.ToString());
             return result;
         }
         /// <summary>
@@ -452,7 +452,7 @@ namespace Netnr.WeChat
         /// </returns>
         public static string GetAll(string access_token)
         {
-            var result = Core.HttpTo.Get(string.Format("https://api.weixin.qq.com/merchant/group/getall?access_token={0}", access_token));
+            var result = NetnrCore.HttpTo.Get(string.Format("https://api.weixin.qq.com/merchant/group/getall?access_token={0}", access_token));
             return result;
         }
 
@@ -484,13 +484,13 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "group_id" + '"' + ": " + group_id).Append(",")
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/getbyid?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/group/getbyid?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
 
     }
-    
+
     /// <summary>
     /// 订单管理
     /// </summary>
@@ -508,7 +508,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "order_id" + '"' + ": " + '"' + order_id + '"')
                   .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/getbyid?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/getbyid?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -529,14 +529,14 @@ namespace Netnr.WeChat
             if (begintime > 0 || endtime > 0)
             {
                 content.Append(",");
-                if (begintime <= 0) begintime = DateTime.MinValue.ToTimestamp();
-                if (endtime <= 0) endtime = DateTime.Now.ToTimestamp();
+                if (begintime <= 0) begintime = NetnrCore.ToTimestamp(DateTime.MinValue);
+                if (endtime <= 0) endtime = NetnrCore.ToTimestamp(DateTime.Now);
                 content.Append('"' + "begintime" + '"' + ": " + begintime).Append(",");
-                if (endtime <= 0) endtime = DateTime.Now.ToTimestamp();
+                if (endtime <= 0) endtime = NetnrCore.ToTimestamp(DateTime.Now);
                 content.Append('"' + "endtime" + '"' + ": " + endtime);
             }
             content.Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/getbyfilter?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/getbyfilter?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -594,7 +594,7 @@ namespace Netnr.WeChat
                        .Append('"' + "delivery_track_no" + '"' + ": " + '"' + delivery_track_no + '"');
             }
             content.Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/setdelivery?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/setdelivery?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -616,7 +616,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "order_id" + '"' + ": " + '"' + order_id + '"')
                   .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/close?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/order/close?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -644,7 +644,7 @@ namespace Netnr.WeChat
         /// </returns>
         public static string Add(string access_token, object content)
         {
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/add?access_token={0}", access_token), content.ToJson());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/add?access_token={0}", access_token), NetnrCore.ToJson(content));
             return result;
         }
         /// <summary>
@@ -665,7 +665,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "shelf_id" + '"' + ": " + shelf_id)
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/del?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/del?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -689,11 +689,11 @@ namespace Netnr.WeChat
             var content = new StringBuilder();
             content.Append("{")
                    .Append('"' + "shelf_id" + '"' + ": " + shelf_id).Append(",")
-                   .Append('"' + "shelf_data" + '"' + ": " + shelf_data.ToJson()).Append(",")
+                   .Append('"' + "shelf_data" + '"' + ": " + NetnrCore.ToJson(shelf_data)).Append(",")
                    .Append('"' + "shelf_banner" + '"' + ": " + '"' + shelf_banner + '"').Append(",")
                    .Append('"' + "shelf_name" + '"' + ": " + '"' + shelf_name + '"')
                   .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/mod?access_token={0}", access_token), content.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/mod?access_token={0}", access_token), content.ToString());
             return result;
         }
 
@@ -704,7 +704,7 @@ namespace Netnr.WeChat
         /// <returns></returns>
         public static string GetAll(string access_token)
         {
-            var result = Core.HttpTo.Get(string.Format("https://api.weixin.qq.com/merchant/shelf/getall?access_token={0}", access_token));
+            var result = NetnrCore.HttpTo.Get(string.Format("https://api.weixin.qq.com/merchant/shelf/getall?access_token={0}", access_token));
             return result;
         }
         /// <summary>
@@ -731,7 +731,7 @@ namespace Netnr.WeChat
             content.Append("{")
                    .Append('"' + "shelf_id" + '"' + ": " + shelf_id)
                   .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/getbyid?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/shelf/getbyid?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -764,7 +764,7 @@ namespace Netnr.WeChat
                    .Append('"' + "sku_info" + '"' + ": " + '"' + sku_info + '"').Append(",")
                    .Append('"' + "quantity" + '"' + ": " + quantity).Append(",")
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/stock/add?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/stock/add?access_token={0}", access_token),
                          content.ToString());
             return result;
         }
@@ -790,7 +790,7 @@ namespace Netnr.WeChat
                    .Append('"' + "sku_info" + '"' + ": " + '"' + sku_info + '"').Append(",")
                    .Append('"' + "quantity" + '"' + ": " + quantity).Append(",")
                    .Append("}");
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/stock/reduce?access_token={0}", access_token),
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/merchant/stock/reduce?access_token={0}", access_token),
                          content.ToString());
             return result;
         }

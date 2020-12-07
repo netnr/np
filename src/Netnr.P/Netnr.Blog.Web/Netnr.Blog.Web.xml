@@ -4,6 +4,91 @@
         <name>Netnr.Blog.Web</name>
     </assembly>
     <members>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs">
+            <summary>
+            过滤器
+            </summary>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs.ErrorActionFilter">
+            <summary>
+            全局错误处理
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Apps.FilterConfigs.DicDescription">
+            <summary>
+            根据生成的注释文件XML获取Action的注释
+            </summary>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs.GlobalFilter">
+            <summary>
+            全局过滤器
+            </summary>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs.LoginSignValid">
+            <summary>
+            需要授权访问
+            </summary>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs.AllowCors">
+            <summary>
+            允许跨域
+            </summary>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs.IsAdmin">
+            <summary>
+            是管理员
+            </summary>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs.IsCompleteInfo">
+            <summary>
+            完善信息
+            </summary>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.FilterConfigs.IsValidAuth">
+            <summary>
+            有效授权（Cookie、Token）
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Web.Apps.FilterConfigs.HelpFuncTo.GetLogonSign(System.Int32,System.Boolean)">
+            <summary>
+            获取最新登录标记，用于对比本地，踢出下线
+            </summary>
+            <param name="UserId">登录的UserId</param>
+            <param name="Cache">优先取缓存</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Blog.Web.Apps.LoginService">
+            <summary>
+            登录
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Web.Apps.LoginService.Get(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            获取授权用户
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Apps.LoginService.TokenMake(Netnr.Blog.Domain.UserInfo)">
+            <summary>
+            生成Token
+            </summary>
+            <param name="mo">授权用户信息</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Apps.LoginService.TokenValid(System.String)">
+            <summary>
+            验证Token
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Apps.LoginService.CompleteInfoValid(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            信息完整
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Blog.Web.Areas.Doc.Controllers.CodeController.Index(System.String)">
             <summary>
             目录页面
@@ -134,6 +219,128 @@
             <param name="page"></param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Blog.Web.Areas.Draw.Controllers.CodeController.Index(System.String,System.String,Netnr.Blog.Domain.Draw)">
+            <summary>
+            首页
+            </summary>
+            <param name="filename"></param>
+            <param name="xml"></param>
+            <param name="mof"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Draw.Controllers.DiscoverController.Index(System.String,System.Int32)">
+            <summary>
+            Draw列表
+            </summary>
+            <param name="q"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Draw.Controllers.HomeController.Index">
+            <summary>
+            绘制首页
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Draw.Controllers.MindController.Index">
+            <summary>
+            脑图首页
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Draw.Controllers.UserController.Index(System.String,System.Int32)">
+            <summary>
+            用户
+            </summary>
+            <param name="q"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Gist.Controllers.DiscoverController.Index(System.String,System.String,System.Int32)">
+            <summary>
+            Gist列表
+            </summary>
+            <param name="q"></param>
+            <param name="lang"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Gist.Controllers.HomeController.Index">
+            <summary>
+            Gist首页
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Gist.Controllers.HomeController.SaveGist(Netnr.Blog.Domain.Gist)">
+            <summary>
+            保存
+            </summary>
+            <param name="mo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Gist.Controllers.RawController.Index">
+            <summary>
+            原始数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Gist.Controllers.UserController.Index(System.String,System.String,System.Int32)">
+            <summary>
+            用户
+            </summary>
+            <param name="q"></param>
+            <param name="lang"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.CodeController.Index(System.String)">
+            <summary>
+            Run一条
+            </summary>
+            <param name="pure"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.DiscoverController.Index(System.String,System.Int32)">
+            <summary>
+            Run列表
+            </summary>
+            <param name="q"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.HomeController.Index">
+            <summary>
+            Run首页
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.HomeController.Preview">
+            <summary>
+            Run预览
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.HomeController.SaveRun(Netnr.Blog.Domain.Run)">
+            <summary>
+            保存
+            </summary>
+            <param name="mo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.UserController.Index(System.String,System.Int32)">
+            <summary>
+            用户
+            </summary>
+            <param name="q"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Gist.Controllers.CodeController.Index">
+            <summary>
+            Gist一条操作
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Blog.Web.Controllers.AccountController">
             <summary>
             账号
@@ -181,12 +388,7 @@
             <param name="remember">记住账号</param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Web.Controllers.AccountController.ValidateloginType">
-            <summary>
-            第三方登录类型枚举
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.AccountController.ValidateLogin(Netnr.Blog.Web.Controllers.AccountController.ValidateloginType,Netnr.Blog.Domain.UserInfo,System.Boolean)">
+        <member name="M:Netnr.Blog.Web.Controllers.AccountController.ValidateLogin(System.Nullable{Netnr.Login.LoginBase.LoginType},Netnr.Blog.Domain.UserInfo,System.Boolean)">
             <summary>
             公共登录验证
             </summary>
@@ -251,7 +453,7 @@
             保存一篇文章（管理）
             </summary>
             <param name="mo"></param>
-            <returns></returns>
+            <returns></returns>        
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.AdminController.Reply">
             <summary>
@@ -279,12 +481,13 @@
             </summary>
             <returns></returns>l
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.AdminController.QueryLog(System.Int32,System.Int32)">
+        <member name="M:Netnr.Blog.Web.Controllers.AdminController.QueryLog(System.Int32,System.Int32,System.String)">
             <summary>
             查询日志
             </summary>
             <param name="page">页码</param>
             <param name="rows">行数</param>
+            <param name="wheres">条件</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.AdminController.LogChart">
@@ -333,12 +536,6 @@
             </summary>
             <param name="file">文件</param>
             <param name="subdir">可选，自定义子路径，如：/static/draw</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.APIController.API9999">
-            <summary>
-            系统错误码说明
-            </summary>
             <returns></returns>
         </member>
         <member name="T:Netnr.Blog.Web.Controllers.GuffController">
@@ -492,9 +689,9 @@
             阅读追加
             </summary>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.HomeController.Valid">
+        <member name="M:Netnr.Blog.Web.Controllers.HomeController.CompleteInfo">
             <summary>
-            请先验证
+            完善信息
             </summary>
             <returns></returns>
         </member>
@@ -724,9 +921,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.StoreController.UPUss">
+        <member name="M:Netnr.Blog.Web.Controllers.StoreController.Ufile">
             <summary>
-            Upyun云存储
+            UCloud 对象存储
             </summary>
             <returns></returns>
         </member>
@@ -871,183 +1068,531 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs">
-            <summary>
-            过滤器
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.ErrorActionFilter">
-            <summary>
-            全局错误处理
-            </summary>
-        </member>
-        <member name="P:Netnr.Blog.Web.Filters.FilterConfigs.DicDescription">
-            <summary>
-            根据生成的注释文件XML获取Action的注释
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.GlobalFilter">
-            <summary>
-            全局过滤器
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.LoginSignValid">
-            <summary>
-            需要授权访问
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.AllowCors">
-            <summary>
-            允许跨域
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.IsAdmin">
-            <summary>
-            是管理员
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.IsValidMail">
-            <summary>
-            有效验证（邮箱）
-            </summary>
-        </member>
-        <member name="T:Netnr.Blog.Web.Filters.FilterConfigs.IsValidAuth">
-            <summary>
-            有效授权（Cookie、Token）
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Filters.FilterConfigs.HelpFuncTo.GetLogonSign(System.Int32,System.Boolean)">
-            <summary>
-            获取最新登录标记，用于对比本地，踢出下线
-            </summary>
-            <param name="UserId">登录的UserId</param>
-            <param name="Cache">优先取缓存</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.Blog.Web.Program.CreateHostBuilder(System.String[])">
             dotnet Netnr.Web.dll "https://*:50"
         </member>
-        <member name="M:Netnr.Web.Areas.Draw.Controllers.CodeController.Index(System.String,System.String,Netnr.Blog.Domain.Draw)">
+        <member name="T:Netnr.SharedApp.BuildTo">
             <summary>
-            首页
+            构建
             </summary>
-            <param name="filename"></param>
-            <param name="xml"></param>
-            <param name="mof"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.BuildTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            构造
+            </summary>
+            <param name="httpContext"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.BuildTo.Html``1">
+            <summary>
+            根据控制器构建静态页面
+            </summary>
+            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Draw.Controllers.DiscoverController.Index(System.String,System.Int32)">
+        <member name="T:Netnr.SharedApp.QuoteTo">
             <summary>
-            Draw列表
+            资源引用
             </summary>
-            <param name="q"></param>
-            <param name="page"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.QuoteTo.Html(System.String)">
+            <summary>
+            得到html字符串
+            </summary>
+            <param name="quotes">引用项，逗号分割，按顺序</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Draw.Controllers.HomeController.Index">
+        <member name="T:Netnr.SharedApp.ClientTo">
             <summary>
-            绘制首页
+            客户端信息
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.ClientTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            构造
+            </summary>
+            <param name="content"></param>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv4">
+            <summary>
+            IPv4
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv6">
+            <summary>
+            IPv6
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.UserAgent">
+            <summary>
+            UA
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Language">
+            <summary>
+            语言
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Referer">
+            <summary>
+            引荐
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedApp.DownTo">
+            <summary>
+            下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.#ctor(Microsoft.AspNetCore.Http.HttpResponse)">
+            <summary>
+            构造
+            </summary>
+            <param name="httpResponse"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.String,System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.Byte[],System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+            <param name="bytes"></param>
+            <param name="fileName">下载文件名</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.CaptchaForDrawingCommon">
+            <summary>
+            引用组件：System.Drawing.Common
+            Windows首选，速度快，Linux需安装 libgdiplus 组件
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.CaptchaForDrawingCommon.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.CaptchaForSkiaSharp">
+            <summary>
+            引用组件：SkiaSharp、SkiaSharp.NativeAssets.Linux
+            跨平台
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.CaptchaForSkiaSharp.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.CaptchaTo">
+            <summary>
+            验证码
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.CaptchaTo.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.ImageTo">
+            <summary>
+            图片操作
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.ImageTo.MinImg(System.String,System.String,System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            生成缩略图
+            </summary>
+            <param name="oldImgPath">原图片地址</param>
+            <param name="newMinImgPath">缩略图地址</param>
+            <param name="newImgName">生成图片名称</param>
+            <param name="width">缩略图宽度</param>
+            <param name="height">缩略图高度</param>
+            <param name="model">生成缩略的模式: wh|width|height|cut </param>
+        </member>
+        <member name="M:Netnr.SharedDrawing.ImageTo.AddTxt(System.String,System.String,System.String)">
+            <summary>
+            在图片上添加文字水印
+            </summary>
+            <param name="path">要添加水印的图片路径</param>
+            <param name="syPath">生成的水印图片存放的位置</param>
+            <param name="syWord">水印文字</param>
+        </member>
+        <member name="M:Netnr.SharedDrawing.ImageTo.AddImg(System.String,System.String,System.String)">
+            <summary>
+            在图片上添加图片水印
+            </summary>
+            <param name="path">原服务器上的图片路径</param>
+            <param name="syPicPath">水印图片的路径</param>
+            <param name="waterPicPath">生成的水印图片存放路径</param>
+        </member>
+        <member name="T:Netnr.SharedLogging.LoggingModel">
+            <summary>
+            日志
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogId">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogApp">
+            <summary>
+            应用
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogUid">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogNickname">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogAction">
+            <summary>
+            动作
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogContent">
+            <summary>
+            内容
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogUrl">
+            <summary>
+            链接
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogReferer">
+            <summary>
+            引荐
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogIp">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogArea">
+            <summary>
+            IP归属地
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogUserAgent">
+            <summary>
+            客户端信息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogBrowserName">
+            <summary>
+            浏览器
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogSystemName">
+            <summary>
+            操作系统
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogGroup">
+            <summary>
+            分组（1：默认；2：爬虫）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogLevel">
+            <summary>
+            级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogRemark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogSpare1">
+            <summary>
+            备用
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogSpare2">
+            <summary>
+            备用
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingModel.LogSpare3">
+            <summary>
+            备用
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedLogging.LoggingResultVM">
+            <summary>
+            查询返回
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingResultVM.Data">
+            <summary>
+            数据体
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingResultVM.Total">
+            <summary>
+            总条数（仅对分页查询时有效）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingResultVM.Lost">
+            <summary>
+            丢失的库（附加库有上限会丢失数据库）
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedLogging.LoggingTo">
+            <summary>
+            日志
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedLogging.LoggingTo.DBPartType">
+            <summary>
+            数据库文件分割类型（由于附加数据库有限制，默认 OptionsDbMaxAttach 个，所以一次最多能查询 OptionsDbMaxAttach + 1 个库）
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.DBPartType.None">
+            <summary>
+            不分
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.DBPartType.Year">
+            <summary>
+            按年分割，如：2020/log.db，最大查询 OptionsDbMaxAttach 年
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.DBPartType.Month">
+            <summary>
+            按月分割，如：2020/04/log.db，最大查询 OptionsDbMaxAttach 个月
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.DBPartType.Day">
+            <summary>
+            按日分割，如：2020/04/16/log.db，最大查询 OptionsDbMaxAttach 天
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbRoot">
+            <summary>
+            数据库目录
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbFileName">
+            <summary>
+            数据库文件名
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbTableName">
+            <summary>
+            表名
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbIpFile">
+            <summary>
+            IP区域库文件
+            更新地址：
+            https://github.com/lionsoul2014/ip2region
+            https://gitee.com/lionsoul/ip2region
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbPart">
+            <summary>
+            数据库文件分割，默认按年
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbMaxAttach">
+            <summary>
+            数据库附加限制，默认 max 30
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsCacheWriteCount">
+            <summary>
+            分批写入满足的条件：缓存的日志数量
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsCacheWriteSecond">
+            <summary>
+            分批写入满足的条件：缓存的时长，单位秒
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingTo.CurrentCacheLog">
+            <summary>
+            当前缓存日志
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingTo.CurrentCacheWriteTime">
+            <summary>
+            当前缓存写入时间
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.PathToConn(System.String)">
+            <summary>
+            路径转连接字符串
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.GetDbPartFormat">
+            <summary>
+            获取数据库分片路径
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Draw.Controllers.MindController.Index">
+        <member name="M:Netnr.SharedLogging.LoggingTo.Add(System.Collections.Generic.IEnumerable{Netnr.SharedLogging.LoggingModel})">
             <summary>
-            脑图首页
+            新增
             </summary>
+            <param name="logs">日志实体</param>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.Add(Netnr.SharedLogging.LoggingModel)">
+            <summary>
+            新增
+            </summary>
+            <param name="log">日志实体</param>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.AddNow(System.Collections.Generic.IEnumerable{Netnr.SharedLogging.LoggingModel},System.Boolean)">
+            <summary>
+            新增
+            </summary>
+            <param name="logs">日志实体</param>
+            <param name="autoMakeUp">自动补齐信息，默认true</param>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.MakeUpLogs(System.Collections.Generic.IEnumerable{Netnr.SharedLogging.LoggingModel}@)">
+            <summary>
+            补齐日志信息
+            </summary>
+            <param name="logs"></param>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.InsertAll(System.String,System.Collections.Generic.IEnumerable{Netnr.SharedLogging.LoggingModel})">
+            <summary>
+            新增SQL
+            </summary>
+            <param name="path"></param>
+            <param name="list"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Draw.Controllers.UserController.Index(System.String,System.Int32)">
+        <member name="M:Netnr.SharedLogging.LoggingTo.UserAgentParse(System.String,System.String@,System.String@,System.Boolean@)">
             <summary>
-            用户
+            解析 User-Agent
             </summary>
-            <param name="q"></param>
-            <param name="page"></param>
+            <param name="ua"></param>
+            <param name="browserName"></param>
+            <param name="systemName"></param>
+            <param name="isBot"></param>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.GetDbPath(System.DateTime,System.DateTime)">
+            <summary>
+            根据时间获取存储的路径
+            </summary>
+            <param name="begin">开始时间</param>
+            <param name="end">结束时间</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Gist.Controllers.DiscoverController.Index(System.String,System.String,System.Int32)">
+        <member name="M:Netnr.SharedLogging.LoggingTo.GetSqlForQuery(System.DateTime,System.DateTime,Netnr.SharedAdo.DbHelper@,System.Int32@,System.Collections.Generic.List{System.String}@)">
             <summary>
-            Gist列表
+            拿到最终查询语句
             </summary>
-            <param name="q"></param>
-            <param name="lang"></param>
-            <param name="page"></param>
+            <param name="begin">开始时间</param>
+            <param name="end">结束时间</param>
+            <param name="db">数据库对象</param>
+            <param name="lost">丢失数据库文件</param>
+            <param name="listPreSql">前置SQL</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Gist.Controllers.HomeController.Index">
+        <member name="M:Netnr.SharedLogging.LoggingTo.ListWhereJoin(System.Collections.Generic.List{System.Collections.Generic.List{System.String}})">
             <summary>
-            Gist首页
+            条件拼接
             </summary>
+            <param name="listWhere">条件（列名、 关系符、值1、值2）</param>
+        </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.Query(System.DateTime,System.DateTime,System.Int32,System.Int32,System.Collections.Generic.List{System.Collections.Generic.List{System.String}})">
+            <summary>
+            查询
+            </summary>
+            <param name="begin">开始时间</param>
+            <param name="end">结束时间</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="listWhere">条件：键、关系符、值1、值2</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Gist.Controllers.HomeController.SaveGist(Netnr.Blog.Domain.Gist)">
+        <member name="M:Netnr.SharedLogging.LoggingTo.StatsPVUV(System.Int32,System.Collections.Generic.List{System.Collections.Generic.List{System.String}})">
             <summary>
-            保存
+            统计PV/UV
             </summary>
-            <param name="mo"></param>
+            <param name="type">类型（0：今天，-1：昨天，-7：最近7天，-30：最近30天）</param>
+            <param name="listWhere">条件：键、关系符、值1、值2</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Gist.Controllers.RawController.Index">
+        <member name="M:Netnr.SharedLogging.LoggingTo.StatsTop(System.Int32,System.String,System.Collections.Generic.List{System.Collections.Generic.List{System.String}})">
             <summary>
-            原始数据
+            统计属性排行
             </summary>
+            <param name="type">类型（0：今天，-1：昨天，-7：最近7天，-30：最近30天）</param>
+            <param name="field">字段列</param>
+            <param name="listWhere">条件：键、关系符、值1、值2</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Gist.Controllers.UserController.Index(System.String,System.String,System.Int32)">
+        <member name="T:Netnr.SharedUserAgent.UserAgentTo">
             <summary>
-            用户
+            客户端 UA 解析
             </summary>
-            <param name="q"></param>
-            <param name="lang"></param>
-            <param name="page"></param>
-            <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Run.Controllers.CodeController.Index(System.String)">
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.BrowserName">
             <summary>
-            Run一条
+            浏览器名称
             </summary>
-            <param name="pure"></param>
-            <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Run.Controllers.DiscoverController.Index(System.String,System.Int32)">
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.BrowserType">
             <summary>
-            Run列表
+            浏览器类型
             </summary>
-            <param name="q"></param>
-            <param name="page"></param>
-            <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Run.Controllers.HomeController.Index">
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.BrowserVersion">
             <summary>
-            Run首页
+            浏览器版本
             </summary>
-            <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Run.Controllers.HomeController.Preview">
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemName">
             <summary>
-            Run预览
+            操作系统名称
             </summary>
-            <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Run.Controllers.HomeController.SaveRun(Netnr.Blog.Domain.Run)">
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemShortName">
             <summary>
-            保存
+            操作系统简称
             </summary>
-            <param name="mo"></param>
-            <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Areas.Run.Controllers.UserController.Index(System.String,System.Int32)">
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemVersion">
             <summary>
-            用户
+            操作系统
             </summary>
-            <param name="q"></param>
-            <param name="page"></param>
-            <returns></returns>
         </member>
-        <member name="M:Netnr.Web.Gist.Controllers.CodeController.Index">
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemPlatform">
             <summary>
-            Gist一条操作
+            操作系统平台
             </summary>
-            <returns></returns>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.IsBot">
+            <summary>
+            是爬虫
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedUserAgent.UserAgentTo.#ctor(System.String)">
+            <summary>
+            解析 User-Agent
+            </summary>
+            <param name="ua">User-Agent</param>
         </member>
     </members>
 </doc>

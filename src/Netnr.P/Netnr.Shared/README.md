@@ -1,0 +1,34 @@
+﻿# 指令说明
+- `Full`
+    - 全部
+- `Ado`
+    - ADO.NET 数据库访问帮助类
+    - 依赖：
+    - **System.Data.SQLite.Core**
+    - **MySqlConnector**
+    - **Oracle.ManagedDataAccess.Core** core
+    - **Oracle.ManagedDataAccess** Framework
+    - **System.Data.SqlClient**
+    - **Npgsql**
+- `DataKit`
+    - 数据库工具
+    - 依赖：
+    - **Microsoft.EntityFrameworkCore**
+    - **Microsoft.EntityFrameworkCore.Sqlite**
+    - **Pomelo.EntityFrameworkCore.MySql**
+    - **Oracle.EntityFrameworkCore**
+    - **Microsoft.EntityFrameworkCore.SqlServer**
+    - **Npgsql.EntityFrameworkCore.PostgreSQL**
+- `DbContext`
+    - EFCore数据库上下文，创建、执行SQL
+    - 依赖：
+    - **Microsoft.EntityFrameworkCore**
+    - **Microsoft.Extensions.Logging**
+- `Extend`
+    - 扩展方法
+- `Json`
+    - 扩展方法
+    - 依赖：
+    - **Newtonsoft.Json**
+- `Public`
+    - 公共类、枚举

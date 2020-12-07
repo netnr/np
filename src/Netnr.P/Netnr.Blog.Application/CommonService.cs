@@ -1,9 +1,10 @@
-using Netnr.Blog.Data;
-using Netnr.Blog.Domain;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Netnr.Core;
+using Netnr.Blog.Data;
+using Netnr.Blog.Domain;
 
 namespace Netnr.Blog.Application
 {
@@ -27,7 +28,7 @@ namespace Netnr.Blog.Application
             //排序
             if (!string.IsNullOrWhiteSpace(ivm.Sort))
             {
-                query = Fast.QueryableTo.OrderBy(query, ivm.Sort, ivm.Order);
+                query = QueryableTo.OrderBy(query, ivm.Sort, ivm.Order);
             }
 
             //分页
@@ -48,11 +49,11 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static List<Tags> TagsQuery(bool FirtCache = true)
         {
-            if (!(Core.CacheTo.Get("Table_Tags_List") is List<Tags> lt) || !FirtCache)
+            if (!(CacheTo.Get("Table_Tags_List") is List<Tags> lt) || !FirtCache)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
                 lt = db.Tags.Where(x => x.TagStatus == 1).OrderByDescending(x => x.TagHot).ToList();
-                Core.CacheTo.Set("Table_Tags_List", lt, 300, false);
+                CacheTo.Set("Table_Tags_List", lt, 300, false);
             }
             return lt;
         }
@@ -64,7 +65,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static Dictionary<string, int> UserWritingByTagCountQuery(bool FirtCache = true)
         {
-            if (!(Core.CacheTo.Get("Table_WritingTags_GroupBy") is Dictionary<string, int> rt) || !FirtCache)
+            if (!(CacheTo.Get("Table_WritingTags_GroupBy") is Dictionary<string, int> rt) || !FirtCache)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
                 var query = from a in db.UserWritingTags
@@ -84,7 +85,7 @@ namespace Netnr.Blog.Application
                 }
 
                 rt = dic;
-                Core.CacheTo.Set("Table_WritingTags_GroupBy", rt, 300, false);
+                CacheTo.Set("Table_WritingTags_GroupBy", rt, 300, false);
             }
             return rt;
         }
@@ -96,11 +97,11 @@ namespace Netnr.Blog.Application
         /// <param name="page"></param>
         /// <param name="TagName"></param>
         /// <returns></returns>
-        public static PageVM UserWritingQuery(string KeyWords, int page, string TagName = "")
+        public static SharedPageVM UserWritingQuery(string KeyWords, int page, string TagName = "")
         {
             KeyWords ??= "";
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 20
@@ -179,7 +180,7 @@ namespace Netnr.Blog.Application
                 }
             }
 
-            var vm = new PageVM()
+            var vm = new SharedPageVM()
             {
                 Rows = list,
                 Pag = pag,
@@ -230,9 +231,9 @@ namespace Netnr.Blog.Application
         /// <param name="action">动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static PageVM UserConnWritingQuery(int OwnerId, EnumService.ConnectionType connectionType, int action, int page)
+        public static SharedPageVM UserConnWritingQuery(int OwnerId, EnumService.ConnectionType connectionType, int action, int page)
         {
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 20
@@ -302,7 +303,7 @@ namespace Netnr.Blog.Application
                 }
             }
 
-            var vm = new PageVM()
+            var vm = new SharedPageVM()
             {
                 Rows = list,
                 Pag = pag
@@ -350,7 +351,7 @@ namespace Netnr.Blog.Application
         /// <param name="UrTargetId">回复目标ID</param>
         /// <param name="pag">分页信息</param>
         /// <returns></returns>
-        public static List<UserReply> ReplyOneQuery(EnumService.ReplyType replyType, string UrTargetId, PaginationVM pag)
+        public static List<UserReply> ReplyOneQuery(EnumService.ReplyType replyType, string UrTargetId, SharedPaginationVM pag)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserReply
@@ -435,7 +436,7 @@ namespace Netnr.Blog.Application
         /// <param name="action">消息动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static PageVM MessageQuery(int UserId, EnumService.MessageType? messageType, int? action, int page = 1)
+        public static SharedPageVM MessageQuery(int UserId, EnumService.MessageType? messageType, int? action, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserMessage
@@ -458,7 +459,7 @@ namespace Netnr.Blog.Application
                 query = query.Where(x => x.a.UmAction == action);
             }
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 10
@@ -483,7 +484,7 @@ namespace Netnr.Blog.Application
 
             var data = list.Select(x => x.a).ToList();
 
-            PageVM pageSet = new PageVM()
+            SharedPageVM pageSet = new SharedPageVM()
             {
                 Rows = data,
                 Pag = pag
@@ -512,7 +513,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
+        public static SharedPageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.DocSet
@@ -554,7 +555,7 @@ namespace Netnr.Blog.Application
                 query = query.Where(x => x.DsName.Contains(q) || x.DsRemark.Contains(q));
             }
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 9
@@ -565,7 +566,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            PageVM pageSet = new PageVM()
+            SharedPageVM pageSet = new SharedPageVM()
             {
                 Rows = list,
                 Pag = pag,
@@ -584,7 +585,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static SharedPageVM GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query1 = from a in db.Gist
@@ -673,7 +674,7 @@ namespace Netnr.Blog.Application
                 });
             }
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 10
@@ -684,7 +685,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            PageVM pageSet = new PageVM()
+            SharedPageVM pageSet = new SharedPageVM()
             {
                 Rows = list,
                 Pag = pag,
@@ -702,7 +703,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static SharedPageVM RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Run
@@ -745,7 +746,7 @@ namespace Netnr.Blog.Application
                 query = query.Where(x => x.RunTheme.Contains(q) || x.RunRemark.Contains(q));
             }
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 4
@@ -756,7 +757,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            PageVM pageSet = new PageVM()
+            SharedPageVM pageSet = new SharedPageVM()
             {
                 Rows = list,
                 Pag = pag,
@@ -774,7 +775,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static SharedPageVM DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Draw
@@ -819,7 +820,7 @@ namespace Netnr.Blog.Application
                 query = query.Where(x => x.DrName.Contains(q) || x.DrRemark.Contains(q));
             }
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 20
@@ -830,7 +831,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            PageVM pageSet = new PageVM()
+            SharedPageVM pageSet = new SharedPageVM()
             {
                 Rows = list,
                 Pag = pag,
@@ -852,7 +853,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM GuffQuery(string category, string q, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
+        public static SharedPageVM GuffQuery(string category, string q, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
         {
             var ctype = EnumService.ConnectionType.GuffRecord.ToString();
 
@@ -1055,7 +1056,7 @@ namespace Netnr.Blog.Application
                 query = query.Where(x => x.GrContent.Contains(q) || x.GrTag.Contains(q));
             }
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18
@@ -1084,7 +1085,7 @@ namespace Netnr.Blog.Application
             //查询记录
             var ormo = new OperationRecord()
             {
-                OrId = Core.UniqueTo.LongId().ToString(),
+                OrId = UniqueTo.LongId().ToString(),
                 OrType = ctype,
                 OrAction = "query",
                 OrSource = string.Join(",", listid),
@@ -1094,7 +1095,7 @@ namespace Netnr.Blog.Application
             db.OperationRecord.Add(ormo);
             db.SaveChanges();
 
-            PageVM pageSet = new PageVM()
+            SharedPageVM pageSet = new SharedPageVM()
             {
                 Rows = list,
                 Pag = pag,

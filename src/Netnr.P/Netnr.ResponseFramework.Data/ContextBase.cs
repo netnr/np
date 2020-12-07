@@ -9,7 +9,7 @@ namespace Netnr.ResponseFramework.Data
     public partial class ContextBase : DbContext
     {
         public ContextBase(DbContextOptions<ContextBase> options)
-       : base(options)
+            : base(options)
         {
         }
 
@@ -33,12 +33,9 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("系统按钮表");
 
-                entity.Property(e => e.SbId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.SbId).IsUnicode(false);
 
                 entity.Property(e => e.SbBtnClass)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("按钮类");
 
@@ -47,28 +44,20 @@ namespace Netnr.ResponseFramework.Data
                 entity.Property(e => e.SbBtnHide).HasComment("隐藏，1隐藏");
 
                 entity.Property(e => e.SbBtnIcon)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("按钮图标");
 
                 entity.Property(e => e.SbBtnId)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("按钮ID");
 
                 entity.Property(e => e.SbBtnOrder).HasComment("排序");
 
-                entity.Property(e => e.SbBtnText)
-                    .HasMaxLength(20)
-                    .HasComment("按钮文本");
+                entity.Property(e => e.SbBtnText).HasComment("按钮文本");
 
-                entity.Property(e => e.SbDescribe)
-                    .HasMaxLength(200)
-                    .HasComment("描述");
+                entity.Property(e => e.SbDescribe).HasComment("描述");
 
-                entity.Property(e => e.SbPid)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.SbPid).IsUnicode(false);
 
                 entity.Property(e => e.SbStatus).HasComment("状态，1启用");
             });
@@ -81,55 +70,42 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("系统字典表");
 
-                entity.HasIndex(e => e.SdType)
-                    .HasName("SysDictionary_SdType")
+                entity.HasIndex(e => e.SdType, "SysDictionary_SdType")
                     .IsClustered();
 
-                entity.Property(e => e.SdId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.SdId).IsUnicode(false);
 
                 entity.Property(e => e.SdAttribute1)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("特性");
 
                 entity.Property(e => e.SdAttribute2)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("特性");
 
                 entity.Property(e => e.SdAttribute3)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("特性");
 
                 entity.Property(e => e.SdKey)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("键");
 
                 entity.Property(e => e.SdOrder).HasComment("排序");
 
                 entity.Property(e => e.SdPid)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("上级ID");
 
-                entity.Property(e => e.SdRemark)
-                    .HasMaxLength(200)
-                    .HasComment("备注");
+                entity.Property(e => e.SdRemark).HasComment("备注");
 
                 entity.Property(e => e.SdStatus).HasComment("状态：1正常，-1删除，2停用");
 
                 entity.Property(e => e.SdType)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("字典类别");
 
-                entity.Property(e => e.SdValue)
-                    .HasMaxLength(200)
-                    .HasComment("值");
+                entity.Property(e => e.SdValue).HasComment("值");
             });
 
             modelBuilder.Entity<SysLog>(entity =>
@@ -138,72 +114,52 @@ namespace Netnr.ResponseFramework.Data
                     .HasName("SysLog_LogId_PK")
                     .IsClustered(false);
 
-                entity.HasIndex(e => e.LogCreateTime)
-                    .HasName("SysLog_LogCreateTime")
+                entity.HasComment("系统日志表");
+
+                entity.HasIndex(e => e.LogCreateTime, "SysLog_LogCreateTime")
                     .IsClustered();
 
                 entity.Property(e => e.LogId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasComment("");
 
-                entity.Property(e => e.LogAction)
-                    .HasMaxLength(50)
-                    .HasComment("动作");
+                entity.Property(e => e.LogAction).HasComment("动作");
 
                 entity.Property(e => e.LogArea)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("IP归属地");
 
-                entity.Property(e => e.LogBrowserName)
-                    .HasMaxLength(50)
-                    .HasComment("浏览器");
+                entity.Property(e => e.LogBrowserName).HasComment("浏览器");
 
-                entity.Property(e => e.LogContent)
-                    .HasMaxLength(200)
-                    .HasComment("内容");
+                entity.Property(e => e.LogContent).HasComment("内容");
 
-                entity.Property(e => e.LogCreateTime)
-                    .HasColumnType("datetime")
-                    .HasComment("创建时间");
+                entity.Property(e => e.LogCreateTime).HasComment("创建时间");
 
                 entity.Property(e => e.LogGroup).HasComment("分组（1：默认；2：爬虫）");
 
                 entity.Property(e => e.LogIp)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("IP");
 
                 entity.Property(e => e.LogLevel)
-                    .HasMaxLength(10)
                     .IsUnicode(false)
                     .HasComment("级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）");
 
-                entity.Property(e => e.LogRemark)
-                    .HasMaxLength(200)
-                    .HasComment("备注");
+                entity.Property(e => e.LogRemark).HasComment("备注");
 
-                entity.Property(e => e.LogSystemName)
-                    .HasMaxLength(50)
-                    .HasComment("客户端操作系统");
+                entity.Property(e => e.LogSystemName).HasComment("客户端操作系统");
 
                 entity.Property(e => e.LogUrl)
-                    .HasMaxLength(500)
                     .IsUnicode(false)
                     .HasComment("链接");
 
                 entity.Property(e => e.LogUserAgent)
-                    .HasMaxLength(500)
                     .IsUnicode(false)
                     .HasComment("User-Agent");
 
-                entity.Property(e => e.SuName)
-                    .HasMaxLength(50)
-                    .HasComment("用户名");
+                entity.Property(e => e.SuName).HasComment("用户名");
 
-                entity.Property(e => e.SuNickname)
-                    .HasMaxLength(50)
-                    .HasComment("昵称");
+                entity.Property(e => e.SuNickname).HasComment("昵称");
             });
 
             modelBuilder.Entity<SysMenu>(entity =>
@@ -213,31 +169,23 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("系统菜单表");
 
-                entity.Property(e => e.SmId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.SmId).IsUnicode(false);
 
                 entity.Property(e => e.SmGroup).HasComment("分组，默认1，比如移动端为2");
 
                 entity.Property(e => e.SmIcon)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("图标");
 
-                entity.Property(e => e.SmName)
-                    .HasMaxLength(50)
-                    .HasComment("名称");
+                entity.Property(e => e.SmName).HasComment("名称");
 
                 entity.Property(e => e.SmOrder).HasComment("排序");
 
-                entity.Property(e => e.SmPid)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.SmPid).IsUnicode(false);
 
                 entity.Property(e => e.SmStatus).HasComment("状态，1启用");
 
                 entity.Property(e => e.SmUrl)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("链接");
             });
@@ -249,27 +197,19 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("系统角色表");
 
-                entity.Property(e => e.SrId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.SrId).IsUnicode(false);
 
                 entity.Property(e => e.SrButtons).HasComment("按钮");
 
-                entity.Property(e => e.SrCreateTime)
-                    .HasColumnType("datetime")
-                    .HasComment("创建时间");
+                entity.Property(e => e.SrCreateTime).HasComment("创建时间");
 
-                entity.Property(e => e.SrDescribe)
-                    .HasMaxLength(200)
-                    .HasComment("描述");
+                entity.Property(e => e.SrDescribe).HasComment("描述");
 
                 entity.Property(e => e.SrGroup).HasComment("分组");
 
                 entity.Property(e => e.SrMenus).HasComment("菜单");
 
-                entity.Property(e => e.SrName)
-                    .HasMaxLength(200)
-                    .HasComment("名称");
+                entity.Property(e => e.SrName).HasComment("名称");
 
                 entity.Property(e => e.SrStatus)
                     .HasDefaultValueSql("((0))")
@@ -284,13 +224,10 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("表配置");
 
-                entity.HasIndex(e => e.TableName)
-                    .HasName("SysTableConfig_TableName")
+                entity.HasIndex(e => e.TableName, "SysTableConfig_TableName")
                     .IsClustered();
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.Id).IsUnicode(false);
 
                 entity.Property(e => e.ColAlign).HasComment("对齐方式 1左，2中，3右");
 
@@ -299,13 +236,10 @@ namespace Netnr.ResponseFramework.Data
                     .HasComment("1导出");
 
                 entity.Property(e => e.ColField)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("列键");
 
-                entity.Property(e => e.ColFormat)
-                    .HasMaxLength(200)
-                    .HasComment("格式化");
+                entity.Property(e => e.ColFormat).HasComment("格式化");
 
                 entity.Property(e => e.ColFrozen)
                     .HasDefaultValueSql("((0))")
@@ -322,7 +256,6 @@ namespace Netnr.ResponseFramework.Data
                     .HasComment("1查询");
 
                 entity.Property(e => e.ColRelation)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("查询关系符");
 
@@ -330,15 +263,11 @@ namespace Netnr.ResponseFramework.Data
                     .HasDefaultValueSql("((0))")
                     .HasComment("1启用点击排序");
 
-                entity.Property(e => e.ColTitle)
-                    .HasMaxLength(200)
-                    .HasComment("列标题");
+                entity.Property(e => e.ColTitle).HasComment("列标题");
 
                 entity.Property(e => e.ColWidth).HasComment("列宽");
 
-                entity.Property(e => e.DvTitle)
-                    .HasMaxLength(200)
-                    .HasComment("默认列标题");
+                entity.Property(e => e.DvTitle).HasComment("默认列标题");
 
                 entity.Property(e => e.FormArea).HasComment("区域");
 
@@ -348,9 +277,7 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.Property(e => e.FormOrder).HasComment("排序");
 
-                entity.Property(e => e.FormPlaceholder)
-                    .HasMaxLength(200)
-                    .HasComment("输入框提示");
+                entity.Property(e => e.FormPlaceholder).HasComment("输入框提示");
 
                 entity.Property(e => e.FormRequired)
                     .HasDefaultValueSql("((0))")
@@ -361,7 +288,6 @@ namespace Netnr.ResponseFramework.Data
                 entity.Property(e => e.FormText).HasComment("显示文本");
 
                 entity.Property(e => e.FormType)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("输入类型");
 
@@ -370,7 +296,6 @@ namespace Netnr.ResponseFramework.Data
                 entity.Property(e => e.FormValue).HasComment("初始值");
 
                 entity.Property(e => e.TableName)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("（虚）表名");
             });
@@ -382,35 +307,23 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("系统用户表");
 
-                entity.Property(e => e.SuId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.SuId).IsUnicode(false);
 
                 entity.Property(e => e.SrId)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("角色");
 
-                entity.Property(e => e.SuCreateTime)
-                    .HasColumnType("datetime")
-                    .HasComment("创建时间");
+                entity.Property(e => e.SuCreateTime).HasComment("创建时间");
 
                 entity.Property(e => e.SuGroup).HasComment("分组");
 
-                entity.Property(e => e.SuName)
-                    .HasMaxLength(50)
-                    .HasComment("账号");
+                entity.Property(e => e.SuName).HasComment("账号");
 
-                entity.Property(e => e.SuNickname)
-                    .HasMaxLength(50)
-                    .HasComment("昵称");
+                entity.Property(e => e.SuNickname).HasComment("昵称");
 
-                entity.Property(e => e.SuPwd)
-                    .HasMaxLength(50)
-                    .HasComment("密码");
+                entity.Property(e => e.SuPwd).HasComment("密码");
 
                 entity.Property(e => e.SuSign)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("登录标识");
 
@@ -423,22 +336,17 @@ namespace Netnr.ResponseFramework.Data
             {
                 entity.HasComment("示例表，请删除");
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.Id).IsUnicode(false);
 
                 entity.Property(e => e.ColAlign).HasComment("对齐方式 1左，2中，3右");
 
                 entity.Property(e => e.ColExport).HasComment("1导出");
 
                 entity.Property(e => e.ColField)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("列键");
 
-                entity.Property(e => e.ColFormat)
-                    .HasMaxLength(200)
-                    .HasComment("格式化");
+                entity.Property(e => e.ColFormat).HasComment("格式化");
 
                 entity.Property(e => e.ColFrozen).HasComment("1冻结");
 
@@ -450,15 +358,11 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.Property(e => e.ColSort).HasComment("1启用点击排序");
 
-                entity.Property(e => e.ColTitle)
-                    .HasMaxLength(200)
-                    .HasComment("列标题");
+                entity.Property(e => e.ColTitle).HasComment("列标题");
 
                 entity.Property(e => e.ColWidth).HasComment("列宽");
 
-                entity.Property(e => e.DvTitle)
-                    .HasMaxLength(200)
-                    .HasComment("默认列标题");
+                entity.Property(e => e.DvTitle).HasComment("默认列标题");
 
                 entity.Property(e => e.FormArea).HasComment("区域");
 
@@ -466,9 +370,7 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.Property(e => e.FormOrder).HasComment("排序");
 
-                entity.Property(e => e.FormPlaceholder)
-                    .HasMaxLength(200)
-                    .HasComment("输入框提示");
+                entity.Property(e => e.FormPlaceholder).HasComment("输入框提示");
 
                 entity.Property(e => e.FormRequired).HasComment("1必填");
 
@@ -477,7 +379,6 @@ namespace Netnr.ResponseFramework.Data
                 entity.Property(e => e.FormText).HasComment("显示文本");
 
                 entity.Property(e => e.FormType)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("输入类型");
 
@@ -486,7 +387,6 @@ namespace Netnr.ResponseFramework.Data
                 entity.Property(e => e.FormValue).HasComment("初始值");
 
                 entity.Property(e => e.TableName)
-                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasComment("（虚）表名");
             });
@@ -498,49 +398,37 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("单据明细");
 
-                entity.Property(e => e.TidId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.TidId).IsUnicode(false);
 
-                entity.Property(e => e.GoodsCost)
-                    .HasColumnType("decimal(8, 2)")
-                    .HasComment("商品成本");
+                entity.Property(e => e.GoodsCost).HasComment("商品成本");
 
                 entity.Property(e => e.GoodsCount).HasComment("商品数量");
 
                 entity.Property(e => e.GoodsId)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("商品ID");
 
-                entity.Property(e => e.GoodsPrice)
-                    .HasColumnType("decimal(8, 2)")
-                    .HasComment("商品售价");
+                entity.Property(e => e.GoodsPrice).HasComment("商品售价");
 
                 entity.Property(e => e.Spare1)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("备用");
 
                 entity.Property(e => e.Spare2)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("备用");
 
                 entity.Property(e => e.Spare3)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("备用");
 
                 entity.Property(e => e.TidOrder).HasComment("排序");
 
                 entity.Property(e => e.TimId)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("单据主表ID");
 
                 entity.Property(e => e.TimNo)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("单据号");
             });
@@ -552,67 +440,49 @@ namespace Netnr.ResponseFramework.Data
 
                 entity.HasComment("单据主表");
 
-                entity.Property(e => e.TimId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.TimId).IsUnicode(false);
 
                 entity.Property(e => e.Spare1)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("备用");
 
                 entity.Property(e => e.Spare2)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("备用");
 
                 entity.Property(e => e.Spare3)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("备用");
 
-                entity.Property(e => e.TimCreateTime)
-                    .HasColumnType("datetime")
-                    .HasComment("创建时间");
+                entity.Property(e => e.TimCreateTime).HasComment("创建时间");
 
-                entity.Property(e => e.TimDate)
-                    .HasColumnType("datetime")
-                    .HasComment("单据日期");
+                entity.Property(e => e.TimDate).HasComment("单据日期");
 
                 entity.Property(e => e.TimNo)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("单据号");
 
                 entity.Property(e => e.TimOwnerId)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("制单人");
 
-                entity.Property(e => e.TimOwnerName)
-                    .HasMaxLength(20)
-                    .HasComment("制单人");
+                entity.Property(e => e.TimOwnerName).HasComment("制单人");
 
-                entity.Property(e => e.TimRemark)
-                    .HasMaxLength(200)
-                    .HasComment("备注");
+                entity.Property(e => e.TimRemark).HasComment("备注");
 
                 entity.Property(e => e.TimStatus).HasComment("状态，1默认，2已审核，3未通过，4作废");
 
                 entity.Property(e => e.TimStore)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("门店");
 
                 entity.Property(e => e.TimSupplier)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("供应商");
 
                 entity.Property(e => e.TimType).HasComment("采购类型");
 
                 entity.Property(e => e.TimUser)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasComment("采购员");
             });

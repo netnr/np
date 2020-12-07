@@ -13,22 +13,22 @@
     <meta name="keywords" content="netnr,NET牛人,Netnr.DataKit" />
     <meta name="description" content="netnr,NET牛人,数据库工具及代码构建" />
 
-    <link href="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-    <script src="https://code.bdstatic.com/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <link href="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui/1.9.0/themes/metro/easyui.css" rel="stylesheet" />
-    <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui/1.9.0/jquery.easyui.min.js"></script>
-    <script src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui/1.9.0/themes/metro/easyui.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui/1.9.0/jquery.easyui.min.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
 
-    <script src="https://code.bdstatic.com/npm/@babel/polyfill@7.10.1/dist/polyfill.min.js"></script>
-    <script src="https://code.bdstatic.com/npm/exceljs@3.9.0/dist/exceljs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.10.1/dist/polyfill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@3.9.0/dist/exceljs.min.js"></script>
 
-    <script src="https://code.bdstatic.com/npm/jszip@3.4.0/dist/jszip.min.js"></script>
-    <script src="https://code.bdstatic.com/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.4.0/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
 
-    <script src="https://code.bdstatic.com/npm/monaco-editor@0.21.0/min/vs/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs/loader.js"></script>
 
     <style>
         html {
@@ -173,6 +173,10 @@
                         <i class="fa fa-fw fa-ellipsis-v"></i><i class="fa fa-fw fa-caret-down"></i>
                     </button>
                     <div class="dropdown-menu">
+                        <a class="dropdown-item p-2" href="javascript:void(0);" id="btnDEI">
+                            <i class="fa fa-fw fa-info-circle"></i>数据库环境信息
+                        </a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item p-2" href="javascript:void(0);" id="btnExportTableForExcel">
                             <i class="fa fa-fw fa-file-excel-o"></i>导出表（Excel）
                         </a>
@@ -459,9 +463,7 @@
             ],
             //默认服务接口
             dapi: [
-                { istemplate: true, host: "https://api.zme.ink", remark: "部署在 Vercel 的 Serverless 服务，不支持 Oracle" },
-                { istemplate: true, host: "https://d-datakit.zme.ink", remark: "部署在 Heroku 的服务" },
-                { istemplate: true, host: location.origin, remark: "当前" }
+                { istemplate: true, host: "https://api.zme.ink", remark: "部署在 Vercel 的 Serverless 服务，不支持 Oracle" }
             ],
             //接口地址
             apiPath: {
@@ -469,7 +471,8 @@
                 GetColumn: "/DK/GetColumn",
                 SetTableComment: "/DK/SetTableComment",
                 SetColumnComment: "/DK/SetColumnComment",
-                GetData: "/DK/GetData"
+                GetData: "/DK/GetData",
+                GetDEI: "/DK/GetDEI"
             },
             //接口头部参数（如：{ Authorization: "token" }）
             apiHeaders: null,
@@ -664,6 +667,17 @@
                 //自适应高度
                 $(window).resize(dk.resize);
 
+                //查看数据库环境信息
+                $('#btnDEI').click(function () {
+                    dk.loadDEI(function () {
+                        let arrv = [];
+                        $.each(dk.dc.DEI.data, function (k, v) {
+                            arrv.push(k + "：" + v);
+                        });
+                        dk.msg('<textarea class="form-control" style="height:350px">' + arrv.join('\r\n') + '</textarea>')
+                    })
+                });
+
                 //查询表
                 $('#btnQueryTable').click(function () {
                     dk.loadTable(function () {
@@ -826,7 +840,7 @@
 
                 //初始化编辑器
                 require.config({
-                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.21.0/min/vs" },
+                    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs" },
                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                 });
                 //调试
@@ -1017,7 +1031,7 @@
 
                 //加载示例
                 $('#btnExtendLoadDemo').click(function () {
-                    var uri = 'https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/netnr-datakit-extension/0.0.1/demo.js';
+                    var uri = 'https://cdn.jsdelivr.net/npm/netnr-cdn@0.0.1/libs/netnr-datakit-extension/0.0.1/demo.js';
                     $.ajax({
                         url: uri,
                         success: function (res) {
@@ -1319,6 +1333,40 @@
                 }
 
                 return tc;
+            },
+
+            /**
+             * 加载表
+             * @param fn 回调
+             */
+            loadDEI: function (fn) {
+                var tc = dk.getTC();
+                if (tc.err.length == 0) {
+                    var url = dk.api + dk.apiPath.GetDEI;
+                    $.ajax({
+                        url: url,
+                        data: tc,
+                        dataType: 'json',
+                        headers: dk.apiHeaders,
+                        success: function (data) {
+                            if (data.code == 200) {
+                                //记录到本地
+                                if (!dk.dc.backConn) {
+                                    dk.saveDbConn();
+                                }
+
+                                dk.dc.dbi = tc.tdb;
+                                dk.dc.DEI = data;
+                                fn();
+                            } else {
+                                dk.msg(data.msg);
+                            }
+                        },
+                        error: function () {
+                            dk.msgError(url)
+                        }
+                    })
+                }
             },
 
             /**

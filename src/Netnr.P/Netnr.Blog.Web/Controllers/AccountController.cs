@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Netnr.Core;
+using Netnr.SharedFast;
+using Netnr.SharedDrawing;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -44,7 +47,7 @@ namespace Netnr.Blog.Web.Controllers
         [HttpPost]
         public IActionResult Register(Domain.UserInfo mo, string RegisterCode)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
             if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
             {
                 vm.Msg = "验证码错误或已过期";
@@ -55,11 +58,11 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                mo.UserPwd = Core.CalcTo.MD5(mo.UserPwd);
+                mo.UserPwd = CalcTo.MD5(mo.UserPwd);
                 mo.UserCreateTime = DateTime.Now;
 
                 //邮箱注册
-                if (Fast.ParsingTo.IsMail(mo.UserName))
+                if (ParsingTo.IsMail(mo.UserName))
                 {
                     mo.UserMail = mo.UserName;
                 }
@@ -78,9 +81,9 @@ namespace Netnr.Blog.Web.Controllers
         public FileResult RegisterCode()
         {
             //生成验证码
-            string num = Core.RandomTo.NumCode(4);
+            string num = RandomTo.NumCode(4);
             HttpContext.Session.SetString("RegisterCode", num);
-            byte[] bytes = Fast.CaptchaTo.CreateImg(num);
+            byte[] bytes = CaptchaTo.CreateImg(num);
             return File(bytes, "image/jpeg");
         }
 
@@ -89,9 +92,9 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo">个人用户信息</param>
         /// <returns></returns>
-        private ActionResultVM RegisterUser(Domain.UserInfo mo)
+        private SharedResultVM RegisterUser(Domain.UserInfo mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var isok = true;
 
@@ -100,14 +103,14 @@ namespace Netnr.Blog.Web.Controllers
             {
                 isok = !db.UserInfo.Any(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail);
 
-                vm.Set(ARTag.exist);
+                vm.Set(SharedEnum.RTag.exist);
                 vm.Msg = "该邮箱已经注册";
             }
             else
             {
                 isok = !db.UserInfo.Any(x => x.UserName == mo.UserName);
 
-                vm.Set(ARTag.exist);
+                vm.Set(SharedEnum.RTag.exist);
                 vm.Msg = "该账号已经注册";
             }
 
@@ -184,7 +187,7 @@ namespace Netnr.Blog.Web.Controllers
         public IActionResult Login(Domain.UserInfo mo, int? remember)
         {
             var isRemember = remember == 1;
-            var vm = ValidateLogin(ValidateloginType.local, mo, isRemember);
+            var vm = ValidateLogin(null, mo, isRemember);
             if (vm.Code == 200)
             {
                 var rurl = Request.Cookies["ReturnUrl"];
@@ -204,23 +207,15 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 第三方登录类型枚举
-        /// </summary>
-        public enum ValidateloginType
-        {
-            local, qq, weibo, github, taobao, microsoft, dingtalk
-        }
-
-        /// <summary>
         /// 公共登录验证
         /// </summary>
         /// <param name="vt">登录类型</param>
         /// <param name="mo">用户信息</param>
         /// <param name="isremember">记住账号</param>
         /// <returns></returns>
-        private ActionResultVM ValidateLogin(ValidateloginType vt, Domain.UserInfo mo, bool isremember = true)
+        private SharedResultVM ValidateLogin(LoginBase.LoginType? vt, Domain.UserInfo mo, bool isremember = true)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             string sql = string.Empty;
 
@@ -229,7 +224,25 @@ namespace Netnr.Blog.Web.Controllers
 
             switch (vt)
             {
-                case ValidateloginType.local:
+                case LoginBase.LoginType.QQ:
+                    outMo = uiR.FirstOrDefault(x => x.OpenId1.Equals(mo.OpenId1));
+                    break;
+                case LoginBase.LoginType.WeiBo:
+                    outMo = uiR.FirstOrDefault(x => x.OpenId2.Equals(mo.OpenId2));
+                    break;
+                case LoginBase.LoginType.GitHub:
+                    outMo = uiR.FirstOrDefault(x => x.OpenId3.Equals(mo.OpenId3));
+                    break;
+                case LoginBase.LoginType.TaoBao:
+                    outMo = uiR.FirstOrDefault(x => x.OpenId4.Equals(mo.OpenId4));
+                    break;
+                case LoginBase.LoginType.MicroSoft:
+                    outMo = uiR.FirstOrDefault(x => x.OpenId5.Equals(mo.OpenId5));
+                    break;
+                case LoginBase.LoginType.DingTalk:
+                    outMo = uiR.FirstOrDefault(x => x.OpenId6.Equals(mo.OpenId6));
+                    break;
+                default:
                     if (string.IsNullOrWhiteSpace(mo.UserName) || string.IsNullOrWhiteSpace(mo.UserPwd))
                     {
                         vm.Msg = "用户名或密码不能为空";
@@ -237,10 +250,10 @@ namespace Netnr.Blog.Web.Controllers
                     }
                     else
                     {
-                        mo.UserPwd = Core.CalcTo.MD5(mo.UserPwd);
+                        mo.UserPwd = CalcTo.MD5(mo.UserPwd);
 
                         //邮箱登录
-                        if (Fast.ParsingTo.IsMail(mo.UserName))
+                        if (ParsingTo.IsMail(mo.UserName))
                         {
                             outMo = uiR.FirstOrDefault(x => x.UserMail == mo.UserName && x.UserPwd == mo.UserPwd);
                         }
@@ -249,24 +262,6 @@ namespace Netnr.Blog.Web.Controllers
                             outMo = uiR.FirstOrDefault(x => x.UserName == mo.UserName && x.UserPwd == mo.UserPwd);
                         }
                     }
-                    break;
-                case ValidateloginType.qq:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId1.Equals(mo.OpenId1));
-                    break;
-                case ValidateloginType.weibo:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId2.Equals(mo.OpenId2));
-                    break;
-                case ValidateloginType.github:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId3.Equals(mo.OpenId3));
-                    break;
-                case ValidateloginType.taobao:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId4.Equals(mo.OpenId4));
-                    break;
-                case ValidateloginType.microsoft:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId5.Equals(mo.OpenId5));
-                    break;
-                case ValidateloginType.dingtalk:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId6.Equals(mo.OpenId6));
                     break;
             }
 
@@ -297,15 +292,15 @@ namespace Netnr.Blog.Web.Controllers
             {
                 //登录标记 缓存5分钟，绝对过期
                 var usk = "UserSign_" + outMo.UserId;
-                Core.CacheTo.Set(usk, outMo.UserSign, 5 * 60, false);
+                CacheTo.Set(usk, outMo.UserSign, 5 * 60, false);
 
                 //写入授权
                 SetAuth(HttpContext, outMo, isremember);
 
                 //生成Token
-                vm.Data = Application.UserAuthService.TokenMake(outMo);
+                vm.Data = Apps.LoginService.TokenMake(outMo);
 
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
@@ -326,7 +321,7 @@ namespace Netnr.Blog.Web.Controllers
         public IActionResult Auth()
         {
             var authType = RouteData.Values["id"]?.ToString();
-            var url = Application.UserAuthService.ThirdLogin.LoginLink(authType);
+            var url = Application.ThirdLoginService.LoginLink(authType);
             return Redirect(url);
         }
 
@@ -337,13 +332,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         public IActionResult AuthCallback(LoginBase.AuthorizeResult authorizeResult)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(authorizeResult.code))
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
@@ -358,26 +353,23 @@ namespace Netnr.Blog.Web.Controllers
                     };
                     //头像
                     string avatar = string.Empty;
-                    //头像（高清）
-                    string avatarhd = string.Empty;
 
-                    Enum.TryParse(RouteData.Values["id"]?.ToString(), true, out ValidateloginType vtype);
+                    Enum.TryParse(RouteData.Values["id"]?.ToString(), true, out LoginBase.LoginType vtype);
 
                     switch (vtype)
                     {
-                        case ValidateloginType.qq:
+                        case LoginBase.LoginType.QQ:
                             {
                                 //获取 access_token
                                 var tokenEntity = QQ.AccessToken(new QQ_AccessToken_RequestEntity()
                                 {
                                     code = authorizeResult.code
                                 });
+                                Console.WriteLine(tokenEntity.ToJson());
 
                                 //获取 OpendId
-                                var openidEntity = QQ.OpenId(new QQ_OpenId_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var openidEntity = QQ.OpenId(tokenEntity.access_token);
+                                Console.WriteLine(openidEntity.ToJson());
 
                                 //获取 UserInfo
                                 var userEntity = QQ.OpenId_Get_User_Info(new QQ_OpenAPI_RequestEntity()
@@ -385,6 +377,7 @@ namespace Netnr.Blog.Web.Controllers
                                     access_token = tokenEntity.access_token,
                                     openid = openidEntity.openid
                                 });
+                                Console.WriteLine(userEntity.ToJson());
 
                                 //身份唯一标识
                                 openId = openidEntity.openid;
@@ -395,23 +388,21 @@ namespace Netnr.Blog.Web.Controllers
                                 mo.UserSay = "";
                                 mo.UserUrl = "";
 
-                                avatar = userEntity.figureurl_qq_1;
-                                avatarhd = userEntity.figureurl_qq_2;
+                                avatar = userEntity.figureurl_2;
                             }
                             break;
-                        case ValidateloginType.weibo:
+                        case LoginBase.LoginType.WeiBo:
                             {
                                 //获取 access_token
                                 var tokenEntity = Weibo.AccessToken(new Weibo_AccessToken_RequestEntity()
                                 {
                                     code = authorizeResult.code
                                 });
+                                Console.WriteLine(tokenEntity.ToJson());
 
                                 //获取 access_token 的授权信息
-                                var tokenInfoEntity = Weibo.GetTokenInfo(new Weibo_GetTokenInfo_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var tokenInfoEntity = Weibo.GetTokenInfo(tokenEntity.access_token);
+                                Console.WriteLine(tokenInfoEntity.ToJson());
 
                                 //获取 users/show
                                 var userEntity = Weibo.UserShow(new Weibo_UserShow_RequestEntity()
@@ -419,6 +410,7 @@ namespace Netnr.Blog.Web.Controllers
                                     access_token = tokenEntity.access_token,
                                     uid = Convert.ToInt64(tokenInfoEntity.uid)
                                 });
+                                Console.WriteLine(userEntity.ToJson());
 
                                 openId = tokenEntity.access_token;
                                 mo.OpenId2 = openId;
@@ -428,20 +420,43 @@ namespace Netnr.Blog.Web.Controllers
                                 mo.UserSay = userEntity.description;
                                 mo.UserUrl = userEntity.domain;
 
-                                avatar = userEntity.profile_image_url;
-                                avatarhd = userEntity.avatar_large;
+                                avatar = userEntity.avatar_large;
                             }
                             break;
-                        case ValidateloginType.github:
+                        case LoginBase.LoginType.WeChat:
+                            {
+                                //获取 access_token
+                                var tokenEntity = Netnr.Login.WeChat.AccessToken(new WeChat_AccessToken_RequestEntity()
+                                {
+                                    code = authorizeResult.code
+                                });
+                                Console.WriteLine(tokenEntity.ToJson());
+
+                                //openId = tokenEntity.openid;
+
+                                //获取 user
+                                var userEntity = Netnr.Login.WeChat.Get_User_Info(new WeChat_OpenAPI_RequestEntity()
+                                {
+                                    access_token = tokenEntity.access_token,
+                                    openid = tokenEntity.openid
+                                });
+                                Console.WriteLine(userEntity.ToJson());
+
+                                avatar = userEntity.headimgurl;
+                            }
+                            break;
+                        case LoginBase.LoginType.GitHub:
                             {
                                 //获取 access_token
                                 var tokenEntity = GitHub.AccessToken(new GitHub_AccessToken_RequestEntity()
                                 {
                                     code = authorizeResult.code
                                 });
+                                Console.WriteLine(tokenEntity.ToJson());
 
                                 //获取 user
                                 var userEntity = GitHub.User(tokenEntity.access_token);
+                                Console.WriteLine(userEntity.ToJson());
 
                                 openId = userEntity.id.ToString();
                                 mo.OpenId3 = openId;
@@ -452,16 +467,38 @@ namespace Netnr.Blog.Web.Controllers
                                 mo.UserMail = userEntity.email;
 
                                 avatar = userEntity.avatar_url;
-                                avatarhd = userEntity.avatar_url;
                             }
                             break;
-                        case ValidateloginType.taobao:
+                        case LoginBase.LoginType.Gitee:
+                            {
+                                //获取 access_token
+                                var tokenEntity = Gitee.AccessToken(new Gitee_AccessToken_RequestEntity()
+                                {
+                                    code = authorizeResult.code
+                                });
+                                Console.WriteLine(tokenEntity.ToJson());
+
+                                //获取 user
+                                var userEntity = Gitee.User(tokenEntity.access_token);
+                                Console.WriteLine(userEntity.ToJson());
+
+                                //openId = userEntity.id.ToString();
+
+                                mo.Nickname = userEntity.name;
+                                mo.UserSay = userEntity.bio;
+                                mo.UserUrl = userEntity.blog;
+
+                                avatar = userEntity.avatar_url;
+                            }
+                            break;
+                        case LoginBase.LoginType.TaoBao:
                             {
                                 //获取 access_token
                                 var tokenEntity = TaoBao.AccessToken(new TaoBao_AccessToken_RequestEntity()
                                 {
                                     code = authorizeResult.code
                                 });
+                                Console.WriteLine(tokenEntity.ToJson());
 
                                 openId = tokenEntity.open_uid;
                                 mo.OpenId4 = openId;
@@ -469,31 +506,31 @@ namespace Netnr.Blog.Web.Controllers
                                 mo.Nickname = "淘宝用户";
                             }
                             break;
-                        case ValidateloginType.microsoft:
+                        case LoginBase.LoginType.MicroSoft:
                             {
                                 //获取 access_token
                                 var tokenEntity = MicroSoft.AccessToken(new MicroSoft_AccessToken_RequestEntity()
                                 {
                                     code = authorizeResult.code
                                 });
+                                Console.WriteLine(tokenEntity.ToJson());
 
                                 //获取 user
-                                var userEntity = MicroSoft.User(new MicroSoft_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var userEntity = MicroSoft.User(tokenEntity.access_token);
+                                Console.WriteLine(userEntity.ToJson());
 
-                                openId = userEntity.id.ToString();
+                                openId = userEntity.id;
                                 mo.OpenId5 = openId;
 
                                 mo.Nickname = userEntity.last_name + userEntity.first_name;
                                 mo.UserMail = userEntity.emails?["account"].ToStringOrEmpty();
                             }
                             break;
-                        case ValidateloginType.dingtalk:
+                        case LoginBase.LoginType.DingTalk:
                             {
                                 //获取 user
                                 var userEntity = DingTalk.User(new DingTalk_User_RequestEntity(), authorizeResult.code);
+                                Console.WriteLine(userEntity.ToJson());
 
                                 openId = userEntity.openid;
                                 mo.OpenId6 = openId;
@@ -501,19 +538,80 @@ namespace Netnr.Blog.Web.Controllers
                                 mo.Nickname = userEntity.nick;
                             }
                             break;
+                        case LoginBase.LoginType.Google:
+                            {
+                                //获取 access_token
+                                var tokenEntity = Google.AccessToken(new Google_AccessToken_RequestEntity()
+                                {
+                                    code = authorizeResult.code
+                                });
+                                Console.WriteLine(tokenEntity.ToJson());
+
+                                //获取 user
+                                var userEntity = Google.User(tokenEntity.access_token);
+                                Console.WriteLine(userEntity.ToJson());
+
+                                //openId = userEntity.sub;
+
+                                avatar = userEntity.picture;
+                            }
+                            break;
+                        case LoginBase.LoginType.AliPay:
+                            {
+                                //获取 access_token
+                                var tokenEntity = AliPay.AccessToken(new AliPay_AccessToken_RequestEntity()
+                                {
+                                    code = authorizeResult.code
+                                });
+                                Console.WriteLine(tokenEntity.ToJson());
+
+                                //openId = tokenEntity.user_id;
+
+                                //获取 user
+                                var userEntity = AliPay.User(new AliPay_User_RequestEntity()
+                                {
+                                    auth_token = tokenEntity.access_token
+                                });
+                                Console.WriteLine(userEntity.ToJson());
+
+                                avatar = userEntity.avatar;
+                            }
+                            break;
+                        case LoginBase.LoginType.StackOverflow:
+                            {
+                                //获取 access_token
+                                var tokenEntity = StackOverflow.AccessToken(new StackOverflow_AccessToken_RequestEntity()
+                                {
+                                    code = authorizeResult.code
+                                });
+                                Console.WriteLine(tokenEntity.ToJson());
+
+                                //获取 user
+                                var userEntity = StackOverflow.User(new StackOverflow_User_RequestEntity()
+                                {
+                                    access_token = tokenEntity.access_token
+                                });
+                                Console.WriteLine(userEntity.ToJson());
+
+                                //openId= userEntity.user_id;
+
+                                avatar = userEntity.profile_image;
+                            }
+                            break;
                     }
 
                     mo.UserCreateTime = DateTime.Now;
                     mo.UserName = openId;
-                    mo.UserPwd = Core.CalcTo.MD5(openId);
+                    mo.UserPwd = CalcTo.MD5(openId);
                     if (!string.IsNullOrWhiteSpace(avatar))
                     {
-                        mo.UserPhoto = Core.UniqueTo.LongId().ToString() + ".jpg";
+                        mo.UserPhoto = UniqueTo.LongId().ToString() + ".jpg";
                     }
+                    Console.WriteLine(mo.ToJson());
 
                     if (string.IsNullOrWhiteSpace(openId))
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                         vm.Msg = "身份验证失败";
                     }
                     else
@@ -522,32 +620,32 @@ namespace Netnr.Blog.Web.Controllers
                         bool isbind = User.Identity.IsAuthenticated && authorizeResult.state.StartsWith("bind");
                         if (isbind)
                         {
-                            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
+                            int uid = Apps.LoginService.Get(HttpContext).UserId;
 
                             //检测是否绑定其它账号
                             var queryIsBind = db.UserInfo.Where(x => x.UserId != uid);
                             switch (vtype)
                             {
-                                case ValidateloginType.qq:
+                                case LoginBase.LoginType.QQ:
                                     queryIsBind = queryIsBind.Where(x => x.OpenId1 == openId);
                                     break;
-                                case ValidateloginType.weibo:
+                                case LoginBase.LoginType.WeiBo:
                                     queryIsBind = queryIsBind.Where(x => x.OpenId2 == openId);
                                     break;
-                                case ValidateloginType.github:
+                                case LoginBase.LoginType.GitHub:
                                     queryIsBind = queryIsBind.Where(x => x.OpenId3 == openId);
                                     break;
-                                case ValidateloginType.taobao:
+                                case LoginBase.LoginType.TaoBao:
                                     queryIsBind = queryIsBind.Where(x => x.OpenId4 == openId);
                                     break;
-                                case ValidateloginType.microsoft:
+                                case LoginBase.LoginType.MicroSoft:
                                     queryIsBind = queryIsBind.Where(x => x.OpenId5 == openId);
                                     break;
-                                case ValidateloginType.dingtalk:
+                                case LoginBase.LoginType.DingTalk:
                                     queryIsBind = queryIsBind.Where(x => x.OpenId6 == openId);
                                     break;
                             }
-                            if (queryIsBind.Count() > 0)
+                            if (queryIsBind.Any())
                             {
                                 return Content("已绑定其它账号，不能重复绑定");
                             }
@@ -556,22 +654,22 @@ namespace Netnr.Blog.Web.Controllers
 
                             switch (vtype)
                             {
-                                case ValidateloginType.qq:
+                                case LoginBase.LoginType.QQ:
                                     userInfo.OpenId1 = openId;
                                     break;
-                                case ValidateloginType.weibo:
+                                case LoginBase.LoginType.WeiBo:
                                     userInfo.OpenId2 = openId;
                                     break;
-                                case ValidateloginType.github:
+                                case LoginBase.LoginType.GitHub:
                                     userInfo.OpenId3 = openId;
                                     break;
-                                case ValidateloginType.taobao:
+                                case LoginBase.LoginType.TaoBao:
                                     userInfo.OpenId4 = openId;
                                     break;
-                                case ValidateloginType.microsoft:
+                                case LoginBase.LoginType.MicroSoft:
                                     userInfo.OpenId5 = openId;
                                     break;
-                                case ValidateloginType.dingtalk:
+                                case LoginBase.LoginType.DingTalk:
                                     userInfo.OpenId6 = openId;
                                     break;
                             }
@@ -585,22 +683,22 @@ namespace Netnr.Blog.Web.Controllers
                             Domain.UserInfo vmo = null;
                             switch (vtype)
                             {
-                                case ValidateloginType.qq:
+                                case LoginBase.LoginType.QQ:
                                     vmo = db.UserInfo.FirstOrDefault(x => x.OpenId1 == openId);
                                     break;
-                                case ValidateloginType.weibo:
+                                case LoginBase.LoginType.WeiBo:
                                     vmo = db.UserInfo.FirstOrDefault(x => x.OpenId2 == openId);
                                     break;
-                                case ValidateloginType.github:
+                                case LoginBase.LoginType.GitHub:
                                     vmo = db.UserInfo.FirstOrDefault(x => x.OpenId3 == openId);
                                     break;
-                                case ValidateloginType.taobao:
+                                case LoginBase.LoginType.TaoBao:
                                     vmo = db.UserInfo.FirstOrDefault(x => x.OpenId4 == openId);
                                     break;
-                                case ValidateloginType.microsoft:
+                                case LoginBase.LoginType.MicroSoft:
                                     vmo = db.UserInfo.FirstOrDefault(x => x.OpenId5 == openId);
                                     break;
-                                case ValidateloginType.dingtalk:
+                                case LoginBase.LoginType.DingTalk:
                                     vmo = db.UserInfo.FirstOrDefault(x => x.OpenId6 == openId);
                                     break;
                             }
@@ -612,26 +710,19 @@ namespace Netnr.Blog.Web.Controllers
                                 {
                                     vm = ValidateLogin(vtype, mo);
                                     //拉取头像
-                                    if (vm.Code == 200 && (!string.IsNullOrWhiteSpace(avatar) || !string.IsNullOrWhiteSpace(avatarhd)))
+                                    if (vm.Code == 200 && !string.IsNullOrWhiteSpace(avatar))
                                     {
                                         try
                                         {
                                             using var wc = new System.Net.WebClient();
-                                            var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
+                                            var ppath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
                                             if (!System.IO.Directory.Exists(ppath))
                                             {
                                                 System.IO.Directory.CreateDirectory(ppath);
                                             }
 
-                                            if (!string.IsNullOrWhiteSpace(avatarhd))
-                                            {
-                                                wc.DownloadFile(avatar, Fast.PathTo.Combine(ppath, mo.UserPhoto));
-                                            }
-                                            else if (!string.IsNullOrWhiteSpace(avatar))
-                                            {
-                                                wc.DownloadFile(avatar, Fast.PathTo.Combine(ppath, mo.UserPhoto));
-                                            }
+                                            wc.DownloadFile(avatar, PathTo.Combine(ppath, mo.UserPhoto));
                                         }
                                         catch (Exception)
                                         {
@@ -653,9 +744,10 @@ namespace Netnr.Blog.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 vm.Set(ex);
 
-                Filters.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
             }
 
             //成功
@@ -673,7 +765,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                string msg = "【登录失败】（ " + vm.Msg + " ）".ToEncode();
+                var msg = $"登录失败：{vm.Msg}".ToEncode();
                 return Redirect("/home/error?msg=" + msg);
             }
         }

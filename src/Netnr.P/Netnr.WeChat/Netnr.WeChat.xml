@@ -2465,6 +2465,193 @@
             <param name="certPassword"></param>
             <returns></returns>
         </member>
+        <member name="T:Netnr.WeChat.NetnrCore">
+            <summary>
+            扩展方法
+            </summary>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.ToJson(System.Object,System.String)">
+            <summary>
+            object 转 JSON 字符串
+            </summary>
+            <param name="obj"></param>
+            <param name="DateTimeFormat">时间格式化</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.ToType(System.String,System.Type)">
+            <summary>
+            JSON字符串 转 类型
+            </summary>
+            <param name="json">JSON字符串</param>
+            <param name="type">类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.ToEntity``1(System.String)">
+            <summary>
+            JSON字符串 转 实体
+            </summary>
+            <typeparam name="T">实体泛型</typeparam>
+            <param name="json">JSON字符串</param>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.ToEntitys``1(System.String)">
+            <summary>
+            JSON字符串 转 实体
+            </summary>
+            <typeparam name="T">实体泛型</typeparam>
+            <param name="json">JSON字符串</param>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.ToEncode(System.String,System.String)">
+            <summary>
+            编码
+            </summary>
+            <param name="uri">内容</param>
+            <param name="charset">编码格式</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.ToDecode(System.String)">
+            <summary>
+            解码
+            </summary>
+            <param name="uriToDecode">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.ToTimestamp(System.DateTime,System.Boolean)">
+            <summary>
+            将Datetime转换成时间戳，10位：秒 或 13位：毫秒
+            </summary>
+            <param name="datetime"></param>
+            <param name="isms">毫秒，默认false为秒，设为true，返回13位，毫秒</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.WeChat.NetnrCore.HttpTo">
+            <summary>
+            HTTP请求
+            </summary>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.HttpTo.HWRequest(System.String,System.String,System.String,System.String)">
+            <summary>
+            HttpWebRequest对象
+            </summary>
+            <param name="url">地址</param>
+            <param name="type">请求类型，默认GET</param>
+            <param name="data">发送数据，非GET、DELETE请求</param>
+            <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.HttpTo.Url(System.Net.HttpWebRequest,System.String)">
+            <summary>
+            HTTP请求
+            </summary>
+            <param name="request">HttpWebRequest对象</param>
+            <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.HttpTo.Get(System.String,System.String)">
+            <summary>
+            GET请求
+            </summary>
+            <param name="url">地址</param>
+            <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.HttpTo.Post(System.String,System.String,System.String)">
+            <summary>
+            POST请求
+            </summary>
+            <param name="url">地址</param>
+            <param name="data">发送数据</param>
+            <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.WeChat.NetnrCore.CalcTo">
+            <summary>
+            算法、加密、解密
+            </summary>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.MD5(System.String,System.Int32)">
+            <summary>
+            MD5加密 小写
+            </summary>
+            <param name="s">需加密的字符串</param>
+            <param name="len">长度 默认32 可选16</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.EnDES(System.String,System.String)">
+            <summary> 
+            DES 加密 
+            </summary> 
+            <param name="Text">内容</param> 
+            <param name="sKey">密钥</param> 
+            <returns></returns> 
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.DeDES(System.String,System.String)">
+            <summary> 
+            DES 解密 
+            </summary> 
+            <param name="Text">内容</param> 
+            <param name="sKey">密钥</param> 
+            <returns></returns> 
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.SHA128(System.String)">
+            <summary>
+            20字节,160位
+            </summary>
+            <param name="str">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.SHA256(System.String)">
+            <summary>
+            32字节,256位
+            </summary>
+            <param name="str">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.SHA384(System.String)">
+            <summary>
+            48字节,384位
+            </summary>
+            <param name="str">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.SHA512(System.String)">
+            <summary>
+            64字节,512位
+            </summary>
+            <param name="str">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.HMAC_SHA1(System.String,System.String)">
+            <summary>
+            HMAC_SHA1 加密
+            </summary>
+            <param name="str">内容</param>
+            <param name="key">密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.HMAC_SHA256(System.String,System.String)">
+            <summary>
+            HMAC_SHA256 加密
+            </summary>
+            <param name="str">内容</param>
+            <param name="key">密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.HMACSHA384(System.String,System.String)">
+            <summary>
+            HMACSHA384 加密
+            </summary>
+            <param name="str">内容</param>
+            <param name="key">密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.WeChat.NetnrCore.CalcTo.HMACSHA512(System.String,System.String)">
+            <summary>
+            HMACSHA512 加密
+            </summary>
+            <param name="str">内容</param>
+            <param name="key">密钥</param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.WeChat.Pay">
             <summary>
             

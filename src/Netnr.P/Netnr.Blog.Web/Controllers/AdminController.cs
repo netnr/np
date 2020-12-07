@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Netnr.Logging;
-using Netnr.Blog.Web.Filters;
 using Netnr.Blog.Data;
+using Newtonsoft.Json.Linq;
+using Netnr.SharedLogging;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -13,7 +13,7 @@ namespace Netnr.Blog.Web.Controllers
     /// 后台管理
     /// </summary>
     [Authorize]
-    [FilterConfigs.IsAdmin]
+    [Apps.FilterConfigs.IsAdmin]
     public class AdminController : Controller
     {
         public ContextBase db;
@@ -88,12 +88,12 @@ namespace Netnr.Blog.Web.Controllers
         /// 保存一篇文章（管理）
         /// </summary>
         /// <param name="mo"></param>
-        /// <returns></returns>
-        public ActionResultVM WriteAdminSave(Domain.UserWriting mo)
+        /// <returns></returns>        
+        public SharedResultVM WriteAdminSave(Domain.UserWriting mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var oldmo = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
 
@@ -180,11 +180,11 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        public ActionResultVM ReplyAdminSave(Domain.UserReply mo)
+        public SharedResultVM ReplyAdminSave(Domain.UserReply mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var oldmo = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
 
@@ -224,12 +224,36 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="page">页码</param>
         /// <param name="rows">行数</param>
+        /// <param name="wheres">条件</param>
         /// <returns></returns>
         [ResponseCache(Duration = 10)]
-        public string QueryLog(int page, int rows)
+        public string QueryLog(int page, int rows, string wheres)
         {
             var now = DateTime.Now;
-            var vm = LoggingTo.Query(now.AddYears(-5), now, page, rows);
+            List<List<string>> listWhere = new List<List<string>>();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(wheres))
+                {
+                    var jws = JArray.Parse(wheres);
+                    foreach (var wi in jws)
+                    {
+                        var w1 = wi[0]?.ToString();
+                        var w2 = wi[1]?.ToString();
+                        var w3 = wi[2]?.ToString();
+                        if (!string.IsNullOrWhiteSpace(w2) && !string.IsNullOrWhiteSpace(w3))
+                        {
+                            listWhere.Add(new List<string> { w1, w2, w3 });
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                listWhere = null;
+            }
+
+            var vm = LoggingTo.Query(now.AddYears(-5), now, page, rows, listWhere);
 
             return new
             {
@@ -257,16 +281,16 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public LoggingResultVM QueryLogStatsPVUV(int? type, string LogGroup)
         {
-            Dictionary<string, string> dicWhere = null;
+            var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
             {
-                dicWhere = new Dictionary<string, string>
+                listWhere = new List<List<string>>
                 {
-                    { "LogGroup", LogGroup }
+                    new List<string> { "LogGroup", "=", LogGroup }
                 };
             }
 
-            var vm = LoggingTo.StatsPVUV(type ?? 0, dicWhere);
+            var vm = LoggingTo.StatsPVUV(type ?? 0, listWhere);
             return vm;
         }
 
@@ -280,16 +304,16 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public LoggingResultVM QueryLogReportTop(int? type, string field, string LogGroup)
         {
-            Dictionary<string, string> dicWhere = null;
+            var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
             {
-                dicWhere = new Dictionary<string, string>
+                listWhere = new List<List<string>>
                 {
-                    { "LogGroup", LogGroup }
+                    new List<string> { "LogGroup", "=", LogGroup }
                 };
             }
 
-            var vm = LoggingTo.StatsTop(type ?? 0, field, dicWhere);
+            var vm = LoggingTo.StatsTop(type ?? 0, field, listWhere);
             return vm;
         }
 

@@ -73,7 +73,7 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("nsfwjs")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("nsfwjs"))
 
 <script>
     var pg = {
@@ -129,7 +129,7 @@
 
         scan: function () {
             $('.sbox-scanner').removeClass('d-none');
-            nsfwjs.load('https://code.bdstatic.com/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
+            nsfwjs.load('https://cdn.jsdelivr.net/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
                 var mf = pg.isgif ? "classifyGif" : "classify";
                 model[mf](pg.iv).then(function (predictions) {
                     console.log(predictions);

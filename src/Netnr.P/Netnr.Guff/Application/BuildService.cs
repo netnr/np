@@ -1,4 +1,7 @@
-﻿namespace Netnr.Guff.Application
+﻿using Netnr.Core;
+using Netnr.SharedFast;
+
+namespace Netnr.Guff.Application
 {
     public class BuildService
     {
@@ -9,7 +12,7 @@
         /// <returns></returns>
         public static string AutoLink(string path = "")
         {
-            var isbh = Core.CacheTo.Get(GlobalTo.GetValue("Common:BuildHtmlKey")) as bool? ?? false;
+            var isbh = CacheTo.Get(GlobalTo.GetValue("Common:BuildHtmlKey")) as bool? ?? false;
             var hp = isbh ? "" : "/home";
             return hp + path;
         }

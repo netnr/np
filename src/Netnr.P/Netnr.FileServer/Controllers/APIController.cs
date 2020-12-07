@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Netnr.FileServer.Application;
-using Netnr.FileServer.Model;
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using System;
-using System.Buffers;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using Netnr.FileServer.Application;
+using Netnr.FileServer.Model;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.FileServer.Controllers
 {
@@ -16,7 +15,7 @@ namespace Netnr.FileServer.Controllers
     /// API接口
     /// </summary>
     [Route("[controller]/[action]")]
-    [Filters.FilterConfigs.AllowCors]
+    [Apps.FilterConfigs.AllowCors]    
     public class APIController : ControllerBase
     {
         /// <summary>
@@ -26,13 +25,13 @@ namespace Netnr.FileServer.Controllers
         /// <param name="owner">用户，唯一，文件夹名，推荐小写字母</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM CreateApp(string password, string owner)
+        public SharedResultVM CreateApp(string password, string owner)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                if (!Fast.ParsingTo.IsLinkPath(owner))
+                if (!ParsingTo.IsLinkPath(owner))
                 {
                     vm.Msg = "owner 必填，仅为字母、数字";
                 }
@@ -42,7 +41,7 @@ namespace Netnr.FileServer.Controllers
                 }
                 else if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -50,7 +49,7 @@ namespace Netnr.FileServer.Controllers
                     vm = FileServerService.CreateApp(owner);
                     if (vm.Code == -1 && vm.Msg.Contains("UNIQUE"))
                     {
-                        vm.Set(ARTag.exist);
+                        vm.Set(SharedEnum.RTag.exist);
                         vm.Msg = "owner 用户已经存在";
                     }
                 }
@@ -58,7 +57,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -72,15 +71,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="pageSize">页量，默认20</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetAppList(string password, int pageNumber = 1, int pageSize = 20)
+        public SharedResultVM GetAppList(string password, int pageNumber = 1, int pageSize = 20)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -91,7 +90,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -104,9 +103,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetAppInfo(string AppId, string AppKey)
+        public SharedResultVM GetAppInfo(string AppId, string AppKey)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -115,7 +114,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -127,15 +126,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="password">密码，必填</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM ResetAll(string password)
+        public SharedResultVM ResetAll(string password)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -146,19 +145,19 @@ namespace Netnr.FileServer.Controllers
                     db.DeleteAll<FileRecord>();
 
                     //删除上传文件
-                    var rootdir = Fast.PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"));
+                    var rootdir = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"));
                     if (Directory.Exists(rootdir))
                     {
                         Directory.Delete(rootdir, true);
                     }
 
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -171,15 +170,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="keepTime">保留最近文件，超过时间被清理，0为全部清理，单位：分</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM ClearTmp(string password, int keepTime = 30)
+        public SharedResultVM ClearTmp(string password, int keepTime = 30)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -187,7 +186,7 @@ namespace Netnr.FileServer.Controllers
                     var listDel = new List<string>();
 
                     //删除临时文件
-                    var tmpdir = Fast.PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:TmpDir"));
+                    var tmpdir = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:TmpDir"));
                     if (Directory.Exists(tmpdir))
                     {
                         if (keepTime > 0)
@@ -222,14 +221,14 @@ namespace Netnr.FileServer.Controllers
                         }
                     }
 
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                     vm.Data = listDel;
                 }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -242,27 +241,27 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetToken(string AppId, string AppKey)
+        public SharedResultVM GetToken(string AppId, string AppKey)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey))
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                     vm.Msg = "参数缺失";
                 }
                 else
                 {
-                    if (!(Core.CacheTo.Get(AppKey) is ActionResultVM cvm))
+                    if (!(CacheTo.Get(AppKey) is SharedResultVM cvm))
                     {
                         vm = FileServerService.GetToken(AppId, AppKey);
 
                         if (vm.Code == 200)
                         {
                             //Token缓存
-                            Core.CacheTo.Set(AppKey, vm, GlobalTo.GetValue<int>("Safe:TokenCache"), false);
+                            CacheTo.Set(AppKey, vm, GlobalTo.GetValue<int>("Safe:TokenCache"), false);
                         }
                     }
                     else
@@ -274,7 +273,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -289,15 +288,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AuthMethod">授权接口名，多个用逗号分割，区分大小写</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM CreateFixToken(string AppId, string AppKey, string Name, string AuthMethod)
+        public SharedResultVM CreateFixToken(string AppId, string AppKey, string Name, string AuthMethod)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(AuthMethod))
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                     vm.Msg = "参数缺失";
                 }
                 else
@@ -305,7 +304,7 @@ namespace Netnr.FileServer.Controllers
                     var listAm = AuthMethodList().Data as List<string>;
                     if (!AuthMethod.Split(',').ToList().All(x => listAm.Contains(x)))
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                         vm.Msg = "AuthMethod 存在无效接口名";
                     }
                     else
@@ -317,7 +316,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -331,15 +330,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="FixToken">固定Token</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM DelFixToken(string AppId, string AppKey, string FixToken)
+        public SharedResultVM DelFixToken(string AppId, string AppKey, string FixToken)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(FixToken))
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                     vm.Msg = "参数缺失";
                 }
                 else
@@ -350,7 +349,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -361,9 +360,9 @@ namespace Netnr.FileServer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM AuthMethodList()
+        public SharedResultVM AuthMethodList()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -379,13 +378,13 @@ namespace Netnr.FileServer.Controllers
                     }
                 }
 
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
                 vm.Data = listA;
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -399,9 +398,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="subdir">子目录，可选</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public ActionResultVM Upload(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir)
+        public SharedResultVM Upload(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -410,7 +409,7 @@ namespace Netnr.FileServer.Controllers
                 {
                     vm.Msg = "未找到上传文件";
                 }
-                else if (!string.IsNullOrWhiteSpace(subdir) && !Fast.ParsingTo.IsLinkPath(subdir))
+                else if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
                 {
                     vm.Msg = "subdir 仅为字母、数字";
                 }
@@ -430,10 +429,10 @@ namespace Netnr.FileServer.Controllers
                         var listFr = new List<FileRecord>();
 
                         //虚拟路径
-                        var vpath = Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
+                        var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
 
                         //物理路径
-                        var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                        var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
                         if (!Directory.Exists(ppath))
                         {
                             Directory.CreateDirectory(ppath);
@@ -443,7 +442,7 @@ namespace Netnr.FileServer.Controllers
                         {
                             var fr = new FileRecord()
                             {
-                                Id = now.ToTimestamp() + Core.RandomTo.NumCode(),
+                                Id = now.ToTimestamp() + RandomTo.NumCode(),
                                 OwnerUser = vtjson.Owner,
                                 Name = Path.GetFileName(file.FileName),
                                 Size = file.Length,
@@ -453,13 +452,13 @@ namespace Netnr.FileServer.Controllers
 
                             var filename = fr.Id + Path.GetExtension(file.FileName);
 
-                            using (var fs = new FileStream(Fast.PathTo.Combine(ppath, filename), FileMode.CreateNew))
+                            using (var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew))
                             {
                                 file.CopyTo(fs);
                                 fs.Flush();
                             }
 
-                            fr.Path = Fast.PathTo.Combine(vpath, filename);
+                            fr.Path = PathTo.Combine(vpath, filename);
                             listFr.Add(fr);
                         }
 
@@ -481,7 +480,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -498,9 +497,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="chunks">总分片数</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public ActionResultVM UploadChunk(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks)
+        public SharedResultVM UploadChunk(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -509,11 +508,11 @@ namespace Netnr.FileServer.Controllers
                 {
                     vm.Msg = "未找到上传文件";
                 }
-                else if (!Fast.ParsingTo.IsLinkPath(ts))
+                else if (!ParsingTo.IsLinkPath(ts))
                 {
                     vm.Msg = "ts 仅为字母、数字";
                 }
-                else if (!string.IsNullOrWhiteSpace(subdir) && !Fast.ParsingTo.IsLinkPath(subdir))
+                else if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
                 {
                     vm.Msg = "subdir 仅为字母、数字";
                 }
@@ -524,11 +523,11 @@ namespace Netnr.FileServer.Controllers
                 else
                 {
                     var vtkey = "vt-" + token;
-                    if (!(Core.CacheTo.Get(vtkey) is ActionResultVM vt))
+                    if (!(CacheTo.Get(vtkey) is SharedResultVM vt))
                     {
                         vt = FileServerService.ValidToken(token, mn);
                         //缓存 Token 验证 30 分钟
-                        Core.CacheTo.Set(vtkey, vt, 1800, false);
+                        CacheTo.Set(vtkey, vt, 1800, false);
                     }
 
                     if (vt.Code != 200)
@@ -541,20 +540,20 @@ namespace Netnr.FileServer.Controllers
                         if (chunks > 0)
                         {
                             //分片临时虚拟目录
-                            var chunkDir = Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:TmpDir"), ts);
+                            var chunkDir = PathTo.Combine(GlobalTo.GetValue("StaticResource:TmpDir"), ts);
 
                             var ext = Path.GetExtension(file.FileName);
                             //存入分片临时目录（格式：Id_片索引.文件格式后缀）
                             var chunkName = $"{ts}_{chunk}.{ext}";
 
                             //保存分片物理路径
-                            var chunkPPath = Fast.PathTo.Combine(GlobalTo.WebRootPath, chunkDir);
+                            var chunkPPath = PathTo.Combine(GlobalTo.WebRootPath, chunkDir);
                             if (!Directory.Exists(chunkPPath))
                             {
                                 Directory.CreateDirectory(chunkPPath);
                             }
 
-                            using (var fs = new FileStream(Fast.PathTo.Combine(chunkPPath, chunkName), FileMode.CreateNew))
+                            using (var fs = new FileStream(PathTo.Combine(chunkPPath, chunkName), FileMode.CreateNew))
                             {
                                 file.CopyTo(fs);
                                 fs.Flush();
@@ -562,9 +561,9 @@ namespace Netnr.FileServer.Controllers
 
                             //记录已上传的分片总数
                             var ckkey = $"chunk-{ts}";
-                            var ci = Core.CacheTo.Get(ckkey) as int? ?? 0;
+                            var ci = CacheTo.Get(ckkey) as int? ?? 0;
                             ci++;
-                            Core.CacheTo.Set(ckkey, ci);
+                            CacheTo.Set(ckkey, ci);
 
                             //所有片已上传完，合并片
                             if (ci == chunks)
@@ -574,10 +573,10 @@ namespace Netnr.FileServer.Controllers
                                 var vtjson = vt.Data as FixTokenJson;
 
                                 //虚拟路径
-                                var vpath = Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
+                                var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
 
                                 //物理路径
-                                var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                                var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
                                 if (!Directory.Exists(ppath))
                                 {
                                     Directory.CreateDirectory(ppath);
@@ -585,7 +584,7 @@ namespace Netnr.FileServer.Controllers
 
                                 var fr = new FileRecord()
                                 {
-                                    Id = now.ToTimestamp() + Core.RandomTo.NumCode(),
+                                    Id = now.ToTimestamp() + RandomTo.NumCode(),
                                     OwnerUser = vtjson.Owner,
                                     Name = Path.GetFileName(file.FileName),
                                     Size = file.Length,
@@ -594,7 +593,7 @@ namespace Netnr.FileServer.Controllers
                                 };
                                 var filename = fr.Id + Path.GetExtension(file.FileName);
 
-                                using var fs = new FileStream(Fast.PathTo.Combine(ppath, filename), FileMode.Create);
+                                using var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.Create);
                                 //排序从 0-N Write
                                 var po = Directory.GetFiles(chunkPPath).OrderBy(x => x.Length).ThenBy(x => x).ToList();
                                 foreach (var part in po)
@@ -606,7 +605,7 @@ namespace Netnr.FileServer.Controllers
                                 //删除分块文件夹
                                 Directory.Delete(chunkPPath, true);
 
-                                fr.Path = Fast.PathTo.Combine(vpath, filename);
+                                fr.Path = PathTo.Combine(vpath, filename);
 
                                 vm = FileServerService.InsertFile(fr);
                                 if (vm.Code == 200)
@@ -617,7 +616,7 @@ namespace Netnr.FileServer.Controllers
                             else
                             {
                                 vm.Code = 201;
-                                vm.Data = Fast.PathTo.Combine(chunkDir, chunkName);
+                                vm.Data = PathTo.Combine(chunkDir, chunkName);
                                 vm.Msg = "chunk success";
                             }
                         }
@@ -627,7 +626,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -640,9 +639,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM Copy(string token, string path)
+        public SharedResultVM Copy(string token, string path)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -672,7 +671,7 @@ namespace Netnr.FileServer.Controllers
                         var now = DateTime.Now;
                         var fr = new FileRecord()
                         {
-                            Id = now.ToTimestamp() + Core.RandomTo.NumCode(),
+                            Id = now.ToTimestamp() + RandomTo.NumCode(),
                             OwnerUser = nowfile.OwnerUser,
                             Name = nowfile.Name,
                             Size = nowfile.Size,
@@ -681,10 +680,10 @@ namespace Netnr.FileServer.Controllers
                         };
 
                         //要复制的物理路径
-                        var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                        var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
                         fr.Path = vpath.Replace(Path.GetFileNameWithoutExtension(vpath), fr.Id);
                         //复制的新物理路径
-                        var newppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, fr.Path);
+                        var newppath = PathTo.Combine(GlobalTo.WebRootPath, fr.Path);
 
                         System.IO.File.Copy(ppath, newppath);
 
@@ -699,7 +698,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -713,9 +712,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public ActionResultVM Cover(IFormFile file, [FromForm] string token, [FromForm] string path)
+        public SharedResultVM Cover(IFormFile file, [FromForm] string token, [FromForm] string path)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -745,7 +744,7 @@ namespace Netnr.FileServer.Controllers
                         else
                         {
                             var nowfile = qf.Data as FileRecord;
-                            var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, nowfile.Path);
+                            var ppath = PathTo.Combine(GlobalTo.WebRootPath, nowfile.Path);
 
                             if (System.IO.File.Exists(ppath))
                             {
@@ -767,7 +766,7 @@ namespace Netnr.FileServer.Controllers
                             }
                             else
                             {
-                                vm.Set(ARTag.invalid);
+                                vm.Set(SharedEnum.RTag.invalid);
                                 vm.Msg = "文件路径无效";
                             }
                         }
@@ -777,7 +776,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -790,9 +789,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM Delete(string token, string path)
+        public SharedResultVM Delete(string token, string path)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -813,7 +812,7 @@ namespace Netnr.FileServer.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -825,50 +824,50 @@ namespace Netnr.FileServer.Controllers
         /// <param name="file">文件流</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public ActionResultVM UploadTmp(IFormFile file)
+        public SharedResultVM UploadTmp(IFormFile file)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (!GlobalTo.GetValue<bool>("Safe:EnableUploadTmp"))
                 {
-                    vm.Set(ARTag.refuse);
+                    vm.Set(SharedEnum.RTag.refuse);
                     vm.Msg = "该接口已关闭";
                 }
                 else
                 {
                     if (file == null)
                     {
-                        vm.Set(ARTag.lack);
+                        vm.Set(SharedEnum.RTag.lack);
                         vm.Msg = "未找到上传文件";
                     }
                     else
                     {
                         var vpath = GlobalTo.GetValue("StaticResource:TmpDir");
-                        var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                        var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
                         if (!Directory.Exists(ppath))
                         {
                             Directory.CreateDirectory(ppath);
                         }
 
-                        var filename = DateTime.Now.ToTimestamp() + Core.RandomTo.NumCode() + Path.GetExtension(file.FileName);
+                        var filename = DateTime.Now.ToTimestamp() + RandomTo.NumCode() + Path.GetExtension(file.FileName);
 
-                        using (var fs = new FileStream(Fast.PathTo.Combine(ppath, filename), FileMode.CreateNew))
+                        using (var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew))
                         {
                             file.CopyTo(fs);
                             fs.Flush();
                         }
 
-                        vm.Set(ARTag.success);
-                        vm.Data = Fast.PathTo.Combine(vpath, filename);
+                        vm.Set(SharedEnum.RTag.success);
+                        vm.Data = PathTo.Combine(vpath, filename);
                     }
                 }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;

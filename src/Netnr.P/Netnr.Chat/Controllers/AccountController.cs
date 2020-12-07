@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using Netnr.Chat.Application.ViewModel;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.Chat.Controllers
 {
@@ -29,9 +31,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="chatLogin">登录信息</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM Token([FromBody] ChatLoginVM chatLogin)
+        public SharedResultVM Token([FromBody] ChatLoginVM chatLogin)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -40,12 +42,12 @@ namespace Netnr.Chat.Controllers
                 //有账号、密码
                 if (!string.IsNullOrWhiteSpace(chatLogin.UserName) && !string.IsNullOrWhiteSpace(chatLogin.Password))
                 {
-                    var pw = Core.CalcTo.MD5(chatLogin.Password);
+                    var pw = CalcTo.MD5(chatLogin.Password);
 
                     uo = db.NChatUser.FirstOrDefault(x => x.CuUserName == chatLogin.UserName && x.CuPassword == pw);
                     if (uo == null)
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                         vm.Msg = "账号或密码错误";
                         return vm;
                     }
@@ -56,16 +58,16 @@ namespace Netnr.Chat.Controllers
                     //新增
                     if (string.IsNullOrWhiteSpace(chatLogin.GuestId))
                     {
-                        var uid = Core.UniqueTo.LongId();
+                        var uid = UniqueTo.LongId();
 
                         uo = new Domain.NChatUser
                         {
                             CuUserId = "G_" + uid,
                             CuUserName = "Guest-" + uid,
-                            CuPassword = Core.CalcTo.MD5("Guest"),
+                            CuPassword = CalcTo.MD5("Guest"),
                             CuUserNickname = "Guest",
                             CuCreateTime = DateTime.Now,
-                            CuStatus = 1                            
+                            CuStatus = 1
                         };
                     }
                     else
@@ -75,7 +77,7 @@ namespace Netnr.Chat.Controllers
                 }
                 else
                 {
-                    vm.Set(ARTag.invalid);
+                    vm.Set(SharedEnum.RTag.invalid);
                     vm.Msg = "账号或密码不能为空";
                     return vm;
                 }
@@ -102,7 +104,7 @@ namespace Netnr.Chat.Controllers
                     userName = uo.CuUserName,
                     userPhoto = uo.CuUserPhoto
                 };
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {

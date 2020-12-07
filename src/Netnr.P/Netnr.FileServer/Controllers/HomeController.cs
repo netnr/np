@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.FileServer.Controllers
 {
@@ -22,12 +24,12 @@ namespace Netnr.FileServer.Controllers
         /// <returns></returns>
         public IActionResult Status()
         {
-            if (!(Core.CacheTo.Get("osi") is Fast.OSInfoTo osi))
+            if (CacheTo.Get("ss") is not SystemStatusTo ss)
             {
-                osi = new Fast.OSInfoTo();
-                Core.CacheTo.Set("osi", osi, 10, false);
+                ss = new SystemStatusTo();
+                CacheTo.Set("ss", ss, 10, false);
             }
-            return Content(osi.ToView());
+            return Content(ss.ToView());
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
+using Netnr.Core;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -22,12 +24,23 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 10)]
-        public ActionResultVM AboutServerStatus()
+        public SharedResultVM AboutServerStatus()
         {
-            var vm = new ActionResultVM
+            var vm = new SharedResultVM();
+
+            try
             {
-                Data = new Fast.OSInfoTo().ToView()
-            };
+                var ss = new SystemStatusTo();
+                vm.Log.Add(ss);
+                vm.Data = ss.ToView();
+                vm.Set(SharedEnum.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+                ConsoleTo.Log(ex);
+            }
+
             return vm;
         }
 

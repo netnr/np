@@ -1,4 +1,4 @@
-@model PageVM
+@model SharedPageVM
 @{
     var listUm = Model.Rows as List<UserMessage>;
     int mn = listUm.Where(x => x.UmStatus == 1).Count();
@@ -6,7 +6,7 @@
     ViewData["Title"] = "消息";
 }
 
-<partial name="_PartialQuote" model="@("netnrmd.css")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css"))
 
 <link href="/css/home/view.css" rel="stylesheet" asp-append-version="true" />
 
@@ -27,7 +27,7 @@
                         var imgup = "/favicon.svg";
                         if (!string.IsNullOrWhiteSpace(item.Spare2))
                         {
-                            imgup = Netnr.Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), item.Spare2);
+                            imgup = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), item.Spare2);
                         }
 
                         <li class="media uwo-reply-item py-3">

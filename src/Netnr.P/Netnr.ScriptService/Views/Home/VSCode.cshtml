@@ -37,7 +37,7 @@
     AutoHeight();
 </script>
 
-<partial name="_PartialQuote" model="@("monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
 <script>
     var editor,

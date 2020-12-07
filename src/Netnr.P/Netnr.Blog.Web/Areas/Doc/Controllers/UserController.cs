@@ -37,7 +37,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var ps = Application.CommonService.DocQuery(q, uid, uinfo.UserId, page);
             ps.Route = Request.Path;

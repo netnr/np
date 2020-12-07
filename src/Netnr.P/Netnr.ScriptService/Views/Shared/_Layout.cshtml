@@ -11,8 +11,10 @@
 
     //无导航
     var nonav = "wallpaper,contact".Split(',');
+
+    var isbh = CacheTo.Get(GlobalTo.GetValue("Common:BuildHtmlKey")) as bool? ?? false;
 }
-<partial name="_PartialQuote" model="@("the")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +22,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon"))
 
     <title>@Html.Raw(title) 脚本服务</title>
 
@@ -35,14 +37,13 @@
     }
     else
     {
-        <partial name="_PartialQuote" model="@("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js,icon")" />
+        @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js,ss-icon"))
         <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
         <script src="/js/global.js" asp-append-version="true"></script>
 
         @if (!nonav.Contains(action))
         {
             <!--导航-->
-
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
             </button>
@@ -55,6 +56,15 @@
                         <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
                         <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
                         <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+                            <!--标题-->
+                            @if (action != "index")
+                            {
+                                <a href='javascript:location.reload(false)' title="@Html.Raw(remark)">
+                                    <svg class="titleicon"><use xlink:href="#@icon"></use></svg> @title
+                                </a>
+                            }
+                        </li>
                         <li>
                             <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
                             <ul>
@@ -65,17 +75,9 @@
                     </ul>
                 </div>
             </div>
-
-            <!--标题-->
-            @if (action != "index")
-            {
-                <h4 class="m-3">
-                    <svg class="titleicon"><use xlink:href="#@icon"></use></svg> @title
-                </h4>
-            }
         }
 
-        <div class="min300">
+        <div class="min300 mt-3">
             @RenderBody()
         </div>
 

@@ -39,7 +39,7 @@ namespace Netnr.Blog.Web.Controllers
         {
             var ovm = new QueryDataOutputVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var query = from a in db.Notepad
                         join b in db.UserInfo on a.Uid equals b.UserId
@@ -72,51 +72,54 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveNote(Domain.Notepad mo)
+        public SharedResultVM SaveNote(Domain.Notepad mo)
         {
-            var vm = new ActionResultVM();
-
-            if (string.IsNullOrWhiteSpace(mo.NoteTitle) || string.IsNullOrWhiteSpace(mo.NoteContent))
+            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
-                vm.Set(ARTag.lack);
-            }
-            else
-            {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
-
-                var now = DateTime.Now;
-                if (mo.NoteId == 0)
+                if (string.IsNullOrWhiteSpace(mo.NoteTitle) || string.IsNullOrWhiteSpace(mo.NoteContent))
                 {
-                    mo.NoteCreateTime = now;
-                    mo.NoteUpdateTime = now;
-                    mo.Uid = uinfo.UserId;
-
-                    db.Notepad.Add(mo);
-
-                    int num = db.SaveChanges();
-                    vm.Set(num > 0);
-                    vm.Data = mo.NoteId;
+                    vm.Set(SharedEnum.RTag.lack);
                 }
                 else
                 {
-                    var currmo = db.Notepad.Find(mo.NoteId);
-                    if (currmo.Uid == uinfo.UserId)
-                    {
-                        currmo.NoteTitle = mo.NoteTitle;
-                        currmo.NoteContent = mo.NoteContent;
-                        currmo.NoteUpdateTime = now;
+                    var uinfo = Apps.LoginService.Get(HttpContext);
 
-                        db.Notepad.Update(currmo);
+                    var now = DateTime.Now;
+                    if (mo.NoteId == 0)
+                    {
+                        mo.NoteCreateTime = now;
+                        mo.NoteUpdateTime = now;
+                        mo.Uid = uinfo.UserId;
+
+                        db.Notepad.Add(mo);
 
                         int num = db.SaveChanges();
-
                         vm.Set(num > 0);
+                        vm.Data = mo.NoteId;
                     }
                     else
                     {
-                        vm.Set(ARTag.unauthorized);
+                        var currmo = db.Notepad.Find(mo.NoteId);
+                        if (currmo.Uid == uinfo.UserId)
+                        {
+                            currmo.NoteTitle = mo.NoteTitle;
+                            currmo.NoteContent = mo.NoteContent;
+                            currmo.NoteUpdateTime = now;
+
+                            db.Notepad.Update(currmo);
+
+                            int num = db.SaveChanges();
+
+                            vm.Set(num > 0);
+                        }
+                        else
+                        {
+                            vm.Set(SharedEnum.RTag.unauthorized);
+                        }
                     }
                 }
+
             }
 
             return vm;
@@ -128,25 +131,25 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM QueryNoteOne(int id)
+        public SharedResultVM QueryNoteOne(int id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var mo = db.Notepad.Find(id);
             if (mo == null)
             {
-                vm.Set(ARTag.invalid);
+                vm.Set(SharedEnum.RTag.invalid);
             }
             else if (mo.Uid == uinfo.UserId)
             {
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
                 vm.Data = mo;
             }
             else
             {
-                vm.Set(ARTag.unauthorized);
+                vm.Set(SharedEnum.RTag.unauthorized);
             }
 
             return vm;
@@ -158,11 +161,11 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM DelNote(int id)
+        public SharedResultVM DelNote(int id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var mo = db.Notepad.Find(id);
             if (mo.Uid == uinfo.UserId)
@@ -174,7 +177,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                vm.Set(ARTag.unauthorized);
+                vm.Set(SharedEnum.RTag.unauthorized);
             }
 
             return vm;

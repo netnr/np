@@ -22,7 +22,7 @@
     AutoHeight();
 </script>
 
-<partial name="_PartialQuote" model="@("sql-formatter.js,monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("sql-formatter.js,monaco-editor"))
 
 <script>
     var editor, dv = ss.lsStr('txt') || 'SELECT * FROM table1';
@@ -64,6 +64,7 @@
         that.disabled = true;
         ss.ajax({
             url: "https://sqlformat.darold.net/",
+            type: "post",
             data: {
                 colorize: 1,
                 uc_keyword: 2,

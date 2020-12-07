@@ -1,51 +1,64 @@
-﻿using Netnr.Tool.Items;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Netnr.Tool.Items;
 using System.Reflection;
+using System.Collections.Generic;
+using Netnr.Core;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Netnr.Tool
 {
     class Program
     {
-        static void enable()
-        {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.Write("\xfeff"); // bom = byte order mark
-        }
-
         static void Main()
         {
             Console.Title = MethodBase.GetCurrentMethod().DeclaringType.Namespace + "  v0.0.1";
-
             Console.WriteLine(Environment.NewLine);
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(CloseApp);
+
+            Test1();
 
             Menu();
+        }
+
+        public static void Test1()
+        {
+
         }
 
         public static void Menu()
         {
             var dic = new Dictionary<int, string>()
             {
-                { 1,"Git Pull （拉取指定目录下的所有项目，检测 .git 文件夹是否存在）"},
-                { 2,"OSInfoTo （获取系统信息）"},
-                { 3,"OSInfoTo （获取系统信息，可视化输出）"},
-                { 4,"Clear Project （清理项目 bin 、obj 目录）"}
+                { 0,"Exit"},
+                { 1,"Git Pull (All projects must exist in a .git folder)"},
+                { 2,"SystemStatusTo (Json)"},
+                { 3,"SystemStatusTo (View)"},
+                { 4,"Project cleanup (bin and obj)"},
+                { 5,"Project safe copy (Handle key and cleanup)"}
             };
             foreach (var key in dic.Keys)
             {
                 Console.WriteLine($"  {key}） " + dic[key]);
             }
             Console.WriteLine(Environment.NewLine);
+
+
             bool isnum = false;
             do
             {
-                Console.Write("请选择功能，输入序号：");
+                Console.Write("Enter the serial number：");
                 if (int.TryParse(Console.ReadLine(), out int num))
                 {
                     isnum = true;
                 }
                 if (isnum)
                 {
+                    if (num == 0)
+                    {
+                        break;
+                    }
+
                     if (dic.ContainsKey(num))
                     {
                         Switch(num);
@@ -53,7 +66,7 @@ namespace Netnr.Tool
                     else
                     {
                         isnum = false;
-                        Console.WriteLine("输入序号有误");
+                        Console.WriteLine("Serial number error");
                     }
                 }
             } while (!isnum);
@@ -61,26 +74,35 @@ namespace Netnr.Tool
 
         public static void Switch(int num)
         {
+            Console.WriteLine(Environment.NewLine);
             switch (num)
             {
                 case 1:
                     GitPull.Run();
                     break;
                 case 2:
-                    Console.WriteLine(new OSInfoTo().ToJson());
+                    Console.WriteLine(new SystemStatusTo().ToJson());
                     break;
                 case 3:
-                    Console.WriteLine(new OSInfoTo().ToView());
+                    Console.WriteLine(new SystemStatusTo().ToView());
                     break;
                 case 4:
-                    ClearProject.Run();
+                    ProjectCleanup.Run();
+                    break;
+                case 5:
+                    ProjectSafeCopy.Run();
                     break;
                 default:
                     Console.WriteLine("Invalid");
                     break;
             }
-            Console.ReadKey();
+            Console.WriteLine(Environment.NewLine);
+            Menu();
         }
 
+        public static void CloseApp(object sender, ConsoleCancelEventArgs args)
+        {
+            Environment.Exit(0);
+        }
     }
 }

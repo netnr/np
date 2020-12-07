@@ -17,7 +17,3 @@ Fork: <https://github.com/night-king/weixinSDK>
      - Method corresponding to `/merchant/category/getsub` interface `Merchant.Category.GetSub()`
      - Method corresponding to `/cgi-bin/message/template/send` interface `Cgi_Bin.Message.Template.Send()`
      - Separate according to the interface`/`, and finally the method name, the front is the class and subclass, when using it, you can know how to call the method by looking at the WeChat API` address
-
-### Frame
-- .NET Standard 2.0
-- .NET Framework 4.0

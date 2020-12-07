@@ -118,6 +118,28 @@
             <param name="owner">所属</param>
             <param name="IdOrPath">文件ID或路径</param>
         </member>
+        <member name="T:Netnr.FileServer.Apps.FilterConfigs">
+            <summary>
+            过滤器
+            </summary>
+        </member>
+        <member name="T:Netnr.FileServer.Apps.FilterConfigs.AllowCors">
+            <summary>
+            允许跨域
+            </summary>
+        </member>
+        <member name="M:Netnr.FileServer.Apps.FilterConfigs.AllowCors.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:Netnr.FileServer.Apps.FilterConfigs.AllowCors.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            action 执行之前
+            </summary>
+            <param name="context"></param>
+        </member>
         <member name="T:Netnr.FileServer.Controllers.APIController">
             <summary>
             API接口
@@ -271,28 +293,6 @@
             Swagger自定义样式
             </summary>
             <returns></returns>
-        </member>
-        <member name="T:Netnr.FileServer.Filters.FilterConfigs">
-            <summary>
-            过滤器
-            </summary>
-        </member>
-        <member name="T:Netnr.FileServer.Filters.FilterConfigs.AllowCors">
-            <summary>
-            允许跨域
-            </summary>
-        </member>
-        <member name="M:Netnr.FileServer.Filters.FilterConfigs.AllowCors.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
-            <summary>
-            
-            </summary>
-            <param name="context"></param>
-        </member>
-        <member name="M:Netnr.FileServer.Filters.FilterConfigs.AllowCors.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
-            <summary>
-            action 执行之前
-            </summary>
-            <param name="context"></param>
         </member>
         <member name="T:Netnr.FileServer.Model.FileRecord">
             <summary>
@@ -470,6 +470,295 @@
         </member>
         <member name="M:Netnr.FileServer.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        </member>
+        <member name="T:Netnr.SharedFast.GlobalTo">
+            <summary>
+            全局
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedFast.GlobalTo.TDB">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.GetConn">
+            <summary>
+            根据数据库类型获取连接字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Netnr.SharedFast.GlobalTo.Configuration">
+            <summary>
+            全局配置
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedFast.GlobalTo.HostEnvironment">
+            <summary>
+            托管环境信息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedFast.GlobalTo.ContentRootPath">
+            <summary>
+            内部访问（项目根路径）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedFast.GlobalTo.WebRootPath">
+            <summary>
+            web外部访问（wwwroot）
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.GetValue(System.String)">
+            <summary>
+            获取AppsettingsJson的值
+            </summary>
+            <param name="key">键路径，如：ConnectionStrings:SQLServer</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.GetValue``1(System.String)">
+            <summary>
+            获取AppsettingsJson的值
+            </summary>
+            <typeparam name="T">类型</typeparam>
+            <param name="key">键路径</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.ConvertValue``1(System.String)">
+            <summary>
+            值类型转换
+            </summary>
+            <typeparam name="T">类型</typeparam>
+            <param name="value">值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.ConvertValue(System.Type,System.String)">
+            <summary>
+            值类型转换
+            </summary>
+            <param name="type">类型</param>
+            <param name="value">值</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedPageVM">
+            <summary>
+            分页视图
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Rows">
+            <summary>
+            数据行
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Temp">
+            <summary>
+            临时数据
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Other">
+            <summary>
+            其它数据
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Pag">
+            <summary>
+            分页信息
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedPageVM.Route">
+            <summary>
+            路由 /home/index
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.QueryString">
+            <summary>
+            url 传参 k=1
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.PageKeyName">
+            <summary>
+            分页 参数名 默认 page
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedPageVM.Page(System.Int32)">
+            <summary>
+            生成页的地址
+            </summary>
+            <param name="pageIndex">页码</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedPaginationVM">
+            <summary>
+            分页参数
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.PageNumber">
+            <summary>
+            页码
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.PageSize">
+            <summary>
+            页量
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.Total">
+            <summary>
+            总数量
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.PageTotal">
+            <summary>
+            总页数
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedResultVM">
+            <summary>
+            通用请求方法返回对象
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedResultVM.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Code">
+            <summary>
+            错误码，200 表示成功，-1 表示异常，其它自定义建议从 1 开始累加
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Msg">
+            <summary>
+            消息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Data">
+            <summary>
+            主体数据
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Log">
+            <summary>
+            日志
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.UseTime">
+            <summary>
+            用时，毫秒
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedResultVM.PartTime">
+            <summary>
+            片段耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Set(Netnr.SharedEnum.RTag)">
+            <summary>
+            设置快捷标签，赋值code、msg
+            </summary>
+            <param name="tag">快捷标签枚举</param>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Set(System.Boolean)">
+            <summary>
+            设置快捷标签，赋值code、msg
+            </summary>
+            <param name="isyes"></param>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Set(System.Exception,System.Boolean)">
+            <summary>
+            设置快捷标签，赋值code、msg
+            </summary>
+            <param name="ex"></param>
+            <param name="showException">显示异常信息，默认true</param>
+        </member>
+        <member name="T:Netnr.SharedEnum">
+            <summary>
+            共享枚举
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedEnum.TypeDB">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.InMemory">
+            <summary>
+            Memory
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.SQLite">
+            <summary>
+            SQLite
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.MySQL">
+            <summary>
+            MySQL
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.Oracle">
+            <summary>
+            Oracle
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.SQLServer">
+            <summary>
+            SQLServer
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.PostgreSQL">
+            <summary>
+            PostgreSQL
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedEnum.RTag">
+            <summary>
+            返回结果常用类型
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.success">
+            <summary>
+            成功
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.fail">
+            <summary>
+            失败
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.error">
+            <summary>
+            错误
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.unauthorized">
+            <summary>
+            未授权
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.refuse">
+            <summary>
+            拒绝
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.exist">
+            <summary>
+            存在
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.invalid">
+            <summary>
+            无效
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.lack">
+            <summary>
+            缺省
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.exception">
+            <summary>
+            异常
+            </summary>
         </member>
     </members>
 </doc>

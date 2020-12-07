@@ -2,9 +2,9 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Netnr.DataKit.Application;
-using Netnr.Fast;
 using Netnr.ResponseFramework.Data;
+using Netnr.SharedFast;
+using Netnr.SharedDataKit.Applications;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -26,80 +26,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [ApiExplorerSettings(IgnoreApi = true)]
-        [Filters.FilterConfigs.IsAdmin]
+        [Apps.FilterConfigs.IsAdmin]
         public IActionResult Index()
         {
-            if (db.Database.IsInMemory())
-            {
-                return Content("不支持内存数据库，请切换其它数据库");
-            }
-
-            if (Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out TypeDB tdb))
-            {
-                ViewData["dbi"] = (int)tdb;
-            }
+            ViewData["tdb"] = GlobalTo.TDB;
 
             return View();
-        }
-
-        /// <summary>
-        /// Netnr.DataKit UI
-        /// </summary>
-        /// <returns></returns>
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult UI()
-        {
-            var dkui = GlobalTo.GetValue("DataKitUI");
-
-            string crContent;
-            try
-            {
-                //非完整路径，相对项目路径，即 UI 静态页面放置到项目资源目录下
-                if (!dkui.StartsWith("http"))
-                {
-                    var currHost = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-                    if (dkui.StartsWith("/") && currHost.EndsWith("/"))
-                    {
-                        currHost = currHost.TrimEnd('/');
-                    }
-                    dkui = currHost + dkui;
-                }
-
-                //优先取缓存
-                var cacheDkui = Core.CacheTo.Get("DataKitUI") as string;
-                if (string.IsNullOrWhiteSpace(cacheDkui))
-                {
-                    crContent = Core.HttpTo.Get(dkui);
-                    Core.CacheTo.Set("DataKitUI", crContent);
-                }
-                else
-                {
-                    crContent = cacheDkui;
-
-                    System.Threading.ThreadPool.QueueUserWorkItem(_ =>
-                    {
-                        try
-                        {
-                            Core.CacheTo.Set("DataKitUI", Core.HttpTo.Get(dkui));
-                        }
-                        catch (Exception)
-                        {
-
-                        }
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                crContent = "请求 UI 地址异常，错误信息：" + ex.Message;
-            }
-
-            return new ContentResult()
-            {
-                StatusCode = 200,
-                ContentType = "text/html",
-                Content = crContent
-            };
         }
 
         #region DK API
@@ -110,27 +42,21 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="tdb"></param>
         /// <param name="conn"></param>
         /// <returns></returns>
-        private ActionResultVM ConnCheck(ref TypeDB? tdb, ref string conn)
+        private SharedResultVM ConnCheck(ref SharedEnum.TypeDB? tdb, ref string conn)
         {
-            var vm = new ActionResultVM();
-            if (db.Database.IsInMemory())
+            var vm = new SharedResultVM();
+
+            //没指定连接字符串时取后台连接信息
+            if (string.IsNullOrWhiteSpace(conn))
             {
-                vm.Set(ARTag.refuse);
-                vm.Msg = "不支持内存数据库，请切换其它数据库";
-            }
-            else
-            {
-                //没指定连接字符串时取后台连接信息
-                if (string.IsNullOrWhiteSpace(conn))
+                tdb = GlobalTo.TDB;
+                conn = db.Database.GetDbConnection().ConnectionString;
+                if (db.Database.IsSqlite())
                 {
-                    tdb = GlobalTo.TDB;
-                    conn = db.Database.GetDbConnection().ConnectionString;
-                    if (db.Database.IsSqlite())
-                    {
-                        conn = conn.Replace("Filename=", "Data Source=");
-                    }
+                    conn = conn.Replace("Filename=", "Data Source=");
                 }
             }
+
             return vm;
         }
 
@@ -142,13 +68,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
-        [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM GetTable(TypeDB? tdb, string conn)
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM GetTable(SharedEnum.TypeDB? tdb, string conn)
         {
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = new DataKitUseService().GetTable(tdb, conn);
+                vm = DataKitService.GetTable(tdb, conn);
             }
             return vm;
         }
@@ -162,13 +88,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM GetColumn([FromForm] TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM GetColumn([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
         {
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = new DataKitUseService().GetColumn(tdb, conn, filterTableName);
+                vm = DataKitService.GetColumn(tdb, conn, filterTableName);
             }
             return vm;
         }
@@ -183,13 +109,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
-        [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM SetTableComment(TypeDB? tdb, string conn, string TableName, string TableComment)
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM SetTableComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string TableComment)
         {
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = new DataKitUseService().SetTableComment(tdb, conn, TableName, TableComment);
+                vm = DataKitService.SetTableComment(tdb, conn, TableName, TableComment);
             }
             return vm;
         }
@@ -205,13 +131,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
-        [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM SetColumnComment(TypeDB? tdb, string conn, string TableName, string FieldName, string FieldComment)
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM SetColumnComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string FieldName, string FieldComment)
         {
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = new DataKitUseService().SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
+                vm = DataKitService.SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
             }
             return vm;
         }
@@ -231,13 +157,30 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
-        [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM GetData(SharedEnum.TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
         {
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = new DataKitUseService().GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
+                vm = DataKitService.GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
+            }
+            return vm;
+        }
+
+        /// <summary>
+        /// 查询数据库环境信息
+        /// </summary>
+        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="conn">连接字符串</param>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM GetDEI(SharedEnum.TypeDB? tdb, string conn)
+        {
+            var vm = ConnCheck(ref tdb, ref conn);
+            if (vm.Code == 0)
+            {
+                vm = DataKitService.GetDEI(tdb, conn);
             }
             return vm;
         }
@@ -250,17 +193,17 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
-        [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM QueryTableConfig()
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM QueryTableConfig()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var query = from a in db.SysTableConfig
                         group a by a.TableName into g
                         select g.Key;
 
             vm.Data = query.ToList();
-            vm.Set(ARTag.success);
+            vm.Set(SharedEnum.RTag.success);
 
             return vm;
         }
@@ -273,10 +216,10 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [Filters.FilterConfigs.IsAdmin]
-        public ActionResultVM SaveTableConfig(string rows, int buildType)
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM SaveTableConfig(string rows, int buildType)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var listMo = rows.ToEntitys<Domain.SysTableConfig>();
             var hasTableName = listMo.Select(x => x.TableName).ToList();
@@ -316,61 +259,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             vm.Data = db.SaveChanges();
-            vm.Set(ARTag.success);
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 根据JSON数据重置数据库
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResultVM ResetDataBaseForJson()
-        {
-            var vm = new ActionResultVM();
-            try
-            {
-                //非内部调用 && 是爬虫
-                if (HttpContext != null && new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
-                {
-                    vm.Set(ARTag.refuse);
-                    vm.Msg = "are you human？";
-                }
-                else
-                {
-                    //用户
-                    vm = new Application.DataMirrorService().AddForJson();
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 数据库备份数据为JSON
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResultVM BackupDataBaseAsJson()
-        {
-            var vm = new ActionResultVM();
-
-            try
-            {
-                //是否覆盖JSON文件，默认不覆盖，避免线上重置功能被破坏
-                var CoverJson = false;
-
-                vm = new Application.DataMirrorService().SaveAsJson(CoverJson);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
+            vm.Set(SharedEnum.RTag.success);
 
             return vm;
         }

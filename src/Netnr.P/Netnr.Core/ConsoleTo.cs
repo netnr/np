@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace Netnr.Core
 {
@@ -9,17 +9,6 @@ namespace Netnr.Core
     /// </summary>
     public class ConsoleTo
     {
-        /// <summary>
-        /// 写入错误信息
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <param name="isFull">是否全部信息，默认false</param>
-        public static void Log(Exception ex, bool isFull = false)
-        {
-            var msg = ExceptionGet(ex, isFull);
-            Log(msg);
-        }
-
         /// <summary>
         /// 写入消息
         /// </summary>
@@ -30,26 +19,11 @@ namespace Netnr.Core
 
             try
             {
-                switch (msg.GetType().Name)
+                txt = msg.GetType().Name switch
                 {
-                    case "Enum":
-                    case "Byte":
-                    case "Char":
-                    case "String":
-                    case "Boolean":
-                    case "UInt16":
-                    case "Int16":
-                    case "Int32":
-                    case "Int64":
-                    case "Single":
-                    case "Double":
-                    case "Decimal":
-                        txt = msg.ToString();
-                        break;
-                    default:
-                        txt = msg.ToJson();
-                        break;
-                }
+                    "Enum" or "Byte" or "Char" or "String" or "StringBuilder" or "Boolean" or "UInt16" or "Int16" or "Int32" or "Int64" or "Single" or "Double" or "Decimal" => msg.ToString(),
+                    _ => msg.ToJson(),
+                };
             }
             catch (Exception)
             {
@@ -58,38 +32,21 @@ namespace Netnr.Core
 
             var now = DateTime.Now;
             var filename = $"console_{now:yyyyMMdd}.log";
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.ToString("yyyyMM"), filename);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.Year.ToString(), filename);
             FileTo.WriteText(txt, path);
         }
 
         /// <summary>
-        /// 获取异常信息
+        /// 写入错误信息
         /// </summary>
         /// <param name="ex"></param>
-        /// <param name="isFull">是否包含堆栈所有信息，默认 false</param>
-        /// <returns></returns>
-        private static string ExceptionGet(Exception ex, bool isFull = false)
+        public static void Log(Exception ex)
         {
-            var en = Environment.NewLine;
-            var st = ex.StackTrace;
-            if (!isFull)
-            {
-                st = st.Replace(en, "^").Split('^')[0];
-            }
-
-            string msg = string.Join(en, new List<string>()
-            {
-                $"====日志记录时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}",
-                $"消息内容：{ex.Message}",
-                $"引发异常的方法：{st}{en}"
-            });
-
-            if (ex.InnerException != null)
-            {
-                msg += ExceptionGet(ex.InnerException, isFull);
-            }
-
-            return msg;
+            var sb = new StringBuilder();
+            sb.AppendLine($"====日志记录时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine(ex.ToJson());
+            Log(sb);
         }
+
     }
 }

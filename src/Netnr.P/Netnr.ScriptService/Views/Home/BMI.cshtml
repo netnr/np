@@ -6,24 +6,24 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md mt-3">
-            <div class="input-group">
+        <div class="col-md mb-3">
+            <div class="input-group input-group-lg">
                 <div class="input-group-prepend">
                     <span class="input-group-text">体重</span>
                 </div>
                 <input type="number" id="txt1" class="form-control" placeholder="体重（单位：千克/kg）" min="25" max="300" step="1" maxlength="3" />
             </div>
         </div>
-        <div class="col-md mt-3">
-            <div class="input-group">
+        <div class="col-md mb-3">
+            <div class="input-group input-group-lg">
                 <div class="input-group-prepend">
                     <span class="input-group-text">身高</span>
                 </div>
                 <input type="number" id="txt2" class="form-control" placeholder="身高（单位：米/m）" min="1" max="3" step="0.1" maxlength="4" />
             </div>
         </div>
-        <div class="col-md mt-3">
-            <div class="input-group">
+        <div class="col-md mb-3">
+            <div class="input-group input-group-lg">
                 <div class="input-group-prepend">
                     <span class="input-group-text">BMI</span>
                 </div>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="row mt-5">
+    <div class="row my-3">
         <div class="col-md">
             <div class="progress">
                 <div class="progress-bar bg-dark" title="低重：BMI < 18.5" style="width: 100%">低重：BMI < 18.5</div>
@@ -52,6 +52,14 @@
             <div class="progress">
                 <div class="progress-bar bg-danger" title="肥胖：BMI ≥ 28.0" style="width: 100%">肥胖：BMI ≥ 28.0</div>
             </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <p>计算公式： BMI = 体重(KG) ÷ 身高²(M)</p>
+            <p>比如：小M是一个60公斤的人，身高是1.7米，则他的计算结果应该是：60÷1.7² =20.76</p>
+            <p>一个人的健康指数范围应该是在：18.5～24，指数在这之间是最好最正常的！</p>
         </div>
     </div>
 </div>

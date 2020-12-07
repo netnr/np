@@ -121,7 +121,7 @@ function SaveRun(st) {
             } else if (data.code == 403) {
                 alert("It's not belongs to you");
             } else {
-                alert('fail');
+                alert(data.msg);
             }
         },
         error: function (ex) {

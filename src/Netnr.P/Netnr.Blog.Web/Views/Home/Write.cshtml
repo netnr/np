@@ -30,6 +30,6 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("netnrmd.css,netnrmd.js,monaco-editor,selectpage")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor,selectpage"))
 
 <script src="/js/home/write.js" asp-append-version="true"></script>

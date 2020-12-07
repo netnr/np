@@ -7,7 +7,7 @@
 
 ### 框架组件
 - jQuery + Bootstrap4
-- .NET Core (latest)
+- .NET (latest)
 - EF + Linq
 - 支持：SQLServer、MySQL、PostgreSQL、SQLite、InMemory等
 - ==========================================

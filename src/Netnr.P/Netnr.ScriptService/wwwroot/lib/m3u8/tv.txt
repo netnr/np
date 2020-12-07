@@ -9,11 +9,11 @@ http://ivi.bupt.edu.cn/hls/cctv3hd.m3u8
 http://ivi.bupt.edu.cn/hls/cctv4.m3u8
 #EXTINF:-1 ,CCTV-5体育
 http://ivi.bupt.edu.cn/hls/cctv5hd.m3u8
-#EXTINF:-1 ,CCTV-6高清
+#EXTINF:-1 ,CCTV-6电影
 http://ivi.bupt.edu.cn/hls/cctv6hd.m3u8
 #EXTINF:-1 ,CCTV-7军事农业
 http://ivi.bupt.edu.cn/hls/cctv7.m3u8
-#EXTINF:-1 ,CCTV-8高清
+#EXTINF:-1 ,CCTV-8电视剧
 http://ivi.bupt.edu.cn/hls/cctv8hd.m3u8
 #EXTINF:-1 ,CCTV-9纪录
 http://ivi.bupt.edu.cn/hls/cctv9.m3u8

@@ -1,7 +1,8 @@
 # Netnr.FileServer (NFS)
 基于 .NET Core 的简单文件服务器，数据库为 SQLite
 
-> 演示：<https://d-fileserver.zme.ink>
+> 演示：<https://fs.netnr.eu.org>  
+> 演示：<https://netnr-fs.azurewebsites.net>
 
 
 > `appsettings.json` 为配置文件，设置直接生效不用重启服务

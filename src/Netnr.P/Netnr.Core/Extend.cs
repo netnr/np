@@ -50,6 +50,18 @@ namespace Netnr
         }
 
         /// <summary>
+        /// JSON字符串 转 类型
+        /// </summary>
+        /// <param name="json">JSON字符串</param>
+        /// <param name="type">类型</param>
+        /// <returns></returns>
+        public static object ToType(this string json, Type type)
+        {
+            var mo = JsonConvert.DeserializeObject(json, type);
+            return mo;
+        }
+
+        /// <summary>
         /// JSON字符串 转 实体
         /// </summary>
         /// <typeparam name="T">实体泛型</typeparam>

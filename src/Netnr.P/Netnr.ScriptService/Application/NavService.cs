@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Netnr.Core;
+using Netnr.SharedFast;
+using Newtonsoft.Json.Linq;
 
 namespace Netnr.ScriptService.Application
 {
@@ -8,8 +10,8 @@ namespace Netnr.ScriptService.Application
         {
             get
             {
-                var fullPath = Fast.PathTo.Combine(GlobalTo.WebRootPath, "db/nav.json");
-                return Core.FileTo.ReadText(fullPath).ToJArray();
+                var fullPath = PathTo.Combine(GlobalTo.WebRootPath, "db/nav.json");
+                return FileTo.ReadText(fullPath).ToJArray();
             }
         }
 

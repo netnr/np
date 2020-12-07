@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Netnr.WeChat;
-using Netnr.WeChat.Entities;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using Netnr.WeChat;
+using Netnr.WeChat.Entities;
 
 namespace Netnr.Test.Controllers
 {

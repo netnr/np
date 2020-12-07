@@ -1,36 +1,56 @@
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="input-group input-group-lg">
+    <div class="form-row">
+        <div class="col-auto mr-3">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">长度</span>
                 </div>
                 <div class="input-group-prepend">
-                    <input class="form-control form-control-lg nrLen" title="长度" type="number" name="name" value="16" min="1" max="99" step="1" />
+                    <input class="form-control nrLen" title="长度" type="number" name="name" value="16" min="1" max="99" step="1" />
                 </div>
+            </div>
+        </div>
+        <div class="col-auto my-2">
+            <div class="custom-control custom-checkbox custom-control-inline">
+                <input type="checkbox" class="custom-control-input" id="chkUpper" value="A" checked>
+                <label class="custom-control-label" for="chkUpper"></label><span>ABC</span>
+            </div>
+        </div>
+        <div class="col-auto my-2">
+            <div class="custom-control custom-checkbox custom-control-inline">
+                <input type="checkbox" class="custom-control-input" id="chkLower" value="a" checked>
+                <label class="custom-control-label" for="chkLower">abc</label>
+            </div>
+        </div>
+        <div class="col-auto my-2">
+            <div class="custom-control custom-checkbox custom-control-inline">
+                <input type="checkbox" class="custom-control-input" id="chkNumber" value="0" checked>
+                <label class="custom-control-label" for="chkNumber">123</label>
+            </div>
+        </div>
+        <div class="col-auto my-2">
+            <div class="custom-control custom-checkbox custom-control-inline">
+                <input type="checkbox" class="custom-control-input" id="chkSymbol" value="!">
+                <label class="custom-control-label" for="chkSymbol">!@@#</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">排除</span>
+                </div>
+                <input class="form-control nrExclude" title="排除" value="0oOiI1l" placeholder="排除字符，如：0oOiIlL1" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-danger nrReset">重置</button>
+        </div>
+        <div class="col-md-12">
+            <div class="input-group input-group-lg">
                 <div class="input-group-prepend">
                     <button class="btn btn-warning nrGk">刷新</button>
                 </div>
-                <input type="text" class="form-control nrRcv">
-            </div>
-            <div class="my-3 clearfix">
-                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
-                    <input type="checkbox" class="custom-control-input" id="chkUpper" value="A" checked>
-                    <label class="custom-control-label" for="chkUpper">ABC</label>
-                </div>
-                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
-                    <input type="checkbox" class="custom-control-input" id="chkLower" value="a" checked>
-                    <label class="custom-control-label" for="chkLower">abc</label>
-                </div>
-                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
-                    <input type="checkbox" class="custom-control-input" id="chkNumber" value="0" checked>
-                    <label class="custom-control-label" for="chkNumber">123</label>
-                </div>
-                <div class="custom-control custom-checkbox float-left mt-1 mr-4">
-                    <input type="checkbox" class="custom-control-input" id="chkSymbol" value="!" checked>
-                    <label class="custom-control-label" for="chkSymbol">!@@#</label>
-                </div>
-                <input class="form-control form-control-sm float-left nrExclude" title="排除" placeholder="排除字符，如：0oOiIlL1" style="width:initial" />
+                <textarea class="form-control min300 nrRcv"></textarea>
             </div>
         </div>
     </div>
@@ -196,7 +216,11 @@
             mm += this.value;
         })
         if (mm != '' && len > 0) {
-            $('.nrRcv').val(rc.randomize(mm, len, { exclude: te == "" ? null : te }));
+            var rcv = [];
+            while (rcv.length < 9) {
+                rcv.push(rc.randomize(mm, len, { exclude: te == "" ? null : te }))
+            }
+            $('.nrRcv').val(rcv.join('\r\n'));
 
             var obj = {};
             $.each('.nrLen .nrExclude #chkUpper #chkLower #chkNumber #chkSymbol'.split(' '), function () {
@@ -223,4 +247,16 @@
     $('.nrRcv').focus(function () {
         this.select();
     })
+
+    $('.nrReset').click(function () {
+        $.each('.nrLen .nrExclude #chkUpper #chkLower #chkNumber #chkSymbol'.split(' '), function () {
+            var jn = $('' + this);
+            if (jn[0].type == "checkbox") {
+                jn[0].checked = jn[0].defaultChecked;
+            } else {
+                jn.val(jn[0].defaultValue);
+            }
+        });
+        $('.nrGk')[0].click();
+    });
 </script>

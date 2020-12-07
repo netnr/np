@@ -71,7 +71,7 @@
     AutoHeight();
 </script>
 
-<partial name="_PartialQuote" model="@("xml2json.js,monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("xml2json.js,monaco-editor"))
 
 <script>
     var editor1, editor2;

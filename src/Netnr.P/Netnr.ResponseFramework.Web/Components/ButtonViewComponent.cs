@@ -26,7 +26,7 @@ namespace Netnr.ResponseFramework.Web.ViewComponents
             if (moMenu != null)
             {
                 //登录用户的角色信息
-                var luri = Application.CommonService.LoginUserRoleInfo(HttpContext);
+                var luri = Apps.LoginService.LoginUserRoleInfo(HttpContext);
                 if (luri != null && !string.IsNullOrWhiteSpace(luri.SrButtons))
                 {
                     //角色配置的按钮

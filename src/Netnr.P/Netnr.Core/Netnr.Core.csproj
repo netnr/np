@@ -1,43 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
-    <Description>开发常用的核心类库；文档：https://zme.ink</Description>
-    <Copyright>netnr</Copyright>
-    <PackageIconUrl></PackageIconUrl>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageTags>netnr</PackageTags>
-    <PackageReleaseNotes>- 调整 `CacheTo`类 依赖 `System.Runtime.Caching` 组件
-- 调整 框架版本为 `NET45`、`.NETStandard2.0`</PackageReleaseNotes>
-    <Authors>netnr</Authors>
-    <Version>1.4.0</Version>
-    <DocumentationFile>Netnr.Core.xml</DocumentationFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <LangVersion>8.0</LangVersion>
-    <PackageIcon>favicon.png</PackageIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net45;netstandard2.0;netstandard2.1</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<Description>开发常用的核心类库；文档：https://zme.ink</Description>
+		<Copyright>netnr</Copyright>
+		<PackageIconUrl></PackageIconUrl>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
+		<PackageLicenseUrl></PackageLicenseUrl>
+		<PackageTags>netnr</PackageTags>
+		<PackageReleaseNotes>
+		</PackageReleaseNotes>
+		<Authors>netnr</Authors>
+		<Version>1.4.1</Version>
+		<DocumentationFile>Netnr.Core.xml</DocumentationFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>favicon.png</PackageIcon>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
+		<DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Runtime.Caching">
-      <Version>4.7.0</Version>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="System.Runtime.Caching">
+			<Version>5.0.0</Version>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+		<PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="favicon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="favicon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
     ViewData["Title"] = "draw";
 }
 
-<partial name="_PartialQuote" model="@("loading")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading"))
 
 <input type="hidden" id="vid" value='@ViewData["vid"]' />
 

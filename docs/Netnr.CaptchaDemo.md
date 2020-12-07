@@ -1,7 +1,7 @@
 # Netnr.CaptchaDemo
 Verification code example
 
-> Demo: <https://d-captcha.zme.ink>
+> Demo: <https://netnr-captcha.herokuapp.com>
 
 ### Quiz
 - `System.Drawing.Common` is the fastest, Windows is the first choice, Linux requires **libgdiplus** components

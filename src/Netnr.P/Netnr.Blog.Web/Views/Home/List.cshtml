@@ -1,4 +1,4 @@
-@model PageVM
+@model SharedPageVM
 @{
     var uw = Model.Temp as UserWriting;
     var tt = JArray.Parse(uw.Spare1);
@@ -122,7 +122,7 @@
                                     var avatarpath = "/favicon.svg";
                                     if (!string.IsNullOrWhiteSpace(item.Spare2))
                                     {
-                                        avatarpath = Netnr.Fast.PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), item.Spare2);
+                                        avatarpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), item.Spare2);
                                     }
 
                                     <img class="imgup" src="@avatarpath" alt="头像" onerror="this.src = '/favicon.svg'; this.onerror = null;">
@@ -210,6 +210,6 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("netnrmd.css,netnrmd.js,monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor"))
 
 <script src="/js/home/list.js" async defer asp-append-version="true"></script>

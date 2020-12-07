@@ -1,4 +1,4 @@
-@model PageVM
+@model SharedPageVM
 
 @{
     ViewData["Title"] = "Discover draw";
@@ -7,7 +7,7 @@
         ViewData["Title"] = ViewData["Nickname"] + " draw";
     }
 
-    var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
     var rows = Model.Rows as List<Netnr.Blog.Domain.Draw>;
 
     string ca = ViewContext.RouteData.Values["controller"].ToString().ToLower() + "/" + ViewContext.RouteData.Values["action"].ToString().ToLower();

@@ -20,6 +20,7 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("easyui")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("easyui"))
+<partial name="_PartialQuote" model="@("z.css,z.js")" />
 
 <script src="/js/admin/reply.js" asp-append-version="true"></script>

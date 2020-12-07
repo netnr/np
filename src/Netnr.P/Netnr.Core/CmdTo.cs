@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Netnr.Core
@@ -8,6 +9,56 @@ namespace Netnr.Core
     /// </summary>
     public class CmdTo
     {
+        /// <summary>
+        /// 执行
+        /// </summary>
+        /// <param name="appName">执行程序绝对路径</param>
+        /// <param name="arguments">参数</param>
+        /// <param name="resultOutput">结果输出</param>
+        /// <returns></returns>
+        public static void Execute(string appName, string arguments, Action<string, int> resultOutput)
+        {
+            Process p = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = appName,
+                    Arguments = arguments,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                }
+            };
+
+            p.OutputDataReceived += (s, e) =>
+            {
+                resultOutput(e.Data, 1);
+            };
+
+            p.ErrorDataReceived += (s, e) =>
+            {
+                resultOutput(e.Data, 0);
+            };
+
+            try
+            {
+                p.Start();
+                p.BeginOutputReadLine();
+                p.BeginErrorReadLine();
+                p.WaitForExit();
+                p.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            finally
+            {
+                p.Dispose();
+            }
+        }
+
         /// <summary>  
         /// Windows操作系统，执行cmd命令
         /// 多命令请使用批处理命令连接符：  
@@ -29,7 +80,7 @@ namespace Netnr.Core
 
             //说明：不管命令是否成功均执行exit命令，否则当调用ReadToEnd()方法时，会处于假死状态  
             var cmd = cmdText + " &exit";
-            using (var p = new System.Diagnostics.Process())
+            using (var p = new Process())
             {
                 p.StartInfo.FileName = cmdPath;
                 p.StartInfo.UseShellExecute = false; //是否使用操作系统shell启动  
@@ -116,7 +167,7 @@ namespace Netnr.Core
             /// <returns>A `BashResult` containing the command's output information.</returns>
             public BashResult Command(string input, bool redirect = true)
             {
-                using (var bash = new System.Diagnostics.Process { StartInfo = BashInfo(input, redirect) })
+                using (var bash = new Process { StartInfo = BashInfo(input, redirect) })
                 {
                     bash.Start();
 
@@ -144,9 +195,9 @@ namespace Netnr.Core
                     return new BashResult(null, null, ExitCode);
             }
 
-            private System.Diagnostics.ProcessStartInfo BashInfo(string input, bool redirectOutput)
+            private ProcessStartInfo BashInfo(string input, bool redirectOutput)
             {
-                return new System.Diagnostics.ProcessStartInfo
+                return new ProcessStartInfo
                 {
                     FileName = PbashPath,
                     Arguments = $"-c \"{input}\"",

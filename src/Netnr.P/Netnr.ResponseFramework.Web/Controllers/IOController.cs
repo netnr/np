@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Application;
+using Netnr.Core;
+using Netnr.SharedFast;
+using Netnr.SharedApp;
+using Netnr.SharedNpoi;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -30,14 +34,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="title">标题，文件名</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM Export(QueryDataInputVM ivm, string title = "export")
+        public SharedResultVM Export(QueryDataInputVM ivm, string title = "export")
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             //虚拟路径
             string vpath = GlobalTo.GetValue("StaticResource:TmpDir");
             //物理路径
-            var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+            var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
             if (!Directory.Exists(ppath))
             {
                 Directory.CreateDirectory(ppath);
@@ -54,7 +58,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 switch (ivm.TableName?.ToLower())
                 {
                     default:
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.invalid);
                         break;
 
                     //角色
@@ -90,21 +94,22 @@ namespace Netnr.ResponseFramework.Web.Controllers
                         break;
                 }
 
-                if (vm.Msg != ARTag.invalid.ToString())
+                Console.WriteLine($"Export table rows : {dtReport.Rows.Count}");
+                if (vm.Msg != SharedEnum.RTag.invalid.ToString())
                 {
                     //生成
-                    if (Fast.NpoiTo.DataTableToExcel(dtReport, Fast.PathTo.Combine(ppath, filename)))
+                    if (NpoiTo.DataTableToExcel(dtReport, PathTo.Combine(ppath, filename)))
                     {
-                        vm.Data = Fast.PathTo.Combine(vpath, filename);
+                        vm.Data = PathTo.Combine(vpath, filename);
 
                         //生成的Excel继续操作
-                        ExportService.ExcelDraw(Fast.PathTo.Combine(ppath, filename), ivm);
+                        ExportService.ExcelDraw(PathTo.Combine(ppath, filename), ivm);
 
-                        vm.Set(ARTag.success);
+                        vm.Set(SharedEnum.RTag.success);
                     }
                     else
                     {
-                        vm.Set(ARTag.fail);
+                        vm.Set(SharedEnum.RTag.fail);
                     }
                 }
             }
@@ -125,7 +130,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public void ExportDown(string path)
         {
             path = GlobalTo.ContentRootPath + path;
-            new Fast.DownTo(Response).Stream(path, "");
+            new DownTo(Response).Stream(path, "");
         }
 
         #endregion

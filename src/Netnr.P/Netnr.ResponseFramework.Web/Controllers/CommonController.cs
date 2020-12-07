@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -38,7 +40,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             if (type != "all")
             {
                 #region 根据登录用户查询角色配置的菜单
-                var userinfo = Application.CommonService.GetLoginUserInfo(HttpContext);
+                var userinfo = Apps.LoginService.GetLoginUserInfo(HttpContext);
                 if (!string.IsNullOrWhiteSpace(userinfo.RoleId))
                 {
                     var role = Application.CommonService.QuerySysRoleEntity(x => x.SrId == userinfo.RoleId);
@@ -75,7 +77,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             #endregion
 
-            result = Core.TreeTo.ListToTree(listNode, "Pid", "Id", new List<string> { Guid.Empty.ToString() });
+            result = TreeTo.ListToTree(listNode, "Pid", "Id", new List<string> { Guid.Empty.ToString() });
 
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -112,7 +114,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             #endregion
 
-            result = Core.TreeTo.ListToTree(listNode, "Pid", "Id", new List<string> { Guid.Empty.ToString() });
+            result = TreeTo.ListToTree(listNode, "Pid", "Id", new List<string> { Guid.Empty.ToString() });
 
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -167,9 +169,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="subdir">自定义子目录，如：doc</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResultVM> Upload(IFormFileCollection files, int? temp, string subdir)
+        public async Task<SharedResultVM> Upload(IFormFileCollection files, int? temp, string subdir)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -185,11 +187,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        vpath = Fast.PathTo.Combine(vpath, subdir, now.ToString("yyyy'/'MM'/'dd"));
+                        vpath = PathTo.Combine(vpath, subdir, now.ToString("yyyy'/'MM'/'dd"));
                     }
 
                     //物理路径
-                    var ppath = Fast.PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
                     if (!Directory.Exists(ppath))
                     {
                         Directory.CreateDirectory(ppath);
@@ -200,14 +202,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         var file = files[i];
                         var ext = Path.GetExtension(file.FileName);
-                        var filename = now.ToString("HHmmss") + Core.RandomTo.NumCode() + ext;
+                        var filename = now.ToString("HHmmss") + RandomTo.NumCode() + ext;
 
-                        using (var stream = new FileStream(Fast.PathTo.Combine(ppath, filename), FileMode.Create))
+                        using (var stream = new FileStream(PathTo.Combine(ppath, filename), FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                         }
 
-                        listPath.Add(Fast.PathTo.Combine(vpath, filename));
+                        listPath.Add(PathTo.Combine(vpath, filename));
                     }
 
                     if (listPath.Count == 1)
@@ -218,7 +220,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         vm.Data = listPath;
                     }
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
             }
             catch (Exception ex)

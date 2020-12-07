@@ -7,7 +7,7 @@ Personal site
 
 ### Framework components
 - jQuery + Bootstrap4
-- .NET Core (latest)
+- .NET (latest)
 - EF + Linq
 - Support: SQLServer, MySQL, PostgreSQL, SQLite, InMemory, etc.
 - ==========================================

@@ -1,7 +1,7 @@
 @model Netnr.Blog.Domain.DocSet
 @{
     ViewData["Title"] = ViewContext.RouteData.Values["action"].ToString() + " Doc";
-    var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
 }
 <style>
     .adf {

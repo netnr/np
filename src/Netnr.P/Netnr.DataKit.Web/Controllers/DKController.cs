@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.DataKit.Application;
+using Netnr.SharedDataKit.Applications;
 
 namespace Netnr.DataKit.Web.Controllers
 {
@@ -7,72 +7,72 @@ namespace Netnr.DataKit.Web.Controllers
     /// Netnr.DataKit API
     /// </summary>
     [Route("[controller]/[action]")]
-    [ResponseCache(Duration = 3)]
-    [Filters.FilterConfigs.AllowCors]
+    [ResponseCache(Duration = 2)]
+    [Apps.FilterConfigs.AllowCors]
     public class DKController : Controller
     {
         /// <summary>
         /// 获取所有表名及注释
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetTable(TypeDB? tdb, string conn)
+        public SharedResultVM GetTable(SharedEnum.TypeDB? tdb, string conn)
         {
-            var vm = new DataKitUseService().GetTable(tdb, conn);
+            var vm = DataKitService.GetTable(tdb, conn);
             return vm;
         }
 
         /// <summary>
         /// 获取所有列
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM GetColumn([FromForm] TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
+        public SharedResultVM GetColumn([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
         {
-            var vm = new DataKitUseService().GetColumn(tdb, conn, filterTableName);
+            var vm = DataKitService.GetColumn(tdb, conn, filterTableName);
             return vm;
         }
 
         /// <summary>
         /// 设置表注释
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="TableName">表名</param>
         /// <param name="TableComment">表注释</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM SetTableComment(TypeDB? tdb, string conn, string TableName, string TableComment)
+        public SharedResultVM SetTableComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string TableComment)
         {
-            var vm = new DataKitUseService().SetTableComment(tdb, conn, TableName, TableComment);
+            var vm = DataKitService.SetTableComment(tdb, conn, TableName, TableComment);
             return vm;
         }
 
         /// <summary>
         /// 设置列注释
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="TableName">表名</param>
         /// <param name="FieldName">列名</param>
         /// <param name="FieldComment">列注释</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM SetColumnComment(TypeDB? tdb, string conn, string TableName, string FieldName, string FieldComment)
+        public SharedResultVM SetColumnComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string FieldName, string FieldComment)
         {
-            var vm = new DataKitUseService().SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
+            var vm = DataKitService.SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
             return vm;
         }
 
         /// <summary>
         /// 查询数据
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="TableName">表名</param>
         /// <param name="page">页码</param>
@@ -83,9 +83,22 @@ namespace Netnr.DataKit.Web.Controllers
         /// <param name="whereSql">条件</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM GetData(TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
+        public SharedResultVM GetData(SharedEnum.TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
         {
-            var vm = new DataKitUseService().GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
+            var vm = DataKitService.GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
+            return vm;
+        }
+
+        /// <summary>
+        /// 查询数据库环境信息
+        /// </summary>
+        /// <param name="tdb">数据库类型</param>
+        /// <param name="conn">连接字符串</param>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM GetDEI(SharedEnum.TypeDB? tdb, string conn)
+        {
+            var vm = DataKitService.GetDEI(tdb, conn);
             return vm;
         }
     }

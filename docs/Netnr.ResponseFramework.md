@@ -1,7 +1,9 @@
 # netnrf responsive framework
 .NET Core responsive framework, based on Ace Admin framework menu navigation, Bootstrap layout, fontAwesome icon, embedded Iframe, data binding with EasyUI, dynamic configuration list, dynamic configuration form
 
-> Demo: <https://d-rf.zme.ink>
+> Demo: <https://rf.netnr.eu.org>  
+> Demo: <https://rf2.netnr.com>
+
 
 ### [CHANGELOG](Netnr.ResponseFramework.ChangeLog.md)
 
@@ -9,7 +11,7 @@
 
 <h3><a href="static/pd/Netnr.ResponseFramework.SQLServer.pdm" title="PD Design" target="_blank">Netnr.ResponseFramework.SQLServer.pdm</a></h3>
 
-### v3.x
+### Architecture
 - The front end adopts jQuery + Bootstrap + EasyUI + AceAdmin + fontAwesome
 - Backend adopts .NET Core + EF + SQL (SQLServer, MySQL, PostgreSQL, SQLite)
     - The database script is placed in the `wwwroot/scripts/` directory

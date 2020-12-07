@@ -1,0 +1,249 @@
+﻿
+<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>图片压缩 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 图片压缩" />
+    <meta name="description" content="Script Services 图片压缩" />
+
+</head>
+<body>
+<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
+<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
+
+<script>
+    $.ajax({
+        url: '/images/icon.svg?20201130',
+        dataType: 'text',
+        success: function (data) {
+            $('body').append('<div class="d-none">' + data + '</div>')
+        }
+    })
+</script>
+
+        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
+        <script src="/js/global.js?v=qaaC1kQbysPcrWUAIoiq9U8DkYoI35FOcNj5QmvDF6A"></script>
+            <!--导航-->
+            <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+                <span class="fa fa-align-justify fa-2x"></span>
+            </button>
+            <div class="netnrnav horizontal">
+                <div class="netnrnav-wrapper">
+                    <ul>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+                            <!--标题-->
+                                <a href='javascript:location.reload(false)' title="图片压缩">
+                                    <svg class="titleicon"><use xlink:href="#tiny"></use></svg> &#x56FE;&#x7247;&#x538B;&#x7F29;
+                                </a>
+                        </li>
+                        <li>
+                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                            <ul>
+                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="dropdown">
+                        <button class="btn btn-warning dropdown-toggle" title="设置" data-toggle="dropdown">
+                            配置 <i class="fa fa-cog"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="form-group mx-2 mb-0" style="width:120px">
+                                <input class="form-control mb-2" type="number" title="默认原图宽度，不填自适应" placeholder="宽">
+                                <input class="form-control mb-2" type="number" title="默认原图高度，不填自适应" placeholder="高">
+                                <input class="form-control mb-2" type="number" title="图片质量，0-1，默认 0.7" min="0.1" max="1" step="0.1" value="0.7" placeholder="质量">
+                                <button class="btn btn-primary nrOptionsOk">确定</button>
+                                <button class="btn btn-danger nrOptionsReset">重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" multiple accept="image/*" id="txtFile">
+                    <label class="custom-file-label" for="txtFile">选择图片或拖拽图片（支持多选）</label>
+                </div>
+                <div class="input-group-prepend">
+                    <a class="btn btn-dark" target="_blank" href="https://tiny.netnr.com" title="更专业的图片压缩工具">Squoosh</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mt-3">
+            <table class="table d-none nrTable">
+                <tr>
+                    <th>名称 <a href="javascript:void(0)" class="nrDownAll" download="images.zip">下载全部</a></th>
+                    <th>大小</th>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-12 mt-5 pt-5 nrDragTip">
+            <div class="h1 text-center text-secondary">支持拖拽图片</div>
+        </div>
+    </div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/lrz@4.9.41/dist/lrz.all.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js'></script>
+
+
+<script>
+
+    var pg = {
+        //压缩配置
+        options: {
+            width: null,
+            height: null,
+            quality: 0.7
+        },
+
+        init: function () {
+            pg.zip = new JSZip();
+
+            //拖拽
+            $(document).on("dragleave dragenter dragover", function (e) {
+                if (e && e.stopPropagation) { e.stopPropagation() } else { window.event.cancelBubble = true }
+                if (e && e.preventDefault) { e.preventDefault() } else { window.event.returnValue = false }
+            }).on("drop", function (e) {
+                if (e && e.preventDefault) { e.preventDefault() } else { window.event.returnValue = false }
+                e = e || window.event;
+                var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
+                if (files && files.length) {
+                    pg.addFiles(files);
+                }
+            });
+
+            $('#txtFile').change(function () {
+                var files = this.files;
+                if (files.length) {
+                    pg.addFiles(files);
+                }
+            });
+
+            //更新压缩配置
+            $('.nrOptionsOk').click(function (e) {
+                var txts = $(this).parent().find('input');
+
+                pg.options = {
+                    width: parseInt(txts.eq(0).val()),
+                    height: parseInt(txts.eq(1).val()),
+                    quality: parseFloat(txts.eq(2).val())
+                };
+                if (isNaN(pg.options.width) || pg.options.width <= 0) {
+                    pg.options.width = null
+                    txts.eq(0).val('')
+                }
+                if (isNaN(pg.options.height) || pg.options.height <= 0) {
+                    pg.options.height = null
+                    txts.eq(1).val('')
+                }
+                if (isNaN(pg.options.quality) || pg.options.quality < 0 || pg.options.quality > 1) {
+                    pg.options.quality = 0.7
+                    txts.eq(1).val(pg.options.quality);
+                }
+            });
+
+            //重置压缩配置
+            $('.nrOptionsReset').click(function (e) {
+                if (e && e.stopPropagation) {
+                    e.stopPropagation()
+                } else {
+                    window.event.cancelBubble = true
+                }
+
+                $(this).parent().find('input').each(function () {
+                    this.value = this.defaultValue;
+                });
+                pg.options = {
+                    width: null,
+                    height: null,
+                    quality: 0.7
+                }
+            });
+        },
+
+        //添加文件
+        addFiles: function (files) {
+            var ignorefile = [];
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file.type.indexOf("image/") == 0) {
+                    lrz(file, pg.options).then(function (rst) {
+
+                        var size1 = ss.sizeOf(rst.origin.size);
+                        var size2 = ss.sizeOf(rst.file.size);
+                        var ratio = ((rst.origin.size - rst.file.size) / rst.origin.size * 100).toFixed(2) + "%";
+
+                        var htm = [];
+                        htm.push('<tr>');
+                        htm.push('<td><img src="' + rst.base64 + '" style="max-height:20px;max-width:50px" /> <a href="javascript:void(0)" download="' + rst.origin.name + '" >' + rst.origin.name + '</a></td>');
+                        htm.push('<td>-' + ratio + '（' + size1 + ' ➜ <span class="text-success">' + size2 + '</span>）</td>');
+                        htm.push('</tr>');
+                        var tr = $(htm.join(''));
+                        tr.find('a').attr('href', URL.createObjectURL(rst.file));
+                        $('.nrTable').append(tr);
+
+                        pg.zip.file(rst.origin.name, rst.file, { base64: true });
+                        pg.zip.generateAsync({ type: "blob" }).then(function (content) {
+                            $('.nrDownAll').attr('href', URL.createObjectURL(content))
+                        });
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                } else {
+                    ignorefile.push(file.name);
+                }
+            }
+            if (ignorefile.length) {
+                var ja = jz.alert('<textarea class="form-control text-nowrap min300">' + ignorefile.join('\r\n') + '</textarea>');
+                ja.fn.title.innerHTML = '已忽略非图片文件';
+            }
+            $('#txtFile').val('');
+            $('.nrDragTip').addClass('d-none');
+            $('.nrTable').removeClass('d-none');
+        }
+    }
+
+    pg.init();
+
+</script>
+
+        </div>
+        <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

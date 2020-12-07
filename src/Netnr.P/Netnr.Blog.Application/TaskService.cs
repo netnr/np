@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Application
 {
@@ -76,9 +77,9 @@ namespace Netnr.Blog.Application
         /// <summary>
         /// 备份数据库
         /// </summary>
-        public static ActionResultVM BackupDataBase()
+        public static SharedResultVM BackupDataBase()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -97,12 +98,12 @@ namespace Netnr.Blog.Application
 
                     listMsg.Add(en);
 
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                     vm.Data = listMsg;
                 }
                 else
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                 }
             }
             catch (Exception ex)
@@ -117,9 +118,9 @@ namespace Netnr.Blog.Application
         /// Gist代码片段，同步到GitHub、Gitee
         /// </summary>
         /// <returns></returns>
-        public static ActionResultVM GistSync()
+        public static SharedResultVM GistSync()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -334,12 +335,12 @@ namespace Netnr.Blog.Application
 
                     listLog.Add("完成同步");
 
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                     vm.Data = listLog;
                 }
                 else
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                 }
             }
             catch (Exception ex)
@@ -350,7 +351,7 @@ namespace Netnr.Blog.Application
                 {
                     Console.WriteLine(ex.InnerException.Message);
                 }
-                Core.ConsoleTo.Log(ex, true);
+                Core.ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -360,9 +361,9 @@ namespace Netnr.Blog.Application
         /// 处理操作记录
         /// </summary>
         /// <returns></returns>
-        public static ActionResultVM HandleOperationRecord()
+        public static SharedResultVM HandleOperationRecord()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
@@ -394,12 +395,12 @@ namespace Netnr.Blog.Application
                     }
                     else
                     {
-                        vm.Set(ARTag.lack);
+                        vm.Set(SharedEnum.RTag.lack);
                     }
                 }
                 else
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                 }
             }
             catch (Exception ex)

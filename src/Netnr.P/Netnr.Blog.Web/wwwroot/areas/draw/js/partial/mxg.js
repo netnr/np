@@ -109,7 +109,6 @@ var mxg = {
                             var req = new mxXmlRequest(SAVE_URL, 'filename=' + encodeURIComponent(name) +
                                 '&xml=' + encodeURIComponent(xml) + '&DrType=draw');
                             req.send(function (mx) {
-                                mxg.RequestActive = null;
                                 var data = JSON.parse(mx.request.responseText);
                                 if (data.code == 200 && data.data) {
                                     localStorage.removeItem(mxg.dc.lstmpkey);
@@ -120,6 +119,7 @@ var mxg = {
                                 if (data.code == 200) {
                                     window.onbeforeunload = null;
                                 }
+                                mxg.RequestActive = null;
                             }, function () {
                                 mxg.RequestActive = null;
                             });

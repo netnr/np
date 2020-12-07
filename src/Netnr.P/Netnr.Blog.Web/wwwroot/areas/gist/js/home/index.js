@@ -39,10 +39,16 @@ require(['vs/editor/editor.main'], function () {
     $('#setheme').change(function () {
         monaco.editor.setTheme(this.value);
     });
+
+    //快捷键
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function () {
+        $('.nrSaveGist')[0].click();
+    })
 });
 
 //保存
-function SaveGist(type, that) {
+$('.nrSaveGist').click(function () {
+    var that = this;
     var gc = editor.getValue(), arrv = gc.split('\n'), row = arrv.length, msg = [];
     var post = {
         GistCode: $('#hidCode').val(),
@@ -99,7 +105,7 @@ function SaveGist(type, that) {
             that.disabled = false;
         }
     })
-}
+})
 
 $('#sfs').click(function () {
     var ed = $('#editor');

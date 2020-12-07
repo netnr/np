@@ -17,7 +17,3 @@ Fork：<https://github.com/night-king/weixinSDK>
     - `/merchant/category/getsub` 接口对应的方法 `Merchant.Category.GetSub()`
     - `/cgi-bin/message/template/send` 接口对应的方法 `Cgi_Bin.Message.Template.Send()`
     - 根据接口`/`分割，最后是方法名，前面的是类、子类，在使用时，看微信`API`地址就知道怎么调用方法
-
-### 框架
-- .NETStandard 2.0
-- .NETFramework 4.0

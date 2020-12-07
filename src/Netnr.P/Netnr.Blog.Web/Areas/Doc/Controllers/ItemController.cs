@@ -21,7 +21,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [Filters.FilterConfigs.IsValidMail]
+        [Apps.FilterConfigs.IsCompleteInfo]
         public IActionResult Add()
         {
             return View("_PartialItemForm");
@@ -36,7 +36,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         {
             string code = RouteData.Values["id"]?.ToString();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var mo = db.DocSet.Find(code);
             if (mo.Uid == uinfo.UserId)
@@ -55,11 +55,11 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveDocSet(Domain.DocSet mo)
+        public SharedResultVM SaveDocSet(Domain.DocSet mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             if (string.IsNullOrWhiteSpace(mo.DsCode))
             {
@@ -75,7 +75,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                 var currmo = db.DocSet.Find(mo.DsCode);
                 if (currmo.Uid != uinfo.UserId)
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
 
                 currmo.DsName = mo.DsName;
@@ -101,7 +101,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         {
             string code = RouteData.Values["id"]?.ToString();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var mo = db.DocSet.Find(code);
             if (mo.Uid == uinfo.UserId)

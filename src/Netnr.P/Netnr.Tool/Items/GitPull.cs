@@ -16,7 +16,7 @@ namespace Netnr.Tool.Items
                 do
                 {
                     var dp = Environment.CurrentDirectory.TrimEnd('/').TrimEnd('\\');
-                    Console.Write($"请输入根目录（默认 {dp}）：");
+                    Console.Write($"Enter the root directory (default {dp}):");
                     rootPath = Console.ReadLine();
 
                     if (string.IsNullOrWhiteSpace(rootPath))
@@ -28,7 +28,7 @@ namespace Netnr.Tool.Items
                 var dis = new DirectoryInfo(rootPath);
                 var sdis = dis.GetDirectories().ToList();
 
-                Console.WriteLine($"\n找到 {sdis.Count} 个项目\n");
+                Console.WriteLine($"\n{sdis.Count} items found 个项目\n");
 
                 int c1 = 0;
                 int c2 = 0;

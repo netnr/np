@@ -1,4 +1,4 @@
-﻿<partial name="_PartialQuote" model="@("the")" />
+﻿@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -7,11 +7,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon" />
-
     <title>@ViewData["Title"]</title>
 
-    <partial name="_PartialQuote" model="@("seo")" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon,blog-seo"))
 </head>
 <body>
     @{
@@ -26,7 +24,7 @@
 
     @if (!caq4.Contains(ca) || (caq4.Contains(ca) && rid == "form"))
     {
-        <partial name="_PartialQuote" model="@("bootstrap.css,fa.css,jquery.js,bootstrap.js")" />
+        @Html.Raw(Netnr.SharedApp.QuoteTo.Html("bootstrap.css,fa.css,jquery.js,bootstrap.js"))
 
         <nav class="navbar navbar-expand-md navbar-light bg-light">
 
@@ -61,7 +59,7 @@
 
                 @if (IsLogin)
                 {
-                    var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+                    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
 
                     <ul class="navbar-nav">
                         <li class="nav-item dropdown">

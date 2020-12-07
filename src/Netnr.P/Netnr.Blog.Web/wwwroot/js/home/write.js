@@ -101,7 +101,7 @@ $('#btnSave').click(function () {
         dataType: 'json',
         success: function (data) {
             if (data.code == 200) {
-                nmd.clear();
+                nmd.setmd('');
                 location.href = "/home/list/" + data.data;
             } else {
                 jz.msg(data.msg);
@@ -168,7 +168,7 @@ $('#btnSaveEdit').click(function () {
         dataType: 'json',
         success: function (data) {
             if (data.code == 200) {
-                nmd.clear();
+                nmd.setmd('');
                 $('#ModalWrite').modal("hide");
                 gd1.load();
             } else {

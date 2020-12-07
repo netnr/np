@@ -242,10 +242,7 @@ namespace Netnr.Test.Controllers
                                 });
 
                                 //获取 OpendId
-                                var openidEntity = QQ.OpenId(new QQ_OpenId_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var openidEntity = QQ.OpenId(tokenEntity.access_token);
 
                                 //获取 UserInfo
                                 _ = QQ.OpenId_Get_User_Info(new QQ_OpenAPI_RequestEntity()
@@ -267,10 +264,7 @@ namespace Netnr.Test.Controllers
                                 });
 
                                 //获取 access_token 的授权信息
-                                var tokenInfoEntity = Weibo.GetTokenInfo(new Weibo_GetTokenInfo_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var tokenInfoEntity = Weibo.GetTokenInfo(tokenEntity.access_token);
 
                                 //获取 users/show
                                 _ = Weibo.UserShow(new Weibo_UserShow_RequestEntity()
@@ -335,10 +329,7 @@ namespace Netnr.Test.Controllers
                                 });
 
                                 //获取 user
-                                var userEntity = MicroSoft.User(new MicroSoft_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var userEntity = MicroSoft.User(tokenEntity.access_token);
 
                                 OpenId = userEntity.id.ToString();
                             }
@@ -360,10 +351,7 @@ namespace Netnr.Test.Controllers
                                 });
 
                                 //获取 user
-                                var userEntity = Gitee.User(new Gitee_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var userEntity = Gitee.User(tokenEntity.access_token);
 
                                 OpenId = userEntity.id.ToString();
                             }
@@ -377,10 +365,7 @@ namespace Netnr.Test.Controllers
                                 });
 
                                 //获取 user
-                                var userEntity = Google.User(new Google_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
+                                var userEntity = Google.User(tokenEntity.access_token);
 
                                 OpenId = userEntity.sub;
                             }

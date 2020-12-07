@@ -1,4 +1,4 @@
-﻿<partial name="_PartialQuote" model="@("the")" />
+﻿@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -7,11 +7,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon" />
-
     <title>@ViewData["Title"]</title>
 
-    <partial name="_PartialQuote" model="@("seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js")" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon,blog-seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js"))
 
     <link href="/areas/doc/css/global.css" rel="stylesheet" asp-append-version="true" />
 
@@ -40,7 +38,7 @@
                 <div class="col-4">
                     @if (IsLogin)
                     {
-                        var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+                        var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
 
                         <div class="btn-group float-right mt-2">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">

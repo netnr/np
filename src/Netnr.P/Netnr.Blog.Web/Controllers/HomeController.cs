@@ -4,8 +4,9 @@ using System.Linq;
 using Netnr.Blog.Domain;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
-using Netnr.Blog.Web.Filters;
+using Netnr.Core;
 using Netnr.Blog.Data;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -27,7 +28,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="k">搜索</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 5)]
+        [ResponseCache(Duration = 2)]
         public IActionResult Index(string k, int page = 1)
         {
             var vm = Application.CommonService.UserWritingQuery(k, page);
@@ -81,7 +82,6 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [FilterConfigs.IsValidMail]
         public IActionResult Write()
         {
             return View();
@@ -104,80 +104,66 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="TagIds">标签，多个逗号分割</param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM WriteSave(UserWriting mo, string TagIds)
+        public SharedResultVM WriteSave(UserWriting mo, string TagIds)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
-
-                //验证邮箱
-                if (GlobalTo.GetValue<bool>("Common:MailValid") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
+                vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                if (vm.Code == 200)
                 {
-                    vm.Set(ARTag.unauthorized);
-                    vm.Msg = "请验证邮箱后再操作";
+                    var uinfo = Apps.LoginService.Get(HttpContext);
 
-                    return vm;
-                }
+                    var lisTagId = new List<int>();
+                    TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
 
-                //有昵称
-                if (string.IsNullOrWhiteSpace(uinfo.Nickname))
-                {
-                    vm.Set(ARTag.refuse);
-                    vm.Msg = "请填写昵称后再操作";
+                    var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
 
-                    return vm;
-                }
+                    mo.Uid = uinfo.UserId;
+                    mo.UwCreateTime = DateTime.Now;
+                    mo.UwUpdateTime = mo.UwCreateTime;
+                    mo.UwLastUid = mo.Uid;
+                    mo.UwLastDate = mo.UwCreateTime;
+                    mo.UwReplyNum = 0;
+                    mo.UwReadNum = 0;
+                    mo.UwOpen = 1;
+                    mo.UwLaud = 0;
+                    mo.UwMark = 0;
+                    mo.UwStatus = 1;
 
-                var lisTagId = new List<int>();
-                TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
+                    db.UserWriting.Add(mo);
+                    db.SaveChanges();
 
-                var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
-
-                mo.Uid = uinfo.UserId;
-                mo.UwCreateTime = DateTime.Now;
-                mo.UwUpdateTime = mo.UwCreateTime;
-                mo.UwLastUid = mo.Uid;
-                mo.UwLastDate = mo.UwCreateTime;
-                mo.UwReplyNum = 0;
-                mo.UwReadNum = 0;
-                mo.UwOpen = 1;
-                mo.UwLaud = 0;
-                mo.UwMark = 0;
-                mo.UwStatus = 1;
-
-                db.UserWriting.Add(mo);
-                db.SaveChanges();
-
-                var listwt = new List<UserWritingTags>();
-                foreach (var tag in lisTagId)
-                {
-                    var wtmo = new UserWritingTags
+                    var listwt = new List<UserWritingTags>();
+                    foreach (var tag in lisTagId)
                     {
-                        UwId = mo.UwId,
-                        TagId = tag,
-                        TagName = lisTagName.FirstOrDefault(x => x.TagId == tag).TagName
-                    };
+                        var wtmo = new UserWritingTags
+                        {
+                            UwId = mo.UwId,
+                            TagId = tag,
+                            TagName = lisTagName.FirstOrDefault(x => x.TagId == tag).TagName
+                        };
 
-                    listwt.Add(wtmo);
+                        listwt.Add(wtmo);
+                    }
+                    db.UserWritingTags.AddRange(listwt);
+
+                    //标签热点+1
+                    var listTagId = listwt.Select(x => x.TagId.Value);
+                    var listTags = db.Tags.Where(x => listTagId.Contains(x.TagId)).ToList();
+                    listTags.ForEach(x => x.TagHot += 1);
+                    db.Tags.UpdateRange(listTags);
+
+                    int num = db.SaveChanges();
+
+                    vm.Data = mo.UwId;
+                    vm.Set(num > 0);
                 }
-                db.UserWritingTags.AddRange(listwt);
-
-                //标签热点+1
-                var listTagId = listwt.Select(x => x.TagId.Value);
-                var listTags = db.Tags.Where(x => listTagId.Contains(x.TagId)).ToList();
-                listTags.ForEach(x => x.TagHot += 1);
-                db.Tags.UpdateRange(listTags);
-
-                int num = db.SaveChanges();
-
-                vm.Data = mo.UwId;
-                vm.Set(num > 0);
             }
             catch (Exception ex)
             {
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
                 vm.Set(ex);
             }
 
@@ -200,13 +186,13 @@ namespace Netnr.Blog.Web.Controllers
                     return Redirect("/");
                 }
 
-                var pag = new PaginationVM
+                var pag = new SharedPaginationVM
                 {
                     PageNumber = Math.Max(page, 1),
                     PageSize = 10
                 };
 
-                var vm = new PageVM()
+                var vm = new SharedPageVM()
                 {
                     Rows = Application.CommonService.ReplyOneQuery(Application.EnumService.ReplyType.UserWriting, wid.ToString(), pag),
                     Pag = pag,
@@ -217,7 +203,7 @@ namespace Netnr.Blog.Web.Controllers
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    var uinfo = new Application.UserAuthService(HttpContext).Get();
+                    var uinfo = Apps.LoginService.Get(HttpContext);
                     var listuc = db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == Application.EnumService.ConnectionType.UserWriting.ToString() && x.UconnTargetId == wid.ToString()).ToList();
 
                     ViewData["uca1"] = listuc.Any(x => x.UconnAction == 1) ? "yes" : "";
@@ -238,15 +224,15 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo">回复信息</param>
         /// <param name="um">消息通知</param>
         /// <returns></returns>
-        public ActionResultVM LsitReplySave(UserReply mo, UserMessage um)
+        public SharedResultVM LsitReplySave(UserReply mo, UserMessage um)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             if ((uinfo.UserId != 0 && string.IsNullOrWhiteSpace(uinfo.Nickname)) || (uinfo.UserId == 0 && string.IsNullOrWhiteSpace(mo.UrAnonymousName)))
             {
-                vm.Set(ARTag.refuse);
+                vm.Set(SharedEnum.RTag.refuse);
                 vm.Msg = "昵称不能为空";
 
                 return vm;
@@ -257,7 +243,7 @@ namespace Netnr.Blog.Web.Controllers
             var now = DateTime.Now;
 
             //回复消息
-            um.UmId = Core.UniqueTo.LongId().ToString();
+            um.UmId = UniqueTo.LongId().ToString();
             um.UmTriggerUid = mo.Uid;
             um.UmType = Application.EnumService.MessageType.UserWriting.ToString();
             um.UmTargetId = mo.UrTargetId;
@@ -272,7 +258,7 @@ namespace Netnr.Blog.Web.Controllers
             mo.UrTargetPid = 0;
             mo.UrTargetType = Application.EnumService.ReplyType.UserWriting.ToString();
 
-            mo.UrAnonymousLink = Fast.ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
+            mo.UrAnonymousLink = ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
 
             db.UserReply.Add(mo);
 
@@ -307,13 +293,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="a">动作</param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM ListUserConn(int a)
+        public SharedResultVM ListUserConn(int a)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             int wid = Convert.ToInt32(RouteData.Values["id"]?.ToString());
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var uw = db.UserWriting.Find(wid);
 
@@ -322,7 +308,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 uc = new UserConnection()
                 {
-                    UconnId = Core.UniqueTo.LongId().ToString(),
+                    UconnId = UniqueTo.LongId().ToString(),
                     UconnAction = a,
                     UconnCreateTime = DateTime.Now,
                     UconnTargetId = wid.ToString(),
@@ -380,10 +366,10 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 请先验证
+        /// 完善信息
         /// </summary>
         /// <returns></returns>
-        public IActionResult Valid()
+        public IActionResult CompleteInfo()
         {
             return View();
         }

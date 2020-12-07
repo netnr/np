@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
+using Netnr.SharedFast;
 
-namespace Netnr.Web.Areas.Draw.Controllers
+namespace Netnr.Blog.Web.Areas.Draw.Controllers
 {
     [Area("Draw")]
     public class CodeController : Controller
@@ -21,12 +22,12 @@ namespace Netnr.Web.Areas.Draw.Controllers
         /// <param name="xml"></param>
         /// <param name="mof"></param>
         /// <returns></returns>
-        public IActionResult Index(string filename, string xml, Blog.Domain.Draw mof)
+        public IActionResult Index(string filename, string xml, Domain.Draw mof)
         {
             var id = RouteData.Values["id"]?.ToString();
             var sid = RouteData.Values["sid"]?.ToString();
 
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             if (!string.IsNullOrWhiteSpace(filename))
             {
@@ -37,23 +38,22 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 xml = xml.ToDecode();
             }
 
-
             //新增
             if (id == "open")
             {
                 //编辑
                 if (!string.IsNullOrWhiteSpace(sid))
                 {
-                    var vm = new ActionResultVM();
+                    var vm = new SharedResultVM();
                     var mo = db.Draw.Find(sid);
                     if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId)
                     {
-                        vm.Set(ARTag.success);
+                        vm.Set(SharedEnum.RTag.success);
                         vm.Data = mo;
                     }
                     else
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                     }
                     return Content(vm.ToJson());
                 }
@@ -80,8 +80,8 @@ namespace Netnr.Web.Areas.Draw.Controllers
             //保存标题等信息
             else if (id == "saveform")
             {
-                var vm = new ActionResultVM();
-                if (User.Identity.IsAuthenticated)
+                var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                if (vm.Code == 200)
                 {
                     int num = 0;
                     if (string.IsNullOrWhiteSpace(mof.DrId))
@@ -109,10 +109,6 @@ namespace Netnr.Web.Areas.Draw.Controllers
                     }
                     vm.Set(num > 0);
                 }
-                else
-                {
-                    vm.Set(ARTag.unauthorized);
-                }
 
                 if (vm.Code == 200)
                 {
@@ -120,20 +116,19 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 }
                 else
                 {
-                    return Content(vm.ToJson());
+                    return Content(vm.Msg);
                 }
             }
             //保存内容
             else if (id == "save")
             {
-                var vm = new ActionResultVM();
-
-                if (User.Identity.IsAuthenticated)
+                var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                if (vm.Code == 200)
                 {
                     //新增
                     if (string.IsNullOrWhiteSpace(sid))
                     {
-                        var mo = new Blog.Domain.Draw
+                        var mo = new Domain.Draw
                         {
                             DrName = filename,
                             DrContent = xml,
@@ -168,14 +163,9 @@ namespace Netnr.Web.Areas.Draw.Controllers
                         }
                         else
                         {
-                            vm.Set(ARTag.unauthorized);
+                            vm.Set(SharedEnum.RTag.unauthorized);
                         }
                     }
-                }
-                else
-                {
-                    vm.Code = 1;
-                    vm.Msg = "未登录";
                 }
 
                 return Content(vm.ToJson());
@@ -183,7 +173,7 @@ namespace Netnr.Web.Areas.Draw.Controllers
             //删除
             else if (id == "del")
             {
-                var vm = new ActionResultVM();
+                var vm = new SharedResultVM();
 
                 if (User.Identity.IsAuthenticated)
                 {
@@ -197,12 +187,12 @@ namespace Netnr.Web.Areas.Draw.Controllers
                     }
                     else
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                     }
                 }
                 else
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
 
                 if (vm.Code == 200)
@@ -222,7 +212,7 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 var url = "";
 
                 var subdir = GlobalTo.GetValue("StaticResource:DrawPath").Replace(GlobalTo.GetValue("StaticResource:RootDir"), "");
-                var vm = new Blog.Web.Controllers.APIController().API98(Request.Form.Files[0], subdir);
+                var vm = new Web.Controllers.APIController().API98(Request.Form.Files[0], subdir);
 
                 if (vm.Code == 200)
                 {

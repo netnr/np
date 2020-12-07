@@ -4,6 +4,73 @@
         <name>Netnr.ResponseFramework.Web</name>
     </assembly>
     <members>
+        <member name="T:Netnr.ResponseFramework.Web.Apps.FilterConfigs">
+            <summary>
+            过滤器
+            
+            能 实现一个过滤器接口，要么是同步版本的，要么是异步版本的，鱼和熊掌不可兼得 。
+            如果你需要在接口中执行异步工作，那么就去实现异步接口。否则应该实现同步版本的接口。
+            框架会首先检查是不是实现了异步接口，如果实现了异步接口，那么将调用它。
+            不然则调用同步接口的方法。如果一个类中实现了两个接口，那么只有异步方法会被调用。
+            最后，不管 action 是同步的还是异步的，过滤器的同步或是异步是独立于 action 的
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Apps.FilterConfigs.ErrorActionFilter">
+            <summary>
+            全局错误处理
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Web.Apps.FilterConfigs.DicDescription">
+            <summary>
+            提取 XML 注释为字典
+            </summary>
+        </member>
+        <member name="P:Netnr.ResponseFramework.Web.Apps.FilterConfigs.CurrentCacheLog">
+            <summary>
+            当前缓存日志
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Apps.FilterConfigs.GlobalActionAttribute">
+            <summary>
+            全局访问过滤器
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Apps.FilterConfigs.IsAdmin">
+            <summary>
+            是管理员
+            </summary>
+        </member>
+        <member name="T:Netnr.ResponseFramework.Web.Apps.LoginService">
+            <summary>
+            登录
+            </summary>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Apps.LoginService.GetLoginUserInfo(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            获取登录用户信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Apps.LoginService.LoginUserRoleInfo(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            获取登录用户角色信息
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Apps.LoginService.TokenMake(Netnr.ResponseFramework.Application.ViewModel.LoginUserVM)">
+            <summary>
+            生成Token
+            </summary>
+            <param name="mo">授权用户信息</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Web.Apps.LoginService.TokenValid(System.String)">
+            <summary>
+            验证Token
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.ResponseFramework.Web.ViewComponents.ButtonViewComponent">
             <summary>
             按钮视图组件
@@ -131,13 +198,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.UI">
-            <summary>
-            Netnr.DataKit UI
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.ConnCheck(System.Nullable{TypeDB}@,System.String@)">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.ConnCheck(System.Nullable{Netnr.SharedEnum.TypeDB}@,System.String@)">
             <summary>
             处理连接信息
             </summary>
@@ -145,7 +206,7 @@
             <param name="conn"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetTable(System.Nullable{TypeDB},System.String)">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetTable(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
             <summary>
             获取所有表名及注释
             </summary>
@@ -153,7 +214,7 @@
             <param name="conn">连接字符串</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetColumn(System.Nullable{TypeDB},System.String,System.String)">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetColumn(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
             <summary>
             获取所有列
             </summary>
@@ -162,7 +223,7 @@
             <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.SetTableComment(System.Nullable{TypeDB},System.String,System.String,System.String)">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.SetTableComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
             <summary>
             设置表注释
             </summary>
@@ -172,7 +233,7 @@
             <param name="TableComment">表注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.SetColumnComment(System.Nullable{TypeDB},System.String,System.String,System.String,System.String)">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.SetColumnComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String,System.String)">
             <summary>
             设置列注释
             </summary>
@@ -183,7 +244,7 @@
             <param name="FieldComment">列注释</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetData(System.Nullable{TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetData(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
             <summary>
             查询数据
             </summary>
@@ -198,6 +259,14 @@
             <param name="whereSql">条件</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.GetDEI(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.QueryTableConfig">
             <summary>
             查询表配置虚拟表名
@@ -210,18 +279,6 @@
             </summary>
             <param name="rows">表配置数据行</param>
             <param name="buildType">1：追加，2：覆盖</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.ResetDataBaseForJson">
-            <summary>
-            根据JSON数据重置数据库
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.DKController.BackupDataBaseAsJson">
-            <summary>
-            数据库备份数据为JSON
-            </summary>
             <returns></returns>
         </member>
         <member name="T:Netnr.ResponseFramework.Web.Controllers.HomeController">
@@ -430,25 +487,31 @@
             服务
             </summary>
         </member>
-        <member name="T:Netnr.ResponseFramework.Web.Controllers.ServicesController.TaskItem">
+        <member name="T:Netnr.ResponseFramework.Web.Controllers.ServicesController.ServiceItem">
             <summary>
-            任务项
+            服务项
             </summary>
         </member>
-        <member name="F:Netnr.ResponseFramework.Web.Controllers.ServicesController.TaskItem.ResetDataBase">
+        <member name="F:Netnr.ResponseFramework.Web.Controllers.ServicesController.ServiceItem.DatabaseReset">
             <summary>
-            重置数据库
+            重置数据库（读取JSON文件）
             </summary>
         </member>
-        <member name="F:Netnr.ResponseFramework.Web.Controllers.ServicesController.TaskItem.ClearTemp">
+        <member name="F:Netnr.ResponseFramework.Web.Controllers.ServicesController.ServiceItem.DatabaseBackup">
+            <summary>
+            备份数据库（写入JSON文件）
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Web.Controllers.ServicesController.ServiceItem.ClearTmp">
             <summary>
             清理临时目录
             </summary>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ServicesController.ExecTask">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ServicesController.Index(Netnr.ResponseFramework.Web.Controllers.ServicesController.ServiceItem)">
             <summary>
-            执行任务项，支持名称或索引
+            服务
             </summary>
+            <param name="ti">服务项</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.ResponseFramework.Web.Controllers.SettingController">
@@ -675,47 +738,247 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.Close">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.Exit">
             <summary>
-            关闭应用
+            退出应用
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs">
+        <member name="T:Netnr.SharedApp.BuildTo">
             <summary>
-            过滤器
-            
-            能 实现一个过滤器接口，要么是同步版本的，要么是异步版本的，鱼和熊掌不可兼得 。
-            如果你需要在接口中执行异步工作，那么就去实现异步接口。否则应该实现同步版本的接口。
-            框架会首先检查是不是实现了异步接口，如果实现了异步接口，那么将调用它。
-            不然则调用同步接口的方法。如果一个类中实现了两个接口，那么只有异步方法会被调用。
-            最后，不管 action 是同步的还是异步的，过滤器的同步或是异步是独立于 action 的
+            构建
             </summary>
         </member>
-        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.ErrorActionFilter">
+        <member name="M:Netnr.SharedApp.BuildTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
-            全局错误处理
+            构造
+            </summary>
+            <param name="httpContext"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.BuildTo.Html``1">
+            <summary>
+            根据控制器构建静态页面
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.QuoteTo">
+            <summary>
+            资源引用
             </summary>
         </member>
-        <member name="P:Netnr.ResponseFramework.Web.Filters.FilterConfigs.DicDescription">
+        <member name="M:Netnr.SharedApp.QuoteTo.Html(System.String)">
             <summary>
-            提取 XML 注释为字典
+            得到html字符串
+            </summary>
+            <param name="quotes">引用项，逗号分割，按顺序</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.ClientTo">
+            <summary>
+            客户端信息
             </summary>
         </member>
-        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.GlobalActionAttribute">
+        <member name="M:Netnr.SharedApp.ClientTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
-            全局访问过滤器
+            构造
+            </summary>
+            <param name="content"></param>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv4">
+            <summary>
+            IPv4
             </summary>
         </member>
-        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.AllowCors">
+        <member name="P:Netnr.SharedApp.ClientTo.IPv6">
             <summary>
-            允许跨域
+            IPv6
             </summary>
         </member>
-        <member name="T:Netnr.ResponseFramework.Web.Filters.FilterConfigs.IsAdmin">
+        <member name="P:Netnr.SharedApp.ClientTo.UserAgent">
             <summary>
-            是管理员
+            UA
             </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Language">
+            <summary>
+            语言
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Referer">
+            <summary>
+            引荐
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedApp.DownTo">
+            <summary>
+            下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.#ctor(Microsoft.AspNetCore.Http.HttpResponse)">
+            <summary>
+            构造
+            </summary>
+            <param name="httpResponse"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.String,System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.Byte[],System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+            <param name="bytes"></param>
+            <param name="fileName">下载文件名</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.CaptchaForDrawingCommon">
+            <summary>
+            引用组件：System.Drawing.Common
+            Windows首选，速度快，Linux需安装 libgdiplus 组件
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.CaptchaForDrawingCommon.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.CaptchaForSkiaSharp">
+            <summary>
+            引用组件：SkiaSharp、SkiaSharp.NativeAssets.Linux
+            跨平台
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.CaptchaForSkiaSharp.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.CaptchaTo">
+            <summary>
+            验证码
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.CaptchaTo.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="T:Netnr.SharedDrawing.ImageTo">
+            <summary>
+            图片操作
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDrawing.ImageTo.MinImg(System.String,System.String,System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            生成缩略图
+            </summary>
+            <param name="oldImgPath">原图片地址</param>
+            <param name="newMinImgPath">缩略图地址</param>
+            <param name="newImgName">生成图片名称</param>
+            <param name="width">缩略图宽度</param>
+            <param name="height">缩略图高度</param>
+            <param name="model">生成缩略的模式: wh|width|height|cut </param>
+        </member>
+        <member name="M:Netnr.SharedDrawing.ImageTo.AddTxt(System.String,System.String,System.String)">
+            <summary>
+            在图片上添加文字水印
+            </summary>
+            <param name="path">要添加水印的图片路径</param>
+            <param name="syPath">生成的水印图片存放的位置</param>
+            <param name="syWord">水印文字</param>
+        </member>
+        <member name="M:Netnr.SharedDrawing.ImageTo.AddImg(System.String,System.String,System.String)">
+            <summary>
+            在图片上添加图片水印
+            </summary>
+            <param name="path">原服务器上的图片路径</param>
+            <param name="syPicPath">水印图片的路径</param>
+            <param name="waterPicPath">生成的水印图片存放路径</param>
+        </member>
+        <member name="T:Netnr.SharedIpArea.IpAreaTo">
+            <summary>
+            IP 归属地查询
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedIpArea.IpAreaTo.DbPath">
+            <summary>
+            数据库完整物理路径
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedIpArea.IpAreaTo.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="dbPath">指定 ip2region 数据库文件路径</param>
+        </member>
+        <member name="M:Netnr.SharedIpArea.IpAreaTo.Parse(System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
+            <summary>
+            解析 IP 归属地
+            </summary>
+            <param name="dicIp">索引：IP地址</param>
+        </member>
+        <member name="M:Netnr.SharedIpArea.IpAreaTo.Parse(System.String)">
+            <summary>
+            解析 IP 归属地
+            </summary>
+            <param name="ip">IP地址</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedUserAgent.UserAgentTo">
+            <summary>
+            客户端 UA 解析
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.BrowserName">
+            <summary>
+            浏览器名称
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.BrowserType">
+            <summary>
+            浏览器类型
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.BrowserVersion">
+            <summary>
+            浏览器版本
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemName">
+            <summary>
+            操作系统名称
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemShortName">
+            <summary>
+            操作系统简称
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemVersion">
+            <summary>
+            操作系统
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.SystemPlatform">
+            <summary>
+            操作系统平台
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedUserAgent.UserAgentTo.IsBot">
+            <summary>
+            是爬虫
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedUserAgent.UserAgentTo.#ctor(System.String)">
+            <summary>
+            解析 User-Agent
+            </summary>
+            <param name="ua">User-Agent</param>
         </member>
     </members>
 </doc>

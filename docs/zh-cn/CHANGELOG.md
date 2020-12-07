@@ -1,5 +1,20 @@
 # 变更日志
 
+### 2020-12
+- 升级 .NET5
+- 调整 提取共享项目
+- 调整 Netnr.Login 删除 Netnr.Core 依赖
+- 调整 Netnr.WeChat 删除 Netnr.Core 依赖
+
+### 2020-11
+- 调整 Netnr.ResponseFramework 项目重置数据库的方法（并删除内存数据库）
+- 新增 Netnr.Fast 类库 ActionResultVM 类添加 log 集合对象，用于填充日志输出，添加片段耗时方法 PartTime
+
+### 2020-10
+- 修复 Netnr.Logging 类库 UV统计（已第一个IP统计）
+- 新增 Netnr.Blog.Web 项目日志添加搜索
+- 修复 日志缓存队列 Queue 的 Count 属性线程不安全问题
+
 ### 2020-09
 - 修复 Netnr.ResponseFramework.Web 项目 表格配置拖拽排序重置后无法使用
 - 调整 Netnr.Blog.Web 项目 Gist 代码片段响应滚轮事件

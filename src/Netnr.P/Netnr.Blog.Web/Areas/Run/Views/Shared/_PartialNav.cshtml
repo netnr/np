@@ -28,7 +28,7 @@
     <ul class="navbar-nav">
         @if (IsLogin)
         {
-            var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+            var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
             <li class="nav-item">
                 <a class="nav-link" href='/@ViewContext.RouteData.Values["area"].ToString().ToLower()'>
                     <i class="fa fa-plus"></i>

@@ -66,9 +66,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype">保存类型</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveSysButton(SysButton mo, string savetype)
+        public SharedResultVM SaveSysButton(SysButton mo, string savetype)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (string.IsNullOrWhiteSpace(mo.SbPid))
             {
@@ -104,9 +104,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">按钮ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM DelSysButton(string id)
+        public SharedResultVM DelSysButton(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mo = db.SysButton.Find(id);
             db.SysButton.Remove(mo);
@@ -162,9 +162,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveSysMenu(SysMenu mo, string savetype)
+        public SharedResultVM SaveSysMenu(SysMenu mo, string savetype)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (string.IsNullOrWhiteSpace(mo.SmPid))
             {
@@ -196,9 +196,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">菜单ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM DelSysMenu(string id)
+        public SharedResultVM DelSysMenu(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mo = db.SysMenu.Find(id);
             db.SysMenu.Remove(mo);
@@ -247,9 +247,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveSysRole(SysRole mo, string savetype)
+        public SharedResultVM SaveSysRole(SysRole mo, string savetype)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (savetype == "add")
             {
@@ -281,9 +281,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="copyid">复制的角色ID</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM CopySysRoleAuth(SysRole mo, string copyid)
+        public SharedResultVM CopySysRoleAuth(SysRole mo, string copyid)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var list = db.SysRole.Where(x => x.SrId == mo.SrId || x.SrId == copyid).ToList();
             var copymo = list.Find(x => x.SrId == copyid);
@@ -312,13 +312,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">角色ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM DelSysRole(string id)
+        public SharedResultVM DelSysRole(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            if (db.SysUser.Where(x => x.SrId == id).Count() > 0)
+            if (db.SysUser.Where(x => x.SrId == id).Any())
             {
-                vm.Set(ARTag.exist);
+                vm.Set(SharedEnum.RTag.exist);
             }
             else
             {
@@ -392,15 +392,15 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="OldUserPwd">原密码，有变化代表为改密码</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveSysUser(SysUser mo, string savetype, string OldUserPwd)
+        public SharedResultVM SaveSysUser(SysUser mo, string savetype, string OldUserPwd)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (savetype == "add")
             {
-                if (db.SysUser.Where(x => x.SuName == mo.SuName).Count() > 0)
+                if (db.SysUser.Where(x => x.SuName == mo.SuName).Any())
                 {
-                    vm.Set(ARTag.exist);
+                    vm.Set(SharedEnum.RTag.exist);
                 }
                 else
                 {
@@ -412,9 +412,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             else
             {
-                if (db.SysUser.Where(x => x.SuName == mo.SuName && x.SuId != mo.SuId).Count() > 0)
+                if (db.SysUser.Where(x => x.SuName == mo.SuName && x.SuId != mo.SuId).Any())
                 {
-                    vm.Set(ARTag.exist);
+                    vm.Set(SharedEnum.RTag.exist);
                 }
                 else
                 {
@@ -438,9 +438,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM DelSysUser(string id)
+        public SharedResultVM DelSysUser(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mo = db.SysUser.Find(id);
             db.SysUser.Remove(mo);
@@ -520,9 +520,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveSysDictionary(SysDictionary mo, string savetype)
+        public SharedResultVM SaveSysDictionary(SysDictionary mo, string savetype)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (savetype == "add")
             {
@@ -547,9 +547,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">字典ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM DelSysDictionary(string id)
+        public SharedResultVM DelSysDictionary(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mo = db.SysDictionary.Find(id);
             mo.SdStatus = -1;
@@ -600,9 +600,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveSysTableConfig(SysTableConfig mo, List<string> ColRelation, string savetype)
+        public SharedResultVM SaveSysTableConfig(SysTableConfig mo, List<string> ColRelation, string savetype)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             mo.ColRelation = string.Join(',', ColRelation);
 
@@ -628,9 +628,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResultVM DelSysTableConfig(string id)
+        public SharedResultVM DelSysTableConfig(string id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var mo = db.SysTableConfig.Find(id);
             db.SysTableConfig.Remove(mo);

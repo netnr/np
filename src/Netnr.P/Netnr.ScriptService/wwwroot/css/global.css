@@ -27,6 +27,14 @@ body {
     box-shadow: none;
 }
 
+@media (min-width: 1666px) {
+    .col-ll-2 {
+        -ms-flex: 0 0 16.666667%;
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+    }
+}
+
 /*顶部导航*/
 .netnrnav.horizontal .netnrnav-wrapper {
     width: 100% !important;
@@ -135,9 +143,9 @@ body {
     }
 
 .titleicon {
-    width: 28px;
-    height: 28px;
-    vertical-align: sub;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
 }
 
 /*footer*/
