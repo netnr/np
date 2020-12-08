@@ -548,6 +548,7 @@ button.close {
 .formui .area-height {
     resize: none;
     height: 83px;
+    resize: vertical;
 }
 
 /*禁用透明度*/
