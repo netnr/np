@@ -4,6 +4,7 @@ Thank you very much for your sponsorship, your support is my motivation, thank y
 
   Date     | Types  |  User    |  Money    |  Message
 :---------:|:------:| -------- | ---------:|:--------- 
+2020-12-19 | AliPay | *峰      |      6.66 | Come on, awesome!
 2020-10-16 | WeChat | *埃      |      6.66 | Handsome guy, here's an Android simulator
 2020-08-25 | WeChat | Y*h      |      5.00 | Hope to do better
 2020-06-13 | WeChat | *哥      |    100.00 | The framework is great

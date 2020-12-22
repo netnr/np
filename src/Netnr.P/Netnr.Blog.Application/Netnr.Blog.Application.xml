@@ -91,22 +91,22 @@
             <param name="UserId">用户ID</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Application.CommonService.DocQuery(System.String,System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Doc查询
-            </summary>
-            <param name="q">搜索</param>
-            <param name="OwnerId">所属用户</param>
-            <param name="UserId">登录用户</param>
-            <param name="page">页码</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.Blog.Application.CommonService.GistQuery(System.String,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Gist查询，按列权重排序
             </summary>
             <param name="q">搜索</param>
             <param name="lang">语言</param>
+            <param name="OwnerId">所属用户</param>
+            <param name="UserId">登录用户</param>
+            <param name="page">页码</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Application.CommonService.DocQuery(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Doc查询
+            </summary>
+            <param name="q">搜索</param>
             <param name="OwnerId">所属用户</param>
             <param name="UserId">登录用户</param>
             <param name="page">页码</param>
@@ -259,6 +259,12 @@
         <member name="M:Netnr.Blog.Application.TaskService.HandleOperationRecord">
             <summary>
             处理操作记录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Application.TaskService.ExportDataBase">
+            <summary>
+            导出数据库
             </summary>
             <returns></returns>
         </member>

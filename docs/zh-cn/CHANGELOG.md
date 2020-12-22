@@ -5,6 +5,7 @@
 - 调整 提取共享项目
 - 调整 Netnr.Login 删除 Netnr.Core 依赖
 - 调整 Netnr.WeChat 删除 Netnr.Core 依赖
+- 新增 数据库连接字符串可配置明文或密文（使用 Netnr.Tool 工具加密解密）
 
 ### 2020-11
 - 调整 Netnr.ResponseFramework 项目重置数据库的方法（并删除内存数据库）

@@ -5,6 +5,7 @@
 - Adjust to extract shared items
 - Adjust Netnr.Login to remove Netnr.Core dependency
 - Adjust Netnr.WeChat to remove Netnr.Core dependency
+- New database connection string can be configured in plain text or cipher text (encrypt and decrypt using Netnr.Tool)
 
 ### 2020-11
 - Adjust the method of resetting the database of the Netnr.ResponseFramework project (and delete the memory database)

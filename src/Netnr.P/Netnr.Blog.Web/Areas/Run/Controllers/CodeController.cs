@@ -53,7 +53,6 @@ namespace Netnr.Blog.Web.Areas.Run.Controllers
                 case "edit":
                     {
                         var mo = db.Run.FirstOrDefault(x => x.RunCode == id);
-                        //有记录且为当前用户
                         if (mo != null)
                         {
                             return View("_PartialMonacoEditor", mo);

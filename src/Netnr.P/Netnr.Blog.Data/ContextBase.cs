@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Netnr.Blog.Domain;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Netnr.Blog.Data
 {

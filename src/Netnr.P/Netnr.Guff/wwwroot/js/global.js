@@ -203,6 +203,7 @@
             lbox = document.createElement("div");
             lbox.style.cssText = "position:fixed;top:0;left:0;bottom:0;right:0;background-color:#e0e0e0;z-index:9999;text-align:center;padding-top:48vh;"
             lbox.innerHTML = '<span class="rounded bg-light p-3">请先 <a href="' + guff.loginLink() + '">登录 / 注册</a></span>';
+            document.documentElement.style.overflow = "hidden";
             document.body.appendChild(lbox);
         }
     },
@@ -356,7 +357,11 @@
         if (item.GrVideo) {
             var urls = item.GrVideo.split(',') || [];
             $.each(urls, function () {
-                htm.push('<div class="mb-3"><video class="w-100" src="' + this.replace(/"/g, "") + '" controls /></div>');
+                if (this.toLowerCase().indexOf("https://streamja.com/") == 0) {
+                    htm.push('<div class="mb-3"><iframe class="w-100 border-0" style="height:500px" allowfullscreen src="' + this.replace(/"/g, "") + '"></iframe></div>');
+                } else {
+                    htm.push('<div class="mb-3"><video class="w-100" src="' + this.replace(/"/g, "") + '" controls /></div>');
+                }
             })
         }
 

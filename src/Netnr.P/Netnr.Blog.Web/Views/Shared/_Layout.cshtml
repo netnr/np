@@ -22,6 +22,8 @@
         var canav = "account/login,account/register,home/auth,admin/write,admin/reply,admin/log,admin/logchart,mix/terms".Split(',');
         var cafooter = "account/login,account/register,home/auth,home/completeinfo,home/write,store/nenos,store/qqcos,store/qnkodo,services/keyvalues,user/write,user/message,user/verify,user/setting,admin/index,admin/write,admin/reply,admin/log,admin/logchart,mix/terms,mix/faq,note/index".Split(',');
     }
+    
+    <partial name="_PartialQuote" model="@("MirrorReadOnly")" />
 
     @if (!canav.Contains(ca))
     {

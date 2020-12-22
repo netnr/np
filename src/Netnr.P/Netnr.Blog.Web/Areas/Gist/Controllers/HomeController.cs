@@ -57,34 +57,27 @@ namespace Netnr.Blog.Web.Areas.Gist.Controllers
                 else
                 {
                     var oldmo = db.Gist.FirstOrDefault(x => x.GistCode == mo.GistCode);
-                    if (oldmo != null)
+                    if (oldmo?.Uid == uinfo.UserId)
                     {
-                        if (oldmo.Uid == uinfo.UserId)
-                        {
-                            oldmo.GistRemark = mo.GistRemark;
-                            oldmo.GistFilename = mo.GistFilename;
-                            oldmo.GistLanguage = mo.GistLanguage;
-                            oldmo.GistTheme = mo.GistTheme;
-                            oldmo.GistContent = mo.GistContent;
-                            oldmo.GistContentPreview = mo.GistContentPreview;
-                            oldmo.GistRow = mo.GistRow;
-                            oldmo.GistOpen = mo.GistOpen;
-                            oldmo.GistUpdateTime = DateTime.Now;
+                        oldmo.GistRemark = mo.GistRemark;
+                        oldmo.GistFilename = mo.GistFilename;
+                        oldmo.GistLanguage = mo.GistLanguage;
+                        oldmo.GistTheme = mo.GistTheme;
+                        oldmo.GistContent = mo.GistContent;
+                        oldmo.GistContentPreview = mo.GistContentPreview;
+                        oldmo.GistRow = mo.GistRow;
+                        oldmo.GistOpen = mo.GistOpen;
+                        oldmo.GistUpdateTime = DateTime.Now;
 
-                            db.Gist.Update(oldmo);
-                            db.SaveChanges();
+                        db.Gist.Update(oldmo);
+                        db.SaveChanges();
 
-                            vm.Data = mo.GistCode;
-                            vm.Set(SharedEnum.RTag.success);
-                        }
-                        else
-                        {
-                            vm.Set(SharedEnum.RTag.unauthorized);
-                        }
+                        vm.Data = mo.GistCode;
+                        vm.Set(SharedEnum.RTag.success);
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(SharedEnum.RTag.fail);
                     }
                 }
             }

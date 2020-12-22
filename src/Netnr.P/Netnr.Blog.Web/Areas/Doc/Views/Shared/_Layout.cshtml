@@ -24,6 +24,8 @@
         var canav = new List<string>() { "code" };
     }
 
+    <partial name="_PartialQuote" model="@("MirrorReadOnly")" />
+
     @if (!canav.Contains(ca))
     {
         <div class="container-fluid ndnav">

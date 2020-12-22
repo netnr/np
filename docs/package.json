@@ -1,7 +1,7 @@
 {
-  "name": "vdocs",
+  "name": "sdocs",
   "version": "0.0.1",
-  "description": "vercel docs",
+  "description": "serverless docs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,8 +12,8 @@
   },
   "keywords": [
     "netnr",
-    "vdocs",
-    "vercel"
+    "sdocs",
+    "serverless docs"
   ],
   "author": "netnr",
   "license": "MIT",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/netnr/np#readme",
   "dependencies": {
-    "marked": "^1.1.1",
-    "mime": "^2.4.6"
+    "marked": "^1.2.7",
+    "mime": "^2.4.7"
   }
 }

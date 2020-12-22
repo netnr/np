@@ -2,7 +2,7 @@
   "version": 2,
 
   "functions": {
-    "api/vdocs.js": {
+    "api/sdocs.js": {
       "includeFiles": "./**"
     }
   },
@@ -21,7 +21,7 @@
 
     {
       "src": "/(.*)",
-      "dest": "/api/vdocs.js",
+      "dest": "/api/sdocs.js",
       "continue": true
     }
   ]

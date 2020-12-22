@@ -111,6 +111,11 @@ $.each(gp.types, function () {
         var file = this.files[0];
         if (file) {
 
+            if (true) {
+                jz.alert("当前不支持上传资源<br/>请用外链的方式引用资源")
+                return false;
+            }
+
             var err = [];
             var ms = t == "Video" ? 10 : 2;
             if (file.size > 1024 * 1024 * ms) {

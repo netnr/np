@@ -131,7 +131,7 @@ namespace Netnr.Blog.Application
                 //按空格分割后搜索
                 KeyWords.Split(' ').ToList().ForEach(k =>
                 {
-                    query = query.Where(x => x.UwTitle.Contains(k));
+                    query = query.Where(x => x.UwTitle.Contains(k) || x.UwContentMd.Contains(k));
                 });
             }
 
@@ -145,17 +145,18 @@ namespace Netnr.Blog.Application
             var listUwId = list.Select(x => x.UwId).ToList();
 
             //文章的所有的标签
-            var listUwTags = (from a in db.Tags
-                              join b in db.UserWritingTags on a.TagName equals b.TagName into bg
-                              from b in bg.DefaultIfEmpty()
-                              where listUwId.Contains(b.UwId) || a.TagName == TagName
-                              orderby b.UwtId ascending
-                              select new
-                              {
-                                  UwId = b == null ? 0 : b.UwId,
-                                  TagName = b == null ? TagName : b.TagName,
-                                  a.TagIcon
-                              }).ToList();
+            var queryTags = from a in db.Tags
+                            join b in db.UserWritingTags on a.TagName equals b.TagName into bg
+                            from b in bg.DefaultIfEmpty()
+                            where (b == null ? true : listUwId.Contains(b.UwId)) || a.TagName == TagName
+                            orderby b.UwtId ascending
+                            select new
+                            {
+                                UwId = b == null ? 0 : b.UwId,
+                                TagName = b == null ? TagName : b.TagName,
+                                a.TagIcon
+                            };
+            var listUwTags = queryTags.ToList();
 
             //文章人员ID
             var listUwUid = list.Select(x => x.UwLastUid).Concat(list.Select(x => x.Uid)).Distinct();
@@ -506,77 +507,6 @@ namespace Netnr.Blog.Application
         }
 
         /// <summary>
-        /// Doc查询
-        /// </summary>
-        /// <param name="q">搜索</param>
-        /// <param name="OwnerId">所属用户</param>
-        /// <param name="UserId">登录用户</param>
-        /// <param name="page">页码</param>
-        /// <returns></returns>
-        public static SharedPageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
-        {
-            using var db = ContextBaseFactory.CreateDbContext();
-            var query = from a in db.DocSet
-                        join b in db.UserInfo on a.Uid equals b.UserId
-                        where a.DsStatus == 1
-                        orderby a.DsCreateTime descending
-                        select new DocSet
-                        {
-                            DsCode = a.DsCode,
-                            DsCreateTime = a.DsCreateTime,
-                            DsName = a.DsName,
-                            DsOpen = a.DsOpen,
-                            DsRemark = a.DsRemark,
-                            Uid = a.Uid,
-                            Spare1 = a.Spare1,
-
-                            Spare3 = b.Nickname
-                        };
-
-            //所属用户
-            if (OwnerId != 0)
-            {
-                query = query.Where(x => x.Uid == OwnerId);
-            }
-
-            //未登录
-            if (UserId == 0)
-            {
-                query = query.Where(x => x.DsOpen == 1);
-            }
-            else
-            {
-                //已登录：公开&登录用户的所有
-                query = query.Where(x => x.DsOpen == 1 || x.Uid == UserId);
-            }
-
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                query = query.Where(x => x.DsName.Contains(q) || x.DsRemark.Contains(q));
-            }
-
-            var pag = new SharedPaginationVM
-            {
-                PageNumber = Math.Max(page, 1),
-                PageSize = 9
-            };
-
-            var dicQs = new Dictionary<string, string> { { "q", q } };
-
-            pag.Total = query.Count();
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
-
-            SharedPageVM pageSet = new SharedPageVM()
-            {
-                Rows = list,
-                Pag = pag,
-                QueryString = dicQs
-            };
-
-            return pageSet;
-        }
-
-        /// <summary>
         /// Gist查询，按列权重排序
         /// </summary>
         /// <param name="q">搜索</param>
@@ -678,6 +608,77 @@ namespace Netnr.Blog.Application
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 10
+            };
+
+            var dicQs = new Dictionary<string, string> { { "q", q } };
+
+            pag.Total = query.Count();
+            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
+
+            SharedPageVM pageSet = new SharedPageVM()
+            {
+                Rows = list,
+                Pag = pag,
+                QueryString = dicQs
+            };
+
+            return pageSet;
+        }
+
+        /// <summary>
+        /// Doc查询
+        /// </summary>
+        /// <param name="q">搜索</param>
+        /// <param name="OwnerId">所属用户</param>
+        /// <param name="UserId">登录用户</param>
+        /// <param name="page">页码</param>
+        /// <returns></returns>
+        public static SharedPageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
+        {
+            using var db = ContextBaseFactory.CreateDbContext();
+            var query = from a in db.DocSet
+                        join b in db.UserInfo on a.Uid equals b.UserId
+                        where a.DsStatus == 1
+                        orderby a.DsCreateTime descending
+                        select new DocSet
+                        {
+                            DsCode = a.DsCode,
+                            DsCreateTime = a.DsCreateTime,
+                            DsName = a.DsName,
+                            DsOpen = a.DsOpen,
+                            DsRemark = a.DsRemark,
+                            Uid = a.Uid,
+                            Spare1 = a.Spare1,
+
+                            Spare3 = b.Nickname
+                        };
+
+            //所属用户
+            if (OwnerId != 0)
+            {
+                query = query.Where(x => x.Uid == OwnerId);
+            }
+
+            //未登录
+            if (UserId == 0)
+            {
+                query = query.Where(x => x.DsOpen == 1);
+            }
+            else
+            {
+                //已登录：公开&登录用户的所有
+                query = query.Where(x => x.DsOpen == 1 || x.Uid == UserId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(x => x.DsName.Contains(q) || x.DsRemark.Contains(q));
+            }
+
+            var pag = new SharedPaginationVM
+            {
+                PageNumber = Math.Max(page, 1),
+                PageSize = 9
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };

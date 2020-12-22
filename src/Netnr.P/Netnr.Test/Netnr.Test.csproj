@@ -15,15 +15,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.0" Condition="'$(Configuration)' == 'Debug'" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.1" Condition="'$(Configuration)' == 'Debug'" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.1" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.1" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.1" />
 		<PackageReference Include="Oracle.EntityFrameworkCore" Version="3.19.80" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.100" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.6" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />

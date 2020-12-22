@@ -243,7 +243,11 @@ namespace Netnr.Blog.Web.Controllers
             /// <summary>
             /// 处理操作记录
             /// </summary>
-            HOR
+            HOR,
+            /// <summary>
+            /// 导出数据库
+            /// </summary>
+            ExportDataBase
         }
 
         /// <summary>
@@ -280,6 +284,10 @@ namespace Netnr.Blog.Web.Controllers
 
                     case TaskItem.HOR:
                         vm = Application.TaskService.HandleOperationRecord();
+                        break;
+
+                    case TaskItem.ExportDataBase:
+                        vm = Application.TaskService.ExportDataBase();
                         break;
                 }
             }

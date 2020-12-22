@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -6,8 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json.Linq;
 using Netnr.Login;
 using Netnr.SharedFast;
 using Netnr.SharedLogging;
@@ -123,16 +125,19 @@ namespace Netnr.Blog.Web
 
                 "Blog.Web,Blog.Application".Split(',').ToList().ForEach(x =>
                 {
-                    c.IncludeXmlComments(System.AppContext.BaseDirectory + $"Netnr.{x}.xml", true);
+                    c.IncludeXmlComments(AppContext.BaseDirectory + $"Netnr.{x}.xml", true);
                 });
             });
 
             //授权访问信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
-                //允许其他站点携带授权Cookie访问，会出现伪造
-                //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
-                options.Cookie.SameSite = SameSiteMode.None;
+                if (!GlobalTo.GetValue<bool>("ReadOnly"))
+                {
+                    //允许其他站点携带授权Cookie访问，会出现伪造
+                    //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
+                    options.Cookie.SameSite = SameSiteMode.None;
+                }
 
                 options.Cookie.Name = "netnr_auth";
                 options.LoginPath = "/account/login";
@@ -148,7 +153,10 @@ namespace Netnr.Blog.Web
             }, 99);
 
             //定时任务
-            FluentScheduler.JobManager.Initialize(new Application.TaskService.TaskComponent.Reg());
+            if (!GlobalTo.GetValue<bool>("ReadOnly"))
+            {
+                FluentScheduler.JobManager.Initialize(new Application.TaskService.TaskComponent.Reg());
+            }
 
             //配置上传文件大小限制（详细信息：FormOptions）
             services.Configure<FormOptions>(options =>
@@ -162,7 +170,7 @@ namespace Netnr.Blog.Web
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();                
             }
             else
             {
@@ -173,31 +181,26 @@ namespace Netnr.Blog.Web
             //数据库不存在则创建，创建后返回true
             if (db.Database.EnsureCreated())
             {
-                var jodb = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/scripts/example/data.json").ToJObject();
+                //从JSON写入数据库
+                var jodb = Core.FileTo.ReadText(GlobalTo.ContentRootPath + "/db/data.json").ToJObject();
 
-                db.UserInfo.AddRange(jodb["UserInfo"].ToString().ToEntitys<Domain.UserInfo>());
+                var dicDbSet = Data.ContextBase.GetDicDbSet(db);
+                foreach (var table in dicDbSet.Keys)
+                {
+                    var dbset = dicDbSet[table];
+                    var gt = dbset.GetType();
+                    var ttype = Type.GetType(gt.FullName.Split("[[")[1].TrimEnd(']'));
 
-                db.Tags.AddRange(jodb["Tags"].ToString().ToEntitys<Domain.Tags>());
+                    var jarows = jodb[table] as JArray;
+                    for (int i = 0; i < jarows?.Count; i++)
+                    {
+                        var mo = jarows[i].ToJson().ToType(ttype);
+                        gt.GetMethod("Add").Invoke(dbset, new object[] { mo });
+                    }
+                }
 
-                db.UserWriting.AddRange(jodb["UserWriting"].ToString().ToEntitys<Domain.UserWriting>());
-
-                db.UserWritingTags.AddRange(jodb["UserWritingTags"].ToString().ToEntitys<Domain.UserWritingTags>());
-
-                db.UserReply.AddRange(jodb["UserReply"].ToString().ToEntitys<Domain.UserReply>());
-
-                db.Run.AddRange(jodb["Run"].ToString().ToEntitys<Domain.Run>());
-
-                db.KeyValues.AddRange(jodb["KeyValues"].ToString().ToEntitys<Domain.KeyValues>());
-
-                db.Gist.AddRange(jodb["Gist"].ToString().ToEntitys<Domain.Gist>());
-
-                db.Draw.AddRange(jodb["Draw"].ToString().ToEntitys<Domain.Draw>());
-
-                db.DocSet.AddRange(jodb["DocSet"].ToString().ToEntitys<Domain.DocSet>());
-
-                db.DocSetDetail.AddRange(jodb["DocSetDetail"].ToString().ToEntitys<Domain.DocSetDetail>());
-
-                db.SaveChanges();
+                var num = db.SaveChanges();
+                Console.WriteLine($"初始化数据库，写入数据 {num} 行");
             }
 
             //配置swagger

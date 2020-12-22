@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Netnr.SharedDbContext;
 using Netnr.SharedFast;
 
 namespace Netnr.ResponseFramework.Data
@@ -17,8 +18,13 @@ namespace Netnr.ResponseFramework.Data
         public static DbContextOptionsBuilder<ContextBase> CreateDbContextOptionsBuilder(DbContextOptionsBuilder builder = null)
         {
             System.Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out GlobalTo.TDB);
-            var conn = GlobalTo.Configuration.GetConnectionString(GlobalTo.TDB.ToString()).Replace("~", GlobalTo.ContentRootPath);
-            return SharedDbContext.FactoryTo.CreateDbContextOptionsBuilder<ContextBase>(GlobalTo.TDB, conn, builder);
+            var conn = GlobalTo.Configuration.GetConnectionString(GlobalTo.TDB.ToString());
+            if (GlobalTo.TDB != SharedEnum.TypeDB.InMemory)
+            {
+                var pwd = GlobalTo.GetValue("ConnectionStrings:Password");
+                conn = FactoryTo.ConnnectionEncryptOrDecrypt(conn, pwd, 2);
+            }
+            return FactoryTo.CreateDbContextOptionsBuilder<ContextBase>(GlobalTo.TDB, conn.Replace("~", GlobalTo.ContentRootPath), builder);
         }
 
         /// <summary>

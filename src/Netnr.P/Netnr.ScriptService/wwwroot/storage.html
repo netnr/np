@@ -35,7 +35,7 @@ https://zme.ink
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201130',
+        url: '/images/icon.svg?20201222',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -44,7 +44,7 @@ https://zme.ink
 </script>
 
         <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
-        <script src="/js/global.js?v=qaaC1kQbysPcrWUAIoiq9U8DkYoI35FOcNj5QmvDF6A"></script>
+        <script src="/js/global.js?v=ckkNo3hER74SKnNCuouMgEfxEpEMP3phtPl9uA0_Lnc"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -79,99 +79,34 @@ https://zme.ink
     <div class="row">
         <div class="col-md-12 nrBS">
             <h4>功能还在开发中 ...</h4>
+
+            <input id='up' type="file" />
+
+            <a href="#" class="nrDownload">download</a>
         </div>
     </div>
 </div>
 
+<script src="/js/bedStorage.js?v=c0tcgi9ELLogESoopjhfsMqj4eGRssDAzYlpT1wqWBU"></script>
+
 <script>
 
+    document.getElementById('up').onchange = function () {
+        var file = this.files[0];
 
-    var bs = {
-        config: {
-            //分块大小
-            chunkSize: 1024 * 1024 * 4
-        },
-        init: function () {
-
-            //$('.nrFile').change(function () {
-            //    var file = this.files[0];
-            //    if (file) {
-            //        var blob1 = $('.nrFile1')[0].files[0];
-            //        var blob2 = file;
-
-            //        console.log(blob1);
-
-            //        let merge = new Blob([blob1, blob2], { type: "image/png" });
-            //        console.log(merge);
-
-            //        var img = new Image();
-            //        img.src = URL.createObjectURL(merge);
-            //        document.body.appendChild(img);
-            //    }
-            //})
-
-            //$('.nrFile3').change(function () {
-            //    var file = this.files[0];
-            //    if (file) {
-            //        var blob = file.slice(83);
-
-            //        let merge = new Blob([blob], { type: "video/mp4" });
-            //        console.log(merge)
-
-            //        var vnode = document.createElement("video");
-            //        vnode.controls = true;
-            //        vnode.src = URL.createObjectURL(merge);
-            //        document.body.appendChild(vnode);
-            //    }
-            //})
-
-            bs.urlToBlob("https://p1.itc.cn/images03/20201123/872be7e9af0c4be68c743069aeabe834.png").then(blob => {
-                blob = blob.slice(83, blob.size, "video/mp4");
-
-                var vnode = document.createElement("video");
-                vnode.controls = true;
-                vnode.style.maxHeight = "600px";
-                vnode.src = URL.createObjectURL(blob);
-                $('.nrBS').append(vnode);
-            })
-        },
-
-        //存储商
-        storage: [
-            { key: "jd", name: "京东" }
-        ],
-
-        //请求链接得到Blob对象
-        urlToBlob: function (url) {
-            return new Promise(function (resolve, reject) {
-                var http = new XMLHttpRequest();
-                http.open("GET", url, true);
-                http.responseType = "blob";
-                http.onload = function (e) {
-                    if (this.status == 200 || this.status === 0) {
-                        resolve(this.response);
-                    } else {
-                        reject(this);
-                    }
-                };
-                http.send();
-            });
-        },
-
-        //分片
-        splitFile: function (file) {
-            var chunks = [], start = 0, fileSize = file.size;
-            while (start < fileSize) {
-                var slen = start + bs.con.chunkSize;
-                var chunk = file.slice(start, Math.min(slen, fileSize));
-                start += bs.con.chunkSize;
-                chunks.push(chunk);
-            }
-            return chunks;
-        }
-
+        bs.upload(file).then(res => {
+            console.log(res);
+        }).catch(err => {
+            console.log(err);
+        })
     }
-    bs.init();
+
+    bs.download("https://cy-pic.kuaizhan.com/g3/e1/39/e094-547b-43c9-ba67-f5b422be7d9d14?cysign=fa71a99bbfb70aa37283690ca2b96024&cyt=1608106856").then(info => {
+        var node = bs.infoAsNode(info);
+        document.querySelector(".nrDownload").href = node.src || node.href;
+        document.querySelector(".nrDownload").setAttribute("download", info.name);
+        document.body.appendChild(node);
+    });
 </script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>

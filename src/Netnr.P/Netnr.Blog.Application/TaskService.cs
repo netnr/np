@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using Netnr.SharedFast;
+using System.IO;
 
 namespace Netnr.Blog.Application
 {
@@ -214,7 +215,7 @@ namespace Netnr.Blog.Application
                                             var hwr = Core.HttpTo.HWRequest("https://api.github.com/gists", "POST", jo.ToJson());
                                             hwr.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
                                             hwr.ContentType = "application/json";
-                                            hwr.UserAgent = GlobalTo.GetValue("UserAgent");
+                                            hwr.UserAgent = "Netnr Agent";
 
                                             var rt = Core.HttpTo.Url(hwr);
 
@@ -253,7 +254,7 @@ namespace Netnr.Blog.Application
                                             var hwr = Core.HttpTo.HWRequest("https://api.github.com/gists/" + gs.GsGitHubId, "PATCH", jo.ToJson());
                                             hwr.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
                                             hwr.ContentType = "application/json";
-                                            hwr.UserAgent = GlobalTo.GetValue("UserAgent");
+                                            hwr.UserAgent = "Netnr Agent";
 
                                             _ = Core.HttpTo.Url(hwr);
 
@@ -298,7 +299,7 @@ namespace Netnr.Blog.Application
                             #region GitHub
                             var hwr_gh = Core.HttpTo.HWRequest("https://api.github.com/gists/" + gs.GsGitHubId, "DELETE");
                             hwr_gh.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
-                            hwr_gh.UserAgent = GlobalTo.GetValue("UserAgent");
+                            hwr_gh.UserAgent = "Netnr Agent";
                             var resp_gh = (HttpWebResponse)hwr_gh.GetResponse();
                             if (resp_gh.StatusCode == HttpStatusCode.NoContent)
                             {
@@ -402,6 +403,45 @@ namespace Netnr.Blog.Application
                 {
                     vm.Set(SharedEnum.RTag.lack);
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 导出数据库
+        /// </summary>
+        /// <returns></returns>
+        public static SharedResultVM ExportDataBase()
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = Data.ContextBaseFactory.CreateDbContext();
+                var dicDbSet = Data.ContextBase.GetDicDbSet(db);
+
+                var rows = 0;
+                var dicOut = new Dictionary<string, object> { };
+                foreach (var key in dicDbSet.Keys)
+                {
+                    var dbset = dicDbSet[key] as IQueryable<object>;
+                    var list = dbset.ToList();
+                    rows += list.Count;
+
+                    dicOut.Add(key, list);
+                }
+
+                var fullPath = Path.Combine(Path.GetTempPath(), "data.json");
+                Core.FileTo.WriteText(dicOut.ToJson(), fullPath, false);
+
+                vm.Set(SharedEnum.RTag.success);
+                vm.Data = fullPath;
+                vm.Msg = $"导出数据表 {dicOut.Keys.Count} 个，共 {rows} 行";
             }
             catch (Exception ex)
             {

@@ -66,31 +66,23 @@ namespace Netnr.Blog.Web.Areas.Run.Controllers
                 else
                 {
                     var oldmo = db.Run.FirstOrDefault(x => x.RunCode == mo.RunCode);
-
-                    if (oldmo != null)
+                    if (oldmo?.Uid == uinfo.UserId)
                     {
-                        if (oldmo.Uid == uinfo.UserId)
-                        {
-                            oldmo.RunContent1 = mo.RunContent1;
-                            oldmo.RunContent2 = mo.RunContent2;
-                            oldmo.RunContent3 = mo.RunContent3;
-                            oldmo.RunRemark = mo.RunRemark;
-                            oldmo.RunTheme = mo.RunTheme;
+                        oldmo.RunContent1 = mo.RunContent1;
+                        oldmo.RunContent2 = mo.RunContent2;
+                        oldmo.RunContent3 = mo.RunContent3;
+                        oldmo.RunRemark = mo.RunRemark;
+                        oldmo.RunTheme = mo.RunTheme;
 
-                            db.Run.Update(oldmo);
-                            int num = db.SaveChanges();
+                        db.Run.Update(oldmo);
+                        int num = db.SaveChanges();
 
-                            vm.Data = mo.RunCode;
-                            vm.Set(num > 0);
-                        }
-                        else
-                        {
-                            vm.Set(SharedEnum.RTag.refuse);
-                        }
+                        vm.Data = mo.RunCode;
+                        vm.Set(num > 0);
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(SharedEnum.RTag.fail);
                     }
                 }
             }

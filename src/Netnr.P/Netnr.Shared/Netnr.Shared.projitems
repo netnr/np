@@ -50,7 +50,4 @@
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)SharedFast\" />
-  </ItemGroup>
 </Project>

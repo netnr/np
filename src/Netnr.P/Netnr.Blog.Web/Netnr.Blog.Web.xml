@@ -825,6 +825,11 @@
             处理操作记录
             </summary>
         </member>
+        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.ExportDataBase">
+            <summary>
+            导出数据库
+            </summary>
+        </member>
         <member name="M:Netnr.Blog.Web.Controllers.ServicesController.ExecTask(System.Nullable{Netnr.Blog.Web.Controllers.ServicesController.TaskItem})">
             <summary>
             需要处理的事情

@@ -35,7 +35,7 @@ https://zme.ink
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201130',
+        url: '/images/icon.svg?20201222',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -44,7 +44,7 @@ https://zme.ink
 </script>
 
         <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
-        <script src="/js/global.js?v=qaaC1kQbysPcrWUAIoiq9U8DkYoI35FOcNj5QmvDF6A"></script>
+        <script src="/js/global.js?v=ckkNo3hER74SKnNCuouMgEfxEpEMP3phtPl9uA0_Lnc"></script>
         <div class="min300 mt-3">
             <style>
     body {
@@ -173,6 +173,9 @@ https://zme.ink
         <img src="/favicon.svg" />
     </a>
     <div class="btn-group float-right">
+        <label class="btn btn-light btn-sm m-0" title="如果无法显示图片，可以尝试勾选代理线路">
+            <input type="checkbox" value="1" class="nrUseProxy" /> 代理线路
+        </label>
         <button class="btn btn-light btn-sm dropdown-toggle" id="ddType" data-toggle="dropdown">
             壁纸分类
         </button>
@@ -264,11 +267,11 @@ https://zme.ink
         DownView: function (item) {
             var size = ["img_1600_900", "img_1440_900", "img_1366_768", "img_1280_800", "img_1280_1024", "img_1024_768"], htm = [];
             htm.push("<div class='list-group'>");
-            htm.push("<a href='" + item.url.replace("__85", "__100") + "' target='_blank' class='list-group-item' download>▼原图(" + item.resolution + ")</a>");
+            htm.push("<a href='" + rt.urlProxy(item.url.replace("__85", "__100")) + "' target='_blank' class='list-group-item' download>▼原图(" + item.resolution + ")</a>");
             $(size).each(function () {
                 var url = item[this], txt = this.replace('img_', '').replace('_', 'x');
                 if (url) {
-                    htm.push("<a href='" + url + "' class='list-group-item' target='_blank' download>▼" + txt + "</a>");
+                    htm.push("<a href='" + rt.urlProxy(url) + "' class='list-group-item' target='_blank' download>▼" + txt + "</a>");
                 }
             });
             htm.push('</div>');
@@ -281,7 +284,7 @@ https://zme.ink
                 var tags = item.tag.split(' ');
                 tit = tags.slice(1, tags.length - 1).join(' ').replace(/_/g, "").replace(/category/g, "");
             }
-            return "<img data-url='" + item.url + "' title='" + tit + "' src='" + cuturl + "' />"
+            return "<img data-url='" + rt.urlProxy(item.url) + "' title='" + tit + "' src='" + cuturl + "' />"
         },
         //拼接容器
         JoinBox: function (content, pu) {
@@ -290,8 +293,7 @@ https://zme.ink
         //呈现
         RenderView: function (json) {
             if (json.errno == "0") {
-                var max_wh = "1000_618", min_wh = "890_550",
-                    htm = [], datas = json.data, len = config.count, i = 0;
+                var max_wh = "1000_618", htm = [], datas = json.data, len = config.count, i = 0;
                 switch (len) {
                     case 12:
                         {
@@ -299,7 +301,7 @@ https://zme.ink
                             for (var r = 1; r < len / col + 1; r++) {
                                 htm.push("<div class='row'>");
                                 for (; i < r * len / (len / col);) {
-                                    var item = datas[i++], url = item.url;
+                                    var item = datas[i++], url = rt.urlProxy(item.url);
                                     var cuturl = url.replace("/bdr/__85", "/bdm/" + max_wh + "_80");
                                     var inbox = ["<div class='col-sm-12 col-md-6 pu'>"];
                                     inbox.push(rt.JoinImg(item, cuturl));
@@ -338,8 +340,24 @@ https://zme.ink
         FullClose: function () {
             document.documentElement.style.overflowY = "scroll";
             $(document.body).children('div.divFP').remove();
+        },
+        //代理
+        urlProxy: function (url) {
+            if (ss.lsStr("useProxy") == "1") {
+                url = "https://netnr-proxy.openode.io/" + url.replace("http://", "");
+            } else {
+                url = url.replace("http://", "https://");
+            }
+            return url;
         }
     };
+
+    //点击代理
+    $('.nrUseProxy').click(function () {
+        ss.ls["useProxy"] = this.checked ? 1 : 0;
+        ss.lsSave();
+        location.reload(false);
+    })[0].checked = ss.lsStr("useProxy") == "1";
 
     //点击分类
     $('#dmType').click(function (e) {

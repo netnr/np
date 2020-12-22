@@ -277,22 +277,27 @@ namespace Netnr.Blog.Web.Controllers
                 return vm;
             }
 
-            //刷新登录标记
-            outMo.UserLoginTime = DateTime.Now;
-            outMo.UserSign = outMo.UserLoginTime.Value.ToTimestamp().ToString();
-            uiR.Update(outMo);
-            var num = db.SaveChanges();
-            if (num < 1)
+            try
             {
-                vm.Msg = "请求登录被拒绝";
-                return vm;
+                //刷新登录标记
+                outMo.UserLoginTime = DateTime.Now;
+                outMo.UserSign = outMo.UserLoginTime.Value.ToTimestamp().ToString();
+                uiR.Update(outMo);
+                db.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
             }
 
             try
             {
                 //登录标记 缓存5分钟，绝对过期
-                var usk = "UserSign_" + outMo.UserId;
-                CacheTo.Set(usk, outMo.UserSign, 5 * 60, false);
+                if (GlobalTo.GetValue<bool>("Common:SingleSignOn"))
+                {
+                    var usk = "UserSign_" + outMo.UserId;
+                    CacheTo.Set(usk, outMo.UserSign, 5 * 60, false);
+                }
 
                 //写入授权
                 SetAuth(HttpContext, outMo, isremember);

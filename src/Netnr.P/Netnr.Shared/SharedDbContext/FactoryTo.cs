@@ -1,5 +1,8 @@
 ﻿# if Full || DbContext
 
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -67,6 +70,46 @@ namespace Netnr.SharedDbContext
             builder.UseLoggerFactory(LogFactory).EnableSensitiveDataLogging().EnableDetailedErrors();
 
             return builder as DbContextOptionsBuilder<T>;
+        }
+
+        /// <summary>
+        /// 连接字符串加密/解密
+        /// </summary>
+        /// <param name="conn">连接字符串</param>
+        /// <param name="pwd">密码</param>
+        /// <param name="ed">1加密 2解密</param>
+        public static string ConnnectionEncryptOrDecrypt(string conn, string pwd, int ed = 1)
+        {
+            switch (ed)
+            {
+                //解密
+                case 2:
+                    {
+                        var ckey = "CONNED" + conn.GetHashCode();
+                        var cval = Core.CacheTo.Get(ckey) as string;
+                        if (cval == null)
+                        {
+                            var clow = conn.ToLower();
+                            var pts = new List<string> { "database", "server", "filename", "source", "user" };
+                            if (!pts.Any(x => clow.Contains(x)))
+                            {
+                                cval = Core.CalcTo.DeDES(conn, pwd);
+                            }
+                            else
+                            {
+                                cval = conn;
+                            }
+                            Core.CacheTo.Set(ckey, cval);
+                        }
+                        return cval;
+                    }
+                //加密
+                default:
+                    {
+                        conn = Core.CalcTo.EnDES(conn, pwd);
+                        return conn;
+                    }
+            }
         }
     }
 }

@@ -22,6 +22,8 @@
         var caq4 = new List<string>() { "home/index", "mind/index", "code/index" };
     }
 
+    <partial name="_PartialQuote" model="@("MirrorReadOnly")" />
+
     @if (!caq4.Contains(ca) || (caq4.Contains(ca) && rid == "form"))
     {
         @Html.Raw(Netnr.SharedApp.QuoteTo.Html("bootstrap.css,fa.css,jquery.js,bootstrap.js"))

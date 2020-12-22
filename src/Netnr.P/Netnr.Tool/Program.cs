@@ -1,10 +1,9 @@
 ﻿using System;
 using Netnr.Tool.Items;
 using System.Reflection;
-using System.Collections.Generic;
 using Netnr.Core;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.ComponentModel;
 
 namespace Netnr.Tool
 {
@@ -13,96 +12,98 @@ namespace Netnr.Tool
         static void Main()
         {
             Console.Title = MethodBase.GetCurrentMethod().DeclaringType.Namespace + "  v0.0.1";
-            Console.WriteLine(Environment.NewLine);
             Console.CancelKeyPress += new ConsoleCancelEventHandler(CloseApp);
 
-            Test1();
-
-            Menu();
-        }
-
-        public static void Test1()
-        {
-
-        }
-
-        public static void Menu()
-        {
-            var dic = new Dictionary<int, string>()
-            {
-                { 0,"Exit"},
-                { 1,"Git Pull (All projects must exist in a .git folder)"},
-                { 2,"SystemStatusTo (Json)"},
-                { 3,"SystemStatusTo (View)"},
-                { 4,"Project cleanup (bin and obj)"},
-                { 5,"Project safe copy (Handle key and cleanup)"}
-            };
-            foreach (var key in dic.Keys)
-            {
-                Console.WriteLine($"  {key}） " + dic[key]);
-            }
-            Console.WriteLine(Environment.NewLine);
-
-
-            bool isnum = false;
-            do
-            {
-                Console.Write("Enter the serial number：");
-                if (int.TryParse(Console.ReadLine(), out int num))
-                {
-                    isnum = true;
-                }
-                if (isnum)
-                {
-                    if (num == 0)
-                    {
-                        break;
-                    }
-
-                    if (dic.ContainsKey(num))
-                    {
-                        Switch(num);
-                    }
-                    else
-                    {
-                        isnum = false;
-                        Console.WriteLine("Serial number error");
-                    }
-                }
-            } while (!isnum);
-        }
-
-        public static void Switch(int num)
-        {
-            Console.WriteLine(Environment.NewLine);
-            switch (num)
-            {
-                case 1:
-                    GitPull.Run();
-                    break;
-                case 2:
-                    Console.WriteLine(new SystemStatusTo().ToJson());
-                    break;
-                case 3:
-                    Console.WriteLine(new SystemStatusTo().ToView());
-                    break;
-                case 4:
-                    ProjectCleanup.Run();
-                    break;
-                case 5:
-                    ProjectSafeCopy.Run();
-                    break;
-                default:
-                    Console.WriteLine("Invalid");
-                    break;
-            }
-            Console.WriteLine(Environment.NewLine);
-            Menu();
+            MenuStart();
         }
 
         public static void CloseApp(object sender, ConsoleCancelEventArgs args)
         {
             Environment.Exit(0);
+        }
+
+        /// <summary>
+        /// 启动菜单
+        /// </summary>
+        public static void MenuStart()
+        {
+            var mitype = typeof(MenuItems);
+            var mis = mitype.GetMethods();
+            var mlen = mis.Length - 4;
+            Console.WriteLine(Environment.NewLine + "  ======================= Netnr.Tool =======================");
+            for (int i = 0; i < mlen; i++)
+            {
+                var mi = mis[i];
+                var desc = mi.CustomAttributes.First().ConstructorArguments.First().Value;
+                Console.WriteLine($"  {i}） {desc}");
+            }
+            Console.WriteLine(Environment.NewLine);
+
+            bool isMenumNum;
+            do
+            {
+                Console.Write("Enter the serial number：");
+                isMenumNum = int.TryParse(Console.ReadLine(), out int num) && num >= 0 && num < mlen;
+                if (isMenumNum)
+                {
+                    mis[num].Invoke(mitype, null);
+
+                    MenuStart();
+                }
+            } while (!isMenumNum);
+        }
+
+        /// <summary>
+        /// 菜单项
+        /// </summary>
+        public class MenuItems
+        {
+            [Description("Exit")]
+            public static void Mi_Exit()
+            {
+                Environment.Exit(0);
+            }
+
+            [Description("Git Pull (All projects must exist in a .git folder)")]
+            public static void Mi_GitPull()
+            {
+                GitPull.Run();
+            }
+
+            [Description("System Status (Json or View)")]
+            public static void Mi_SystemStatus()
+            {
+                Console.Write($"Please choose [1/J]Json or [2/V]View(default 1):");
+                var format = Console.ReadLine()?.ToLower();
+                var ss = new SystemStatusTo();
+                Console.WriteLine(Environment.NewLine);
+                if (format == "2" || format == "v")
+                {
+                    Console.WriteLine(ss.ToView());
+                }
+                else
+                {
+                    Console.WriteLine(ss.ToJson());
+                }
+            }
+
+            [Description("Project cleanup (bin and obj)")]
+            public static void Mi_ProjectCleanup()
+            {
+                ProjectCleanup.Run();
+            }
+
+            [Description("Project safe copy (Handle key and cleanup)")]
+            public static void Mi_ProjectSafeCopy()
+            {
+                ProjectSafeCopy.Run();
+            }
+
+            [Description("DES encrypt or decode (Database connection string)")]
+            public static void Mi_DESEncryptOrDecrypt()
+            {
+                DESEncryptOrDecrypt.Run();
+            }
         }
     }
 }
