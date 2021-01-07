@@ -65,6 +65,11 @@
                                     @if (item.DrOpen == 2)
                                     {
                                         <i class="fa fa-lock text-success mr-1" title="私有"></i>
+
+                                        if (!string.IsNullOrWhiteSpace(item.Spare1))
+                                        {
+                                            <a href="/draw/code/@(item.DrId+"/?code="+item.Spare1)" target="_blank" class="fa fa-share-alt mr-1" title="分享码查看链接"></a>
+                                        }
                                     }
                                     <a href="/draw/code/@item.DrId">@item.DrName</a>
                                     @if (uinfo.UserId == item.Uid)

@@ -18,14 +18,38 @@ namespace Netnr.Blog.Web.Areas.Draw.Controllers
         /// <summary>
         /// 首页
         /// </summary>
+        /// <param name="code">分享码</param>
         /// <param name="filename"></param>
         /// <param name="xml"></param>
         /// <param name="mof"></param>
         /// <returns></returns>
-        public IActionResult Index(string filename, string xml, Domain.Draw mof)
+        public IActionResult Index(string code, string filename, string xml, Domain.Draw mof)
         {
             var id = RouteData.Values["id"]?.ToString();
             var sid = RouteData.Values["sid"]?.ToString();
+
+            var kid = string.Empty;
+            if (id?.Length == 20)
+            {
+                kid = id;
+            }
+            else if (sid?.Length == 20)
+            {
+                kid = sid;
+            }
+            if (!string.IsNullOrEmpty(kid))
+            {
+                var sck = "SharedCode_" + kid;
+                //有分享码
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    Response.Cookies.Append(sck, code);
+                }
+                else
+                {
+                    code = Request.Cookies[sck]?.ToString();
+                }
+            }
 
             var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -38,7 +62,7 @@ namespace Netnr.Blog.Web.Areas.Draw.Controllers
                 xml = xml.ToDecode();
             }
 
-            //新增
+            //新增、编辑
             if (id == "open")
             {
                 //编辑
@@ -46,7 +70,10 @@ namespace Netnr.Blog.Web.Areas.Draw.Controllers
                 {
                     var vm = new SharedResultVM();
                     var mo = db.Draw.Find(sid);
-                    if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId)
+
+                    //分享码
+                    var isShare = !string.IsNullOrWhiteSpace(mo?.Spare1) && mo?.Spare1 == code;
+                    if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId || isShare)
                     {
                         vm.Set(SharedEnum.RTag.success);
                         vm.Data = mo;
@@ -97,11 +124,16 @@ namespace Netnr.Blog.Web.Areas.Draw.Controllers
                     else
                     {
                         var newmo = db.Draw.Find(mof.DrId);
-                        if (newmo.Uid == uinfo.UserId)
+                        if (newmo.Uid != uinfo.UserId)
+                        {
+                            vm.Set(SharedEnum.RTag.unauthorized);
+                        }
+                        else
                         {
                             newmo.DrRemark = mof.DrRemark;
                             newmo.DrName = mof.DrName;
                             newmo.DrOpen = mof.DrOpen;
+                            newmo.Spare1 = mof.Spare1;
 
                             db.Draw.Update(newmo);
                             num = db.SaveChanges();

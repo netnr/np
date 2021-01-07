@@ -29,50 +29,31 @@ namespace Netnr.Blog.Web
             LoggingTo.OptionsCacheWriteSecond = GlobalTo.GetValue<int>("logs:CacheWriteSecond");
 
             #region 第三方登录
-            QQConfig.APPID = GlobalTo.GetValue("OAuthLogin:QQ:APPID");
-            QQConfig.APPKey = GlobalTo.GetValue("OAuthLogin:QQ:APPKey");
-            QQConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:QQ:Redirect_Uri");
-
-            WeChatConfig.AppId = GlobalTo.GetValue("OAuthLogin:WeChat:AppId"); ;
-            WeChatConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:WeChat:AppSecret"); ;
-            WeChatConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:WeChat:Redirect_Uri"); ;
-
-            WeiboConfig.AppKey = GlobalTo.GetValue("OAuthLogin:Weibo:AppKey");
-            WeiboConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:Weibo:AppSecret");
-            WeiboConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:Weibo:Redirect_Uri");
-
-            GitHubConfig.ClientID = GlobalTo.GetValue("OAuthLogin:GitHub:ClientID");
-            GitHubConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:GitHub:ClientSecret");
-            GitHubConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:GitHub:Redirect_Uri");
-
-            GiteeConfig.ClientID = GlobalTo.GetValue("OAuthLogin:Gitee:ClientID");
-            GiteeConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:Gitee:ClientSecret");
-            GiteeConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:Gitee:Redirect_Uri");
-
-            TaoBaoConfig.AppKey = GlobalTo.GetValue("OAuthLogin:TaoBao:AppKey");
-            TaoBaoConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:TaoBao:AppSecret");
-            TaoBaoConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:TaoBao:Redirect_Uri");
-
-            MicroSoftConfig.ClientID = GlobalTo.GetValue("OAuthLogin:MicroSoft:ClientID");
-            MicroSoftConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:MicroSoft:ClientSecret");
-            MicroSoftConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:MicroSoft:Redirect_Uri");
-
-            DingTalkConfig.appId = GlobalTo.GetValue("OAuthLogin:DingTalk:AppId");
-            DingTalkConfig.appSecret = GlobalTo.GetValue("OAuthLogin:DingTalk:AppSecret");
-            DingTalkConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:DingTalk:Redirect_Uri");
-
-            GoogleConfig.ClientID = GlobalTo.GetValue("OAuthLogin:Google:ClientID");
-            GoogleConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:Google:ClientSecret");
-            GoogleConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:Google:Redirect_Uri");
-
-            AliPayConfig.AppId = GlobalTo.GetValue("OAuthLogin:AliPay:AppId");
-            AliPayConfig.AppPrivateKey = GlobalTo.GetValue("OAuthLogin:AliPay:AppPrivateKey");
-            AliPayConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:AliPay:Redirect_Uri");
-
-            StackOverflowConfig.ClientId = GlobalTo.GetValue("OAuthLogin:StackOverflow:ClientId");
-            StackOverflowConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:StackOverflow:ClientSecret");
-            StackOverflowConfig.Key = GlobalTo.GetValue("OAuthLogin:StackOverflow:Key");
-            StackOverflowConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:StackOverflow:Redirect_Uri");
+            new List<Type>
+            {
+                typeof(QQConfig),
+                typeof(WeChatConfig),
+                typeof(WeiboConfig),
+                typeof(GitHubConfig),
+                typeof(GiteeConfig),
+                typeof(TaoBaoConfig),
+                typeof(MicroSoftConfig),
+                typeof(DingTalkConfig),
+                typeof(GoogleConfig),
+                typeof(AliPayConfig),
+                typeof(StackOverflowConfig)
+            }.ForEach(lc =>
+            {
+                var fields = lc.GetFields();
+                foreach (var field in fields)
+                {
+                    if (!field.Name.StartsWith("API_"))
+                    {
+                        var cv = GlobalTo.GetValue($"OAuthLogin:{lc.Name.Replace("Config", "")}:{field.Name}");
+                        field.SetValue(lc, cv);
+                    }
+                }
+            });
             #endregion
         }
 
@@ -83,7 +64,13 @@ namespace Netnr.Blog.Web
             {
                 //cookie存储需用户同意，欧盟新标准，暂且关闭，否则用户没同意无法写入
                 options.CheckConsentNeeded = context => false;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+
+                if (!GlobalTo.GetValue<bool>("ReadOnly"))
+                {
+                    //允许其他站点携带授权Cookie访问，会出现伪造
+                    //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                }
             });
 
             IMvcBuilder builder = services.AddControllersWithViews(options =>
@@ -150,7 +137,7 @@ namespace Netnr.Blog.Web
             services.AddDbContextPool<Data.ContextBase>(options =>
             {
                 Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
-            }, 99);
+            }, 20);
 
             //定时任务
             if (!GlobalTo.GetValue<bool>("ReadOnly"))
@@ -170,7 +157,7 @@ namespace Netnr.Blog.Web
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();                
+                app.UseDeveloperExceptionPage();
             }
             else
             {
@@ -200,7 +187,7 @@ namespace Netnr.Blog.Web
                 }
 
                 var num = db.SaveChanges();
-                Console.WriteLine($"初始化数据库，写入数据 {num} 行");
+                Console.WriteLine($"Initialize the database, write {num} rows of data");
             }
 
             //配置swagger

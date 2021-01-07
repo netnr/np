@@ -316,6 +316,15 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
+        /// 随机匹配
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult RandomMatch()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// 垃圾分类
         /// </summary>
         /// <returns></returns>
@@ -401,6 +410,15 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Tiny()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// SSL
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult SSL()
         {
             return View();
         }

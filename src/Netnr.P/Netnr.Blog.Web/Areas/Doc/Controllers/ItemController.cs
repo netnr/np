@@ -69,6 +69,9 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                 mo.DsCreateTime = DateTime.Now;
 
                 db.DocSet.Add(mo);
+
+                var num = db.SaveChanges();
+                vm.Set(num > 0);
             }
             else
             {
@@ -77,18 +80,19 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                 {
                     vm.Set(SharedEnum.RTag.unauthorized);
                 }
+                else
+                {
+                    currmo.DsName = mo.DsName;
+                    currmo.DsRemark = mo.DsRemark;
+                    currmo.DsOpen = mo.DsOpen;
+                    currmo.Spare1 = mo.Spare1;
 
-                currmo.DsName = mo.DsName;
-                currmo.DsRemark = mo.DsRemark;
-                currmo.DsOpen = mo.DsOpen;
-                currmo.Spare1 = mo.Spare1;
+                    db.DocSet.Update(currmo);
 
-                db.DocSet.Update(currmo);
+                    var num = db.SaveChanges();
+                    vm.Set(num > 0);
+                }
             }
-            var num = db.SaveChanges();
-
-            vm.Set(num > 0);
-
             return vm;
         }
 

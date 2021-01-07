@@ -281,6 +281,12 @@
             <param name="authType">登录防伪追加标识，区分登录、注册</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Blog.Application.ThirdLoginService.GetQuickLogin">
+            <summary>
+            获取快捷登录项
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Blog.Application.ViewModel.DocTreeViewVM">
             <summary>
             文档内容视图

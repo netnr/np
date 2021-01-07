@@ -221,17 +221,27 @@
             输出
             </summary>
         </member>
-        <member name="M:Netnr.Core.ConsoleTo.Log(System.Object)">
+        <member name="P:Netnr.Core.ConsoleTo.CurrentCacheLog">
             <summary>
-            写入消息
+            缓存
             </summary>
-            <param name="msg"></param>
+        </member>
+        <member name="F:Netnr.Core.ConsoleTo.WriteMark">
+            <summary>
+            写入标记
+            </summary>
         </member>
         <member name="M:Netnr.Core.ConsoleTo.Log(System.Exception)">
             <summary>
             写入错误信息
             </summary>
             <param name="ex"></param>
+        </member>
+        <member name="M:Netnr.Core.ConsoleTo.Log(System.Object)">
+            <summary>
+            写入消息
+            </summary>
+            <param name="msg"></param>
         </member>
         <member name="T:Netnr.Core.FileTo">
             <summary>

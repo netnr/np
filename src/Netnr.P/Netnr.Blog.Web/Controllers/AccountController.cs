@@ -71,6 +71,7 @@ namespace Netnr.Blog.Web.Controllers
 
             ViewData["UserName"] = mo.UserName;
 
+            HttpContext.Session.Remove("RegisterCode");
             return View(vm);
         }
 
@@ -139,40 +140,6 @@ namespace Netnr.Blog.Web.Controllers
             //记录登录跳转
             Response.Cookies.Append("ReturnUrl", ReturnUrl ?? "");
 
-            ViewData["listQuickLogin"] = new List<Application.ViewModel.QuickLoginVM>
-            {
-                new Application.ViewModel.QuickLoginVM
-                {
-                    Key = "qq",
-                    Name = "QQ"
-                },
-                new Application.ViewModel.QuickLoginVM
-                {
-                    Key = "weibo",
-                    Name = "微博"
-                },
-                new Application.ViewModel.QuickLoginVM
-                {
-                    Key = "github",
-                    Name = "GitHub"
-                },
-                new Application.ViewModel.QuickLoginVM
-                {
-                    Key = "taobao",
-                    Name = "淘宝"
-                },
-                new Application.ViewModel.QuickLoginVM
-                {
-                    Key = "microsoft",
-                    Name = "Microsoft"
-                },
-                new Application.ViewModel.QuickLoginVM
-                {
-                    Key = "dingtalk",
-                    Name = "钉钉"
-                }
-            };
-
             return View();
         }
 
@@ -205,6 +172,8 @@ namespace Netnr.Blog.Web.Controllers
                 return View(vm);
             }
         }
+
+
 
         /// <summary>
         /// 公共登录验证
@@ -750,9 +719,9 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                vm.Set(ex);
-
                 Apps.FilterConfigs.WriteLog(HttpContext, ex);
+                Response.Headers["X-Output-Msg"] = ex.ToJson();
+                vm.Set(ex);
             }
 
             //成功
@@ -770,8 +739,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                var msg = $"登录失败：{vm.Msg}".ToEncode();
-                return Redirect("/home/error?msg=" + msg);
+                return Redirect("/home/error");
             }
         }
 

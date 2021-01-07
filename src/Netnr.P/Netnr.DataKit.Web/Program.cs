@@ -10,7 +10,7 @@ namespace Netnr.DataKit.Web
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.DataKit.Web.dll "http://*:54"
+        //dotnet Netnr.DataKit.Web.dll "https://*:54"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

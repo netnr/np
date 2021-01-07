@@ -25,14 +25,14 @@ namespace Netnr.Blog.Web.Apps
         {
             public void OnException(ExceptionContext context)
             {
-                //日志
                 try
                 {
                     WriteLog(context.HttpContext, context.Exception);
+                    context.Result = new RedirectResult("/home/error");
                 }
                 catch (Exception ex)
                 {
-                    Core.ConsoleTo.Log("写入错误日志失败：" + ex.Message);
+                    Console.WriteLine($"写入错误日志失败：{ex.Message}");
                 }
             }
         }

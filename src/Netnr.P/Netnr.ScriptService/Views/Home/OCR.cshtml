@@ -169,9 +169,9 @@
                     },
                     success: function (data) {
                         console.log(data);
-                        if (data.words_result) {
+                        if (data.code == 200 && data.data.words_result) {
                             var wrs = [];
-                            $.each(data.words_result, function () {
+                            $.each(data.data.words_result, function () {
                                 wrs.push(this.words);
                             });
                             $('#txtResult').val(wrs.join('\r\n'));

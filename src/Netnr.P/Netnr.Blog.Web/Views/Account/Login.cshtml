@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "登录";
 
-    var listQuickLogin = ViewData["listQuickLogin"] as List<Netnr.Blog.Application.ViewModel.QuickLoginVM>;
+    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin();
 }
 
 <link href="/css/account/login.css" rel="stylesheet" asp-append-version="true" />

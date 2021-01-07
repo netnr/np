@@ -219,10 +219,11 @@
             <param name="page"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Areas.Draw.Controllers.CodeController.Index(System.String,System.String,Netnr.Blog.Domain.Draw)">
+        <member name="M:Netnr.Blog.Web.Areas.Draw.Controllers.CodeController.Index(System.String,System.String,System.String,Netnr.Blog.Domain.Draw)">
             <summary>
             首页
             </summary>
+            <param name="code">分享码</param>
             <param name="filename"></param>
             <param name="xml"></param>
             <param name="mof"></param>
@@ -695,11 +696,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.HomeController.Error(System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.HomeController.Error">
             <summary>
             全局错误页面
             </summary>
-            <param name="msg">错误消息</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.HomeController.SwaggerCustomStyle">

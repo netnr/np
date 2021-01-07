@@ -26,7 +26,7 @@
 		<PackageReference Include="Oracle.EntityFrameworkCore" Version="3.19.80" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.100" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
-		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.6" />
+		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
 	</ItemGroup>

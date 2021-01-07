@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "个人设置";
 
-    var listQuickLogin = ViewData["listQuickLogin"] as List<Netnr.Blog.Application.ViewModel.QuickLoginVM>;
+    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin();
 }
 
 <div class="container">
@@ -13,7 +13,6 @@
                 <span class="h4">个人信息</span>
             </div>
             <table class="table">
-                <colgroup><col style="width:30%" /></colgroup>
                 <tr>
                     <td>
                         账号
@@ -57,8 +56,8 @@
                 </tr>
             </table>
 
-            <div class="modal fade" role="dialog" id="ModalUserInfo">
-                <div class="modal-dialog" role="document">
+            <div class="modal" id="ModalUserInfo">
+                <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">修改个人信息</h5>
@@ -105,7 +104,6 @@
 
             <h4 class="mt-5">授权关联</h4>
             <table class="table">
-                <colgroup><col style="width:30%" /></colgroup>
                 @foreach (var login in listQuickLogin)
                 {
                     <tr>

@@ -129,7 +129,10 @@
 
         scan: function () {
             $('.sbox-scanner').removeClass('d-none');
+            $('#txtResult').val("正在加载引擎...")
             nsfwjs.load('https://cdn.jsdelivr.net/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
+                $('#txtResult').val("正在识别...")
+
                 var mf = pg.isgif ? "classifyGif" : "classify";
                 model[mf](pg.iv).then(function (predictions) {
                     console.log(predictions);

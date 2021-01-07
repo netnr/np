@@ -35,7 +35,7 @@ https://zme.ink
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201222',
+        url: '/images/icon.svg?20201228',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -208,7 +208,10 @@ https://zme.ink
 
         scan: function () {
             $('.sbox-scanner').removeClass('d-none');
+            $('#txtResult').val("正在加载引擎...")
             nsfwjs.load('https://cdn.jsdelivr.net/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
+                $('#txtResult').val("正在识别...")
+
                 var mf = pg.isgif ? "classifyGif" : "classify";
                 model[mf](pg.iv).then(function (predictions) {
                     console.log(predictions);

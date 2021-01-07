@@ -11,7 +11,7 @@ namespace Netnr.Chat
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.Chat.dll "http://*:58"
+        //dotnet Netnr.Chat.dll "https://*:58"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

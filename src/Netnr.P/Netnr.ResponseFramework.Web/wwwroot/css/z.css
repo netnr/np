@@ -115,6 +115,24 @@ body {
         width: 100%;
     }
 
+/* iframe 切换由隐藏改为浮动层&透明度（修复因隐藏造成easyui表格显示不正常的问题） */
+#mtabox {
+    position: relative;
+}
+
+    #mtabox .tab-pane {
+        display: initial !important;
+        position: absolute !important;
+        width: 100%;
+        z-index: 1;
+        opacity: 0;
+        top: 0;
+    }
+
+    #mtabox .active {
+        opacity: 1;
+        z-index: 2 !important;
+    }
 
 /*大三角*/
 .caret-lg {

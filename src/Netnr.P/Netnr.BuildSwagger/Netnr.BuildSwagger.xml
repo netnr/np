@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Netnr.BuildSwagger</name>
+    </assembly>
+    <members>
+        <member name="T:Netnr.BuildSwagger.Controllers.Serverless.AIController">
+            <summary>
+            AI 人工智能
+            </summary>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.AIController.Aip_ocr(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String,System.String,System.String)">
+            <summary>
+            OCR 通用文字识别(百度接口,50000次/天免费,用自己申请的授权信息更稳定不受限制)
+            </summary>
+            <param name="file">待识别的图片文件（二选一）</param>
+            <param name="url">远程图片地址（二选一）</param>
+            <param name="APP_ID">百度AI接口：APP_ID（可选，用自己申请的授权信息更稳定不受限制）</param>
+            <param name="API_KEY">百度AI接口：API_KEY（可选，用自己申请的授权信息更稳定不受限制）</param>
+            <param name="SECRET_KEY">百度AI接口：SECRET_KEY（可选，用自己申请的授权信息更稳定不受限制）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.AIController.Analysis(System.String,System.Int32,System.String)">
+            <summary>
+            内容分词解析(nodejieba 组件)
+            </summary>
+            <param name="lang">语言，默认 zh-cn</param>
+            <param name="ctype">命令类型，0：分词（默认，可不传）；1：关键词</param>
+            <param name="content">内容</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.BuildSwagger.Controllers.Serverless.BadgeController">
+            <summary>
+            Badge 徽章
+            </summary>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.BadgeController.nuget_v(System.String)">
+            <summary>
+            获取 NuGet 发布包的最新版本
+            </summary>
+            <param name="package">发布包名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.BadgeController.npm_v(System.String)">
+            <summary>
+            获取 NPM 发布包的最新版本
+            </summary>
+            <param name="package">发布包名</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.BuildSwagger.Controllers.Serverless.BedController">
+            <summary>
+            Bed 图床
+            </summary>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.BedController.Bed">
+            <summary>
+            聚合图床(获取存储商列表)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.BedController.Bed(System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            聚合图床(上传)
+            </summary>
+            <param name="url">存储商接口URL</param>
+            <param name="file">文件</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.BuildSwagger.Controllers.Serverless.CommonController">
+            <summary>
+            Common 常用
+            </summary>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Clock">
+            <summary>
+            获取时钟(UTC),默认东8区,中国,自定义时区:东1~12区、西-1~-12区
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Clock(System.Int32)">
+            <summary>
+            获取时钟(UTC),默认东8区,中国,自定义时区:东1~12区、西-1~-12区
+            </summary>
+            <param name="timezone">东1 ~ 12区、西-1 ~ -12区</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Ip">
+            <summary>
+            获取IP
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Minify_css(System.String,System.String)">
+            <summary>
+            CSS压缩
+            </summary>
+            <param name="content">CSS内容</param>
+            <param name="options">自定义配置，JSON配置字符串，参考：https://github.com/fmarcia/UglifyCSS </param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Svg">
+            <summary>
+            生成占位图,默认200x200
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Svg(System.String)">
+            <summary>
+            生成占位图,默认200x200
+            </summary>
+            <param name="wh">自定义宽高，如 500x309</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Captcha(System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Boolean,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            生成SVG验证码,默认返回一条
+            </summary>
+            <param name="size">验证码长度，默认4位</param>
+            <param name="ignoreChars">验证码字符中排除，如：0o1i</param>
+            <param name="noise">干扰线条的数量，默认1</param>
+            <param name="color">验证码的字符是否有颜色，默认没有，如果设定了背景，则默认有</param>
+            <param name="background">验证码图片背景颜色</param>
+            <param name="width">验证码宽，默认150</param>
+            <param name="height">验证码高，默认50</param>
+            <param name="fontSize">验证码字体大小</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Captcha(System.Int32,System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Boolean,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            生成SVG验证码,默认返回一条
+            </summary>
+            <param name="count">自定义条数（限制1-99，1条为 Object，多条为 Array）</param>
+            <param name="size">验证码长度，默认4位</param>
+            <param name="ignoreChars">验证码字符中排除，如：0o1i</param>
+            <param name="noise">干扰线条的数量，默认1</param>
+            <param name="color">验证码的字符是否有颜色，默认没有，如果设定了背景，则默认有</param>
+            <param name="background">验证码图片背景颜色</param>
+            <param name="width">验证码宽，默认150</param>
+            <param name="height">验证码高，默认50</param>
+            <param name="fontSize">验证码字体大小</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.UUID">
+            <summary>
+            生成UUID,默认返回一条
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.UUID(System.Int32)">
+            <summary>
+            生成UUID,默认返回一条
+            </summary>
+            <param name="count">自定义条数（限制1-99，1条为字符串，多条为数组JSON）</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.BuildSwagger.Controllers.Serverless.DKController">
+            <summary>
+            DK Netnr.DataKit API
+            </summary>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetTable(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String)">
+            <summary>
+            获取所有表名及注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetColumn(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String)">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.SetTableComment(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.SetColumnComment(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetData(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetDEI(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String)">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.BuildSwagger.Models.Serverless.TypeDB">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="F:Netnr.BuildSwagger.Models.Serverless.TypeDB.InMemory">
+            <summary>
+            Memory
+            </summary>
+        </member>
+        <member name="F:Netnr.BuildSwagger.Models.Serverless.TypeDB.SQLite">
+            <summary>
+            SQLite
+            </summary>
+        </member>
+        <member name="F:Netnr.BuildSwagger.Models.Serverless.TypeDB.MySQL">
+            <summary>
+            MySQL
+            </summary>
+        </member>
+        <member name="F:Netnr.BuildSwagger.Models.Serverless.TypeDB.Oracle">
+            <summary>
+            Oracle
+            </summary>
+        </member>
+        <member name="F:Netnr.BuildSwagger.Models.Serverless.TypeDB.SQLServer">
+            <summary>
+            SQLServer
+            </summary>
+        </member>
+        <member name="F:Netnr.BuildSwagger.Models.Serverless.TypeDB.PostgreSQL">
+            <summary>
+            PostgreSQL
+            </summary>
+        </member>
+    </members>
+</doc>

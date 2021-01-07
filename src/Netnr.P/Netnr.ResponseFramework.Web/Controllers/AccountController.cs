@@ -73,6 +73,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             else
             {
                 var capt = HttpContext.Session.GetString("captcha");
+                HttpContext.Session.Remove("captcha");
 
                 if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != Core.CalcTo.MD5(captcha.ToLower()))
                 {

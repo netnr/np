@@ -1,11 +1,18 @@
 # Change log
 
+### 2021-01
+- Fix the problem that the EasyUI table is not displayed normally due to the hidden Iframe tab of the Netnr.ResponseFramework project (switch from hiding to floating layer & transparency mode)
+- Added Draw to support private setting sharing code view
+
 ### 2020-12
 - Upgrade .NET5
 - Adjust to extract shared items
 - Adjust Netnr.Login to remove Netnr.Core dependency
 - Adjust Netnr.WeChat to remove Netnr.Core dependency
 - New database connection string can be configured in plain text or cipher text (encrypt and decrypt using Netnr.Tool)
+- Adjust ConsoleTo.Log log writing to add a secure queue, which can be written concurrently
+- Adjust the log cache queue Queue to ConcurrentQueue
+- Repair verification code cleanup to avoid repeated use loopholes
 
 ### 2020-11
 - Adjust the method of resetting the database of the Netnr.ResponseFramework project (and delete the memory database)

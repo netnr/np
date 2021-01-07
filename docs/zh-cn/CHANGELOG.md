@@ -1,11 +1,18 @@
 # 变更日志
 
+### 2021-01
+- 修复 Netnr.ResponseFramework 项目 Iframe 选项卡隐藏造成 EasyUI 表格显示不正常的问题（从隐藏切换改为浮动层&透明度的模式）
+- 新增 Draw 支持私有设置分享码查看
+
 ### 2020-12
 - 升级 .NET5
 - 调整 提取共享项目
 - 调整 Netnr.Login 删除 Netnr.Core 依赖
 - 调整 Netnr.WeChat 删除 Netnr.Core 依赖
 - 新增 数据库连接字符串可配置明文或密文（使用 Netnr.Tool 工具加密解密）
+- 调整 ConsoleTo.Log 日志写入添加安全队列，可并发写入
+- 调整 日志缓存队列 Queue 改为 ConcurrentQueue
+- 修复 验证码清理避免重复使用的漏洞
 
 ### 2020-11
 - 调整 Netnr.ResponseFramework 项目重置数据库的方法（并删除内存数据库）

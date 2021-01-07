@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using Netnr.Core;
 using Netnr.Blog.Data;
-using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -377,11 +376,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 全局错误页面
         /// </summary>
-        /// <param name="msg">错误消息</param>
         /// <returns></returns>
-        public IActionResult Error(string msg)
+        public IActionResult Error()
         {
-            TempData["msg"] = msg;
             return View();
         }
 

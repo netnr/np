@@ -499,7 +499,7 @@ $('#seup').change(function () {
 //获取 token
 function getToken() {
     if (!uploader.token_imgbbcom) {
-        $.get('https://cors.zme.ink/imgbb.com', null, function (html) {
+        $.get('https://netnr-proxy.openode.io/imgbb.com', null, function (html) {
             html.replace(/auth_token=".*";/, function (at) {
                 uploader.token_imgbbcom = at.split('"')[1];
             })

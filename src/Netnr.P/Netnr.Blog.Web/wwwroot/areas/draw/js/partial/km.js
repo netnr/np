@@ -121,6 +121,7 @@ var km = {
                         } catch (e) { console.log(e) }
                     } else {
                         alert(data.msg);
+                        location.href = "/draw/mind";
                     }
                 }
             })

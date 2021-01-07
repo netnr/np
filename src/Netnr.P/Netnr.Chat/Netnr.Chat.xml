@@ -898,6 +898,14 @@
             <param name="builder"></param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.SharedDbContext.FactoryTo.ConnnectionEncryptOrDecrypt(System.String,System.String,System.Int32)">
+            <summary>
+            连接字符串加密/解密
+            </summary>
+            <param name="conn">连接字符串</param>
+            <param name="pwd">密码</param>
+            <param name="ed">1加密 2解密</param>
+        </member>
         <member name="T:Netnr.SharedDbContext.ExtendTo">
             <summary>
             EF上下文执行SQL扩展

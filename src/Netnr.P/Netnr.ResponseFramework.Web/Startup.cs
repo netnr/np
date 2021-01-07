@@ -90,7 +90,7 @@ namespace Netnr.ResponseFramework.Web
             services.AddDbContextPool<ContextBase>(options =>
             {
                 ContextBaseFactory.CreateDbContextOptionsBuilder(options);
-            }, 99);
+            }, 20);
 
             //定时任务
             FluentScheduler.JobManager.Initialize(new Application.TaskService.Reg());

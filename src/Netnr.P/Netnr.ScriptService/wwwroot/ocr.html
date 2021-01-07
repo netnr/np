@@ -35,7 +35,7 @@ https://zme.ink
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201222',
+        url: '/images/icon.svg?20201228',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -248,9 +248,9 @@ https://zme.ink
                     },
                     success: function (data) {
                         console.log(data);
-                        if (data.words_result) {
+                        if (data.code == 200 && data.data.words_result) {
                             var wrs = [];
-                            $.each(data.words_result, function () {
+                            $.each(data.data.words_result, function () {
                                 wrs.push(this.words);
                             });
                             $('#txtResult').val(wrs.join('\r\n'));

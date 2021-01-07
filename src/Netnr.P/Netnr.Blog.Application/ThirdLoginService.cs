@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Netnr.Login;
 
 namespace Netnr.Blog.Application
@@ -141,6 +142,47 @@ namespace Netnr.Blog.Application
             }
 
             return url;
+        }
+
+        /// <summary>
+        /// 获取快捷登录项
+        /// </summary>
+        /// <returns></returns>
+        public static List<ViewModel.QuickLoginVM> GetQuickLogin()
+        {
+            return new List<ViewModel.QuickLoginVM>
+            {
+                new ViewModel.QuickLoginVM
+                {
+                    Key = "qq",
+                    Name = "QQ"
+                },
+                new ViewModel.QuickLoginVM
+                {
+                    Key = "weibo",
+                    Name = "微博"
+                },
+                new ViewModel.QuickLoginVM
+                {
+                    Key = "github",
+                    Name = "GitHub"
+                },
+                new ViewModel.QuickLoginVM
+                {
+                    Key = "taobao",
+                    Name = "淘宝"
+                },
+                new ViewModel.QuickLoginVM
+                {
+                    Key = "microsoft",
+                    Name = "Microsoft"
+                },
+                new ViewModel.QuickLoginVM
+                {
+                    Key = "dingtalk",
+                    Name = "钉钉"
+                }
+            };
         }
     }
 }

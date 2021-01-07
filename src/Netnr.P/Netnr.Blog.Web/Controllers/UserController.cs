@@ -235,46 +235,6 @@ namespace Netnr.Blog.Web.Controllers
 
             var mo = db.UserInfo.Find(uinfo.UserId);
 
-            ViewData["listQuickLogin"] = new List<Application.ViewModel.QuickLoginVM>
-                {
-                    new Application.ViewModel.QuickLoginVM
-                    {
-                        Key = "qq",
-                        Name = "QQ",
-                        Bind = mo.OpenId1?.Length > 1
-                    },
-                    new Application.ViewModel.QuickLoginVM
-                    {
-                        Key = "weibo",
-                        Name = "微博",
-                        Bind = mo.OpenId2?.Length > 1
-                    },
-                    new Application.ViewModel.QuickLoginVM
-                    {
-                        Key = "github",
-                        Name = "GitHub",
-                        Bind = mo.OpenId3?.Length > 1
-                    },
-                    new Application.ViewModel.QuickLoginVM
-                    {
-                        Key = "taobao",
-                        Name = "淘宝",
-                        Bind = mo.OpenId4?.Length > 1
-                    },
-                    new Application.ViewModel.QuickLoginVM
-                    {
-                        Key = "microsoft",
-                        Name = "Microsoft",
-                        Bind = mo.OpenId5?.Length > 1
-                    },
-                    new Application.ViewModel.QuickLoginVM
-                    {
-                        Key = "dingtalk",
-                        Name = "钉钉",
-                        Bind = mo.OpenId6?.Length > 1
-                    }
-                };
-
             return View(mo);
         }
 
@@ -697,11 +657,11 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
-                                    var cacheKey = "Global_VerifyMail_" + usermo.UserMail;
+                                    var cacheKey = "Global_VerifyMail_" + usermo.UserId;
                                     var issend = CacheTo.Get(cacheKey) as bool?;
                                     if (issend == true)
                                     {
-                                        vm.Msg = "1分钟内只能发送一次验证信息";
+                                        vm.Msg = "5分钟内只能发送一次验证信息";
                                     }
                                     else
                                     {
@@ -733,7 +693,7 @@ namespace Netnr.Blog.Web.Controllers
                                             if (vm.Code == 200)
                                             {
                                                 vm.Msg = "已发送成功";
-                                                CacheTo.Set(cacheKey, true, 60, false);
+                                                CacheTo.Set(cacheKey, true, 300, false);
                                             }
                                         }
                                     }

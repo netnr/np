@@ -795,6 +795,7 @@ namespace Netnr.Blog.Application
                             DrCreateTime = a.DrCreateTime,
                             DrStatus = a.DrStatus,
                             DrOpen = a.DrOpen,
+                            Spare1 = a.Spare1,
 
                             Spare3 = b.Nickname
                         };

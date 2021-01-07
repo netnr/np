@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.FileServer.Controllers
 {

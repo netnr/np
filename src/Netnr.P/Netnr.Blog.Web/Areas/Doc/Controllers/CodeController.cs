@@ -30,15 +30,6 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// <returns></returns>
         public IActionResult Index(string code)
         {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                code = Request.Cookies["DocCode"]?.ToString();
-            }
-            else
-            {
-                Response.Cookies.Append("DocCode", code);
-            }
-
             //文档集编号
             var DsCode = RouteData.Values["id"]?.ToString();
             //页编码
@@ -47,6 +38,17 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             if (string.IsNullOrWhiteSpace(DsCode))
             {
                 return Redirect("/doc");
+            }
+
+            var sck = "SharedCode_" + DsCode;
+            //有分享码
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                Response.Cookies.Append(sck, code);
+            }
+            else
+            {
+                code = Request.Cookies[sck]?.ToString();
             }
 
             //跳转带斜杠
@@ -64,7 +66,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
             }
 
             //分享码
-            var isShare = !string.IsNullOrWhiteSpace(code) && ds.Spare1 == code;
+            var isShare = !string.IsNullOrWhiteSpace(ds.Spare1) && ds.Spare1 == code;
 
             if (!isShare && ds.DsOpen != 1)
             {

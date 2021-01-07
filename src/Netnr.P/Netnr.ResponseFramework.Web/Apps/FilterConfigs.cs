@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Xml;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System.Diagnostics;
 using Netnr.SharedUserAgent;
 using Netnr.SharedIpArea;
@@ -14,12 +15,6 @@ namespace Netnr.ResponseFramework.Web.Apps
 {
     /// <summary>
     /// 过滤器
-    /// 
-    /// 能 实现一个过滤器接口，要么是同步版本的，要么是异步版本的，鱼和熊掌不可兼得 。
-    /// 如果你需要在接口中执行异步工作，那么就去实现异步接口。否则应该实现同步版本的接口。
-    /// 框架会首先检查是不是实现了异步接口，如果实现了异步接口，那么将调用它。
-    /// 不然则调用同步接口的方法。如果一个类中实现了两个接口，那么只有异步方法会被调用。
-    /// 最后，不管 action 是同步的还是异步的，过滤器的同步或是异步是独立于 action 的
     /// </summary>
     public class FilterConfigs
     {
@@ -30,7 +25,14 @@ namespace Netnr.ResponseFramework.Web.Apps
         {
             public void OnException(ExceptionContext context)
             {
-                Core.ConsoleTo.Log(context.Exception);
+                try
+                {
+                    Core.ConsoleTo.Log(context.Exception);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"写入错误日志失败：{ex.Message}");
+                }
             }
         }
 
@@ -110,7 +112,7 @@ namespace Netnr.ResponseFramework.Web.Apps
         /// <summary>
         /// 当前缓存日志
         /// </summary>
-        public static Queue<Domain.SysLog> CurrentCacheLog { get; set; } = new Queue<Domain.SysLog>();
+        public static ConcurrentQueue<Domain.SysLog> CurrentCacheLog { get; set; } = new ConcurrentQueue<Domain.SysLog>();
 
         /// <summary>
         /// 全局访问过滤器
@@ -222,8 +224,7 @@ namespace Netnr.ResponseFramework.Web.Apps
                                     //写入日志前
                                     var listMo = new List<Domain.SysLog>();
 
-                                    var deobj = new Domain.SysLog();
-                                    while (CurrentCacheLog.Count > 0 && (deobj = CurrentCacheLog.Dequeue()) != null)
+                                    while (CurrentCacheLog.TryDequeue(out Domain.SysLog deobj))
                                     {
                                         deobj.LogId = Core.UniqueTo.LongId().ToString();
                                         deobj.LogArea = ipto.Parse(deobj.LogIp);

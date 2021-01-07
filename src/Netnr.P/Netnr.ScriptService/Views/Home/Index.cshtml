@@ -39,6 +39,11 @@
                 <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>@gi["group"].ToString()</div>
                 @foreach (var item in gi["items"])
                 {
+                    if (item["display"]?.ToString() == "0")
+                    {
+                        continue;
+                    }
+
                     var href = item["url"].ToString();
                     if (!isbh && !href.Contains("//"))
                     {

@@ -3,12 +3,13 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using System.Data.SQLite;
+using System.Data;
 using DeviceDetectorNET;
 using DeviceDetectorNET.Parser;
+using System.Data.SQLite;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Netnr.SharedAdo;
-using System.Data;
 
 namespace Netnr.SharedLogging
 {
@@ -86,7 +87,7 @@ namespace Netnr.SharedLogging
         /// <summary>
         /// 当前缓存日志
         /// </summary>
-        public static Queue<LoggingModel> CurrentCacheLog { get; set; } = new Queue<LoggingModel>();
+        public static ConcurrentQueue<LoggingModel> CurrentCacheLog { get; set; } = new ConcurrentQueue<LoggingModel>();
 
         /// <summary>
         /// 当前缓存写入时间
@@ -195,8 +196,7 @@ namespace Netnr.SharedLogging
                 {
                     var listMo = new List<LoggingModel>();
 
-                    var deobj = new LoggingModel();
-                    while (CurrentCacheLog.Count > 0 && (deobj = CurrentCacheLog.Dequeue()) != null)
+                    while (CurrentCacheLog.TryDequeue(out LoggingModel deobj))
                     {
                         listMo.Add(deobj);
                     }

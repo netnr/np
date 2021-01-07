@@ -133,6 +133,12 @@
         "remark": "格式转换"
       },
       {
+        "url": "/ssl",
+        "icon": "ssl",
+        "title": "SSL证书转换",
+        "remark": "格式转换"
+      },
+      {
         "url": "//getman.cn",
         "icon": "http",
         "title": "HTTP请求",
@@ -181,13 +187,20 @@
         "url": "/storage",
         "icon": "storage",
         "title": "存储",
-        "remark": "图床存储"
+        "remark": "图床存储",
+        "display": "0"
       },
       {
         "url": "//www.iconfont.cn",
         "icon": "vector",
         "title": "阿里矢量图标",
         "remark": "矢量图标库"
+      },
+      {
+        "url": "//svgsprit.es",
+        "icon": "chain",
+        "title": "SVG雪碧图",
+        "remark": "合并SVG"
       },
       {
         "url": "//c.runoob.com/more/svgeditor/",
@@ -290,6 +303,12 @@
         "url": "/randomcode",
         "icon": "key",
         "title": "生成随机密码"
+      },
+      {
+        "url": "/randommatch",
+        "icon": "dice",
+        "title": "随机匹配",
+        "remark": "随机数生成、随机分组"
       },
       {
         "url": "/qiushibaike",

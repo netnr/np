@@ -25,7 +25,6 @@
     <PackageReference Include="Markdig" Version="0.22.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.1" Condition="'$(Configuration)' == 'Debug'" />
-    <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
     <PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
     <PackageReference Include="Qiniu.Shared" Version="7.2.15" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -34,7 +33,7 @@
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="IP2Region" Version="1.2.0" />
     <PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.6" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
   </ItemGroup>
 
   <ItemGroup>
