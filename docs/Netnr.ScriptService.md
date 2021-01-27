@@ -1,4 +1,4 @@
-# Netnr.ScriptService
+# Netnr.ScriptService (NSS)
 No backend provides services based on cross-domain proxy requests
 
 > Demo: <https://ss.netnr.com>  

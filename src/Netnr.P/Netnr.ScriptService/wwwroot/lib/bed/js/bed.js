@@ -565,7 +565,7 @@ $(function () {
 
     //获取 token
     uploader.tokens = {};
-    $.get('https://cors.zme.ink/imgbb.com', null, function (html) {
+    $.get('https://cors.eu.org/imgbb.com', null, function (html) {
         html.replace(/auth_token=".*";/, function (at) {
             uploader.tokens.imgbbcom = at.split('"')[1];
         })

@@ -6,8 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
-using System.Linq;
-using Netnr.Core;
 using Netnr.SharedFast;
 
 namespace Netnr.FileServer
@@ -60,10 +58,7 @@ namespace Netnr.FileServer
                     })
                 });
 
-                "FileServer".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr.FileServer.xml", true);
             });
 
             //配置上传文件大小限制（详细信息：FormOptions）
@@ -104,20 +99,24 @@ namespace Netnr.FileServer
                 ServeUnknownFileTypes = true
             });
 
-            //目录浏览
-            string vrootdir = GlobalTo.GetValue("StaticResource:RootDir");
-            string prootdir = PathTo.Combine(GlobalTo.WebRootPath, vrootdir);
-            if (!System.IO.Directory.Exists(prootdir))
+            //目录浏览&&公开访问
+            if (GlobalTo.GetValue<bool>("Safe:EnableDirectoryBrowsing") && GlobalTo.GetValue<bool>("Safe:PublicAccess"))
             {
-                System.IO.Directory.CreateDirectory(prootdir);
+                string vrootdir = GlobalTo.GetValue("StaticResource:RootDir");
+                string prootdir = Application.FileServerService.StaticVrPathAsPhysicalPath(vrootdir);
+                if (!System.IO.Directory.Exists(prootdir))
+                {
+                    System.IO.Directory.CreateDirectory(prootdir);
+                }
+                app.UseFileServer(new FileServerOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(prootdir),
+                    //目录浏览链接
+                    RequestPath = new Microsoft.AspNetCore.Http.PathString(vrootdir),
+                    EnableDirectoryBrowsing = true,
+                    EnableDefaultFiles = false
+                });
             }
-            app.UseFileServer(new FileServerOptions()
-            {
-                FileProvider = new PhysicalFileProvider(prootdir),
-                RequestPath = new Microsoft.AspNetCore.Http.PathString(vrootdir),
-                EnableDirectoryBrowsing = GlobalTo.GetValue<bool>("Safe:EnableDirectoryBrowsing"),
-                EnableDefaultFiles = false
-            });
 
             app.UseRouting();
 

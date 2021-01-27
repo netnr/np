@@ -294,7 +294,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.UpdateBrowser">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.HomeController.UB">
             <summary>
             请升级你的浏览器
             </summary>

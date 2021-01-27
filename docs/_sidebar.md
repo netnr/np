@@ -9,15 +9,15 @@
 
 - [Netnr.Blog](Netnr.Blog.md) 
 
-- [Netnr.ResponseFramework](Netnr.ResponseFramework.md)
+- [Netnr.ResponseFramework (NRF)](Netnr.ResponseFramework.md)
 
-- [Netnr.ScriptService ](Netnr.ScriptService.md)
+- [Netnr.ScriptService (NSS)](Netnr.ScriptService.md)
 
 - [Netnr.Guff](Netnr.Guff.md)
 
-- [Netnr.DataKit](Netnr.DataKit.md)
+- [Netnr.DataKit (NDK)](Netnr.DataKit.md)
 
-- [Netnr.FileServer](Netnr.FileServer.md)
+- [Netnr.FileServer (NFS)](Netnr.FileServer.md)
 
 - [Netnr.Chat](Netnr.Chat.md)
 

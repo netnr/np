@@ -672,7 +672,7 @@
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.HomeController.LsitReplySave(Netnr.Blog.Domain.UserReply,Netnr.Blog.Domain.UserMessage)">
             <summary>
-            回复
+            回复（关闭匿名回复）
             </summary>
             <param name="mo">回复信息</param>
             <param name="um">消息通知</param>
@@ -835,6 +835,35 @@
             需要处理的事情
             </summary>
             <param name="ti"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Blog.Web.Controllers.StorageController">
+            <summary>
+            对象存储
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.StorageController.Tencent">
+            <summary>
+            腾讯对象存储
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.StorageController.NetEasy">
+            <summary>
+            网易对象存储
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.StorageController.Qiniu">
+            <summary>
+            七牛对象存储
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.StorageController.UCloud">
+            <summary>
+            优刻得对象存储
+            </summary>
             <returns></returns>
         </member>
         <member name="T:Netnr.Blog.Web.Controllers.StoreController">

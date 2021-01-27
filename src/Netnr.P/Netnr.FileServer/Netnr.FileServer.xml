@@ -6,7 +6,7 @@
     <members>
         <member name="T:Netnr.FileServer.Application.FileServerService">
             <summary>
-            数据库操作
+            数据库操作及辅助方法
             </summary>
         </member>
         <member name="F:Netnr.FileServer.Application.FileServerService.SQLiteConn">
@@ -64,13 +64,6 @@
             <param name="FixToken">固定Token</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.NewToken(System.Boolean)">
-            <summary>
-            创建 Token
-            </summary>
-            <param name="IsFixToken">是固定Token，默认否</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.ValidToken(System.String,System.String)">
             <summary>
             验证Token
@@ -117,6 +110,20 @@
             </summary>
             <param name="owner">所属</param>
             <param name="IdOrPath">文件ID或路径</param>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.NewToken(System.Boolean)">
+            <summary>
+            创建 Token
+            </summary>
+            <param name="IsFixToken">是固定Token，默认否</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Application.FileServerService.StaticVrPathAsPhysicalPath(System.String)">
+            <summary>
+            静态资源虚拟路径转为物理路径
+            </summary>
+            <param name="VrDir">虚拟路径</param>
+            <returns></returns>
         </member>
         <member name="T:Netnr.FileServer.Apps.FilterConfigs">
             <summary>
@@ -237,6 +244,14 @@
             <param name="subdir">子目录，可选</param>
             <param name="chunk">当前分片索引</param>
             <param name="chunks">总分片数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.APIController.View(System.String,System.String)">
+            <summary>
+            查看文件
+            </summary>
+            <param name="path"></param>
+            <param name="token"></param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.Copy(System.String,System.String)">
@@ -471,6 +486,95 @@
         <member name="M:Netnr.FileServer.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         </member>
+        <member name="T:Netnr.SharedApp.BuildTo">
+            <summary>
+            构建
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.BuildTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            构造
+            </summary>
+            <param name="httpContext"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.BuildTo.Html``1">
+            <summary>
+            根据控制器构建静态页面
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.QuoteTo">
+            <summary>
+            资源引用
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.QuoteTo.Html(System.String)">
+            <summary>
+            得到html字符串
+            </summary>
+            <param name="quotes">引用项，逗号分割，按顺序</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.ClientTo">
+            <summary>
+            客户端信息
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.ClientTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            构造
+            </summary>
+            <param name="content"></param>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv4">
+            <summary>
+            IPv4
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv6">
+            <summary>
+            IPv6
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.UserAgent">
+            <summary>
+            UA
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Language">
+            <summary>
+            语言
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Referer">
+            <summary>
+            引荐
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedApp.DownTo">
+            <summary>
+            下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.#ctor(Microsoft.AspNetCore.Http.HttpResponse)">
+            <summary>
+            构造
+            </summary>
+            <param name="httpResponse"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.String,System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.Byte[],System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+            <param name="bytes"></param>
+            <param name="fileName">下载文件名</param>
+        </member>
         <member name="T:Netnr.SharedFast.GlobalTo">
             <summary>
             全局
@@ -537,6 +641,11 @@
             <param name="type">类型</param>
             <param name="value">值</param>
             <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.EncodingReg">
+            <summary>
+            编码注册
+            </summary>
         </member>
         <member name="T:Netnr.SharedPageVM">
             <summary>

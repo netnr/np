@@ -1,11 +1,11 @@
-# netnrf responsive framework
+# netnrf responsive framework (NRF)
 .NET Core responsive framework, based on Ace Admin framework menu navigation, Bootstrap layout, fontAwesome icon, embedded Iframe, data binding with EasyUI, dynamic configuration list, dynamic configuration form
 
 > Demo: <https://rf.netnr.eu.org>  
 > Demo: <https://rf2.netnr.com>
 
 
-### [CHANGELOG](Netnr.ResponseFramework.ChangeLog.md)
+### [Historical change log](Netnr.ResponseFramework.ChangeLog.md)
 
 ### [Documentation](Netnr.ResponseFramework.Document.md)
 
@@ -61,24 +61,24 @@
 
 #### List
 
-![List](https://s1.zme.ink/2018/05/18/403ce7d002.png)
+![List](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/403ce7d002.png)
 
 #### Add, edit, view
 
-![Form](https://s1.zme.ink/2018/05/18/8d25d345b2.png)
+![Form](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/8d25d345b2.png)
 
 #### List configuration
 
-![List Configuration](https://s1.zme.ink/2018/05/18/13da6572a3.png)
+![List Configuration](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/13da6572a3.png)
 
 #### Form configuration
 
-![Form Configuration](https://s1.zme.ink/2018/05/18/0c98ee578c.png)
+![Form Configuration](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/0c98ee578c.png)
 
 #### Role permission configuration (tree)
 
-![Role Permission Configuration](https://s1.zme.ink/2018/08/16/31a55cac78.png)
+![Role Permission Configuration](https://cdn.jsdelivr.net/gh/netnr/static/2018/08/16/31a55cac78.png)
 
 ### Third-party documentation API
-- [EasyUI Document](https://ad.netnr.com/#EasyUI-1.5.2)
-- [jQuery Documentation](https://ad.netnr.com/#jQuery-1.11.3)
+- [EasyUI Document](https://doc.netnr.eu.org/#EasyUI-1.5.2)
+- [jQuery Documentation](https://doc.netnr.eu.org/#jQuery-1.11.3)

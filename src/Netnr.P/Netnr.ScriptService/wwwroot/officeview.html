@@ -25,17 +25,17 @@ https://zme.ink
 </head>
 <body>
 <div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
 <link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201228',
+        url: '/images/icon.svg?20210127',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -43,8 +43,8 @@ https://zme.ink
     })
 </script>
 
-        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
-        <script src="/js/global.js?v=ckkNo3hER74SKnNCuouMgEfxEpEMP3phtPl9uA0_Lnc"></script>
+        <link href="/css/global.css?v=8day63ZfnKDva9KQuDWIgzWbAwNGkylzlnLgUUezVjw" rel="stylesheet" />
+        <script src="/js/global.js?v=qKGqDsc_42dgyvIvUG_yNyp_WOiFUri4ZlUSpN7smCY"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -88,7 +88,7 @@ https://zme.ink
                 </span>
                 <div class="custom-file">
                     <input id="txtFile" type="file" class="custom-file-input">
-                    <label class="custom-file-label" id="ps">选择本地 Word、Excel、PPT</label>
+                    <label class="custom-file-label" id="ps">选择（拖拽）本地 Word、Excel、PPT</label>
                 </div>
             </div>
             <p>
@@ -97,7 +97,7 @@ https://zme.ink
             </p>
         </div>
         <div class="col-md-12">
-            <iframe src="about:blank" frameborder="0"></iframe>
+            <iframe src="about:blank" class="d-none" frameborder="0"></iframe>
         </div>
     </div>
 </div>
@@ -105,30 +105,40 @@ https://zme.ink
 <script>
     var ov = {
         api: "https://view.officeapps.live.com/op/embed.aspx?src=",
+        init: function () {
+
+            $('#ps').attr('tip', $('#ps').html());
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                ov.upload(files[0]);
+            }, "#txtFile");
+
+            $('#txtUrl').on('input', function () {
+                ov.view(this.value);
+            });
+
+            $(window).on('load resize', function () {
+                ov.size();
+            });
+        },
         view: function (url) {
             if (url && url != "") {
                 url = decodeURIComponent(url);
                 $('#auri').attr('href', ov.api + url);
                 $('#auri').html(ov.api + url);
-                $('iframe').attr('src', ov.api + url);
+                $('iframe').removeClass("d-none").attr('src', ov.api + url);
             } else {
                 $('#auri').attr('href', 'javascript:void(0);');
                 $('#auri').html(ov.api);
-                $('iframe').attr('src', 'about:blank');
+                $('iframe').addClass("d-none").attr('src', 'about:blank');
             }
         },
         size: function () {
             var h = $(window).height() - $('iframe').offset().top - 15;
             $('iframe').height(Math.max(200, h)).width('100%');
-        }
-    }
-
-    $('#txtUrl').on('input', function () {
-        ov.view(this.value);
-    });
-    $('#txtFile').change(function () {
-        var file = this.files[0];
-        if (file) {
+        },
+        upload: function (file) {
             var err = [];
             if (file.size > 1024 * 1024 * 20) {
                 err.push('文档大小限制 20MB')
@@ -158,7 +168,7 @@ https://zme.ink
                             if (rate < 100) {
                                 $('#ps').html('已上传 ' + rate + ' %');
                             } else {
-                                $('#ps').html('选择本地 Word、Excel、PPT');
+                                $('#ps').html($('#ps').attr('tip'));
                             }
                         })
                         return xhr;
@@ -175,17 +185,15 @@ https://zme.ink
                         jz.alert("上传出错");
                     },
                     complete: function () {
-                        $('#txtFile').val('')
-                        $('#ps').html('选择本地 Word、Excel、PPT');
+                        $('#txtFile').val('');
+                        $('#ps').html($('#ps').attr('tip'));
                     }
                 });
             }
         }
-    });
+    }
 
-    $(window).on('load resize', function () {
-        ov.size();
-    });
+    ov.init();
 </script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>

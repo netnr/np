@@ -1,4 +1,4 @@
-# Netnr.DataKit
+# Netnr.DataKit (NDK)
 Database build code
 
 > <https://dk.netnr.eu.org>  

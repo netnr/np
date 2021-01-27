@@ -25,17 +25,17 @@ https://zme.ink
 </head>
 <body>
 <div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
 <link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201228',
+        url: '/images/icon.svg?20210127',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -43,8 +43,8 @@ https://zme.ink
     })
 </script>
 
-        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
-        <script src="/js/global.js?v=ckkNo3hER74SKnNCuouMgEfxEpEMP3phtPl9uA0_Lnc"></script>
+        <link href="/css/global.css?v=8day63ZfnKDva9KQuDWIgzWbAwNGkylzlnLgUUezVjw" rel="stylesheet" />
+        <script src="/js/global.js?v=qKGqDsc_42dgyvIvUG_yNyp_WOiFUri4ZlUSpN7smCY"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -79,8 +79,34 @@ https://zme.ink
     <div class="row">
         <div class="col-md-12">
             <div class="input-group">
-                <button class="btn btn-info" id="btnSqlFormatter" title="基于开源项目 sql-formatter 本地提供格式化">本地格式化</button>
-                <button class="btn btn-warning" id="btnPgFormatter" title="基于开源项目 pgFormatter 服务端提供格式化，效果更佳">服务端格式化</button>
+                <div class="input-group-append">
+                    <button class="btn btn-info" id="btnSqlFormatter" title="Ctrl+Shift+F 快捷格式化">格式化</button>
+                </div>
+                <div class="input-group-append">
+                    <select class="custom-select nrSqlConfigLanguage">
+                        <optgroup label="语言类型">
+                            <option value="sql">SQL</option>
+                            <option value="pl/sql">Oracle</option>
+                            <option value="db2">DB2</option>
+                            <option value="n1ql">N1QL</option>
+                            <option value="redshift">AWS Redshift</option>
+                            <option value="spark">Spark</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="input-group-append">
+                    <select class="custom-select nrSqlConfigUpperCase">
+                        <optgroup label="关键字">
+                            <option value="1">大写</option>
+                            <option value="0">不处理</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <a target="_blank" class="btn btn-warning ml-3" href="https://sqlformat.darold.net/">pgFormatter</a>
+                <div class="input-group-prepend pt-2 pl-3 text-muted">
+                    自动保存，可拖拽文件打开
+                </div>
             </div>
         </div>
         <div class="col-md-12 mt-2">
@@ -99,13 +125,13 @@ https://zme.ink
     AutoHeight();
 </script>
 
-<script src='https://cdn.jsdelivr.net/npm/sql-formatter@2.3.3/dist/sql-formatter.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs/loader.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/sql-formatter@3.1.0/dist/sql-formatter.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs/loader.js'></script>
 
 <script>
     require.config({
         paths: {
-            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs'
+            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
@@ -114,7 +140,19 @@ https://zme.ink
 
 
 <script>
-    var editor, dv = ss.lsStr('txt') || 'SELECT * FROM table1';
+    var editor, dv = ss.lsStr('txt') || 'SELECT * FROM table1 表名',
+        scLanguage = ss.lsStr('sql-config-language') || 'sql',
+        scUpperCase = ss.lsStr('sql-config-uppercase') || "1";
+
+    $('.nrSqlConfigLanguage').change(function () {
+        ss.ls["sql-config-language"] = this.value;
+        ss.lsSave();
+    }).val(scLanguage);
+
+    $('.nrSqlConfigUpperCase').change(function () {
+        ss.ls["sql-config-uppercase"] = this.value;
+        ss.lsSave();
+    }).val(scUpperCase);
 
     require(['vs/editor/editor.main'], function () {
         var te = $("#editor");
@@ -140,44 +178,32 @@ https://zme.ink
                 ss.lsSave();
             }, 1000 * 1)
         });
+
+        //快捷键
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+            $('#btnSqlFormatter')[0].click();
+        })
     });
 
     $(window).resize(AutoHeight);
 
     $('#btnSqlFormatter').click(function () {
-        var sf = sqlFormatter.format(editor.getValue(), { language: "sql" });
+        var sf = sqlFormatter.format(editor.getValue(), {
+            language: $('.nrSqlConfigLanguage').val(),
+            uppercase: $('.nrSqlConfigUpperCase').val() == "1"
+        });
         editor.setValue(sf);
     })
-    $('#btnPgFormatter').click(function () {
-        var that = this;
-        that.disabled = true;
-        ss.ajax({
-            url: "https://sqlformat.darold.net/",
-            type: "post",
-            data: {
-                colorize: 1,
-                uc_keyword: 2,
-                uc_function: 0,
-                uc_type: 1,
-                spaces: 2,
-                wrap_after: 0,
-                show_example: 0,
-                load_from_file: 0,
-                code_upload: "",
-                content: editor.getValue(),
-                original_content: ""
-            },
-            success: function (data) {
-                editor.setValue($.trim($(data).find('#sql').text()));
-            },
-            error: function () {
-                alert('请求服务失败');
-            },
-            complete: function () {
-                that.disabled = false;
-            }
-        })
-    })
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            editor.setValue(e.target.result);
+        };
+        reader.readAsText(file);
+    });
 </script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>

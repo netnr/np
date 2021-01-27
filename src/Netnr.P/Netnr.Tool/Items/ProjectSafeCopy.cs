@@ -37,7 +37,7 @@ namespace Netnr.Tool.Items
                     }
                 }
 
-                var ignoreForder = "bin,obj,PublishProfiles,node_modules,.git,.vs,.config,.vercel".Split(',').ToList();
+                var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel".Split(',').ToList();
                 Console.WriteLine($"Folder ignored :{ignoreForder.ToJson()}");
 
                 Core.FileTo.CopyDirectory(sourcePath, targetPath, ignoreForder);

@@ -3,6 +3,9 @@
 ### 2021-01
 - 修复 Netnr.ResponseFramework 项目 Iframe 选项卡隐藏造成 EasyUI 表格显示不正常的问题（从隐藏切换改为浮动层&透明度的模式）
 - 新增 Draw 支持私有设置分享码查看
+- 修复 Blog 文章分类图标错误
+- 调整 Blog 关闭匿名回复
+- 修复 Netnr.DataKit 项目修复 Oracle 查询默认值（Long类型）丢失的问题（`InitialLONGFetchSize = -1`）
 
 ### 2020-12
 - 升级 .NET5

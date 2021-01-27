@@ -163,8 +163,8 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        [HttpPost]
-        public SharedResultVM Add(Domain.GuffRecord mo)
+        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        public SharedResultVM Add([FromForm] Domain.GuffRecord mo)
         {
             var vm = new SharedResultVM();
 
@@ -240,8 +240,8 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        [HttpPost]
-        public SharedResultVM Update(Domain.GuffRecord mo)
+        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        public SharedResultVM Update([FromForm] Domain.GuffRecord mo)
         {
             var vm = new SharedResultVM();
 
@@ -443,8 +443,8 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo">内容，仅限内容字段必填，支持匿名回复</param>
         /// <param name="id">ID</param>
         /// <returns></returns>
-        [HttpPost]
-        public SharedResultVM ReplyAdd(Domain.UserReply mo, string id)
+        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        public SharedResultVM ReplyAdd([FromForm] Domain.UserReply mo, [FromForm] string id)
         {
             var vm = new SharedResultVM();
 

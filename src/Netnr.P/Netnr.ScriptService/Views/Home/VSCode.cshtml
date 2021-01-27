@@ -16,7 +16,12 @@
                         <optgroup label="Language"></optgroup>
                     </select>
                 </div>
-                <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
+                <div class="input-group-append">
+                    <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
+                </div>
+                <div class="input-group-prepend pt-2 pl-3 text-muted">
+                    自动保存，可拖拽文件打开
+                </div>
             </div>
         </div>
     </div>
@@ -114,6 +119,16 @@
         } catch (e) {
             console.error(e);
         }
+    });
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            editor.setValue(e.target.result);
+        };
+        reader.readAsText(file);
     });
 
     $(window).resize(AutoHeight);

@@ -74,7 +74,7 @@ namespace Netnr
             /// <summary>
             /// 缺省
             /// </summary>
-            lack = 94,
+            lack = 410,
             /// <summary>
             /// 异常
             /// </summary>

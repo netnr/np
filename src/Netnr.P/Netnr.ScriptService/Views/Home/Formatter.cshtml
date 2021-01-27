@@ -3,7 +3,9 @@
         <div class="col-md-12">
             <div class="mb-2">
                 <div class="input-group">
-                    <button class="btn btn-warning" id="btnFormatter">格式化</button>
+                    <div class="input-group-prepend">
+                        <button class="btn btn-warning" id="btnFormatter" title="Ctrl+Shift+F 快捷格式化">格式化</button>
+                    </div>                    
                     <div class="input-group-prepend">
                         <select class="custom-select" id="seLang">
                             <option value="javascript">JS</option>
@@ -20,6 +22,9 @@
                             <option value="yaml">YAML</option>
                             <option value="graphql">GraphQL</option>
                         </select>
+                    </div>
+                    <div class="input-group-prepend pt-2 pl-3 text-muted">
+                        自动保存，可拖拽文件打开
                     </div>
                 </div>
             </div>
@@ -50,7 +55,7 @@
                 horizontalScrollbarSize: 6
             },
             minimap: {
-                enabled: false
+                enabled: true
             }
         });
 
@@ -62,6 +67,11 @@
                 ss.lsSave();
             }, 1000 * 1)
         });
+
+        //快捷键
+        ee.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+            $('#btnFormatter')[0].click();
+        })
 
         //切换语言
         $('#seLang').change(function () {
@@ -99,6 +109,16 @@
         $(window).on('load resize', function () {
             var ch = $(window).height() - $('#editor').offset().top - 15;
             $('#editor').css('height', Math.max(200, ch));
+        });
+
+        //接收文件
+        ss.receiveFiles(function (files) {
+            var file = files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                ee.setValue(e.target.result);
+            };
+            reader.readAsText(file);
         });
     });
 </script>

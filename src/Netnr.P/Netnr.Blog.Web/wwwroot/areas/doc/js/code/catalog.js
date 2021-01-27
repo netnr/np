@@ -6,7 +6,7 @@ function loadCatalog() {
         success: function (data) {
             if (data.code == 200) {
                 data = data.data;
-            } else if (data.code == 94) {
+            } else if (data.code == 410) {
                 data = [];
             } else {
                 jz.msg('fail');
@@ -72,7 +72,7 @@ function loadMenuTree() {
         success: function (data) {
             if (data.code == 200) {
                 data = data.data;
-            } else if (data.code == 94) {
+            } else if (data.code == 410) {
                 data = [];
             } else {
                 jz.msg('fail');

@@ -145,16 +145,15 @@ namespace Netnr.Blog.Application
             var listUwId = list.Select(x => x.UwId).ToList();
 
             //文章的所有的标签
-            var queryTags = from a in db.Tags
-                            join b in db.UserWritingTags on a.TagName equals b.TagName into bg
-                            from b in bg.DefaultIfEmpty()
-                            where (b == null ? true : listUwId.Contains(b.UwId)) || a.TagName == TagName
-                            orderby b.UwtId ascending
+            var queryTags = from a in db.UserWritingTags
+                            join b in db.Tags on a.TagName equals b.TagName
+                            where listUwId.Contains(a.UwId) || b.TagName == TagName
+                            orderby a.UwtId ascending
                             select new
                             {
-                                UwId = b == null ? 0 : b.UwId,
-                                TagName = b == null ? TagName : b.TagName,
-                                a.TagIcon
+                                a.UwId,
+                                a.TagName,
+                                b.TagIcon
                             };
             var listUwTags = queryTags.ToList();
 
@@ -678,7 +677,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 9
+                PageSize = 12
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };

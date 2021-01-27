@@ -9,7 +9,7 @@
             </div>
             <div class="form-group">
                 <label>
-                    <a href="https://api.zme.ink/ip" target="_blank">api.zme.ink</a>
+                    <a href="@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/ip" target="_blank">@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/ip</a>
                 </label>
                 <input class="form-control" id="txtZme">
             </div>
@@ -30,7 +30,7 @@
     try {
         $('#txtSohu').val(returnCitySN.cip);
 
-        $.get('https://api.zme.ink/ip', null, function (data) {
+        $.get(`${ss.apiServer}/ip`, null, function (data) {
             $('#txtZme').val(data);
         });
     } catch (e) { }

@@ -8,6 +8,7 @@ using Netnr.FileServer.Application;
 using Netnr.FileServer.Model;
 using Netnr.Core;
 using Netnr.SharedFast;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Netnr.FileServer.Controllers
 {
@@ -15,7 +16,7 @@ namespace Netnr.FileServer.Controllers
     /// API接口
     /// </summary>
     [Route("[controller]/[action]")]
-    [Apps.FilterConfigs.AllowCors]    
+    [Apps.FilterConfigs.AllowCors]
     public class APIController : ControllerBase
     {
         /// <summary>
@@ -145,7 +146,7 @@ namespace Netnr.FileServer.Controllers
                     db.DeleteAll<FileRecord>();
 
                     //删除上传文件
-                    var rootdir = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:RootDir"));
+                    var rootdir = FileServerService.StaticVrPathAsPhysicalPath(GlobalTo.GetValue("StaticResource:RootDir"));
                     if (Directory.Exists(rootdir))
                     {
                         Directory.Delete(rootdir, true);
@@ -186,7 +187,7 @@ namespace Netnr.FileServer.Controllers
                     var listDel = new List<string>();
 
                     //删除临时文件
-                    var tmpdir = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:TmpDir"));
+                    var tmpdir = FileServerService.StaticVrPathAsPhysicalPath(GlobalTo.GetValue("StaticResource:TmpDir"));
                     if (Directory.Exists(tmpdir))
                     {
                         if (keepTime > 0)
@@ -240,7 +241,7 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AppId">分配的应用ID</param>
         /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, ResponseCache(Duration = 30)]
         public SharedResultVM GetToken(string AppId, string AppKey)
         {
             var vm = new SharedResultVM();
@@ -254,7 +255,7 @@ namespace Netnr.FileServer.Controllers
                 }
                 else
                 {
-                    if (!(CacheTo.Get(AppKey) is SharedResultVM cvm))
+                    if (CacheTo.Get(AppKey) is not SharedResultVM cvm)
                     {
                         vm = FileServerService.GetToken(AppId, AppKey);
 
@@ -432,7 +433,7 @@ namespace Netnr.FileServer.Controllers
                         var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
 
                         //物理路径
-                        var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                        var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
                         if (!Directory.Exists(ppath))
                         {
                             Directory.CreateDirectory(ppath);
@@ -523,7 +524,7 @@ namespace Netnr.FileServer.Controllers
                 else
                 {
                     var vtkey = "vt-" + token;
-                    if (!(CacheTo.Get(vtkey) is SharedResultVM vt))
+                    if (CacheTo.Get(vtkey) is not SharedResultVM vt)
                     {
                         vt = FileServerService.ValidToken(token, mn);
                         //缓存 Token 验证 30 分钟
@@ -547,7 +548,7 @@ namespace Netnr.FileServer.Controllers
                             var chunkName = $"{ts}_{chunk}.{ext}";
 
                             //保存分片物理路径
-                            var chunkPPath = PathTo.Combine(GlobalTo.WebRootPath, chunkDir);
+                            var chunkPPath = FileServerService.StaticVrPathAsPhysicalPath(chunkDir);
                             if (!Directory.Exists(chunkPPath))
                             {
                                 Directory.CreateDirectory(chunkPPath);
@@ -576,7 +577,7 @@ namespace Netnr.FileServer.Controllers
                                 var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
 
                                 //物理路径
-                                var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                                var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
                                 if (!Directory.Exists(ppath))
                                 {
                                     Directory.CreateDirectory(ppath);
@@ -633,6 +634,58 @@ namespace Netnr.FileServer.Controllers
         }
 
         /// <summary>
+        /// 查看文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpGet, ResponseCache(Duration = 30)]
+        public ActionResult View(string path, string token)
+        {
+            var vm = new SharedResultVM();
+
+            var mn = RouteData.Values["Action"].ToString();
+            try
+            {
+                var isAuth = false;
+                //公开访问
+                if (GlobalTo.GetValue<bool>("Safe:PublicAccess"))
+                {
+                    isAuth = true;
+                }
+                else
+                {
+                    isAuth = FileServerService.ValidToken(token, mn).Code == 200;
+                }
+
+                if (isAuth)
+                {
+                    var ppath = FileServerService.StaticVrPathAsPhysicalPath(path);
+                    if (System.IO.File.Exists(ppath))
+                    {
+                        new FileExtensionContentTypeProvider().TryGetContentType(path, out string contentType);
+                        return PhysicalFile(ppath, contentType ?? "application/octet-stream");
+                    }
+                    else
+                    {
+                        vm.Set(SharedEnum.RTag.lack);
+                    }
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+                ConsoleTo.Log(ex);
+            }
+
+            return Content(vm.ToJson());
+        }
+
+        /// <summary>
         /// 复制文件
         /// </summary>
         /// <param name="token">token，授权验证，必填</param>
@@ -680,10 +733,10 @@ namespace Netnr.FileServer.Controllers
                         };
 
                         //要复制的物理路径
-                        var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                        var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
                         fr.Path = vpath.Replace(Path.GetFileNameWithoutExtension(vpath), fr.Id);
                         //复制的新物理路径
-                        var newppath = PathTo.Combine(GlobalTo.WebRootPath, fr.Path);
+                        var newppath = FileServerService.StaticVrPathAsPhysicalPath(fr.Path);
 
                         System.IO.File.Copy(ppath, newppath);
 
@@ -744,7 +797,7 @@ namespace Netnr.FileServer.Controllers
                         else
                         {
                             var nowfile = qf.Data as FileRecord;
-                            var ppath = PathTo.Combine(GlobalTo.WebRootPath, nowfile.Path);
+                            var ppath = FileServerService.StaticVrPathAsPhysicalPath(nowfile.Path);
 
                             if (System.IO.File.Exists(ppath))
                             {
@@ -845,7 +898,7 @@ namespace Netnr.FileServer.Controllers
                     else
                     {
                         var vpath = GlobalTo.GetValue("StaticResource:TmpDir");
-                        var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                        var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
                         if (!Directory.Exists(ppath))
                         {
                             Directory.CreateDirectory(ppath);

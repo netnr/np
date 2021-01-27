@@ -25,17 +25,17 @@ https://zme.ink
 </head>
 <body>
 <div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
 <link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201228',
+        url: '/images/icon.svg?20210127',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -43,8 +43,8 @@ https://zme.ink
     })
 </script>
 
-        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
-        <script src="/js/global.js?v=ckkNo3hER74SKnNCuouMgEfxEpEMP3phtPl9uA0_Lnc"></script>
+        <link href="/css/global.css?v=8day63ZfnKDva9KQuDWIgzWbAwNGkylzlnLgUUezVjw" rel="stylesheet" />
+        <script src="/js/global.js?v=qKGqDsc_42dgyvIvUG_yNyp_WOiFUri4ZlUSpN7smCY"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -129,9 +129,6 @@ https://zme.ink
                         <option value="2">不格式化</option>
                     </select>
                 </div>
-                <div class="input-group-prepend">
-                    <i class="fa fa-info-circle ml-2" data-toggle="tooltip" title="必须有一个根节点，没有则自动加 root"></i>
-                </div>
             </div>
 
             <div class="border overflow-hidden" id="txt2"></div>
@@ -149,12 +146,12 @@ https://zme.ink
 </script>
 
 <script src='https://cdn.jsdelivr.net/gh/abdolence/x2js@1.2.0/xml2json.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs/loader.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs/loader.js'></script>
 
 <script>
     require.config({
         paths: {
-            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs'
+            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
@@ -250,7 +247,7 @@ https://zme.ink
         var jsonObj = x2js.xml_str2json(xmlText);
         if (jsonObj == null && $(xmlText).length) {
             xmlText = '<root>' + xmlText + '</root>';
-            jsonObj = x2js.xml_str2json(xmlText);
+            jsonObj = x2js.xml_str2json(xmlText)["root"];
         }
         if (jsonObj == null) {
             jz.msg('转换错误');
@@ -305,9 +302,6 @@ https://zme.ink
 
         return formatted;
     }
-
-    //提示
-    $('.fa-info-circle').tooltip();
 </script>
         </div>
         <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>

@@ -5,7 +5,7 @@ const marked = require('marked');
 module.exports = (req, res) => {
 
     let vd = {
-        path: req.url.substr(1).trim(),
+        path: req.url.substr(1).split('?')[0].trim(),
         dc: {
             coverpage: "",
             sidebar: "",

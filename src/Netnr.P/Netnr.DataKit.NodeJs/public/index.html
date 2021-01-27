@@ -148,7 +148,7 @@
                         <i class="fa fa-fw fa-bars"></i>菜单
                     </button>
                     <div class="input-group-prepend">
-                        <select class="from-control" id="seti">
+                        <select class="form-control" id="seti">
                             <option value="">（选择数据库）</option>
                         </select>
                     </div>
@@ -463,8 +463,7 @@
             ],
             //默认服务接口
             dapi: [
-                { istemplate: true, host: "https://api.zme.ink", remark: "部署在 Vercel 的 Serverless 服务，不支持 Oracle" },
-                { istemplate: true, host: "https://d-datakit.zme.ink", remark: "部署在 Heroku 的服务" },
+                { istemplate: true, host: "https://api.netnr.eu.org", remark: "部署在 Vercel 的 Serverless 服务，不支持 Oracle" },
                 { istemplate: true, host: location.origin, remark: "当前" }
             ],
             //接口地址
@@ -603,7 +602,7 @@
                 dk.addDbConn("MySQL", "Data Source=den1.mysql5.gear.host;User Id=rfmysql;Password=Vr8a474!nW4!;Database=rfmysql;");
                 dk.addDbConn("SQLServer", "Server=den1.mssql7.gear.host;uid=rfmssql;pwd=Cj24-GXLO9-H;database=rfmssql;");
                 dk.addDbConn("PostgreSQL", "Host=satao.db.elephantsql.com;Username=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;");
-                dk.addDbConn("SQLite", "Data Source=https://s1.zme.ink/2020/05/22/2037505934.db");
+                dk.addDbConn("SQLite", "Data Source=https://cdn.jsdelivr.net/gh/netnr/static/2020/05/22/2037505934.db");
 
                 //渲染本地连接记录
                 dk.viewConn();

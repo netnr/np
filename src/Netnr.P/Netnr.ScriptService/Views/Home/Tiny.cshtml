@@ -20,7 +20,7 @@
                 </div>
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" multiple accept="image/*" id="txtFile">
-                    <label class="custom-file-label" for="txtFile">选择图片或拖拽图片（支持多选）</label>
+                    <label class="custom-file-label" for="txtFile">选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片（支持多选）</label>
                 </div>
                 <div class="input-group-prepend">
                     <a class="btn btn-dark" target="_blank" href="https://tiny.netnr.com" title="更专业的图片压缩工具">Squoosh</a>
@@ -56,25 +56,10 @@
         init: function () {
             pg.zip = new JSZip();
 
-            //拖拽
-            $(document).on("dragleave dragenter dragover", function (e) {
-                if (e && e.stopPropagation) { e.stopPropagation() } else { window.event.cancelBubble = true }
-                if (e && e.preventDefault) { e.preventDefault() } else { window.event.returnValue = false }
-            }).on("drop", function (e) {
-                if (e && e.preventDefault) { e.preventDefault() } else { window.event.returnValue = false }
-                e = e || window.event;
-                var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
-                if (files && files.length) {
-                    pg.addFiles(files);
-                }
-            });
-
-            $('#txtFile').change(function () {
-                var files = this.files;
-                if (files.length) {
-                    pg.addFiles(files);
-                }
-            });
+            //接收文件
+            ss.receiveFiles(function (files) {
+                pg.addFiles(files);
+            }, "#txtFile");
 
             //更新压缩配置
             $('.nrOptionsOk').click(function (e) {

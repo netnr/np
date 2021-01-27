@@ -82,7 +82,7 @@ $('#btnReply').click(function () {
 
     $.ajax({
         url: "/home/lsitreplysave",
-        type: "type",
+        type: "post",
         data: {
             Uid: uid,
             UrTargetId: wid,

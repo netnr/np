@@ -1,12 +1,16 @@
 @{
     ViewData["Title"] = "draw";
+
+    var mxBaseServer = "https://cdn.jsdelivr.net/gh/netnr/mxgraph/javascript";
 }
 
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading"))
 
+<input type="hidden" id="mxBaseServer" value='@mxBaseServer' />
+
 <input type="hidden" id="vid" value='@ViewData["vid"]' />
 
-<link href="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/styles/grapheditor.css" rel="stylesheet" />
+<link href="@mxBaseServer/examples/grapheditor/www/styles/grapheditor.css" rel="stylesheet" />
 
 <style>
     /*重写菜单样式*/
@@ -27,18 +31,18 @@
 
 <script src="/areas/draw/js/partial/mxg.js" asp-append-version="true"></script>
 
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/deflate/pako.min.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/deflate/base64.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/jscolor/jscolor.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/sanitizer/sanitizer.min.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/mxClient.min.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/EditorUi.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Editor.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Sidebar.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Graph.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Format.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Shapes.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Actions.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Menus.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Toolbar.js"></script>
-<script type="text/javascript" src="https://mxgraph.netnr.com/javascript/examples/grapheditor/www/js/Dialogs.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/deflate/pako.min.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/deflate/base64.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/jscolor/jscolor.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/sanitizer/sanitizer.min.js"></script>
+<script type="text/javascript" src="@mxBaseServer/mxClient.min.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/EditorUi.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Editor.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Sidebar.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Graph.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Format.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Shapes.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Actions.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Menus.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Toolbar.js"></script>
+<script type="text/javascript" src="@mxBaseServer/examples/grapheditor/www/js/Dialogs.js"></script>

@@ -1,30 +1,31 @@
 <style>
     .difftxt {
         width: auto;
-        padding: 2px;
-        margin-left: 108px;
-        height: 30px !important;
+        padding: 6px;
+        height: 38px !important;
     }
 </style>
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-5">
-            <label class="btn btn-primary btn-sm float-left">
-                <input type="file" class="d-none" id="fileOrigin" />选择原始文件
+            <label class="btn btn-secondary float-left">
+                <input type="file" class="d-none" id="fileOrigin" />选择原始文件（只读）
             </label>
             <textarea class="form-control difftxt" id="txtOrigin" placeholder="或 粘贴内容"></textarea>
         </div>
         <div class="col-md-5">
-            <label class="btn btn-info btn-sm float-left">
-                <input type="file" class="d-none" id="fileVary" />选择变动文件
+            <label class="btn btn-warning float-left">
+                <input type="file" class="d-none" id="fileVary" />选择变动文件（可编辑）
             </label>
             <textarea class="form-control difftxt" id="txtVary" placeholder="或 粘贴内容"></textarea>
         </div>
         <div class="col-md-2">
-            <label>
+            <label class="m-0">
                 <input type="checkbox" id="chkDiffMode" /> 内联对比
             </label>
+            <br />
+            <label class="text-muted m-0">可拖拽打开文件</label>
         </div>
     </div>
     <div class="row">
@@ -99,4 +100,32 @@
         $('#editor').css('height', Math.max(200, ch));
     }
     $(window).on('load resize', AutoHeight);
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        jz.popup({
+            title: "请选择文件打开到？",
+            okValue: "变动文件（可编辑）",
+            cancelValue: "原始文件（只读）",
+            drag: true,
+            //变动（右）
+            ok: function () {
+                var file = files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    createDiffEditor(originContent, varyContent = e.target.result);
+                };
+                reader.readAsText(file);
+            },
+            //原始（左）
+            cancel: function () {
+                var file = files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    createDiffEditor(originContent = e.target.result, varyContent);
+                };
+                reader.readAsText(file);
+            }
+        })
+    });
 </script>

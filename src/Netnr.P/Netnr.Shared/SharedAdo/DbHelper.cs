@@ -38,8 +38,9 @@ namespace Netnr.SharedAdo
         /// </summary>
         /// <param name="sql">SQL语句，支持多条</param>
         /// <param name="parameters">带参</param>
+        /// <param name="action">回调</param>
         /// <returns>返回数据集</returns>
-        public DataSet SqlQuery(string sql, DbParameter[] parameters = null)
+        public DataSet SqlQuery(string sql, DbParameter[] parameters = null, Action<DbCommand> action = null)
         {
             return SafeConn(() =>
             {
@@ -56,7 +57,9 @@ namespace Netnr.SharedAdo
 
                 foreach (var txt in listSql)
                 {
-                    var tds = GetCommand(txt, parameters).ExecuteDataSet();
+                    var dbc = GetCommand(txt, parameters);
+                    action?.Invoke(dbc);
+                    var tds = dbc.ExecuteDataSet();
                     while (tds.Tables.Count > 0)
                     {
                         var dt = tds.Tables[0];

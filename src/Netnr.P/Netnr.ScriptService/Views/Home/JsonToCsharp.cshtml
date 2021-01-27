@@ -27,6 +27,9 @@
                         </optgroup>
                     </select>
                 </div>
+                <div class="input-group-prepend pt-2 pl-3 text-muted">
+                    可拖拽文件打开
+                </div>
             </div>
         </div>
         <div class="col-sm-6">
@@ -81,11 +84,11 @@
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
 <script>
-    /*                      *\
-    Author：netnr
-    Date：2019-09-14
-\*                      */
 
+    /**
+     * by netnr
+     * 2019-09-14
+     * */
     var rt = {
         //配置
         config: {
@@ -354,5 +357,15 @@
         } catch (ex) {
             editor2.setValue(ex);
         }
+    });
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            editor1.setValue(e.target.result);
+        };
+        reader.readAsText(file);
     });
 </script>

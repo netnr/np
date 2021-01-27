@@ -71,7 +71,7 @@
     bs.getStorageVendor = function () {
         let sv = bs.config.storageVendor[0];
 
-        function (file) {
+        function _(file) {
             var fd = new FormData();
             fd.append('file', file);
 

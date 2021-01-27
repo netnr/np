@@ -63,7 +63,7 @@
             .divWP div img {
                 width: 100%;
                 height: 100%;
-                cursor: url(https://img.t.sinajs.cn/t6/style/images/common/big.cur), default;
+                cursor: url(lib/cur/big.cur), default;
             }
 
             .divWP div.pu {
@@ -72,9 +72,9 @@
 
                 .divWP div.pu .list-group {
                     position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 150px;
+                    top: 4px;
+                    left: 4px;
+                    width: 115px;
                     display: none;
                     opacity: .8;
                     filter: alpha(opacity=80);
@@ -82,8 +82,8 @@
 
                     .divWP div.pu .list-group a {
                         color: #777;
-                        padding: 2px 3px;
                         border-radius: 0;
+                        padding: 3px 0 3px 6px;
                     }
 
                 .divWP div.pu:hover .list-group {
@@ -108,7 +108,7 @@
             color: red;
             z-index: 2;
             right: 15px;
-            font-size: 3rem;
+            font-size: 2rem;
             cursor: pointer;
             text-decoration: none;
         }
@@ -219,11 +219,11 @@
         DownView: function (item) {
             var size = ["img_1600_900", "img_1440_900", "img_1366_768", "img_1280_800", "img_1280_1024", "img_1024_768"], htm = [];
             htm.push("<div class='list-group'>");
-            htm.push("<a href='" + rt.urlProxy(item.url.replace("__85", "__100")) + "' target='_blank' class='list-group-item' download>▼原图(" + item.resolution + ")</a>");
+            htm.push("<a href='" + rt.urlProxy(item.url.replace("__85", "__100")) + "' target='_blank' class='list-group-item' download>▼ " + item.resolution + "</a>");
             $(size).each(function () {
                 var url = item[this], txt = this.replace('img_', '').replace('_', 'x');
                 if (url) {
-                    htm.push("<a href='" + rt.urlProxy(url) + "' class='list-group-item' target='_blank' download>▼" + txt + "</a>");
+                    htm.push("<a href='" + rt.urlProxy(url) + "' class='list-group-item' target='_blank' download>▼ " + txt + "</a>");
                 }
             });
             htm.push('</div>');
@@ -286,7 +286,7 @@
         //全屏
         FullShow: function (src) {
             document.documentElement.style.overflowY = "hidden";
-            $('<div class="divFP"><a href="javascript:rt.FullClose()">✖</a><img src="' + src + '" title="拖动图片" /></div>').appendTo(document.body);
+            $('<div class="divFP"><a href="javascript:rt.FullClose()">❌</a><img src="' + src + '" title="拖动图片" /></div>').appendTo(document.body);
         },
         //关闭全屏
         FullClose: function () {
@@ -296,7 +296,7 @@
         //代理
         urlProxy: function (url) {
             if (ss.lsStr("useProxy") == "1") {
-                url = "https://netnr-proxy.openode.io/" + url.replace("http://", "");
+                url = "https://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=" + url;
             } else {
                 url = url.replace("http://", "https://");
             }

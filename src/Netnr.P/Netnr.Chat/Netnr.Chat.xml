@@ -523,12 +523,13 @@
             </summary>
             <param name="dbConnection">连接对象</param>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.SqlQuery(System.String,System.Data.Common.DbParameter[])">
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlQuery(System.String,System.Data.Common.DbParameter[],System.Action{System.Data.Common.DbCommand})">
             <summary>
             查询
             </summary>
             <param name="sql">SQL语句，支持多条</param>
             <param name="parameters">带参</param>
+            <param name="action">回调</param>
             <returns>返回数据集</returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlScalar(System.String,System.Data.Common.DbParameter[])">

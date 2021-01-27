@@ -1,4 +1,4 @@
-# Netnr.ScriptService
+# Netnr.ScriptService (NSS)
 无后台基于跨域代理请求提供服务
 
 > 演示：<https://ss.netnr.com>  

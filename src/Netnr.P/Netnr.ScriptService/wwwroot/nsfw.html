@@ -25,17 +25,17 @@ https://zme.ink
 </head>
 <body>
 <div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
 <link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201228',
+        url: '/images/icon.svg?20210127',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -43,8 +43,8 @@ https://zme.ink
     })
 </script>
 
-        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
-        <script src="/js/global.js?v=ckkNo3hER74SKnNCuouMgEfxEpEMP3phtPl9uA0_Lnc"></script>
+        <link href="/css/global.css?v=8day63ZfnKDva9KQuDWIgzWbAwNGkylzlnLgUUezVjw" rel="stylesheet" />
+        <script src="/js/global.js?v=qKGqDsc_42dgyvIvUG_yNyp_WOiFUri4ZlUSpN7smCY"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -132,111 +132,158 @@ https://zme.ink
                 <div class="sbox">
                     <div class="sbox-scanner d-none"></div>
                     <div class="sbox-screen">
-                        <img src="https://api.zme.ink/svg/400*200" id="imgview" />
+                        <img src="https://api.netnr.eu.org/svg/400*200" id="imgview" />
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="input-group">
+            <div class="input-group nrResultType">
                 <input class="form-control text-white bg-success" value="Drawing（绘画）" title="无害的艺术，或艺术绘画">
-                <input class="form-control text-white bg-dark" value="Hentai（变态）" title="色情艺术，不适合大多数工作环境">
                 <input class="form-control text-white bg-info" value="Neutral（中立）" title="一般，无害的内容">
-                <input class="form-control text-white bg-danger" value="Porn（色情）" title="不雅的内容和行为，通常涉及生殖器">
                 <input class="form-control text-white bg-warning" value="Sexy（性感）" title="不合时宜的挑衅内容">
+                <input class="form-control text-white bg-danger" value="Porn（色情）" title="不雅的内容和行为，通常涉及生殖器">
+                <input class="form-control text-white bg-dark" value="Hentai（变态）" title="色情艺术，不适合大多数工作环境">
             </div>
             <textarea class="form-control mt-3" style="height:400px" id="txtResult"></textarea>
         </div>
+    </div>
+    <div class="row mt-3 nrChart">
     </div>
 </div>
 
 <script src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@nsfw-filter/nsfwjs@2.2.0/dist/nsfwjs.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/highcharts@8.2.2/highcharts.js'></script>
 
 
 <script>
     var pg = {
         isgif: false,
+        model: null,
+        rtorder: [],
         init: function () {
-
-            $('#txtFile').change(function () {
-                pg.preview();
+            $('.nrResultType').children().each(function () {
+                pg.rtorder.push({
+                    key: this.value.split('（')[0],
+                    name: this.value
+                });
             });
 
-            //粘贴图片
-            document.addEventListener('paste', function (event) {
-                if (event.clipboardData || event.originalEvent) {
-                    var clipboardData = (event.clipboardData || event.originalEvent.clipboardData);
-                    if (clipboardData.items) {
-                        var items = clipboardData.items, len = items.length;
-                        for (var i = 0; i < len; i++) {
-                            if (items[i].type.indexOf("image") !== -1) {
-                                var blob = items[i].getAsFile();
-                                pg.iv.src = URL.createObjectURL(blob);
-
-                                pg.isgif = false;
-                                pg.scan();
-                            }
-                        }
+            //接收文件
+            ss.receiveFiles(function (files) {
+                var isImg = false;
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    pg.isgif = file.type == "image/gif";
+                    if (file.type.indexOf("image") != -1) {
+                        isImg = true;
+                        pg.iv.src = URL.createObjectURL(file);
+                        pg.scan();
+                        break;
                     }
                 }
-            })
+                if (!isImg) {
+                    jz.alert('不是图片哦');
+                    pg.iv.src = `${ss.apiServer}/svg/400*200`;
+                }
+            }, "#txtFile");
         },
         iv: document.getElementById('imgview'),
-
-        /**预览图片 */
-        preview: function () {
-            var file = document.querySelector('input[type=file]').files[0];
-            if (file) {
-                console.log(file);
-                if (file.type.indexOf('image') != 0) {
-                    jz.alert('不是图片哦');
-                    return false;
-                }
-                pg.isgif = file.type == "image/gif";
-                var reader = new FileReader();
-                reader.onload = function () {
-                    pg.iv.src = reader.result;
-
-                    pg.scan();
-                }
-                reader.readAsDataURL(file);
-            } else {
-                pg.iv.src = "https://api.zme.ink/svg/400*200";
-            }
-        },
 
         scan: function () {
             $('.sbox-scanner').removeClass('d-none');
             $('#txtResult').val("正在加载引擎...")
-            nsfwjs.load('https://cdn.jsdelivr.net/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
-                $('#txtResult').val("正在识别...")
+            if (pg.model) {
+                pg.classify();
+            } else {
+                nsfwjs.load('https://cdn.jsdelivr.net/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
+                    pg.model = model;
+                    pg.classify();
+                })
+            }
+        },
 
-                var mf = pg.isgif ? "classifyGif" : "classify";
-                model[mf](pg.iv).then(function (predictions) {
-                    console.log(predictions);
+        classify: function () {
+            $('#txtResult').val("正在识别...")
 
-                    if (pg.isgif) {
-                        var oarr = [];
-                        predictions.forEach(parr => {
-                            var ro = {};
-                            parr.forEach(p => {
-                                ro[p.className] = p.probability.toFixed(20);
-                            });
-                            oarr.push(ro);
-                        });
-                        $('#txtResult').val(JSON.stringify(oarr, null, 4))
-                    } else {
+            var mf = pg.isgif ? "classifyGif" : "classify";
+            pg.model[mf](pg.iv).then(function (predictions) {
+                console.log(predictions);
+
+                if (pg.isgif) {
+                    var oarr = [];
+                    predictions.forEach(parr => {
                         var ro = {};
-                        predictions.forEach(p => {
+                        parr.forEach(p => {
                             ro[p.className] = p.probability.toFixed(20);
                         });
-                        $('#txtResult').val(JSON.stringify(ro, null, 4))
-                    }
+                        oarr.push(ro);
+                    });
+                    $('#txtResult').val(JSON.stringify(oarr, null, 4))
+                    pg.chart(oarr);
+                } else {
+                    var ro = {};
+                    predictions.forEach(p => {
+                        ro[p.className] = p.probability.toFixed(20);
+                    });
+                    $('#txtResult').val(JSON.stringify(ro, null, 4))
+                    pg.chart([ro]);
+                }
 
-                    $('.sbox-scanner').addClass('d-none');
-                })
+                $('.sbox-scanner').addClass('d-none');
             })
+        },
+
+        chart: function (results) {
+            var nrc = $('.nrChart').empty()
+            for (var i = 0; i < results.length; i++) {
+                var ro = results[i], data = [];
+                for (var j = 0; j < pg.rtorder.length; j++) {
+                    var o = pg.rtorder[j];
+                    data.push({
+                        name: o.name,
+                        y: ro[o.key] * 1
+                    });
+                }
+
+                var colsize = results.length > 1 ? "col-md-6 col-xl-4" : "col-md-12";
+
+                $('<div style="height:360px;" class="' + colsize + ' px-3 mb-3"></div>').appendTo(nrc).highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: '识别结果占比' + (results.length > 1 ? '（' + (i + 1) + ' 帧）' : '')
+                    },
+                    colors: ['#28a745', '#17a2b8', '#ffc107', '#dc3545', '#343a40'],
+                    tooltip: {
+                        headerFormat: '{series.name}<br>',
+                        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: '识别结果占比',
+                        data: data
+                    }]
+                });
+            }
+
         }
     }
 

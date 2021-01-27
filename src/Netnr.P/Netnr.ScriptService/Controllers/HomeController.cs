@@ -415,10 +415,10 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// SSL
+        /// 印
         /// </summary>
         /// <returns></returns>
-        public IActionResult SSL()
+        public IActionResult Seal()
         {
             return View();
         }
@@ -428,6 +428,15 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Storage()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 文本转图片
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult TexToImage()
         {
             return View();
         }

@@ -218,70 +218,72 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 回复
+        /// 回复（关闭匿名回复）
         /// </summary>
         /// <param name="mo">回复信息</param>
         /// <param name="um">消息通知</param>
         /// <returns></returns>
+        [Authorize]
         public SharedResultVM LsitReplySave(UserReply mo, UserMessage um)
         {
             var vm = new SharedResultVM();
-
-            var uinfo = Apps.LoginService.Get(HttpContext);
-
-            if ((uinfo.UserId != 0 && string.IsNullOrWhiteSpace(uinfo.Nickname)) || (uinfo.UserId == 0 && string.IsNullOrWhiteSpace(mo.UrAnonymousName)))
+            vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
-                vm.Set(SharedEnum.RTag.refuse);
-                vm.Msg = "昵称不能为空";
+                if (!mo.Uid.HasValue || string.IsNullOrWhiteSpace(mo.UrContent) || string.IsNullOrWhiteSpace(mo.UrTargetId))
+                {
+                    vm.Set(SharedEnum.RTag.lack);
+                }
+                else
+                {
+                    var uinfo = Apps.LoginService.Get(HttpContext);
+                    mo.Uid = uinfo.UserId;
 
-                return vm;
+                    var now = DateTime.Now;
+
+                    //回复消息
+                    um.UmId = UniqueTo.LongId().ToString();
+                    um.UmTriggerUid = mo.Uid;
+                    um.UmType = Application.EnumService.MessageType.UserWriting.ToString();
+                    um.UmTargetId = mo.UrTargetId;
+                    um.UmAction = 2;
+                    um.UmStatus = 1;
+                    um.UmContent = mo.UrContent;
+                    um.UmCreateTime = now;
+
+                    //回复内容
+                    mo.UrCreateTime = now;
+                    mo.UrStatus = 1;
+                    mo.UrTargetPid = 0;
+                    mo.UrTargetType = Application.EnumService.ReplyType.UserWriting.ToString();
+
+                    mo.UrAnonymousLink = ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
+
+                    db.UserReply.Add(mo);
+
+                    //回填文章最新回复记录
+                    var mow = db.UserWriting.FirstOrDefault(x => x.UwId.ToString() == mo.UrTargetId);
+                    if (mow != null)
+                    {
+                        mow.UwReplyNum += 1;
+                        mow.UwLastUid = mo.Uid;
+                        mow.UwLastDate = now;
+
+                        um.UmTargetIndex = mow.UwReplyNum;
+
+                        db.UserWriting.Update(mow);
+                    }
+
+                    if (um.Uid != um.UmTriggerUid)
+                    {
+                        db.UserMessage.Add(um);
+                    }
+
+                    int num = db.SaveChanges();
+
+                    vm.Set(num > 0);
+                }
             }
-
-            mo.Uid = uinfo.UserId;
-
-            var now = DateTime.Now;
-
-            //回复消息
-            um.UmId = UniqueTo.LongId().ToString();
-            um.UmTriggerUid = mo.Uid;
-            um.UmType = Application.EnumService.MessageType.UserWriting.ToString();
-            um.UmTargetId = mo.UrTargetId;
-            um.UmAction = 2;
-            um.UmStatus = 1;
-            um.UmContent = mo.UrContent;
-            um.UmCreateTime = now;
-
-            //回复内容
-            mo.UrCreateTime = now;
-            mo.UrStatus = 1;
-            mo.UrTargetPid = 0;
-            mo.UrTargetType = Application.EnumService.ReplyType.UserWriting.ToString();
-
-            mo.UrAnonymousLink = ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
-
-            db.UserReply.Add(mo);
-
-            //回填文章最新回复记录
-            var mow = db.UserWriting.FirstOrDefault(x => x.UwId.ToString() == mo.UrTargetId);
-            if (mow != null)
-            {
-                mow.UwReplyNum += 1;
-                mow.UwLastUid = mo.Uid;
-                mow.UwLastDate = now;
-
-                um.UmTargetIndex = mow.UwReplyNum;
-
-                db.UserWriting.Update(mow);
-            }
-
-            if (um.Uid != um.UmTriggerUid)
-            {
-                db.UserMessage.Add(um);
-            }
-
-            int num = db.SaveChanges();
-
-            vm.Set(num > 0);
 
             return vm;
         }

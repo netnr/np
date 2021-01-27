@@ -1,11 +1,11 @@
-# netnrf 响应式框架
+# NRF响应式框架
 .NET Core 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
 
 > 演示：<https://rf.netnr.eu.org>  
 > 演示：<https://rf2.netnr.com>
 
 
-### [更新日志](Netnr.ResponseFramework.ChangeLog.md)
+### [历史更新日志](Netnr.ResponseFramework.ChangeLog.md)
 
 ### [文档说明](Netnr.ResponseFramework.Document.md)
 
@@ -61,24 +61,24 @@
 
 #### 列表 
 
-![列表](https://s1.zme.ink/2018/05/18/403ce7d002.png)
+![列表](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/403ce7d002.png)
 
 #### 新增、编辑、查看
 
-![表单](https://s1.zme.ink/2018/05/18/8d25d345b2.png)
+![表单](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/8d25d345b2.png)
 
 #### 列表配置
 
-![列表配置](https://s1.zme.ink/2018/05/18/13da6572a3.png)
+![列表配置](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/13da6572a3.png)
 
 #### 表单配置
 
-![表单配置](https://s1.zme.ink/2018/05/18/0c98ee578c.png)
+![表单配置](https://cdn.jsdelivr.net/gh/netnr/static/2018/05/18/0c98ee578c.png)
 
 #### 角色权限配置（树）
 
-![角色权限配置](https://s1.zme.ink/2018/08/16/31a55cac78.png)
+![角色权限配置](https://cdn.jsdelivr.net/gh/netnr/static/2018/08/16/31a55cac78.png)
 
 ### 第三方文档API
-- [EasyUI文档](https://ad.netnr.com/#EasyUI-1.5.2)
-- [jQuery文档](https://ad.netnr.com/#jQuery-1.11.3)
+- [EasyUI文档](https://doc.netnr.eu.org/#EasyUI-1.5.2)
+- [jQuery文档](https://doc.netnr.eu.org/#jQuery-1.11.3)

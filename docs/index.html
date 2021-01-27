@@ -35,8 +35,8 @@
         {SEO}
     </div>
 
-    <link href="https://cdn.jsdelivr.net/npm/netnrmd@2.6.0/src/netnrmd.min.css" rel="stylesheet" async />
-    <script src="https://cdn.jsdelivr.net/npm/netnrmd@2.6.0/src/netnrmd.bundle.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.min.css" rel="stylesheet" async />
+    <script src="https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.bundle.min.js" defer></script>
 
     <script>
         window.$docsify = {
@@ -47,7 +47,7 @@
             loadNavbar: true,
             loadSidebar: true,
             relativePath: true,
-            routerMode: 'history',
+            routerMode: location.hostname == "localhost" ? "hash" : "history",
             markdown: {
                 renderer: {
                     code: function (str, lang) {

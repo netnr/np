@@ -1,5 +1,7 @@
 # Change log
 
+### [The change log has been migrated](CHANGELOG.md)
+
 ### [v3.1.5] - 2020-06-14
 - Optimization configuration menu link does not need to be lowercase (but it is recommended to uniform lowercase)
 - Added the background check whether the role can access the link that has been added to the menu table

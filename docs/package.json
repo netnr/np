@@ -3,9 +3,6 @@
   "version": "0.0.1",
   "description": "serverless docs",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netnr/np.git"
@@ -23,6 +20,6 @@
   "homepage": "https://github.com/netnr/np#readme",
   "dependencies": {
     "marked": "^1.2.7",
-    "mime": "^2.4.7"
+    "mime": "^2.5.0"
   }
 }

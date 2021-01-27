@@ -309,4 +309,5 @@ OpenCover/
 .config
 .vercel
 log.db
+yarn.lock
 ip2region.db

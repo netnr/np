@@ -6,23 +6,26 @@ netnr@netnr.com
 ---
 
 ### Site
-- [zme.ink](https://zme.ink)
-    - [api.zme.ink](https://api.zme.ink "API")
-    - [ub.zme.ink](http://ub.zme.ink "Browser upgrade tips")
-    - [v.zme.ink](https://v.zme.ink "VIP video")
-- [guff.ltd](https://guff.ltd)
-- [uuid.fun](https://uuid.fun "Bookmark")
-- [netnr.top](https://netnr.top)
-- [gitee.com/netnr](https://gitee.com/netnr)
-- [github.com/netnr](https://github.com/netnr)
-- [www.netnr.com](https://www.netnr.com)
-    - [Script service](https://ss.netnr.com)
-    - [JSON editor](https://json.netnr.com)
-    - [NetnrMD](https://md.netnr.com "Markdown editor")
-    - [KMS](https://kms.netnr.com "Windows activation service")
-    - [jz pop-up](https://jz.netnr.com "A lightweight, simple pop-up plugin")
-    - [jCute script](https://jcute.netnr.com)
-    - [FontAwesome icon](https://fa.netnr.com "Font Awesome Mirror")
+[github.com/netnr](https://github.com/netnr) 
+&nbsp; [gitee.com/netnr](https://gitee.com/netnr)
+
+[Blog](https://www.netnr.com) 
+&nbsp; [Boot](https://netnr.top)
+&nbsp; [Favorites](https://uuid.fun)
+&nbsp; [Guff](https://guff.ltd)
+&nbsp; [zme.ink](https://zme.ink) 
+
+[Script service](https://ss.netnr.eu.org "ss.js.org")
+&nbsp; [API](https://api.netnr.eu.org)
+&nbsp; [CORS](https://cors.eu.org)
+&nbsp; [JSON](https://json.netnr.eu.org)
+&nbsp; [Markdown](https://md.netnr.eu.org)
+&nbsp; [VIP Video](https://v.netnr.eu.org)
+&nbsp; [jz Pop-ups](https://jz.netnr.eu.org)
+&nbsp; [Font-Awesome icon](https://fa.netnr.eu.org "Font-Awesome Mirror")
+&nbsp; [Browser upgrade](https://ub.netnr.eu.org)
+&nbsp; [KMS](https://kms.netnr.eu.org)
+&nbsp; [Git Storage](https://gs.netnr.eu.org)
 
 ---
 

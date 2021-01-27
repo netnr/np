@@ -2,7 +2,9 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="input-group">
-                <button class="btn btn-warning" id="btnFormatterNginxConf">格式化</button>
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning" id="btnFormatterNginxConf" title="Ctrl+Shift+F 快捷格式化">格式化</button>
+                </div>
                 <div class="input-group-prepend">
                     <select class="custom-select" id="seindent">
                         <optgroup label="缩进">
@@ -18,6 +20,9 @@
                             <option value="2">大括号在行首（新的一行）</option>
                         </optgroup>
                     </select>
+                </div>
+                <div class="input-group-prepend pt-2 pl-3 text-muted">
+                    自动保存，可拖拽文件打开
                 </div>
             </div>
         </div>
@@ -37,7 +42,12 @@
 
     var cme = CodeMirror.fromTextArea(ebox.children()[0], {
         mode: 'nginx',
-        lineNumbers: true
+        lineNumbers: true,
+        extraKeys: {
+            "Shift-Ctrl-F": function () {
+                $('#btnFormatterNginxConf')[0].click();
+            }
+        }
     })
     cme.setValue(ss.lsStr("txt"));
     cme.on("change", function () {

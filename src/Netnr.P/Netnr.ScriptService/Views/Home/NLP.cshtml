@@ -28,7 +28,7 @@
             $('#btnOk').html('处理中');
             $('#btnOk')[0].disabled = true;
             $.ajax({
-                url: 'https://api.zme.ink/analysis',
+                url: `${ss.apiServer}/analysis`,
                 type: 'POST',
                 data: {
                     ctype: $('#sem').val(),

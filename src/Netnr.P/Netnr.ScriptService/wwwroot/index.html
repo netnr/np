@@ -25,17 +25,17 @@ https://zme.ink
 </head>
 <body>
 <div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
 <link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
 
 <script>
     $.ajax({
-        url: '/images/icon.svg?20201228',
+        url: '/images/icon.svg?20210127',
         dataType: 'text',
         success: function (data) {
             $('body').append('<div class="d-none">' + data + '</div>')
@@ -43,8 +43,8 @@ https://zme.ink
     })
 </script>
 
-        <link href="/css/global.css?v=YuzFOH_Z7ma5bs-3HMdZQu0aPQZ1pkBqrzQ_Ri8Yh3k" rel="stylesheet" />
-        <script src="/js/global.js?v=ckkNo3hER74SKnNCuouMgEfxEpEMP3phtPl9uA0_Lnc"></script>
+        <link href="/css/global.css?v=8day63ZfnKDva9KQuDWIgzWbAwNGkylzlnLgUUezVjw" rel="stylesheet" />
+        <script src="/js/global.js?v=qKGqDsc_42dgyvIvUG_yNyp_WOiFUri4ZlUSpN7smCY"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
                 <span class="fa fa-align-justify fa-2x"></span>
@@ -82,6 +82,7 @@ https://zme.ink
                 <div class="input-group-prepend">
                     <select class="custom-select" style="width:150px;" id="seGroup">
                         <option value="">全部</option>
+                            <option value="&#x70ED;&#x95E8;">&#x70ED;&#x95E8;</option>
                             <option value="&#x5F00;&#x53D1;">&#x5F00;&#x53D1;</option>
                             <option value="&#x751F;&#x6D3B;">&#x751F;&#x6D3B;</option>
                             <option value="AI">AI</option>
@@ -98,396 +99,8 @@ https://zme.ink
 
     <div class="navbox">
             <div class="row">
-                <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>&#x5F00;&#x53D1;</div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/code" >
-                                    <svg><use xlink:href="#encrypt"></use></svg>
-                                    <h5 class="ov">加密转码</h5>
-                                    <small>加密、解密、编码、转码</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/vscode" >
-                                    <svg><use xlink:href="#vscode"></use></svg>
-                                    <h5 class="ov">VSCode编辑器</h5>
-                                    <small>Monaco Editor 编辑器</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/diff" >
-                                    <svg><use xlink:href="#diff"></use></svg>
-                                    <h5 class="ov">文本对比</h5>
-                                    <small>Monaco Editor 文件对比</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//md.netnr.com" target='_blank'>
-                                    <svg><use xlink:href="#markdown"></use></svg>
-                                    <h5 class="ov">Markdown编辑器</h5>
-                                    <small>Markdown编辑器</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//json.netnr.com" target='_blank'>
-                                    <svg><use xlink:href="#json"></use></svg>
-                                    <h5 class="ov">JSON编辑器</h5>
-                                    <small>JSON编辑器</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/nginx" >
-                                    <svg><use xlink:href="#nginx"></use></svg>
-                                    <h5 class="ov">Nginx编辑器</h5>
-                                    <small>Nginx配置文件格式化</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/sqlformatter" >
-                                    <svg><use xlink:href="#sql"></use></svg>
-                                    <h5 class="ov">SQL格式化</h5>
-                                    <small>美化SQL语句</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/filetobase64" >
-                                    <svg><use xlink:href="#code"></use></svg>
-                                    <h5 class="ov">文件转Base64</h5>
-                                    <small>Base64编码转换</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/jsontocsharp" >
-                                    <svg><use xlink:href="#csharp"></use></svg>
-                                    <h5 class="ov">JSON生成C#实体类</h5>
-                                    <small>根据JSON生成Model</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/jsontoxml" >
-                                    <svg><use xlink:href="#xml"></use></svg>
-                                    <h5 class="ov">JSON转换XML</h5>
-                                    <small>JSON与XML相互转换</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/dk" target='_blank'>
-                                    <svg><use xlink:href="#db"></use></svg>
-                                    <h5 class="ov">DataKit</h5>
-                                    <small>数据库工具及代码构建</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/zerotier" >
-                                    <svg><use xlink:href="#p2p"></use></svg>
-                                    <h5 class="ov">ZeroTier</h5>
-                                    <small>ZeroTier 管理</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/jscss" >
-                                    <svg><use xlink:href="#js"></use></svg>
-                                    <h5 class="ov">JS、CSS工具</h5>
-                                    <small>JS压缩、CSS压缩</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/formatter" >
-                                    <svg><use xlink:href="#formatter"></use></svg>
-                                    <h5 class="ov">代码格式化</h5>
-                                    <small>Js、Css、Html、TypeScript、Yaml</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/tiny" >
-                                    <svg><use xlink:href="#tiny"></use></svg>
-                                    <h5 class="ov">图片压缩</h5>
-                                    <small>图片压缩</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//zijian.aliyun.com" target='_blank'>
-                                    <svg><use xlink:href="#detect"></use></svg>
-                                    <h5 class="ov">域名检测</h5>
-                                    <small>检测域名状态、DNS、站点</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//whois.aliyun.com" target='_blank'>
-                                    <svg><use xlink:href="#whois"></use></svg>
-                                    <h5 class="ov">Whois查询</h5>
-                                    <small>域名信息查询</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//check-host.net" target='_blank'>
-                                    <svg><use xlink:href="#host"></use></svg>
-                                    <h5 class="ov">检测主机</h5>
-                                    <small>CHECK-HOST</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/ip" >
-                                    <svg><use xlink:href="#ip"></use></svg>
-                                    <h5 class="ov">IP</h5>
-                                    <small>客户端IP地址</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//ping.pe" target='_blank'>
-                                    <svg><use xlink:href="#ping"></use></svg>
-                                    <h5 class="ov">Ping</h5>
-                                    <small>Ping测试</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/pingcloud" >
-                                    <svg><use xlink:href="#pingcloud"></use></svg>
-                                    <h5 class="ov">Ping云</h5>
-                                    <small>Ping各大云服务节点</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//www.chinassl.net/ssltools/convert-ssl.html" target='_blank'>
-                                    <svg><use xlink:href="#ssl"></use></svg>
-                                    <h5 class="ov">SSL证书转换</h5>
-                                    <small>格式转换</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//getman.cn" target='_blank'>
-                                    <svg><use xlink:href="#http"></use></svg>
-                                    <h5 class="ov">HTTP请求</h5>
-                                    <small>在线HTTP请求</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/useragent" >
-                                    <svg><use xlink:href="#info"></use></svg>
-                                    <h5 class="ov">UserAgent</h5>
-                                    <small>客户端信息</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/icp" >
-                                    <svg><use xlink:href="#icp"></use></svg>
-                                    <h5 class="ov">ICP备案查询</h5>
-                                    <small>ICP备案查询</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/zoning" >
-                                    <svg><use xlink:href="#zoning"></use></svg>
-                                    <h5 class="ov">行政区划</h5>
-                                    <small>五级行政区划</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//tool.chinaz.com/regex/" target='_blank'>
-                                    <svg><use xlink:href="#regex"></use></svg>
-                                    <h5 class="ov">正则表达式</h5>
-                                    <small>正则表达式</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/pinyin" >
-                                    <svg><use xlink:href="#translate"></use></svg>
-                                    <h5 class="ov">汉字转拼音</h5>
-                                    <small>汉字转拼音</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//zidian.netnr.com" target='_blank'>
-                                    <svg><use xlink:href="#dictionary"></use></svg>
-                                    <h5 class="ov">字典</h5>
-                                    <small>字、词、成语</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/bed" >
-                                    <svg><use xlink:href="#img"></use></svg>
-                                    <h5 class="ov">图床</h5>
-                                    <small>图床大集合</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//www.iconfont.cn" target='_blank'>
-                                    <svg><use xlink:href="#vector"></use></svg>
-                                    <h5 class="ov">阿里矢量图标</h5>
-                                    <small>矢量图标库</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//svgsprit.es" target='_blank'>
-                                    <svg><use xlink:href="#chain"></use></svg>
-                                    <h5 class="ov">SVG雪碧图</h5>
-                                    <small>合并SVG</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//c.runoob.com/more/svgeditor/" target='_blank'>
-                                    <svg><use xlink:href="#svg"></use></svg>
-                                    <h5 class="ov">SVG编辑器</h5>
-                                    <small>SVG编辑器</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/free" >
-                                    <svg><use xlink:href="#free"></use></svg>
-                                    <h5 class="ov">免费</h5>
-                                    <small>免费的资源</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/officeview" >
-                                    <svg><use xlink:href="#office"></use></svg>
-                                    <h5 class="ov">Office文档查看</h5>
-                                    <small>Word、Excel、PPT</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>&#x751F;&#x6D3B;</div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>&#x70ED;&#x95E8;</div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/wallpaper" >
@@ -498,40 +111,29 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//kms.netnr.com" target='_blank'>
-                                    <svg><use xlink:href="#microsoft"></use></svg>
-                                    <h5 class="ov">KMS服务</h5>
-                                    <small>激活Windows系统</small>
+                                <a href="/free" >
+                                    <svg><use xlink:href="#free"></use></svg>
+                                    <h5 class="ov">免费</h5>
+                                    <small>免费的资源</small>
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/symbol" >
-                                    <svg><use xlink:href="#symbol"></use></svg>
-                                    <h5 class="ov">特殊符号</h5>
-                                    <small>特殊符号</small>
+                                <a href="/bed" >
+                                    <svg><use xlink:href="#img"></use></svg>
+                                    <h5 class="ov">图床</h5>
+                                    <small>图床大集合</small>
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/emoji" >
-                                    <svg><use xlink:href="#emoji"></use></svg>
-                                    <h5 class="ov">Emoji符号</h5>
-                                    <small>Emoji表情</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/speedtest" >
@@ -542,40 +144,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/qrcode" >
-                                    <svg><use xlink:href="#qrcode"></use></svg>
-                                    <h5 class="ov">生成二维码</h5>
-                                    <small>生成二维码</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/lottery" >
-                                    <svg><use xlink:href="#lottery"></use></svg>
-                                    <h5 class="ov">彩票查询</h5>
-                                    <small>彩票查询</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/idcard" >
-                                    <svg><use xlink:href="#idcard"></use></svg>
-                                    <h5 class="ov">身份证号码查询</h5>
-                                    <small>查询地区、性别，纠正尾数</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/ps" target='_blank'>
@@ -586,84 +155,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="//v.zme.ink" target='_blank'>
-                                    <svg><use xlink:href="#video"></use></svg>
-                                    <h5 class="ov">VIP视频解析</h5>
-                                    <small>免费看会员视频</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/express" >
-                                    <svg><use xlink:href="#express"></use></svg>
-                                    <h5 class="ov">快递查询</h5>
-                                    <small>一键查询快递</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/weather" >
-                                    <svg><use xlink:href="#weather"></use></svg>
-                                    <h5 class="ov">天气预报</h5>
-                                    <small>天气预报</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/rmb" >
-                                    <svg><use xlink:href="#rmb"></use></svg>
-                                    <h5 class="ov">人民币转大写</h5>
-                                    <small>人民币转大写</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/randomcode" >
-                                    <svg><use xlink:href="#key"></use></svg>
-                                    <h5 class="ov">生成随机密码</h5>
-                                    <small>生成随机密码</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/randommatch" >
-                                    <svg><use xlink:href="#dice"></use></svg>
-                                    <h5 class="ov">随机匹配</h5>
-                                    <small>随机数生成、随机分组</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/qiushibaike" >
-                                    <svg><use xlink:href="#qsbk"></use></svg>
-                                    <h5 class="ov">糗事百科笑话</h5>
-                                    <small>糗事百科笑话</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/tv" >
@@ -674,7 +166,541 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/qrcode" >
+                                    <svg><use xlink:href="#qrcode"></use></svg>
+                                    <h5 class="ov">生成二维码</h5>
+                                    <small>识别二维码</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/idcard" >
+                                    <svg><use xlink:href="#idcard"></use></svg>
+                                    <h5 class="ov">身份证号码查询</h5>
+                                    <small>查询地区、性别，纠正尾数</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/zoning" >
+                                    <svg><use xlink:href="#zoning"></use></svg>
+                                    <h5 class="ov">行政区划</h5>
+                                    <small>五级行政区划</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>&#x5F00;&#x53D1;</div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/code" >
+                                    <svg><use xlink:href="#encrypt"></use></svg>
+                                    <h5 class="ov">加密转码</h5>
+                                    <small>加密、解密、编码、转码</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/vscode" >
+                                    <svg><use xlink:href="#vscode"></use></svg>
+                                    <h5 class="ov">VSCode编辑器</h5>
+                                    <small>Monaco Editor 编辑器</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/diff" >
+                                    <svg><use xlink:href="#diff"></use></svg>
+                                    <h5 class="ov">文本对比</h5>
+                                    <small>Monaco Editor 文件对比</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//md.netnr.com" target='_blank'>
+                                    <svg><use xlink:href="#markdown"></use></svg>
+                                    <h5 class="ov">Markdown编辑器</h5>
+                                    <small>Markdown编辑器</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//json.netnr.com" target='_blank'>
+                                    <svg><use xlink:href="#json"></use></svg>
+                                    <h5 class="ov">JSON编辑器</h5>
+                                    <small>JSON编辑器</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/nginx" >
+                                    <svg><use xlink:href="#nginx"></use></svg>
+                                    <h5 class="ov">Nginx编辑器</h5>
+                                    <small>Nginx配置文件格式化</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/sqlformatter" >
+                                    <svg><use xlink:href="#sql"></use></svg>
+                                    <h5 class="ov">SQL格式化</h5>
+                                    <small>美化SQL语句</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/filetobase64" >
+                                    <svg><use xlink:href="#code"></use></svg>
+                                    <h5 class="ov">文件转Base64</h5>
+                                    <small>Base64编码转换</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/jsontocsharp" >
+                                    <svg><use xlink:href="#csharp"></use></svg>
+                                    <h5 class="ov">JSON生成C#实体类</h5>
+                                    <small>根据JSON生成Model</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/jsontoxml" >
+                                    <svg><use xlink:href="#xml"></use></svg>
+                                    <h5 class="ov">JSON转换XML</h5>
+                                    <small>JSON与XML相互转换</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/dk" target='_blank'>
+                                    <svg><use xlink:href="#db"></use></svg>
+                                    <h5 class="ov">DataKit</h5>
+                                    <small>数据库工具及代码构建</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/zerotier" >
+                                    <svg><use xlink:href="#p2p"></use></svg>
+                                    <h5 class="ov">ZeroTier</h5>
+                                    <small>ZeroTier 管理</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/jscss" >
+                                    <svg><use xlink:href="#js"></use></svg>
+                                    <h5 class="ov">JS、CSS工具</h5>
+                                    <small>JS压缩、CSS压缩</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/formatter" >
+                                    <svg><use xlink:href="#formatter"></use></svg>
+                                    <h5 class="ov">代码格式化</h5>
+                                    <small>Js、Css、Html、TypeScript、Yaml</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//zijian.aliyun.com" target='_blank'>
+                                    <svg><use xlink:href="#detect"></use></svg>
+                                    <h5 class="ov">域名检测</h5>
+                                    <small>检测域名状态、DNS、站点</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//whois.aliyun.com" target='_blank'>
+                                    <svg><use xlink:href="#whois"></use></svg>
+                                    <h5 class="ov">Whois查询</h5>
+                                    <small>域名信息查询</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//check-host.net" target='_blank'>
+                                    <svg><use xlink:href="#host"></use></svg>
+                                    <h5 class="ov">检测主机</h5>
+                                    <small>CHECK-HOST</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/ip" >
+                                    <svg><use xlink:href="#ip"></use></svg>
+                                    <h5 class="ov">IP</h5>
+                                    <small>客户端IP地址</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//ping.pe" target='_blank'>
+                                    <svg><use xlink:href="#ping"></use></svg>
+                                    <h5 class="ov">Ping</h5>
+                                    <small>Ping测试</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/pingcloud" >
+                                    <svg><use xlink:href="#pingcloud"></use></svg>
+                                    <h5 class="ov">Ping云</h5>
+                                    <small>Ping各大云服务节点</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//www.chinassl.net/ssltools/convert-ssl.html" target='_blank'>
+                                    <svg><use xlink:href="#ssl"></use></svg>
+                                    <h5 class="ov">SSL证书转换</h5>
+                                    <small>格式转换</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//getman.cn" target='_blank'>
+                                    <svg><use xlink:href="#http"></use></svg>
+                                    <h5 class="ov">HTTP请求</h5>
+                                    <small>在线HTTP请求</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/useragent" >
+                                    <svg><use xlink:href="#info"></use></svg>
+                                    <h5 class="ov">UserAgent</h5>
+                                    <small>客户端信息</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/icp" >
+                                    <svg><use xlink:href="#icp"></use></svg>
+                                    <h5 class="ov">ICP备案查询</h5>
+                                    <small>ICP备案查询</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//tool.chinaz.com/regex/" target='_blank'>
+                                    <svg><use xlink:href="#regex"></use></svg>
+                                    <h5 class="ov">正则表达式</h5>
+                                    <small>正则表达式</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/pinyin" >
+                                    <svg><use xlink:href="#translate"></use></svg>
+                                    <h5 class="ov">汉字转拼音</h5>
+                                    <small>汉字转拼音</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//zidian.netnr.eu.org" target='_blank'>
+                                    <svg><use xlink:href="#dictionary"></use></svg>
+                                    <h5 class="ov">字典</h5>
+                                    <small>字、词、成语</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//www.iconfont.cn" target='_blank'>
+                                    <svg><use xlink:href="#vector"></use></svg>
+                                    <h5 class="ov">阿里矢量图标</h5>
+                                    <small>矢量图标库</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//svgsprit.es" target='_blank'>
+                                    <svg><use xlink:href="#chain"></use></svg>
+                                    <h5 class="ov">SVG雪碧图</h5>
+                                    <small>合并SVG</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//c.runoob.com/more/svgeditor/" target='_blank'>
+                                    <svg><use xlink:href="#svg"></use></svg>
+                                    <h5 class="ov">SVG编辑器</h5>
+                                    <small>SVG编辑器</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/textoimage" >
+                                    <svg><use xlink:href="#textoimage"></use></svg>
+                                    <h5 class="ov">文本转图片</h5>
+                                    <small>图片转文本</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>&#x751F;&#x6D3B;</div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//kms.netnr.eu.org" target='_blank'>
+                                    <svg><use xlink:href="#microsoft"></use></svg>
+                                    <h5 class="ov">KMS服务</h5>
+                                    <small>激活Windows系统</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/officeview" >
+                                    <svg><use xlink:href="#office"></use></svg>
+                                    <h5 class="ov">Office文档查看</h5>
+                                    <small>Word、Excel、PPT</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/tiny" >
+                                    <svg><use xlink:href="#tiny"></use></svg>
+                                    <h5 class="ov">图片压缩</h5>
+                                    <small>图片压缩</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/seal" >
+                                    <svg><use xlink:href="#seal"></use></svg>
+                                    <h5 class="ov">印</h5>
+                                    <small>添加水印、印章</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/symbol" >
+                                    <svg><use xlink:href="#symbol"></use></svg>
+                                    <h5 class="ov">特殊符号</h5>
+                                    <small>特殊符号</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/emoji" >
+                                    <svg><use xlink:href="#emoji"></use></svg>
+                                    <h5 class="ov">Emoji符号</h5>
+                                    <small>Emoji表情</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/lottery" >
+                                    <svg><use xlink:href="#lottery"></use></svg>
+                                    <h5 class="ov">彩票查询</h5>
+                                    <small>彩票查询</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="//v.netnr.eu.org" target='_blank'>
+                                    <svg><use xlink:href="#video"></use></svg>
+                                    <h5 class="ov">VIP视频解析</h5>
+                                    <small>免费看会员视频</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/express" >
+                                    <svg><use xlink:href="#express"></use></svg>
+                                    <h5 class="ov">快递查询</h5>
+                                    <small>一键查询快递</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/weather" >
+                                    <svg><use xlink:href="#weather"></use></svg>
+                                    <h5 class="ov">天气预报</h5>
+                                    <small>天气预报</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/rmb" >
+                                    <svg><use xlink:href="#rmb"></use></svg>
+                                    <h5 class="ov">人民币转大写</h5>
+                                    <small>人民币转大写</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/randomcode" >
+                                    <svg><use xlink:href="#key"></use></svg>
+                                    <h5 class="ov">生成随机密码</h5>
+                                    <small>生成随机密码</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/randommatch" >
+                                    <svg><use xlink:href="#dice"></use></svg>
+                                    <h5 class="ov">随机匹配</h5>
+                                    <small>随机数生成、随机分组</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/qiushibaike" >
+                                    <svg><use xlink:href="#qsbk"></use></svg>
+                                    <h5 class="ov">糗事百科笑话</h5>
+                                    <small>糗事百科笑话</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/purine" >
@@ -685,7 +711,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/bmi" >
@@ -696,7 +722,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/gc" >
@@ -710,7 +736,7 @@ https://zme.ink
             </div>
             <div class="row">
                 <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>AI</div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/ocr" >
@@ -721,7 +747,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/nsfw" >
@@ -732,7 +758,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/nlp" >
@@ -746,7 +772,7 @@ https://zme.ink
             </div>
             <div class="row">
                 <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>&#x5173;&#x4E8E;</div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/overview" >
@@ -757,7 +783,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="/message" >
@@ -768,7 +794,7 @@ https://zme.ink
                             </div>
                         </div>
                     </div>
-                    <div class="col-ll-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <a href="//zme.ink" target='_blank'>

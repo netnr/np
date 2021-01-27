@@ -11,7 +11,7 @@
                 </span>
                 <div class="custom-file">
                     <input id="txtFile" type="file" class="custom-file-input">
-                    <label class="custom-file-label" id="ps">选择本地 Word、Excel、PPT</label>
+                    <label class="custom-file-label" id="ps">选择（拖拽）本地 Word、Excel、PPT</label>
                 </div>
             </div>
             <p>
@@ -20,7 +20,7 @@
             </p>
         </div>
         <div class="col-md-12">
-            <iframe src="about:blank" frameborder="0"></iframe>
+            <iframe src="about:blank" class="d-none" frameborder="0"></iframe>
         </div>
     </div>
 </div>
@@ -28,30 +28,40 @@
 <script>
     var ov = {
         api: "https://view.officeapps.live.com/op/embed.aspx?src=",
+        init: function () {
+
+            $('#ps').attr('tip', $('#ps').html());
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                ov.upload(files[0]);
+            }, "#txtFile");
+
+            $('#txtUrl').on('input', function () {
+                ov.view(this.value);
+            });
+
+            $(window).on('load resize', function () {
+                ov.size();
+            });
+        },
         view: function (url) {
             if (url && url != "") {
                 url = decodeURIComponent(url);
                 $('#auri').attr('href', ov.api + url);
                 $('#auri').html(ov.api + url);
-                $('iframe').attr('src', ov.api + url);
+                $('iframe').removeClass("d-none").attr('src', ov.api + url);
             } else {
                 $('#auri').attr('href', 'javascript:void(0);');
                 $('#auri').html(ov.api);
-                $('iframe').attr('src', 'about:blank');
+                $('iframe').addClass("d-none").attr('src', 'about:blank');
             }
         },
         size: function () {
             var h = $(window).height() - $('iframe').offset().top - 15;
             $('iframe').height(Math.max(200, h)).width('100%');
-        }
-    }
-
-    $('#txtUrl').on('input', function () {
-        ov.view(this.value);
-    });
-    $('#txtFile').change(function () {
-        var file = this.files[0];
-        if (file) {
+        },
+        upload: function (file) {
             var err = [];
             if (file.size > 1024 * 1024 * 20) {
                 err.push('文档大小限制 20MB')
@@ -81,7 +91,7 @@
                             if (rate < 100) {
                                 $('#ps').html('已上传 ' + rate + ' %');
                             } else {
-                                $('#ps').html('选择本地 Word、Excel、PPT');
+                                $('#ps').html($('#ps').attr('tip'));
                             }
                         })
                         return xhr;
@@ -98,15 +108,13 @@
                         jz.alert("上传出错");
                     },
                     complete: function () {
-                        $('#txtFile').val('')
-                        $('#ps').html('选择本地 Word、Excel、PPT');
+                        $('#txtFile').val('');
+                        $('#ps').html($('#ps').attr('tip'));
                     }
                 });
             }
         }
-    });
+    }
 
-    $(window).on('load resize', function () {
-        ov.size();
-    });
+    ov.init();
 </script>

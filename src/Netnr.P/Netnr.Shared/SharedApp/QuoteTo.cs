@@ -59,11 +59,11 @@ namespace Netnr.SharedApp
                         break;
 
                     case "bootstrap.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css' rel='stylesheet'>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>");
                         break;
 
                     case "bootstrap.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>");
                         break;
 
                     case "bootstrap3.css":
@@ -79,11 +79,11 @@ namespace Netnr.SharedApp
                         break;
 
                     case "netnrmd.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.0/src/netnrmd.css' rel='stylesheet' />");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.css' rel='stylesheet' />");
                         break;
 
                     case "netnrmd.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.0/src/netnrmd.bundle.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.bundle.js'></script>");
                         break;
 
                     case "netnrnav.css":
@@ -135,11 +135,15 @@ namespace Netnr.SharedApp
                         break;
 
                     case "md5.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/blueimp-md5@2.11.0/js/md5.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js'></script>");
                         break;
 
                     case "qrcode.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/qrcodejs/20200706/qrcode.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js'></script>");
+                        break;
+
+                    case "jsqr.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/jsqr@1.3.1/dist/jsQR.min.js'></script>");
                         break;
 
                     case "bmob.js":
@@ -151,11 +155,19 @@ namespace Netnr.SharedApp
                         break;
 
                     case "sql-formatter.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/sql-formatter@2.3.3/dist/sql-formatter.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/sql-formatter@3.1.0/dist/sql-formatter.min.js'></script>");
+                        break;
+
+                    case "highcharts.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/highcharts@8.2.2/highcharts.js'></script>");
                         break;
 
                     case "hls.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/hls.js@0.13.2/dist/hls.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/hls.js@0.14.17/dist/hls.min.js'></script>");
+                        break;
+
+                    case "watermark.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/watermarkjs@2.1.1/dist/watermark.min.js'></script>");
                         break;
 
                     case "nsfwjs":
@@ -169,7 +181,7 @@ namespace Netnr.SharedApp
                         break;
 
                     case "terser.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/terser@5.3.8/dist/bundle.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/terser@5.5.1/dist/bundle.min.js'></script>");
                         break;
 
                     case "cleancss.js":
@@ -177,17 +189,17 @@ namespace Netnr.SharedApp
                         break;
 
                     case "prettier.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/standalone.min.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-angular.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-babel.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-flow.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-glimmer.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-graphql.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-html.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-markdown.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-postcss.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-typescript.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-yaml.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/standalone.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-angular.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-babel.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-flow.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-glimmer.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-graphql.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-html.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-markdown.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-postcss.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-typescript.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-yaml.js'></script>");
                         break;
 
                     case "lrz.js":
@@ -211,21 +223,21 @@ namespace Netnr.SharedApp
                         break;
 
                     case "codemirror":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/codemirror@5.58.3/lib/codemirror.min.css' rel='stylesheet' />");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.58.3/lib/codemirror.min.js'></script>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/codemirror@5.59.2/lib/codemirror.min.css' rel='stylesheet' />");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.59.2/lib/codemirror.min.js'></script>");
                         break;
 
                     case "codemirror-nginx":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.58.3/mode/nginx/nginx.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.59.2/mode/nginx/nginx.min.js'></script>");
                         break;
 
                     case "monaco-editor":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs/loader.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs/loader.js'></script>");
                         vh.Add(@"
                                 <script>
                                     require.config({
                                         paths: {
-                                            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.2/min/vs'
+                                            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs'
                                         },
                                         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                     });

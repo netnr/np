@@ -17,9 +17,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <textarea id="txtCode1" style="height:100px">一二12ab</textarea>
+            <textarea class="form-control" id="txtCode1" rows="5">一二12ab</textarea>
         </div>
-        <div class="col-md-12" id="codetoolbox">
+        <div class="col-md-12 my-3" id="codetoolbox">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="tab1" data-toggle="tab" href="#pane1">
@@ -136,8 +136,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-12 mt-2">
-            <textarea id="txtCode2"></textarea>
+        <div class="col-md-12 mb-3">
+            <textarea class="form-control" rows="8" id="txtCode2"></textarea>
         </div>
     </div>
 </div>
@@ -243,8 +243,9 @@
                     break;
 
                 case "UUID":
+                    t2.val("Loading ...");
                     $.ajax({
-                        url: "https://api.zme.ink/uuid/9",
+                        url: `${ss.apiServer}/uuid/9`,
                         dataType: 'json',
                         success: function (data) {
                             t2.val(data.join('\r\n'));

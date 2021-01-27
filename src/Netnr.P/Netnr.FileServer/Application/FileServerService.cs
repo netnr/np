@@ -10,7 +10,7 @@ using Netnr.SharedFast;
 namespace Netnr.FileServer.Application
 {
     /// <summary>
-    /// 数据库操作
+    /// 数据库操作及辅助方法
     /// </summary>
     public class FileServerService
     {
@@ -253,16 +253,6 @@ namespace Netnr.FileServer.Application
             }
 
             return vm;
-        }
-
-        /// <summary>
-        /// 创建 Token
-        /// </summary>
-        /// <param name="IsFixToken">是固定Token，默认否</param>
-        /// <returns></returns>
-        public static string NewToken(bool IsFixToken = false)
-        {
-            return (IsFixToken ? GlobalTo.GetValue("Safe:FixTokenPrefix") : "") + (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
         }
 
         /// <summary>
@@ -531,5 +521,26 @@ namespace Netnr.FileServer.Application
 
             return vm;
         }
+
+        /// <summary>
+        /// 创建 Token
+        /// </summary>
+        /// <param name="IsFixToken">是固定Token，默认否</param>
+        /// <returns></returns>
+        public static string NewToken(bool IsFixToken = false)
+        {
+            return (IsFixToken ? GlobalTo.GetValue("Safe:FixTokenPrefix") : "") + (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
+        }
+
+        /// <summary>
+        /// 静态资源虚拟路径转为物理路径
+        /// </summary>
+        /// <param name="VrDir">虚拟路径</param>
+        /// <returns></returns>
+        public static string StaticVrPathAsPhysicalPath(string VrDir)
+        {
+            return PathTo.Combine(GlobalTo.GetValue<bool>("Safe:PublicAccess") ? GlobalTo.WebRootPath : GlobalTo.ContentRootPath, VrDir);
+        }
+
     }
 }

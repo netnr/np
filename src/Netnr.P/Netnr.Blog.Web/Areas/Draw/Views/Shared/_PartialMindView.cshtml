@@ -1,5 +1,7 @@
 @{
     ViewData["Title"] = "draw";
+
+    var mindBaseServer = "https://cdn.jsdelivr.net/gh/netnr/cdn/libs/kityminder/20190212"; ;
 }
 
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading"))
@@ -8,11 +10,11 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.47.0/lib/codemirror.min.css" />
-<link rel="stylesheet" asp-append-version="true" href="/lib/kityminder/components/hotbox/hotbox.css" />
+<link rel="stylesheet" href="@mindBaseServer/components/hotbox/hotbox.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.css" />
-<link rel="stylesheet" asp-append-version="true" href="/lib/kityminder/components/color-picker/dist/color-picker.css" />
+<link rel="stylesheet" href="@mindBaseServer/components/color-picker/dist/color-picker.css" />
 
-<link asp-append-version="true" rel="stylesheet" href="/lib/kityminder/dist/kityminder.editor.css">
+<link rel="stylesheet" href="@mindBaseServer/dist/kityminder.editor.css">
 
 <style>
     .eh {
@@ -111,9 +113,9 @@
 <script src="https://cdn.jsdelivr.net/npm/angular-ui-codemirror@0.3.0/src/ui-codemirror.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@0.7.0/lib/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script>
-<script asp-append-version="true" src="/lib/kityminder/components/hotbox/hotbox.js"></script>
-<script asp-append-version="true" src="/lib/kityminder/components/json-diff/json-diff.js"></script>
+<script src="@mindBaseServer/components/hotbox/hotbox.js"></script>
+<script src="@mindBaseServer/components/json-diff/json-diff.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script>
-<script asp-append-version="true" src="/lib/kityminder/components/color-picker/dist/color-picker.min.js"></script>
+<script src="@mindBaseServer/components/color-picker/dist/color-picker.min.js"></script>
 
-<script asp-append-version="true" src="/lib/kityminder/dist/kityminder.editor.js"></script>
+<script src="@mindBaseServer/dist/kityminder.editor.js"></script>

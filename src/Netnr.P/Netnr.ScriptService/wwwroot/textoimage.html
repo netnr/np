@@ -1,0 +1,226 @@
+﻿
+<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>文本转图片 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 文本转图片" />
+    <meta name="description" content="Script Services 图片转文本" />
+
+</head>
+<body>
+<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
+<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
+
+<script>
+    $.ajax({
+        url: '/images/icon.svg?20210127',
+        dataType: 'text',
+        success: function (data) {
+            $('body').append('<div class="d-none">' + data + '</div>')
+        }
+    })
+</script>
+
+        <link href="/css/global.css?v=8day63ZfnKDva9KQuDWIgzWbAwNGkylzlnLgUUezVjw" rel="stylesheet" />
+        <script src="/js/global.js?v=qKGqDsc_42dgyvIvUG_yNyp_WOiFUri4ZlUSpN7smCY"></script>
+            <!--导航-->
+            <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
+                <span class="fa fa-align-justify fa-2x"></span>
+            </button>
+            <div class="netnrnav horizontal">
+                <div class="netnrnav-wrapper">
+                    <ul>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+                            <!--标题-->
+                                <a href='javascript:location.reload(false)' title="图片转文本">
+                                    <svg class="titleicon"><use xlink:href="#textoimage"></use></svg> &#x6587;&#x672C;&#x8F6C;&#x56FE;&#x7247;
+                                </a>
+                        </li>
+                        <li>
+                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                            <ul>
+                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="input-group">
+                <button class="btn btn-warning" id="btnToImage">转成图片</button>
+                <div class="custom-file">
+                    <input id="txtFile" type="file" class="custom-file-input">
+                    <label class="custom-file-label" id="pr">选择（拖拽、粘贴）图片或文本</label>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-danger" id="btnToText">转回文本</button>
+                </div>
+                <input class="form-control" id="txtUri" placeholder="粘贴图片链接转为文本（须支持跨域）" />
+                <div class="input-group-prepend">
+                    <button class="btn btn-info" id="btnToTextDemo">例子</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mb-3">
+            <div id="editor" class="border overflow-hidden position-relative min300">
+            </div>
+        </div>
+        <div class="col-md-12 mb-3 nrView d-none">
+            <img class="mw-100 border" style="height:200px" />
+            <br />
+            <a href="javascript:void(0)" target="_blank" download="tti.png">下载</a>
+        </div>
+        <div class="col-md-12 mb-3">
+            <p>把文字转换为图片；转换后的图片可转回文字（图片未压缩等丢失信息的操作）</p>
+            <p>可以把文字转为图片后上传到图床（图床选不处理图片保存原图的厂商，且支持跨域）用于存储</p>
+            <p class="text-danger">警告：非文字转成的图片解析后是乱码，而且耗时很久，容易卡死浏览器</p>
+        </div>
+    </div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs/loader.js'></script>
+
+<script>
+    require.config({
+        paths: {
+            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs'
+        },
+        'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+    });
+</script>
+
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/text-to-image/20201119/tti.js'></script>
+
+
+<script>
+
+    var ti = {
+        tti: new tti(),
+        editor: null,
+        init: function () {
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                var file = files[0]
+                console.log(files, file);
+                //解析
+                if (file.type.indexOf("image") == 0) {
+                    ti.showText(URL.createObjectURL(file));
+                } else {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        if (reader.result) {
+                            ti.editor.setValue(reader.result);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            }, "#txtFile");
+
+            $('#btnToImage').click(function () {
+                var txt = ti.editor.getValue();
+                if (txt != "") {
+                    ti.showImage(txt);
+                }
+            });
+
+            $('#btnToText').click(function () {
+                var uri = $('#txtUri').val();
+                if (uri != "") {
+                    ti.showText(uri);
+                }
+            });
+
+            $('#btnToTextDemo').click(function () {
+                var uri = 'https://img14.360buyimg.com/ddimg/jfs/t1/125681/26/19217/154989/5fb66c5fE20b7c048/fa5a3f63b1179289.png';
+                $('#txtUri').val(uri);
+                $('#btnToText')[0].click();
+            });
+
+            ti.showCode('');
+        },
+        showCode: function (code) {
+            if (ti.editor) {
+                ti.editor.setValue(code);
+            } else {
+                require(['vs/editor/editor.main'], function () {
+                    ti.editor = monaco.editor.create(document.getElementById("editor"), {
+                        value: code,
+                        language: 'html',
+                        automaticLayout: true,
+                        wordWrap: "on",
+                        theme: 'vs',
+                        scrollbar: {
+                            verticalScrollbarSize: 6,
+                            horizontalScrollbarSize: 6
+                        },
+                        minimap: {
+                            enabled: false
+                        }
+                    });
+                });
+            }
+        },
+        showText: function (src) {
+            var nv = $('.nrView').removeClass('d-none').children();
+
+            ti.showCode("正在解析为文本，请稍等 ... \r\n非文字转成的图片解析后是乱码 ... \r\n图片越大（亮）解析越慢 ... ");
+            nv.first().attr('src', src);
+            nv.last().attr('href', src);
+            setTimeout(function () {
+                try {
+                    ti.tti.asText(nv.first()[0], function (txt) {
+                        ti.showCode(txt)
+                    });
+                } catch (e) {
+                    console.log(e);
+                    ti.showCode(e + "");
+                }
+            }, 1000)
+        },
+        showImage: function (txt) {
+            var $base64 = ti.tti.asImage(txt).toImage();
+            var nv = $('.nrView').removeClass('d-none').children();
+            nv.first().attr('src', $base64);
+            nv.last().attr('href', nv.first().attr('src'));
+        }
+    }
+
+    ti.init();
+</script>
+        </div>
+        <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

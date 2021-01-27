@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Data;
 using System.Collections.Generic;
+using Oracle.ManagedDataAccess.Client;
 using Netnr.SharedDataKit.Models;
 using Netnr.SharedAdo;
 
@@ -30,7 +31,7 @@ namespace Netnr.SharedDataKit.Applications
         /// <param name="conn">连接字符串</param>
         public DataKitOracleService(string conn)
         {
-            db = new DbHelper(new Oracle.ManagedDataAccess.Client.OracleConnection(connectionString = conn));
+            db = new DbHelper(new OracleConnection(connectionString = conn));
         }
 
         /// <summary>
@@ -145,7 +146,10 @@ namespace Netnr.SharedDataKit.Applications
             }
 
             var sql = GetColumnSQL(whereSql);
-            var ds = db.SqlQuery(sql);
+            var ds = db.SqlQuery(sql, null, (dbc) =>
+            {
+                ((OracleCommand)dbc).InitialLONGFetchSize = -1;
+            });
 
             var list = ds.Tables[0].ToModel<DkTableColumn>();
 

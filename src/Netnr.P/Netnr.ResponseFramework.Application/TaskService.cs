@@ -136,7 +136,7 @@ namespace Netnr.ResponseFramework.Application
             /// <summary>
             /// JSON存储路径
             /// </summary>
-            private static readonly string fullJsonData = PathTo.Combine(GlobalTo.WebRootPath, "/scripts/table-json/data.json");
+            private static readonly string fullJsonData = PathTo.Combine(GlobalTo.WebRootPath, "/db/data.json");
 
             /// <summary>
             /// 获取所有表

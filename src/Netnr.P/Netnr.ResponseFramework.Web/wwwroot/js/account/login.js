@@ -3,7 +3,7 @@ top != self && (top.location = self.location);
 
 //低版本跳转
 if (typeof document.createElement == "object" || !window.localStorage) {
-    top.location = "/home/updatebrowser";
+    top.location = "/home/ub";
 }
 
 //登录

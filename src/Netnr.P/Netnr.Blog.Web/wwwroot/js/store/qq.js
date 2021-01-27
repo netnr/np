@@ -220,7 +220,6 @@ function CC() {
         bucket: pObject.bucket,
         region: 'tj',
         getAppSign: function (callback) {
-            var that1 = this;
             $.ajax({
                 url: "/Store/QQSignature",
                 type: 'post',
@@ -234,7 +233,6 @@ function CC() {
             });
         },
         getAppSignOnce: function (callback) {
-            var that2 = this;
             $.ajax({
                 url: "/Store/QQSignatureOnce",
                 type: 'post',

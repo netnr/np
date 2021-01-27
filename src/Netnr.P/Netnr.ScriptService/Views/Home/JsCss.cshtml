@@ -141,7 +141,7 @@
 
     require(['vs/editor/editor.main'], function () {
 
-        var defaultContent = ss.lsStr("vscode-content") || '/* 粘贴 JS、CSS 内容 */',
+        var defaultContent = ss.lsStr("vscode-content") || '/* 粘贴 JS、CSS 内容 ；自动保存，可拖拽文件打开 */',
             defaultLang = ss.lsStr("vscode-lang") || 'javascript';
 
         window.ee1 = monaco.editor.create(document.getElementById("editor1"), {
@@ -226,7 +226,7 @@
                 ss.loading();
                 $('#btnFn3')[0].disabled = true;
                 $.ajax({
-                    url: "https://api.zme.ink/minify/css",
+                    url: `${ss.apiServer}/minify/css`,
                     type: "post",
                     data: {
                         content: code
@@ -262,5 +262,15 @@
             $('#editor1').css('height', Math.max(200, ch));
             $('#editor2').css('height', Math.max(200, ch));
         });
+    });
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            ee1.setValue(e.target.result);
+        };
+        reader.readAsText(file);
     });
 </script>

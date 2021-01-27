@@ -35,7 +35,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult UpdateBrowser()
+        public IActionResult UB()
         {
             return View();
         }

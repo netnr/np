@@ -176,7 +176,7 @@
         </div>
         @if (!ViewContext.HttpContext.User.Identity.IsAuthenticated)
         {
-            <div class="col-sm-4 mb-3">
+            <div class="col-sm-4 mb-3 d-none">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <div class="input-group-text">昵称</div>
@@ -184,7 +184,7 @@
                     <input class="form-control" aria-label="昵称" id="WrAnonymousName" placeholder="请输入昵称" maxlength="20">
                 </div>
             </div>
-            <div class="col-sm-4 mb-3">
+            <div class="col-sm-4 mb-3 d-none">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <div class="input-group-text">邮箱</div>
@@ -192,7 +192,7 @@
                     <input class="form-control" aria-label="邮箱" id="WrAnonymousMail" placeholder="根据邮箱从 Gravatar 获取头像" maxlength="50">
                 </div>
             </div>
-            <div class="col-sm-4 mb-3">
+            <div class="col-sm-4 mb-3 d-none">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <div class="input-group-text">链接</div>

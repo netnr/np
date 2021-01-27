@@ -104,6 +104,12 @@ namespace Netnr.Tool
             {
                 DESEncryptOrDecrypt.Run();
             }
+
+            [Description("Text encoding conversion (Please backup first)")]
+            public static void Mi_TextEncodingConversion()
+            {
+                TextEncodingConversion.Run();
+            }
         }
     }
 }

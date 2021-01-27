@@ -2,56 +2,62 @@
     <div class="row">
         <div class="col-md-12">
             <label class="btn btn-success mb-0">
-                <input type="file" class="d-none" id="txtFile" /> 选择（拖拽）文件
+                <input type="file" class="d-none" id="txtFile" /> 选择（拖拽、粘贴）文件
             </label>
             <label id="labSize" class="ml-3"></label>
         </div>
-        <div class="col-md-12 my-2">
-            <textarea class="form-control min300" id="txtBase64"></textarea>
+        <div class="col-md-12 my-2 nrEbox d-none">
+            <div id="editor" class="border overflow-hidden position-relative min300">
+            </div>
         </div>
-        <div class="col-md-12 mb-2">
+        <div class="col-md-12 mb-2 d-none">
             <button class="btn btn-success" id="btnBase64ToFile">Base64转文件</button>
             <div id="viewBase64" class="mt-3"></div>
         </div>
     </div>
 </div>
 
-<script>
-    //拖拽
-    $(document).on("dragleave dragenter dragover", function (e) {
-        if (e && e.stopPropagation) { e.stopPropagation() } else { window.event.cancelBubble = true }
-        if (e && e.preventDefault) { e.preventDefault() } else { window.event.returnValue = false }
-    }).on("drop", function (e) {
-        if (e && e.preventDefault) { e.preventDefault() } else { window.event.returnValue = false }
-        e = e || window.event;
-        var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
-        if (files && files.length) {
-            fileAsBase64(files[0])
-        }
-    });
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
-    $('#txtFile').change(function () {
-        if (this.files.length) {
-            fileAsBase64(this.files[0])
-            $('#txtFile').val('')
+<script>
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        fileAsBase64(files[0])
+        $('#txtFile').val('')
+    }, "#txtFile");
+
+    var editor;
+    function showCode(code) {
+        if (editor) {
+            editor.setValue(code);
+        } else {
+            require(['vs/editor/editor.main'], function () {
+                $('.nrEbox').removeClass('d-none');
+                $('#btnBase64ToFile').parent().removeClass('d-none');
+
+                editor = monaco.editor.create(document.getElementById("editor"), {
+                    value: code,
+                    language: 'html',
+                    automaticLayout: true,
+                    wordWrap: "on",
+                    theme: 'vs',
+                    scrollbar: {
+                        verticalScrollbarSize: 6,
+                        horizontalScrollbarSize: 6
+                    },
+                    minimap: {
+                        enabled: false
+                    }
+                });
+            });
         }
-    });
+    }
 
     function fileAsBase64(file) {
-        if (file.size / 1024 / 1024 > 3) {
-            var msgs = [
-                "<div style='font-size:1rem'>",
-                "正在处理，请稍等，^_^",
-                "<hr/>",
-                "文件较大，浏览器会出现卡顿的情况",
-                "</div>"
-            ];
-            jz.alert(msgs.join('<br/>'), { time: 5, ok: false })
-        }
-
         var r = new FileReader();
         r.onload = function () {
-            $('#txtBase64').val(this.result)
+            showCode(this.result);
             $('#labSize').html("大小：" + (this.result.length / 1024).toFixed(1) + " K");
         }
         r.readAsDataURL(file);
@@ -72,7 +78,7 @@
     };
 
     $('#btnBase64ToFile').click(function () {
-        var code = $('#txtBase64').val();
+        var code = editor.getValue();
         var blob = base64AsBlob(code);
         console.log(blob);
         var vbase = $('#viewBase64'), vnode;

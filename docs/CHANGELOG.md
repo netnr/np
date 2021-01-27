@@ -3,6 +3,9 @@
 ### 2021-01
 - Fix the problem that the EasyUI table is not displayed normally due to the hidden Iframe tab of the Netnr.ResponseFramework project (switch from hiding to floating layer & transparency mode)
 - Added Draw to support private setting sharing code view
+- Fix the wrong blog post classification icon
+- Adjust the blog to turn off anonymous replies
+- Repair Netnr.DataKit project. Repair Oracle query default value (Long type) missing problem (`InitialLONGFetchSize = -1`)
 
 ### 2020-12
 - Upgrade .NET5
