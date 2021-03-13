@@ -9,7 +9,7 @@ if (console) {
 
     var oi = fi();
     oi.msg = "NET牛人";
-    oi.style = "padding:10px 40px 10px;line-height:50px;background:url('" + domain + "/favicon.svg') no-repeat;background-size:15% 100%;font-size:1.8rem;color:#009a61";
+    oi.style = "padding:10px 40px 10px;line-height:50px;background:url('" + domain + "/favicon.svg') no-repeat;background-size:15% 100%;font-size:1.8rem;color:orange";
     outs.push(oi);
 
     oi = fi();

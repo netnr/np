@@ -298,7 +298,7 @@ namespace Netnr.ResponseFramework.Application
         /// <returns></returns>
         public static List<SysMenu> QuerySysMenuList(Func<SysMenu, bool> predicate, bool cache = true)
         {
-            if (!cache || !(CacheTo.Get(GlobalCacheKey.SysMenu) is List<SysMenu> list))
+            if (!cache || CacheTo.Get(GlobalCacheKey.SysMenu) is not List<SysMenu> list)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysMenu.OrderBy(x => x.SmOrder).ToList();
@@ -316,7 +316,7 @@ namespace Netnr.ResponseFramework.Application
         /// <returns></returns>
         public static List<SysButton> QuerySysButtonList(Func<SysButton, bool> predicate, bool cache = true)
         {
-            if (!cache || !(CacheTo.Get(GlobalCacheKey.SysButton) is List<SysButton> list))
+            if (!cache || CacheTo.Get(GlobalCacheKey.SysButton) is not List<SysButton> list)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysButton.OrderBy(x => x.SbBtnOrder).ToList();
@@ -334,7 +334,7 @@ namespace Netnr.ResponseFramework.Application
         /// <returns></returns>
         public static SysRole QuerySysRoleEntity(Func<SysRole, bool> predicate, bool cache = true)
         {
-            if (!cache || !(CacheTo.Get(GlobalCacheKey.SysRole) is List<SysRole> list))
+            if (!cache || CacheTo.Get(GlobalCacheKey.SysRole) is not List<SysRole> list)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysRole.ToList();

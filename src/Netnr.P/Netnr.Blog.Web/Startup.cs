@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using Netnr.Login;
 using Netnr.SharedFast;
 using Netnr.SharedLogging;
+using Newtonsoft.Json.Converters;
 
 namespace Netnr.Blog.Web
 {
@@ -95,6 +96,9 @@ namespace Netnr.Blog.Web
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 //日期格式化
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+
+                //swagger枚举显示名称
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
             //配置swagger
@@ -115,6 +119,8 @@ namespace Netnr.Blog.Web
                     c.IncludeXmlComments(AppContext.BaseDirectory + $"Netnr.{x}.xml", true);
                 });
             });
+            //swagger枚举显示名称
+            services.AddSwaggerGenNewtonsoftSupport();
 
             //授权访问信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -168,8 +174,11 @@ namespace Netnr.Blog.Web
             //数据库不存在则创建，创建后返回true
             if (db.Database.EnsureCreated())
             {
+                var jobj = Core.FileTo.ReadText(GlobalTo.ContentRootPath + "/db/data.json").ToJObject();
+                Console.WriteLine(jobj["log"]);
+
                 //从JSON写入数据库
-                var jodb = Core.FileTo.ReadText(GlobalTo.ContentRootPath + "/db/data.json").ToJObject();
+                var jodb = jobj["data"];
 
                 var dicDbSet = Data.ContextBase.GetDicDbSet(db);
                 foreach (var table in dicDbSet.Keys)
@@ -199,7 +208,7 @@ namespace Netnr.Blog.Web
             });
 
             //默认起始页index.html
-            DefaultFilesOptions options = new DefaultFilesOptions();
+            DefaultFilesOptions options = new();
             options.DefaultFileNames.Add("index.html");
             app.UseDefaultFiles(options);
 
@@ -209,8 +218,24 @@ namespace Netnr.Blog.Web
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                }
+                },
+                ServeUnknownFileTypes = true
             });
+
+            //目录浏览&&公开访问
+            if (GlobalTo.GetValue<bool>("ReadOnly"))
+            {
+                string vrootdir = "/_";
+                string prootdir = GlobalTo.WebRootPath;
+                app.UseFileServer(new FileServerOptions()
+                {
+                    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(prootdir),
+                    //目录浏览链接
+                    RequestPath = new PathString(vrootdir),
+                    EnableDirectoryBrowsing = true,
+                    EnableDefaultFiles = false
+                });
+            }
 
             app.UseRouting();
 

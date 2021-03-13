@@ -1,4 +1,4 @@
-临时短信
+临时短信 Temporary SMS
 - <https://www.pdflibr.com>
 - <http://www.114sim.com>
 - <https://yunduanxin.net>
@@ -7,10 +7,10 @@
 - <https://zh.mytrashmobile.com>
 - <https://www.receive-sms-online.info>
 - <https://receiveasms.com>
-- <https://sms-online.co/receive-free-sms>
 - <https://receive-sms.com>
+- <https://sms-online.co/receive-free-sms>
 
-临时邮箱
+临时邮箱 Temporary mailbox
 - <https://maildrop.cc>
 - <https://10minutemail.net>
 
@@ -24,6 +24,10 @@ SQLServer
 PostgresqlSQL
 - <https://www.elephantsql.com>
 
+数据库转换 Database conversion
+- <https://www.convert-in.com>
+- <https://fishcodelib.com/DBMigration.htm>
+
 Csharp
 - <https://somee.com>
 
@@ -32,7 +36,6 @@ NodeJs
 
 部署 Deploy
 - <https://www.heroku.com>
-- <https://www.openode.io>
 
 无服务 Serverless
 - <https://vercel.com/home>
@@ -46,5 +49,5 @@ NodeJs
 - <http://ecd.tencent.com>
 - <http://127-0-0-1.s.test.cab> ( SSL：<https://s.test.cab> )
 
-更多
+更多 More
 - <https://free-for.dev>

@@ -1,0 +1,182 @@
+﻿/*公共包*/
+.jzart {
+    position: absolute;
+    color: #333;
+    display: block;
+    min-width: 10px;
+    font-size: 14px;
+    line-height: 150%;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 0 4px #b4b4b4;
+    font-family: Microsoft YaHei;
+}
+
+
+    .jzart a, .jzart input {
+        outline: none;
+        resize: none;
+    }
+
+    /*头部*/
+    .jzart .jzart-header {
+        height: 40px;
+        padding: 0 15px;
+        min-width: 150px;
+        line-height: 40px;
+        white-space: nowrap;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #ddd;
+    }
+
+        .jzart .jzart-header .jzart-header-title {
+            font-size: 16px;
+            margin-right: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .jzart .jzart-header .jzart-header-cloase {
+            border: none;
+            float: right;
+            color: #b4b4b4;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 40px;
+            text-decoration: none;
+            vertical-align: middle;
+        }
+
+            .jzart .jzart-header .jzart-header-cloase:hover {
+                color: #333;
+                text-decoration: none;
+            }
+
+    /*内容*/
+    .jzart .jzart-body {
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 15px 20px;
+        word-break: break-all;
+        word-wrap: break-word;
+        box-sizing: border-box;
+    }
+
+    /*弹窗*/
+    .jzart .jzart-iframe {
+        width: 100%;
+        border: none;
+        height: 300px;
+        box-sizing: border-box;
+    }
+
+    /*底部按钮包*/
+    .jzart .jzart-footer {
+        min-width: 200px;
+        text-align: right;
+        padding: 15px 20px;
+        box-sizing: border-box;
+    }
+
+    /*按钮*/
+    .jzart .art-btn {
+        font-size: 15px;
+        cursor: pointer;
+        margin-left: 15px;
+        text-align: center;
+        border-radius: 4px;
+        white-space: nowrap;
+        display: inline-block;
+        padding: 0.5em 0.85em;
+        text-decoration: none;
+    }
+
+    /*确定按钮*/
+    .jzart .art-ok {
+        color: #fff;
+        background-color: #337ab7;
+    }
+
+        .jzart .art-ok:hover, .jzart .art-ok:active {
+            text-decoration: none;
+            border-color: #204d74;
+            background-color: #286090;
+        }
+
+    /*取消按钮*/
+    .jzart .art-cancel {
+        color: #333;
+        background-color: #fff;
+        border: 1px solid #cccccc;
+    }
+
+        .jzart .art-cancel:hover, .jzart .art-cancel:active {
+            color: #333;
+            text-decoration: none;
+            border: 1px solid #999;
+            background-color: #f2f2f2;
+        }
+
+    /*  小提示 三角符号*/
+    .jzart .tip-em {
+        position: absolute;
+        width: 0;
+        height: 0;
+        font-size: 0;
+        line-height: 0;
+        border-width: 15px;
+        border-style: dashed;
+        border-color: transparent;
+    }
+
+    /* 上 */
+    .jzart .em-top {
+        left: 15px;
+        bottom: -13px;
+        border-left-style: solid;
+        border-left-color: #337ab7;
+    }
+    /* 右 */
+    .jzart .em-right {
+        top: 15px;
+        left: -13px;
+        border-top-style: solid;
+        border-top-color: #337ab7;
+    }
+    /* 左 */
+    .jzart .em-left {
+        top: 15px;
+        right: -13px;
+        border-top-style: solid;
+        border-top-color: #337ab7;
+    }
+    /* 下 */
+    .jzart .em-bottom {
+        top: -13px;
+        left: 15px;
+        border-left-style: solid;
+        border-left-color: #337ab7;
+    }
+
+/* msg */
+.jzart-msg {
+    color: #fff;
+    font-size: 1.2em;
+    border-radius: 4px;
+    background-color: #337ab7;
+    box-shadow: 0 0 2px #2a78eb;
+}
+
+/*  遮罩层 */
+.jzart-mask {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.01;
+    position: fixed;
+    background-color: #333;
+    filter: alpha(opacity=1);
+}

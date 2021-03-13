@@ -91,14 +91,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Minify_css(System.String,System.String)">
-            <summary>
-            CSS压缩
-            </summary>
-            <param name="content">CSS内容</param>
-            <param name="options">自定义配置，JSON配置字符串，参考：https://github.com/fmarcia/UglifyCSS </param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Svg">
             <summary>
             生成占位图,默认200x200
@@ -152,72 +144,6 @@
             生成UUID,默认返回一条
             </summary>
             <param name="count">自定义条数（限制1-99，1条为字符串，多条为数组JSON）</param>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.BuildSwagger.Controllers.Serverless.DKController">
-            <summary>
-            DK Netnr.DataKit API
-            </summary>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetTable(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String)">
-            <summary>
-            获取所有表名及注释
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetColumn(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String)">
-            <summary>
-            获取所有列
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.SetTableComment(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String,System.String)">
-            <summary>
-            设置表注释
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="TableName">表名</param>
-            <param name="TableComment">表注释</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.SetColumnComment(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String,System.String,System.String)">
-            <summary>
-            设置列注释
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="TableName">表名</param>
-            <param name="FieldName">列名</param>
-            <param name="FieldComment">列注释</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetData(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
-            <summary>
-            查询数据
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
-            <param name="TableName">表名</param>
-            <param name="page">页码</param>
-            <param name="rows">页量</param>
-            <param name="sort">排序字段</param>
-            <param name="order">排序方式</param>
-            <param name="listFieldName">查询列，默认为 *</param>
-            <param name="whereSql">条件</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.DKController.GetDEI(System.Nullable{Netnr.BuildSwagger.Models.Serverless.TypeDB},System.String)">
-            <summary>
-            查询数据库环境信息
-            </summary>
-            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-            <param name="conn">连接字符串</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.BuildSwagger.Models.Serverless.TypeDB">

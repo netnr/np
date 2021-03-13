@@ -10,7 +10,7 @@
 
 <link href="/css/home/view.css" rel="stylesheet" asp-append-version="true" />
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <!--标签-->
@@ -169,13 +169,15 @@
         </div>
     </div>
 
-    <div class="row mt-5">
-        <!--回复帖子-->
-        <div class="col-md-12">
-            <h5>回复</h5>
-        </div>
-        @if (!ViewContext.HttpContext.User.Identity.IsAuthenticated)
-        {
+    @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && !GlobalTo.GetValue<bool>("ReadOnly"))
+    {
+        <div class="row mt-5">
+            <!--回复帖子-->
+            <div class="col-md-12">
+                <h5>回复</h5>
+            </div>
+
+            <!--匿名回复已关闭-->
             <div class="col-sm-4 mb-3 d-none">
                 <div class="input-group">
                     <div class="input-group-prepend">
@@ -200,14 +202,16 @@
                     <input class="form-control" aria-label="链接" id="WrAnonymousLink" placeholder="请输入链接，以 http 开头" maxlength="50">
                 </div>
             </div>
-        }
-        <div class="col-md-12">
-            <div>
-                <div id="replyeditor"></div>
+
+            <div class="col-md-12">
+                <div>
+                    <div id="replyeditor"></div>
+                </div>
+                <button id="btnReply" class="btn btn-warning mt-3">提交</button>
             </div>
-            <button id="btnReply" class="btn btn-warning mt-3">提交</button>
         </div>
-    </div>
+    }
+
 </div>
 
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor"))

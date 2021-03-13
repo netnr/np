@@ -197,7 +197,7 @@
                         });
                         break;
                     case 'image':
-                        watermark([fileOutput || fileOrigin, cog.logo || '/favicon.svg']).image(function (target, logo) {
+                        watermark([fileOutput || fileOrigin, cog.logo || '/favicon.ico']).image(function (target, logo) {
                             var context = target.getContext('2d')
                             context.globalAlpha = cog.alpha;
                             context.rotate(-1 * cog.angle * Math.PI / 180);

@@ -28,16 +28,22 @@
     {
         @Html.Raw(Netnr.SharedApp.QuoteTo.Html("bootstrap.css,fa.css,jquery.js,bootstrap.js"))
 
+        <link href="/areas/draw/css/global.css" rel="stylesheet" asp-append-version="true" />
+
         <nav class="navbar navbar-expand-md navbar-light bg-light">
 
             <div class="navbar-brand dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <a class="dropdown-toggle text-info" data-toggle="dropdown" href="#">
                     <i class="fa fa-fw fa-paint-brush"></i> <b>@GlobalTo.GetValue("Common:EnglishName")</b> Draw
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/draw">绘图（Draw）</a>
+                    <a class="dropdown-item" href="/draw">
+                        绘图<span class="ml-1 badge badge-light text-success">Draw</span>
+                    </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/draw/mind">思维导图（Mind）</a>
+                    <a class="dropdown-item" href="/draw/mind">
+                        思维导图<span class="ml-1 badge badge-light text-info">Mind</span>
+                    </a>
                 </div>
             </div>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#drawnavbar">
@@ -69,9 +75,13 @@
                                 <i class="fa fa-plus"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="/draw">绘图（Draw）</a>
+                                <a class="dropdown-item" href="/draw">
+                                    绘图<span class="ml-1 badge badge-light text-success">Draw</span>
+                                </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/draw/mind">思维导图（Mind）</a>
+                                <a class="dropdown-item" href="/draw/mind">
+                                    思维导图<span class="ml-1 badge badge-light text-info">Mind</span>
+                                </a>
                             </div>
                         </li>
 

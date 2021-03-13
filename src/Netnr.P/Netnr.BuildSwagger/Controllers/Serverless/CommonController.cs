@@ -42,18 +42,6 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
         }
 
         /// <summary>
-        /// CSS压缩
-        /// </summary>
-        /// <param name="content">CSS内容</param>
-        /// <param name="options">自定义配置，JSON配置字符串，参考：https://github.com/fmarcia/UglifyCSS </param>
-        /// <returns></returns>
-        [HttpPost, Route("/minify/css"), Consumes("application/x-www-form-urlencoded")]
-        public PublicResult Minify_css([FromForm] string content, [FromForm] string options)
-        {
-            return null;
-        }
-
-        /// <summary>
         /// 生成占位图,默认200x200
         /// </summary>
         /// <returns></returns>

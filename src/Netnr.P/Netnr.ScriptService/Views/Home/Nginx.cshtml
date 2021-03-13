@@ -3,7 +3,7 @@
         <div class="col-sm-12">
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnFormatterNginxConf" title="Ctrl+Shift+F 快捷格式化">格式化</button>
+                    <button class="btn btn-warning" id="btnFormatterNginxConf" title="Shift+Alt+F 快捷格式化">格式化</button>
                 </div>
                 <div class="input-group-prepend">
                     <select class="custom-select" id="seindent">
@@ -44,6 +44,9 @@
         mode: 'nginx',
         lineNumbers: true,
         extraKeys: {
+            "Shift-Alt-F": function () {
+                $('#btnFormatterNginxConf')[0].click();
+            },
             "Shift-Ctrl-F": function () {
                 $('#btnFormatterNginxConf')[0].click();
             }

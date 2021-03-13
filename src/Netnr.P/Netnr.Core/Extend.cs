@@ -22,7 +22,7 @@ namespace Netnr
         /// <returns></returns>
         public static string ToJson(this object obj, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
         {
-            Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new Newtonsoft.Json.Converters.IsoDateTimeConverter
+            Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new()
             {
                 DateTimeFormat = DateTimeFormat
             };
@@ -107,7 +107,7 @@ namespace Netnr
         /// <returns></returns>
         public static string OfJson(this string s)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for (int i = 0; i < s.Length; i++)
             {
                 char c = s.ToCharArray()[i];

@@ -19,7 +19,7 @@ namespace Netnr.Core
         /// <summary>
         /// 写入标记
         /// </summary>
-        static readonly object WriteMark = new object();
+        static readonly object WriteMark = new();
 
         /// <summary>
         /// 写入错误信息

@@ -453,7 +453,7 @@ namespace Netnr.Test.Controllers
             string sAppID = "wx5823bf96d3bd56c7";
             string sEncodingAESKey = "jWmYm7qr5nMoAUwZRjGtBxmz3KA1tkAj3ykkR6q2B2C";
 
-            WeChat.Helpers.Crypto.WXBizMsgCrypt wxcpt = new WeChat.Helpers.Crypto.WXBizMsgCrypt(sToken, sEncodingAESKey, sAppID);
+            WeChat.Helpers.Crypto.WXBizMsgCrypt wxcpt = new(sToken, sEncodingAESKey, sAppID);
 
             /* 1. 对用户回复的数据进行解密。
             * 用户回复消息或者点击事件响应时，企业会收到回调消息，假设企业收到的推送消息：
@@ -502,7 +502,7 @@ namespace Netnr.Test.Controllers
             /*测试：
              * 将sEncryptMsg解密看看是否是原文
              * */
-            XmlDocument doc = new XmlDocument();
+            XmlDocument doc = new();
             doc.LoadXml(sEncryptMsg);
             XmlNode root = doc.FirstChild;
             string sig = root["MsgSignature"].InnerText;

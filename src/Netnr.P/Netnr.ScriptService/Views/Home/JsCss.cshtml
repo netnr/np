@@ -4,7 +4,6 @@
             <div class="mb-2">
                 <button type="button" class="btn btn-warning" id="btnFn1">JS压缩（Terser）</button>
                 <button type="button" class="btn btn-success" id="btnFn2">CSS压缩（CleanCSS）</button>
-                <button type="button" class="btn btn-info" id="btnFn3">CSS压缩（YUI）</button>
             </div>
             <div id="editor1" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
@@ -144,34 +143,16 @@
         var defaultContent = ss.lsStr("vscode-content") || '/* 粘贴 JS、CSS 内容 ；自动保存，可拖拽文件打开 */',
             defaultLang = ss.lsStr("vscode-lang") || 'javascript';
 
-        window.ee1 = monaco.editor.create(document.getElementById("editor1"), {
+        window.ee1 = monaco.editor.create(document.getElementById("editor1"), ss.meConfig({
             value: defaultContent,
-            language: defaultLang,
-            automaticLayout: true,
-            theme: "vs",
-            scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
-            },
-            minimap: {
-                enabled: false
-            }
-        });
+            language: defaultLang
+        }));
 
-        window.ee2 = monaco.editor.create(document.getElementById("editor2"), {
+        window.ee2 = monaco.editor.create(document.getElementById("editor2"), ss.meConfig({
             value: "/* 输出的内容 */",
             language: defaultLang,
-            automaticLayout: true,
-            wordWrap: "on",
-            theme: "vs",
-            scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
-            },
-            minimap: {
-                enabled: false
-            }
-        });
+            wordWrap: "on"
+        }));
 
         ee1.onDidChangeModelContent(function (e) {
             clearTimeout(window.defer1);
@@ -216,36 +197,6 @@
                 } else {
                     ee2.setValue(cout.styles);
                 }
-            }
-        });
-
-        $('#btnFn3').click(function () {
-            var code = ee1.getValue();
-            if (code != "") {
-                jc.setEE("css");
-                ss.loading();
-                $('#btnFn3')[0].disabled = true;
-                $.ajax({
-                    url: `${ss.apiServer}/minify/css`,
-                    type: "post",
-                    data: {
-                        content: code
-                    },
-                    success: function (data) {
-                        if (data.code == 200) {
-                            ee2.setValue(data.data);
-                        } else {
-                            ee2.setValue(JSON.stringify(data));
-                        }
-                    },
-                    error: function (e) {
-                        ee2.setValue(e + "");
-                    },
-                    complete: function () {
-                        ss.loading(0);
-                        $('#btnFn3')[0].disabled = false;
-                    }
-                })
             }
         });
 

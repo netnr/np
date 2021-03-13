@@ -21,7 +21,7 @@ namespace Netnr.Chat.Application
         /// <summary>
         /// 系统用户，用户ID 对应 用户信息
         /// </summary>
-        public static Dictionary<string, ChatUserVM> OnlineUser1 = new Dictionary<string, ChatUserVM>()
+        public static Dictionary<string, ChatUserVM> OnlineUser1 = new()
         {
             {
                 "0",
@@ -47,22 +47,22 @@ namespace Netnr.Chat.Application
         /// <summary>
         /// 在线用户，用户ID 对应 用户信息
         /// </summary>
-        public static Dictionary<string, ChatUserVM> OnlineUser2 = new Dictionary<string, ChatUserVM>();
+        public static Dictionary<string, ChatUserVM> OnlineUser2 = new();
 
         /// <summary>
         /// 组，组ID 对应 组信息
         /// </summary>
-        public static Dictionary<string, ChatGroupVM> OnlineGroup1 = new Dictionary<string, ChatGroupVM>();
+        public static Dictionary<string, ChatGroupVM> OnlineGroup1 = new();
 
         /// <summary>
         /// 用户消息记录，接收用户ID 对应 发送消息
         /// </summary>
-        public static Dictionary<string, List<Domain.NChatMessageToUser>> UserMessage1 = new Dictionary<string, List<Domain.NChatMessageToUser>>();
+        public static Dictionary<string, List<Domain.NChatMessageToUser>> UserMessage1 = new();
 
         /// <summary>
         /// 组消息记录，接收组ID 对应 发送消息
         /// </summary>
-        public static Dictionary<string, List<Domain.NChatMessageToGroup>> GroupMessage1 = new Dictionary<string, List<Domain.NChatMessageToGroup>>();
+        public static Dictionary<string, List<Domain.NChatMessageToGroup>> GroupMessage1 = new();
 
         #endregion
 

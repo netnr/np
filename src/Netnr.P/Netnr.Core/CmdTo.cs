@@ -18,7 +18,7 @@ namespace Netnr.Core
         /// <returns></returns>
         public static void Execute(string appName, string arguments, Action<string, int> resultOutput)
         {
-            Process p = new Process()
+            Process p = new()
             {
                 StartInfo = new ProcessStartInfo()
                 {
@@ -57,6 +57,25 @@ namespace Netnr.Core
             {
                 p.Dispose();
             }
+        }
+
+        /// <summary>
+        /// 执行
+        /// </summary>
+        /// <param name="command">命令</param>
+        /// <returns></returns>
+        public static string Execute(string command)
+        {
+            string er;
+            if (Environment.OSVersion.Platform.ToString().ToLower().Contains("win"))
+            {
+                er = Run(command);
+            }
+            else
+            {
+                er = Shell(command).Output;
+            }
+            return er;
         }
 
         /// <summary>  

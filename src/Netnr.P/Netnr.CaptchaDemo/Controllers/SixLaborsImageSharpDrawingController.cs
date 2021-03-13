@@ -71,7 +71,7 @@ namespace Netnr.CaptchaDemo.Controllers
                 }
             });
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new();
             image.SaveAsJpeg(ms);
             return ms.ToArray();
         }

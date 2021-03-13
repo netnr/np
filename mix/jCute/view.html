@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+
+    <title>jCute JavaScript Library</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" async>
+    <link href="https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.css" rel="stylesheet" async>
+    <script src="https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 my-4">
+                <h1><a href="/" id="tname"></a></h1>
+                <hr />
+                <div id="vc"></div>
+            </div>
+        </div>
+    </div>
+    <script src="src/jCute.all.js"></script>
+    <script>
+        var vurl = 'src/' + location.search.substring(1).replace('jcute', 'jCute');
+        jCute.ajax({
+            url: vurl,
+            success: function (data) {
+                var urs = vurl.split('/'), tn = document.getElementById('tname');
+                tn.innerHTML = urs[urs.length - 1];
+                tn.href = vurl;
+
+                document.getElementById('vc').innerHTML = netnrmd.render('```\r\n' + data + '\r\n```');
+            }
+        })
+
+    </script>
+</body>
+</html>

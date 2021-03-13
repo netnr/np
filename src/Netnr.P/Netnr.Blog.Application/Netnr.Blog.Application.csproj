@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentScheduler" Version="5.5.1" />
-    <PackageReference Include="MailKit" Version="2.10.1" />
+    <PackageReference Include="MailKit" Version="2.11.0" />
     <PackageReference Include="Qcloud.Shared.NetCore" Version="1.0.0" />
   </ItemGroup>
 

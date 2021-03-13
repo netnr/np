@@ -78,27 +78,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "59 Demo", "59 Demo", "{FD80
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.CaptchaDemo", "Netnr.CaptchaDemo\Netnr.CaptchaDemo.csproj", "{04BDC2C1-3417-45C2-8DF1-25F7E6E5C7E1}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Netnr.DataKit.NodeJs", "Netnr.DataKit.NodeJs\", "{080A733C-278B-42A5-9578-681C164D58DE}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_7909"
-		Debug.AspNetCompiler.PhysicalPath = "Netnr.DataKit.NodeJs\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_7909\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_7909"
-		Release.AspNetCompiler.PhysicalPath = "Netnr.DataKit.NodeJs\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_7909\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "7909"
-		SlnRelativePath = "Netnr.DataKit.NodeJs\"
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.DataKit.Web", "Netnr.DataKit.Web\Netnr.DataKit.Web.csproj", "{962F1F29-4DDC-48C6-8043-915240872570}"
@@ -202,9 +181,6 @@ Global
 		{04BDC2C1-3417-45C2-8DF1-25F7E6E5C7E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04BDC2C1-3417-45C2-8DF1-25F7E6E5C7E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04BDC2C1-3417-45C2-8DF1-25F7E6E5C7E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{080A733C-278B-42A5-9578-681C164D58DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{080A733C-278B-42A5-9578-681C164D58DE}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{080A733C-278B-42A5-9578-681C164D58DE}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -239,7 +215,6 @@ Global
 		{C3E1DC11-4331-48BF-9E8B-DF32B2C053D0} = {9C11B0FC-3722-48BC-8E3D-3416F980790F}
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5} = {9C11B0FC-3722-48BC-8E3D-3416F980790F}
 		{04BDC2C1-3417-45C2-8DF1-25F7E6E5C7E1} = {FD80CF2D-F394-4A89-87FF-0E6BF109AF21}
-		{080A733C-278B-42A5-9578-681C164D58DE} = {70A676C8-6AEA-46EB-BFC9-FC295EAEB351}
 		{962F1F29-4DDC-48C6-8043-915240872570} = {70A676C8-6AEA-46EB-BFC9-FC295EAEB351}
 		{37A82AE4-A2F0-40C8-A084-237E256E543F} = {4F110821-2C36-4DC3-9F95-59427B998E54}
 		{3770B6CC-FF8A-4059-B511-3673238E455D} = {E0BFB32D-82D2-4FC2-8E5C-1BB52F8ED850}

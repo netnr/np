@@ -54,15 +54,13 @@ namespace Netnr.ResponseFramework.Web
                 //swagger枚举显示名称
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
-            //swagger枚举显示名称
-            services.AddSwaggerGenNewtonsoftSupport();
 
             //配置swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "RF API",
+                    Title = "NRF API",
                     Description = string.Join(" &nbsp; ", new string[]
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
@@ -75,6 +73,8 @@ namespace Netnr.ResponseFramework.Web
                     c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
                 });
             });
+            //swagger枚举显示名称
+            services.AddSwaggerGenNewtonsoftSupport();
 
             //授权访问信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -126,13 +126,13 @@ namespace Netnr.ResponseFramework.Web
             //配置swagger（生产环境不需要，把该代码移至 是开发环境 条件里面）
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "RF API";
+                c.DocumentTitle = "NRF API";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
                 c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             //默认起始页index.html
-            DefaultFilesOptions options = new DefaultFilesOptions();
+            DefaultFilesOptions options = new();
             options.DefaultFileNames.Add("index.html");
             app.UseDefaultFiles(options);
 

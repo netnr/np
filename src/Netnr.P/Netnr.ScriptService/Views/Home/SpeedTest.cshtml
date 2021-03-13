@@ -1,15 +1,12 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <div class="input-group mb-4">
+            <div class="input-group mb-3">
+                <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
                 <div class="input-group-prepend">
-                    <span class="input-group-text">请选择节点</span>
-                </div>
-                <div class="input-group-prepend">
-                    <select class="custom-select" style="width:150px;" id="seSpeedServer"></select>
-                </div>
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
+                    <select class="custom-select" id="seSpeedServer">
+                        <optgroup label="请选择节点"></optgroup>
+                    </select>
                 </div>
             </div>
             <div id="divresult"></div>
@@ -59,6 +56,16 @@
                 name: "jsDelivr CDN",
                 cr: 1116 / 10578,
                 link: "https://cdn.jsdelivr.net/npm/sql.js@1.2.2/dist/sql-asm-debug.js"
+            },
+            {
+                name: "七牛 CDN",
+                cr: 1126 / 10578,
+                link: "https://cdn.staticfile.org/sql.js/1.2.2/dist/sql-asm-debug.js"
+            },
+            {
+                name: "字节跳动 CDN",
+                cr: 1126 / 10578,
+                link: "https://s1.pstatp.com/cdn/expire-1-M/sql.js/1.2.2/dist/sql-asm-debug.js"
             }
         ],
         //绑定节点
@@ -68,7 +75,7 @@
                 var si = this;
                 htm.push('<option value="' + si.link + '">' + si.name + '</option>');
             })
-            $('#seSpeedServer').html(htm.join(''));
+            $('#seSpeedServer').find("optgroup").html(htm.join(''));
         },
         //获取请求的源
         geturi: function () {
@@ -99,11 +106,14 @@
             //统计
             var si2 = setInterval(function () {
                 var now = new Date().valueOf(), ds = 0;
-                $.each(sp.result, function () {
-                    ds += (this || 0);
-                })
+                for (var j = 0; j < sp.result.length; j++) {
+                    var ri = sp.result[j] * 1;
+                    ds += (ri || 0);
+                }
                 sp.downsize = ds;
-                var speed = ((sp.downsize / 1024 / 1024 * sp.cr()) / ((now - sp.start) / 1000)).toFixed(2);
+                var size = sp.downsize / 1024 / 1024 * sp.cr();
+                var time = (now - sp.start) / 1000;
+                var speed = (size / time).toFixed(2);
                 sp.data.push(speed);
 
                 //回调
@@ -142,7 +152,7 @@
         var sps = [];
         //过程
         sp.progress = function (speed) {
-            $('#divresult').append('<div>' + speed + ' Mb/s</div>');
+            $('#divresult').append('<div>' + speed + ' MiB/s</div>');
             sps.push(speed);
         };
         //完成
@@ -152,7 +162,7 @@
                 sum += this * 1;
             });
             var avg = (sum / sps.length).toFixed(2);
-            $('<h2>平均：' + avg + ' Mb/s</h2>').insertBefore($('#divresult').children().first())
+            $('<h2>平均：' + avg + ' MiB/s</h2>').insertBefore($('#divresult').children().first())
 
             $('#seSpeedServer')[0].disabled = false;
         };

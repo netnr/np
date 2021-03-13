@@ -86,26 +86,220 @@ namespace Netnr.Blog.Application
             {
                 var listMsg = new List<object>() { "备份数据库" };
 
-                var kp = "Work:BackupDataBase:SQLServer:";
+
+                var kp = $"Work:BackupDataBase:{GlobalTo.TDB}:";
 
                 if (GlobalTo.GetValue<bool>(kp + "enable") == true)
                 {
-                    //执行命令
-                    using var conn = Data.ContextBaseFactory.CreateDbContext().Database.GetDbConnection();
-                    conn.Open();
-                    var connCmd = conn.CreateCommand();
-                    connCmd.CommandText = GlobalTo.GetValue(kp + "cmd");
-                    int en = connCmd.ExecuteNonQuery();
+                    var cmd = GlobalTo.GetValue(kp + "cmd");
+                    var sql = GlobalTo.GetValue(kp + "sql");
 
-                    listMsg.Add(en);
+                    if (!string.IsNullOrWhiteSpace(cmd))
+                    {
+                        var er = Core.CmdTo.Execute(cmd);
+                        vm.Log.Add($"执行CMD：{cmd}");
+                        vm.Log.Add($"结果输出：{er}");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(sql))
+                    {
+                        using var conn = Data.ContextBaseFactory.CreateDbContext().Database.GetDbConnection();
+                        conn.Open();
+                        var connCmd = conn.CreateCommand();
+                        connCmd.CommandText = sql;
+                        int en = connCmd.ExecuteNonQuery();
+
+                        vm.Log.Add($"执行SQL：{sql}");
+                        vm.Log.Add($"受影响行数：{en}");
+                    }
 
                     vm.Set(SharedEnum.RTag.success);
-                    vm.Data = listMsg;
                 }
                 else
                 {
                     vm.Set(SharedEnum.RTag.lack);
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 导出数据库
+        /// </summary>
+        /// <returns></returns>
+        public static SharedResultVM ExportDataBase()
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = Data.ContextBaseFactory.CreateDbContext();
+                var dicDbSet = Data.ContextBase.GetDicDbSet(db);
+
+                var rows = 0;
+                var dicOut = new Dictionary<string, object> { };
+                foreach (var key in dicDbSet.Keys)
+                {
+                    var dbset = dicDbSet[key] as IQueryable<object>;
+                    var list = dbset.ToList();
+                    rows += list.Count;
+
+                    dicOut.Add(key, list);
+                }
+
+                vm.Data = dicOut;
+
+                vm.Log.Add($"时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                vm.Log.Add($"驱动：{db.Database.ProviderName}");
+
+                var conn = db.Database.GetDbConnection();
+                vm.Log.Add($"数据库：{conn.Database}");
+                conn.Open();
+                vm.Log.Add($"版本号：{conn.ServerVersion}");
+                conn.Close();
+
+                vm.Log.Add($"导出数据表 {dicOut.Keys.Count} 个，共 {rows} 行");
+
+                vm.Set(SharedEnum.RTag.success);
+
+                var fullPath = Path.Combine(Path.GetTempPath(), "data.json");
+                Core.FileTo.WriteText(vm.ToJson(), fullPath, false);
+
+                vm.Data = null;
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 导出示例数据
+        /// </summary>
+        /// <returns></returns>
+        public static SharedResultVM ExportSampleData()
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = Data.ContextBaseFactory.CreateDbContext();
+                var dicOut = new Dictionary<string, object> { };
+
+                dicOut["UserInfo"] = (from a in db.UserInfo
+                                      where a.UserId == 1
+                                      select new
+                                      {
+                                          UserId = 0,
+                                          UserName = "netnr",
+                                          UserPwd = "e10adc3949ba59abbe56e057f20f883e", //123456
+
+                                          a.UserCreateTime,
+                                          a.UserLoginTime,
+                                          a.LoginLimit,
+                                          a.UserSign,
+                                          a.Nickname,
+                                          a.UserPhoto,
+                                          a.UserSex,
+                                          a.UserMail,
+                                          a.UserSay
+                                      }).ToList();
+
+                dicOut["Tags"] = (from a in db.Tags
+                                  where a.TagId == 58 || a.TagId == 96
+                                  select new
+                                  {
+                                      TagId = 0,
+                                      a.TagName,
+                                      a.TagIcon,
+                                      a.TagStatus,
+                                      a.TagHot
+                                  }).ToList();
+
+                dicOut["UserWriting"] = (from a in db.UserWriting
+                                         where a.UwId == 117
+                                         select new
+                                         {
+                                             UwId = 0,
+                                             a.Uid,
+                                             a.UwCategory,
+                                             a.UwTitle,
+                                             a.UwContent,
+                                             a.UwContentMd,
+                                             a.UwCreateTime,
+                                             a.UwUpdateTime,
+                                             a.UwLastUid,
+                                             a.UwLastDate,
+                                             a.UwReplyNum,
+                                             a.UwReadNum,
+                                             a.UwOpen,
+                                             a.UwLaud,
+                                             a.UwMark,
+                                             a.UwStatus
+                                         }).ToList();
+
+                dicOut["UserWritingTags"] = (from a in db.UserWritingTags
+                                             where a.UwId == 117
+                                             select new
+                                             {
+                                                 UwtId = 0,
+                                                 UwId = 1,
+                                                 TagId = 1,
+                                                 a.TagName
+                                             }).ToList();
+
+                dicOut["UserReply"] = (from a in db.UserReply
+                                       where a.UrTargetId == "117"
+                                       orderby a.UrCreateTime
+                                       select new
+                                       {
+                                           UrId = 0,
+                                           a.Uid,
+                                           a.UrAnonymousName,
+                                           a.UrAnonymousLink,
+                                           a.UrAnonymousMail,
+                                           a.UrTargetType,
+                                           UrTargetId = 1,
+                                           a.UrContent,
+                                           a.UrContentMd,
+                                           a.UrCreateTime,
+                                           a.UrStatus,
+                                           a.UrTargetPid
+                                       }).Take(3).ToList();
+
+                dicOut["Run"] = db.Run.OrderBy(x => x.RunCreateTime).Take(1).ToList();
+
+                dicOut["KeyValues"] = db.KeyValues.Where(x => x.KeyName == "https" || x.KeyName == "browser").ToList();
+
+                dicOut["Gist"] = db.Gist.Where(x => x.GistCode == "5373307231488995367").ToList();
+
+                dicOut["GistSync"] = db.GistSync.Where(x => x.GistCode == "5373307231488995367").ToList();
+
+                dicOut["Draw"] = db.Draw.Where(x => x.DrId == "d4969500168496794720" || x.DrId == "m4976065893797151245").ToList();
+
+                dicOut["DocSet"] = db.DocSet.Where(x => x.DsCode == "4840050256984581805" || x.DsCode == "5036967707833574483").ToList();
+
+                dicOut["DocSetDetail"] = db.DocSetDetail.Where(x => x.DsCode == "4840050256984581805" || x.DsCode == "5036967707833574483").ToList();
+
+                vm.Data = dicOut;
+
+                vm.Log.Add($"时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                vm.Log.Add($"驱动：{db.Database.ProviderName}");
+
+                var conn = db.Database.GetDbConnection();
+                vm.Log.Add($"数据库：{conn.Database}");
+                conn.Open();
+                vm.Log.Add($"版本号：{conn.ServerVersion}");
+                conn.Close();
+
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
@@ -412,43 +606,5 @@ namespace Netnr.Blog.Application
             return vm;
         }
 
-        /// <summary>
-        /// 导出数据库
-        /// </summary>
-        /// <returns></returns>
-        public static SharedResultVM ExportDataBase()
-        {
-            var vm = new SharedResultVM();
-
-            try
-            {
-                using var db = Data.ContextBaseFactory.CreateDbContext();
-                var dicDbSet = Data.ContextBase.GetDicDbSet(db);
-
-                var rows = 0;
-                var dicOut = new Dictionary<string, object> { };
-                foreach (var key in dicDbSet.Keys)
-                {
-                    var dbset = dicDbSet[key] as IQueryable<object>;
-                    var list = dbset.ToList();
-                    rows += list.Count;
-
-                    dicOut.Add(key, list);
-                }
-
-                var fullPath = Path.Combine(Path.GetTempPath(), "data.json");
-                Core.FileTo.WriteText(dicOut.ToJson(), fullPath, false);
-
-                vm.Set(SharedEnum.RTag.success);
-                vm.Data = fullPath;
-                vm.Msg = $"导出数据表 {dicOut.Keys.Count} 个，共 {rows} 行";
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
-        }
     }
 }

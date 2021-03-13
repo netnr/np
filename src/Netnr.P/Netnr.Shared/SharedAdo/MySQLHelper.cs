@@ -67,7 +67,7 @@ namespace Netnr.SharedAdo
             //以半角逗号（即,）作分隔符，列为空也要表达其存在。  
             //列内容如存在半角逗号（即,）则用半角引号（即""）将该字段值包含起来。  
             //列内容如存在半角引号（即"）则应替换成半角双引号（""）转义，并用半角引号（即""）将该字段值包含起来。  
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             foreach (DataRow dr in dt.Rows)
             {

@@ -51,7 +51,7 @@ namespace Netnr.SharedApp
                         break;
 
                     case "fa.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />");
                         break;
 
                     case "jquery.js":
@@ -59,7 +59,7 @@ namespace Netnr.SharedApp
                         break;
 
                     case "bootstrap.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />");
                         break;
 
                     case "bootstrap.js":
@@ -67,7 +67,7 @@ namespace Netnr.SharedApp
                         break;
 
                     case "bootstrap3.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css' rel='stylesheet'>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css' rel='stylesheet' />");
                         break;
 
                     case "bootstrap3.js":
@@ -79,19 +79,19 @@ namespace Netnr.SharedApp
                         break;
 
                     case "netnrmd.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.css' rel='stylesheet' />");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.2/src/netnrmd.css' rel='stylesheet' />");
                         break;
 
                     case "netnrmd.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.bundle.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.2/src/netnrmd.bundle.js'></script>");
                         break;
 
                     case "netnrnav.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.css' rel='stylesheet' />");
                         break;
 
                     case "netnrnav.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.js' defer async></script>");
                         break;
 
                     case "selectpage":
@@ -114,12 +114,24 @@ namespace Netnr.SharedApp
                         break;
 
                     case "bootstrap-table.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap-table@1.16.0/dist/bootstrap-table.min.css' rel='stylesheet'>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/bootstrap-table@1.16.0/dist/bootstrap-table.min.css' rel='stylesheet' />");
                         break;
 
                     case "bootstrap-table.js":
                         vh.Add("<script src='https://cdn.jsdelivr.net/npm/bootstrap-table@1.16.0/dist/bootstrap-table.min.js'></script>");
                         vh.Add("<script src='https://cdn.jsdelivr.net/npm/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js'></script>");
+                        break;
+
+                    case "canvas-datagrid.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/canvas-datagrid@0.25.4/dist/canvas-datagrid.min.js'></script>");
+                        break;
+
+                    case "ag-grid-community.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/ag-grid-community@25.0.1/dist/ag-grid-community.min.js'></script>");
+                        break;
+
+                    case "ag-grid-enterprise.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/ag-grid-enterprise@25.0.1/dist/ag-grid-enterprise.min.js'></script>");
                         break;
 
                     case "webuploader.js":
@@ -155,11 +167,11 @@ namespace Netnr.SharedApp
                         break;
 
                     case "sql-formatter.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/sql-formatter@3.1.0/dist/sql-formatter.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/sql-formatter@4.0.2/dist/sql-formatter.min.js'></script>");
                         break;
 
                     case "highcharts.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/highcharts@8.2.2/highcharts.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/highcharts@9.0.1/highcharts.js'></script>");
                         break;
 
                     case "hls.js":
@@ -176,16 +188,16 @@ namespace Netnr.SharedApp
                         break;
 
                     case "cropperjs":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/cropperjs@1.5.9/dist/cropper.css' rel='stylesheet' />");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/cropperjs@1.5.9/dist/cropper.min.js'></script>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/cropperjs@1.5.11/dist/cropper.css' rel='stylesheet' />");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/cropperjs@1.5.11/dist/cropper.min.js'></script>");
                         break;
 
                     case "terser.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/terser@5.5.1/dist/bundle.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/terser@5.6.0/dist/bundle.min.js'></script>");
                         break;
 
                     case "cleancss.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/gh/jakubpawlowicz/clean-css-builds/v4.2.2.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/gh/jakubpawlowicz/clean-css-builds/v5.1.1.js'></script>");
                         break;
 
                     case "prettier.js":
@@ -206,8 +218,12 @@ namespace Netnr.SharedApp
                         vh.Add("<script src='https://cdn.jsdelivr.net/npm/lrz@4.9.41/dist/lrz.all.bundle.min.js'></script>");
                         break;
 
+                    case "jdenticon.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/jdenticon@3.1.0/dist/jdenticon.min.js'></script>");
+                        break;
+
                     case "jszip.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js'></script>");
                         break;
 
                     case "tti.js":
@@ -215,7 +231,7 @@ namespace Netnr.SharedApp
                         break;
 
                     case "docsify.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/docsify@4.11.6/lib/docsify.min.js' defer></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/docsify.min.js' defer></script>");
                         break;
 
                     case "nginxbeautifier":
@@ -223,45 +239,30 @@ namespace Netnr.SharedApp
                         break;
 
                     case "codemirror":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/codemirror@5.59.2/lib/codemirror.min.css' rel='stylesheet' />");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.59.2/lib/codemirror.min.js'></script>");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/codemirror@5.59.4/lib/codemirror.min.css' rel='stylesheet' />");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.59.4/lib/codemirror.min.js'></script>");
                         break;
 
                     case "codemirror-nginx":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.59.2/mode/nginx/nginx.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/codemirror@5.59.4/mode/nginx/nginx.min.js'></script>");
                         break;
 
                     case "monaco-editor":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs/loader.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs/loader.js'></script>");
                         vh.Add(@"
                                 <script>
                                     require.config({
                                         paths: {
-                                            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.21.3/min/vs'
+                                            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs'
                                         },
                                         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                     });
                                 </script>
-                                ");
+                        ");
                         break;
 
                     case "loading":
-                        vh.Add("<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>");
-                        break;
-
-                    case "ss-icon":
-                        var ymd = DateTime.Now.ToString("yyyyMMdd");
-                        vh.Add(@"
-                                <script>
-                                    $.ajax({
-                                        url: '/images/icon.svg?" + ymd + @"',
-                                        dataType: 'text',
-                                        success: function (data) {
-                                            $('body').append('<div class=""d-none"">' + data + '</div>')
-                                        }
-                                    })
-                                </script>
-                                ");
+                        vh.Add("<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url(\"/images/loading.svg\");background-repeat:no-repeat;background-position:48% 45%'></div>");
                         break;
                 }
             }

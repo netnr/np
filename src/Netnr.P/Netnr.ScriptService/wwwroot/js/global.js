@@ -1,16 +1,15 @@
+//低版本跳转
+try { eval("() => 1") } catch (e) { top.location = "https://ub.netnr.eu.org" }
+
 /*
     upstream: From nginx upstream
     Source must support cross-domain
-    v1.0.1
-    by netnr
-    2021-01-15
-    https://github.com/netnr/upstream
  */
 
 (function (window) {
     var ups = function (hosts, callback, timeout) {
         //全局对象、默认请求超时、默认源过期
-        var gk = "upstreamCache", dto = 3000, es = 30000;
+        var gk = "upstreamCache", dto = 3000, es = 1000 * 300;
         if (!(gk in window)) {
             try {
                 window[gk] = JSON.parse(localStorage.getItem(gk)) || {};
@@ -34,7 +33,7 @@
                 //发起fetch，添加成功的url（该url与hosts可能不一样），须支持跨域请求
                 fetch(host).then(function (res) {
                     res.ok ? ok.push(res.url) : bad++;
-                }).catch(() => bad++)
+                }).catch(function () { bad++ })
             }
             var si = setInterval(function () {
                 var isc = false, now = new Date().valueOf();
@@ -66,7 +65,38 @@
 /* ScriptService */
 var ss = {
     apiServer: "https://api.netnr.eu.org",
+    meConfig: function (config) {
+        var ops = {
+            value: "",
+            theme: "vs",
+            fontSize: 18,
+            automaticLayout: true,
+            scrollbar: {
+                verticalScrollbarSize: 6,
+                horizontalScrollbarSize: 6
+            },
+            minimap: {
+                enabled: true
+            }
+        }
+        if (config) {
+            for (var i in config) {
+                ops[i] = config[i];
+            }
+        }
+        return ops;
+    },
     init: function () {
+
+        //icon
+        $.ajax({
+            url: "/images/icon.svg?202103",
+            dataType: "text",
+            success: function (svg) {
+                $('body').append('<div class="d-none">' + svg + '</div>');
+            }
+        })
+
         ss.lsInit();
 
         $(function () {
@@ -91,13 +121,292 @@ var ss = {
         window.Bmob && Bmob.initialize("59a522843b951532546934352166df80", "97fcbeae1457621def948aba1db01821");
     },
 
+    agg: {
+        lk: function () {
+            agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { };
+        },
+        defaultColDef: {
+            sortable: true,
+            resizable: true,
+            filter: "agSetColumnFilter",
+            menuTabs: ['filterMenuTab']
+        },
+        localeText: {
+            // Set Filter
+            selectAll: '（全部）',
+            selectAllSearchResults: '（全部搜索结果）',
+            searchOoo: '搜索...',
+            blanks: '（空）',
+            noMatches: '未找到',
+
+            // Number Filter & Text Filter
+            filterOoo: '搜索...',
+            equals: '等于',
+            notEqual: '不等于',
+            empty: '选择一项',
+
+            // Number Filter
+            lessThan: '小于',
+            greaterThan: '大于',
+            lessThanOrEqual: '小于等于',
+            greaterThanOrEqual: '大于等于',
+            inRange: '范围',
+            inRangeStart: '开始值',
+            inRangeEnd: '结束值',
+
+            // Text Filter
+            contains: '包含',
+            notContains: '不包含',
+            startsWith: '头包含',
+            endsWith: '尾包含',
+
+            // Date Filter
+            dateFormatOoo: 'yyyy-mm-dd',
+
+            // Filter Conditions
+            andCondition: '和',
+            orCondition: '或',
+
+            // Filter Buttons
+            applyFilter: '确定',
+            resetFilter: '重置',
+            clearFilter: '清除',
+            cancelFilter: '取消',
+
+            // Filter Titles
+            textFilter: '文本搜索',
+            numberFilter: '数字搜索',
+            dateFilter: '日期搜索',
+            setFilter: '项搜索',
+
+            // Side Bar
+            columns: '列',
+            filters: '搜索',
+
+            // columns tool panel
+            pivotMode: '枢轴模式',
+            groups: '行组',
+            rowGroupColumnsEmptyMessage: '拖拽列到此处进行分组',
+            values: '值',
+            valueColumnsEmptyMessage: '拖拽到此处合计',
+            pivots: '列标签',
+            pivotColumnsEmptyMessage: '拖拽到此处设置列标签',
+
+            // Header of the Default Group Column
+            group: '分组',
+
+            // Other
+            loadingOoo: '加载中...',
+            noRowsToShow: '（空）',
+            enabled: '启用',
+
+            // Menu
+            pinColumn: '固定列',
+            pinLeft: '左固定',
+            pinRight: '右固定',
+            noPin: '取消固定',
+            valueAggregation: '合计',
+            autosizeThiscolumn: '当前列大小自适应',
+            autosizeAllColumns: '所有列大小自适应',
+            groupBy: '分组',
+            ungroupBy: '取消分组',
+            resetColumns: '重置列',
+            expandAll: '展开全部',
+            collapseAll: '折叠全部',
+            copy: '复制',
+            ctrlC: 'Ctrl+C',
+            copyWithHeaders: '复制带标题',
+            paste: '粘贴',
+            ctrlV: 'Ctrl+V',
+            export: '导出',
+            csvExport: '导出 CSV',
+            excelExport: '导出 Excel',
+            excelXmlExport: '导出 XML',
+
+            // Enterprise Menu Aggregation and Status Bar
+            sum: '求和',
+            min: '最小',
+            max: '最大',
+            none: 'None',
+            count: '总数',
+            avg: '平均',
+            filteredRows: '已过滤',
+            selectedRows: '选中行',
+            totalRows: '总行',
+            totalAndFilteredRows: '行',
+            more: '更多',
+            to: '-',
+            of: '，共',
+            page: '当前',
+            nextPage: '下一页',
+            lastPage: '尾页',
+            firstPage: '首页',
+            previousPage: '上一页',
+
+            // Enterprise Menu (Charts)
+            pivotChartAndPivotMode: 'Pivot Chart & Pivot Mode',
+            pivotChart: 'Pivot Chart',
+            chartRange: 'Chart Range',
+
+            columnChart: 'Column',
+            groupedColumn: 'Grouped',
+            stackedColumn: 'Stacked',
+            normalizedColumn: '100% Stacked',
+
+            barChart: 'Bar',
+            groupedBar: 'Grouped',
+            stackedBar: 'Stacked',
+            normalizedBar: '100% Stacked',
+
+            pieChart: 'Pie',
+            pie: 'Pie',
+            doughnut: 'Doughnut',
+
+            line: 'Line',
+
+            xyChart: 'X Y (Scatter)',
+            scatter: 'Scatter',
+            bubble: 'Bubble',
+
+            areaChart: 'Area',
+            area: 'Area',
+            stackedArea: 'Stacked',
+            normalizedArea: '100% Stacked',
+
+            histogramChart: 'Histogram',
+
+            // Charts
+            pivotChartTitle: 'Pivot Chart',
+            rangeChartTitle: 'Range Chart',
+            settings: 'Settings',
+            data: 'Data',
+            format: 'Format',
+            categories: 'Categories',
+            defaultCategory: '(None)',
+            series: 'Series',
+            xyValues: 'X Y Values',
+            paired: 'Paired Mode',
+            axis: 'Axis',
+            navigator: 'Navigator',
+            color: 'Color',
+            thickness: 'Thickness',
+            xType: 'X Type',
+            automatic: 'Automatic',
+            category: 'Category',
+            number: 'Number',
+            time: 'Time',
+            xRotation: 'X Rotation',
+            yRotation: 'Y Rotation',
+            ticks: 'Ticks',
+            width: 'Width',
+            height: 'Height',
+            length: 'Length',
+            padding: 'Padding',
+            spacing: 'Spacing',
+            chart: 'Chart',
+            title: 'Title',
+            titlePlaceholder: 'Chart title - double click to edit',
+            background: 'Background',
+            font: 'Font',
+            top: 'Top',
+            right: 'Right',
+            bottom: 'Bottom',
+            left: 'Left',
+            labels: 'Labels',
+            size: 'Size',
+            minSize: 'Minimum Size',
+            maxSize: 'Maximum Size',
+            legend: 'Legend',
+            position: 'Position',
+            markerSize: 'Marker Size',
+            markerStroke: 'Marker Stroke',
+            markerPadding: 'Marker Padding',
+            itemSpacing: 'Item Spacing',
+            itemPaddingX: 'Item Padding X',
+            itemPaddingY: 'Item Padding Y',
+            layoutHorizontalSpacing: 'Horizontal Spacing',
+            layoutVerticalSpacing: 'Vertical Spacing',
+            strokeWidth: 'Stroke Width',
+            offset: 'Offset',
+            offsets: 'Offsets',
+            tooltips: 'Tooltips',
+            callout: 'Callout',
+            markers: 'Markers',
+            shadow: 'Shadow',
+            blur: 'Blur',
+            xOffset: 'X Offset',
+            yOffset: 'Y Offset',
+            lineWidth: 'Line Width',
+            normal: 'Normal',
+            bold: 'Bold',
+            italic: 'Italic',
+            boldItalic: 'Bold Italic',
+            predefined: 'Predefined',
+            fillOpacity: 'Fill Opacity',
+            strokeOpacity: 'Line Opacity',
+            histogramBinCount: 'Bin count',
+            columnGroup: 'Column',
+            barGroup: 'Bar',
+            pieGroup: 'Pie',
+            lineGroup: 'Line',
+            scatterGroup: 'X Y (Scatter)',
+            areaGroup: 'Area',
+            histogramGroup: 'Histogram',
+            groupedColumnTooltip: 'Grouped',
+            stackedColumnTooltip: 'Stacked',
+            normalizedColumnTooltip: '100% Stacked',
+            groupedBarTooltip: 'Grouped',
+            stackedBarTooltip: 'Stacked',
+            normalizedBarTooltip: '100% Stacked',
+            pieTooltip: 'Pie',
+            doughnutTooltip: 'Doughnut',
+            lineTooltip: 'Line',
+            groupedAreaTooltip: 'Area',
+            stackedAreaTooltip: 'Stacked',
+            normalizedAreaTooltip: '100% Stacked',
+            scatterTooltip: 'Scatter',
+            bubbleTooltip: 'Bubble',
+            histogramTooltip: 'Histogram',
+            noDataToChart: 'No data available to be charted.',
+            pivotChartRequiresPivotMode: 'Pivot Chart requires Pivot Mode enabled.',
+            chartSettingsToolbarTooltip: 'Menu',
+            chartLinkToolbarTooltip: 'Linked to Grid',
+            chartUnlinkToolbarTooltip: 'Unlinked from Grid',
+            chartDownloadToolbarTooltip: 'Download Chart',
+
+            // ARIA
+            ariaHidden: 'hidden',
+            ariaVisible: 'visible',
+            ariaChecked: 'checked',
+            ariaUnchecked: 'unchecked',
+            ariaIndeterminate: 'indeterminate',
+            ariaColumnSelectAll: 'Toggle Select All Columns',
+            ariaInputEditor: 'Input Editor',
+            ariaDateFilterInput: 'Date Filter Input',
+            ariaFilterInput: 'Filter Input',
+            ariaFilterColumnsInput: 'Filter Columns Input',
+            ariaFilterValue: 'Filter Value',
+            ariaFilterFromValue: 'Filter from value',
+            ariaFilterToValue: 'Filter to value',
+            ariaFilteringOperator: 'Filtering Operator',
+            ariaColumnToggleVisibility: 'column toggle visibility',
+            ariaColumnGroupToggleVisibility: 'column group toggle visibility',
+            ariaRowSelect: 'Press SPACE to select this row',
+            ariaRowDeselect: 'Press SPACE to deselect this row',
+            ariaRowToggleSelection: 'Press Space to toggle row selection',
+            ariaRowSelectAll: 'Press Space to toggle all rows selection',
+            ariaSearch: 'Search',
+            ariaSearchFilterValues: 'Search filter values'
+        }
+    },
+
     /**
      * 代理请求
      * @param {any} obj 请求参数
      * @param {any} hi 指定代理
      */
     ajax: function (obj, hi) {
-        var hosts = ["https://cors.eu.org/", "https://bird.ioliu.cn/v2?url=", "https://netnr-proxy.openode.io/"];
+        var hosts = ["https://cors.eu.org/", "https://bird.ioliu.cn/v2?url=", "https://www.netnr.eu.org/api/v1/Proxy?url="];
         if (hi != null) {
             obj.url = hosts[hi] + encodeURIComponent(obj.url);
             $.ajax(obj)

@@ -56,6 +56,7 @@
                 $('#auri').html(ov.api);
                 $('iframe').addClass("d-none").attr('src', 'about:blank');
             }
+            ov.size();
         },
         size: function () {
             var h = $(window).height() - $('iframe').offset().top - 15;
@@ -78,7 +79,7 @@
 
                 $('#ps').html('正在准备上传 ');
                 $.ajax({
-                    url: "https://ftp.netnr.eu.org/API/UploadTmp",
+                    url: "https://www.netnr.eu.org/api/v1/Upload",
                     type: "POST",
                     data: formData,
                     contentType: false,
@@ -99,7 +100,7 @@
                     success: function (data) {
                         console.log(data);
                         if (data.code == 200) {
-                            ov.view("https://ftp.netnr.eu.org" + data.data);
+                            ov.view("https://www.netnr.eu.org" + data.data.path);
                         } else {
                             jz.alert(data.msg)
                         }

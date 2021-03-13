@@ -27,7 +27,7 @@ namespace Netnr.SharedApp
         /// </summary>
         public void Stream(string path, string fileName)
         {
-            FileStream fileStream = new FileStream(path + fileName, FileMode.Open);
+            FileStream fileStream = new(path + fileName, FileMode.Open);
             byte[] bytes = new byte[(int)fileStream.Length];
             fileStream.Read(bytes, 0, bytes.Length);
             fileStream.Close();

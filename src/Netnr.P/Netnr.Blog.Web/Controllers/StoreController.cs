@@ -59,7 +59,7 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public string QQSign(string bucket, string path = "")
         {
-            Dictionary<string, string> dic = new Dictionary<string, string>
+            Dictionary<string, string> dic = new()
             {
                 { "Signature", QQSignature(bucket) },
                 { "SignatureOnce", QQSignatureOnce(bucket, path) }
@@ -321,6 +321,16 @@ namespace Netnr.Blog.Web.Controllers
 
             switch (cmd)
             {
+                case "ak":
+                    {
+                        result = new
+                        {
+                            AccessKey = AccessNOS.AccessKeyId,
+                            SecretKey = AccessNOS.AccessKeySecret
+                        }.ToJson();
+                    }
+                    break;
+
                 #region 列举文件
                 case "list":
                     var listObjectsRequest = new ListObjectsRequest(bucket)
@@ -411,7 +421,7 @@ namespace Netnr.Blog.Web.Controllers
         public IActionResult QNToken(string type)
         {
             var mac = new Mac(AccessQN.AK, AccessQN.SK);
-            Auth auth = new Auth(mac);
+            Auth auth = new(mac);
 
             string result = string.Empty;
             switch (type)

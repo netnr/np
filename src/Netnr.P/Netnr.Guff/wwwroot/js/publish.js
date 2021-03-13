@@ -131,8 +131,7 @@ $.each(gp.types, function () {
 
                 //上传
                 var fd = new FormData();
-                fd.append('files', file);
-                fd.append('token', "FIX_1A6AEC62943B49CB88EA852B3D6309655305E5C309D64CE582AC765B49280E79");
+                fd.append('file', file);
 
                 var xhr = new XMLHttpRequest();
                 xhr.upload.onprogress = function (event) {
@@ -145,7 +144,7 @@ $.each(gp.types, function () {
                     }
                 };
 
-                xhr.open("post", "https://ftp.netnr.eu.org/API/Upload", true);
+                xhr.open("POST", "https://www.netnr.eu.org/api/v1/Upload", true);
                 xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
                 xhr.send(fd);
                 xhr.onreadystatechange = function () {
@@ -156,7 +155,7 @@ $.each(gp.types, function () {
                             var jv = JSON.parse(xhr.responseText);
                             console.log(jv);
                             if (jv.code == 200) {
-                                gp.addFile(t, 'https://ftp.netnr.eu.org' + jv.data.Path);
+                                gp.addFile(t, 'https://www.netnr.eu.org' + jv.data.path);
                             } else {
                                 jz.alert('上传失败');
                             }

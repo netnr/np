@@ -6,7 +6,7 @@
         "url": "/wallpaper",
         "icon": "wallpaper",
         "title": "壁纸",
-        "remark": "360高清壁纸"
+        "remark": "源自360壁纸"
       },
       {
         "url": "/free",
@@ -70,7 +70,7 @@
       },
       {
         "url": "/vscode",
-        "icon": "vscode",
+        "icon": "vsc",
         "title": "VSCode编辑器",
         "remark": "Monaco Editor 编辑器"
       },
@@ -81,12 +81,12 @@
         "remark": "Monaco Editor 文件对比"
       },
       {
-        "url": "//md.netnr.com",
+        "url": "//md.js.org",
         "icon": "markdown",
         "title": "Markdown编辑器"
       },
       {
-        "url": "//json.netnr.com",
+        "url": "//je.js.org",
         "icon": "json",
         "title": "JSON编辑器"
       },
@@ -95,12 +95,6 @@
         "icon": "nginx",
         "title": "Nginx编辑器",
         "remark": "Nginx配置文件格式化"
-      },
-      {
-        "url": "/sqlformatter",
-        "icon": "sql",
-        "title": "SQL格式化",
-        "remark": "美化SQL语句"
       },
       {
         "url": "/filetobase64",
@@ -121,6 +115,12 @@
         "remark": "JSON与XML相互转换"
       },
       {
+        "url": "/pdm",
+        "icon": "pdm",
+        "title": "PDM查看",
+        "remark": "PowerDesigner解析、查看"
+      },
+      {
         "url": "/dk",
         "icon": "db",
         "title": "DataKit",
@@ -138,6 +138,12 @@
         "icon": "js",
         "title": "JS、CSS工具",
         "remark": "JS压缩、CSS压缩"
+      },
+      {
+        "url": "/sqlformatter",
+        "icon": "sql",
+        "title": "SQL格式化",
+        "remark": "美化SQL语句"
       },
       {
         "url": "/formatter",

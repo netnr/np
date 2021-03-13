@@ -40,13 +40,8 @@ body {
     }
 }
 
-/*顶部导航*/
-.netnrnav.horizontal .netnrnav-wrapper {
-    width: 100% !important;
-}
-
 .CodeMirror {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 /*logo*/
@@ -115,7 +110,7 @@ body {
 
 /*nav*/
 .navbox .card:hover {
-    border-color: green;
+    border-color: orange;
 }
 
 .navbox .card-body {
@@ -181,4 +176,8 @@ body {
     z-index: 201;
     cursor: pointer;
     font-size: 1.2em;
+}
+
+.ag-watermark {
+    display: none !important;
 }

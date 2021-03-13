@@ -1,10 +1,8 @@
 # Netnr.CaptchaDemo
-Verification code example
+验证码示例
 
-> Demo: <https://netnr-captcha.herokuapp.com>
-
-### Quiz
-- `System.Drawing.Common` is the fastest, Windows is the first choice, Linux requires **libgdiplus** components
-- `SkiaSharp` is fast, very close to `System.Drawing.Common` speed, cross-platform advantage
-- `SixLabors.ImageSharp.Drawing` is slow and cross-platform
-- `Magick.NET` is slow
+### 测验
+- `System.Drawing.Common` 最快，Windows 首选，Linux 需依赖 **libgdiplus** 组件
+- `SkiaSharp` 快，和 `System.Drawing.Common` 速度非常接近，跨平台优势
+- `SixLabors.ImageSharp.Drawing` 很慢，跨平台
+- `Magick.NET` 很慢

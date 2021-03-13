@@ -89,8 +89,8 @@ namespace Netnr.Blog.Web.Gist.Controllers
                             GistTags = a.GistTags,
                             GistTheme = a.GistTheme,
 
-                            Spare1 = b.GsGitHubId,
-                            Spare2 = b.GsGiteeId,
+                            Spare1 = b == null ? null : b.GsGitHubId,
+                            Spare2 = b == null ? null : b.GsGiteeId,
                             Spare3 = c.Nickname
                         };
             var moout = query.FirstOrDefault();

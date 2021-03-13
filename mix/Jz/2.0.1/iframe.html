@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>弹窗页面</title>
+</head>
+<body>
+    <input id="txt6" type="text" name="name" value="回传 " />
+    <div style="background:#f8f8f8;padding:5px;margin:15px auto;padding:.75em;">
+        //子页面关闭自身窗口操作
+        parent.jz.closeback(window.name);
+    </div>
+    <input id="btn6" type="button" name="name" value="传递值到父页面 并触发关闭按钮" />
+</body>
+</html>
+<script type="text/javascript">
+    document.getElementById("txt6").value += new Date().valueOf();
+
+    document.getElementById("btn6").onclick = function () {
+        //子页面赋值父页面
+        parent.document.getElementById("txtPv").value = document.getElementById("txt6").value;
+        //子页面关闭自身窗口操作：
+        parent.jz.closeback(window.name);
+    }
+
+</script>

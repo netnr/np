@@ -4,7 +4,7 @@
             <div class="mb-2">
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <button class="btn btn-warning" id="btnFormatter" title="Ctrl+Shift+F 快捷格式化">格式化</button>
+                        <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
                     </div>                    
                     <div class="input-group-prepend">
                         <select class="custom-select" id="seLang">
@@ -45,19 +45,10 @@
             defaultLang = ss.lsStr("vscode-lang") || 'javascript',
             formatterLang = ss.lsStr("formatter-lang") || 'javascript';
 
-        window.ee = monaco.editor.create(document.getElementById("editor"), {
+        window.ee = monaco.editor.create(document.getElementById("editor"), ss.meConfig({
             value: defaultContent,
-            language: defaultLang,
-            automaticLayout: true,
-            theme: "vs",
-            scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
-            },
-            minimap: {
-                enabled: true
-            }
-        });
+            language: defaultLang
+        }));
 
         ee.onDidChangeModelContent(function (e) {
             clearTimeout(window.defer1);
@@ -69,6 +60,9 @@
         });
 
         //快捷键
+        ee.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
+            $('#btnFormatter')[0].click();
+        })
         ee.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
             $('#btnFormatter')[0].click();
         })
@@ -101,7 +95,7 @@
                     }))
                 } catch (e) {
                     console.log(e);
-                    jz.msg(e + "");
+                    jz.msg("ERROR");
                 }
             }
         });

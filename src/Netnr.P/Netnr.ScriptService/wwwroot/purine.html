@@ -24,35 +24,24 @@ https://zme.ink
 
 </head>
 <body>
-<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%'></div>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet'>
-<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url("/images/loading.svg");background-repeat:no-repeat;background-position:48% 45%'></div>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.0/src/netnrnav.js' defer async></script>
-
-<script>
-    $.ajax({
-        url: '/images/icon.svg?20210127',
-        dataType: 'text',
-        success: function (data) {
-            $('body').append('<div class="d-none">' + data + '</div>')
-        }
-    })
-</script>
-
-        <link href="/css/global.css?v=8day63ZfnKDva9KQuDWIgzWbAwNGkylzlnLgUUezVjw" rel="stylesheet" />
-        <script src="/js/global.js?v=qKGqDsc_42dgyvIvUG_yNyp_WOiFUri4ZlUSpN7smCY"></script>
+<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.js' defer async></script>
+        <link href="/css/global.css?v=ILaxEDuAKPcfx0Dw00WIDWl_jGo3BYpoTjyINR4ydjY" rel="stylesheet" />
+        <script src="/js/global.js?v=pKcbh4RJesRNHWnZRek0eTm5akwKQWgf9Qa-pLuFFAs"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
-                <span class="fa fa-align-justify fa-2x"></span>
+            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
+                <span class="fa fa-align-justify"></span>
             </button>
             <div class="netnrnav horizontal">
                 <div class="netnrnav-wrapper">
                     <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
                         <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
                         <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
                         <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
@@ -86,63 +75,104 @@ https://zme.ink
             <span class="text-warning text-nowrap">中嘌呤</span>：100g食物中嘌呤含量在25mg-150mg；
             <span class="text-danger text-nowrap">高嘌呤</span>：100g食物中嘌呤含量在150-1000mg
         </div>
-        <div class="col-md-12" id="PGrid">
-            <table id="table" class="text-nowrap" data-filter-control="true" data-row-style="purine.rowStyle">
-                <thead>
-                    <tr>
-                        <th data-field="type" data-filter-control="select" data-sortable="true">分类</th>
-                        <th data-field="food" data-filter-control="input" data-sortable="true">食物</th>
-                        <th data-field="number" data-filter-control="input" data-sortable="true">含量</th>
-                    </tr>
-                </thead>
-            </table>
+        <div class="col-md-12">
+            <div class="grid ag-theme-alpine"></div>
         </div>
     </div>
 </div>
 
-<link href='https://cdn.jsdelivr.net/npm/bootstrap-table@1.16.0/dist/bootstrap-table.min.css' rel='stylesheet'>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap-table@1.16.0/dist/bootstrap-table.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/ag-grid-enterprise@25.0.1/dist/ag-grid-enterprise.min.js'></script>
 
 
 <script>
-    var purine = {
-        rowStyle: function (row) {
-            var classes = [
-                'text-success',
-                'text-warning',
-                'text-danger'
-            ], ci = 0;
-            if (row.number > 25) {
-                ci = 1;
-            }
-            if (row.number > 150) {
-                ci = 2;
-            }
-            return {
-                classes: classes[ci]
-            }
+
+    var agg = {
+        grid: null,
+        gbox: document.querySelector('.grid'),
+        init: function () {
+            ss.agg.lk();
+
+            agg.bindGrid();
         },
+
+        bindGrid: function () {
+
+            var data = JSON.parse(document.getElementById("source").innerHTML);
+
+            data.forEach(d => {
+                d.rank = "低";
+                d.class = "green";
+                if (d.number > 25) {
+                    d.rank = "中";
+                    d.class = "orange";
+                }
+                if (d.number > 150) {
+                    d.rank = "高";
+                    d.class = "red";
+                }
+                d.rank += "嘌呤";
+            })
+
+            var gridOptions = {
+                columnDefs: [
+                    {
+                        headerName: "#", width: 80, pinned: "left", sortable: false,
+                        cellRenderer: function (params) {
+                            return `<b class="text-dark">${params.node.rowIndex + 1}</b>`
+                        },
+                        menuTabs: ['generalMenuTab', 'columnsMenuTab']
+                    },
+                    {
+                        field: "type", headerName: "分类", enableRowGroup: true
+                    },
+                    {
+                        field: "food", headerName: "食物"
+                    },
+                    {
+                        field: "number", headerName: "含量", filter: "agNumberColumnFilter",
+                        filterParams: {
+                            filterOptions: ['lessThanOrEqual', 'greaterThanOrEqual', 'inRange'],
+                            buttons: ['reset', 'apply']
+                        }
+                    },
+                    {
+                        field: "rank", headerName: "等级", enableRowGroup: true
+                    }
+                ],
+                rowData: data,
+                suppressDragLeaveHidesColumns: true,
+                suppressMakeColumnVisibleAfterUnGroup: true,
+                rowGroupPanelShow: 'always',
+                enableRangeSelection: true,
+                defaultColDef: ss.agg.defaultColDef,
+                localeText: ss.agg.localeText,
+                getRowStyle: function (item) {
+                    if (item.data) {
+                        return {
+                            "color": item.data.class
+                        }
+                    }
+                },
+                onGridReady: function () {
+                    //表格创建完成后执行的事件
+                    //gridOptions.api.sizeColumnsToFit();//调整表格大小自适应
+                }
+            };
+
+            agg.grid = new agGrid.Grid(agg.gbox, gridOptions);
+
+            agg.resize();
+            $(window).resize(agg.resize);
+        },
+
         resize: function () {
-            $('#table').bootstrapTable('resetView', {
-                height: $(window).height() - $('#PGrid').offset().top - 15
-            });
-        },
-        load: function () {
-            $('#table').bootstrapTable({
-                classes: 'table table-sm table-bordered',
-                data: JSON.parse($('#source').html())
-            });
-
-            $(window).resize(purine.resize);
-
-            purine.resize();
+            var h = $(window).height() - $(agg.gbox).offset().top - 15;
+            agg.gbox.style.height = h + "px";
         }
     }
 
-    purine.load();
+    agg.init();
 </script>
         </div>
-        <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>

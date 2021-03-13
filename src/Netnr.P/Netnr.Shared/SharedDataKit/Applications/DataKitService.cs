@@ -459,7 +459,7 @@ namespace Netnr.SharedDataKit.Applications
         private static long SHA128ToLong(string str)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(str);
-            using SHA1CryptoServiceProvider SHA1 = new SHA1CryptoServiceProvider();
+            using SHA1CryptoServiceProvider SHA1 = new();
             byte[] byteArr = SHA1.ComputeHash(buffer);
             return BitConverter.ToInt64(byteArr, 0);
         }

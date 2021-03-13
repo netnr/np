@@ -39,11 +39,6 @@
         <partial name="_PartialFooter" />
     }
 
-    @if (!canav.Contains(ca))
-    {
-        <a href="javascript:void(0);" onclick="$('html,body').animate({scrollTop:0}, 400)" class="totop" title="返回顶部">ˆ</a>
-    }
-
     <partial name="_PartialQuote" model="@("fun.js")" />
 </body>
 </html>

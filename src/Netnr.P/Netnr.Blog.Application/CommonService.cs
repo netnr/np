@@ -37,6 +37,9 @@ namespace Netnr.Blog.Application
                 query = query.Skip((ivm.Page - 1) * ivm.Rows).Take(ivm.Rows);
             }
 
+            var sql = query.ToQueryString();
+            Console.WriteLine(sql);
+
             //数据
             var data = query.ToList();
             ovm.Data = data;
@@ -49,7 +52,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static List<Tags> TagsQuery(bool FirtCache = true)
         {
-            if (!(CacheTo.Get("Table_Tags_List") is List<Tags> lt) || !FirtCache)
+            if (CacheTo.Get("Table_Tags_List") is not List<Tags> lt || !FirtCache)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
                 lt = db.Tags.Where(x => x.TagStatus == 1).OrderByDescending(x => x.TagHot).ToList();
@@ -65,7 +68,7 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static Dictionary<string, int> UserWritingByTagCountQuery(bool FirtCache = true)
         {
-            if (!(CacheTo.Get("Table_WritingTags_GroupBy") is Dictionary<string, int> rt) || !FirtCache)
+            if ((CacheTo.Get("Table_WritingTags_GroupBy") is not Dictionary<string, int> rt) || !FirtCache)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
                 var query = from a in db.UserWritingTags
@@ -104,7 +107,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 20
+                PageSize = 12
             };
 
             var dicQs = new Dictionary<string, string> { { "k", KeyWords } };
@@ -372,8 +375,8 @@ namespace Netnr.Blog.Application
 
                             UrTargetId = a.UrTargetId,
 
-                            Spare1 = b1.Nickname,
-                            Spare2 = b1.UserPhoto
+                            Spare1 = b1 == null ? null : b1.Nickname,
+                            Spare2 = b1 == null ? null : b1.UserPhoto
                         };
 
             pag.Total = query.Count();
@@ -447,8 +450,8 @@ namespace Netnr.Blog.Application
                         select new
                         {
                             a,
-                            b1.Nickname,
-                            b1.UserPhoto
+                            Nickname = b1 == null ? null : b1.Nickname,
+                            UserPhoto = b1 == null ? null : b1.UserPhoto
                         };
             if (messageType.HasValue)
             {
@@ -484,7 +487,7 @@ namespace Netnr.Blog.Application
 
             var data = list.Select(x => x.a).ToList();
 
-            SharedPageVM pageSet = new SharedPageVM()
+            SharedPageVM pageSet = new()
             {
                 Rows = data,
                 Pag = pag
@@ -500,9 +503,16 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static int NewMessageQuery(int UserId)
         {
-            using var db = ContextBaseFactory.CreateDbContext();
-            int num = db.UserMessage.Where(x => x.Uid == UserId && x.UmStatus == 1).Count();
-            return num;
+            var ck = $"mq_{UserId}";
+            var num = CacheTo.Get(ck) as int?;
+            if (num == null)
+            {
+                using var db = ContextBaseFactory.CreateDbContext();
+                num = db.UserMessage.Where(x => x.Uid == UserId && x.UmStatus == 1).Count();
+                CacheTo.Set(ck, num, 10, false);
+            }
+
+            return num.Value;
         }
 
         /// <summary>
@@ -614,7 +624,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new SharedPageVM()
+            SharedPageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -677,7 +687,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 12
+                PageSize = 16
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
@@ -685,7 +695,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new SharedPageVM()
+            SharedPageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -757,7 +767,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new SharedPageVM()
+            SharedPageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -824,7 +834,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 20
+                PageSize = 16
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
@@ -832,7 +842,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new SharedPageVM()
+            SharedPageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -1096,7 +1106,7 @@ namespace Netnr.Blog.Application
             db.OperationRecord.Add(ormo);
             db.SaveChanges();
 
-            SharedPageVM pageSet = new SharedPageVM()
+            SharedPageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,

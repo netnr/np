@@ -2,8 +2,11 @@
 top != self && (top.location = self.location);
 
 //低版本跳转
-if (typeof document.createElement == "object" || !window.localStorage) {
-    top.location = "/home/ub";
+try { eval("() => 1") } catch (e) { top.location = "/home/ub" }
+
+//http=>https
+if (location.hostname != "localhost" && location.protocol == "http:") {
+    location = location.href.replace("http://", "https://");
 }
 
 //登录

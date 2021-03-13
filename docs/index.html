@@ -11,15 +11,6 @@
     <meta name="description" content="netnr,NET牛人,Netnr Project">
 
     <style>
-        .hide {
-            display: none;
-        }
-
-        .github-corner svg {
-            width: 80px;
-            height: 80px;
-        }
-
         .sidebar ul li p.active > a {
             border-right: 2px solid;
             font-weight: 600;
@@ -31,27 +22,22 @@
     <div id="app">Loading ...</div>
 
     <!--SEO-->
-    <div class="hide">
+    <div style="display:none">
         {SEO}
     </div>
-
-    <link href="https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.min.css" rel="stylesheet" async />
-    <script src="https://cdn.jsdelivr.net/npm/netnrmd@2.6.1/src/netnrmd.bundle.min.js" defer></script>
 
     <script>
         window.$docsify = {
             repo: 'netnr',
             noEmoji: true,
             auto2top: true,
-            coverpage: ['/', '/zh-cn/'],
-            loadNavbar: true,
             loadSidebar: true,
             relativePath: true,
             routerMode: location.hostname == "localhost" ? "hash" : "history",
             markdown: {
                 renderer: {
                     code: function (str, lang) {
-                        var ch = [];
+                        let ch = [];
                         ch.push("<pre><code>");
                         try {
                             str = hljs.getLanguage(lang)
@@ -65,40 +51,42 @@
                         return ch.join('');
                     }
                 }
-            },
-
-            search: {
-                placeholder: {
-                    '/zh-cn/': '搜索',
-                    '/': 'Type to search'
-                },
-                noData: {
-                    '/zh-cn/': '找不到结果',
-                    '/': 'No Results'
-                },
-                depth: 6,
             }
         };
-
-        function get(url, success) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.send();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    success(xhr.responseText)
-                }
-            };
-        }
-
-        get('https://cdn.jsdelivr.net/npm/docsify@4.11.6/lib/themes/vue.css', function (res) {
-            var ele = document.createElement("STYLE");
-            ele.innerHTML = "*" + res.split(';*')[1];
-            document.getElementsByTagName("HEAD")[0].appendChild(ele);
-        })
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/docsify@4.11.6/lib/docsify.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/docsify@4.11.6/lib/plugins/search.min.js" defer></script>
+    <script>
+        const nd = {
+            sourceList: [
+                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.6.0/build/styles/vs.min.css",
+                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.6.0/build/highlight.min.js",
+                "https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/themes/vue.css",
+                "https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/docsify.min.js"
+            ],
+            createNode: function (nn, html) {
+                let em = document.createElement(nn);
+                em.innerHTML = html;
+                return em;
+            },
+            init: function () {
+                let pas = [];
+                nd.sourceList.forEach(u => {
+                    pas.push(fetch(u).then(x => x.text()));
+                });
+
+                Promise.all(pas).then(res => {
+
+                    var head = document.getElementsByTagName("HEAD")[0];
+
+                    head.appendChild(nd.createNode("STYLE", res[0]));
+                    head.appendChild(nd.createNode("SCRIPT", res[1]));
+                    head.appendChild(nd.createNode("STYLE", "*" + res[2].split(';*')[1]));
+                    head.appendChild(nd.createNode("SCRIPT", res[3]));
+                })
+            }
+        }
+
+        nd.init();
+    </script>
 </body>
 </html>

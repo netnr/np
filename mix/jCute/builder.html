@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <title>生成</title>
+    <style>
+        .tb {
+            margin: 15px 0;
+            border-collapse: collapse;
+        }
+
+            .tb tr th, .tb tr td {
+                padding: 3px 5px;
+                border: 1px solid #999;
+            }
+
+        #txtOut {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="txtFile" webkitdirectory directory multiple /><button id="btnBuilder">生成</button>
+
+    <div id="dirinfo"></div>
+
+    <textarea id="txtOut"></textarea>
+
+    <script src="src/jCute.all.js"></script>
+    <script>
+        var txts = [
+            '# jCute',
+            'JavaScript Library',
+            '',
+            '### [jCute.all.js](view.html?jcute.all.js)',
+            '',
+            '# Module',
+        ];
+
+        document.getElementById('txtFile').onchange = function () {
+            var dirinfo = '<table class="tb"><tr><th>file name</th><th>path</th><th>size<th>type</tr>';
+            for (var i = 0, file; file = this.files[i]; i++) {
+                if ("jCute.all.js,jCute.js".indexOf(file.name) >= 0 || file.name.indexOf('.js') == -1) {
+                    continue;
+                }
+                pick(file);
+                var fileSize = 0;
+                if (file.size > 1024 * 1024)
+                    fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+                else
+                    fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+                dirinfo += '<tr><td>' + file.name + '<td>' + file.webkitRelativePath + '<td>' + fileSize + '<td>' + file.type + '</tr>';
+            }
+            dirinfo += '</table>';
+            document.getElementById('dirinfo').innerHTML = dirinfo;
+        }
+
+        function pick(file) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                txts.push('\r\n---\r\n');
+                txts.push('### [' + file.name + '](view.html?' + file.name.toLowerCase() + ')');
+                txts.push('```js');
+
+                var notes = [], funcs = [];
+                this.result.replace(/\/\*\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g, function (value) {
+                    notes.push(value);
+                }).replace(/jCute\..*{/g, function (value) {
+                    funcs.push(value);
+                });
+                console.log(notes, funcs)
+                if (notes.length == funcs.length) {
+                    for (var i = 0, len = funcs.length; i < len; i++) {
+                        txts.push(notes[i]);
+                        txts.push(funcs[i].replace(' = function ', '').replace(' {', '') + '\r\n');
+                    }
+                } else {
+                    alert(file.name + ' ,方法必须带注释');
+                    return false;
+                }
+                txts.push('```');
+
+                document.getElementById('txtOut').value += txts.join('\r\n');
+                txts = [];
+            };
+            reader.readAsText(file);
+        }
+
+    </script>
+</body>
+</html>

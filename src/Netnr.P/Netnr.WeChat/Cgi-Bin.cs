@@ -166,7 +166,7 @@ namespace Netnr.WeChat
             public static void Get(string savePath, string access_token, string media_id)
             {
                 var url = string.Format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token={0}&media_id={1}", access_token, media_id);
-                FileStream fs = new FileStream(savePath, FileMode.Create);
+                FileStream fs = new(savePath, FileMode.Create);
                 Util.Download(url, fs);
                 fs.Close();
                 fs.Dispose();

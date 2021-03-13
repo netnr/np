@@ -440,5 +440,14 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// PowerDesigner
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult PDM()
+        {
+            return View();
+        }
     }
 }

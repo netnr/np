@@ -49,11 +49,11 @@ namespace Netnr.Blog.Web.Apps
                 if (_dicDescription == null)
                 {
                     var ass = System.Reflection.Assembly.GetExecutingAssembly();
-                    var listController = ass.ExportedTypes.Where(x => x.BaseType.FullName == "Microsoft.AspNetCore.Mvc.Controller").ToList();
+                    var listController = ass.ExportedTypes.Where(x => x.BaseType?.FullName == "Microsoft.AspNetCore.Mvc.Controller").ToList();
 
                     //载入xml注释
                     var cp = AppContext.BaseDirectory + ass.FullName.Split(',').FirstOrDefault() + ".xml";
-                    XmlDocument xmldoc = new XmlDocument();
+                    XmlDocument xmldoc = new();
                     xmldoc.Load(cp);
                     var xns = xmldoc.DocumentElement.SelectSingleNode("members").SelectNodes("member");
                     var listMember = new List<XmlNode>();

@@ -3,17 +3,22 @@
         <div class="col-md-12">
             <div class="input-group">
                 <div class="input-group-append">
-                    <button class="btn btn-info" id="btnSqlFormatter" title="Ctrl+Shift+F 快捷格式化">格式化</button>
+                    <button class="btn btn-info" id="btnSqlFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
                 </div>
                 <div class="input-group-append">
                     <select class="custom-select nrSqlConfigLanguage">
                         <optgroup label="语言类型">
                             <option value="sql">SQL</option>
-                            <option value="pl/sql">Oracle</option>
-                            <option value="db2">DB2</option>
-                            <option value="n1ql">N1QL</option>
+                            <!-- dialects -->
                             <option value="redshift">AWS Redshift</option>
+                            <option value="db2">DB2</option>
+                            <option value="mariadb">MariaDB</option>
+                            <option value="mysql">MySQL</option>
+                            <option value="n1ql">N1QL</option>
+                            <option value="plsql">PL/SQL</option>
+                            <option value="postgresql">PostgreSQL</option>
                             <option value="spark">Spark</option>
+                            <option value="tsql">Transact-SQL</option>
                         </optgroup>
                     </select>
                 </div>
@@ -68,19 +73,10 @@
     require(['vs/editor/editor.main'], function () {
         var te = $("#editor");
 
-        editor = monaco.editor.create(te[0], {
+        editor = monaco.editor.create(te[0], ss.meConfig({
             value: dv,
-            language: 'sql',
-            automaticLayout: true,
-            theme: 'vs',
-            scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
-            },
-            minimap: {
-                enabled: false
-            }
-        });
+            language: 'sql'
+        }));
 
         editor.onDidChangeModelContent(function (e) {
             clearTimeout(window.defer1);
@@ -91,6 +87,9 @@
         });
 
         //快捷键
+        editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
+            $('#btnSqlFormatter')[0].click();
+        })
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
             $('#btnSqlFormatter')[0].click();
         })

@@ -7,26 +7,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), Name = "DocSet_Uid")]
+    [Index(nameof(Uid), Name = "IDXDocSet_Uid")]
     public partial class DocSet
     {
         [Key]
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string DsCode { get; set; }
         public int? Uid { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string DsName { get; set; }
-        [StringLength(200)]
+        [Column(TypeName = "varchar(200)")]
         public string DsRemark { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? DsCreateTime { get; set; }
         public int? DsOpen { get; set; }
         public int? DsStatus { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare1 { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare2 { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare3 { get; set; }
     }
 }

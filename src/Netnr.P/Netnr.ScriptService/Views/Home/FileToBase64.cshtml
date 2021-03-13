@@ -36,20 +36,11 @@
                 $('.nrEbox').removeClass('d-none');
                 $('#btnBase64ToFile').parent().removeClass('d-none');
 
-                editor = monaco.editor.create(document.getElementById("editor"), {
+                editor = monaco.editor.create(document.getElementById("editor"), ss.meConfig({
                     value: code,
                     language: 'html',
-                    automaticLayout: true,
-                    wordWrap: "on",
-                    theme: 'vs',
-                    scrollbar: {
-                        verticalScrollbarSize: 6,
-                        horizontalScrollbarSize: 6
-                    },
-                    minimap: {
-                        enabled: false
-                    }
-                });
+                    wordWrap: "on"
+                }));
             });
         }
     }

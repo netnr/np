@@ -7,16 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), Name = "Writing_Uid")]
+    [Index(nameof(Uid), Name = "IDXUserWriting_Uid")]
     public partial class UserWriting
     {
         [Key]
         public int UwId { get; set; }
         public int? Uid { get; set; }
         public int? UwCategory { get; set; }
-        [StringLength(200)]
+        [Column(TypeName = "varchar(200)")]
         public string UwTitle { get; set; }
+        [Column(TypeName = "longtext")]
         public string UwContent { get; set; }
+        [Column(TypeName = "longtext")]
         public string UwContentMd { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UwCreateTime { get; set; }
@@ -31,11 +33,11 @@ namespace Netnr.Blog.Domain
         public int? UwLaud { get; set; }
         public int? UwMark { get; set; }
         public int? UwStatus { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare1 { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare2 { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare3 { get; set; }
     }
 }

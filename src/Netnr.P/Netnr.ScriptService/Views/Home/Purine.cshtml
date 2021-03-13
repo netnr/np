@@ -9,56 +9,100 @@
             <span class="text-warning text-nowrap">中嘌呤</span>：100g食物中嘌呤含量在25mg-150mg；
             <span class="text-danger text-nowrap">高嘌呤</span>：100g食物中嘌呤含量在150-1000mg
         </div>
-        <div class="col-md-12" id="PGrid">
-            <table id="table" class="text-nowrap" data-filter-control="true" data-row-style="purine.rowStyle">
-                <thead>
-                    <tr>
-                        <th data-field="type" data-filter-control="select" data-sortable="true">分类</th>
-                        <th data-field="food" data-filter-control="input" data-sortable="true">食物</th>
-                        <th data-field="number" data-filter-control="input" data-sortable="true">含量</th>
-                    </tr>
-                </thead>
-            </table>
+        <div class="col-md-12">
+            <div class="grid ag-theme-alpine"></div>
         </div>
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("bootstrap-table.css,bootstrap-table.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))
 
 <script>
-    var purine = {
-        rowStyle: function (row) {
-            var classes = [
-                'text-success',
-                'text-warning',
-                'text-danger'
-            ], ci = 0;
-            if (row.number > 25) {
-                ci = 1;
-            }
-            if (row.number > 150) {
-                ci = 2;
-            }
-            return {
-                classes: classes[ci]
-            }
+
+    var agg = {
+        grid: null,
+        gbox: document.querySelector('.grid'),
+        init: function () {
+            ss.agg.lk();
+
+            agg.bindGrid();
         },
+
+        bindGrid: function () {
+
+            var data = JSON.parse(document.getElementById("source").innerHTML);
+
+            data.forEach(d => {
+                d.rank = "低";
+                d.class = "green";
+                if (d.number > 25) {
+                    d.rank = "中";
+                    d.class = "orange";
+                }
+                if (d.number > 150) {
+                    d.rank = "高";
+                    d.class = "red";
+                }
+                d.rank += "嘌呤";
+            })
+
+            var gridOptions = {
+                columnDefs: [
+                    {
+                        headerName: "#", width: 80, pinned: "left", sortable: false,
+                        cellRenderer: function (params) {
+                            return `<b class="text-dark">${params.node.rowIndex + 1}</b>`
+                        },
+                        menuTabs: ['generalMenuTab', 'columnsMenuTab']
+                    },
+                    {
+                        field: "type", headerName: "分类", enableRowGroup: true
+                    },
+                    {
+                        field: "food", headerName: "食物"
+                    },
+                    {
+                        field: "number", headerName: "含量", filter: "agNumberColumnFilter",
+                        filterParams: {
+                            filterOptions: ['lessThanOrEqual', 'greaterThanOrEqual', 'inRange'],
+                            buttons: ['reset', 'apply']
+                        }
+                    },
+                    {
+                        field: "rank", headerName: "等级", enableRowGroup: true
+                    }
+                ],
+                rowData: data,
+                suppressDragLeaveHidesColumns: true,
+                suppressMakeColumnVisibleAfterUnGroup: true,
+                rowGroupPanelShow: 'always',
+                enableRangeSelection: true,
+                defaultColDef: ss.agg.defaultColDef,
+                localeText: ss.agg.localeText,
+                getRowStyle: function (item) {
+                    if (item.data) {
+                        return {
+                            "color": item.data.class
+                        }
+                    }
+                },
+                onGridReady: function () {
+                    //表格创建完成后执行的事件
+                    //gridOptions.api.sizeColumnsToFit();//调整表格大小自适应
+                }
+            };
+
+            agg.grid = new agGrid.Grid(agg.gbox, gridOptions);
+
+            agg.resize();
+            $(window).resize(agg.resize);
+        },
+
         resize: function () {
-            $('#table').bootstrapTable('resetView', {
-                height: $(window).height() - $('#PGrid').offset().top - 15
-            });
-        },
-        load: function () {
-            $('#table').bootstrapTable({
-                classes: 'table table-sm table-bordered',
-                data: JSON.parse($('#source').html())
-            });
-
-            $(window).resize(purine.resize);
-
-            purine.resize();
+            var h = $(window).height() - $(agg.gbox).offset().top - 15;
+            agg.gbox.style.height = h + "px";
         }
     }
 
-    purine.load();
+    agg.init();
 </script>

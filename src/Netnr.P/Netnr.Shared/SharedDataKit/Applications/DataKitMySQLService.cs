@@ -273,7 +273,7 @@ namespace Netnr.SharedDataKit.Applications
             {
                 mo.DeiMaxConn = mc;
             }
-            if (int.TryParse(ds.Tables[3].Rows[0][0].ToString(), out int cc))
+            if (int.TryParse(ds.Tables[3].Rows[0][1].ToString(), out int cc))
             {
                 mo.DeiCurrConn = cc;
             }

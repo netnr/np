@@ -136,7 +136,7 @@
             };
         }
 
-        get('https://cdn.jsdelivr.net/npm/docsify@4.11.6/lib/themes/vue.css', function (res) {
+        get('https://cdn.jsdelivr.net/npm/docsify@4.12.0/lib/themes/vue.css', function (res) {
             var ele = document.createElement("STYLE");
             ele.innerHTML = "*" + res.split(';*')[1];
             document.getElementsByTagName("HEAD")[0].appendChild(ele);

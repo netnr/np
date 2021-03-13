@@ -6,7 +6,6 @@ using Netnr.WeChat;
 using Netnr.WeChat.Entities;
 using Netnr.SharedFast;
 
-
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
@@ -193,7 +192,7 @@ namespace Netnr.Blog.Web.Controllers
         #region WebHook
 
         /// <summary>
-        /// WebHook
+        /// WebHook（已停用）
         /// </summary>
         /// <returns></returns>
         public SharedResultVM WebHook()
@@ -223,81 +222,6 @@ namespace Netnr.Blog.Web.Controllers
             return vm;
         }
 
-        #endregion
-
-        #region 任务
-
-        /// <summary>
-        /// 任务项
-        /// </summary>
-        public enum TaskItem
-        {
-            /// <summary>
-            /// 备份数据库
-            /// </summary>
-            BackupDataBase,
-            /// <summary>
-            /// 代码片段同步到GitHub、Gitee
-            /// </summary>
-            GistSync,
-            /// <summary>
-            /// 处理操作记录
-            /// </summary>
-            HOR,
-            /// <summary>
-            /// 导出数据库
-            /// </summary>
-            ExportDataBase
-        }
-
-        /// <summary>
-        /// 需要处理的事情
-        /// </summary>
-        /// <param name="ti"></param>
-        /// <returns></returns>
-        [ResponseCache(Duration = 60)]
-        [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM ExecTask(TaskItem? ti)
-        {
-            var vm = new SharedResultVM();
-
-            try
-            {
-                if (!ti.HasValue)
-                {
-                    ti = (TaskItem)Enum.Parse(typeof(TaskItem), RouteData.Values["id"]?.ToString(), true);
-                }
-
-                switch (ti)
-                {
-                    default:
-                        vm.Set(SharedEnum.RTag.invalid);
-                        break;
-
-                    case TaskItem.BackupDataBase:
-                        vm = Application.TaskService.BackupDataBase();
-                        break;
-
-                    case TaskItem.GistSync:
-                        vm = Application.TaskService.GistSync();
-                        break;
-
-                    case TaskItem.HOR:
-                        vm = Application.TaskService.HandleOperationRecord();
-                        break;
-
-                    case TaskItem.ExportDataBase:
-                        vm = Application.TaskService.ExportDataBase();
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
-        }
         #endregion
     }
 }

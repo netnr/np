@@ -27,7 +27,7 @@
     }
 
         .navtag a:hover {
-            border-bottom-color: #009a61;
+            border-bottom-color: orange;
             transition: border-bottom-color .5s;
         }
 
@@ -52,7 +52,7 @@
 
     .uw-box .uw-item:hover {
         background-color: #f8fcfe;
-        border-left-color: #009a61;
+        border-left-color: orange;
     }
 
     .uw-box .uw-item .wtitle {
@@ -60,29 +60,31 @@
         padding-bottom: 8px;
     }
 
-    .uw-box .uw-item .uw-emoji * {
-        position: absolute;
-        top: 17px;
-        right: 3px;
-        max-width: 28px;
-        max-height: 28px;
+.uw-box .uw-icon {
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin-top: 8px;
+    margin-right: 30px;
+    display: inline-block;
+}
+
+    .uw-box .uw-icon:hover {
+        transition: transform 1.5s;
+        transform: rotate(360deg);
     }
 
-        .uw-box .uw-item .uw-emoji *:hover {
-            transition: transform 1.5s;
-            transform: rotate(360deg);
-        }
 
 /*标签统计*/
 .tagcount a {
     padding: 9px 9px;
-    border-left: 2px solid #ddd;
+    border-left: 3px solid #ddd;
 }
 
     .tagcount a:hover {
         text-decoration: none;
         background-color: #f8fcfe;
-        border-left-color: #009a61;
+        border-left-color: orange;
     }
 
     .tagcount a span {
@@ -90,15 +92,15 @@
         font-size: .9rem;
     }
 
+    .tagcount a img {
+        height: 20px;
+        margin-right: 5px;
+    }
+
 /*搜索高亮*/
 .skh {
-    color: #D0021B;
+    color: orange;
     font-weight: 500;
-}
-
-/*昵称*/
-a.uid {
-    color: #009a61;
 }
 
 /*头像*/

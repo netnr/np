@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>GitStorage</title>
+
+    <meta name="keywords" content="GitStorage,Git图床" />
+    <meta name="description" content="GitStorage,Git图床,基于Git服务商提供存储、图床。" />
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+
+    <link href="css/upload.css?20210129" rel="stylesheet" />
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/" class="navbar-brand">GitStorage</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="padding-top:80px;">
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon">* owner / repo</span>
+                    <input type="text" class="form-control" id="txtor" placeholder="必填，用户/仓库，例：netnr/np">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-addon">* token</span>
+                    <input type="text" class="form-control" id="txttoken" placeholder="必填，访问仓库的 token">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-addon">path（单个文件）</span>
+                    <input type="text" class="form-control" id="txtpath" placeholder="可选，默认：yyyy/MM/dd/xx.ext">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="wrapper">
+                    <div id="container">
+                        <div id="uploader">
+                            <div class="queueList">
+                                <div id="dndArea" class="placeholder">
+                                    <div id="filePicker"></div>
+                                    <p>截图粘贴、拖到这里（MaxSize：5MB）</p>
+                                </div>
+                            </div>
+                            <div class="statusBar" style="display:none;">
+                                <div class="progress">
+                                    <span class="text">0%</span>
+                                    <span class="percentage"></span>
+                                </div><div class="info"></div>
+                                <div class="btns">
+                                    <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row hidden" id="divnt">
+            <div class="col-md-12">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#rt_1" data-toggle="tab" aria-expanded="true">URL</a></li>
+                    <li><a href="#rt_2" data-toggle="tab" aria-expanded="false">Proxy</a></li>
+                    <li><a href="#rt_3" data-toggle="tab" aria-expanded="false">HTML</a></li>
+                    <li><a href="#rt_4" data-toggle="tab" aria-expanded="false">Markdown</a></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content" id="tcpane" style="margin-top:15px;font-size:14px;">
+                    <div class="tab-pane active" id="rt_1">
+                        <ul class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane" id="rt_2">
+                        <ul class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane" id="rt_3">
+                        <ul class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane" id="rt_4">
+                        <ul class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">消息</h4>
+                    </div>
+                    <div class="modal-body" id="myModalBody" style="word-break:break-word;word-wrap:break-word;">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/webuploader@0.1.8/dist/webuploader.html5only.min.js"></script>
+    <script src="js/upload.js?20210129"></script>
+
+</body>
+</html>

@@ -211,37 +211,41 @@ namespace Netnr.SharedDataKit.Applications
         /// <returns></returns>
         public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, out int total)
         {
-            if (listFieldName == "*")
-            {
-                listFieldName = "t.*";
-            }
-
             var countWhere = string.Empty;
             if (string.IsNullOrWhiteSpace(whereSql))
             {
-                whereSql = "";
+                whereSql = "1=1";
             }
             else
             {
                 countWhere = "WHERE " + whereSql;
-                whereSql = "AND " + whereSql;
             }
 
             var sql = $@"
                         SELECT
-                          *
+                            *
                         FROM
-                          (
+                            (
                             SELECT
-                              ROWNUM AS rowno,{listFieldName}
+                                ROWNUM AS g_rowno,
+                                g_t2. *
                             FROM
-                              {TableName} t
+                                (
+                                SELECT
+                                    {listFieldName}
+                                FROM
+                                    {TableName}
+                                WHERE
+                                    {whereSql}
+                                ORDER BY
+                                    {sort} {order}
+                                ) g_t2
                             WHERE
-                              ROWNUM <= {(page * rows)} {whereSql}
-                            ORDER BY {sort} {order}
-                          ) table_alias
+                                ROWNUM <= {(page * rows)}
+                            ) g_t3
                         WHERE
-                          table_alias.rowno >= {((page - 1) * rows + 1)}";
+                            g_t3.g_rowno > {((page - 1) * rows + 1)}
+             ";
 
             sql += $";select count(1) as total from {TableName} {countWhere}";
 

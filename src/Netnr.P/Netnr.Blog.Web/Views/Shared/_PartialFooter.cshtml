@@ -1,8 +1,11 @@
 <div class="border-top mt-5">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row my-4">
             <div class="col-md-12">
-                <h5 class="text-muted">链接</h5>
+                <h5 class="text-muted">
+                    链接
+                    <a class="text-muted small float-right" href="javascript:document.documentElement.scrollTo(0,0)">返回顶部</a>
+                </h5>
                 <a class="mr-3 text-nowrap" href="https://netnr.top">netnr.top</a>
                 <a class="mr-3 text-nowrap" href="https://uuid.fun" title="一个基于Git的书签托管">书签</a>
                 <a class="mr-3 text-nowrap" href="https://guff.ltd" title="分享有趣的人或事">尬服</a>
@@ -14,7 +17,7 @@
                 <a class="mr-3 text-nowrap" target="_blank" href="https://api.netnr.eu.org" title="基于 Vercel Serverless 提供的免费服务">API</a>
             </div>
         </div>
-        <div class="my-3 small text-muted">
+        <div class="my-4 small text-muted">
             @{
                 var os = Netnr.Core.SystemStatusTo.GetOSPlatform();
             }

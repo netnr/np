@@ -53,16 +53,7 @@
         require(['vs/editor/editor.main'], function () {
             var originalModel = monaco.editor.createModel(text1 || "", "text/plain");
             var modifiedModel = monaco.editor.createModel(text2 || "", "text/plain");
-            editor = monaco.editor.createDiffEditor(document.getElementById("editor"), {
-                automaticLayout: true,
-                scrollbar: {
-                    verticalScrollbarSize: 6,
-                    horizontalScrollbarSize: 6
-                },
-                minimap: {
-                    enabled: false
-                }
-            });
+            editor = monaco.editor.createDiffEditor(document.getElementById("editor"), ss.meConfig());
             editor.setModel({
                 original: originalModel,
                 modified: modifiedModel
@@ -114,6 +105,7 @@
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     createDiffEditor(originContent, varyContent = e.target.result);
+                    $('#txtVary').val(varyContent)
                 };
                 reader.readAsText(file);
             },
@@ -123,6 +115,7 @@
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     createDiffEditor(originContent = e.target.result, varyContent);
+                    $('#txtOrigin').val(originContent)
                 };
                 reader.readAsText(file);
             }

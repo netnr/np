@@ -45,6 +45,6 @@ namespace Netnr.FileServer.Controllers
                 StatusCode = 200,
                 ContentType = "text/css"
             };
-        }
+        }             
     }
 }

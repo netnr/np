@@ -2,10 +2,10 @@
 @{
     ViewData["Title"] = "个人设置";
 
-    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin();
+    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin(Model);
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <div class="mb-2">

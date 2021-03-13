@@ -8,7 +8,7 @@ body {
 
 /*主色*/
 .mc {
-    color: #009a61 !important;
+    color: orange !important;
 }
 
 /*logo*/
@@ -23,7 +23,6 @@ body {
 
 /*标签*/
 a.tag {
-    color: #017E66;
     padding: 0 3px;
     margin: 0 3px 0;
     font-weight: 400;
@@ -34,8 +33,8 @@ a.tag {
 }
 
     a.tag:hover {
+        border-color: orange;
         text-decoration: none;
-        border-color: #017E66;
         background-color: white;
     }
 
@@ -49,33 +48,6 @@ a.tag {
 .sp_result_area {
     z-index: 8888 !important;
 }
-
-/*返回顶部*/
-.totop {
-    position: fixed;
-    z-index: 2;
-    right: 15px;
-    bottom: 80px;
-    height: 35px;
-    font-size: 3em;
-    padding: 0 8px;
-    font-weight: 600;
-    border-radius: 6px;
-    text-align: center;
-    border: 1px solid #ddd;
-    line-height: 1.42857143;
-    color: #009a61 !important;
-    text-decoration: none !important;
-    background-color: rgba(217, 217, 217, .5);
-    opacity: .4;
-    filter: alpha(opacity=40);
-    font-family: 'Microsoft YaHei';
-}
-
-    .totop:hover {
-        color: white !important;
-        background-color: #009a61;
-    }
 
 /* Bootstrap Trim */
 div.modal-header {

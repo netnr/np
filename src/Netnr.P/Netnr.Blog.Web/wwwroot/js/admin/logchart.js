@@ -141,7 +141,7 @@ function init() {
     var st = $('#setime').val(), sg = $('#segroup').val();
 
     loadPVUV(st, sg);
-    loadTop(st, 'LogUrl', sg);
+    loadTop(st, 'LogAction', sg);
     loadTop(st, 'LogReferer', sg);
     loadTop(st, 'LogSystemName', sg);
     loadTop(st, 'LogBrowserName', sg);

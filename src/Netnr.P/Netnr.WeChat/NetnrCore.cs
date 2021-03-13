@@ -22,7 +22,7 @@ namespace Netnr.WeChat
         /// <returns></returns>
         public static string ToJson(object obj, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
         {
-            Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new Newtonsoft.Json.Converters.IsoDateTimeConverter
+            Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new()
             {
                 DateTimeFormat = DateTimeFormat
             };
@@ -215,9 +215,9 @@ namespace Netnr.WeChat
             public static string MD5(string s, int len = 32)
             {
                 string result;
-                using MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
+                using MD5CryptoServiceProvider md5Hasher = new();
                 byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(s));
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 for (int i = 0; i < data.Length; i++)
                 {
                     sb.Append(data[i].ToString("x2"));
@@ -238,16 +238,16 @@ namespace Netnr.WeChat
             /// <returns></returns> 
             public static string EnDES(string Text, string sKey)
             {
-                DESCryptoServiceProvider des = new DESCryptoServiceProvider();
+                DESCryptoServiceProvider des = new();
                 byte[] inputByteArray;
                 inputByteArray = Encoding.Default.GetBytes(Text);
                 des.Key = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
                 des.IV = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
-                MemoryStream ms = new MemoryStream();
-                using CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write);
+                MemoryStream ms = new();
+                using CryptoStream cs = new(ms, des.CreateEncryptor(), CryptoStreamMode.Write);
                 cs.Write(inputByteArray, 0, inputByteArray.Length);
                 cs.FlushFinalBlock();
-                StringBuilder ret = new StringBuilder();
+                StringBuilder ret = new();
                 foreach (byte b in ms.ToArray())
                 {
                     ret.AppendFormat("{0:X2}", b);
@@ -263,7 +263,7 @@ namespace Netnr.WeChat
             /// <returns></returns> 
             public static string DeDES(string Text, string sKey)
             {
-                DESCryptoServiceProvider des = new DESCryptoServiceProvider();
+                DESCryptoServiceProvider des = new();
                 int len;
                 len = Text.Length / 2;
                 byte[] inputByteArray = new byte[len];
@@ -275,8 +275,8 @@ namespace Netnr.WeChat
                 }
                 des.Key = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
                 des.IV = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
-                MemoryStream ms = new MemoryStream();
-                using CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write);
+                MemoryStream ms = new();
+                using CryptoStream cs = new(ms, des.CreateDecryptor(), CryptoStreamMode.Write);
                 cs.Write(inputByteArray, 0, inputByteArray.Length);
                 cs.FlushFinalBlock();
                 return Encoding.Default.GetString(ms.ToArray());
@@ -294,7 +294,7 @@ namespace Netnr.WeChat
             public static string SHA128(string str)
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(str);
-                using SHA1CryptoServiceProvider SHA1 = new SHA1CryptoServiceProvider();
+                using SHA1CryptoServiceProvider SHA1 = new();
                 byte[] byteArr = SHA1.ComputeHash(buffer);
                 return BitConverter.ToString(byteArr);
             }
@@ -307,7 +307,7 @@ namespace Netnr.WeChat
             public static string SHA256(string str)
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(str);
-                using SHA256CryptoServiceProvider SHA256 = new SHA256CryptoServiceProvider();
+                using SHA256CryptoServiceProvider SHA256 = new();
                 byte[] byteArr = SHA256.ComputeHash(buffer);
                 return BitConverter.ToString(byteArr);
             }
@@ -320,7 +320,7 @@ namespace Netnr.WeChat
             public static string SHA384(string str)
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(str);
-                using SHA384CryptoServiceProvider SHA384 = new SHA384CryptoServiceProvider();
+                using SHA384CryptoServiceProvider SHA384 = new();
                 byte[] byteArr = SHA384.ComputeHash(buffer);
                 return BitConverter.ToString(byteArr);
             }
@@ -333,7 +333,7 @@ namespace Netnr.WeChat
             public static string SHA512(string str)
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(str);
-                using SHA512CryptoServiceProvider SHA512 = new SHA512CryptoServiceProvider();
+                using SHA512CryptoServiceProvider SHA512 = new();
                 byte[] byteArr = SHA512.ComputeHash(buffer);
                 return BitConverter.ToString(byteArr);
             }
@@ -347,7 +347,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string HMAC_SHA1(string str, string key)
             {
-                using HMACSHA1 hmacsha1 = new HMACSHA1
+                using HMACSHA1 hmacsha1 = new()
                 {
                     Key = Encoding.UTF8.GetBytes(key)
                 };
@@ -364,7 +364,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string HMAC_SHA256(string str, string key)
             {
-                using HMACSHA256 hmacsha256 = new HMACSHA256
+                using HMACSHA256 hmacsha256 = new()
                 {
                     Key = Encoding.UTF8.GetBytes(key)
                 };
@@ -381,7 +381,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string HMACSHA384(string str, string key)
             {
-                using HMACSHA384 hmacsha384 = new HMACSHA384
+                using HMACSHA384 hmacsha384 = new()
                 {
                     Key = Encoding.UTF8.GetBytes(key)
                 };
@@ -398,7 +398,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string HMACSHA512(string str, string key)
             {
-                using HMACSHA512 hmacsha512 = new HMACSHA512
+                using HMACSHA512 hmacsha512 = new()
                 {
                     Key = Encoding.UTF8.GetBytes(key)
                 };

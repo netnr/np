@@ -147,40 +147,52 @@ namespace Netnr.Blog.Application
         /// <summary>
         /// 获取快捷登录项
         /// </summary>
+        /// <param name="umo">用户绑定状态</param>
         /// <returns></returns>
-        public static List<ViewModel.QuickLoginVM> GetQuickLogin()
+        public static List<ViewModel.QuickLoginVM> GetQuickLogin(Domain.UserInfo umo = null)
         {
+            if (umo == null)
+            {
+                umo = new Domain.UserInfo();
+            }
+
             return new List<ViewModel.QuickLoginVM>
             {
                 new ViewModel.QuickLoginVM
                 {
                     Key = "qq",
-                    Name = "QQ"
+                    Name = "QQ",
+                    Bind = !string.IsNullOrWhiteSpace(umo.OpenId1)
                 },
                 new ViewModel.QuickLoginVM
                 {
                     Key = "weibo",
-                    Name = "微博"
+                    Name = "微博",
+                    Bind = !string.IsNullOrWhiteSpace(umo.OpenId2)
                 },
                 new ViewModel.QuickLoginVM
                 {
                     Key = "github",
-                    Name = "GitHub"
+                    Name = "GitHub",
+                    Bind = !string.IsNullOrWhiteSpace(umo.OpenId3)
                 },
                 new ViewModel.QuickLoginVM
                 {
                     Key = "taobao",
-                    Name = "淘宝"
+                    Name = "淘宝",
+                    Bind = !string.IsNullOrWhiteSpace(umo.OpenId4)
                 },
                 new ViewModel.QuickLoginVM
                 {
                     Key = "microsoft",
-                    Name = "Microsoft"
+                    Name = "Microsoft",
+                    Bind = !string.IsNullOrWhiteSpace(umo.OpenId5)
                 },
                 new ViewModel.QuickLoginVM
                 {
                     Key = "dingtalk",
-                    Name = "钉钉"
+                    Name = "钉钉",
+                    Bind = !string.IsNullOrWhiteSpace(umo.OpenId6)
                 }
             };
         }

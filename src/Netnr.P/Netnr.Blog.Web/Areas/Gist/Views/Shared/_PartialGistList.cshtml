@@ -17,16 +17,14 @@
     ViewData["Title"] = ViewData["Nickname"] + " gists";
 
     <div class="container-fluid">
-        <div class="row cp-header">
-            <div class="container">
-                <div class="row mt-4 mb-3">
-                    <div class="col-12 text-right">
-                        <div class="float-left">
-                            <i class="fa fa-book fa-2x text-muted mr-sm-3"></i>
-                        </div>
-                        <div class="float-left text-left">
-                            <h5>Your gists</h5>
-                        </div>
+        <div class="cp-header">
+            <div class="row mt-4 mb-3">
+                <div class="col-12 text-right">
+                    <div class="float-left">
+                        <i class="fa fa-book fa-2x text-muted mr-sm-3"></i>
+                    </div>
+                    <div class="float-left text-left">
+                        <h5>Your gists</h5>
                     </div>
                 </div>
             </div>
@@ -34,7 +32,7 @@
     </div>
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-12 mt-4 mb-2">
             <p>We’ve found <b>@Model.Pag.Total.ToString("N0")</b> results</p>
@@ -48,7 +46,7 @@
                 <div class="ml-5">
                     <a href="/gist/user/@item.Uid">@item.Spare3</a>&nbsp;/
                     <a href="/gist/code/@item.GistCode"><b>@item.GistFilename</b></a>
-                    <small class="ml-3 badge badge-secondary">@item.GistLanguage</small>
+                    <small class="ml-3 badge badge-warning">@item.GistLanguage</small>
                     <div>
                         <small class="text-muted">@item.GistCreateTime.Value.ToString("yyyy-MM-dd HH:mm")</small>
                     </div>

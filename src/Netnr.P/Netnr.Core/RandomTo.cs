@@ -18,7 +18,7 @@ namespace Netnr.Core
             string result = string.Empty;
             if (strLen > 0)
             {
-                Random rd = new Random(Guid.NewGuid().GetHashCode());
+                Random rd = new(Guid.NewGuid().GetHashCode());
                 for (int i = 0; i < strLen; i++)
                     result += source[rd.Next(source.Length)].ToString();
             }

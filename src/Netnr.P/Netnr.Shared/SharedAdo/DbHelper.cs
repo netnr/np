@@ -117,7 +117,7 @@ namespace Netnr.SharedAdo
                 var num = 0;
 
                 var listBatchSql = new List<string>();
-                StringBuilder sbsql = new StringBuilder();
+                StringBuilder sbsql = new();
                 var currSqlSize = 0;
                 var si = 0;
                 while (si < listSql.Count)

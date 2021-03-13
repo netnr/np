@@ -27,7 +27,7 @@ namespace Netnr.CaptchaDemo.Controllers
         /// <param name="code">随机码</param>
         public byte[] CreateImg(string code)
         {
-            Random random = new Random();
+            Random random = new();
 
             //为验证码插入空格
             for (int i = 0; i < 2; i++)

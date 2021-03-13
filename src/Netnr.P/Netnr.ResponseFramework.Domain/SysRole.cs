@@ -9,15 +9,17 @@ namespace Netnr.ResponseFramework.Domain
     public partial class SysRole
     {
         [Key]
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string SrId { get; set; }
-        [StringLength(200)]
+        [Column(TypeName = "varchar(200)")]
         public string SrName { get; set; }
         public int? SrStatus { get; set; }
-        [StringLength(200)]
+        [Column(TypeName = "varchar(200)")]
         public string SrDescribe { get; set; }
         public int? SrGroup { get; set; }
+        [Column(TypeName = "text")]
         public string SrMenus { get; set; }
+        [Column(TypeName = "text")]
         public string SrButtons { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? SrCreateTime { get; set; }

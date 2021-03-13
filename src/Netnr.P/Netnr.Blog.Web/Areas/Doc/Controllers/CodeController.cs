@@ -93,9 +93,9 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                 var ct = new List<string>
                     {
                         "# " + ds.DsName,
-                        ds.DsRemark,
+                        string.IsNullOrWhiteSpace(ds.DsRemark)? "" : $"#### {ds.DsRemark}",
                         "",
-                        ds.DsCreateTime.Value.ToString("yyyy-MM-dd")
+                        ds.DsCreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss")
                     };
                 var ctmd = string.Join(Environment.NewLine, ct);
                 listSeo.Add(Markdown.ToHtml(ctmd));
@@ -488,7 +488,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// <returns></returns>
         private string ListTreeEach<T>(List<T> list, string pidField, string idField, List<string> startPid, List<int> listNo = null, int deep = 1)
         {
-            StringBuilder sbTree = new StringBuilder();
+            StringBuilder sbTree = new();
 
             var rdt = list.Where(x => startPid.Contains(x.GetType().GetProperty(pidField).GetValue(x, null).ToString())).ToList();
 

@@ -189,7 +189,7 @@ namespace Netnr.Blog.Web.Controllers
             string sql = string.Empty;
 
             var uiR = db.UserInfo;
-            Domain.UserInfo outMo = new Domain.UserInfo();
+            Domain.UserInfo outMo = new();
 
             switch (vt)
             {

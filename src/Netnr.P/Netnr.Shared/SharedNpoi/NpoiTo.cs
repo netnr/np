@@ -125,7 +125,7 @@ namespace Netnr.SharedNpoi
                 }
 
                 //写Excel
-                using (FileStream file = new FileStream(fullPathName, FileMode.OpenOrCreate))
+                using (FileStream file = new(fullPathName, FileMode.OpenOrCreate))
                 {
                     workbook.Write(file);
                 }
@@ -150,7 +150,7 @@ namespace Netnr.SharedNpoi
         /// <returns></returns>
         public static DataTable ExcelToDataTable(IWorkbook workbook, int iSheetIndex, string extName, int skipRow = 0)
         {
-            DataTable dt = new DataTable();
+            DataTable dt = new();
 
             ISheet sheet = workbook.GetSheetAt(iSheetIndex);
 
@@ -272,7 +272,7 @@ namespace Netnr.SharedNpoi
             IWorkbook workbook = null;
 
             string strExtName = Path.GetExtension(fullPathName);
-            using (FileStream file = new FileStream(fullPathName, FileMode.Open, FileAccess.Read))
+            using (FileStream file = new(fullPathName, FileMode.Open, FileAccess.Read))
             {
                 if (strExtName.Equals(".xls"))
                 {

@@ -159,10 +159,10 @@ namespace Netnr.Blog.Web.Controllers
                             a.Spare2,
                             a.Spare3,
 
-                            b.UserId,
-                            b.Nickname,
-                            b.UserName,
-                            b.UserMail
+                            UserId = b == null ? 0 : b.UserId,
+                            Nickname = b == null ? null : b.Nickname,
+                            UserName = b == null ? null : b.UserName,
+                            UserMail = b == null ? null : b.UserMail
                         };
 
             if (!string.IsNullOrWhiteSpace(ivm.Pe1))
@@ -230,7 +230,7 @@ namespace Netnr.Blog.Web.Controllers
         public string QueryLog(int page, int rows, string wheres)
         {
             var now = DateTime.Now;
-            List<List<string>> listWhere = new List<List<string>>();
+            List<List<string>> listWhere = new();
             try
             {
                 if (!string.IsNullOrWhiteSpace(wheres))

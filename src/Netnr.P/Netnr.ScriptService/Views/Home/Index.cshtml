@@ -16,7 +16,7 @@
         <div class="col-md-12">
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <select class="custom-select" style="width:150px;" id="seGroup">
+                    <select class="custom-select" id="seGroup">
                         <option value="">全部</option>
                         @foreach (var gi in NavService.Nav)
                         {
@@ -25,9 +25,9 @@
                     </select>
                 </div>
                 <div class="input-group-prepend">
-                    <button class="btn btn-success" id="btnSearch">搜索</button>
+                    <button class="btn btn-warning" id="btnSearch">搜索</button>
                 </div>
-                <input type="text" class="form-control" placeholder="双击空白处 重置搜索条件" id="txtSearch">
+                <input type="text" class="form-control" placeholder="双击空白处 重置搜索条件" id="txtSearch" autocomplete="off">
             </div>
         </div>
     </div>

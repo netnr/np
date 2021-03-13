@@ -39,17 +39,13 @@
     "title": "NET牛人",
     "domain": "https://www.netnr.com",
     "foreverdomain": "http://netnr.top",
-    "createtime": "2014.01.01",
-    "qqgroup": 83084426
+    "createtime": "2014.01.01"
   },
   "about": {
     "name": "netnr",
     "sex": "男",
-    "birthday": "1992.07.13",
     "injob": "2012.03.01",
     "live": "中国重庆",
-    "stain": null,
-    "qq": 1041911384,
     "mail": "netnr@netnr.com",
     "git": [
       {
@@ -62,7 +58,7 @@
       }
     ]
   },
-  "updaet": "2018.01.08",
+  "updaet": "2021.03.05",
   "version": "v.1.0.0"
 }</pre>
         </div>
@@ -288,20 +284,11 @@
         var tv1 = txt1.innerHTML;
         txt1.innerHTML = '';
 
-        editor1 = monaco.editor.create(txt1, {
+        editor1 = monaco.editor.create(txt1, ss.meConfig({
             value: tv1,
             language: 'json',
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-            theme: 'vs',
-            scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
-            },
-            minimap: {
-                enabled: false
-            }
-        });
+            scrollBeyondLastLine: false
+        }));
 
         editor1.onDidChangeModelContent(function (e) {
             if ($('#seautoformatter1').val() == "1") {
@@ -320,20 +307,10 @@
             }
         });
 
-        editor2 = monaco.editor.create($("#txt2")[0], {
-            value: '',
+        editor2 = monaco.editor.create($("#txt2")[0], ss.meConfig({
             language: 'csharp',
-            automaticLayout: true,
-            scrollBeyondLastLine: false,
-            theme: 'vs',
-            scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
-            },
-            minimap: {
-                enabled: false
-            }
-        });
+            scrollBeyondLastLine: false
+        }));
     });
 
     $(window).resize(AutoHeight);

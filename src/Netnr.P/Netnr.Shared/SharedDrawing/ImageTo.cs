@@ -113,7 +113,7 @@ namespace Netnr.SharedDrawing
             graphic.DrawImage(image, 0, 0, image.Width, image.Height);
 
             //设置字体
-            Font f = new Font("Verdana", 60);
+            Font f = new("Verdana", 60);
 
             //设置字体颜色
             Brush b = new SolidBrush(Color.Green);

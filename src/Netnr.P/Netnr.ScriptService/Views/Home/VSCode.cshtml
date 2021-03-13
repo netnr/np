@@ -51,7 +51,7 @@
         defaultTheme = ss.lsStr("vscode-theme") || 'vs';
 
     require(['vs/editor/editor.main'], function () {
-        var modesIds = monaco.languages.getLanguages().map(function (lang) { return lang.id }).sort();
+        var modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
 
         var te = $("#editor"), selang = $('#selanguage'),
             languagehtm = [];
@@ -61,19 +61,11 @@
         }
         selang.children()[0].innerHTML = languagehtm.join('');
 
-        editor = monaco.editor.create(te[0], {
+        editor = monaco.editor.create(te[0], ss.meConfig({
             value: defaultContent,
             language: defaultLang,
-            automaticLayout: true,
-            theme: defaultTheme,
-            scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
-            },
-            minimap: {
-                _enabled: false
-            }
-        });
+            theme: defaultTheme
+        }));
 
         selang.change(function () {
             var oldModel = editor.getModel();

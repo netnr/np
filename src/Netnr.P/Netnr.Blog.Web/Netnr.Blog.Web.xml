@@ -520,31 +520,142 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Web.Controllers.APIController">
+        <member name="T:Netnr.Blog.Web.Controllers.api.APIController">
             <summary>
             公共接口
             </summary>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.APIController.UserInfo">
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.UserInfo">
             <summary>
             登录用户个人信息
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.APIController.API98(Microsoft.AspNetCore.Http.IFormFile,System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.String)">
             <summary>
-            公共上传
+            上传
             </summary>
             <param name="file">文件</param>
-            <param name="subdir">可选，自定义子路径，如：/static/draw</param>
+            <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Web.Controllers.GuffController">
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.Proxy(System.String,System.String)">
+            <summary>
+            代理
+            </summary>
+            <param name="url">代理链接</param>
+            <param name="charset">编码，默认utf-8，如：gb2312</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Blog.Web.Controllers.api.APIController.TaskItem">
+            <summary>
+            任务项
+            </summary>
+        </member>
+        <member name="F:Netnr.Blog.Web.Controllers.api.APIController.TaskItem.BackupDataBase">
+            <summary>
+            备份数据库
+            </summary>
+        </member>
+        <member name="F:Netnr.Blog.Web.Controllers.api.APIController.TaskItem.ExportDataBase">
+            <summary>
+            导出数据库
+            </summary>
+        </member>
+        <member name="F:Netnr.Blog.Web.Controllers.api.APIController.TaskItem.ExportSampleData">
+            <summary>
+            导出示例数据
+            </summary>
+        </member>
+        <member name="F:Netnr.Blog.Web.Controllers.api.APIController.TaskItem.GistSync">
+            <summary>
+            代码片段同步到GitHub、Gitee
+            </summary>
+        </member>
+        <member name="F:Netnr.Blog.Web.Controllers.api.APIController.TaskItem.HOR">
+            <summary>
+            处理操作记录
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.ExecTask(System.Nullable{Netnr.Blog.Web.Controllers.api.APIController.TaskItem})">
+            <summary>
+            手动执行任务（管理员）
+            </summary>
+            <param name="ti"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Blog.Web.Controllers.api.DKController">
+            <summary>
+            Netnr.DataKit API
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DKController.GetTable(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            获取所有表名及注释
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DKController.GetColumn(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DKController.SetTableComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DKController.SetColumnComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DKController.GetData(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DKController.GetDEI(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Blog.Web.Controllers.api.GuffController">
             <summary>
             尬服 guff.ltd 提供所有接口支持
             </summary>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.List(System.String,System.String,System.Int32,System.String,System.String,System.String,System.Int32)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.List(System.String,System.String,System.Int32,System.String,System.String,System.String,System.Int32)">
             <summary>
             列表
             </summary>
@@ -557,28 +668,28 @@
             <param name="page">页码</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.Detail(System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.Detail(System.String)">
             <summary>
             查询一条
             </summary>
             <param name="id">ID</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.Add(Netnr.Blog.Domain.GuffRecord)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.Add(Netnr.Blog.Domain.GuffRecord)">
             <summary>
             新增
             </summary>
             <param name="mo"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.Update(Netnr.Blog.Domain.GuffRecord)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.Update(Netnr.Blog.Domain.GuffRecord)">
             <summary>
             修改
             </summary>
             <param name="mo"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.Connection(System.String,System.Int32,System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.Connection(System.String,System.Int32,System.String)">
             <summary>
             连接：点赞、收藏 
             </summary>
@@ -587,7 +698,7 @@
             <param name="id">ID</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.ReplyAdd(Netnr.Blog.Domain.UserReply,System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.ReplyAdd(Netnr.Blog.Domain.UserReply,System.String)">
             <summary>
             添加回复
             </summary>
@@ -595,7 +706,7 @@
             <param name="id">ID</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.ReplyList(System.String,System.Int32)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.ReplyList(System.String,System.Int32)">
             <summary>
             回复列表
             </summary>
@@ -603,14 +714,14 @@
             <param name="page"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.Delete(System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.Delete(System.String)">
             <summary>
             删除一条
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.GuffController.HotTag">
+        <member name="M:Netnr.Blog.Web.Controllers.api.GuffController.HotTag">
             <summary>
             热门标签
             </summary>
@@ -801,40 +912,8 @@
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.ServicesController.WebHook">
             <summary>
-            WebHook
+            WebHook（已停用）
             </summary>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.Blog.Web.Controllers.ServicesController.TaskItem">
-            <summary>
-            任务项
-            </summary>
-        </member>
-        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.BackupDataBase">
-            <summary>
-            备份数据库
-            </summary>
-        </member>
-        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.GistSync">
-            <summary>
-            代码片段同步到GitHub、Gitee
-            </summary>
-        </member>
-        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.HOR">
-            <summary>
-            处理操作记录
-            </summary>
-        </member>
-        <member name="F:Netnr.Blog.Web.Controllers.ServicesController.TaskItem.ExportDataBase">
-            <summary>
-            导出数据库
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.ExecTask(System.Nullable{Netnr.Blog.Web.Controllers.ServicesController.TaskItem})">
-            <summary>
-            需要处理的事情
-            </summary>
-            <param name="ti"></param>
             <returns></returns>
         </member>
         <member name="T:Netnr.Blog.Web.Controllers.StorageController">
@@ -1260,6 +1339,789 @@
             <param name="path">原服务器上的图片路径</param>
             <param name="syPicPath">水印图片的路径</param>
             <param name="waterPicPath">生成的水印图片存放路径</param>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Applications.DataKitMySQLService">
+            <summary>
+            实现接口
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitMySQLService.connectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitMySQLService.db">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="conn">连接字符串</param>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.DataBaseName">
+            <summary>
+            获取数据库名称
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.GetTableSQL">
+            <summary>
+            获取所有表信息的SQL脚本
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.GetColumnSQL(System.String)">
+            <summary>
+            获取所有列信息的SQL脚本
+            </summary>
+            <param name="sqlWhere">SQL条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.SetTableCommentSQL(System.String,System.String)">
+            <summary>
+            设置表注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.SetColumnCommentSQL(System.String,System.String,System.String)">
+            <summary>
+            设置列注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="dataColumnName">列名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.GetColumn(System.Collections.Generic.List{System.String})">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="listTableName">表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.GetTable">
+            <summary>
+            获取所有表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.SetTableComment(System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.SetColumnComment(System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <param name="total">返回总条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitMySQLService.GetDEI">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Applications.DataKitOracleService">
+            <summary>
+            Oracle
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitOracleService.connectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitOracleService.db">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="conn">连接字符串</param>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.GetTableSQL">
+            <summary>
+            获取所有表信息的SQL脚本
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.GetColumnSQL(System.String)">
+            <summary>
+            获取所有列信息的SQL脚本
+            </summary>
+            <param name="sqlWhere">SQL条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.SetTableCommentSQL(System.String,System.String)">
+            <summary>
+            设置表注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.SetColumnCommentSQL(System.String,System.String,System.String)">
+            <summary>
+            设置列注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="dataColumnName">列名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.GetColumn(System.Collections.Generic.List{System.String})">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="listTableName">表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.GetTable">
+            <summary>
+            获取所有表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.SetTableComment(System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.SetColumnComment(System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <param name="total">返回总条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitOracleService.GetDEI">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService">
+            <summary>
+            实现接口
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.connectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.db">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="conn">连接字符串</param>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.GetTableSQL">
+            <summary>
+            获取所有表信息的SQL脚本
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.GetColumnSQL(System.String)">
+            <summary>
+            获取所有列信息的SQL脚本
+            </summary>
+            <param name="sqlWhere">SQL条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.SetTableCommentSQL(System.String,System.String)">
+            <summary>
+            设置表注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.SetColumnCommentSQL(System.String,System.String,System.String)">
+            <summary>
+            设置列注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="dataColumnName">列名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.GetColumn(System.Collections.Generic.List{System.String})">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="listTableName">表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.GetTable">
+            <summary>
+            获取所有表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.SetTableComment(System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.SetColumnComment(System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <param name="total">返回总条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitPostgreSQLService.GetDEI">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Applications.DataKitSQLiteService">
+            <summary>
+            实现接口
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitSQLiteService.connectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitSQLiteService.db">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="conn">连接字符串</param>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.GetTableSQL">
+            <summary>
+            获取所有表信息的SQL脚本
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.GetColumnSQL(System.String)">
+            <summary>
+            获取所有列信息的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.GetColumn(System.Collections.Generic.List{System.String})">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="listTableName">表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.GetTable">
+            <summary>
+            获取所有表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.SetTableComment(System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.SetColumnComment(System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <param name="total">返回总条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLiteService.GetDEI">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Applications.DataKitSQLServerService">
+            <summary>
+            实现接口
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitSQLServerService.connectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDataKit.Applications.DataKitSQLServerService.db">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="conn">连接字符串</param>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.GetTableSQL">
+            <summary>
+            获取所有表信息的SQL脚本
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.GetColumnSQL(System.String)">
+            <summary>
+            获取所有列信息的SQL脚本
+            </summary>
+            <param name="sqlWhere">SQL条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.SetTableCommentSQL(System.String,System.String)">
+            <summary>
+            设置表注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.SetColumnCommentSQL(System.String,System.String,System.String)">
+            <summary>
+            设置列注释的SQL脚本
+            </summary>
+            <param name="dataTableName">表名</param>
+            <param name="dataColumnName">列名</param>
+            <param name="comment">注释内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.GetColumn(System.Collections.Generic.List{System.String})">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="listTableName">表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.GetTable">
+            <summary>
+            获取所有表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.SetTableComment(System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.SetColumnComment(System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <param name="total">返回总条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitSQLServerService.GetDEI">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Applications.DataKitService">
+            <summary>
+            DataKit调用
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.ForTypeDBSetConn(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            赋值
+            </summary>
+            <param name="tdb"></param>
+            <param name="conn"></param>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.GetTable(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            获取所有表名及注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.GetColumn(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
+            <summary>
+            获取所有列
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.SetTableComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.SetColumnComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.GetData(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.GetDEI(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+            <param name="conn">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.DataKitService.SHA128ToLong(System.String)">
+            <summary>
+            SHA1 加密 为 long
+            </summary>
+            <param name="str">内容</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Applications.IDataKitService">
+            <summary>
+            获取数据库各类信息的接口定义
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.IDataKitService.GetTable">
+            <summary>
+            获取所有表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.IDataKitService.GetColumn(System.Collections.Generic.List{System.String})">
+            <summary>
+            获取表列信息
+            </summary>
+            <param name="listTableName">表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.IDataKitService.SetTableComment(System.String,System.String)">
+            <summary>
+            设置表注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="TableComment">表注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.IDataKitService.SetColumnComment(System.String,System.String,System.String)">
+            <summary>
+            设置列注释
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="FieldName">列名</param>
+            <param name="FieldComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.IDataKitService.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.Int32@)">
+            <summary>
+            查询数据
+            </summary>
+            <param name="TableName">表名</param>
+            <param name="page">页码</param>
+            <param name="rows">页量</param>
+            <param name="sort">排序字段</param>
+            <param name="order">排序方式</param>
+            <param name="listFieldName">查询列，默认为 *</param>
+            <param name="whereSql">条件</param>
+            <param name="total">返回总条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Applications.IDataKitService.GetDEI">
+            <summary>
+            查询数据库环境信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Models.DkDEI">
+            <summary>
+            数据库环境信息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiName">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiVersion">
+            <summary>
+            版本号
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiCompile">
+            <summary>
+            编译
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiDirInstall">
+            <summary>
+            安装目录
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiDirData">
+            <summary>
+            数据库目录
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiEngine">
+            <summary>
+            引擎
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiCharSet">
+            <summary>
+            字符集
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiTimeZone">
+            <summary>
+            时区
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiDateTime">
+            <summary>
+            当前时间
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiMaxConn">
+            <summary>
+            最大连接数
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiCurrConn">
+            <summary>
+            当前连接数
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiTimeout">
+            <summary>
+            连接超时（秒）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiIgnoreCase">
+            <summary>
+            忽略大小写（不区分大小写）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkDEI.DeiSystem">
+            <summary>
+            操作系统
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Models.DkTableColumn">
+            <summary>
+            表列信息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.TableName">
+            <summary>
+            表名
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.TableComment">
+            <summary>
+            表注释
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.FieldName">
+            <summary>
+            字段名
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.DataTypeLength">
+            <summary>
+            数据类型及长度
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.DataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.DataLength">
+            <summary>
+            数据长度
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.DataScale">
+            <summary>
+            数据精度
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.FieldOrder">
+            <summary>
+            字段排序
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.PrimaryKey">
+            <summary>
+            主键（YES：是主键）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.AutoAdd">
+            <summary>
+            自增（YES：是自增）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.NotNull">
+            <summary>
+            为空（YES：不为空）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.DefaultValue">
+            <summary>
+            默认值
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableColumn.FieldComment">
+            <summary>
+            字段注释
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedDataKit.Models.DkTableName">
+            <summary>
+            表信息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableName.TableName">
+            <summary>
+            表名
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.Models.DkTableName.TableComment">
+            <summary>
+            表注释
+            </summary>
         </member>
         <member name="T:Netnr.SharedLogging.LoggingModel">
             <summary>

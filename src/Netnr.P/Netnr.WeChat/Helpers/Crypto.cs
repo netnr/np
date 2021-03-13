@@ -108,7 +108,7 @@ namespace Netnr.WeChat.Helpers
                 }
                 string[] arr = codeSerial.Split(',');
                 string code = "";
-                Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
+                Random rand = new(unchecked((int)DateTime.Now.Ticks));
                 for (int i = 0; i < codeLen; i++)
                 {
                     int randValue = rand.Next(0, arr.Length - 1);
@@ -223,7 +223,7 @@ namespace Netnr.WeChat.Helpers
 
             private static byte[] AES_decrypt(string Input, byte[] Iv, byte[] Key)
             {
-                RijndaelManaged aes = new RijndaelManaged
+                RijndaelManaged aes = new()
                 {
                     KeySize = 256,
                     BlockSize = 128,
@@ -323,7 +323,7 @@ namespace Netnr.WeChat.Helpers
                 {
                     return (int)WXBizMsgCryptErrorCode.WXBizMsgCrypt_IllegalAesKey;
                 }
-                XmlDocument doc = new XmlDocument();
+                XmlDocument doc = new();
                 XmlNode root;
                 string sEncryptMsg;
                 try
@@ -463,8 +463,8 @@ namespace Netnr.WeChat.Helpers
             /// <returns></returns>
             public static int GenarateSinature(string sToken, string sTimeStamp, string sNonce, string sMsgEncrypt, ref string sMsgSignature)
             {
-                ArrayList AL = new ArrayList
-            {
+                ArrayList AL = new()
+                {
                 sToken,
                 sTimeStamp,
                 sNonce,

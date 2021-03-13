@@ -1,6 +1,7 @@
 <style>
-    .messagebox img {
+    .messagebox svg {
         width: 32px;
+        height: 32px;
     }
 
     .messagebox textarea {
@@ -12,6 +13,7 @@
         word-break: break-word;
     }
 </style>
+
 <div class="container-fluid">
     <div class="row messagebox">
         <div class="col-md-12">
@@ -37,7 +39,7 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("bmob.js,netnrmd.css,netnrmd.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("bmob.js,netnrmd.css,netnrmd.js,jdenticon.js"))
 
 <script>
     ss.bmobInit();
@@ -56,9 +58,9 @@
                 var htm = [];
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
-                    htm.push('<li class="media mb-3 border-bottom" id="' + id + '">');
-                    htm.push('<a class="mr-3" href="#' + id + '"><img src="/images/photo.svg"></a>');
                     var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
+                    htm.push('<li class="media mb-3 border-bottom" id="' + id + '">');
+                    htm.push('<a class="mr-3" href="#' + id + '"><svg data-jdenticon-value="' + nickname + '"></svg></a>');
                     htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + nickname + '<small class="mx-3 text-muted">' + this.createdAt + '</small><a class="text-warning" href="#' + id + '">#' + (i + 1) + '</a></h6>');
                     if (this.IsBlock) {
                         htm.push('<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>');
@@ -69,7 +71,7 @@
                         }).replace(/#\d+/g, function (n) {
                             return '<a href="' + n.replace("#", "#mi") + '" class="text-warning">' + n + '</a>'
                         });
-                        htm.push('<div>' + vc + '</div>');
+                        htm.push('<div class="text-break">' + vc + '</div>');
                     }
                     htm.push('</div></li>');
                 });
@@ -78,11 +80,13 @@
                 } else {
                     $('#messagelist').html('no message');
                 }
+
+                jdenticon();
             }).catch(err => {
                 jz.alert("查询失败");
                 console.log(err);
                 ss.loading(0);
-            })
+            });
         }
     }
 

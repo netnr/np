@@ -152,6 +152,13 @@
             <param name="resultOutput">结果输出</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Core.CmdTo.Execute(System.String)">
+            <summary>
+            执行
+            </summary>
+            <param name="command">命令</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Core.CmdTo.Run(System.String,System.String)">
             <summary>  
             Windows操作系统，执行cmd命令

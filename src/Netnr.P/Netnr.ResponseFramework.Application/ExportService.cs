@@ -65,7 +65,7 @@ namespace Netnr.ResponseFramework.Application
             }
 
             //剔除没在表配置的列
-            List<string> removeColNotExists = new List<string>();
+            List<string> removeColNotExists = new();
             foreach (DataColumn dc in dt.Columns)
             {
                 if (!listColumns.Where(x => x.ColField == dc.ColumnName).Any())
@@ -311,7 +311,7 @@ namespace Netnr.ResponseFramework.Application
 
             IWorkbook workbook = null;
 
-            using (FileStream file = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (FileStream file = new(fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
                 if (strExtName.Equals(".xls"))
                 {
@@ -360,7 +360,7 @@ namespace Netnr.ResponseFramework.Application
                     break;
             }
 
-            using (FileStream file = new FileStream(fullPath, FileMode.OpenOrCreate))
+            using (FileStream file = new(fullPath, FileMode.OpenOrCreate))
             {
                 workbook.Write(file);
                 workbook.Close();

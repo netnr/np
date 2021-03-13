@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>netnrnav</title>
+
+    <meta name="keywords" content="netnr,NET牛人,netnrnav,netnrnav导航" />
+    <meta name="description" content="netnr,NET牛人,netnrnav,netnrnav导航,响应式导航" />
+
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="src/netnrnav.css" rel="stylesheet" />
+</head>
+<body>
+    <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 my-3">
+        <span class="fa fa-align-justify fa-lg"></span>
+    </button>
+    <div class="netnrnav horizontal">
+        <div class="netnrnav-wrapper">
+            <ul>
+                <li><a href="//www.netnr.com" title="首页"><span class="fa fa-fw fa-home"></span> 首页</a></li>
+                <li><a href="//www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                <li><a href="//www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                <li><a href="//www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                <li><a href="//www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                <li><a href="https://ss.netnr.com" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                <li>
+                    <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                    <ul>
+                        <li><a target="_blank" rel="noopener norefferrer" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li><a target="_blank" rel="noopener norefferrer" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="float-right">
+                <li>
+                    <a><span class="fa fa-fw fa-user-circle-o "></span><span class="indicator fa fa-sort-desc"></span></a>
+                    <ul>
+                        <li><a href="//www.netnr.com/user/id/1"><span class="fa fa-fw fa-user text-primary"></span> 我的主页</a></li>
+                        <li><a href="/"><span class="fa fa-fw fa-cog text-primary"></span> 个人设置</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/"><span class="fa fa-fw fa-pencil text-info"></span> 写</a></li>
+                        <li><a href="/"><span class="fa fa-fw fa-file-text-o text-info"></span> 我的文章</a></li>
+                        <li><a href="/"><span class="fa fa-fw fa-thumbs-up text-success"></span> 我的点赞</a></li>
+                        <li><a href="/"><span class="fa fa-fw fa-cube text-info"></span> 我的收藏</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/"><span class="fa fa-fw fa-power-off text-danger"></span> 退出</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+    <script src="src/netnrnav.js"></script>
+</body>
+
+</html>

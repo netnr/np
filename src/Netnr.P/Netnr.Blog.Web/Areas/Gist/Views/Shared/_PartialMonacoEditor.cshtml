@@ -7,18 +7,14 @@
 {
     ViewData["Title"] = "Editing " + mo.GistFilename;
 
-    <div class="container-fluid mb-4">
-        <div class="row cp-header">
-            <div class="container">
-                <div class="row mt-4 mb-3">
-                    <div class="col-12 text-right">
-                        <div class="float-left">
-                            <i class="fa fa-file-code-o fa-fw fa-2x text-muted mr-sm-2"></i>
-                        </div>
-                        <div class="float-left text-left">
-                            <h5>Editing <a href="/gist/code/@mo.GistCode">@mo.GistFilename</a></h5>
-                        </div>
-                    </div>
+    <div class="container-fluid mb-4 cp-header">
+        <div class="row mt-4 mb-3">
+            <div class="col-12 text-right">
+                <div class="float-left">
+                    <i class="fa fa-file-code-o fa-fw fa-2x text-muted mr-sm-2"></i>
+                </div>
+                <div class="float-left text-left">
+                    <h5>Editing <a href="/gist/code/@mo.GistCode">@mo.GistFilename</a></h5>
                 </div>
             </div>
         </div>
@@ -31,19 +27,13 @@ else
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 gn-hint">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <h1>Instantly share code, notes, and snippets.</h1>
-                        </div>
-                    </div>
-                </div>
+                <h1>Instantly share code, notes, and snippets.</h1>
             </div>
         </div>
     </div>
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row gn-header">
         <div class="col-12 mb-3">
             <input type="text" class="form-control" placeholder="Gist description…" id="txtRemark" value="@mo.GistRemark" maxlength="200" />
@@ -83,7 +73,7 @@ else
 </div>
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-12 mt-3 text-right">
             @if (Model == null)

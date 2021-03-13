@@ -23,7 +23,7 @@ require(['vs/editor/editor.main'], function () {
                 }
             });
         }
-        $('<button class="fre btn btn-outline-info">' + lang + '<i class="fa fa-arrows-alt fa-fw"></i></button>').appendTo(this).click(function () {
+        $('<button class="fre btn btn-outline-success">' + lang + '<i class="fa fa-arrows-alt fa-fw"></i></button>').appendTo(this).click(function () {
             var re = $('#rune');
             if (re.hasClass('rune-full')) {
                 re.removeClass('rune-full');

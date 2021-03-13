@@ -21,7 +21,7 @@ namespace Netnr.Core
         /// <returns></returns>
         public static string ListToTree<T>(List<T> list, string pidField, string idField, List<string> startPid, string childrenNodeName = "children")
         {
-            StringBuilder sbTree = new StringBuilder();
+            StringBuilder sbTree = new();
 
             var rdt = list.Where(x => startPid.Contains(x.GetType().GetProperty(pidField).GetValue(x, null).ToString())).ToList();
 

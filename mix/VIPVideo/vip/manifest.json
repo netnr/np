@@ -1,0 +1,19 @@
+﻿{
+  "background": {
+    "scripts": [ "background.js" ]
+  },
+  "browser_action": {
+    "default_icon": "favicon.png",
+    "default_title": "VIP视频解析"
+  },
+  "description": "看爱奇艺优酷芒果等各大vip会员视频利器，本插件仅供娱乐，不保证持续更新支持",
+  "icons": {
+    "128": "favicon.png",
+    "16": "favicon.png",
+    "48": "favicon.png"
+  },
+  "manifest_version": 2,
+  "name": "VIP视频解析",
+  "permissions": [ "background", "contextMenus", "tabs" ],
+  "version": "1.0"
+}

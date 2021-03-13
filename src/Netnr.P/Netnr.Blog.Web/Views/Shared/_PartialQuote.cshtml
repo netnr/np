@@ -9,14 +9,25 @@
         case "MirrorReadOnly":
             if (GlobalTo.GetValue<bool>("ReadOnly"))
             {
-                <div class="alert alert-warning text-center p-1 m-0 nrMsiro">Mirror site is read only &nbsp; <a href="https://www.netnr.com">www.netnr.com</a> &nbsp; 镜像站点只读</div>
+                <div class="alert alert-warning text-center p-1 m-0 invisible nrMsiro">Mirror site is read only &nbsp; <a href="https://www.netnr.com">www.netnr.com</a> &nbsp; 镜像站点只读</div>
                 <script>
                     setTimeout(function () {
-                        var pn = location.pathname.toLowerCase();
-                        if (pn.indexOf("/draw/mind") == 0 || pn.indexOf("/draw/code/m") == 0) {
-                            document.querySelector(".nrMsiro").style.display = "none"
+                        var msiroNode = document.querySelector(".nrMsiro"),
+                            pn = location.pathname.toLowerCase(),
+                            ep = ["/draw/mind", "/draw/code/m", "/draw/code/d"],
+                            isep = false;
+                        for (var i = 0; i < ep.length; i++) {
+                            if (pn.indexOf(ep[i]) == 0) {
+                                isep = true;
+                                break;
+                            }
                         }
-                    }, 1000 * 9);
+                        if (isep) {
+                            document.body.removeChild(msiroNode)
+                        } else {
+                            msiroNode.className = msiroNode.className.replace(" invisible", "");
+                        }
+                    }, 0);
                 </script>
             }
             break;

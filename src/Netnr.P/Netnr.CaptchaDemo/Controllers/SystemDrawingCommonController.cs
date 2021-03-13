@@ -28,7 +28,7 @@ namespace Netnr.CaptchaDemo.Controllers
         /// <param name="code">随机码</param>
         public byte[] CreateImg(string code)
         {
-            Random random = new Random();
+            Random random = new();
 
             //为验证码插入空格
             for (int i = 0; i < 2; i++)
@@ -40,7 +40,7 @@ namespace Netnr.CaptchaDemo.Controllers
             Color[] colors = { Color.LightBlue, Color.LightCoral, Color.LightGreen, Color.LightPink, Color.LightSkyBlue, Color.LightSteelBlue, Color.LightSalmon };
 
             //定义图像的大小，生成图像的实例  
-            using Bitmap Img = new Bitmap(code.Length * 22, 38);
+            using Bitmap Img = new(code.Length * 22, 38);
             using Graphics g = Graphics.FromImage(Img);
 
             //背景设为白色
@@ -57,7 +57,7 @@ namespace Netnr.CaptchaDemo.Controllers
             //验证码绘制
             for (int i = 0; i < code.Length; i++)
             {
-                Font f = new Font(FontFamily.GenericSerif, 24, (FontStyle.Italic | FontStyle.Bold));//字体  
+                Font f = new(FontFamily.GenericSerif, 24, (FontStyle.Italic | FontStyle.Bold));//字体  
                 Brush b = new SolidBrush(colors[random.Next(colors.Length - 1)]);//颜色  
 
                 //控制验证码不在同一高度
@@ -65,7 +65,7 @@ namespace Netnr.CaptchaDemo.Controllers
                 g.DrawString(code.Substring(i, 1), f, b, (i * 20), ii);//绘制一个验证字符
             }
 
-            using MemoryStream ms = new MemoryStream();
+            using MemoryStream ms = new();
             Img.Save(ms, ImageFormat.Jpeg);
 
             return ms.ToArray();

@@ -117,8 +117,8 @@ namespace Netnr.Core
         /// <param name="ignoreFolder">忽略文件夹</param>
         public static void CopyDirectory(string sourceDirectory, string targetDirectory, List<string> ignoreFolder = null)
         {
-            DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
-            DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+            DirectoryInfo diSource = new(sourceDirectory);
+            DirectoryInfo diTarget = new(targetDirectory);
 
             CopyDirectory(diSource, diTarget, ignoreFolder);
         }

@@ -1,117 +1,93 @@
-# Development Guide (2020-05-16)
-Better project management, better start-up projects, and better handover projects
+# 开发指南 （2020-05-16）
+更好的管理项目，更好的上手项目，更好的交接项目
 
-![Project Layered Architecture](static/project/la.png)
+![项目分层架构](static/project/la.png)
 
-### Site presentation layer structure
-- `wwwroot` directory
-    - Directory of public static resources
-- `wwwroot/css` directory
-    - Style root directory of all pages
-    - All lower case
-    - `global.css` global style
-    - Page style storage format: `{controller}/{action}.css`, such as: `/home/index.css`
-- `wwwroot/images` directory
-    - Picture root directory of all pages
-- `wwwroot/js` directory
-    - Script root directory of all pages
-    - All lower case
-    - `global.js` global script
-    - Page script storage similar to css structure
-    - Page style storage format: `{controller}/{action}.js`, such as: `/home/index.js`
-- `wwwroot/lib` directory
-    - Common component root directory
-    - Such as the referenced jquery package, jquery/xxx.js
-    - Different versions of the same component are in a directory, such as jquery/jquery-1.0.js, jquery/jquery-2.0.js
-    - Components try to extract dist files, such as examples, maps, themes, language packs, etc. are not introduced as much as possible (only necessary items are kept)
-- `wwwroot/upload` directory
-    - Upload file root directory
-    - Uploaded files need to be classified, that is, files cannot be stored directly under the `upload` directory
-    - Commonly cited:
-    - `temp` directory, where all temporary files are stored, such as imported files and exported files, you can empty the `temp` directory at any time
-    - `template` directory, templates, such as print templates, import templates
-    - `docs` directory, uploaded documents, such as upload interface can achieve similar storage: `/docs/2019/05/id.docx`, depending on the specific situation
-    - Remember to store all files in the same directory
-    - To facilitate applications such as load balancing, when using files, configure the server address + file path, such as `static.domain.com` + `/upload/docs/2019/05/id.docx`
-- `Components` directory
-    - Components
-- `Controllers` directory
-    - Controller, corresponding to the first menu of the system
-    - When building a project, create a controller based on the first-level menu
-    - When new functional modules appear, discuss whether a new controller is needed
-    - The controller is named after the big hump, such as `AccountController`; the abbreviation can be all capitalized, such as API
-    - Translate the corresponding English name according to the Chinese name of the function module
-    - Controller class must add notes
-- `Filters` directory
-    - filter
-    - Such as authorized access, diary records, etc.
-- `logs` directory
-    - Journal
-    - Error log, debug log, the path is as follows: `2019/05/20190515.log`, depending on the situation, but `2019/05` is the molecular path by year and month is necessary
-    - Avoid excessively large single log files and excessive number of files in a directory
-- `Views` directory
-    - View
-    - The folder corresponding to the controller, which contains all the `Action` pages
-    - `Action` keeps the big hump name, like `Index`
-    - Each `Action` must have a comment description
-    - If there is a public partial view under the controller, create `_PartialXXXX.cshtml`, starting with `_Partial`
-- `Views/Shared` directory
-    - Public view
-    - Global partial view starting with `_Partial`
-- `appsettings.json` file
-    - Configuration file
-    - Each item must be annotated
-    - By category
-    - Example:
-    
-```
-{
-    //Connection string
-    "ConnectionStrings": {
-        "MySQL": "Server=localhost;uid=root;pwd=123;database=db;",
-        "SQLServer": "Server=.;uid=sa;pwd=123;database=db;",
-        "PostgreSQL": "Host=localhost;Username=postgres;Password=123;Database=db;"
-    },
+### 站点展现层结构
+- `wwwroot` 目录
+    - 对公的静态资源目录
+- `wwwroot/css` 目录
+    - 所有页面的样式根目录
+    - 全部小写
+    - `global.css` 全局样式
+    - 页面样式存放格式：`{controller}/{action}.css`，如：`/home/index.css`
+- `wwwroot/images` 目录
+    - 所有页面的图片根目录
+- `wwwroot/js` 目录
+    - 所有页面的脚本根目录
+    - 全部小写
+    - `global.js` 全局脚本
+    - 页面脚本存放类似 css 结构
+    - 页面样式存放格式：`{controller}/{action}.js`，如：`/home/index.js`
+- `wwwroot/lib` 目录
+    - 公共组件根目录
+    - 如引用的 jquery 包，jquery/xxx.js
+    - 相同的组件不同的版本方于一个目录下，如 jquery/jquery-1.0.js、jquery/jquery-2.0.js
+    - 组件尽量提取 dist 文件，如示例、map、主题、语言包等尽量不引入（只保留必要的项）
+- `wwwroot/upload` 目录
+    - 上传文件根目录
+    - 上传的文件需要分类，即 `upload` 目录下不能直接存放文件
+    - 常用列举：
+    - `temp` 目录，所有临时文件存放，如导入的文件、导出的文件，可随时清空 `temp` 目录
+    - `template` 目录，模版，如打印模版，导入模版
+    - `docs` 目录，上传的文档，如上传接口可实现类似的存储：`/docs/2019/05/id.docx`，视具体情况
+    - 切记所有文件放在同一目录的情况，根据需求分析拆分子文件存储
+    - 为方便负载均衡等应用，使用文件时，配置服务器地址+文件路径的方式，如 `static.domain.com` + `/upload/docs/2019/05/id.docx`
+- `Components` 目录
+    - 组件
+- `Controllers` 目录
+    - 控制器，对应系统一级菜单
+    - 搭建项目时，根据一级菜单创建控制器
+    - 当出现新的功能模块，商讨是否需要新建控制器
+    - 控制器采用大驼峰命名，如 `AccountController`；简写可全大写，如API
+    - 根据功能模块中文名，翻译对应的英文名称
+    - 控制器类须添加注释说明
+- `Filters` 目录
+    - 过滤器
+    - 如 授权访问，日记记录等
+- `logs` 目录
+    - 日志
+    - 错误日志，调试日志，路径如：`2019/05/20190515.log`，视具体情况，但 `2019/05` 即按年月分子路径是必要的
+    - 避免单一日志文件过大，避免某一目录文件数量过多的情况
+- `Views` 目录
+    - 视图
+    - 控制器对应的文件夹，文件夹下包含所有的 `Action` 页面
+    - `Action` 保持大驼峰命名，如 `Index`
+    - 每一个 `Action` 必须有注释描述
+    - 如该控制器下有公共的局部视图，创建 `_PartialXXXX.cshtml`，以 `_Partial` 开头
+- `Views/Shared` 目录
+    - 公共视图
+    - `_Partial` 开头的全局局部视图
+- `appsettings.json` 文件
+    - 配置文件
+    - 每项须带有注释
+    - 按分类
 
-    //Log
-    "logs": {
-        //Open the log
-        "enable": true,
-        //path
-        "path": "~/logs",
-        //Write in batches to satisfy any trigger
-        "CacheWriteCount": 9999,
-        //Write time in batches (seconds) to satisfy any trigger
-        "CacheWriteSecond": 9
-    }
-}
-```
-
-### Database and projects
-- Database design, recommend `PD`, or bring your own design tools
-- The table name is named after the big hump, without symbols (underscore, horizontal bar, etc.)
-- Keep the prefixes consistent with the classification table names, such as: System tables: `SysUser`, `SysRole`, `SysLog`
-- Table names are translated according to Chinese, pinyin cannot be used
-- Table fields are translated according to Chinese, Pinyin cannot be used
-- Tables and table fields must be annotated, the primary key can be ignored, the key field should be described clearly, such as: `Gender (1: male; 2: female)`
-- The primary key uniformly uses the `GUID` string, and the database type is a string; exceptions for special requirements
-- Primary and foreign key associations are not recommended; exceptions for special requirements
-- Write view is not recommended; exceptions for special requirements
-- Writing stored procedures is not recommended; exceptions for special requirements
-- Table index creation, evaluation setting field is clustered index, non-clustered index
-- VS recommends and implements rewriting of project code, with exceptions in certain circumstances
-- vs. unnecessary prompts for the project, delete
-- Vs prompts for variables not needed for the project, delete
-- All `Action`s need to be commented; all class methods must be commented, and key places are commented;
-- One method handles multiple complex logics, which need to be described in order
-- Generally no exception handling is required, the global filter will record exception logs; in some cases, you need to handle exceptions yourself, and you should try to output exception logs
-- `JS` scripts, all methods must have key comments; reduce the declaration of global variables, reduce the declaration of variables in the same scope, too much will lead to conflicts and annoyances
-- All methods must have only one line interval, Action, library methods, JS functions, etc.
-- An empty line, generally means to open the block, the code is beautiful, like a comma segment
-- Two empty lines, generally means hierarchical, similar to a semicolon in a paragraph
-- Keep consistent with the overall code style of the project, do not highlight your own code style
-- Method parameters, small hump first
-- The project construction and naming recommends the form of `Aaa.Bbb`, such as `Volo.Abp`
-- Code decoupling, function subdivision, can improve the utilization rate, convenient and better maintenance and upgrade
-- Priority to use `LINQ`, complex functions, some queries that do not support `LINQ`, can use `SQL` query string processing (prevent injection)
-- Cross-platform, enhanced portability: can easily switch databases, can easily switch deployment environment
+### 数据库及项目
+- 数据库设计，推荐 `PD`，或自带设计工具
+- 表名大驼峰命名，不带符号（下划线、横杠等）
+- 按分类表名前缀保持一致，如：系统表：`SysUser`、`SysRole`、`SysLog`
+- 表名根据中文翻译，不能使用拼音
+- 表字段根据中文翻译，不能使用拼音
+- 表和表字段必须带有注释，主键可忽略，表示键的字段，要描述清楚，如：`性别（1：男；2：女）`
+- 主键统一采用 `GUID` 的字符串，数据库类型为字符串；特殊要求例外
+- 不推荐主外键关联；特殊要求例外
+- 不推荐写视图；特殊要求例外
+- 不推荐写存储过程；特殊要求例外
+- 表索引创建，评估设置字段为聚集索引、非聚集索引
+- vs对项目代码改写推荐，执行，特定情况例外
+- vs对项目不需要的using提示，删除
+- vs对项目不需要的变量提示，删除
+- 所有的 `Action` 需有注释描述；所有类方法必须有注释，关键的地方有注释； 
+- 一个方法处理多个复杂的逻辑，需按点依次描述
+- 一般无须异常处理，全局过滤器会记录异常日志；某些情况需自己异常处理，应尽量输出异常日志
+- `JS` 脚本，所有的方法必须有关键的注释；减少全局变量的声明，减少同一作用域的变量声明，过多会导致冲突、烦杂
+- 所有的方法必须仅有一行间隔，Action、类库方法、JS 函数等
+- 空一行，一般表示拉开区块，代码美观，类似一段话的逗号分割
+- 空两行，一般表示分层，类似一段话的分号分割
+- 与项目整体代码风格保持一致，不要突出自己的代码风格
+- 方法参数，小驼峰优先
+- 项目的构建命名推荐 `Aaa.Bbb` 的形式，如 `Volo.Abp`
+- 代码解耦，功能细分化，可提高利用率，方便更好的维护升级
+- 优先采用 `LINQ`，复杂的功能、不支持 `LINQ` 的一些查询，可采用 `SQL` 查询字符串处理（须防注入）
+- 跨平台，增强移植性：能很方便的切换数据库、能很方便的切换部署环境

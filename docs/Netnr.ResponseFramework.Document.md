@@ -1,186 +1,187 @@
 ### z.Grid()
-The methods and attributes are basically the same as the official documents
+方法、属性与官方的文档基本一致
 
 ```js
 var gd1 = new z.Grid();
 
-gd1.isinit  //It is true for the first time, and it is always false after binding
-gd1.id  //Table container#ID, default #Grid1
-gd1.type    //Table type, default datagrid, support: datagrid, treegrid, propertygrid, datalist
-gd1.autosize    //Automatically adjust the size, default xy, support: xy (wide, full, high and sinking), x, y, p (filling the parent container)
-gd1.autosizePid //Parent container #ID, default #myBody, required for automatic resizing
-gd1.columnsExists   //Whether to query the column configuration, set the value to true after the first query column configuration, if it is true, the query column configuration will not be followed
-gd1.dataCache   //Data obtained by asynchronous request
+gd1.isinit  //第一次为 true ,绑定完成后始终为 false
+gd1.id  //表格容器#ID，默认 #Grid1
+gd1.type    //表格类型，默认 datagrid ，支持：datagrid、treegrid、propertygrid、datalist
+gd1.autosize    //自动调整大小，默认 xy ，支持：xy(宽满高沉底)、x、y、p(填充父容器)
+gd1.autosizePid //父容器#ID，默认 #myBody，为实现自动调整大小所需要
+gd1.columnsExists   //是否查询列配置，第一次查询列配置后赋值为 true ，为true 则后面不在查询列配置
+gd1.dataCache   //异步请求得到的数据
 
-gd1.onComplete(function(obj){ })    //Complete the callback, which can be called multiple times. Note: Calling the binding again within the completion will cause an infinite loop, which needs to be marked out
+gd1.onComplete(function(obj){ })    //完成回调，可多次调用，注意：完成里面再次调用绑定会造成死循环，需标记跳出
 
-gd1.bind()  //Local binding method
-gd1.load()  //Load method, bind method will be called automatically after loading
+gd1.bind()  //本地绑定方法
+gd1.load()  //加载方法，载入后会自动调用 bind 方法
 
-gd1.func()  //Method call, consistent with the official method, example:
-gd1.func('getSelected') //Get the selected row
-gd1.func('updateRow', (index:1, row:()))    //Update row
+gd1.func()  //方法调用，与官方提供的方法一致，例子：
+gd1.func('getSelected') //获取选中行
+gd1.func('updateRow', {index:1, row:{}}) //更新行
 
-//Query panel component expansion
-gd1.queryMark   //Create query mark, default true
-gd1.queryData   //The query condition item, the title column is extracted by default, and can be customized (array type); you can also set the (virtual) table name (string type), that is, if you enter the query condition and then query the data, the configuration table name will Synchronize request form configuration to get query condition items
-gd1.QueryBuild()    //Create a query panel (including initializing the query panel and assigning gd1.query, it will only be created when the gd1.query object is empty)
-gd1.QueryOpen(field)    //Open the query panel (automatically call the gd1.QueryBuild method); field, optional, point to the query condition field name, locate the row and enable editing
-gd1.QueryWhere()    //Get the conditions of the query panel
-gd1.QueryOk = function () {}    //Click the callback of the query panel confirmation, optional, customize the confirmation event, if you donâ€™t write this event, the first page of the query panel condition request will be obtained by default
-gd1.query   //The query object is the query panel object; it will have a value after calling gd1.QueryBuild() or gd1.QueryOpen()
-z.queryin   //Point to the open query panel, when calling gd1.QueryOpen() method, z.queryin = gd1.query, open other query panels will point to the corresponding
-gd1.query.grid  //Query panel table, the same type of object as gd1
-gd1.query.id    //Point to the container ID of the query panel table
-gd1.query.md    //Query panel modal box object, the object returned by new z.Modal()
+//查询面板组件拓展
+gd1.queryMark   //创建查询标记，默认 true
+gd1.queryData   //查询条件项，默认提取标题列，可自定义（array类型）；也可以设置（虚拟）表名（string类型），即先输入查询条件再查询数据的情况，配置表名会同步请求表配置得到查询条件项
+gd1.QueryBuild()    //创建查询面板（含初始化查询面板，并赋值 gd1.query ，只有 gd1.query 对象为空时才会创建 ）
+gd1.QueryOpen(field)    //打开查询面板（自动调用 gd1.QueryBuild 方法）; field，可选，指向查询条件字段名，定位行和启用编辑
+gd1.QueryWhere()    //获取查询面板的条件
+gd1.QueryOk = function () { }   //点击查询面板确定的回调，可选，自定义确定事件，不写该事件则默认获取查询面板条件请求第一页
+gd1.query   //query对象为查询面板对象；需调用 gd1.QueryBuild() 或 gd1.QueryOpen()方法后才会有值
+z.queryin   //指向打开的查询面板,调用 gd1.QueryOpen() 方法时，z.queryin = gd1.query，打开其他的查询面板会对应的指向
+gd1.query.grid  //查询面板表格，与 gd1 同类型对象
+gd1.query.id    //指向查询面板表格的容器ID
+gd1.query.md    //查询面板模态框对象，new z.Modal() 返回的对象
 ```
 
-Query panel component expansion
+查询面板组件拓展
 
 ### z.GridQueryMark(gd)
 
-> Create query mark
+> 创建查询标记
 
 ### z.GridQueryBuild(gd)
 
-> Create query panel
+> 创建查询面板
 
 ### z.GridQueryOpen(gd, field)
 
-> Open the query panel, automatically call the GridQueryBuild creation method, parameter: field specifies a query column field, optional
+> 打开查询面板，自动调用 GridQueryBuild 创建方法，参数：field 指定某个查询列字段，可选
 
 ### z.GridQueryWhere(gd)
 
-> Get the query conditions of the query panel to form the z.SqlQuery object
+> 得到查询面板的查询条件，组建 z.SqlQuery 对象
 
 
 
 ### z.GridFormat()
 
-> Common formatting methods, such as gender, date, status, amount, etc.
+> 公用的格式化方法，如性别、日期、状态、金额等
 
 ### z.GridAuto(gd)
 
-> Grid resize method
+> Grid调整大小的方法
 
 ### z.GridLoading(gd)
 
-> When the table is loaded for the first time, the loading icon is displayed, and subsequent loading prompts are provided by the DataGrid component
+> 第一次加载表格时，显示加载图标，以后的加载提示由 DataGrid 组件提供
 
 ### z.GridEditor(gd, index, field, row)
 
-> Grid edit configuration, parameter row is optional, see script comments for details
+> Grid编辑配置，参数 row 可选，具体看脚本注释
 
 ### z.GridEditorBlank(gd)
 
-> Click blank to end Grid editing
+> 点空白结束Grid编辑
 
 
 ### z.Combo()
 
-> The methods and attributes are basically the same as the official documents, and have the same form as z.Grid
+> 方法、属性与官方的文档基本一致，与 z.Grid 一样的形式
 
 ```js
 var cb1 = new z.Combo();
 
-cb1.type    //Type, default combobox, support: combobox, combotree tree
+cb1.type    //类型，默认 combobox ，支持：combobox、combotree tree
 
-cb1.onComplete(function(obj){ })    //Complete the callback, which can be called multiple times. Note: Calling the binding again within the completion will cause an infinite loop, which needs to be marked out
+cb1.onComplete(function(obj){ })    //完成回调，可多次调用，注意：完成里面再次调用绑定会造成死循环，需标记跳出
 
-cb1.bind()  //Local binding method
-cb1.load()  //Load method, bind method will be called automatically after loading
+cb1.bind()  //本地绑定方法
+cb1.load()  //加载方法，载入后会自动调用 bind 方法
 
-cb1.func()  //Method call, consistent with the official method, example:
-cb1.func('getValue')    //Get value
-cb1.func('setValue', 1) //assignment
+cb1.func()  //方法调用，与官方提供的方法一致，例子：
+cb1.func('getValue') //取值
+cb1.func('setValue', 1) //赋值
 ```
 
 ### z.TreeVagueCheck(cb, values)
 
-> Tree is selected fuzzy, the child nodes used for a node are partially selected, after assignment, the child nodes are all selected, use this method to deal with, the example refers to the role permission setting
+> Tree模糊选中，用于一个节点的子节点有部分选中，赋值后子节点被全部选中，用此方法处理，示例参考角色权限设置
 
 ### z.FormAttrAjax()
 
-> formui form request return data source & callback, used to initialize the data source bound by asynchronous request, used with z.FormAttrBind method
+> formui表单 请求返回数据源&回调，用于初始化异步请求绑定的数据来源，与 z.FormAttrBind 方法配合使用
 
 ### z.FormAttrBind(target)
 
-> formui form type source binding, used to initialize the corresponding component method according to different types and use with z.FormAttrAjax method
+> formui表单 类型源绑定，用于初始化根据不同的类型调用对应的组件方法 与 z.FormAttrAjax 方法配合使用
 
 ### z.FormRequired(color, FormId, dialog)
 
-> The form is required for verification, used when saving
+> 表单必填验证，用于保存时
 
 ### z.FindTreeNode(data, value, key)
 
-> Find tree nodes
+> 查找树节点
 
 ### z.FormEdit(rowData)
 
-> Backfill form, used to select a row of the form, directly assign the form to edit
+> 回填表单，用于选中表格的一行，直接赋值表单编辑
 
 ### z.FormToJson(FormId)
 
-> The form is converted to JSON, which is used for editing and saving, without refreshing and loading, and directly obtaining the form value to update a row of data
+> 表单转为 JSON , 用于编辑保存后，不用刷新加载，直接获取表单值更新表格的一行数据
 
 ### z.FormClear(FormId)
 
-> Clear the form for adding
+> 清空表单，用于新增
 
 ### z.FormDisabled(dd, FormId)
 
-> Disable forms for viewing
+> 禁用表单，用于查看
 
 ### z.FormAutoHeight()
 
-> Adjust the height of the modal frame sheet for the height adaptation of the modal frame
+> 模态框表单调整高度，用于模态框高度自适应
 
 ### z.FormTitle(ops)
 
-> Form title setting ops example: {id:"#id", title:"new", required:true}
-* icon title icon
-* title title
-* id title container ID or object
-* required Whether to display the required prompt text, the default is true
+> 表单标题设置 ops示例：{id:"#id", title:"新增", required:true}
+* icon 标题图标
+* title 标题
+* id 标题容器ID或对象
+* required 是否显示必填的提示文字，默认 true
 
 ### z.Modal()
 
-> Create a modal box
+> 创建模态框
 
 ```js
 var md1 = new z.Modal();
 
-md1.okText  //ok button text
-md1.cancelText  //cancel button text
-md1.okClick //Ok click callback
+md1.okText  //ok按钮文本        
+md1.cancelText  //cancel按钮文本        
+md1.okClick //Ok点击回调
         
-md1.cancelClick //Cancel click callback
-md1.title   //title content
-md1.content //Main content
-md1.src //iframe address, overwrite content attribute
-md1.heightIframe    //iframe height
-md1.complete    //iframe loading complete callback
-md1.size    //Modal size Default 2 Optional: 1|2|3|4; Corresponding respectively (sm, md, lg, full)
-md1.showClose   //Display the close button in the upper right corner
-md1.showFooter  //Show footer
-md1.showCancel  //Display the Cancel button
+md1.cancelClick //Cancel点击回调
+md1.title   //标题内容
+md1.content //主体内容
+md1.src //iframe地址，覆盖content属性
+md1.heightIframe    //iframe高度
+md1.complete    //iframe加载完成回调
+md1.size    //模态大小 默认2 可选：1|2|3|4 ;分别对应（sm、md、lg、full）
+md1.showClose   //显示右上角关闭按钮
+md1.showFooter  //显示页脚
+md1.showCancel  //显示Cancel按钮
 
-md1.okClick = function(){}  //Determine the event
-md1.cancelClick = function(){}  //cancel
+md1.okClick = function(){}   //确定事件
+md1.cancelClick = function(){}   //取消
 
-md1.append()    //Append to the body, the method is called after the final attribute assignment
-md1.show()  //show
-md1.hide()  //Hide
-md1.remove()    //Remove
+md1.append()    //追加到 body 上，改方法在最后属性赋值后调用
+md1.show()  //显示
+md1.hide()  //隐藏
+md1.remove()    //移除
 
-md1.modal   //Point to the jQuery object of the modal box, such as: md1.modal.find('div.modal-body') Find the content body of the modal box
+md1.modal   //指向模态框的jQuery对象，如：md1.modal.find('div.modal-body') 找到模态框内容主体
 ```
+
 ### z.SqlQuery()
 
-> Objects used to represent SQL query conditions
+> 用于表示SQL查询条件的对象
 
 ```
-// id1='1' AND id2 IN('1','2') AND id2 LIKE'%5%' AND id3>='5' AND id3<='10'
+// id1='1' AND id2 IN('1','2') AND id2 LIKE '%5%' AND id3>='5' AND id3<='10'
 [
     {
         field: "id1",
@@ -204,60 +205,60 @@ md1.modal   //Point to the jQuery object of the modal box, such as: md1.modal.fi
     }
 ]
 
-// description of relation symbol
+// relation 关系符说明
 {
-    Equal:'{0} = {1}',
-    NotEqual:'{0} != {1}',
-    LessThan:'{0} <{1}',
-    GreaterThan:'{0}> {1}',
-    LessThanOrEqual:'{0} <= {1}',
-    GreaterThanOrEqual:'{0} >= {1}',
-    BetweenAnd:'{0} >= {1} AND {0} <= {2}',
-    Contains:'%{0}%',
-    StartsWith:'{0}%',
-    EndsWith:'%{0}',
-    In:'IN',
-    NotIn:'NOT IN'
+    Equal: '{0} = {1}',
+    NotEqual: '{0} != {1}',
+    LessThan: '{0} < {1}',
+    GreaterThan: '{0} > {1}',
+    LessThanOrEqual: '{0} <= {1}',
+    GreaterThanOrEqual: '{0} >= {1}',
+    BetweenAnd: '{0} >= {1} AND {0} <= {2}',
+    Contains: '%{0}%',
+    StartsWith: '{0}%',
+    EndsWith: '%{0}',
+    In: 'IN',
+    NotIn: 'NOT IN'
 }
 ```
 
 ### z.DC
 
-> Page data cache, including components, data sources, etc., everything is inside
-* The drop-down list, according to the lowercase of the requested URL address as the key, stores the information of the drop-down list component
+> 页面数据缓存，包括组件、数据源等，所有的东西都在里面
+* 下拉列表，根据请求url的地址小写作为键，存储下拉列表组件的信息
 
 ### z.btnTrigger
 
-> Button trigger identification, click the corresponding function button, assign the corresponding button ID
+> 按钮触发标识，点击对应的功能按钮，赋值对应按钮的ID
 
 ### z.button(type, fn)
 
-> Click the button event (if you need to disable some function buttons, add the disabled style to the button to take effect, instead of setting the button disable attribute), not applicable to the secondary button (pop-up drop-down menu button)
+> 点击按钮事件（如需要禁用某些功能按钮，为按钮添加 disabled 样式即可生效，而不是设置按钮禁用属性），不适用二级按钮（弹出的下拉菜单按钮）
 ```js
-z.button('add',functin(){ console.log('New event') })
+z.button('add',functin(){ console.log('新增事件') })
 ```
 
 ### z.buttonClick(type)
 
-> Simulate operation button click, such as: z.buttonClick('add') Simulate click to add
+> 模拟操作按钮点击，如：z.buttonClick('add') 模拟点击新增
 
 ### art(content, fnOk, fnCacle)
 
-> Message prompt, inquiry prompt, depend on z.Modal
+> 消息提示、询问提示，依赖于 z.Modal
 ```js
-art('Save successfully'); //Similar to the alert method
-//There are several keywords that have been converted: fail, error, success, select
-art('fail') //The operation failed, generally used to return the result is failure
-art('error') //Network error, generally used for asynchronous request error event
-art('success') //The operation is successful, generally used to save successfully
-//Maintain a unified style for all prompts and avoid some: wrong operation, operation failure, system error, etc.
+art('保存成功');    //类似于alert方法
+//有几个关键词做了转换：fail、error、success、select
+art('fail') //操作失败，一般用于返回的结果是失败
+art('error')    //网络错误，一般用于异步请求error事件
+art('success')  //操作成功，一般用于保存成功
+//为所有提示保持风格统一，避免一些：操作有误、操作失败、 系统错误等各种提示
 
-art('Are you sure to delete?', function(){
-    //OK, initiate a delete request
+art('确定删除吗？', function(){
+    //确定，发起删除请求
 })
-art('Does it cover?', function(){
-    //cover
+art('是否覆盖？', function(){
+    //覆盖
 },function(){
-    //Do not cover
+    //不覆盖
 })
 ```

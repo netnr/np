@@ -9,25 +9,25 @@ namespace Netnr.Blog.Domain
     public partial class OperationRecord
     {
         [Key]
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string OrId { get; set; }
-        [StringLength(200)]
+        [Column(TypeName = "varchar(200)")]
         public string OrType { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string OrAction { get; set; }
-        [StringLength(2000)]
+        [Column(TypeName = "text")]
         public string OrSource { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? OrCreateTime { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string OrMark { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string OrRemark { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare1 { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare2 { get; set; }
-        [StringLength(50)]
+        [Column(TypeName = "varchar(50)")]
         public string Spare3 { get; set; }
     }
 }

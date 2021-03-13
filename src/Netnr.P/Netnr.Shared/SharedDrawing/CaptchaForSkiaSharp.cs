@@ -31,8 +31,8 @@ namespace Netnr.SharedDrawing
             //旋转角度
             int randAngle = 40;
 
-            using SKBitmap bitmap = new SKBitmap(code.Length * 22, 38);
-            using SKCanvas canvas = new SKCanvas(bitmap);
+            using SKBitmap bitmap = new(code.Length * 22, 38);
+            using SKCanvas canvas = new(bitmap);
             //背景设为白色
             canvas.Clear(SKColors.White);
 
@@ -55,7 +55,7 @@ namespace Netnr.SharedDrawing
                 //不同高度
                 int ii = random.Next(20) * (random.Next(1) % 2 == 0 ? -1 : 1) + 20;
 
-                SKPoint point = new SKPoint(18, 20);
+                SKPoint point = new(18, 20);
 
                 canvas.Translate(point);
                 canvas.RotateDegrees(angle);

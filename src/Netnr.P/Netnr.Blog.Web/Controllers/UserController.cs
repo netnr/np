@@ -32,7 +32,6 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [Authorize]
-        [ResponseCache(Duration = 5)]
         public IActionResult Message(int page = 1)
         {
             var uinfo = Apps.LoginService.Get(HttpContext);
@@ -344,7 +343,7 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize]
         public IActionResult RidOAuth()
         {
-            if (Enum.TryParse(RouteData.Values["id"]?.ToString().ToLower(), out LoginBase.LoginType vtype))
+            if (Enum.TryParse(RouteData.Values["id"]?.ToString().ToLower(), true, out LoginBase.LoginType vtype))
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
                 var mo = db.UserInfo.Find(uinfo.UserId);
