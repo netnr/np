@@ -26,13 +26,6 @@ namespace Netnr.Blog.Web.Gist.Controllers
                 return Redirect("/gist");
             }
 
-            //write js
-            bool isjs = id.ToLower().Contains(".js");
-            if (isjs)
-            {
-                id = id.Replace(".js", "");
-            }
-
             //cmd && Auth
             string cmd = RouteData.Values["sid"]?.ToString().ToLower();
             if (User.Identity.IsAuthenticated)
@@ -94,14 +87,8 @@ namespace Netnr.Blog.Web.Gist.Controllers
                             Spare3 = c.Nickname
                         };
             var moout = query.FirstOrDefault();
-            if (isjs)
-            {
-                return Content(moout.GistContent);
-            }
-            else
-            {
-                return View(moout);
-            }
+
+            return View(moout);
         }
     }
 }

@@ -16,13 +16,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Markdig" Version="0.23.0" />
+		<PackageReference Include="Markdig" Version="0.24.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.4" />	
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.4" Condition="'$(Configuration)' == 'Debug'" />
 		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
 		<PackageReference Include="Qiniu.Shared" Version="7.2.15" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.1" />
 		<PackageReference Include="SkiaSharp" Version="2.80.3-preview.40" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.40" />
 		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />

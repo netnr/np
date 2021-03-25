@@ -3,6 +3,8 @@
 ### 2021-03
 - 调整 Blog 项目改为宽屏
 - 整合 项目
+- 优化 Run 预览、输出等
+- 新增 Gist 集成 asciinema 终端文本录屏
 
 ### 2021-02
 - 新增 Netnr.ScriptService 项目 PowerDesigner 解析查看

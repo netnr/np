@@ -16,94 +16,25 @@
     background-color: #28a745;
 }
 
-.navbar {
-    z-index: 9;
+.bg-vs pre {
+    background-color: white;
 }
 
-.bg-vs {
-    background-color: #f8f9fa;
-}
-
-.bg-vs-dark {
+.bg-vs-dark, .bg-vs-dark pre {
     background-color: #1e1e1e;
 }
 
-.bg-hc-black {
-    background-color: #000;
-}
-
-.navbar-dark #setheme {
+.navbar-dark input, .navbar-dark input:focus, .navbar-dark select, .navbar-dark select option {
     background-color: #343a40;
-    color: rgba(255,255,255,.5);
-}
-
-.navbar-light #setheme {
-    background-color: #f8f9fa;
-}
-
-.runsub {
-    position: absolute;
-    left: 0;
-    top: 56px;
-    bottom: 0;
-    width: 180px;
-    border-top: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-}
-
-    .runsub .runsubc {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 2;
-        width: 6px;
-        cursor: pointer;
-    }
-
-        .runsub .runsubc:hover {
-            background-color: rgba(221, 221, 221, .5);
-        }
-
-    .runsub .card-header {
-        padding: 5px 8px;
-    }
-
-    .runsub .card-body {
-        padding: 0;
-    }
-
-    .runsub .bg-dark * {
-        color: #a7a7a7;
-    }
-
-    .runsub .card-body textarea {
-        resize: none;
-        height: 150px;
-        background-color: inherit;
-    }
-
-    .runsub .card-body input {
-        resize: none;
-        background-color: inherit;
-    }
-
-.runsub-fold {
-    width: 7px;
-    overflow: hidden;
+    color: rgb(255 255 255 / 50%);
 }
 
 .rune {
     position: absolute;
+    left: 0;
     right: 0;
     bottom: 0;
-    top: 56px;
-    left: 180px;
-    border-top: 1px solid #ddd;
-}
-
-.rune-fold {
-    left: 7px;
+    top: 57px;
 }
 
 .rune-full {
@@ -124,11 +55,15 @@
 
 .rune > pre {
     position: absolute;
+    margin: 0;
     z-index: 1;
     width: 50%;
     height: 62%;
+    font-size: 18px;
     overflow: hidden;
-    margin: 0 !important;
+    line-height: 24px;
+    padding: 0 0 0 75px;
+    font-family: Consolas, "Courier New", monospace;
 }
 
     .rune > pre.re2 {
@@ -158,11 +93,9 @@
 
 .rune .fre {
     position: absolute;
-    padding: 3px 5px;
-    font-size: 12px;
-    right: 10px;
+    right: 20px;
     z-index: 2;
-    top: 5px;
+    top: 10px;
 }
 
     .rune .fre i {

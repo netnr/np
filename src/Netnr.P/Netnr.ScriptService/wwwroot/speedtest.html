@@ -24,16 +24,15 @@ https://zme.ink
 
 </head>
 <body>
-<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url("/images/loading.svg");background-repeat:no-repeat;background-position:48% 45%'></div>
 <link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.js' defer async></script>
-        <link href="/css/global.css?v=ILaxEDuAKPcfx0Dw00WIDWl_jGo3BYpoTjyINR4ydjY" rel="stylesheet" />
-        <script src="/js/global.js?v=pKcbh4RJesRNHWnZRek0eTm5akwKQWgf9Qa-pLuFFAs"></script>
+<link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.js' defer async></script>
+        <link href="/css/global.css?v=IPkG7bYnLflJ9OTZm8YWi1nN5clvARcIvd9S3B7GThs" rel="stylesheet" />
+        <script src="/js/global.js?v=2qC1foM6JiDBU6dhNLFOecVKUITzjUOqEBcNCd10dLE"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
                 <span class="fa fa-align-justify"></span>
@@ -68,7 +67,9 @@ https://zme.ink
     <div class="row">
         <div class="col-md-12">
             <div class="input-group mb-3">
-                <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
+                </div>                
                 <div class="input-group-prepend">
                     <select class="custom-select" id="seSpeedServer">
                         <optgroup label="请选择节点"></optgroup>

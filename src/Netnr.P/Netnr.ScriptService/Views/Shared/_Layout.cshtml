@@ -13,7 +13,7 @@
     var nonav = "wallpaper,contact".Split(',');
 
     //无返回顶部
-    var nototop = "vscode,diff,nginx,jsontocsharp,jsontoxml,zerotier,jscss,pdm,sqlformatter,formatter,officeview,express,rmb,randomcode,randommatch,purine,bmi,gc".Split(',');
+    var nototop = "vscode,diff,nginx,jsontocsharp,jsontoxml,zerotier,jscss,pdm,sqlformatter,formatter,officeview,express,rmb,randomcode,randommatch,purine,bmi,gc,swaggerto".Split(',');
 
     var isbh = CacheTo.Get(GlobalTo.GetValue("Common:BuildHtmlKey")) as bool? ?? false;
 
@@ -42,7 +42,7 @@
     }
     else
     {
-        @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js"))
+        @Html.Raw(Netnr.SharedApp.QuoteTo.Html("bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js,netnrnav.css,netnrnav.js"))
         <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
         <script src="/js/global.js" asp-append-version="true"></script>
 

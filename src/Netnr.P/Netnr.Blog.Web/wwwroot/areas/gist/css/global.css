@@ -34,7 +34,7 @@
 }
 
 .gn-header .card-body {
-    height: 480px;
+    height: 520px;
     padding: 5px 0 0;
     border-bottom: 1px solid #ddd;
 }
@@ -60,27 +60,14 @@
         text-align: center;
     }
 
-.cp-header {
-    background-color: #fafbfc;
-    border-bottom: 1px solid #ddd;
-}
-
-.cp-viewcode .card-header, .gc-viewcode .card-header {
-    padding: 5px 10px;
-}
-
-    .gc-viewcode .card-header .btn {
-        padding: 0 5px;
-    }
-
 .gn-viewcode {
     cursor: pointer;
     overflow: hidden;
-    border: 1px solid #ddd;
+    border: 1px solid transparent !important;
 }
 
     .gn-viewcode:hover {
-        border-color: #0366d6;
+        border-color: orange !important;
     }
 
         .gn-viewcode:hover::after {
@@ -96,8 +83,12 @@
 
 /*lineNumber*/
 .vcln {
-    margin-bottom: 0 !important;
-    overflow-x: auto !important;
+    margin: 0;
+    font-size: 16px;
+    overflow: hidden;
+    line-height: 22px;
+    padding: 0 0 0 70px;
+    font-family: Consolas, "Courier New", monospace;
 }
 
     .vcln span {
@@ -106,12 +97,10 @@
 
     .vcln > span::before {
         min-width: 60px;
-        font-size: 12px;
         user-select: none;
         -ms-user-select: none;
         -moz-user-select: none;
         -webkit-user-select: none;
-        line-height: 19px;
         text-align: right;
         margin-left: -60px;
         white-space: nowrap;
@@ -120,11 +109,6 @@
         color: rgba(27,31,35,0.3);
         content: attr(data-linen);
     }
-
-pre.card-body {
-    padding: 3px 0;
-    line-height: 19px;
-}
 
 .gn-viewcode {
     cursor: pointer;

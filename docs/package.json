@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/netnr/np#readme",
   "dependencies": {
-    "marked": "^1.2.7",
-    "mime": "^2.5.0"
+    "marked": "^2.0.1",
+    "mime": "^2.5.2"
   }
 }

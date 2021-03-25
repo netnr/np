@@ -30,7 +30,7 @@
 
         <link href="/areas/draw/css/global.css" rel="stylesheet" asp-append-version="true" />
 
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <nav class="navbar navbar-expand-md border-bottom navbar-light bg-light">
 
             <div class="navbar-brand dropdown">
                 <a class="dropdown-toggle text-info" data-toggle="dropdown" href="#">
@@ -53,15 +53,15 @@
             <div class="collapse navbar-collapse" id="drawnavbar">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <form class="form-inline" action="@ViewContext.HttpContext.Request.Path" method="get" id="gsearch">
-                            <input class="form-control mr-sm-3 txtsearch" name="q" placeholder="Search..." value='@ViewData["q"]'>
-                        </form>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/draw/discover"><i class="fa fa-fw fa-file-text"></i>Discover</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>@GlobalTo.GetValue("Common:EnglishName")</a>
+                    </li>
+                    <li class="nav-item ml-2">
+                        <form class="form-inline" action="@ViewContext.HttpContext.Request.Path" method="get" id="gsearch">
+                            <input class="form-control form-control-sm mt-1 txtsearch" name="q" placeholder="Search..." value='@ViewData["q"]'>
+                        </form>
                     </li>
                 </ul>
 

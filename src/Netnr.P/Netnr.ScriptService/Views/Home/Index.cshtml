@@ -35,7 +35,7 @@
     <div class="navbox">
         @foreach (var gi in NavService.Nav)
         {
-            <div class="row">
+            <div class="row my-3">
                 <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>@gi["group"].ToString()</div>
                 @foreach (var item in gi["items"])
                 {

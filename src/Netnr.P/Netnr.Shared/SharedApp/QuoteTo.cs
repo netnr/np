@@ -55,7 +55,7 @@ namespace Netnr.SharedApp
                         break;
 
                     case "jquery.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>");
                         break;
 
                     case "bootstrap.css":
@@ -79,19 +79,19 @@ namespace Netnr.SharedApp
                         break;
 
                     case "netnrmd.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.2/src/netnrmd.css' rel='stylesheet' />");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.3/src/netnrmd.css' rel='stylesheet' />");
                         break;
 
                     case "netnrmd.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.2/src/netnrmd.bundle.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.3/src/netnrmd.bundle.js'></script>");
                         break;
 
                     case "netnrnav.css":
-                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.css' rel='stylesheet' />");
+                        vh.Add("<link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.css' rel='stylesheet' />");
                         break;
 
                     case "netnrnav.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/netnrnav@1.1.1/src/netnrnav.js' defer async></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.js' defer async></script>");
                         break;
 
                     case "selectpage":
@@ -200,6 +200,29 @@ namespace Netnr.SharedApp
                         vh.Add("<script src='https://cdn.jsdelivr.net/gh/jakubpawlowicz/clean-css-builds/v5.1.1.js'></script>");
                         break;
 
+                    case "asciinema-player.css":
+                        vh.Add("<link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/asciinema-player/2.6.1/asciinema-player.css' rel='stylesheet' />");
+                        break;
+                    case "asciinema-player.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/asciinema-player/2.6.1/asciinema-player.js'></script>");
+                        break;
+
+                    case "esprima.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/esprima@4.0.1/dist/esprima.min.js'></script>");
+                        break;
+
+                    case "js-yaml.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/js-yaml@3.14.1/dist/js-yaml.min.js'></script>");
+                        break;
+
+                    case "swagger-ui-dist.css":
+                        vh.Add("<link href='https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.45.0/swagger-ui.css' rel='stylesheet' />");
+                        break;
+                    case "swagger-ui-dist.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.45.0/swagger-ui-bundle.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.45.0/swagger-ui-standalone-preset.js'></script>");
+                        break;
+
                     case "prettier.js":
                         vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/standalone.min.js'></script>");
                         vh.Add("<script src='https://cdn.jsdelivr.net/npm/prettier@2.2.1/parser-angular.js'></script>");
@@ -228,10 +251,6 @@ namespace Netnr.SharedApp
 
                     case "tti.js":
                         vh.Add("<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/text-to-image/20201119/tti.js'></script>");
-                        break;
-
-                    case "docsify.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/docsify.min.js' defer></script>");
                         break;
 
                     case "nginxbeautifier":

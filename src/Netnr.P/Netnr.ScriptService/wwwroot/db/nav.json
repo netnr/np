@@ -255,6 +255,12 @@
         "icon": "textoimage",
         "title": "文本转图片",
         "remark": "图片转文本"
+      },
+      {
+        "url": "/swaggerto",
+        "icon": "swagger",
+        "title": "SwaggerTo",
+        "remark": "Swagger转换生成"
       }
     ]
   },

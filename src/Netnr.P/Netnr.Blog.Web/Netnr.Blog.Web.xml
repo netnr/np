@@ -315,12 +315,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.HomeController.Preview">
-            <summary>
-            Run预览
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.Blog.Web.Areas.Run.Controllers.HomeController.SaveRun(Netnr.Blog.Domain.Run)">
             <summary>
             保存
@@ -543,7 +537,7 @@
             <summary>
             代理
             </summary>
-            <param name="url">代理链接</param>
+            <param name="url">地址</param>
             <param name="charset">编码，默认utf-8，如：gb2312</param>
             <returns></returns>
         </member>

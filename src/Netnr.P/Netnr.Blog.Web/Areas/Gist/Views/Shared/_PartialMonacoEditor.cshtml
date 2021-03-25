@@ -41,21 +41,19 @@ else
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="row">
-                        <div class="col-md-6 col-sm-12">
-                            <input type="text" class="form-control" placeholder="Filename including extension…" id="txtFilename" value="@mo.GistFilename" maxlength="50" />
-                        </div>
-                        <div class="col-md-3 col-sm-6">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
                             <select class="custom-select" id="selanguage" data-value="@(string.IsNullOrWhiteSpace(mo.GistLanguage)?"javascript":mo.GistLanguage)">
                                 <optgroup label="Language"></optgroup>
                             </select>
                         </div>
-                        <div class="col-md-3 col-sm-6">
+                        <input type="text" class="form-control" placeholder="Filename including extension…" id="txtFilename" value="@mo.GistFilename" maxlength="50" />
+                        <div class="input-group-prepend d-none">
                             <select class="custom-select" id="setheme" data-value="@(string.IsNullOrWhiteSpace(mo.GistTheme)?"vs":mo.GistTheme)">
                                 <optgroup label="Theme">
-                                    <option value="vs">Visual Studio</option>
-                                    <option value="vs-dark">Visual Studio Dark</option>
-                                    <option value="hc-black">High Contrast Dark</option>
+                                    <option value="vs">vs</option>
+                                    <option value="vs-dark">vs-dark</option>
+                                    <option value="hc-black">hc-black</option>
                                 </optgroup>
                             </select>
                         </div>

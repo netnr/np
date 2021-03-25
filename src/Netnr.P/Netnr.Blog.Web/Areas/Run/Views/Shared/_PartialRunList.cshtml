@@ -7,7 +7,7 @@
         ViewData["Title"] = ViewData["Nickname"] + " run";
     }
 
-    var rows = Model.Rows as List<Netnr.Blog.Domain.Run>;    
+    var rows = Model.Rows as List<Netnr.Blog.Domain.Run>;
 }
 
 <partial name="_PartialNav" />
@@ -22,15 +22,15 @@
         @foreach (var item in rows)
         {
             <div class="col-md-6 col-sm-12">
-                <div class="card border-secondary mb-4">
-                    <div class="card-body text-secondary">
+                <div class="card mb-4">
+                    <div class="card-body">
                         <iframe src="/run/code/@item.RunCode?pure=1" allowfullscreen="allowfullscreen" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
                         <div class="rldc">
                             <a href="/run/code/@item.RunCode/edit" title="edit"><i class="fa fa-edit"></i></a>
                             <a href="/run/code/@item.RunCode" title="see"><i class="fa fa-eye"></i></a>
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent border-secondary">
+                    <div class="card-footer bg-transparent">
                         <i class="fa fa-user text-muted"></i>
                         <a href="/run/user/@item.Uid">@item.Spare3</a>
                         <small class="ml-sm-3 text-muted">@item.RunCreateTime.Value.ToString("yyyy-MM-dd")</small>

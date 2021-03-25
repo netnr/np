@@ -1,5 +1,5 @@
 /*
- * netnrnav v1.1.0
+ * netnrnav v1.1.1
  * 
  * Fork: https://github.com/zhoufengjob/SuiNav
  * 

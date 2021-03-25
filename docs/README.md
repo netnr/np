@@ -58,7 +58,7 @@ netnr@netnr.com
 
 **DataKit**
 &nbsp; 数据库工具及代码构建
-&nbsp; https://netnr-dk.azurewebsites.net
+&nbsp; https://ss.js.org/dk
 
 **CaptchaDemo**
 &nbsp; 验证码 Demo

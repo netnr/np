@@ -131,7 +131,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <summary>
         /// 代理
         /// </summary>
-        /// <param name="url">代理链接</param>
+        /// <param name="url">地址</param>
         /// <param name="charset">编码，默认utf-8，如：gb2312</param>
         /// <returns></returns>
         [HttpGet]

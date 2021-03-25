@@ -89,6 +89,10 @@ html, body {
                 margin-bottom: 0;
             }
 
+            .chat-msgbox .mb-item .mb-msg img {
+                max-width: 100%;
+            }
+
     .chat-msgbox .mb-right .mb-photo {
         float: right;
         margin-right: 0;

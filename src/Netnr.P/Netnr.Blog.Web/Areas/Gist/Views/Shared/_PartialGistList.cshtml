@@ -53,9 +53,18 @@
                     <small>@item.GistRemark</small>
                 </div>
             </div>
-            <div class="col-12 mt-3 mb-4">
+            <div class="col-12 mt-2 mb-4">
                 <div class="card gn-viewcode" data-href="/gist/code/@item.GistCode">
-                    <pre class="card-body monaco-editor vcln" style="height:@(item.GistContentPreview.Split('\n').Length*19+6)px;overflow-y:hidden;padding-left:65px;" data-lang="@item.GistLanguage">@item.GistContentPreview.TrimEnd('\r')</pre>
+                    @if (item.GistLanguage == "shell" && item.GistFilename.EndsWith(".cast"))
+                    {
+                        <div class="card-body vcln pl-5 py-3">
+                            <a href="/gist/code/@item.GistCode">点击播放终端录屏</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <pre class="card-body monaco-editor vcln" style="height:@((item.GistContentPreview.Split('\n').Length*22).ToString()+"px")" data-lang="@item.GistLanguage">@item.GistContentPreview.TrimEnd('\r')</pre>
+                    }
                 </div>
             </div>
         }
@@ -87,6 +96,7 @@
                     horizontalScrollbarSize: 0,
                     alwaysConsumeMouseWheel: false
                 },
+                fontSize: 16,
                 readOnly: true,
                 theme: that.attr('data-theme'),
                 minimap: {

@@ -72,8 +72,8 @@ var ss = {
             fontSize: 18,
             automaticLayout: true,
             scrollbar: {
-                verticalScrollbarSize: 6,
-                horizontalScrollbarSize: 6
+                verticalScrollbarSize: 9,
+                horizontalScrollbarSize: 9
             },
             minimap: {
                 enabled: true
@@ -100,8 +100,6 @@ var ss = {
         ss.lsInit();
 
         $(function () {
-            $('#LoadingMask').fadeOut();
-
             //Monaco Editor 编辑器全屏切换
             $('.me-full-btn').click(function () {
                 var mebox = $(this).parent();
@@ -452,7 +450,7 @@ var ss = {
             window.loadingdom.hide();
         } else {
             if (!window.loadingdom) {
-                window.loadingdom = $('<div class="loading"></div>').appendTo(document.body);
+                window.loadingdom = $('<div class="loading"><svg><use xlink:href="#loading"></use></svg></div>').appendTo(document.body);
             }
             window.loadingdom.hide();
             window.loadingdefer = setTimeout(function () {

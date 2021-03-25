@@ -476,8 +476,8 @@
             ],
             //默认服务接口
             dapi: [
-                { istemplate: true, host: location.origin, remark: "当前" },
-                { istemplate: true, host: "https://www.netnr.eu.org/api/v1", remark: "当前" }
+                { istemplate: true, host: "https://www.netnr.eu.org/api/v1", remark: "基于 Heroku 构建" },
+                { istemplate: true, host: location.origin, remark: "当前" }
             ],
             //接口地址
             apiPath: {
@@ -1730,7 +1730,7 @@
                     onDblClickCell: function (_index, _field, value) {
                         dk.msg('<textarea class="form-control" readonly >' + (value || "") + '</textarea>');
                     },
-                    pageList: [30, 100, 500, 999],
+                    pageList: [30, 50, 400, 999],
                     data: dk.dc.dataWhere.result.data,
                     total: dk.dc.dataWhere.result.total
                 });

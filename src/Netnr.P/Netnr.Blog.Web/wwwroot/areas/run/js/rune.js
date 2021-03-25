@@ -1,29 +1,46 @@
 ﻿//Monaco
-var editor1, editor2, editor3, deferp4;
+var editor1, editor2, editor3;
 require(['vs/editor/editor.main'], function () {
-    var theme = $('#bgtheme').find('input:checked').val();
+    var setheme = $('.nrTheme'), theme = setheme.attr('data-value');
+    setheme.val(theme);
+
     $('#rune').children().each(function (i) {
+        var that = this;
         var lang = this.getAttribute('data-lang');
         if (i < 3) {
             var tc = htmlDecodeByRegExp(this.innerHTML);
             this.innerHTML = "";
-            window["editor" + (i + 1)] = monaco.editor.create(this, {
+
+            var editor = monaco.editor.create(this, {
                 value: htmlDecodeByRegExp(tc),
                 language: lang,
                 automaticLayout: true,
                 theme: theme,
                 roundedSelection: true,
                 scrollBeyondLastLine: true,
+                fontSize: 18,
                 scrollbar: {
-                    verticalScrollbarSize: 6,
-                    horizontalScrollbarSize: 6
+                    verticalScrollbarSize: 9,
+                    horizontalScrollbarSize: 9
                 },
                 minimap: {
                     enabled: false
                 }
             });
+            window["editor" + (i + 1)] = editor;
+
+            //快捷键
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_M, function () {
+                $(that).children('button')[0].click();
+            })
+            editor.addCommand(monaco.KeyCode.PauseBreak, function () {
+                RunPreview();
+            })
         }
-        $('<button class="fre btn btn-outline-success">' + lang + '<i class="fa fa-arrows-alt fa-fw"></i></button>').appendTo(this).click(function () {
+        $(this).css('padding-left', 0);
+
+        //窗口漂浮按钮
+        $('<button class="fre btn btn-outline-success px-1 py-0">' + lang + '<i class="fa fa-arrows-alt fa-fw"></i></button>').appendTo(this).click(function () {
             var re = $('#rune');
             if (re.hasClass('rune-full')) {
                 re.removeClass('rune-full');
@@ -35,31 +52,24 @@ require(['vs/editor/editor.main'], function () {
         });
     });
 
-    $('#bgtheme').click(function () {
-        setTimeout(function () {
-            var theme = $('#bgtheme').find('input:checked').val();
-            monaco.editor.setTheme(theme);
+    //主题
+    $('.nrTheme').change(function () {
+        var theme = this.value;
+        monaco.editor.setTheme(theme);
 
-            var rv = $('#runav')[0], rb = $('#runsub')[0];
-            var rvcl = rv.className.replace(/bg-\w+/g, '').replace("navbar-light", "").replace("navbar-dark", "");
-            var rbcl = rb.className.replace(/bg-\w+/g, '');
-            switch (theme) {
-                case "vs":
-                    rv.className = rvcl + " navbar-light bg-" + theme;
-                    rb.className = rbcl + " bg-" + theme;
-                    $(rb).children('.card').removeClass('bg-dark');
-                    break;
-                case "vs-dark":
-                case "hc-black":
-                    rb.className = rbcl + " bg-" + theme;
-                    $(rb).children('.card').addClass('bg-dark');
-                    rv.className = rvcl + " navbar-dark bg-" + theme;
-                    break;
-            }
-        }, 10);
+        switch (theme) {
+            case "vs":
+                $('.nrRunBox').removeClass("bg-vs-dark").addClass("bg-vs");
+                $('#runav').removeClass("navbar-dark bg-dark").addClass("navbar-light bg-light");
+                break;
+            default:
+                $('.nrRunBox').removeClass("bg-vs").addClass("bg-vs-dark");
+                $('#runav').addClass("navbar-dark bg-dark").removeClass("navbar-light bg-light");
+                break;
+        }
     });
 
-    $('#runep')[0].src = "/run/home/preview";
+    RunPreview();
 });
 
 function htmlDecodeByRegExp(str) {
@@ -74,7 +84,29 @@ function htmlDecodeByRegExp(str) {
 
 //preview
 function RunPreview() {
-    $('#runep')[0].src = $('#runep')[0].src;
+    var iframebox = $('.re4');
+    iframebox.children('iframe').remove();
+
+    var e1 = editor1.getValue(), e2 = editor2.getValue(), e3 = editor3.getValue();
+    var iframe = document.createElement('iframe');
+    iframe.name = "Run preview";
+    iframebox.append(iframe);
+    iframe.onload = function () {
+        if (e3.trim() != "") {
+            var style = document.createElement("STYLE");
+            style.innerHTML = e3;
+            iframe.contentWindow.document.head.appendChild(style);
+        }
+
+        if (e2.trim() != "") {
+            var script = document.createElement("SCRIPT");
+            script.innerHTML = e2;
+            iframe.contentWindow.document.body.appendChild(script);
+        }
+    }
+    iframe.contentWindow.document.open();
+    iframe.contentWindow.document.write(e1);
+    iframe.contentWindow.document.close();
 }
 
 //保存
@@ -84,7 +116,7 @@ function SaveRun(st) {
     var post = {
         RunCode: $('#hidCode').val(),
         RunRemark: $('#txtRemark').val(),
-        RunTheme: $('#bgtheme').find('input:checked').val(),
+        RunTheme: $('.nrTheme').val(),
         RunContent1: editor1.getValue(),
         RunContent2: editor2.getValue(),
         RunContent3: editor3.getValue()
@@ -113,7 +145,7 @@ function SaveRun(st) {
     $.ajax({
         url: '/run/home/SaveRun',
         data: post,
-        type: "post",
+        type: "POST",
         dataType: 'json',
         success: function (data) {
             if (data.code == 200) {
@@ -134,13 +166,115 @@ function SaveRun(st) {
     })
 }
 
-$('#runsubc').click(function () {
-    var rb = $('#runsub'), re = $('#rune');
-    if (rb.hasClass('runsub-fold')) {
-        rb.removeClass('runsub-fold');
-        re.removeClass('rune-fold');
-    } else {
-        rb.addClass('runsub-fold');
-        re.addClass('rune-fold');
+//ref
+$('.nrRef').on('keydown', function (e) {
+    if (e.keyCode == 13) {
+        jsd.search(this.value);
     }
+});
+$('.nrRefList').click(function (e) {
+    var target = e.target;
+    if (target.nodeName == "A") {
+        jsd.selected(target);
+    }
+});
+
+var jsd = {
+    key: null,
+    buildItem: function (name, dir, type) {
+        type = type ? type : "file";
+        dir = dir ? dir : "";
+        var cls = "", empty = [], pn = dir == "" ? 0 : dir.split('/').length - 1;
+        while (pn--) {
+            empty.push("-")
+        }
+        if (empty.length) {
+            empty = empty.join(' ') + " ";
+        } else {
+            empty = "";
+        }
+        if (["file", "version"].indexOf(type) == -1) {
+            cls = "disabled";
+        }
+        return `<a class="dropdown-item ${cls}" data-stopPropagation="true" href="javascript:void(0)" data-type="${type}" data-dir="${dir + name}">${empty}${name}</a>`;
+    },
+    filesEach: function (files, directoryName) {
+        directoryName = directoryName || "";
+
+        var parr = [];
+        files.forEach(item => {
+            if (item.type == "file") {
+                parr.push(jsd.buildItem(item.name, directoryName));
+            } else if (item.type == "directory") {
+                parr.push(jsd.buildItem(item.name, directoryName, item.type));
+                parr = parr.concat(arguments.callee(item.files, directoryName + item.name + "/"));
+            }
+        })
+        return parr;
+    },
+    search: function (key) {
+        $('.nrRef').dropdown('show');
+
+        var vh = Math.max(100, $(window).height() - 100);
+        $('.nrRefList').css('max-height', vh);
+
+        jsd.key = key;
+        fetch("https://data.jsdelivr.com/v1/package/npm/" + key).then(x => x.json()).then(res => {
+            console.log(res);
+            var htm = [];
+            if (res.versions) {
+                res.versions.forEach(item => {
+                    htm.push(jsd.buildItem(item, "", "version"));
+                })
+            } else if (res.files) {
+                htm = jsd.filesEach(res.files);
+
+                if (res.default) {
+                    if (res.default[0] == "/") {
+                        res.default = res.default.substr(1);
+                    }
+                    htm.splice(0, 0, jsd.buildItem(res.default));
+                }
+            } else {
+                htm.push(jsd.buildItem("empty", "", "empty"));
+            }
+            $('.nrRefList').html(htm.join(''));
+        }).catch(err => {
+            console.log(err);
+            $('.nrRefList').html(jsd.buildItem("empty", "", "empty"));
+        })
+    },
+    selected: function (item) {
+        switch (item.getAttribute('data-type')) {
+            case "file":
+                {
+                    var dir = item.getAttribute('data-dir');
+                    var text = `https://cdn.jsdelivr.net/npm/${jsd.key}/${dir}`;
+                    switch (dir.split('.').pop()) {
+                        case "js":
+                            text = `<script src="${text}"></script>`
+                            break;
+                        case "css":
+                            text = `<link rel="stylesheet" href="${text}" />`
+                            break;
+                    }
+                    text += "\n";
+
+                    var gse = editor1.getSelection();
+                    var range = new monaco.Range(gse.startLineNumber, gse.startColumn, gse.endLineNumber, gse.endColumn);
+                    var op = { identifier: { major: 1, minor: 1 }, range: range, text: text, forceMoveMarkers: true };
+                    editor1.executeEdits("", [op]);
+                }
+                break;
+            case "version":
+                $('.nrRef').val(jsd.key + "@" + item.getAttribute('data-dir'));
+                jsd.search($('.nrRef').val());
+                $('.nrRef')[0].focus();
+                break;
+        }
+    }
+}
+
+$("body").on('click', '[data-stopPropagation]', function (e) {
+    e.stopPropagation();
 });

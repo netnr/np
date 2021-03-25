@@ -33,15 +33,15 @@
         <div class="collapse navbar-collapse" id="gistnavbar">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <form class="form-inline" action="@fa" method="get" id="gsearch">
-                        <input class="form-control mr-sm-3 txtsearch" name="q" aria-label="Search" placeholder="Search..." value="@ViewData["q"]">
-                    </form>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="/gist/discover"><i class="fa fa-fw fa-file-text"></i>Discover</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/"><i class="fa fa-fw fa-home"></i>@GlobalTo.GetValue("Common:EnglishName")</a>
+                </li>
+                <li class="nav-item ml-2">
+                    <form class="form-inline" action="@fa" method="get" id="gsearch">
+                        <input class="form-control form-control-sm mt-1 txtsearch" name="q" aria-label="Search" placeholder="Search..." value="@ViewData["q"]">
+                    </form>
                 </li>
             </ul>
 

@@ -1,0 +1,53 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 mb-3">
+
+            <button class="btn btn-success nrBtnSwaggerUI">SwaggerUI</button>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary nrBtnYamlToJson">Yaml</button>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">⇄</span>
+                </div>
+                <button class="btn btn-secondary nrBtnJsonToYaml">Json</button>
+            </div>
+
+            <button class="btn btn-primary nrBtnSwaggerToOpenAPI">Swagger 转 OpenAPI</button>
+            <div class="btn-group">
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning nrTo">生成文档</button>
+                </div>
+                <div class="input-group-prepend">
+                    <select class="custom-select nrConfigOnlyJson">
+                        <option value="1">Only JSON</option>
+                        <option value="0">不处理</option>
+                    </select>
+                </div>
+                <div class="input-group-prepend">
+                    <select class="btn btn-secondary nrDown">
+                        <option value="">（下载）</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="html">HTML</option>
+                        <option value="word">Word</option>
+                        <option value="pdf">PDF</option>
+                        <option value="png">PNG</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="border overflow-hidden position-relative nrEditorSwagger1"></div>
+        </div>
+        <div class="col-md-6 nrOutBox">
+            <div class="d-none border overflow-hidden position-relative nrEditorSwagger2"></div>
+            <div class="d-none nrEditorSwagger3">
+                <div class="nrMarkdownEditor"></div>
+            </div>
+            <div class="d-none border overflow-auto position-relative nrSwaggerUI"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,esprima.js,js-yaml.js,swagger-ui-dist.css,swagger-ui-dist.js,xml2json.js,monaco-editor"))
+
+<script src="/js/swaggerto.js" asp-append-version="true"></script>

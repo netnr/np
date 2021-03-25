@@ -18,8 +18,8 @@ require(['vs/editor/editor.main'], function () {
         automaticLayout: true,
         scrollWidth: 5,
         scrollbar: {
-            verticalScrollbarSize: 6,
-            horizontalScrollbarSize: 6
+            verticalScrollbarSize: 9,
+            horizontalScrollbarSize: 9
         },
         theme: $('#setheme').attr('data-value'),
         minimap: {

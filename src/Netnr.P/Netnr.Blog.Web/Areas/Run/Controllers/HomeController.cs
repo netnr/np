@@ -26,15 +26,6 @@ namespace Netnr.Blog.Web.Areas.Run.Controllers
         }
 
         /// <summary>
-        /// Run预览
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Preview()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 保存
         /// </summary>
         /// <param name="mo"></param>

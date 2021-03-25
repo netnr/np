@@ -449,5 +449,14 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// Swagger
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult SwaggerTo()
+        {
+            return View();
+        }
     }
 }
