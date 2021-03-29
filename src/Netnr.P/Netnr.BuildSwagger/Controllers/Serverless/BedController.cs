@@ -7,7 +7,6 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
     /// <summary>
     /// Bed 图床
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
     public class BedController : Controller
     {
         /// <summary>

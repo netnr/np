@@ -123,15 +123,15 @@ namespace Netnr.SharedApp
                         break;
 
                     case "canvas-datagrid.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/canvas-datagrid@0.25.4/dist/canvas-datagrid.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/canvas-datagrid@0.3.4/dist/canvas-datagrid.min.js'></script>");
                         break;
 
                     case "ag-grid-community.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/ag-grid-community@25.0.1/dist/ag-grid-community.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/ag-grid-community@25.1.0/dist/ag-grid-community.min.js'></script>");
                         break;
 
                     case "ag-grid-enterprise.js":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/ag-grid-enterprise@25.0.1/dist/ag-grid-enterprise.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/ag-grid-enterprise@25.1.0/dist/ag-grid-enterprise.min.js'></script>");
                         break;
 
                     case "webuploader.js":

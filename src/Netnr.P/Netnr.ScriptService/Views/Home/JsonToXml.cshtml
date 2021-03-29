@@ -10,7 +10,7 @@
                     </select>
                 </div>
             </div>
-            <pre id="txt1" class="border overflow-hidden">
+            <pre id="txt1" class="border overflow-hidden pme">
 {
   "site": {
     "title": "NET牛人",
@@ -80,6 +80,7 @@
             language: 'json',
             scrollBeyondLastLine: false
         }));
+        $(txt1).removeClass('pme');
 
         editor1.onDidChangeModelContent(function (e) {
             if ($('#seautoformatter1').val() == "1") {

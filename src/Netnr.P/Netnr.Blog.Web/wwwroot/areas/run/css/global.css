@@ -51,6 +51,7 @@
     z-index: 2 !important;
     width: 100% !important;
     height: 100% !important;
+    border-color: transparent !important;
 }
 
 .rune > pre {
@@ -58,30 +59,37 @@
     margin: 0;
     z-index: 1;
     width: 50%;
-    height: 62%;
     font-size: 18px;
     overflow: hidden;
     line-height: 24px;
     padding: 0 0 0 75px;
+    border: 1px solid transparent;
     font-family: Consolas, "Courier New", monospace;
 }
 
+    .rune > pre.re1 {
+        height: 38%;
+    }
+
     .rune > pre.re2 {
         top: 38%;
-        border-top: 1px solid #ddd;
+        height: 62%;
+        border-top-color: #ddd;
     }
 
     .rune > pre.re3 {
         left: 50%;
-        border-left: 1px solid #ddd;
+        height: 38%;
+        border-left-color: #ddd;
     }
 
     .rune > pre.re4 {
         top: 38%;
         left: 50%;
+        height: 62%;
         background-color: white;
-        border-top: 1px solid #ddd;
-        border-left: 1px solid #ddd;
+        border-top-color: #ddd;
+        border-left-color: #ddd;
     }
 
         .rune > pre.re4 iframe {

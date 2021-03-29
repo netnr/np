@@ -1,0 +1,191 @@
+<style>
+    #preview iframe {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <select class="custom-select nrSeMerge">
+                        <option value="1">合并</option>
+                        <option value="0">优化</option>
+                    </select>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning nrDown">下载</button>
+                </div>
+                <div class="custom-file">
+                    <input id="txtFile" type="file" class="custom-file-input" multiple accept="*">
+                    <label class="custom-file-label nrtip" dv="选择（拖拽）多个 svg 文件">选择（拖拽）多个 svg 文件</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 d-none mt-3">
+            <div id="editor" class="border overflow-hidden position-relative">
+                <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
+            </div>
+        </div>
+        <div class="col-md-6 d-none mt-3">
+            <div id="preview" class="border overflow-hidden position-relative">
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jszip.js,monaco-editor"))
+
+<script>
+    var svgo = {
+        svgJson: [],
+        svgOut: null,
+        readFiles: function (files) {
+            var arr = [];
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file.name.toLowerCase().includes(".svg")) {
+                    arr.push(svgo.readFile(file));
+                }
+            }
+
+            ss.loading();
+            Promise.all(arr).then(json => {
+                svgo.svgJson = json;
+
+                $("#txtFile").val('');
+                var merge = $('.nrSeMerge').val();
+
+                var fd = new FormData();
+                fd.append("svgJson", JSON.stringify(json));
+                fd.append("merge", merge);
+
+                fetch(ss.apiServer + "/svgo", {
+                    method: "POST",
+                    body: fd
+                }).then(x => x.json()).then(res => {
+                    ss.loading(0);
+
+                    if (res.code == 200) {
+                        svgo.svgOut = res;
+
+                        $('#editor').parent().removeClass('d-none');
+                        $('#preview').parent().removeClass('d-none');
+
+                        var html = [];
+                        if (merge == "1") {
+                            html.push(res.data);
+                            html.push("\n<!--使用-->");
+                            $(res.data).find('symbol').each(function () {
+                                var id = $(this).attr('id');
+                                html.push(`<svg><use xlink:href="#${id}"></use></svg>`);
+                            });
+                        } else {
+                            res.data.forEach(item => {
+                                html.push(item.data + "\n");
+                            });
+                        }
+                        editor.setValue(html.join('\n'));
+                        svgo.viewIframe();
+                    } else {
+                        alert('ERROR');
+                    }
+                }).catch(err => {
+                    alert('ERROR');
+                    ss.loading(0);
+                })
+            });
+        },
+        readFile: function (file) {
+            return new Promise((resolve) => {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var obj = { path: file.name, text: e.target.result };
+                    resolve(obj);
+                };
+                reader.readAsText(file);
+            });
+        },
+        viewIframe: function () {
+            var html = editor.getValue();
+            var iframebox = $('#preview');
+            iframebox.children('iframe').remove();
+
+            var iframe = document.createElement('iframe');
+            iframe.name = "Run preview";
+            iframebox.append(iframe);
+            iframe.onload = function () {
+                var style = document.createElement("STYLE");
+                style.innerHTML = `
+svg {
+    height: 5rem;
+    margin: .5rem;
+    padding: .5rem;
+    max-width: 5rem;
+}
+
+svg:hover {
+    transition: transform 1.5s;
+    transform: rotate(360deg);
+}
+`;
+                iframe.contentWindow.document.head.appendChild(style);
+            }
+            iframe.contentWindow.document.open();
+            iframe.contentWindow.document.write(html);
+            iframe.contentWindow.document.close();
+        },
+        resize: function () {
+            var vh = $(window).height() - 140;
+            $('#editor').height(vh);
+            $('#preview').height(vh);
+        }
+    };
+
+    require(['vs/editor/editor.main'], function () {
+        window.editor = monaco.editor.create($("#editor")[0], ss.meConfig({
+            language: "html",
+            wordWrap: "on"
+        }));
+
+        editor.addCommand(monaco.KeyCode.PauseBreak, function () {
+            svgo.viewIframe();
+        });
+
+        $('.nrDown').click(function () {
+            if (svgo.svgOut) {
+                if (typeof svgo.svgOut.data == "string") {
+                    ss.dowload(svgo.svgOut.data, "icon.svg");
+                } else {
+                    if (svgo.svgOut.data.length == 1) {
+                        ss.dowload(svgo.svgOut.data[0].data, svgo.svgOut.data[0].path);
+                    } else {
+                        var zip = new JSZip();
+                        $.each(svgo.svgOut.data, function () {
+                            zip.file(this.path, this.data);
+                        });
+                        zip.generateAsync({ type: "blob" }).then(function (content) {
+                            ss.dowload(content, "icon.zip");
+                        });
+                    }
+                }
+            } else {
+                alert("请选择或拖拽 SVG 文件后再下载")
+            }
+        });
+
+        svgo.resize();
+        $(window).on('load resize', function () {
+            svgo.resize();
+        })
+    });
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        svgo.readFiles(files);
+    }, "#txtFile");
+</script>

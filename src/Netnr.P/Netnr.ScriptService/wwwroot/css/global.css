@@ -194,6 +194,13 @@ body {
     font-size: 1.2em;
 }
 
+.pme {
+    font-size: 18px;
+    line-height: 24px;
+    padding: 0 0 0 75px;
+    font-family: Consolas, "Courier New", monospace;
+}
+
 .ag-watermark {
     display: none !important;
 }

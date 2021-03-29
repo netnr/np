@@ -482,6 +482,25 @@ var ss = {
     },
 
     /**
+     * 下载
+     * @param {any} content
+     * @param {any} fileName
+     */
+    dowload: function (content, fileName) {
+        var aTag = document.createElement('a');
+        aTag.download = fileName;
+        if (content.nodeType == 1) {
+            aTag.href = content.toDataURL();
+        } else {
+            var blob = new Blob([content]);
+            aTag.href = URL.createObjectURL(blob);
+        }
+        document.body.appendChild(aTag);
+        aTag.click();
+        aTag.remove();
+    },
+
+    /**
      * 大小可视化
      * @param {any} size
      */

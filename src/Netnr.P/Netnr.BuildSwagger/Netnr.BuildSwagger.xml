@@ -104,6 +104,15 @@
             <param name="wh">自定义宽高，如 500x309</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Svgo(System.Collections.Generic.List{Microsoft.AspNetCore.Http.IFormFile},System.String,System.Int32)">
+            <summary>
+            svg优化
+            </summary>
+            <param name="svgFile">文件</param>
+            <param name="svgJson">文件内容 [{"path":"a.svg","text":"svg content"}]</param>
+            <param name="merge">合并（0：不合并，默认；1：合并）</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.BuildSwagger.Controllers.Serverless.CommonController.Captcha(System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Boolean,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             生成SVG验证码,默认返回一条

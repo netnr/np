@@ -458,5 +458,14 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// SVG优化
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Svgo()
+        {
+            return View();
+        }
     }
 }

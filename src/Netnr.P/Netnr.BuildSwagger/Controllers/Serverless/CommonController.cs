@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using static Netnr.BuildSwagger.Models.Serverless;
 
@@ -7,7 +8,6 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
     /// <summary>
     /// Common 常用
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
     public class CommonController : Controller
     {
         /// <summary>
@@ -63,6 +63,19 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
         }
 
         /// <summary>
+        /// svg优化
+        /// </summary>
+        /// <param name="svgFile">文件</param>
+        /// <param name="svgJson">文件内容 [{"path":"a.svg","text":"svg content"}]</param>
+        /// <param name="merge">合并（0：不合并，默认；1：合并）</param>
+        /// <returns></returns>
+        [HttpPost, Route("/svgo")]
+        public PublicResult Svgo([FromForm] List<IFormFile> svgFile, [FromForm] string svgJson, [FromForm] int merge = 0)
+        {
+            return new PublicResult();
+        }
+
+        /// <summary>
         /// 生成SVG验证码,默认返回一条
         /// </summary>
         /// <param name="size">验证码长度，默认4位</param>
@@ -74,7 +87,7 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
         /// <param name="height">验证码高，默认50</param>
         /// <param name="fontSize">验证码字体大小</param>
         /// <returns></returns>
-        [HttpGet, Route("/captcha")]        
+        [HttpGet, Route("/captcha")]
         public CaptchaResult Captcha(int? size, string ignoreChars, int? noise, bool color, string background, int? width, int? height, int? fontSize)
         {
             return new CaptchaResult();

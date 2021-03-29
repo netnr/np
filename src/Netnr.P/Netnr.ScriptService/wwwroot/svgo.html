@@ -1,0 +1,272 @@
+﻿
+<!--
+https://github.com/netnr
+https://gitee.com/netnr
+https://www.netnr.com
+https://zme.ink
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>SVG雪碧图 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 SVG雪碧图" />
+    <meta name="description" content="Script Services 优化合并SVG" />
+
+</head>
+<body>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
+<link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.js' defer async></script>
+        <link href="/css/global.css?v=Arn5hUvxiAOolMKCsfGPHThvmHY1N7NaAqWCd8z0dW4" rel="stylesheet" />
+        <script src="/js/global.js?v=-UUx_lkaONxBXMxYH5RB2QtqMLBOuqV077SxjKI08E4"></script>
+            <!--导航-->
+            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
+                <span class="fa fa-align-justify"></span>
+            </button>
+            <div class="netnrnav horizontal">
+                <div class="netnrnav-wrapper">
+                    <ul>
+                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
+                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
+                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
+                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
+                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
+                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
+                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+                            <!--标题-->
+                                <a href='javascript:location.reload(false)' title="优化合并SVG">
+                                    <svg class="titleicon"><use xlink:href="#chain"></use></svg> SVG&#x96EA;&#x78A7;&#x56FE;
+                                </a>
+                        </li>
+                        <li>
+                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
+                            <ul>
+                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <div class="min300 mt-3">
+            <style>
+    #preview iframe {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <select class="custom-select nrSeMerge">
+                        <option value="1">合并</option>
+                        <option value="0">优化</option>
+                    </select>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-warning nrDown">下载</button>
+                </div>
+                <div class="custom-file">
+                    <input id="txtFile" type="file" class="custom-file-input" multiple accept="*">
+                    <label class="custom-file-label nrtip" dv="选择（拖拽）多个 svg 文件">选择（拖拽）多个 svg 文件</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 d-none mt-3">
+            <div id="editor" class="border overflow-hidden position-relative">
+                <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
+            </div>
+        </div>
+        <div class="col-md-6 d-none mt-3">
+            <div id="preview" class="border overflow-hidden position-relative">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs/loader.js'></script>
+
+<script>
+    require.config({
+        paths: {
+            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs'
+        },
+        'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+    });
+</script>
+                        
+
+
+<script>
+    var svgo = {
+        svgJson: [],
+        svgOut: null,
+        readFiles: function (files) {
+            var arr = [];
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file.name.toLowerCase().includes(".svg")) {
+                    arr.push(svgo.readFile(file));
+                }
+            }
+
+            ss.loading();
+            Promise.all(arr).then(json => {
+                svgo.svgJson = json;
+
+                $("#txtFile").val('');
+                var merge = $('.nrSeMerge').val();
+
+                var fd = new FormData();
+                fd.append("svgJson", JSON.stringify(json));
+                fd.append("merge", merge);
+
+                fetch(ss.apiServer + "/svgo", {
+                    method: "POST",
+                    body: fd
+                }).then(x => x.json()).then(res => {
+                    ss.loading(0);
+
+                    if (res.code == 200) {
+                        svgo.svgOut = res;
+
+                        $('#editor').parent().removeClass('d-none');
+                        $('#preview').parent().removeClass('d-none');
+
+                        var html = [];
+                        if (merge == "1") {
+                            html.push(res.data);
+                            html.push("\n<!--使用-->");
+                            $(res.data).find('symbol').each(function () {
+                                var id = $(this).attr('id');
+                                html.push(`<svg><use xlink:href="#${id}"></use></svg>`);
+                            });
+                        } else {
+                            res.data.forEach(item => {
+                                html.push(item.data + "\n");
+                            });
+                        }
+                        editor.setValue(html.join('\n'));
+                        svgo.viewIframe();
+                    } else {
+                        alert('ERROR');
+                    }
+                }).catch(err => {
+                    alert('ERROR');
+                    ss.loading(0);
+                })
+            });
+        },
+        readFile: function (file) {
+            return new Promise((resolve) => {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var obj = { path: file.name, text: e.target.result };
+                    resolve(obj);
+                };
+                reader.readAsText(file);
+            });
+        },
+        viewIframe: function () {
+            var html = editor.getValue();
+            var iframebox = $('#preview');
+            iframebox.children('iframe').remove();
+
+            var iframe = document.createElement('iframe');
+            iframe.name = "Run preview";
+            iframebox.append(iframe);
+            iframe.onload = function () {
+                var style = document.createElement("STYLE");
+                style.innerHTML = `
+svg {
+    height: 5rem;
+    margin: .5rem;
+    padding: .5rem;
+    max-width: 5rem;
+}
+
+svg:hover {
+    transition: transform 1.5s;
+    transform: rotate(360deg);
+}
+`;
+                iframe.contentWindow.document.head.appendChild(style);
+            }
+            iframe.contentWindow.document.open();
+            iframe.contentWindow.document.write(html);
+            iframe.contentWindow.document.close();
+        },
+        resize: function () {
+            var vh = $(window).height() - 140;
+            $('#editor').height(vh);
+            $('#preview').height(vh);
+        }
+    };
+
+    require(['vs/editor/editor.main'], function () {
+        window.editor = monaco.editor.create($("#editor")[0], ss.meConfig({
+            language: "html",
+            wordWrap: "on"
+        }));
+
+        editor.addCommand(monaco.KeyCode.PauseBreak, function () {
+            svgo.viewIframe();
+        });
+
+        $('.nrDown').click(function () {
+            if (svgo.svgOut) {
+                if (typeof svgo.svgOut.data == "string") {
+                    ss.dowload(svgo.svgOut.data, "icon.svg");
+                } else {
+                    if (svgo.svgOut.data.length == 1) {
+                        ss.dowload(svgo.svgOut.data[0].data, svgo.svgOut.data[0].path);
+                    } else {
+                        var zip = new JSZip();
+                        $.each(svgo.svgOut.data, function () {
+                            zip.file(this.path, this.data);
+                        });
+                        zip.generateAsync({ type: "blob" }).then(function (content) {
+                            ss.dowload(content, "icon.zip");
+                        });
+                    }
+                }
+            } else {
+                alert("请选择或拖拽 SVG 文件后再下载")
+            }
+        });
+
+        svgo.resize();
+        $(window).on('load resize', function () {
+            svgo.resize();
+        })
+    });
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        svgo.readFiles(files);
+    }, "#txtFile");
+</script>
+        </div>
+            <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
+</body>
+</html>

@@ -19,7 +19,6 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
         /// <param name="SECRET_KEY">百度AI接口：SECRET_KEY（可选，用自己申请的授权信息更稳定不受限制）</param>
         /// <returns></returns>
         [HttpPost, Route("/aip/ocr")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
         public PublicResult Aip_ocr(IFormFile file, [FromForm] string url, [FromForm] string APP_ID, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
         {
             return new PublicResult();
@@ -33,7 +32,6 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
         /// <param name="content">内容</param>
         /// <returns></returns>
         [HttpPost, Route("/analysis"), Consumes("application/x-www-form-urlencoded")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
         public PublicResult Analysis([FromForm] string lang, [FromForm] int ctype, [FromForm] string content = "结过婚的和尚未结过婚的")
         {
             return new PublicResult();

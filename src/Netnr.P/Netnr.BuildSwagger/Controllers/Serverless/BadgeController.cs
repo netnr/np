@@ -5,8 +5,6 @@ namespace Netnr.BuildSwagger.Controllers.Serverless
     /// <summary>
     /// Badge 徽章
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名样式", Justification = "<挂起>")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
     public class BadgeController : Controller
     {
         /// <summary>

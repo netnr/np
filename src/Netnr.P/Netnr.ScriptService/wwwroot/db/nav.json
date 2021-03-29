@@ -240,10 +240,10 @@
         "remark": "矢量图标库"
       },
       {
-        "url": "//svgsprit.es",
+        "url": "/svgo",
         "icon": "chain",
         "title": "SVG雪碧图",
-        "remark": "合并SVG"
+        "remark": "优化合并SVG"
       },
       {
         "url": "//c.runoob.com/more/svgeditor/",
