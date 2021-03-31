@@ -140,8 +140,8 @@ https://zme.ink
     </div>
 </div>
 
-<script src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/@nsfw-filter/nsfwjs@2.2.0/dist/nsfwjs.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.8.6/dist/tf.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/nsfwjs@2.3.0/dist/nsfwjs.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/highcharts@9.0.1/highcharts.js'></script>
 
 
@@ -166,8 +166,10 @@ https://zme.ink
                     pg.isgif = file.type == "image/gif";
                     if (file.type.indexOf("image") != -1) {
                         isImg = true;
+                        pg.iv.onload = function () {
+                            pg.scan();
+                        }
                         pg.iv.src = URL.createObjectURL(file);
-                        pg.scan();
                         break;
                     }
                 }
@@ -185,7 +187,7 @@ https://zme.ink
             if (pg.model) {
                 pg.classify();
             } else {
-                nsfwjs.load('https://cdn.jsdelivr.net/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
+                nsfwjs.load('https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@2.3.0/example/nsfw_demo/public/quant_nsfw_mobilenet/').then(function (model) {
                     pg.model = model;
                     pg.classify();
                 })

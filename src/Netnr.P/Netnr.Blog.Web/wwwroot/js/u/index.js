@@ -6,7 +6,7 @@ $('#btnGetGp').click(function () {
         jz.alert("请输入邮箱");
         return;
     }
-    var gp = "https://www.gravatar.com/avatar/" + md5($('#txtUserMail').val());
+    var gp = "https://dn-qiniu-avatar.qbox.me/avatar/" + md5($('#txtUserMail').val());
     var img = new Image();
     img.onload = function () {
         $('#imgPreviewPhoto').attr('src', this.src);

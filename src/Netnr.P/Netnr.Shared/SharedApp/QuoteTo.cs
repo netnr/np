@@ -183,8 +183,8 @@ namespace Netnr.SharedApp
                         break;
 
                     case "nsfwjs":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js'></script>");
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/@nsfw-filter/nsfwjs@2.2.0/dist/nsfwjs.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.8.6/dist/tf.min.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/nsfwjs@2.3.0/dist/nsfwjs.min.js'></script>");
                         break;
 
                     case "cropperjs":

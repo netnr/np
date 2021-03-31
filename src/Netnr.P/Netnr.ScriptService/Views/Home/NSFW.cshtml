@@ -98,8 +98,10 @@
                     pg.isgif = file.type == "image/gif";
                     if (file.type.indexOf("image") != -1) {
                         isImg = true;
+                        pg.iv.onload = function () {
+                            pg.scan();
+                        }
                         pg.iv.src = URL.createObjectURL(file);
-                        pg.scan();
                         break;
                     }
                 }
@@ -117,7 +119,7 @@
             if (pg.model) {
                 pg.classify();
             } else {
-                nsfwjs.load('https://cdn.jsdelivr.net/npm/nsfwjs-node@2.1.14/model/').then(function (model) {
+                nsfwjs.load('https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@2.3.0/example/nsfw_demo/public/quant_nsfw_mobilenet/').then(function (model) {
                     pg.model = model;
                     pg.classify();
                 })
