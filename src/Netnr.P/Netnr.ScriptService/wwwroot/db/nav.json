@@ -21,12 +21,6 @@
         "remark": "图床大集合"
       },
       {
-        "url": "/speedtest",
-        "icon": "speed",
-        "title": "网络测速",
-        "remark": "资源下载速率"
-      },
-      {
         "url": "/ps",
         "icon": "ps",
         "title": "Photoshop",
@@ -44,6 +38,12 @@
         "icon": "qrcode",
         "title": "生成二维码",
         "remark": "识别二维码"
+      },
+      {
+        "url": "/speedtest",
+        "icon": "speed",
+        "title": "网络测速",
+        "remark": "资源下载速率"
       },
       {
         "url": "/idcard",
@@ -64,7 +64,7 @@
     "items": [
       {
         "url": "/code",
-        "icon": "encrypt",
+        "icon": "lock",
         "title": "加密转码",
         "remark": "加密、解密、编码、转码"
       },
@@ -247,7 +247,7 @@
       },
       {
         "url": "//c.runoob.com/more/svgeditor/",
-        "icon": "svg",
+        "icon": "svge",
         "title": "SVG编辑器"
       },
       {
@@ -261,6 +261,12 @@
         "icon": "swagger",
         "title": "SwaggerTo",
         "remark": "Swagger转换生成"
+      },
+      {
+        "url": "/identicon",
+        "icon": "pixel",
+        "title": "身份图标",
+        "remark": "生成哈希头像"
       }
     ]
   },

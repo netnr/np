@@ -3,15 +3,15 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label>
-                    <a href="https://pv.sohu.com/cityjson" target="_blank">搜狐</a>
-                </label>
-                <input class="form-control" id="txtSohu">
-            </div>
-            <div class="form-group">
-                <label>
                     <a href="@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/ip" target="_blank">@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/ip</a>
                 </label>
                 <input class="form-control" id="txtZme">
+            </div>
+            <div class="form-group">
+                <label>
+                    <a href="https://pv.sohu.com/cityjson" target="_blank">搜狐</a>
+                </label>
+                <input class="form-control" id="txtSohu">
             </div>
             <div>
                 <label>更多：</label>
@@ -28,10 +28,10 @@
 <script src="https://pv.sohu.com/cityjson"></script>
 <script>
     try {
-        $('#txtSohu').val(returnCitySN.cip);
-
         $.get(`${ss.apiServer}/ip`, null, function (data) {
             $('#txtZme').val(data);
         });
+
+        $('#txtSohu').val(returnCitySN.cip);
     } catch (e) { }
 </script>

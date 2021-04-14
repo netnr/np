@@ -17,7 +17,7 @@ require(['vs/editor/editor.main'], function () {
     if (location.pathname == "/home/write") {
         //高度沉底
         $(window).on('load resize', function () {
-            var vh = $(window).height() - nmd.obj.container.offset().top - 15;
+            var vh = $(window).height() - nmd.obj.container.offset().top - 20;
             nmd.height(Math.max(100, vh));
         })
     }

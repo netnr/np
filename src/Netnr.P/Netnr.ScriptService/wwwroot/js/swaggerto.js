@@ -918,8 +918,8 @@ var st = {
             md2.push(hrs.join(''));
         })
 
-        mds.push(md1.join(' | '));
-        mds.push(md2.join(' | '));
+        mds.push(md1.join(' | ').trim());
+        mds.push(md2.join(' | ').trim());
     },
 
     /**
@@ -944,7 +944,7 @@ var st = {
                 description = "**默认值**：" + (item.default === '' ? '"" 。 ' : '`' + item.default + '` 。 ') + description;
             }
 
-            list.push(`${empty} ${item.field} | ${type} | ${description} `);
+            list.push(`|${empty} ${item.field} | ${type} | ${description} |`);
             if (item.children) {
                 list = list.concat(arguments.callee(item.children, deep + 1))
             }

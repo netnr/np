@@ -63,7 +63,7 @@
 .gn-viewcode {
     cursor: pointer;
     overflow: hidden;
-    border: 1px solid transparent !important;
+    border: 1px solid #e1e4e8 !important;
 }
 
     .gn-viewcode:hover {

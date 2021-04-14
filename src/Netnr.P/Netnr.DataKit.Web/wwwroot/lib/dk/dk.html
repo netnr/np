@@ -1730,7 +1730,7 @@
                     onDblClickCell: function (_index, _field, value) {
                         dk.msg('<textarea class="form-control" readonly >' + (value || "") + '</textarea>');
                     },
-                    pageList: [30, 50, 400, 999],
+                    pageList: [30, 100, 500, 999],
                     data: dk.dc.dataWhere.result.data,
                     total: dk.dc.dataWhere.result.total
                 });
@@ -1951,7 +1951,6 @@
                     if (cr == null || x[dgo.groupField] != cr[dgo.groupField]) {
                         if (i > 0) {
                             tablemd.push('');
-                            tablemd.push('---');
                             tablemd.push('');
                         }
 

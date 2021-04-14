@@ -79,6 +79,12 @@
 
             seal.cogAdd();
 
+            $('input,textarea').each(function () {
+                if (this.placeholder != "") {
+                    this.title = this.placeholder;
+                }
+            });
+
             $(window).dblclick(function () {
                 seal.draw();
             });

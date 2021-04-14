@@ -76,12 +76,12 @@ else
         <div class="col-12 mt-3 text-right">
             @if (Model == null)
             {
-                <button class="btn btn-dark nrSaveGist ml-sm-2">Create public gist</button>
+                <button class="btn btn-warning nrSaveGist ml-sm-2">Create public gist</button>
             }
             else
             {
                 <a href="/gist/code/@mo.GistCode" class="btn btn-outline-danger mr-sm-2">Cancel</a>
-                <button class="btn btn-success nrSaveGist">Update public gist</button>
+                <button class="btn btn-warning nrSaveGist">Update public gist</button>
             }
         </div>
     </div>

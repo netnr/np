@@ -407,7 +407,7 @@ namespace Netnr.Blog.Web.Controllers
                             break;
                         case "addtag":
                             {
-                                var tags = Request.Form["tags"].ToString().Split(',').ToList();
+                                var tags = Request.Form["tags"].ToString().ToLower().Split(',').ToList();
 
                                 if (tags.Count > 0)
                                 {
@@ -422,10 +422,11 @@ namespace Netnr.Blog.Web.Controllers
                                             {
                                                 var mo = new Domain.Tags
                                                 {
-                                                    TagName = tag.ToLower(),
+                                                    TagName = tag,
+                                                    TagCode = tag,
                                                     TagStatus = 1,
                                                     TagHot = 0,
-                                                    TagIcon = tag.ToLower() + ".svg"
+                                                    TagIcon = tag + ".svg"
                                                 };
                                                 listMo.Add(mo);
                                             }
@@ -438,7 +439,7 @@ namespace Netnr.Blog.Web.Controllers
 
                                         Application.CommonService.TagsQuery(false);
 
-                                        rt[1] = "操作成功";
+                                        rt[1] = "操作成功（已刷新缓存）";
                                     }
                                     else
                                     {
@@ -448,8 +449,10 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
+                                    Application.CommonService.TagsQuery(false);
+
                                     rt[0] = 0;
-                                    rt[1] = "新增标签不能为空";
+                                    rt[1] = "新增标签不能为空（已刷新缓存）";
                                 }
                             }
                             break;

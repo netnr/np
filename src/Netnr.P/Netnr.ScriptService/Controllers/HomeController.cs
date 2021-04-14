@@ -467,5 +467,14 @@ namespace Netnr.ScriptService.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// 身份图标
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Identicon()
+        {
+            return View();
+        }
     }
 }

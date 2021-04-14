@@ -110,7 +110,7 @@
                         @foreach (var item in listRp)
                         {
                             lv += 1;
-                            var gra = "https://dn-qiniu-avatar.qbox.me/avatar/" + Netnr.Core.CalcTo.MD5(item.UrAnonymousMail ?? "") + "?r=pg";
+                            var gra = "https://sdn.geekzu.org/avatar/" + Netnr.Core.CalcTo.MD5(item.UrAnonymousMail ?? "") + "?r=pg";
 
                             <li class="media uwo-reply-item py-3" id="no_@lv">
                                 @if (item.Uid == 0)

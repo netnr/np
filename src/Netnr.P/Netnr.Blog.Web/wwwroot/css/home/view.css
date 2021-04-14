@@ -12,11 +12,15 @@
 
         .navtag .nav li {
             float: left;
-            padding: .5rem .8rem;
+            padding: .5rem;
         }
 
             .navtag .nav li:first-child {
                 padding-left: 0;
+            }
+
+            .navtag .nav li a {
+                padding: .3rem;
             }
 
     .navtag a {

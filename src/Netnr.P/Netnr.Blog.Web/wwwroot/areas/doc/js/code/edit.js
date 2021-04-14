@@ -1,7 +1,7 @@
 //初始化MarkDown
 require(['vs/editor/editor.main'], function () {
     window.nmd = new netnrmd('#editor', {
-        storekey: "md_autosave_" + location.pathname.replace("/", "").toLowerCase()
+        autosave: false
     });
 
     nmd.setmd(nmd.obj.mebox.attr('data-value'));
@@ -162,7 +162,7 @@ $('#btnbox').click(function (e) {
 function InsertTemplateMd(md) {
     var docstop = $(document).scrollTop();
     $.ajax({
-        url: "/areas/doc/template/" + md + ".md?v2",
+        url: "/areas/doc/template/" + md + ".md?v3",
         success: function (data) {
             netnrmd.insertAfterText(nmd.obj.me, data);
         },

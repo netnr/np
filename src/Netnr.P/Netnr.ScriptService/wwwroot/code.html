@@ -31,7 +31,7 @@ https://zme.ink
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
 <link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.js' defer async></script>
-        <link href="/css/global.css?v=Arn5hUvxiAOolMKCsfGPHThvmHY1N7NaAqWCd8z0dW4" rel="stylesheet" />
+        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
         <script src="/js/global.js?v=-UUx_lkaONxBXMxYH5RB2QtqMLBOuqV077SxjKI08E4"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
@@ -49,7 +49,7 @@ https://zme.ink
                         <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
                             <!--标题-->
                                 <a href='javascript:location.reload(false)' title="加密、解密、编码、转码">
-                                    <svg class="titleicon"><use xlink:href="#encrypt"></use></svg> &#x52A0;&#x5BC6;&#x8F6C;&#x7801;
+                                    <svg class="titleicon"><use xlink:href="#lock"></use></svg> &#x52A0;&#x5BC6;&#x8F6C;&#x7801;
                                 </a>
                         </li>
                         <li>
@@ -64,15 +64,6 @@ https://zme.ink
             </div>
         <div class="min300 mt-3">
             <style>
-    textarea {
-        width: 100%;
-        padding: 5px;
-        height: 400px;
-        font-size: 15px;
-        line-height: 1.5;
-        border: 1px solid #ddd;
-    }
-
     .tab-pane {
         border: 1px solid #ddd;
         border-top: none;
@@ -81,128 +72,115 @@ https://zme.ink
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <textarea class="form-control" id="txtCode1" rows="5">一二12ab</textarea>
+        <div class="col-md-6 mb-3">
+            <textarea class="form-control" id="txtCode1" rows="6" autofocus>一二12ab</textarea>
         </div>
-        <div class="col-md-12 my-3" id="codetoolbox">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="tab1" data-toggle="tab" href="#pane1">
-                        加密/解密
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="tab2" data-toggle="tab" href="#pane2">
-                        散列/哈希
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="tab3" data-toggle="tab" href="#pane3">
-                        编码转换
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="tab4" data-toggle="tab" href="#pane4">
-                        其它
-                    </a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane fade show active" id="pane1">
-                    <div class="card-body px-2 py-2">
-                        <div class="input-group mb-2">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">密钥：</span>
-                            </div>
-                            <input type="text" class="form-control" id="txtKey1" placeholder="请输入密钥">
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">AES</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">DES</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">RC4</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">Rabbit</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">TripleDES</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="pane2">
-                    <div class="card-body px-2 py-2">
-                        <div class="btn-group">
-                            <button class="btn btn-primary">MD5</button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary">SHA1</button>
-                            <button type="button" class="btn btn-light">224</button>
-                            <button type="button" class="btn btn-light">256</button>
-                            <button type="button" class="btn btn-light">384</button>
-                            <button type="button" class="btn btn-light">512</button>
-                        </div>
-                        <div class="card mt-3">
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">密钥：</span>
-                                </div>
-                                <input type="text" class="form-control" id="txtKey2" placeholder="HmacSHA、HmacMD5密钥">
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary">HmacSHA1</button>
-                                <button type="button" class="btn btn-light">224</button>
-                                <button type="button" class="btn btn-light">256</button>
-                                <button type="button" class="btn btn-light">384</button>
-                                <button type="button" class="btn btn-light">512</button>
-                                <button type="button" class="btn btn-light">HmacMD5</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="pane3">
-                    <div class="card-body px-2 py-2">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">encodeURI</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">encodeURIComponent</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">Base64</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">Unicode</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">ASCII</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="pane4">
-                    <div class="card-body px-2 py-2">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-danger">UUID</button>
-                        </div>
-                    </div>
-                </div>
+        <div class="col-md-6 mb-3">
+            <textarea class="form-control" rows="6" id="txtCode2"></textarea>
+        </div>
+    </div>
+
+    <div class="row" title="散列/哈希">
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group">
+                <button class="btn btn-success">MD5</button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success">SHA1</button>
+                <button type="button" class="btn btn-outline-secondary">224</button>
+                <button type="button" class="btn btn-outline-secondary">256</button>
+                <button type="button" class="btn btn-outline-secondary">384</button>
+                <button type="button" class="btn btn-outline-secondary">512</button>
             </div>
         </div>
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">密钥</span>
+                    </div>
+                    <input type="text" class="form-control" id="txtKey2" placeholder="HmacSHA、HmacMD5密钥">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success">HmacSHA1</button>
+                <button type="button" class="btn btn-outline-secondary">224</button>
+                <button type="button" class="btn btn-outline-secondary">256</button>
+                <button type="button" class="btn btn-outline-secondary">384</button>
+                <button type="button" class="btn btn-outline-secondary">512</button>
+                <button type="button" class="btn btn-outline-secondary">HmacMD5</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" title="加密/解密">
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">密钥</span>
+                    </div>
+                    <input type="text" class="form-control" id="txtKey1" placeholder="请输入密钥">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-warning">AES</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-warning">DES</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-warning">RC4</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-warning">Rabbit</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-warning">TripleDES</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" title="编码转换">
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group">
+                <button type="button" class="btn btn-info">Base64</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info">encodeURI</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info">encodeURIComponent</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info">Unicode</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info">ASCII</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" title="其他">
         <div class="col-md-12 mb-3">
-            <textarea class="form-control" rows="8" id="txtCode2"></textarea>
+            <hr />
+            <div class="btn-group">
+                <button type="button" class="btn btn-dark">UUID</button>
+            </div>
         </div>
     </div>
 </div>
@@ -211,10 +189,10 @@ https://zme.ink
 
 
 <script>
-    var t1 = $('#txtCode1'), t2 = $('#txtCode2'), k1 = $('#txtKey1'), k2 = $('#txtKey2'), box = $('#codetoolbox');
+    var t1 = $('#txtCode1'), t2 = $('#txtCode2'), k1 = $('#txtKey1'), k2 = $('#txtKey2');
 
     //按钮点击事件
-    box.click(function (e) {
+    $(document.body).click(function (e) {
         e = e || window.event;
         var target = e.target || e.srcElement;
         if (target.nodeName == "BUTTON" || target.nodeName == "I") {
@@ -311,7 +289,7 @@ https://zme.ink
                 case "UUID":
                     t2.val("Loading ...");
                     $.ajax({
-                        url: `${ss.apiServer}/uuid/9`,
+                        url: `${ss.apiServer}/uuid/6`,
                         dataType: 'json',
                         success: function (data) {
                             t2.val(data.join('\r\n'));
@@ -324,12 +302,6 @@ https://zme.ink
             }
         }
     });
-
-
-    $("#btnHtmlToJs").click(function () {
-        $("#txtCode2").val("var tmp='" + $("#txtCode1").val().replace(/\'/g, "\\'").replace(/\n/g, '').replace(/\s/g, '') + "'");
-    });
-
 
     //转码 To Unicode
     function ConvertUnicode(s) {

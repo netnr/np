@@ -1,43 +1,52 @@
- **简要描述：**
+### GET /svg/{wh}
 
-- 用户注册接口
+#### 描述（Summary）
+生成占位图,默认200x200
 
-**请求URL：** 
-- `http://xx.com/api/user/register`
-  
-**请求方式：**
+#### 参数（Parameters）
+| 名称 | 类型 | 位置 | 说明 |
+| ---- | ---- | ---- | ---- |
+| wh | string | path | **必填** 。 自定义宽高，如 500x309 |
 
-- POST
+#### 响应（Responses）
 
-**参数：**
-
-|参数名|必选|类型|说明|
-|:----|:----:|:-----|:-----|
-|username |是 |string |用户名 |
-|password |是 |string |密码 |
-|name |否 |string | 昵称 |
-
- **返回示例**
-
-``` 
-  {
-    "error_code": 0,
-    "data": {
-      "uid": "1",
-      "username": "12345",
-      "name": "汤姆",
-      "sex": 2 ,
-      "reg_time": "1436865212"
-    }
-  }
+```html
+Status: 200 Success
 ```
 
- **返回参数说明** 
+### POST /svgo
 
-|参数名|类型|说明|
-|:-----|:-----|-----|
-|sex |int |性别编码，1：男；2：女 |
+#### 描述（Summary）
+svg优化
 
- **备注** 
+#### 请求主体（RequestBody）
 
-- 更多返回错误代码请看首页的错误代码描述
+**multipart/form-data**
+
+| 名称 | 类型 | 说明 |
+| ---- | ---- | ---- |
+| svgFile | array |  |
+| svgJson | string |  |
+| merge | int32 | **默认值**："" 。  |
+
+#### 响应（Responses）
+
+```html
+Status: 200 Success
+```
+
+**application/json**
+
+```json
+{
+  "code": 0,
+  "msg": "string",
+  "data": {}
+}
+```
+
+| 名称 | 类型 | 说明 |
+| ---- | ---- | ---- |
+| code | integer / int32 |  |
+| msg | string |  |
+| data | object |  |

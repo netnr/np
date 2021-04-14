@@ -186,7 +186,7 @@ function ListUserConn(action) {
 }
 
 //阅读量
-if (sessionStorage.getItem("wid") != wid) {
+if (location.hostname != "localhost" && sessionStorage.getItem("wid") != wid) {
     sessionStorage.setItem("wid", wid);
     $.get("/home/ListReadPlus/" + wid);
 }
