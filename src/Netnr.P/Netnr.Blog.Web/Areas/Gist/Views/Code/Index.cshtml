@@ -123,7 +123,7 @@
                         var editor;
                         require(['vs/editor/editor.main'], function () {
                             var gc = $('pre.vcln');
-                            var cv = htmlDecodeByRegExp(gc.html());
+                            var cv = htmlDecode(gc.html());
                             gc.html('');
                             editor = monaco.editor.create(gc[0], {
                                 value: cv,

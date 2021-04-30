@@ -82,7 +82,7 @@
     require(['vs/editor/editor.main'], function () {
         $('pre.vcln').each(function () {
             var that = $(this);
-            var cv = htmlDecodeByRegExp(that.html());
+            var cv = htmlDecode(that.html());
             that.html('');
             editor = monaco.editor.create(this, {
                 value: cv,

@@ -18,15 +18,16 @@ namespace Netnr
         /// object 转 JSON 字符串
         /// </summary>
         /// <param name="obj"></param>
+        /// <param name="isSpace">缩进输出</param>
         /// <param name="DateTimeFormat">时间格式化</param>
         /// <returns></returns>
-        public static string ToJson(this object obj, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
+        public static string ToJson(this object obj, bool isSpace = false, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
         {
             Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new()
             {
                 DateTimeFormat = DateTimeFormat
             };
-            return JsonConvert.SerializeObject(obj, dtFmt);
+            return JsonConvert.SerializeObject(obj, isSpace ? Formatting.Indented : Formatting.None, dtFmt);
         }
 
         /// <summary>

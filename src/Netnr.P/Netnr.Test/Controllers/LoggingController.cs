@@ -1,58 +1,93 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.SharedLogging;
 
 namespace Netnr.Test.Controllers
 {
+    /// <summary>
+    /// 日志
+    /// </summary>
+    [Route("[controller]/[action]")]
     public class LoggingController : Controller
     {
         public LoggingController()
         {
-            LoggingTo.OptionsDbPart = LoggingTo.DBPartType.Month;
-            LoggingTo.OptionsCacheWriteCount = 99;
+            LoggingTo.OptionsDbPart = LoggingTo.DBPartType.Year;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public SharedResultVM Query()
         {
             var vm = new SharedResultVM();
 
             try
             {
-                vm.Data = Query();
+                var now = DateTime.Now;
+                vm.Data = LoggingTo.Query(now, now.AddYears(30));
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
             }
 
-            return Content(vm.ToJson());
+            return vm;
         }
 
-        public void Add()
+        [HttpGet]
+        public SharedResultVM Add()
         {
-            var now = DateTime.Now;
+            var vm = new SharedResultVM();
 
-            var listLog = new List<LoggingModel>();
-            for (int i = 0; i < 5000; i++)
+            var now = DateTime.Now;
+            var ct = new SharedApp.ClientTo(HttpContext);
+
+            var listLog = new ConcurrentBag<LoggingModel>();
+            Parallel.For(0, 999, i =>
             {
                 var lm = new LoggingModel()
                 {
                     LogAction = "/",
-                    LogCreateTime = now.AddDays(i),
-                    LogContent = $"日志内容{i},{now}"
+                    LogCreateTime = now.AddHours(i),
+                    LogContent = $"日志内容{i},{now}",
+                    LogUserAgent = ct.UserAgent,
+                    LogIp = ct.IPv4,
+                    LogReferer = ct.Referer
                 };
                 listLog.Add(lm);
-            }
+            });
 
             LoggingTo.Add(listLog);
+
+            vm.Data = listLog.Count;
+
+            return vm;
         }
 
-        public LoggingResultVM Query()
+        /// <summary>
+        /// 删除存储目录
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM DeleteStorageDir()
         {
-            var now = DateTime.Now;
+            var vm = new SharedResultVM();
 
-            var vm = LoggingTo.Query(now, now.AddYears(30));
+            try
+            {
+                vm.Log.Add(LoggingTo.OptionsDbRoot);
+                System.IO.Directory.Delete(LoggingTo.OptionsDbRoot, true);
+
+                vm.Set(SharedEnum.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
             return vm;
         }
     }

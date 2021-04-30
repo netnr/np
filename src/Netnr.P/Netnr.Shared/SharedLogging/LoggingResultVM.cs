@@ -8,10 +8,6 @@ namespace Netnr.SharedLogging
     public class LoggingResultVM
     {
         /// <summary>
-        /// 数据体
-        /// </summary>
-        public object Data { get; set; }
-        /// <summary>
         /// 总条数（仅对分页查询时有效）
         /// </summary>
         public int Total { get; set; }
@@ -19,6 +15,10 @@ namespace Netnr.SharedLogging
         /// 丢失的库（附加库有上限会丢失数据库）
         /// </summary>
         public int Lost { get; set; }
+        /// <summary>
+        /// 数据体
+        /// </summary>
+        public object Data { get; set; }
     }
 }
 

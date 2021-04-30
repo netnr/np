@@ -30,6 +30,18 @@ namespace Netnr.Test
                 //日期格式化
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
             });
+
+            //配置swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = $"Netnr Test"
+                });
+                c.IncludeXmlComments(System.AppContext.BaseDirectory + $"Netnr.Test.xml", true);
+            });
+            //swagger枚举显示名称
+            services.AddSwaggerGenNewtonsoftSupport();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +55,14 @@ namespace Netnr.Test
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            //配置swagger
+            app.UseSwagger().UseSwaggerUI(c =>
+            {
+                c.DocumentTitle = $"Netnr Test";
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+            });
+
             app.UseStaticFiles();
 
             app.UseRouting();

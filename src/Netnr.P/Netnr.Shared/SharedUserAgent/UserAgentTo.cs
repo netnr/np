@@ -61,11 +61,11 @@ namespace Netnr.SharedUserAgent
             if (ua != null)
             {
                 var dd = new DeviceDetector(ua);
-                dd.Parse();
-                if (dd.IsBot())
-                {
-                    IsBot = true;
+                dd.DiscardBotInformation();
 
+                dd.Parse();
+                if (IsBot = dd.IsBot())
+                {
                     var botInfo = dd.GetBot();
                     if (botInfo.Success)
                     {
@@ -92,7 +92,6 @@ namespace Netnr.SharedUserAgent
                 }
             }
         }
-
     }
 }
 

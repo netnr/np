@@ -91,6 +91,9 @@
 
         <!--内容-->
         <div class="col-md-12 my-3">
+            <!--目录-->
+            <div class="toc"></div>
+
             <div class="uwo-content markdown-body">
                 @Html.Raw(uw.UwContent)
             </div>
@@ -214,6 +217,5 @@
 
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor"))
-
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,tocbot.js,monaco-editor"))
 <script src="/js/home/list.js" async defer asp-append-version="true"></script>

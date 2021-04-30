@@ -1,6 +1,6 @@
 @model List<UserWriting>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jdenticon.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("identicon.js"))
 
 <div class="uw-box mb-3">
     @if (Model.Count == 0)
@@ -13,7 +13,7 @@
     @foreach (var mo in Model)
     {
         <div class="uw-item pl-3 pr-4 py-3">
-            <svg class="uw-icon d-none d-sm-block" data-jdenticon-value="netnr-blog-@mo.UwId"></svg>
+            <svg class="uw-icon d-none d-sm-block" data-identicon-value="netnr_blog_@mo.UwId"></svg>
             <div class="uw-title">
                 @if (mo.UwLaud > 0)
                 {
@@ -62,3 +62,11 @@
         </div>
     }
 </div>
+
+<script>
+    document.querySelectorAll('.uw-icon').forEach(icon => {
+        var value = icon.getAttribute('data-identicon-value');
+        var svg = iisvg({ value: value, size: 50 });
+        icon.innerHTML = svg.innerHTML;
+    })
+</script>

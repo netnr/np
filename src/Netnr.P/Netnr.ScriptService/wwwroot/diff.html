@@ -27,12 +27,11 @@ https://zme.ink
 <link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-<link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.js' defer async></script>
         <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=-UUx_lkaONxBXMxYH5RB2QtqMLBOuqV077SxjKI08E4"></script>
+        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
                 <span class="fa fa-align-justify"></span>
@@ -73,29 +72,29 @@ https://zme.ink
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-5">
-            <label class="btn btn-secondary float-left">
-                <input type="file" class="d-none" id="fileOrigin" />选择原始文件（只读）
-            </label>
-            <textarea class="form-control difftxt" id="txtOrigin" placeholder="或 粘贴内容"></textarea>
-        </div>
-        <div class="col-md-5">
-            <label class="btn btn-warning float-left">
-                <input type="file" class="d-none" id="fileVary" />选择变动文件（可编辑）
-            </label>
-            <textarea class="form-control difftxt" id="txtVary" placeholder="或 粘贴内容"></textarea>
-        </div>
-        <div class="col-md-2">
-            <label class="m-0">
-                <input type="checkbox" id="chkDiffMode" /> 内联对比
-            </label>
-            <br />
-            <label class="text-muted m-0">可拖拽打开文件</label>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-12">
-            <div id="editor" class="border"></div>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <select class="custom-select nr-diff-inline">
+                        <optgroup label="对比模式">
+                            <option value="0">左右</option>
+                            <option value="1">内联</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="custom-file">
+                    <input id="txtFile" type="file" class="custom-file-input">
+                    <label class="custom-file-label nrtip" dv="选择（拖拽）文件">选择（拖拽）文件</label>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-secondary nr-diff-next">Next</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mt-3">
+            <div id="editor" class="border overflow-hidden position-relative">
+                <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
+            </div>
         </div>
     </div>
 </div>
@@ -103,6 +102,12 @@ https://zme.ink
 <script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs/loader.js'></script>
 
 <script>
+    function htmlDecode(html) {
+        var a = document.createElement('a');
+        a.innerHTML = html;
+        return a.innerText;
+    }
+
     require.config({
         paths: {
             vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs'
@@ -114,74 +119,64 @@ https://zme.ink
 
 
 <script>
-    var editor, originContent = '', varyContent = '';
+    var de = {
+        editor: document.getElementById("editor"),
+        init: function () {
 
-    $('#chkDiffMode').click(changeDiffMode);
-    function changeDiffMode() {
-        if (editor) {
-            editor.updateOptions({
-                renderSideBySide: !$('#chkDiffMode').is(':checked')
-            });
-        }
-    }
-    function createDiffEditor(text1, text2) {
-        $('#editor').empty();
-        require(['vs/editor/editor.main'], function () {
-            var originalModel = monaco.editor.createModel(text1 || "", "text/plain");
-            var modifiedModel = monaco.editor.createModel(text2 || "", "text/plain");
-            editor = monaco.editor.createDiffEditor(document.getElementById("editor"), ss.meConfig());
-            editor.setModel({
-                original: originalModel,
-                modified: modifiedModel
-            });
-            changeDiffMode();
-        });
-    }
-    $('#fileOrigin').change(function () {
-        if (this.files.length) {
-            var reader = new FileReader();
-            reader.onload = function () {
-                createDiffEditor(originContent = this.result, varyContent);
-            };
-            reader.readAsText(this.files[0]);
-        }
-    });
-    $('#txtOrigin').on('input', function () {
-        createDiffEditor(originContent = this.value, varyContent);
-    });
-    $('#fileVary').change(function () {
-        if (this.files.length) {
-            var reader = new FileReader();
-            reader.onload = function () {
-                createDiffEditor(originContent, varyContent = this.result);
-            };
-            reader.readAsText(this.files[0]);
-        }
-    });
-    $('#txtVary').on('input', function () {
-        createDiffEditor(originContent, varyContent = this.value);
-    });
+            de.resize();
+            $(window).on('resize', de.resize);
 
-    function AutoHeight() {
-        var ch = $(window).height() - $('#editor').offset().top - 15;
-        $('#editor').css('height', Math.max(200, ch));
+            require(['vs/editor/editor.main'], function () {
+                de.originalModel = monaco.editor.createModel("just some text\n\nHello World\n\nSome more text", "text/plain");
+                de.modifiedModel = monaco.editor.createModel("just some Text\n\nHello World\n\nSome more changes", "text/plain");
+
+                de.diffEditor = monaco.editor.createDiffEditor(de.editor, ss.meConfig({
+                    originalEditable: true
+                }));
+
+                de.diffEditor.setModel({
+                    original: de.originalModel,
+                    modified: de.modifiedModel
+                });
+
+                de.den = monaco.editor.createDiffNavigator(de.diffEditor, {
+                    followsCaret: true,
+                    ignoreCharChanges: true
+                });
+
+                $('.nr-diff-inline').change(function () {
+                    de.diffEditor.updateOptions({
+                        renderSideBySide: this.value != 1
+                    });
+                });
+
+                $('.nr-diff-next').click(function () {
+                    de.den.next();
+                });
+            });
+        },
+        resize: function () {
+            var ch = $(window).height() - $('#editor').offset().top - 20;
+            $('#editor').height(Math.max(200, ch));
+        }
     }
-    $(window).on('load resize', AutoHeight);
+
+    de.init();
 
     //接收文件
     ss.receiveFiles(function (files) {
         jz.popup({
             title: "请选择文件打开到？",
-            okValue: "变动文件（可编辑）",
-            cancelValue: "原始文件（只读）",
+            okValue: "Right 右边",
+            cancelValue: "Left 左边",
             drag: true,
             //变动（右）
             ok: function () {
                 var file = files[0];
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    createDiffEditor(originContent, varyContent = e.target.result);
-                    $('#txtVary').val(varyContent)
+                    de.diffEditor.getModifiedEditor().setValue(e.target.result);
+                    $("#txtFile").val('');
                 };
                 reader.readAsText(file);
             },
@@ -190,13 +185,16 @@ https://zme.ink
                 var file = files[0];
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    createDiffEditor(originContent = e.target.result, varyContent);
-                    $('#txtOrigin').val(originContent)
+                    de.diffEditor.getOriginalEditor().setValue(e.target.result);
+                    $("#txtFile").val('');
                 };
                 reader.readAsText(file);
+            },
+            close: function () {
+                $("#txtFile").val('');
             }
         })
-    });
+    }, "#txtFile");
 </script>
         </div>
 </body>

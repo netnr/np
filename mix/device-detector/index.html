@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <script src='dd.min.js'></script>
+</head>
+
+<body>
+    <script>
+        var pre = document.createElement('pre');
+        pre.style.fontSize = "1.5rem";
+        pre.innerHTML = JSON.stringify(dd(navigator.userAgent), null, 2);
+        document.body.appendChild(pre);
+
+        setTimeout(function () {
+            console.time();
+            for (var i = 0; i < 999; i++) {
+                dd(navigator.userAgent)
+            }
+            console.log("999 parse");
+            console.timeEnd();
+        }, 1000)
+    </script>
+</body>
+
+</html>

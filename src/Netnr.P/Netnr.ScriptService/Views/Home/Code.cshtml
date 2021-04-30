@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 mb-3">
-            <textarea class="form-control" id="txtCode1" rows="6" autofocus>一二12ab</textarea>
+            <textarea class="form-control" id="txtCode1" rows="6" autofocus>一二 12 ab &lt;&gt; </textarea>
         </div>
         <div class="col-md-6 mb-3">
             <textarea class="form-control" rows="6" id="txtCode2"></textarea>
@@ -107,6 +107,10 @@
                 <button type="button" class="btn btn-info">ASCII</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info">HtmlEncode</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
         </div>
     </div>
 
@@ -120,7 +124,7 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("crypto.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("crypto.js,uuid4.js"))
 
 <script>
     var t1 = $('#txtCode1'), t2 = $('#txtCode2'), k1 = $('#txtKey1'), k2 = $('#txtKey2');
@@ -172,6 +176,9 @@
                         case "ASCII":
                             try { t1.val(UnConvertAscii(t2.val())); } catch (e) { t1.val('') }
                             break;
+                        case "HtmlEncode":
+                            t1.val(ss.htmlDecode(t2.val()));
+                            break;
                     }
                     break;
 
@@ -219,19 +226,18 @@
                 case "ASCII":
                     t2.val(ConvertAscii(t1.val()));
                     break;
+                case "HtmlEncode":
+                    t2.val(ss.htmlEncode(t1.val()));
+                    break;
 
                 case "UUID":
-                    t2.val("Loading ...");
-                    $.ajax({
-                        url: `${ss.apiServer}/uuid/6`,
-                        dataType: 'json',
-                        success: function (data) {
-                            t2.val(data.join('\r\n'));
-                        },
-                        error: function () {
-                            t2.val('生成UUID失败');
+                    {
+                        var arr = [];
+                        for (var i = 0; i < 6; i++) {
+                            arr.push(uuidv4());
                         }
-                    });
+                        t2.val(arr.join('\r\n'));
+                    }
                     break;
             }
         }
@@ -247,7 +253,9 @@
     };
 
     //转码 Unicode To STR-CN
-    function UnConvertUnicode(s) { return eval("'" + s + "'"); };/*return unescape(str.replace(/\u/g, "%u"))*/
+    function UnConvertUnicode(s) {
+        return unescape(s.replace(/\\u/g, "%u"))
+    };
 
     //转码 To ASCII
     function ConvertAscii(s) {

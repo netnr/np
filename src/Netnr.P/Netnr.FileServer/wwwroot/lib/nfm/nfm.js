@@ -13,8 +13,6 @@
         container: document.querySelector(".nfm"),
         //语言
         locale: "zh-CN",
-        //双击时间（毫秒）
-        doubleClickTime: 250,
         //图标
         icon: {
             app: "exe,apk",
@@ -27,12 +25,22 @@
             image: "jpeg,jpg,png,gif,bpm,webp,svg",
             js: "js,ts,json",
             music: "mp3,wav,wma,ape,flac",
-            page: "",
             pdf: "pdf",
             ppt: "pptx,ppt",
             text: "text,txt,log,ini",
             video: "mp4,wmv,avi,flv,3gp",
             zip: "zip,rar,7z,gz,tar"
+        },
+        //图标路径
+        iconUri: function (ext) {
+            var iconName = 'file';
+            for (var i in nfm.config.icon) {
+                var exts = nfm.config.icon[i].split(',');
+                if (exts.includes(ext)) {
+                    iconName = i;
+                }
+            }
+            return `/lib/nfm/icon/${iconName}.svg`;
         }
     };
 
@@ -42,10 +50,6 @@
         ui: {},
         //点击
         click: {
-            //最后时间
-            lastTime: Date.now(),
-            //最后对象
-            lastTarget: null,
             //最后数据行对象
             lastRow: null
         }
@@ -223,7 +227,7 @@
                         <div class="row" data-cmd="colRow">
                             <div class="col-md-8 py-1 text-truncate" data-cmd="colName">
                                 <input type="checkbox" data-cmd="checkOne">
-                                <img src="/favicon.svg" class="list-fileIcon" />
+                                <img src="${nfm.config.iconUri(li.fileExtension)}" class="list-fileIcon" />
                                 <a class="text-muted" href="javascript:void(0)" data-cmd="fileName" title="${li.fileName}">${li.fileName || '-'}</a>
                             </div>
                             <div class="col-md-2 d-none d-md-block py-1 text-muted" data-cmd="colSize">
@@ -333,26 +337,12 @@
         /**处理点击事件 */
         globalClick: function () {
             document.body.addEventListener('click', function (e) {
-                var target = e.target, ctime = Date.now();
+                var target = e.target;
                 var cmd = target.getAttribute('data-cmd');
 
                 if (cmd) {
-                    clearTimeout(nfm.cache.click.stDeferClick);
-                    nfm.cache.click.stDeferClick = setTimeout(function () {
-                        console.log(cmd, target, 'click one')
-                        nfm.event.click[cmd] && nfm.event.click[cmd](e);
-                    }, nfm.config.doubleClickTime);
-
-                    //点击同一对象时判断是否为双击
-                    if (target == nfm.cache.click.lastTarget && ctime - nfm.cache.click.lastTime < nfm.config.doubleClickTime) {
-                        clearTimeout(nfm.cache.click.stDeferClick);
-                        console.log(cmd, target, 'click two')
-                        nfm.event.dblclick[cmd] && nfm.event.dblclick[cmd](e);
-                    }
+                    nfm.event.click[cmd] && nfm.event.click[cmd](e);
                 }
-
-                nfm.cache.click.lastTime = ctime;
-                nfm.cache.click.lastTarget = target;
             }, false);
         },
 
@@ -385,7 +375,16 @@
             if (sw) {
                 nfm.cache.ui.tableHeader.style.marginRight = (-15 + sw) + "px";
             }
+        },
+
+        /**
+         * 随机数
+         * @param {any} max 最大值
+         */
+        random: function (max) {
+            return Math.floor(Math.random() * (max + 1))
         }
+
     };
 
     /**事件 */
@@ -515,34 +514,6 @@
             fileName: function () {
 
             }
-        },
-
-        //双击
-        dblclick: {
-
-            /**数据行 */
-            colRow: function (e, target) {
-                var row = (e ? e.target : target);
-                console.log('open', row);
-            },
-
-            /**名称 */
-            colName: function (e, target) {
-                var row = (e ? e.target : target).parentNode;
-                console.log('open', row);
-            },
-
-            /**大小 */
-            colSize: function (e, target) {
-                var row = (e ? e.target : target).parentNode;
-                console.log('open', row);
-            },
-
-            /**日期 */
-            colDate: function (e, target) {
-                var row = (e ? e.target : target).parentNode;
-                console.log('open', row);
-            }
         }
 
     };
@@ -629,15 +600,20 @@
         nfm.ui.pathBox('/abc/123/kdfkdfkdfkdf/abcabcabcabcabcabcabcabc/123456123456/');
         nfm.ui.totalBox();
 
-        nfm.ui.tableHeader()
+        nfm.ui.tableHeader();
+
         var list = [];
+        var exts = Object.values(nfm.config.icon).join(',').split(',');
         for (var i = 0; i < 88; i++) {
             list.push({
-                fileName: `文件名文件名文件名文件名文件名文件名文件名文件名文件名文件名文件名文件名${Math.random().toString().substring(2, 10)}`,
-                fileSize: (Math.random() * 999).toFixed(0),
+                type: ['file', 'folder'][(Math.random() * 1).toFixed(0)],
+                fileName: `文件名文件名文件名文件名文件名文件名文件名文件名文件名文件名文件名文件名${nfm.func.random(9999)}`,
+                fileExtension: exts[nfm.func.random(exts.length - 1)],
+                fileSize: nfm.func.random(999),
                 fileModDate: new Date().toLocaleDateString()
             })
         }
+        console.log(list)
         nfm.ui.tableBody(list)
 
         nfm.func.globalClick();

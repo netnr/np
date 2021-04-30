@@ -31,7 +31,7 @@ namespace Netnr.Blog.Application
                 /// </summary>
                 public Reg()
                 {
-                    Schedule<BackupDataBaseJob>().ToRunEvery(2).Days().At(5, 5);
+                    Schedule<BackupDataBaseJob>().ToRunEvery(1).Days().At(5, 5);
 
                     Schedule<GistSyncJob>().ToRunEvery(2).Hours();
 
@@ -55,7 +55,6 @@ namespace Netnr.Blog.Application
             /// </summary>
             public class GistSyncJob : IJob
             {
-
                 void IJob.Execute()
                 {
                     Core.ConsoleTo.Log(GistSync().ToJson());
@@ -67,7 +66,6 @@ namespace Netnr.Blog.Application
             /// </summary>
             public class HandleOperationRecordJob : IJob
             {
-
                 void IJob.Execute()
                 {
                     Core.ConsoleTo.Log(HandleOperationRecord().ToJson());
@@ -96,7 +94,7 @@ namespace Netnr.Blog.Application
 
                     if (!string.IsNullOrWhiteSpace(cmd))
                     {
-                        var er = Core.CmdTo.Execute(cmd);
+                        var er = Core.CmdTo.Execute(cmd).CrOutput;
                         vm.Log.Add($"执行CMD：{cmd}");
                         vm.Log.Add($"结果输出：{er}");
                     }

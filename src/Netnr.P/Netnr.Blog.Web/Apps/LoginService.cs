@@ -127,7 +127,12 @@ namespace Netnr.Blog.Web.Apps
                     {
                         vm.Log.Add("验证邮箱");
                     }
-                }                
+
+                    if (umo.UserCreateTime.Value.AddDays(3) > DateTime.Now)
+                    {
+                        vm.Log.Add("新注册用户需 3 天以后才能操作");
+                    }
+                }
             }
 
             vm.Set(vm.Log.Count == 0);

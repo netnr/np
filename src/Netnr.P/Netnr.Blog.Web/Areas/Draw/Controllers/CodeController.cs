@@ -117,6 +117,7 @@ namespace Netnr.Blog.Web.Areas.Draw.Controllers
                         mof.DrCreateTime = DateTime.Now;
                         mof.Uid = uinfo.UserId;
                         mof.DrOrder = 100;
+                        mof.DrStatus = 1;
 
                         db.Draw.Add(mof);
                         num = db.SaveChanges();

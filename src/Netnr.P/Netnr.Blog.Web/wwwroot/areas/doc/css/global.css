@@ -2,20 +2,34 @@
     box-shadow: none;
 }
 
+@media (min-width: 1666px) {
+    .col-xxl-2, .col-ll-2 {
+        -ms-flex: 0 0 16.666667%;
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+    }
+
+    .col-xxl-3 {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+}
+
 /*卡片*/
 .card-pi {
-    height: 140px;
+    height: 132px;
     overflow: hidden;
 }
 
     .card-pi .card-tool {
         position: absolute;
-        top: 16px;
-        right: 3px;
+        top: 5px;
+        z-index: 2;
+        right: 12px;
         display: none;
         cursor: pointer;
+        font-size: 1.2rem;
         user-select: none;
-        text-align: center;
     }
 
         .card-pi .card-tool a {

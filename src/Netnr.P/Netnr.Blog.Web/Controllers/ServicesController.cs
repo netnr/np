@@ -112,7 +112,7 @@ namespace Netnr.Blog.Web.Controllers
 
             //输出
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(result);
-            await Response.Body.WriteAsync(buffer, 0, buffer.Length);
+            await Response.Body.WriteAsync(buffer.AsMemory(0, buffer.Length));
             await Response.Body.FlushAsync();
         }
 

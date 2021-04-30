@@ -1,6 +1,11 @@
 ﻿<style>
     .nr-view-1, .nr-view-2 {
         display: inline-block;
+        border: 1px solid #ddd;
+    }
+
+    .border-transparent {
+        border-color: transparent;
     }
 </style>
 
@@ -15,7 +20,7 @@
             </div>
         </div>
         <div class="col d-none">
-            <div class="nr-view-1 border">
+            <div class="nr-view-1">
             </div>
             <div class="my-3">
                 <a href="https://github.com/stewartlord/identicon.js" class="text-muted" target="_blank">GitHub-style</a>
@@ -24,7 +29,7 @@
             </div>
         </div>
         <div class="col d-none">
-            <div class="nr-view-2 border">
+            <div class="nr-view-2">
             </div>
             <div class="my-3">
                 <a href="https://github.com/dmester/jdenticon" class="text-muted" target="_blank">jdenticon</a>
@@ -35,7 +40,7 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jdenticon.js,identicon,crypto.js,html2canvas.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jdenticon.js,identicon.js,html2canvas.js"))
 
 <script>
 
@@ -55,20 +60,20 @@
                         ss.dowload($('.nr-view-1').html(), "identicon.svg");
                         break;
                     case "image1":
-                        $('.nr-view-1').removeClass('border');
+                        $('.nr-view-1').addClass('border-transparent');
                         html2canvas($('.nr-view-1')[0]).then(function (canvas) {
                             ss.dowload(canvas, "identicon.jpg");
-                            $('.nr-view-1').addClass('border')
+                            $('.nr-view-1').removeClass('border-transparent')
                         })
                         break;
                     case "svg2":
                         ss.dowload($('.nr-view-2').html(), "identicon.svg");
                         break;
                     case "image2":
-                        $('.nr-view-2').removeClass('border');
+                        $('.nr-view-2').addClass('border-transparent');
                         html2canvas($('.nr-view-2')[0]).then(function (canvas) {
                             ss.dowload(canvas, "identicon.jpg");
-                            $('.nr-view-2').addClass('border');
+                            $('.nr-view-2').removeClass('border-transparent');
                         })
                         break;
                 }
@@ -82,14 +87,8 @@
                 var value = $('.nr-value').val();
                 var size = $('.nr-size').val() || 420;
 
-                var hash = CryptoJS.SHA1(value).toString();
-                var data = new Identicon(hash, {
-                    size: size,
-                    format: "svg"
-                }).toString();
-                var o1 = CryptoJS.enc.Base64.parse(data).toString(CryptoJS.enc.Utf8);
-                $('.nr-view-1').html(o1).parent().removeClass('d-none');
-                $('.nr-view-1').children().removeAttr('style');
+                var svgicon = iisvg({ value, size });
+                $('.nr-view-1').empty().append(svgicon).parent().removeClass('d-none');
 
                 var o2 = jdenticon.toSvg(value, size);
                 $('.nr-view-2').html(o2).parent().removeClass('d-none');

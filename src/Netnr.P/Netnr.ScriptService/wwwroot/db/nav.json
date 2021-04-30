@@ -140,16 +140,16 @@
         "remark": "JS压缩、CSS压缩"
       },
       {
-        "url": "/sqlformatter",
-        "icon": "sql",
-        "title": "SQL格式化",
-        "remark": "美化SQL语句"
-      },
-      {
         "url": "/formatter",
         "icon": "formatter",
         "title": "代码格式化",
         "remark": "Js、Css、Html、TypeScript、Yaml"
+      },
+      {
+        "url": "/sqlformatter",
+        "icon": "sql",
+        "title": "SQL格式化",
+        "remark": "美化SQL语句"
       },
       {
         "url": "//zijian.aliyun.com",

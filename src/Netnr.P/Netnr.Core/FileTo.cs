@@ -34,6 +34,8 @@ namespace Netnr.Core
             //流写入
             using var sw = new StreamWriter(fs, e);
             sw.WriteLine(content);
+            sw.Flush();
+            sw.Close();
         }
 
         /// <summary>

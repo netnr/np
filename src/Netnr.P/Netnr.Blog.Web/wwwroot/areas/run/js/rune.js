@@ -8,11 +8,11 @@ require(['vs/editor/editor.main'], function () {
         var that = this;
         var lang = this.getAttribute('data-lang');
         if (i < 3) {
-            var tc = htmlDecodeByRegExp(this.innerHTML);
+            var tc = htmlDecode(this.innerHTML);
             this.innerHTML = "";
 
             var editor = monaco.editor.create(this, {
-                value: htmlDecodeByRegExp(tc),
+                value: tc,
                 language: lang,
                 automaticLayout: true,
                 theme: theme,
@@ -36,6 +36,12 @@ require(['vs/editor/editor.main'], function () {
             editor.addCommand(monaco.KeyCode.PauseBreak, function () {
                 RunPreview();
             })
+            //CSS格式化
+            if (i == 2) {
+                editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+                    editor3.setValue(cssFormatter(editor3.getValue()))
+                })
+            }
         }
         $(this).css('padding-left', 0);
 
@@ -72,36 +78,35 @@ require(['vs/editor/editor.main'], function () {
     RunPreview();
 });
 
-function htmlDecodeByRegExp(str) {
-    if (str.length == 0) return "";
-    return str.replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&nbsp;/g, " ")
-        .replace(/&#39;/g, "\'")
-        .replace(/&quot;/g, "\"")
-        .replace(/&amp;/g, "&");
-}
-
 //preview
 function RunPreview() {
     var iframebox = $('.re4');
     iframebox.children('iframe').remove();
 
-    var e1 = editor1.getValue(), e2 = editor2.getValue(), e3 = editor3.getValue();
+    var e1 = editor1.getValue(), e2 = editor2.getValue().trim(), e3 = editor3.getValue().trim();
     var iframe = document.createElement('iframe');
     iframe.name = "Run preview";
     iframebox.append(iframe);
-    iframe.onload = function () {
-        if (e3.trim() != "") {
-            var style = document.createElement("STYLE");
-            style.innerHTML = e3;
-            iframe.contentWindow.document.head.appendChild(style);
+    if (e1.includes("</head>") && e1.includes("</body>")) {
+        if (e3 != "") {
+            e1 = e1.replace("</head>", `<style>${e3}</style></head>`);
         }
+        if (e2 != "") {
+            e1 = e1.replace("</body>", `<script>${e2}</script></body>`);
+        }
+    } else {
+        iframe.onload = function () {
+            if (e3 != "") {
+                var style = document.createElement("STYLE");
+                style.innerHTML = e3;
+                iframe.contentWindow.document.head.appendChild(style);
+            }
 
-        if (e2.trim() != "") {
-            var script = document.createElement("SCRIPT");
-            script.innerHTML = e2;
-            iframe.contentWindow.document.body.appendChild(script);
+            if (e2 != "") {
+                var script = document.createElement("SCRIPT");
+                script.innerHTML = e2;
+                iframe.contentWindow.document.body.appendChild(script);
+            }
         }
     }
     iframe.contentWindow.document.open();
@@ -272,6 +277,19 @@ var jsd = {
                 $('.nrRef')[0].focus();
                 break;
         }
+    }
+}
+
+function cssFormatter(css) {
+    try {
+        return prettier.format(css, {
+            parser: 'css',
+            tabWidth: 4,
+            plugins: prettierPlugins
+        });
+    } catch (e) {
+        console.log(e);
+        return null;
     }
 }
 

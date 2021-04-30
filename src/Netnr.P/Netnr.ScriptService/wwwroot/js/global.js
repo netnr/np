@@ -434,6 +434,16 @@ var ss = {
     },
 
     /**
+     * html 解码
+     * @param {any} html
+     */
+    htmlDecode: function (html) {
+        var a = document.createElement('a');
+        a.innerHTML = html;
+        return a.innerText;
+    },
+
+    /**
      * 回到顶部
      */
     toTop: function () {

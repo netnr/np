@@ -26,8 +26,6 @@ namespace Netnr.Blog.Web
 
             //设置日志
             LoggingTo.OptionsDbRoot = GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath);
-            LoggingTo.OptionsCacheWriteCount = GlobalTo.GetValue<int>("logs:CacheWriteCount");
-            LoggingTo.OptionsCacheWriteSecond = GlobalTo.GetValue<int>("logs:CacheWriteSecond");
 
             #region 第三方登录
             new List<Type>

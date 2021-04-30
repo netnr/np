@@ -36,9 +36,10 @@ namespace Netnr.Tool.Items
                 {
                     if (Directory.Exists(sdi.FullName + "/.git"))
                     {
-                        var cmd = $"git -C \"{sdi.FullName}\" pull origin master";
-                        var rt = Core.CmdTo.Run(cmd).Split(cmd + " &exit")[1].Trim(Environment.NewLine.ToCharArray());
-                        Console.WriteLine($"[{sdi.Name}] {rt}");
+                        var arg = $"git -C \"{sdi.FullName}\" pull --all";
+                        var cr = Core.CmdTo.Execute(arg);
+                        var rt = cr.CrOutput + cr.CrError;
+                        Console.WriteLine($"[ {sdi.Name} ]\n{rt}");
                         c1++;
                     }
                     else

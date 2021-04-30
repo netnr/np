@@ -27,12 +27,11 @@ https://zme.ink
 <link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-<link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.js' defer async></script>
         <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=-UUx_lkaONxBXMxYH5RB2QtqMLBOuqV077SxjKI08E4"></script>
+        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
                 <span class="fa fa-align-justify"></span>
@@ -70,7 +69,7 @@ https://zme.ink
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
-                    </div>                    
+                    </div>
                     <div class="input-group-prepend">
                         <select class="custom-select" id="seLang">
                             <option value="javascript">JS</option>
@@ -87,6 +86,7 @@ https://zme.ink
                             <option value="yaml">YAML</option>
                             <option value="graphql">GraphQL</option>
                         </select>
+                        <input type="number" class="form-control nr-tab-width" value="4" min="1" max="9" step="1" />
                     </div>
                     <div class="input-group-prepend pt-2 pl-3 text-muted">
                         自动保存，可拖拽文件打开
@@ -114,6 +114,12 @@ https://zme.ink
 <script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs/loader.js'></script>
 
 <script>
+    function htmlDecode(html) {
+        var a = document.createElement('a');
+        a.innerHTML = html;
+        return a.innerText;
+    }
+
     require.config({
         paths: {
             vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs'
@@ -172,19 +178,29 @@ https://zme.ink
 
         //格式化
         $('#btnFormatter').click(function () {
-            var fmlang = $('#seLang').val().split('-').pop();
+            var vlang = $('#seLang').val(), fmlang = vlang.split('-').pop();
             var code = ee.getValue();
             if (code != "") {
                 try {
-                    ee.setValue(prettier.format(code, {
+                    var ops = {
                         parser: fmlang,
+                        tabWidth: $('.nr-tab-width').val() * 1,
                         plugins: prettierPlugins
-                    }))
+                    };
+
+                    if (vlang.includes("html")) {
+                        ops.requirePragma = true;
+                        ops.htmlWhitespaceSensitivity = "ignore";
+                    }
+                    ee.setValue(prettier.format(code, ops))
                 } catch (e) {
                     console.log(e);
                     jz.msg("ERROR");
                 }
             }
+        });
+        $('.nr-tab-width').on('input', function () {
+            $('#btnFormatter')[0].click();
         });
 
         $(window).on('load resize', function () {

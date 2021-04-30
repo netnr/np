@@ -183,7 +183,7 @@ namespace Netnr.Core
                 var cmd = "wmic os get TotalVisibleMemorySize /value";
                 try
                 {
-                    var cr = CmdTo.Run(cmd).Split('=').LastOrDefault().Trim().Split('.').First();
+                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=').LastOrDefault().Trim().Split('.').First();
                     long TotalPhysicalMemory = 1024 * long.Parse(cr);
 
                     return TotalPhysicalMemory;
@@ -204,7 +204,7 @@ namespace Netnr.Core
                 var cmd = "wmic os get FreePhysicalMemory /value";
                 try
                 {
-                    var cr = CmdTo.Run(cmd).Split('=').LastOrDefault().Trim().Split('.').First();
+                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=').LastOrDefault().Trim().Split('.').First();
                     long FreePhysicalMemory = 1024 * long.Parse(cr);
 
                     return FreePhysicalMemory;
@@ -227,7 +227,7 @@ namespace Netnr.Core
                 var cmd = "wmic logicaldisk where DriveType=3 get FreeSpace,Name,Size,VolumeName";
                 try
                 {
-                    var cr = CmdTo.Run(cmd).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var cr = CmdTo.Execute(cmd).CrOutput.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
                     foreach (var item in cr)
                     {
                         var mr = Regex.Match(item, @"(\d+)\s+(\w:)\s+(\d+)\s+(.*)");
@@ -260,7 +260,7 @@ namespace Netnr.Core
                 var cmd = "wmic cpu get Name /value";
                 try
                 {
-                    var cr = CmdTo.Run(cmd).Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
 
                     return cr;
                 }
@@ -281,7 +281,7 @@ namespace Netnr.Core
                 var cmd = "PowerShell \"Get-Counter '\\Processor(_Total)\\% Processor Time'\"";
                 try
                 {
-                    var list = CmdTo.Run(cmd).Trim().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    var list = CmdTo.Execute(cmd).CrOutput.Trim().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                     var cu = Math.Ceiling(Convert.ToDecimal(list.LastOrDefault().ToString().Trim()));
 
                     return cu;
@@ -303,7 +303,7 @@ namespace Netnr.Core
                 var cmd = "wmic os get LastBootUpTime /value";
                 try
                 {
-                    var cr = CmdTo.Run(cmd).Split('=').LastOrDefault().Trim().Split('.').First();
+                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=').LastOrDefault().Trim().Split('.').First();
                     cr = cr.Insert(12, ":").Insert(10, ":").Insert(8, " ").Insert(6, "-").Insert(4, "-");
                     _ = DateTime.TryParse(cr, out DateTime startTime);
                     var rt = Convert.ToInt64((DateTime.Now - startTime).TotalMilliseconds);
@@ -327,7 +327,7 @@ namespace Netnr.Core
                 var cmd = "wmic csproduct get name /value";
                 try
                 {
-                    var cr = CmdTo.Run(cmd).Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
 
                     return cr;
                 }
@@ -348,7 +348,7 @@ namespace Netnr.Core
                 var cmd = "wmic os get Caption /value";
                 try
                 {
-                    var cr = CmdTo.Run(cmd).Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
 
                     return cr;
                 }
@@ -423,8 +423,8 @@ namespace Netnr.Core
                 var listld = new List<object>();
                 try
                 {
-                    var dfresult = CmdTo.Shell("df");
-                    var listdev = dfresult.Output.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => x.StartsWith("/dev/"));
+                    var dfresult = CmdTo.Execute("df").CrOutput;
+                    var listdev = dfresult.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => x.StartsWith("/dev/"));
                     foreach (var devitem in listdev)
                     {
                         var dis = devitem.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -453,8 +453,8 @@ namespace Netnr.Core
             {
                 try
                 {
-                    var br = CmdTo.Shell("vmstat 1 2");
-                    var cpuitems = br.Output.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).LastOrDefault().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                    var br = CmdTo.Execute("vmstat 1 2").CrOutput;
+                    var cpuitems = br.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).LastOrDefault().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                     var usi = cpuitems.Count - 5;
                     var us = cpuitems[usi];
 
@@ -540,7 +540,7 @@ namespace Netnr.Core
                 {
                     Console.WriteLine(ex);
                 }
-                return os;
+                return os.Trim(Environment.NewLine.ToCharArray());
             }
         }
 
@@ -595,7 +595,7 @@ namespace Netnr.Core
         /// <returns></returns>
         private static string ProgressBar(long m, long d, bool isc = true, string desc = "")
         {
-            var vt = 20;
+            var vt = 24;
             var v1 = m * 1.0;
             var v2 = d * 1.0;
             var v3 = Math.Round(vt * (v1 / v2));
@@ -604,7 +604,7 @@ namespace Netnr.Core
             {
                 v1 = Math.Round(m * 1.0 / 1024 / 1024 / 1024, 2);
                 v2 = Math.Round(d * 1.0 / 1024 / 1024 / 1024, 2);
-                unit = $"（{v1}/{v2} GB） ";
+                unit = $" {v1}/{v2}GiB ";
             }
 
             if (!string.IsNullOrWhiteSpace(desc) && desc.Length > 20)
@@ -616,7 +616,7 @@ namespace Netnr.Core
             {
                 "\r\n\r\n "
             };
-            while (v3-- > 0)
+            while (--v3 > 0)
             {
                 listpb.Add("◼");
             }
@@ -624,14 +624,14 @@ namespace Netnr.Core
             {
                 listpb.Add("◻");
             }
-            if (v2 == 0)
+            var text = unit + desc;
+            if (!string.IsNullOrEmpty(text))
             {
-                listpb.Add($" 0% {unit}{desc}");
+                text = $"\n{text}";
             }
-            else
-            {
-                listpb.Add($" {Math.Round((v1 / v2) * 100, 0)}% {unit}{desc}");
-            }
+            var per = " " + (v2 == 0 ? 0 : Math.Round((v1 / v2) * 100, 0)) + "%";
+            text = per + text;
+            listpb.Add(text);
 
             return string.Join("", listpb);
         }

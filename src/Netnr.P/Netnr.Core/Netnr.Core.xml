@@ -143,85 +143,63 @@
             调用cmd
             </summary>
         </member>
-        <member name="M:Netnr.Core.CmdTo.Execute(System.String,System.String,System.Action{System.String,System.Int32})">
+        <member name="F:Netnr.Core.CmdTo.IsWindows">
             <summary>
-            执行
+            是Windows系统
             </summary>
-            <param name="appName">执行程序绝对路径</param>
-            <param name="arguments">参数</param>
-            <param name="resultOutput">结果输出</param>
+        </member>
+        <member name="M:Netnr.Core.CmdTo.PSInfo(System.String,System.String)">
+            <summary>
+            ProcessStartInfo
+            </summary>
+            <param name="Arguments">参数命令</param>
+            <param name="FileName">执行程序，Windows默认cmd，Linux默认bash</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CmdTo.Execute(System.String)">
+        <member name="M:Netnr.Core.CmdTo.Execute(System.String,System.String)">
             <summary>
-            执行
+            执行（简单）
             </summary>
-            <param name="command">命令</param>
+            <param name="Arguments">参数命令</param>
+            <param name="FileName">执行程序，Windows默认cmd，Linux默认bash</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CmdTo.Run(System.String,System.String)">
-            <summary>  
-            Windows操作系统，执行cmd命令
-            多命令请使用批处理命令连接符：  
-            <![CDATA[  
-            &:同时执行两个命令  
-            |:将上一个命令的输出,作为下一个命令的输入  
-            &&：当&&前的命令成功时,才执行&&后的命令  
-            ||：当||前的命令失败时,才执行||后的命令
-            ]]>
-            </summary>  
-        </member>
-        <member name="M:Netnr.Core.CmdTo.Shell(System.String)">
+        <member name="M:Netnr.Core.CmdTo.Execute(System.String,System.String,System.Action{System.Diagnostics.Process,Netnr.Core.CmdTo.CliResult})">
             <summary>
-            Linux操作系统，执行Shell
-            【 using https://github.com/phil-harmoniq/Shell.NET 】
+            执行（自定义）
             </summary>
-            <param name="cmd"></param>
+            <param name="Arguments">参数命令</param>
+            <param name="FileName">执行程序，Windows默认cmd，Linux默认bash</param>
+            <param name="apc"></param>
+            <returns></returns>
         </member>
-        <member name="T:Netnr.Core.CmdTo.BashResult">
-            <summary>
-            返回结果
-            </summary>
-        </member>
-        <member name="P:Netnr.Core.CmdTo.BashResult.Output">
-            <summary>
-            The command's standard output as a string. (if redirected)</summary>
-        </member>
-        <member name="P:Netnr.Core.CmdTo.BashResult.ErrorMsg">
-            <summary>
-            The command's error output as a string. (if redirected)</summary>
-        </member>
-        <member name="P:Netnr.Core.CmdTo.BashResult.ExitCode">
-            <summary>
-            The command's exit code as an integer.</summary>
-        </member>
-        <member name="P:Netnr.Core.CmdTo.BashResult.Lines">
-            <summary>
-            An array of the command's output split by newline characters. (if redirected)</summary>
-        </member>
-        <member name="T:Netnr.Core.CmdTo.Bash">
+        <member name="M:Netnr.Core.CmdTo.Execute(System.Diagnostics.ProcessStartInfo,System.Action{System.Diagnostics.Process,Netnr.Core.CmdTo.CliResult})">
             <summary>
             执行
             </summary>
+            <param name="psi"></param>
+            <param name="apc"></param>
+            <returns></returns>
         </member>
-        <member name="P:Netnr.Core.CmdTo.Bash.Output">
-            <summary>Stores output of the previous command if redirected.</summary>
-        </member>
-        <member name="P:Netnr.Core.CmdTo.Bash.Lines">
+        <member name="T:Netnr.Core.CmdTo.CliResult">
             <summary>
-            Gets an array of the command output split by newline characters if redirected. </summary>
+            输出
+            </summary>
         </member>
-        <member name="P:Netnr.Core.CmdTo.Bash.ExitCode">
-            <summary>Stores the exit code of the previous command.</summary>
+        <member name="P:Netnr.Core.CmdTo.CliResult.CrProcess">
+            <summary>
+            进程
+            </summary>
         </member>
-        <member name="P:Netnr.Core.CmdTo.Bash.ErrorMsg">
-            <summary>Stores the error message of the previous command if redirected.</summary>
+        <member name="P:Netnr.Core.CmdTo.CliResult.CrOutput">
+            <summary>
+            标准输出
+            </summary>
         </member>
-        <member name="M:Netnr.Core.CmdTo.Bash.Command(System.String,System.Boolean)">
-            <summary>Execute a new Bash command.</summary>
-            <param name="input">The command to execute.</param>
-            <param name="redirect">Print output to terminal if false.</param>
-            <returns>A `BashResult` containing the command's output information.</returns>
+        <member name="P:Netnr.Core.CmdTo.CliResult.CrError">
+            <summary>
+            错误输出
+            </summary>
         </member>
         <member name="T:Netnr.Core.ConsoleTo">
             <summary>
@@ -956,11 +934,12 @@
             常用方法拓展
             </summary>
         </member>
-        <member name="M:Netnr.Extend.ToJson(System.Object,System.String)">
+        <member name="M:Netnr.Extend.ToJson(System.Object,System.Boolean,System.String)">
             <summary>
             object 转 JSON 字符串
             </summary>
             <param name="obj"></param>
+            <param name="isSpace">缩进输出</param>
             <param name="DateTimeFormat">时间格式化</param>
             <returns></returns>
         </member>

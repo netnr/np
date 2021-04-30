@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml;
 using Netnr.WeChat;
 using Netnr.WeChat.Entities;
+using System;
 
 namespace Netnr.Test.Controllers
 {
@@ -23,7 +24,7 @@ namespace Netnr.Test.Controllers
         /// <summary>
         /// 开发者接管
         /// </summary>
-        public void Index(string signature, string timestamp, string nonce, string echostr, string encrypt_type, string msg_signature)
+        public async void Index(string signature, string timestamp, string nonce, string echostr, string encrypt_type, string msg_signature)
         {
             string result = string.Empty;
 
@@ -107,8 +108,8 @@ namespace Netnr.Test.Controllers
 
             //输出
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(result);
-            Response.Body.Write(buffer, 0, buffer.Length);
-            Response.Body.Flush();
+            await Response.Body.WriteAsync(buffer.AsMemory(0, buffer.Length));
+            await Response.Body.FlushAsync();
         }
 
         public class WeChatExecutor : IWeChatExecutor

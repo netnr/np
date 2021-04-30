@@ -27,12 +27,11 @@ https://zme.ink
 <link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-<link href='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.2/netnrnav.js' defer async></script>
         <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=-UUx_lkaONxBXMxYH5RB2QtqMLBOuqV077SxjKI08E4"></script>
+        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
             <!--导航-->
             <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
                 <span class="fa fa-align-justify"></span>
@@ -73,7 +72,7 @@ https://zme.ink
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 mb-3">
-            <textarea class="form-control" id="txtCode1" rows="6" autofocus>一二12ab</textarea>
+            <textarea class="form-control" id="txtCode1" rows="6" autofocus>一二 12 ab &lt;&gt; </textarea>
         </div>
         <div class="col-md-6 mb-3">
             <textarea class="form-control" rows="6" id="txtCode2"></textarea>
@@ -172,6 +171,10 @@ https://zme.ink
                 <button type="button" class="btn btn-info">ASCII</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info">HtmlEncode</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
         </div>
     </div>
 
@@ -186,6 +189,7 @@ https://zme.ink
 </div>
 
 <script src='https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js'></script>
 
 
 <script>
@@ -238,6 +242,9 @@ https://zme.ink
                         case "ASCII":
                             try { t1.val(UnConvertAscii(t2.val())); } catch (e) { t1.val('') }
                             break;
+                        case "HtmlEncode":
+                            t1.val(ss.htmlDecode(t2.val()));
+                            break;
                     }
                     break;
 
@@ -285,19 +292,18 @@ https://zme.ink
                 case "ASCII":
                     t2.val(ConvertAscii(t1.val()));
                     break;
+                case "HtmlEncode":
+                    t2.val(ss.htmlEncode(t1.val()));
+                    break;
 
                 case "UUID":
-                    t2.val("Loading ...");
-                    $.ajax({
-                        url: `${ss.apiServer}/uuid/6`,
-                        dataType: 'json',
-                        success: function (data) {
-                            t2.val(data.join('\r\n'));
-                        },
-                        error: function () {
-                            t2.val('生成UUID失败');
+                    {
+                        var arr = [];
+                        for (var i = 0; i < 6; i++) {
+                            arr.push(uuidv4());
                         }
-                    });
+                        t2.val(arr.join('\r\n'));
+                    }
                     break;
             }
         }
@@ -313,7 +319,9 @@ https://zme.ink
     };
 
     //转码 Unicode To STR-CN
-    function UnConvertUnicode(s) { return eval("'" + s + "'"); };/*return unescape(str.replace(/\u/g, "%u"))*/
+    function UnConvertUnicode(s) {
+        return unescape(s.replace(/\\u/g, "%u"))
+    };
 
     //转码 To ASCII
     function ConvertAscii(s) {

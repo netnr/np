@@ -110,8 +110,18 @@
                     pg.iv.src = `${ss.apiServer}/svg/400*200`;
                 }
             }, "#txtFile");
+
+            pg.modelPath();
         },
         iv: document.getElementById('imgview'),
+
+        modelPath: function () {
+            if (!pg.modelVersion) {
+                var bhtm = document.body.innerHTML;
+                pg.modelVersion = bhtm.substr(bhtm.indexOf("/nsfwjs"), 20).substring(8).split('/')[0];
+            }
+            return `https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@@${pg.modelVersion}/example/nsfw_demo/public/quant_nsfw_mobilenet/`
+        },
 
         scan: function () {
             $('.sbox-scanner').removeClass('d-none');
@@ -119,7 +129,7 @@
             if (pg.model) {
                 pg.classify();
             } else {
-                nsfwjs.load('https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@2.3.0/example/nsfw_demo/public/quant_nsfw_mobilenet/').then(function (model) {
+                nsfwjs.load(pg.modelPath()).then(function (model) {
                     pg.model = model;
                     pg.classify();
                 })

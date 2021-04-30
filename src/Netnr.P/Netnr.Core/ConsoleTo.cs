@@ -58,6 +58,8 @@ namespace Netnr.Core
 
             if (Monitor.TryEnter(WriteMark))
             {
+            wmark:
+
                 var sblog = new StringBuilder();
                 while (CurrentCacheLog.TryDequeue(out string log))
                 {
@@ -71,6 +73,12 @@ namespace Netnr.Core
 
                     FileTo.WriteText(sblog.ToString(), path);
                 }
+
+                if (!CurrentCacheLog.IsEmpty)
+                {
+                    goto wmark;
+                }
+
                 Monitor.Exit(WriteMark);
             }
         }

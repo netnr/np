@@ -119,16 +119,11 @@ namespace Netnr.SharedAdo
                 var listBatchSql = new List<string>();
                 StringBuilder sbsql = new();
                 var currSqlSize = 0;
-                var si = 0;
-                while (si < listSql.Count)
+                foreach (var sql in listSql)
                 {
-                    var sql = listSql[si++];
                     currSqlSize += Encoding.Default.GetBytes(sql).Length;
-                    if (currSqlSize <= sqlBatchSize)
-                    {
-                        sbsql.AppendLine(sql + ";");
-                    }
-                    else
+                    sbsql.AppendLine(sql + ";");
+                    if (currSqlSize > sqlBatchSize)
                     {
                         listBatchSql.Add(sbsql.ToString());
                         sbsql.Clear();

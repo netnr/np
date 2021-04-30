@@ -38,10 +38,10 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jszip.js,monaco-editor"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("svgo.js,jszip.js,monaco-editor"))
 
 <script>
-    var svgo = {
+    var so = {
         svgJson: [],
         svgOut: null,
         readFiles: function (files) {
@@ -49,56 +49,71 @@
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 if (file.name.toLowerCase().includes(".svg")) {
-                    arr.push(svgo.readFile(file));
+                    arr.push(so.readFile(file));
                 }
             }
 
-            ss.loading();
             Promise.all(arr).then(json => {
-                svgo.svgJson = json;
+                so.svgJson = json;
 
                 $("#txtFile").val('');
                 var merge = $('.nrSeMerge').val();
 
-                var fd = new FormData();
-                fd.append("svgJson", JSON.stringify(json));
-                fd.append("merge", merge);
+                so.svgOut = so.op(json, merge);
 
-                fetch(ss.apiServer + "/svgo", {
-                    method: "POST",
-                    body: fd
-                }).then(x => x.json()).then(res => {
-                    ss.loading(0);
+                $('#editor').parent().removeClass('d-none');
+                $('#preview').parent().removeClass('d-none');
 
-                    if (res.code == 200) {
-                        svgo.svgOut = res;
-
-                        $('#editor').parent().removeClass('d-none');
-                        $('#preview').parent().removeClass('d-none');
-
-                        var html = [];
-                        if (merge == "1") {
-                            html.push(res.data);
-                            html.push("\n<!--使用-->");
-                            $(res.data).find('symbol').each(function () {
-                                var id = $(this).attr('id');
-                                html.push(`<svg><use xlink:href="#${id}"></use></svg>`);
-                            });
-                        } else {
-                            res.data.forEach(item => {
-                                html.push(item.data + "\n");
-                            });
-                        }
-                        editor.setValue(html.join('\n'));
-                        svgo.viewIframe();
-                    } else {
-                        alert('ERROR');
-                    }
-                }).catch(err => {
-                    alert('ERROR');
-                    ss.loading(0);
-                })
+                var html = [];
+                if (merge == "1") {
+                    html.push(so.svgOut);
+                    html.push("\n<!--使用-->");
+                    $(so.svgOut).find('symbol').each(function () {
+                        var id = $(this).attr('id');
+                        html.push(`<svg><use xlink:href="#${id}"></use></svg>`);
+                    });
+                } else {
+                    so.svgOut.forEach(item => {
+                        html.push(item.data + "\n");
+                    });
+                }
+                editor.setValue(html.join('\n'));
+                so.viewIframe();
             });
+        },
+        op: function (json, merge) {
+            var results = [];
+            json.forEach(item => {
+                var result = svgo(item.text, {
+                    multipass: true,
+                    path: item.path
+                });
+
+                result.data = result.data.replace(' class="icon" ', ' ').replace("<defs><style/></defs>", "");
+
+                //合并
+                if (merge == 1) {
+                    result.data = result.data.replace('<svg ', `<symbol id="${result.path.replace(".svg", "")}" `)
+                        .replace(' xmlns="http://www.w3.org/2000/svg"', '')
+                        .replace(/ width="(\d+)"/, "")
+                        .replace(/ height="(\d+)"/, "")
+                        .replace(/ width="(\d+.\d+)"/, "")
+                        .replace(/ height="(\d+.\d+)"/, "")
+                        .replace("</svg>", "</symbol>");
+                    results.push(result.data);
+                } else {
+                    results.push(result);
+                }
+            })
+
+            //合并
+            if (merge == 1) {
+                results.splice(0, 0, '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" style="display:none;">');
+                results.push('</svg>');
+                results = results.join('');
+            }
+
+            return results;
         },
         readFile: function (file) {
             return new Promise((resolve) => {
@@ -153,19 +168,19 @@ svg:hover {
         }));
 
         editor.addCommand(monaco.KeyCode.PauseBreak, function () {
-            svgo.viewIframe();
+            so.viewIframe();
         });
 
         $('.nrDown').click(function () {
-            if (svgo.svgOut) {
-                if (typeof svgo.svgOut.data == "string") {
-                    ss.dowload(svgo.svgOut.data, "icon.svg");
+            if (so.svgOut) {
+                if (typeof so.svgOut == "string") {
+                    ss.dowload(so.svgOut, "icon.svg");
                 } else {
-                    if (svgo.svgOut.data.length == 1) {
-                        ss.dowload(svgo.svgOut.data[0].data, svgo.svgOut.data[0].path);
+                    if (so.svgOut.length == 1) {
+                        ss.dowload(so.svgOut[0].data, so.svgOut[0].path);
                     } else {
                         var zip = new JSZip();
-                        $.each(svgo.svgOut.data, function () {
+                        $.each(so.svgOut, function () {
                             zip.file(this.path, this.data);
                         });
                         zip.generateAsync({ type: "blob" }).then(function (content) {
@@ -178,14 +193,14 @@ svg:hover {
             }
         });
 
-        svgo.resize();
+        so.resize();
         $(window).on('load resize', function () {
-            svgo.resize();
+            so.resize();
         })
     });
 
     //接收文件
     ss.receiveFiles(function (files) {
-        svgo.readFiles(files);
+        so.readFiles(files);
     }, "#txtFile");
 </script>

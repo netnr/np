@@ -52,7 +52,81 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
-        /// 上传
+        /// 上传检测
+        /// </summary>
+        /// <param name="file">文件</param>
+        /// <param name="content">文件内容 Base64</param>
+        /// <param name="ext"></param>
+        /// <param name="subdir">输出完整物理路径，用于存储</param>
+        /// <returns></returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
+        private static SharedResultVM UploadCheck(IFormFile file, string content, string ext, string subdir)
+        {
+            var vm = new SharedResultVM();
+
+            if (file != null)
+            {
+                ext = Path.GetExtension(file.FileName);
+            }
+
+            if (string.IsNullOrWhiteSpace(ext) || !ext.Contains(".") || ext.EndsWith("exe"))
+            {
+                vm.Set(SharedEnum.RTag.refuse);
+                vm.Msg = "Invalid extension";
+            }
+            else
+            {
+                var now = DateTime.Now;
+                string filename = now.ToString("HHmmss") + RandomTo.NumCode() + ext;
+
+                if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
+                {
+                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Msg = "subdir 仅为字母、数字";
+                }
+                else
+                {
+                    //虚拟路径
+                    var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), subdir, now.ToString("yyyy'/'MM'/'dd"));
+                    //物理路径
+                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                    //创建物理目录
+                    if (!Directory.Exists(ppath))
+                    {
+                        Directory.CreateDirectory(ppath);
+                    }
+
+                    using var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew);
+                    if (file != null)
+                    {
+                        file.CopyTo(fs);
+                    }
+                    else
+                    {
+                        //删除 “,” 前面的字符串
+                        content = content[(content.IndexOf(",") + 1)..].Trim();
+                        using var ms = new MemoryStream(Convert.FromBase64String(content));
+                        byte[] bs = ms.ToArray();
+                        fs.Write(bs, 0, bs.Length);
+                    }
+                    fs.Flush();
+                    fs.Close();
+
+                    //输出
+                    vm.Data = new
+                    {
+                        server = GlobalTo.GetValue("StaticResource:Server"),
+                        path = PathTo.Combine(vpath, filename)
+                    };
+                    vm.Set(SharedEnum.RTag.success);
+                }
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 上传（文件）
         /// </summary>
         /// <param name="file">文件</param>
         /// <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
@@ -60,7 +134,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost]
         [HttpOptions]
         [Apps.FilterConfigs.AllowCors]
-        public SharedResultVM Upload(IFormFile file, string subdir = "/static")
+        public SharedResultVM Upload([FromForm] IFormFile file, [FromForm] string subdir = "/static")
         {
             var vm = new SharedResultVM();
 
@@ -68,50 +142,42 @@ namespace Netnr.Blog.Web.Controllers.api
             {
                 if (file != null)
                 {
-                    string ext = Path.GetExtension(file.FileName).ToLower();
-                    if (ext == ".exe" || ext == "")
-                    {
-                        vm.Code = 2;
-                        vm.Msg = "Unsupported file format：" + ext;
-                    }
-                    else
-                    {
-                        var now = DateTime.Now;
-                        string filename = now.ToString("HHmmss") + RandomTo.NumCode() + ext;
+                    vm = UploadCheck(file, null, "", subdir);
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.lack);
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+                Console.WriteLine(ex);
+                Apps.FilterConfigs.WriteLog(HttpContext, ex);
+            }
 
-                        if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
-                        {
-                            vm.Set(SharedEnum.RTag.invalid);
-                            vm.Msg = "subdir 仅为字母、数字";
-                        }
-                        else
-                        {
-                            var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), subdir, now.ToString("yyyy'/'MM'/'dd"));
+            return vm;
+        }
 
-                            var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+        /// <summary>
+        /// 上传（Base64）
+        /// </summary>
+        /// <param name="content">内容 Base64 编码</param>
+        /// <param name="ext">后缀，以点“.”开头，如：.txt</param>
+        /// <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
+        /// <returns></returns>
+        [HttpPost]
+        [HttpOptions]
+        [Apps.FilterConfigs.AllowCors]
+        public SharedResultVM UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
+        {
+            var vm = new SharedResultVM();
 
-                            if (!Directory.Exists(ppath))
-                            {
-                                Directory.CreateDirectory(ppath);
-                            }
-
-                            using (var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew))
-                            {
-                                file.CopyTo(fs);
-                                fs.Flush();
-                            }
-
-                            var jo = new
-                            {
-                                server = GlobalTo.GetValue("StaticResource:Server"),
-                                path = PathTo.Combine(vpath, filename)
-                            };
-
-                            vm.Data = jo;
-
-                            vm.Set(SharedEnum.RTag.success);
-                        }
-                    }
+            try
+            {
+                if (content != null)
+                {
+                    vm = UploadCheck(null, content, ext, subdir);
                 }
                 else
                 {

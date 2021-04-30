@@ -5,7 +5,7 @@
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
-                    </div>                    
+                    </div>
                     <div class="input-group-prepend">
                         <select class="custom-select" id="seLang">
                             <option value="javascript">JS</option>
@@ -22,6 +22,7 @@
                             <option value="yaml">YAML</option>
                             <option value="graphql">GraphQL</option>
                         </select>
+                        <input type="number" class="form-control nr-tab-width" value="4" min="1" max="9" step="1" />
                     </div>
                     <div class="input-group-prepend pt-2 pl-3 text-muted">
                         自动保存，可拖拽文件打开
@@ -35,7 +36,7 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("prettier.js,monaco-editor"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("prettier,monaco-editor"))
 
 <script>
 
@@ -85,19 +86,29 @@
 
         //格式化
         $('#btnFormatter').click(function () {
-            var fmlang = $('#seLang').val().split('-').pop();
+            var vlang = $('#seLang').val(), fmlang = vlang.split('-').pop();
             var code = ee.getValue();
             if (code != "") {
                 try {
-                    ee.setValue(prettier.format(code, {
+                    var ops = {
                         parser: fmlang,
+                        tabWidth: $('.nr-tab-width').val() * 1,
                         plugins: prettierPlugins
-                    }))
+                    };
+
+                    if (vlang.includes("html")) {
+                        ops.requirePragma = true;
+                        ops.htmlWhitespaceSensitivity = "ignore";
+                    }
+                    ee.setValue(prettier.format(code, ops))
                 } catch (e) {
                     console.log(e);
                     jz.msg("ERROR");
                 }
             }
+        });
+        $('.nr-tab-width').on('input', function () {
+            $('#btnFormatter')[0].click();
         });
 
         $(window).on('load resize', function () {

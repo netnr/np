@@ -13,15 +13,11 @@
                 </thead>
                 <tbody></tbody>
             </table>
-            <p>
-                开源项目：<a href="https://github.com/fex-team/ua-device">https://github.com/fex-team/ua-device</a>
-            </p>
         </div>
     </div>
 </div>
 
-<script src="/lib/ua-device/useragent-base.js" asp-append-version="true"></script>
-<script src="/lib/ua-device/ua-device.js" asp-append-version="true"></script>
+<script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/device-detector/2.2.9/dd.min.js"></script>
 
 <script>
     var pg = {
@@ -38,15 +34,20 @@
             pg.parse(pg.ua);
         },
         parse: function (ua) {
-            var uaobj = uaDevice(ua),
-                ub = uaobj.browser,
-                ue = uaobj.engine || {},
-                uo = uaobj.os,
-                ud = uaobj.device,
-                ubv = ub.version || {},
-                uev = ue.version || {},
-                uov = uo.version || {};
-            $('table').find('tbody').html('<tr><td>' + ub.name + '</br>' + ubv.original + '</td><td>' + ue.name + '</br>' + uev.original + '</td><td>' + uo.name + '</br>' + uov.original + '</td><td>' + ud.type + '</br>' + (ud.model || "") + '</td></tr>');
+            var uaobj = dd(ua);
+            if (uaobj.bot) {
+                $('table').find('tbody').html(`<tr><td colspan="4"><pre class="m-0 p-3">${JSON.stringify(uaobj.bot, null, 2)}</pre></td></tr>`);
+            } else {
+                var uc = uaobj.client,
+                    uo = uaobj.os,
+                    ud = uaobj.device,
+                    ci = `${uc.name} ${uc.version}`,
+                    ei = `${uc.engine} ${uc.engineVersion}`,
+                    oi = `${uo.name} ${uo.version} ${uo.platform}`,
+                    di = `${ud.brand} ${ud.model}`;
+
+                $('table').find('tbody').html(`<tr><td>${ci}</td><td>${ei}</td><td>${oi}</td><td>${di}</td></tr>`);
+            }
         }
     }
 

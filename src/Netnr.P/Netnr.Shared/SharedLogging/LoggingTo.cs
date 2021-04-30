@@ -10,6 +10,9 @@ using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Netnr.SharedAdo;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Netnr.SharedLogging
 {
@@ -75,24 +78,14 @@ namespace Netnr.SharedLogging
         public static int OptionsDbMaxAttach = 30;
 
         /// <summary>
-        /// 分批写入满足的条件：缓存的日志数量
-        /// </summary>
-        public static int OptionsCacheWriteCount = 9999;
-
-        /// <summary>
-        /// 分批写入满足的条件：缓存的时长，单位秒
-        /// </summary>
-        public static int OptionsCacheWriteSecond = 99;
-
-        /// <summary>
         /// 当前缓存日志
         /// </summary>
         public static ConcurrentQueue<LoggingModel> CurrentCacheLog { get; set; } = new ConcurrentQueue<LoggingModel>();
 
         /// <summary>
-        /// 当前缓存写入时间
+        /// 写入标记
         /// </summary>
-        public static DateTime CurrentCacheWriteTime { get; set; } = DateTime.Now;
+        static readonly object WriteMark = new();
 
         /// <summary>
         /// 路径转连接字符串
@@ -127,6 +120,10 @@ namespace Netnr.SharedLogging
             return ctf;
         }
 
+        /// <summary>
+        /// 创建数据库
+        /// </summary>
+        /// <param name="path"></param>
         public static void CreateDatabase(string path)
         {
             SQLiteConnection.CreateFile(path);
@@ -175,36 +172,40 @@ namespace Netnr.SharedLogging
         }
 
         /// <summary>
-        /// 新增
+        /// 新增（队列+锁）
         /// </summary>
         /// <param name="logs">日志实体</param>
         public static void Add(IEnumerable<LoggingModel> logs)
         {
-            var now = DateTime.Now;
-
-            //当前缓存的日志
-            foreach (var log in logs)
+            ThreadPool.QueueUserWorkItem(_ =>
             {
-                CurrentCacheLog.Enqueue(log);
-            }
-
-            //满足缓存条数写入 或 满足写入时间间隔
-            if (CurrentCacheLog.Count > OptionsCacheWriteCount || (now - CurrentCacheWriteTime).TotalSeconds > OptionsCacheWriteSecond)
-            {
-                //写入日志
-                System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+                //当前缓存的日志
+                Parallel.ForEach(logs, log =>
                 {
-                    var listMo = new List<LoggingModel>();
+                    CurrentCacheLog.Enqueue(log);
+                });
 
+                //锁
+                if (Monitor.TryEnter(WriteMark))
+                {
+                wmark:
+
+                    //写入日志
+                    var listLog = new List<LoggingModel>();
                     while (CurrentCacheLog.TryDequeue(out LoggingModel deobj))
                     {
-                        listMo.Add(deobj);
+                        listLog.Add(deobj);
                     }
-                    AddNow(listMo);
+                    AddNow(listLog);
 
-                    CurrentCacheWriteTime = now;
-                });
-            }
+                    if (!CurrentCacheLog.IsEmpty)
+                    {
+                        goto wmark;
+                    }
+
+                    Monitor.Exit(WriteMark);
+                }
+            });
         }
 
         /// <summary>
@@ -217,7 +218,7 @@ namespace Netnr.SharedLogging
         }
 
         /// <summary>
-        /// 新增
+        /// 新增（实时）
         /// </summary>
         /// <param name="logs">日志实体</param>
         /// <param name="autoMakeUp">自动补齐信息，默认true</param>
@@ -253,11 +254,6 @@ namespace Netnr.SharedLogging
 
                 foreach (var ig in igs)
                 {
-                    if (ig.Key == null)
-                    {
-                        continue;
-                    }
-
                     //当前片区
                     var df = Path.Combine(OptionsDbRoot, ig.Key);
                     //创建目录
@@ -295,7 +291,7 @@ namespace Netnr.SharedLogging
                 ipds = new IP2Region.DbSearcher(OptionsDbIpFile);
             }
 
-            foreach (var item in logs)
+            Parallel.ForEach(logs, item =>
             {
                 //设置ID
                 item.LogId = BitConverter.ToInt64(Guid.NewGuid().ToByteArray(), 0).ToString();
@@ -338,7 +334,7 @@ namespace Netnr.SharedLogging
                         item.LogGroup = "2";
                     }
                 }
-            }
+            });
 
             ipds?.Dispose();
         }
@@ -381,9 +377,8 @@ namespace Netnr.SharedLogging
                     item.LogSpare2?.Replace("'","''"),
                     item.LogSpare3?.Replace("'","''")
                 });
-                var sql = $"insert into {OptionsDbTableName} ({fields}) values ('{values}')";
 
-                listSql.Add(sql);
+                listSql.Add($"insert into {OptionsDbTableName} ({fields}) values ('{values}')");
             }
 
             return new DbHelper(new SQLiteConnection(PathToConn(path))).SqlExecute(listSql);
@@ -408,11 +403,11 @@ namespace Netnr.SharedLogging
             if (ua != null)
             {
                 var dd = new DeviceDetector(ua);
-                dd.Parse();
-                if (dd.IsBot())
-                {
-                    isBot = true;
+                dd.DiscardBotInformation();
 
+                dd.Parse();
+                if (isBot = dd.IsBot())
+                {
                     var botInfo = dd.GetBot();
                     if (botInfo.Success)
                     {

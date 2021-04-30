@@ -1,89 +1,74 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.Core;
 using Netnr.SharedAdo;
-using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Data.SQLite;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Netnr.Test.Controllers
 {
     /// <summary>
     /// Netnr.Shared
     /// </summary>
+    [Route("[controller]/[action]")]
     public class SharedController : Controller
     {
-        public IActionResult Index()
-        {
-            return Ok();
-        }
-
-        public IActionResult Test1()
-        {
-            var ss = new SystemStatusTo();
-            return Content(ss.ToView());
-        }
-
-        public IActionResult Test2()
-        {
-            var ss = new SystemStatusTo();
-            return Content(ss.ToJson());
-        }
-
-        public SharedResultVM Test3()
+        /// <summary>
+        /// 查询数据库
+        /// </summary>
+        /// <param name="conn">连接字符串</param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM Ado_SQLite(string conn = @"Data Source=https://cdn.jsdelivr.net/gh/netnr/static/2020/05/22/2037505934.db", string sql = "select sqlite_version();PRAGMA encoding;select datetime();")
         {
             var vm = new SharedResultVM();
 
-            var conn = @"Data Source=E:\TEMP\netnrf.db";
+            if (conn.Contains("://"))
+            {
+                var dbname = Math.Abs(conn.GetHashCode()).ToString() + ".db";
+                var fileName = PathTo.Combine(System.IO.Path.GetTempPath(), dbname);
+                if (!System.IO.File.Exists(fileName))
+                {
+                    using var wc = new System.Net.WebClient();
+                    wc.DownloadFile(conn.Split('=')[1], fileName);
+                }
+                conn = @$"Data Source={fileName}";
+            }
+
             var db = new DbHelper(new SQLiteConnection(conn));
-            var ds = db.SqlQuery("PRAGMA table_info('SysUser');PRAGMA table_info('SysRole')");
+            var ds = db.SqlQuery(sql);
+
+            vm.Log.Add(conn);
             vm.Data = ds;
 
             return vm;
         }
 
-        public SharedResultVM Test4()
+
+        /// <summary>
+        /// User-Agent
+        /// </summary>
+        /// <param name="ua">User-Agent</param>
+        /// <param name="loop">循环</param>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM UserAgentTo(string ua = "", int loop = 1)
         {
             var vm = new SharedResultVM();
-            
-            Console.WriteLine("TimeZoneInfo.Local.DisplayName = {0}", TimeZoneInfo.Local.DisplayName);
-            Console.WriteLine("TimeZoneInfo.Local.Id = {0}", TimeZoneInfo.Local.Id);
-            Console.WriteLine("TimeZoneInfo.Local.StandardName = {0}", TimeZoneInfo.Local.StandardName);
-            Console.WriteLine("TimeZoneInfo.Local.DaylightName = {0}", TimeZoneInfo.Local.DaylightName);
-            Console.WriteLine(string.Empty);
 
-            var str = new OracleConnectionStringBuilder
+            if (string.IsNullOrWhiteSpace(ua))
             {
-                UserID = "<username>",
-                Password = "<password>",
-                DataSource = "<database name>"
-            };
-            using (var con = new OracleConnection(str.ConnectionString))
-            {
-                con.Open();
-                Console.WriteLine("Oracle.DataAccess: OracleConnection -> SessionInfo.TimeZone = {0}", con.GetSessionInfo().TimeZone);
-                Console.WriteLine("Oracle.DataAccess: Version = {0}", FileVersionInfo.GetVersionInfo(con.GetType().Assembly.Location).FileVersion.ToString());
-
-                var tz = new OracleCommand("SELECT SESSIONTIMEZONE FROM dual", con).ExecuteScalar();
-                Console.WriteLine("Oracle.DataAccess: SESSIONTIMEZONE = {0}", tz.ToString());
-                con.Close();
+                ua = Request.HttpContext.Request.Headers["User-Agent"].ToString();
             }
-            Console.WriteLine(string.Empty);
 
-            var strm = new OracleConnectionStringBuilder();
-            str.UserID = "<username>";
-            str.Password = "<password>";
-            str.DataSource = "<database name>";
-            using (var con = new OracleConnection(str.ConnectionString))
+            Parallel.For(0, loop, i =>
             {
-                con.Open();
-                Console.WriteLine("Oracle.ManagedDataAccess: OracleConnection -> SessionInfo.TimeZone = {0}", con.GetSessionInfo().TimeZone);
-                Console.WriteLine("Oracle.ManagedDataAccess: Version = {0}", FileVersionInfo.GetVersionInfo(con.GetType().Assembly.Location).FileVersion.ToString());
+                _ = new SharedUserAgent.UserAgentTo(ua);
+            });
 
-                var tz = new OracleCommand("SELECT SESSIONTIMEZONE FROM dual", con).ExecuteScalar();
-                Console.WriteLine("Oracle.ManagedDataAccess: SESSIONTIMEZONE = {0}", tz.ToString());
-                con.Close();
-            }
+            var uainfo = new SharedUserAgent.UserAgentTo(ua);
+            vm.Data = uainfo;
 
             return vm;
         }

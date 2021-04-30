@@ -24,7 +24,7 @@
                     else
                     {
                         var tsarg = arg.Trim().TrimStart('/');
-                        path += path.EndsWith("/") ? tsarg : '/' + tsarg;
+                        path += (path.EndsWith("/") || path.EndsWith("\\")) ? tsarg : '/' + tsarg;
                     }
                 }
             }

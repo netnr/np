@@ -86,18 +86,6 @@
         </div>
     </nav>
 
-    <script>
-        function htmlDecodeByRegExp(str) {
-            if (str.length == 0) return "";
-            return str.replace(/&lt;/g, "<")
-                .replace(/&gt;/g, ">")
-                .replace(/&nbsp;/g, " ")
-                .replace(/&#39;/g, "\'")
-                .replace(/&quot;/g, "\"")
-                .replace(/&amp;/g, "&");
-        }
-    </script>
-
     @RenderBody()
 
     <partial name="_PartialFooter" />

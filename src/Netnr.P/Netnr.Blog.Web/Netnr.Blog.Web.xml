@@ -525,11 +525,30 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.String)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.UploadCheck(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String,System.String)">
             <summary>
-            上传
+            上传检测
             </summary>
             <param name="file">文件</param>
+            <param name="content">文件内容 Base64</param>
+            <param name="ext"></param>
+            <param name="subdir">输出完整物理路径，用于存储</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            上传（文件）
+            </summary>
+            <param name="file">文件</param>
+            <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.UploadBase64(System.String,System.String,System.String)">
+            <summary>
+            上传（Base64）
+            </summary>
+            <param name="content">内容 Base64 编码</param>
+            <param name="ext">后缀，以点“.”开头，如：.txt</param>
             <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
             <returns></returns>
         </member>
@@ -2227,11 +2246,6 @@
             查询返回
             </summary>
         </member>
-        <member name="P:Netnr.SharedLogging.LoggingResultVM.Data">
-            <summary>
-            数据体
-            </summary>
-        </member>
         <member name="P:Netnr.SharedLogging.LoggingResultVM.Total">
             <summary>
             总条数（仅对分页查询时有效）
@@ -2240,6 +2254,11 @@
         <member name="P:Netnr.SharedLogging.LoggingResultVM.Lost">
             <summary>
             丢失的库（附加库有上限会丢失数据库）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedLogging.LoggingResultVM.Data">
+            <summary>
+            数据体
             </summary>
         </member>
         <member name="T:Netnr.SharedLogging.LoggingTo">
@@ -2305,24 +2324,14 @@
             数据库附加限制，默认 max 30
             </summary>
         </member>
-        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsCacheWriteCount">
-            <summary>
-            分批写入满足的条件：缓存的日志数量
-            </summary>
-        </member>
-        <member name="F:Netnr.SharedLogging.LoggingTo.OptionsCacheWriteSecond">
-            <summary>
-            分批写入满足的条件：缓存的时长，单位秒
-            </summary>
-        </member>
         <member name="P:Netnr.SharedLogging.LoggingTo.CurrentCacheLog">
             <summary>
             当前缓存日志
             </summary>
         </member>
-        <member name="P:Netnr.SharedLogging.LoggingTo.CurrentCacheWriteTime">
+        <member name="F:Netnr.SharedLogging.LoggingTo.WriteMark">
             <summary>
-            当前缓存写入时间
+            写入标记
             </summary>
         </member>
         <member name="M:Netnr.SharedLogging.LoggingTo.PathToConn(System.String)">
@@ -2338,9 +2347,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.CreateDatabase(System.String)">
+            <summary>
+            创建数据库
+            </summary>
+            <param name="path"></param>
+        </member>
         <member name="M:Netnr.SharedLogging.LoggingTo.Add(System.Collections.Generic.IEnumerable{Netnr.SharedLogging.LoggingModel})">
             <summary>
-            新增
+            新增（队列+锁）
             </summary>
             <param name="logs">日志实体</param>
         </member>
@@ -2352,7 +2367,7 @@
         </member>
         <member name="M:Netnr.SharedLogging.LoggingTo.AddNow(System.Collections.Generic.IEnumerable{Netnr.SharedLogging.LoggingModel},System.Boolean)">
             <summary>
-            新增
+            新增（实时）
             </summary>
             <param name="logs">日志实体</param>
             <param name="autoMakeUp">自动补齐信息，默认true</param>

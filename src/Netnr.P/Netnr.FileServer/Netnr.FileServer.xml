@@ -309,6 +309,38 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Netnr.FileServer.Controllers.SliceController">
+            <summary>
+            切片
+            </summary>
+        </member>
+        <member name="T:Netnr.FileServer.Controllers.SliceController.Config">
+            <summary>
+            配置
+            </summary>
+        </member>
+        <member name="F:Netnr.FileServer.Controllers.SliceController.Config.RootDir">
+            <summary>
+            根目录
+            </summary>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.Config.AsPhysicalPath(System.String)">
+            <summary>
+            转为物理路径
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.Upload(System.Int32,System.Int32,System.String,Microsoft.AspNetCore.Http.FormFile)">
+            <summary>
+            分片上传
+            </summary>
+            <param name="chunk"></param>
+            <param name="chunks"></param>
+            <param name="sole"></param>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.FileServer.Model.FileRecord">
             <summary>
             文件记录
