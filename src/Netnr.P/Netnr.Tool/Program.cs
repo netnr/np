@@ -1,9 +1,8 @@
 ﻿using System;
-using Netnr.Tool.Items;
 using System.Reflection;
-using Netnr.Core;
-using System.Linq;
 using System.ComponentModel;
+using Netnr.Core;
+using Netnr.Tool.Items;
 
 namespace Netnr.Tool
 {
@@ -11,46 +10,11 @@ namespace Netnr.Tool
     {
         static void Main()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.Title = MethodBase.GetCurrentMethod().DeclaringType.Namespace + "  v0.0.1";
-            Console.CancelKeyPress += new ConsoleCancelEventHandler(CloseApp);
+            Console.CancelKeyPress += (s, e) => Environment.Exit(0);
 
-            MenuStart();
-        }
-
-        public static void CloseApp(object sender, ConsoleCancelEventArgs args)
-        {
-            Environment.Exit(0);
-        }
-
-        /// <summary>
-        /// 启动菜单
-        /// </summary>
-        public static void MenuStart()
-        {
-            var mitype = typeof(MenuItems);
-            var mis = mitype.GetMethods();
-            var mlen = mis.Length - 4;
-            Console.WriteLine(Environment.NewLine + "  ======================= Netnr.Tool =======================");
-            for (int i = 0; i < mlen; i++)
-            {
-                var mi = mis[i];
-                var desc = mi.CustomAttributes.First().ConstructorArguments.First().Value;
-                Console.WriteLine($"  {i}） {desc}");
-            }
-            Console.WriteLine(Environment.NewLine);
-
-            bool isMenumNum;
-            do
-            {
-                Console.Write("Enter the serial number：");
-                isMenumNum = int.TryParse(Console.ReadLine(), out int num) && num >= 0 && num < mlen;
-                if (isMenumNum)
-                {
-                    mis[num].Invoke(mitype, null);
-
-                    MenuStart();
-                }
-            } while (!isMenumNum);
+            ConsoleTo.InvokeMenu(typeof(MenuItems));
         }
 
         /// <summary>
@@ -58,22 +22,22 @@ namespace Netnr.Tool
         /// </summary>
         public class MenuItems
         {
-            [Description("Exit")]
+            [Description("退出")]
             public static void Mi_Exit()
             {
                 Environment.Exit(0);
             }
 
-            [Description("Git Pull (All projects must exist in a .git folder)")]
+            [Description("Git Pull （有 .git 文件夹）")]
             public static void Mi_GitPull()
             {
                 GitPull.Run();
             }
 
-            [Description("System Status (Json or View)")]
+            [Description("系统状态 （Json 或 View）")]
             public static void Mi_SystemStatus()
             {
-                Console.Write($"Please choose [1/J]Json or [2/V]View(default 1):");
+                Console.Write($"请选择 [1/J]Json 或 [2/V]View（默认 1）：");
                 var format = Console.ReadLine()?.ToLower();
                 var ss = new SystemStatusTo();
                 Console.WriteLine(Environment.NewLine);
@@ -87,25 +51,25 @@ namespace Netnr.Tool
                 }
             }
 
-            [Description("Project cleanup (bin and obj)")]
+            [Description("项目清理 （bin 、obj）")]
             public static void Mi_ProjectCleanup()
             {
                 ProjectCleanup.Run();
             }
 
-            [Description("Project safe copy (Handle key and cleanup)")]
+            [Description("项目安全拷贝 （替换密钥）")]
             public static void Mi_ProjectSafeCopy()
             {
                 ProjectSafeCopy.Run();
             }
 
-            [Description("DES encrypt or decode (Database connection string)")]
-            public static void Mi_DESEncryptOrDecrypt()
+            [Description("AES 加密解密 （数据库连接字符串）")]
+            public static void Mi_AESEncryptOrDecrypt()
             {
-                DESEncryptOrDecrypt.Run();
+                AESEncryptOrDecrypt.Run();
             }
 
-            [Description("Text encoding conversion (Please backup first)")]
+            [Description("文本编码转换 （请先备份）")]
             public static void Mi_TextEncodingConversion()
             {
                 TextEncodingConversion.Run();

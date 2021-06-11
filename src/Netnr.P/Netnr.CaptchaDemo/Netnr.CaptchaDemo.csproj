@@ -14,11 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.23.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.5" Condition="'$(Configuration)' == 'Debug'" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta11" />
-    <PackageReference Include="SkiaSharp" Version="2.80.3-preview.40" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.40" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.24.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.7" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3-preview.90" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.90" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 

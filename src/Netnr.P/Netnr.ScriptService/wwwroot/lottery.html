@@ -24,43 +24,57 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
+        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-                <span class="fa fa-align-justify"></span>
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="netnrnav horizontal">
-                <div class="netnrnav-wrapper">
-                    <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
-                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
                             <!--标题-->
-                                <a href='javascript:location.reload(false)' title="彩票查询">
+                                <a class="nav-link bg-body" href='javascript:location.reload(false)' title="彩票查询">
                                     <svg class="titleicon"><use xlink:href="#lottery"></use></svg> &#x5F69;&#x7968;&#x67E5;&#x8BE2;
                                 </a>
                         </li>
-                        <li>
-                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                            <ul>
-                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
-            </div>
+            </nav>
         <div class="min300 mt-3">
             <style>
     #divlottery span {
@@ -87,25 +101,19 @@ https://zme.ink
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <form>
-                <div class="input-group">
-                    <span class="input-group-append">
-                        <button class="btn btn-warning" type="button" id="btnSearch">彩票类型</button>
-                    </span>
-                    <div class="input-group-append">
-                        <select class="custom-select" id="seLotteryType" name="code">
-                            <option value="001">双色球</option>
-                            <option value="110">七星彩</option>
-                            <option value="003">七乐彩</option>
-                            <option value="002">福彩3d</option>
-                            <option value="113">大乐透</option>
-                            <option value="108">排列3</option>
-                            <option value="109">排列5</option>
-                        </select>
-                    </div>
-                </div>
-            </form>
+        <div class="col-md-auto">
+            <div class="input-group">
+                <span class="input-group-text">彩票类型</span>
+                <select class="form-select" id="seLotteryType" name="code">
+                    <option value="001">双色球</option>
+                    <option value="110">七星彩</option>
+                    <option value="003">七乐彩</option>
+                    <option value="002">福彩3d</option>
+                    <option value="113">大乐透</option>
+                    <option value="108">排列3</option>
+                    <option value="109">排列5</option>
+                </select>
+            </div>
         </div>
     </div>
     <div id="divlottery" class="row mt-3"></div>
@@ -140,8 +148,8 @@ https://zme.ink
                         }
 
                         htm.push(
-                            '<div class="col-xl-3 col-md-4 col-sm-6 mt-2 mb-2"><div class="card card-secondary"><div class="py-2 px-2">'
-                            + '<div class="et"><label class="h5 mr-2">' + this.lotteryExpect + '</label><small>' + (new Date(this.ernieDate)).toISOString().substr(0, 10) + '</small></div>'
+                            '<div class="col-xl-3 col-md-4 col-sm-6 mb-3"><div class="card card-secondary"><div class="p-2">'
+                            + '<div class="et"><label class="h5 me-2">' + this.lotteryExpect + '</label><small>' + (new Date(this.ernieDate)).toISOString().substr(0, 10) + '</small></div>'
                             + spans1 + spans2
                             + '</div></div></div>'
                         );
@@ -151,7 +159,7 @@ https://zme.ink
             },
             error: function () {
                 ss.loading(0);
-                jz.msg("网络错误");
+                bs.msg("<h4>网络错误</h4>");
             },
             complete: function () {
                 ss.loading(0);
@@ -161,6 +169,5 @@ https://zme.ink
 
 </script>
         </div>
-            <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>

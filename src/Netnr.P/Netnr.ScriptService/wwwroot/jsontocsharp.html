@@ -17,87 +17,88 @@ https://zme.ink
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
-    <title>JSON生成C#实体类 脚本服务</title>
+    <title>JSON 生成 C# 实体类 脚本服务</title>
 
-    <meta name="keywords" content="netnr NET牛人 JSON生成C#实体类" />
-    <meta name="description" content="Script Services 根据JSON生成Model" />
+    <meta name="keywords" content="netnr NET牛人 JSON 生成 C# 实体类" />
+    <meta name="description" content="Script Services 根据 JSON 生成 Model" />
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
+        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-                <span class="fa fa-align-justify"></span>
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="netnrnav horizontal">
-                <div class="netnrnav-wrapper">
-                    <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
-                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
                             <!--标题-->
-                                <a href='javascript:location.reload(false)' title="根据JSON生成Model">
-                                    <svg class="titleicon"><use xlink:href="#csharp"></use></svg> JSON&#x751F;&#x6210;C#&#x5B9E;&#x4F53;&#x7C7B;
+                                <a class="nav-link bg-body" href='javascript:location.reload(false)' title="根据 JSON 生成 Model">
+                                    <svg class="titleicon"><use xlink:href="#csharp"></use></svg> JSON &#x751F;&#x6210; C# &#x5B9E;&#x4F53;&#x7C7B;
                                 </a>
                         </li>
-                        <li>
-                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                            <ul>
-                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
-            </div>
+            </nav>
         <div class="min300 mt-3">
             <div class="container-fluid">
-    <div class="row" id="tobox">
-        <div class="col-sm-12 mb-2">
+    <div class="row">
+        <div class="col-md-auto mb-3">
             <div class="input-group">
                 <button class="btn btn-warning" id="btnJsonToEntity">生成实体</button>
-                <div class="input-group-append">
-                    <select class="form-control" id="seNotes">
-                        <optgroup label="是否带注释">
-                            <option value="1">带注释</option>
-                            <option value="2" selected>不带注释</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <select class="form-control" id="seClassNameFirstBig">
-                        <optgroup label="类名强制大写开头">
-                            <option value="1">强制大写</option>
-                            <option value="2" selected>不强制大写</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <select class="custom-select" id="seautoformatter1">
-                        <optgroup label="是否自动格式化">
-                            <option value="1">自动格式化</option>
-                            <option value="2">不格式化</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-prepend pt-2 pl-3 text-muted">
-                    可拖拽文件打开
-                </div>
+                <select class="form-select" id="seNotes">
+                    <optgroup label="是否带注释">
+                        <option value="1">带注释</option>
+                        <option value="2" selected>不带注释</option>
+                    </optgroup>
+                </select>
+                <select class="form-select" id="seClassNameFirstBig">
+                    <optgroup label="类名强制大写开头">
+                        <option value="1">强制大写</option>
+                        <option value="2" selected>不强制大写</option>
+                    </optgroup>
+                </select>
             </div>
         </div>
-        <div class="col-sm-6">
-            <pre class="border overflow-hidden pme" id="txt1">
+    </div>
+    <div class="row">
+        <div class="col-sm-6 mb-3">
+            <pre class="border overflow-hidden mb-0 pme" id="txt1">
 {
   "site": {
     "title": "NET牛人",
@@ -126,7 +127,7 @@ https://zme.ink
   "version": "v.1.0.0"
 }</pre>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 mb-3">
             <div class="border overflow-hidden" id="txt2"></div>
         </div>
     </div>
@@ -134,14 +135,14 @@ https://zme.ink
 
 <script>
     function AutoHeight() {
-        var ch = $(window).height() - $('#txt1').offset().top - 15;
+        var ch = $(window).height() - $('#txt1').offset().top - 20;
         $('#txt1').css('height', Math.max(200, ch));
         $('#txt2').css('height', Math.max(200, ch));
     }
     AutoHeight();
 </script>
 
-<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs/loader.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.24.0/min/vs/loader.js'></script>
 
 <script>
     function htmlDecode(html) {
@@ -152,7 +153,7 @@ https://zme.ink
 
     require.config({
         paths: {
-            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs'
+            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.24.0/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
@@ -372,23 +373,6 @@ https://zme.ink
         }));
         $(txt1).removeClass('pme');
 
-        editor1.onDidChangeModelContent(function (e) {
-            if ($('#seautoformatter1').val() == "1") {
-                window.clearTimeout(window.defer1)
-                window.defer1 = setTimeout(function () {
-                    try {
-                        if (window.very1 == 'self') {
-                            window.very1 = '';
-                        } else {
-                            var val = JSON.stringify(JSON.parse(editor1.getValue()), null, 2);
-                            window.very1 = 'self';
-                            editor1.setValue(val);
-                        }
-                    } catch (e) { }
-                }, 20)
-            }
-        });
-
         editor2 = monaco.editor.create($("#txt2")[0], ss.meConfig({
             language: 'csharp',
             scrollBeyondLastLine: false
@@ -401,11 +385,11 @@ https://zme.ink
     $('#btnJsonToEntity').click(function () {
         var json = editor1.getValue();
         if (json == "") {
-            jz.msg('JSON 不能为空');
+            editor2.setValue('JSON 不能为空');
             return false;
         }
         try {
-            json = $.parseJSON(json);
+            json = JSON.parse(json);
 
             rt.config.notes = $('#seNotes').val() == 1;
             rt.config.classNameFirstBig = $('#seClassNameFirstBig').val() == 1;

@@ -1,0 +1,28 @@
+﻿{
+  //od-conn 原数据库连接字符串
+  //od-type 原数据库类型
+
+  //nd-conn 新数据库连接字符串
+  //nd-type 新数据库类型
+
+  //"od-conn": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.100.115)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=SMECQ;",
+  //"od-type": "Oracle",
+
+  //"nd-conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=tmp",
+  //"nd-type": "MySQL",
+
+  //"nd-conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME;",
+  //"nd-type": "SQLServer",
+
+  //"nd-conn": "Host=192.168.100.115;Username=postgres;Password=Abc123....;Database=tmpdb;",
+  //"nd-type": "PostgreSQL",
+
+  //"nd-conn": "Data Source=D:\\tmp\\tmp.db",
+  //"nd-type": "SQLite",
+
+  "od-conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=tmp",
+  "od-type": "MySQL",
+
+  "nd-conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME;",
+  "nd-type": "SQLServer"
+}

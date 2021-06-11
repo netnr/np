@@ -1,6 +1,5 @@
 ﻿# if Full || DbContext
 
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
@@ -93,7 +92,7 @@ namespace Netnr.SharedDbContext
                             var pts = new List<string> { "database", "server", "filename", "source", "user" };
                             if (!pts.Any(x => clow.Contains(x)))
                             {
-                                cval = Core.CalcTo.DeDES(conn, pwd);
+                                cval = Core.CalcTo.AESDecrypt(conn, pwd);
                             }
                             else
                             {
@@ -106,7 +105,7 @@ namespace Netnr.SharedDbContext
                 //加密
                 default:
                     {
-                        conn = Core.CalcTo.EnDES(conn, pwd);
+                        conn = Core.CalcTo.DESEncrypt(conn, pwd);
                         return conn;
                     }
             }

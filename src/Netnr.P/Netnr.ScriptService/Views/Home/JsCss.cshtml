@@ -1,28 +1,24 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
-            <div class="mb-2">
-                <button type="button" class="btn btn-warning" id="btnFn1">JS压缩（Terser）</button>
-                <button type="button" class="btn btn-success" id="btnFn2">CSS压缩（CleanCSS）</button>
+            <div class="btn-group mb-3">
+                <button type="button" class="btn btn-warning" id="btnFn1" title="Terser">压缩 JS</button>
+                <button type="button" class="btn btn-success" id="btnFn2" title="CleanCSS">压缩 CSS</button>
             </div>
             <div id="editor1" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
-            <div id="einfo1"></div>
         </div>
         <div class="col-md-6">
-            <div class="mb-2">
+            <div class="mb-3">
                 <div class="input-group">
                     <button type="button" class="btn btn-success" id="btnDown">下载文件</button>
-                    <div class="input-group-prepend">
-                        <input class="form-control" placeholder="（可选）自定义文件名" id="txtFileName" />
-                    </div>
+                    <input class="form-control" placeholder="（可选）自定义文件名" id="txtFileName" />
                 </div>
             </div>
             <div id="editor2" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
-            <div id="einfo2"></div>
         </div>
     </div>
 </div>
@@ -159,17 +155,7 @@
             window.defer1 = setTimeout(function () {
                 var txt = ee1.getValue();
                 ss.ls["vscode-content"] = txt;
-                $('#einfo1').html(jc.sizeFormat(jc.sizeof(txt)));
                 ss.lsSave();
-            }, 1000 * 1)
-        });
-        $('#einfo1').html(jc.sizeFormat(jc.sizeof(ee1.getValue())));
-
-        ee2.onDidChangeModelContent(function (e) {
-            clearTimeout(window.defer2);
-            window.defer2 = setTimeout(function () {
-                var txt = ee2.getValue();
-                $('#einfo2').html(jc.sizeFormat(jc.sizeof(txt)));
             }, 1000 * 1)
         });
 
@@ -209,7 +195,7 @@
         })
 
         $(window).on('load resize', function () {
-            var ch = $(window).height() - $('#editor1').offset().top - 35;
+            var ch = $(window).height() - $('#editor1').offset().top - 20;
             $('#editor1').css('height', Math.max(200, ch));
             $('#editor2').css('height', Math.max(200, ch));
         });

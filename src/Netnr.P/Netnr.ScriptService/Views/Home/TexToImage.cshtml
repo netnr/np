@@ -1,19 +1,16 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 mb-3">
+        <div class="col-md-6 mb-3">
             <div class="input-group">
                 <button class="btn btn-warning" id="btnToImage">转成图片</button>
-                <div class="custom-file">
-                    <input id="txtFile" type="file" class="custom-file-input">
-                    <label class="custom-file-label" id="pr">选择（拖拽、粘贴）图片或文本</label>
-                </div>
-                <div class="input-group-prepend">
-                    <button class="btn btn-danger" id="btnToText">转回文本</button>
-                </div>
+                <input id="txtFile" type="file" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <button class="btn btn-danger" id="btnToText">转回文本</button>
                 <input class="form-control" id="txtUri" placeholder="粘贴图片链接转为文本（须支持跨域）" />
-                <div class="input-group-prepend">
-                    <button class="btn btn-info" id="btnToTextDemo">例子</button>
-                </div>
+                <button class="btn btn-info" id="btnToTextDemo">例子</button>
             </div>
         </div>
         <div class="col-md-12 mb-3">

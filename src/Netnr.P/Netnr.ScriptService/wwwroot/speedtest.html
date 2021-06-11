@@ -24,56 +24,66 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
+        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-                <span class="fa fa-align-justify"></span>
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="netnrnav horizontal">
-                <div class="netnrnav-wrapper">
-                    <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
-                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
                             <!--标题-->
-                                <a href='javascript:location.reload(false)' title="资源下载速率">
+                                <a class="nav-link bg-body" href='javascript:location.reload(false)' title="资源下载速率">
                                     <svg class="titleicon"><use xlink:href="#speed"></use></svg> &#x7F51;&#x7EDC;&#x6D4B;&#x901F;
                                 </a>
                         </li>
-                        <li>
-                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                            <ul>
-                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
-            </div>
+            </nav>
         <div class="min300 mt-3">
             <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
-                </div>                
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="seSpeedServer">
-                        <optgroup label="请选择节点"></optgroup>
-                    </select>
-                </div>
+                <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
+                <select class="form-select" id="seSpeedServer">
+                    <optgroup label="请选择节点"></optgroup>
+                </select>
             </div>
             <div id="divresult"></div>
         </div>
@@ -211,7 +221,7 @@ https://zme.ink
 
     $('#btnRunSpeedTest').click(function () {
         if (sp.start && new Date().valueOf() - sp.start <= sp.time) {
-            jz.msg('正在测速中');
+            bs.msg('正在测速中');
             return false;
         }
 
@@ -236,6 +246,5 @@ https://zme.ink
     });
 </script>
         </div>
-            <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>

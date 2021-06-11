@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Netnr.ResponseFramework.Data;
 using Netnr.SharedFast;
-using Netnr.SharedDataKit.Applications;
+using Netnr.SharedDataKit;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -51,7 +51,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 tdb = GlobalTo.TDB;
                 conn = db.Database.GetDbConnection().ConnectionString;
-                if (db.Database.IsSqlite())
+                if (db.Database.ProviderName.ToLower().Contains("sqlite"))
                 {
                     conn = conn.Replace("Filename=", "Data Source=");
                 }
@@ -74,7 +74,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = DataKitService.GetTable(tdb, conn);
+                vm = DataKitTo.GetTable(tdb, conn);
             }
             return vm;
         }
@@ -94,7 +94,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = DataKitService.GetColumn(tdb, conn, filterTableName);
+                vm = DataKitTo.GetColumn(tdb, conn, filterTableName);
             }
             return vm;
         }
@@ -115,7 +115,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = DataKitService.SetTableComment(tdb, conn, TableName, TableComment);
+                vm = DataKitTo.SetTableComment(tdb, conn, TableName, TableComment);
             }
             return vm;
         }
@@ -137,7 +137,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = DataKitService.SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
+                vm = DataKitTo.SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
             }
             return vm;
         }
@@ -163,7 +163,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = DataKitService.GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
+                vm = DataKitTo.GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
             }
             return vm;
         }
@@ -180,7 +180,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = ConnCheck(ref tdb, ref conn);
             if (vm.Code == 0)
             {
-                vm = DataKitService.GetDEI(tdb, conn);
+                vm = DataKitTo.GetDEI(tdb, conn);
             }
             return vm;
         }

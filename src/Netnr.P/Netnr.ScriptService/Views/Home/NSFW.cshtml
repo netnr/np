@@ -6,8 +6,8 @@
     }
 
         .sbox .sbox-screen {
-            height: 400px;
-            line-height: 400px;
+            height: 371px;
+            line-height: 371px;
         }
 
             .sbox .sbox-screen img {
@@ -31,13 +31,11 @@
 
     @@-webkit-keyframes scan {
         0%, 100% {
-            -webkit-transform: translateY(0);
             transform: translateY(0);
         }
 
         100% {
-            -webkit-transform: translateY(370px);
-            transform: translateY(390px);
+            transform: translateY(364px);
         }
     }
 </style>
@@ -45,30 +43,35 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
-            <div class="input-group">
-                <div class="custom-file">
-                    <input id="txtFile" type="file" class="custom-file-input" accept="image/*">
-                    <label class="custom-file-label">选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片</label>
-                </div>
+            <div class="mb-3 input-group">
+                <input id="txtFile" type="file" class="form-control" accept="image/*">
             </div>
-            <div class="mt-3">
-                <div class="sbox">
-                    <div class="sbox-scanner d-none"></div>
-                    <div class="sbox-screen">
-                        <img src="@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/svg/400*200" id="imgview" />
-                    </div>
+            <div class="mb-3 rounded sbox">
+                <div class="sbox-scanner d-none"></div>
+                <div class="sbox-screen">
+                    <img src="@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/svg/400*200" id="imgview" />
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="input-group nrResultType">
-                <input class="form-control text-white bg-success" value="Drawing（绘画）" title="无害的艺术，或艺术绘画">
-                <input class="form-control text-white bg-info" value="Neutral（中立）" title="一般，无害的内容">
-                <input class="form-control text-white bg-warning" value="Sexy（性感）" title="不合时宜的挑衅内容">
-                <input class="form-control text-white bg-danger" value="Porn（色情）" title="不雅的内容和行为，通常涉及生殖器">
-                <input class="form-control text-white bg-dark" value="Hentai（变态）" title="色情艺术，不适合大多数工作环境">
+            <div class="row nrResultType">
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-success" value="Drawing（绘画）" title="无害的艺术，或艺术绘画">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-info" value="Neutral（中立）" title="一般，无害的内容">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-warning" value="Sexy（性感）" title="不合时宜的挑衅内容">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-danger" value="Porn（色情）" title="不雅的内容和行为，通常涉及生殖器">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-dark" value="Hentai（变态）" title="色情艺术，不适合大多数工作环境">
+                </div>
             </div>
-            <textarea class="form-control mt-3" style="height:400px" id="txtResult"></textarea>
+            <textarea class="form-control" rows="15" id="txtResult"></textarea>
         </div>
     </div>
     <div class="row mt-3 nrChart">
@@ -83,7 +86,7 @@
         model: null,
         rtorder: [],
         init: function () {
-            $('.nrResultType').children().each(function () {
+            $('.nrResultType').find('input').each(function () {
                 pg.rtorder.push({
                     key: this.value.split('（')[0],
                     name: this.value
@@ -106,7 +109,7 @@
                     }
                 }
                 if (!isImg) {
-                    jz.alert('不是图片哦');
+                    bs.alert('<h4>不是图片哦</h4>');
                     pg.iv.src = `${ss.apiServer}/svg/400*200`;
                 }
             }, "#txtFile");

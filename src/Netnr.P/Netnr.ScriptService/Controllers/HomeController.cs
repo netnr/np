@@ -145,15 +145,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 糗事百科
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Qiushibaike()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 特殊符号
         /// </summary>
         /// <returns></returns>

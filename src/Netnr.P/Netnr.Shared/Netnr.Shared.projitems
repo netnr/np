@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\SQLiteHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\OracleHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\BuildTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\QuoteTo.cs" />
@@ -18,21 +19,24 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\SQLServerHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\ClientTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\DownTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedCompile\CompileTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitAidTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\IDataKitTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\SqlMappingCsharpVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedFast\GlobalTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaForDrawingCommon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaForSkiaSharp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\ImageTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Applications\DataKitMySQLService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Applications\DataKitOracleService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Applications\DataKitPostgreSQLService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Applications\DataKitSQLiteService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Applications\DataKitSQLServerService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Applications\DataKitService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Applications\IDataKitService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DkDEI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DkTableColumn.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DkTableName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitMySQLTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitOracleTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitPostgreSQLTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitSQLiteTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitSQLServerTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DEIVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TableColumnVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TableNameVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedPageVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedPaginationVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedResultVM.cs" />

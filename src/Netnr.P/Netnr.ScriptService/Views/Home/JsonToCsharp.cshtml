@@ -1,39 +1,26 @@
 <div class="container-fluid">
-    <div class="row" id="tobox">
-        <div class="col-sm-12 mb-2">
+    <div class="row">
+        <div class="col-md-auto mb-3">
             <div class="input-group">
                 <button class="btn btn-warning" id="btnJsonToEntity">生成实体</button>
-                <div class="input-group-append">
-                    <select class="form-control" id="seNotes">
-                        <optgroup label="是否带注释">
-                            <option value="1">带注释</option>
-                            <option value="2" selected>不带注释</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <select class="form-control" id="seClassNameFirstBig">
-                        <optgroup label="类名强制大写开头">
-                            <option value="1">强制大写</option>
-                            <option value="2" selected>不强制大写</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <select class="custom-select" id="seautoformatter1">
-                        <optgroup label="是否自动格式化">
-                            <option value="1">自动格式化</option>
-                            <option value="2">不格式化</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-prepend pt-2 pl-3 text-muted">
-                    可拖拽文件打开
-                </div>
+                <select class="form-select" id="seNotes">
+                    <optgroup label="是否带注释">
+                        <option value="1">带注释</option>
+                        <option value="2" selected>不带注释</option>
+                    </optgroup>
+                </select>
+                <select class="form-select" id="seClassNameFirstBig">
+                    <optgroup label="类名强制大写开头">
+                        <option value="1">强制大写</option>
+                        <option value="2" selected>不强制大写</option>
+                    </optgroup>
+                </select>
             </div>
         </div>
-        <div class="col-sm-6">
-            <pre class="border overflow-hidden pme" id="txt1">
+    </div>
+    <div class="row">
+        <div class="col-sm-6 mb-3">
+            <pre class="border overflow-hidden mb-0 pme" id="txt1">
 {
   "site": {
     "title": "NET牛人",
@@ -62,7 +49,7 @@
   "version": "v.1.0.0"
 }</pre>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 mb-3">
             <div class="border overflow-hidden" id="txt2"></div>
         </div>
     </div>
@@ -70,7 +57,7 @@
 
 <script>
     function AutoHeight() {
-        var ch = $(window).height() - $('#txt1').offset().top - 15;
+        var ch = $(window).height() - $('#txt1').offset().top - 20;
         $('#txt1').css('height', Math.max(200, ch));
         $('#txt2').css('height', Math.max(200, ch));
     }
@@ -291,23 +278,6 @@
         }));
         $(txt1).removeClass('pme');
 
-        editor1.onDidChangeModelContent(function (e) {
-            if ($('#seautoformatter1').val() == "1") {
-                window.clearTimeout(window.defer1)
-                window.defer1 = setTimeout(function () {
-                    try {
-                        if (window.very1 == 'self') {
-                            window.very1 = '';
-                        } else {
-                            var val = JSON.stringify(JSON.parse(editor1.getValue()), null, 2);
-                            window.very1 = 'self';
-                            editor1.setValue(val);
-                        }
-                    } catch (e) { }
-                }, 20)
-            }
-        });
-
         editor2 = monaco.editor.create($("#txt2")[0], ss.meConfig({
             language: 'csharp',
             scrollBeyondLastLine: false
@@ -320,11 +290,11 @@
     $('#btnJsonToEntity').click(function () {
         var json = editor1.getValue();
         if (json == "") {
-            jz.msg('JSON 不能为空');
+            editor2.setValue('JSON 不能为空');
             return false;
         }
         try {
-            json = $.parseJSON(json);
+            json = JSON.parse(json);
 
             rt.config.notes = $('#seNotes').val() == 1;
             rt.config.classNameFirstBig = $('#seClassNameFirstBig').val() == 1;

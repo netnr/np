@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>TRACE;Public;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DataKit</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>TRACE;Public;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DataKit</DefineConstants>
+	</PropertyGroup>
+
+	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
+
+	<ItemGroup>
+	  <None Remove="Application\TableXCompile.dcs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+		<PackageReference Include="MySqlConnector" Version="1.3.9" />
+		<PackageReference Include="Npgsql" Version="5.0.5" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.1" />
+		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="3.9.0" />
+		<PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="ud\config-test.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="ud\init.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

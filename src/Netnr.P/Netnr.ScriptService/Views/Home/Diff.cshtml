@@ -1,30 +1,17 @@
-<style>
-    .difftxt {
-        width: auto;
-        padding: 6px;
-        height: 38px !important;
-    }
-</style>
-
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-auto">
+            <select class="form-select nr-diff-inline">
+                <optgroup label="对比模式">
+                    <option value="0">左右</option>
+                    <option value="1">内联</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="col-md">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <select class="custom-select nr-diff-inline">
-                        <optgroup label="对比模式">
-                            <option value="0">左右</option>
-                            <option value="1">内联</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="custom-file">
-                    <input id="txtFile" type="file" class="custom-file-input">
-                    <label class="custom-file-label nrtip" dv="选择（拖拽）文件">选择（拖拽）文件</label>
-                </div>
-                <div class="input-group-prepend">
-                    <button class="btn btn-secondary nr-diff-next">Next</button>
-                </div>
+                <input id="txtFile" type="file" class="form-control">
+                <button class="btn btn-secondary nr-diff-next">Next</button>
             </div>
         </div>
         <div class="col-md-12 mt-3">
@@ -40,7 +27,12 @@
 <script>
     var de = {
         editor: document.getElementById("editor"),
+        isHideMenu: location.hash == "#hide-menu",
         init: function () {
+
+            if (de.isHideMenu) {
+                $('.mobile-offcanvas').hide();
+            }
 
             de.resize();
             $(window).on('resize', de.resize);
@@ -72,11 +64,26 @@
                 $('.nr-diff-next').click(function () {
                     de.den.next();
                 });
+
+                de.receiveMessage();
             });
         },
+        receiveMessage: function () {
+            window.addEventListener("message", function (event) {
+                try {
+                    var jsonData = JSON.parse(event.data);
+                    if (jsonData.origin != null && jsonData.vary != null) {
+                        de.diffEditor.getOriginalEditor().setValue(jsonData.origin);
+                        de.diffEditor.getModifiedEditor().setValue(jsonData.vary);
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }, false);
+        },
         resize: function () {
-            var ch = $(window).height() - $('#editor').offset().top - 20;
-            $('#editor').height(Math.max(200, ch));
+            var ch = $(window).height() - $('#editor').offset().top - (de.isHideMenu ? 5 : 20);
+            $('#editor').height(Math.max(100, ch));
         }
     }
 
@@ -84,34 +91,25 @@
 
     //接收文件
     ss.receiveFiles(function (files) {
-        jz.popup({
-            title: "请选择文件打开到？",
-            okValue: "Right 右边",
-            cancelValue: "Left 左边",
-            drag: true,
-            //变动（右）
-            ok: function () {
+        bs.alert(`<div class="text-center"><button type="button" class="btn btn-danger me-3" data-cmd="left">左边 Left</button><button type="button" class="btn btn-info" data-cmd="right">右边 Right</button></div>`);
+        bs.obj.alert._dialog.querySelector('.modal-footer').remove();
+        bs.obj.alert._dialog.onclick = function (e) {
+            var target = e.target, cmd = target.getAttribute("data-cmd");
+            if (["left", "right"].includes(cmd)) {
                 var file = files[0];
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    de.diffEditor.getModifiedEditor().setValue(e.target.result);
+                    if (cmd == "left") {
+                        de.diffEditor.getOriginalEditor().setValue(e.target.result);
+                    } else {
+                        de.diffEditor.getModifiedEditor().setValue(e.target.result);
+                    }
                     $("#txtFile").val('');
                 };
                 reader.readAsText(file);
-            },
-            //原始（左）
-            cancel: function () {
-                var file = files[0];
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    de.diffEditor.getOriginalEditor().setValue(e.target.result);
-                    $("#txtFile").val('');
-                };
-                reader.readAsText(file);
-            },
-            close: function () {
-                $("#txtFile").val('');
+
+                bs.obj.alert.hide();
             }
-        })
+        }
     }, "#txtFile");
 </script>

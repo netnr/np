@@ -16,15 +16,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Markdig" Version="0.24.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.5" />	
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.5" Condition="'$(Configuration)' == 'Debug'" />
+		<PackageReference Include="Baidu.AI" Version="3.6.14" />
+		<PackageReference Include="jieba.NET" Version="0.42.2" />
+		<PackageReference Include="Markdig" Version="0.25.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.7" />	
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.7" Condition="'$(Configuration)' == 'Debug'" />
 		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
 		<PackageReference Include="Qiniu.Shared" Version="7.2.15" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.3" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.3" />
-		<PackageReference Include="SkiaSharp" Version="2.80.3-preview.40" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.40" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.4" />
+		<PackageReference Include="SkiaSharp" Version="2.80.3-preview.90" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.90" />
 		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
@@ -41,7 +43,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Netnr.Blog.Web.xml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 

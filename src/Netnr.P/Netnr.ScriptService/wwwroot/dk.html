@@ -140,20 +140,20 @@
                             <i class="fa fa-fw fa-bars"></i>菜单
                         </button>
                     </div>
-                    <div class="input-group-prepend">
+                    <div class="input-group-append">
                         <select class="custom-select custom-select-sm" id="seti">
                             <option value="">（选择数据库）</option>
                         </select>
                     </div>
-                    <div class="input-group-prepend">
+                    <div class="input-group-append">
                         <button type="button" class="btn btn-secondary dropdown-toggle-split" data-toggle="dropdown" data-reference="parent" title="数据库连接记录及模版">
                             <i class="fa fa-fw fa-caret-down"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right border-info dmbox" id="dmConn"></div>
                     </div>
                     <input type="text" id="txtConn" class="form-control" placeholder="数据库连接字符串，本地记录，后台不记录" autocomplete="off" maxlength="300">
-                    <div class="input-group-prepend">
-                        <button class="btn btn-light" id="btnToggleSHconn" title="隐藏/显示 连接字符串">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" id="btnToggleSHconn" title="隐藏/显示 连接字符串">
                             <i class="fa fa-fw fa-eye"></i>
                         </button>
                     </div>
@@ -335,7 +335,7 @@
                                         <i class="fa fa-fw fa-file-code-o"></i>加载示例
                                     </button>
                                 </div>
-                                <div class="input-group-prepend">
+                                <div class="input-group-append">
                                     <button class="btn btn-sm btn-warning" id="btnExtendIn">
                                         <i class="fa fa-fw fa-plug"></i>注入
                                     </button>
@@ -447,7 +447,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui/1.9.0/jquery.easyui.min.min.js"></script>
@@ -2350,7 +2350,7 @@
 
                         //数据库类型 ➜ SQL语句参数类型
                         //db：数据库类型，lg：语言类型，pm：参数
-                        MySQL: [{ "db": "bigint", "lg": "long", "pm": "Int64" }, { "db": "binary", "lg": "byte[]", "pm": "Binary" }, { "db": "bit", "lg": "ulong", "pm": "Bit" }, { "db": "blob", "lg": "byte[]", "pm": "Blob" }, { "db": "char", "lg": "string", "pm": "VarChar" }, { "db": "date", "lg": "DateTime", "pm": "Date" }, { "db": "datetime", "lg": "DateTime", "pm": "DateTime" }, { "db": "decimal", "lg": "decimal", "pm": "Decimal" }, { "db": "double", "lg": "double", "pm": "Double" }, { "db": "float", "lg": "float", "pm": "Float" }, { "db": "int", "lg": "int", "pm": "Int32" }, { "db": "json", "lg": "string", "pm": "JSON" }, { "db": "longblob", "lg": "byte[]", "pm": "LongBlob" }, { "db": "longtext", "lg": "string", "pm": "LongText" }, { "db": "mediumblob", "lg": "byte[]", "pm": "MediumBlob" }, { "db": "mediumint", "lg": "int", "pm": "Int32" }, { "db": "mediumtext", "lg": "string", "pm": "MediumText" }, { "db": "tinytext", "lg": "string", "pm": "TinyText" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "time", "lg": "DateTime", "pm": "Time" }, { "db": "timestamp", "lg": "DateTime", "pm": "Timestamp" }, { "db": "tinyblob", "lg": "byte[]", "pm": "TinyBlob" }, { "db": "varbinary", "lg": "byte[]", "pm": "VarBinary" }, { "db": "varchar", "lg": "string", "pm": "VarChar" }, { "db": "year", "lg": "string", "pm": "Year" }],
+                        MySQL: [{ "db": "bigint", "lg": "long", "pm": "Int64" }, { "db": "binary", "lg": "byte[]", "pm": "Binary" }, { "db": "bit", "lg": "ulong", "pm": "Bit" }, { "db": "blob", "lg": "byte[]", "pm": "Blob" }, { "db": "char", "lg": "string", "pm": "VarChar" }, { "db": "date", "lg": "DateTime", "pm": "Date" }, { "db": "datetime", "lg": "DateTime", "pm": "DateTime" }, { "db": "decimal", "lg": "decimal", "pm": "Decimal" }, { "db": "double", "lg": "double", "pm": "Double" }, { "db": "float", "lg": "float", "pm": "Float" }, { "db": "int", "lg": "int", "pm": "Int32" }, { "db": "json", "lg": "string", "pm": "JSON" }, { "db": "longblob", "lg": "byte[]", "pm": "LongBlob" }, { "db": "longtext", "lg": "string", "pm": "LongText" }, { "db": "mediumblob", "lg": "byte[]", "pm": "MediumBlob" }, { "db": "mediumint", "lg": "int", "pm": "Int32" }, { "db": "mediumtext", "lg": "string", "pm": "MediumText" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "time", "lg": "DateTime", "pm": "Time" }, { "db": "timestamp", "lg": "DateTime", "pm": "Timestamp" }, { "db": "tinyblob", "lg": "byte[]", "pm": "TinyBlob" }, { "db": "tinyint", "lg": "short", "pm": "Int16" }, { "db": "tinytext", "lg": "string", "pm": "TinyText" }, { "db": "varbinary", "lg": "byte[]", "pm": "VarBinary" }, { "db": "varchar", "lg": "string", "pm": "VarChar" }, { "db": "year", "lg": "string", "pm": "Year" }],
                         SQLite: [{ "db": "integer", "lg": "int", "pm": "Integer" }, { "db": "real", "lg": "double", "pm": "Real" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "blob", "lg": "byte[]", "pm": "Blob" }],
                         Oracle: [{ "db": "BFILE", "lg": "byte[]", "pm": "BFile" }, { "db": "VARCHAR2", "lg": "string", "pm": "Varchar2" }, { "db": "BINARY_DOUBLE", "lg": "double", "pm": "BinaryDouble" }, { "db": "BINARY_FLOAT", "lg": "float", "pm": "BinaryFloat" }, { "db": "BLOB", "lg": "byte[]", "pm": "Blob" }, { "db": "CLOB", "lg": "string", "pm": "Clob" }, { "db": "CHAR", "lg": "string", "pm": "Char" }, { "db": "DATE", "lg": "DateTime", "pm": "Date" }, { "db": "LONG", "lg": "Long", "pm": "Long" }, { "db": "LONG RAW", "lg": "byte[]", "pm": "LongRaw" }, { "db": "NCLOB", "lg": "string", "pm": "NClob" }, { "db": "NUMBER", "lg": "decimal", "pm": "Decimal" }, { "db": "NVARCHAR2", "lg": "string", "pm": "NVarchar2" }, { "db": "RAW", "lg": "byte[]", "pm": "Raw" }, { "db": "TIMESTAMP(6)", "lg": "DateTime", "pm": "TimeStamp" }, { "db": "INTERVAL DAY(2) TO SECOND(6)", "lg": "TimeSpan", "pm": "IntervalDS" }, { "db": "INTERVAL YEAR(2) TO MONTH", "lg": "string", "pm": "IntervalYM" }, { "db": "TIMESTAMP(6) WITH LOCAL TIME ZONE", "lg": "DateTimeOffset", "pm": "TimeStampLTZ" }, { "db": "TIMESTAMP(6) WITH TIME ZONE", "lg": "DateTimeOffset", "pm": "TimeStampTZ" }],
                         SQLServer: [{ "db": "bigint", "lg": "long", "pm": "BigInt" }, { "db": "binary", "lg": "byte[]", "pm": "Binary" }, { "db": "bit", "lg": "bool", "pm": "Bit" }, { "db": "char", "lg": "string", "pm": "Char" }, { "db": "date", "lg": "DateTime", "pm": "Date" }, { "db": "datetime", "lg": "DateTime", "pm": "DateTime" }, { "db": "datetime2", "lg": "DateTime", "pm": "DateTime2" }, { "db": "datetimeoffset", "lg": "DateTimeOffset", "pm": "DateTimeOffset" }, { "db": "decimal", "lg": "decimal", "pm": "Decimal" }, { "db": "float", "lg": "double", "pm": "Float" }, { "db": "image", "lg": "byte[]", "pm": "Image" }, { "db": "int", "lg": "int", "pm": "Int" }, { "db": "money", "lg": "decimal", "pm": "Money" }, { "db": "nchar", "lg": "string", "pm": "NChar" }, { "db": "ntext", "lg": "string", "pm": "NText" }, { "db": "numeric", "lg": "decimal", "pm": "Decimal" }, { "db": "nvarchar", "lg": "string", "pm": "nvarchar" }, { "db": "nvarchar", "lg": "string", "pm": "NVarChar" }, { "db": "real", "lg": "float", "pm": "Real" }, { "db": "smalldatetime", "lg": "DateTime", "pm": "SmallDateTime" }, { "db": "smallint", "lg": "short", "pm": "SmallInt" }, { "db": "smallmoney", "lg": "decimal", "pm": "SmallMoney" }, { "db": "sql_variant", "lg": "object", "pm": "NVarChar" }, { "db": "text", "lg": "string", "pm": "Text" }, { "db": "time", "lg": "TimeSpan", "pm": "Time" }, { "db": "timestamp", "lg": "byte[]", "pm": "Timestamp" }, { "db": "tinyint", "lg": "byte", "pm": "TinyInt" }, { "db": "uniqueidentifier", "lg": "Guid", "pm": "UniqueIdentifier" }, { "db": "varbinary", "lg": "byte[]", "pm": "VarBinary" }, { "db": "varchar", "lg": "string", "pm": "VarChar" }, { "db": "xml", "lg": "string", "pm": "Xml" }],

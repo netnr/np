@@ -1,23 +1,21 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6 mb-3">
             <div class="input-group">
-                <span class="input-group-append">
-                    <span class="input-group-text">粘贴公网链接</span>
-                </span>
+                <span class="input-group-text">粘贴公网链接</span>
                 <input id="txtUrl" type="text" class="form-control" placeholder="请粘贴公网文档链接地址">
-                <span class="input-group-append">
-                    <span class="input-group-text">上传Office文档（Max 20MB）</span>
-                </span>
-                <div class="custom-file">
-                    <input id="txtFile" type="file" class="custom-file-input">
-                    <label class="custom-file-label" id="ps">选择（拖拽）本地 Word、Excel、PPT</label>
-                </div>
             </div>
-            <p>
-                <label>全屏完整链接：</label>
-                <a target="_blank" id="auri" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
-            </p>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">上传Office文档</span>
+                <input id="txtFile" type="file" class="form-control">
+                <span class="input-group-text d-none nr-update-progress"></span>
+            </div>
+        </div>
+        <div class="col-md-12 mb-3 d-none d-md-block">
+            <label>全屏完整链接：</label>
+            <a target="_blank" id="auri" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
         </div>
         <div class="col-md-12">
             <iframe src="about:blank" class="d-none" frameborder="0"></iframe>
@@ -29,8 +27,6 @@
     var ov = {
         api: "https://view.officeapps.live.com/op/embed.aspx?src=",
         init: function () {
-
-            $('#ps').attr('tip', $('#ps').html());
 
             //接收文件
             ss.receiveFiles(function (files) {
@@ -71,13 +67,14 @@
                 err.push('请选择 Office文档')
             }
             if (err.length) {
-                jz.alert(err.join('<br/>'))
+                bs.alert(err.join('<br/>'));
+                $("#txtFile").val('')
             } else {
                 //上传
                 var formData = new FormData();
                 formData.append("file", file);
 
-                $('#ps').html('正在准备上传 ');
+                ss.loading(1);
                 $.ajax({
                     url: "https://www.netnr.eu.org/api/v1/Upload",
                     type: "POST",
@@ -90,9 +87,9 @@
                         xhr.upload.addEventListener('progress', function (e) {
                             var rate = ((e.loaded / e.total) * 100).toFixed();
                             if (rate < 100) {
-                                $('#ps').html('已上传 ' + rate + ' %');
+                                $('.nr-update-progress').removeClass('d-none').html('已上传 ' + rate + ' %');
                             } else {
-                                $('#ps').html($('#ps').attr('tip'));
+                                $('.nr-update-progress').addClass('d-none');
                             }
                         })
                         return xhr;
@@ -102,15 +99,15 @@
                         if (data.code == 200) {
                             ov.view("https://www.netnr.eu.org" + data.data.path);
                         } else {
-                            jz.alert(data.msg)
+                            bs.msg("<h4>" + data.msg + "</h4>");
                         }
                     },
                     error: function () {
-                        jz.alert("上传出错");
+                        bs.msg("<h4>上传出错</h4>");
                     },
                     complete: function () {
                         $('#txtFile').val('');
-                        $('#ps').html($('#ps').attr('tip'));
+                        ss.loading(0);
                     }
                 });
             }

@@ -92,7 +92,7 @@
                     <div class="markdown-body p-2">@Model.GistContent</div>
                     <script>
                         var mb = $('div.markdown-body');
-                        mb.html(netnrmd.render(mb.html()));
+                        mb.html(netnrmd.render(mb.text()));
 
                         $('#faicon').removeClass('fa-spinner fa-spin').addClass('fa-file-code-o');
                     </script>

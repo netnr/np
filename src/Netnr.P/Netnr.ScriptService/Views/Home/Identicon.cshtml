@@ -2,7 +2,12 @@
     .nr-view-1, .nr-view-2 {
         display: inline-block;
         border: 1px solid #ddd;
+        max-width: 100%;
     }
+
+        .nr-view-1 svg, .nr-view-2 svg {
+            max-width: 100%;
+        }
 
     .border-transparent {
         border-color: transparent;
@@ -11,15 +16,17 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-auto">
             <div class="input-group mb-3">
-                <span class="input-group-append">
-                    <input type="number" class="form-control nr-size" style="width:90px" value="420" min="2" step="2" title="大小" placeholder="大小" />
-                </span>
-                <input type="text" class="form-control nr-value" placeholder="请输入身份（昵称、标识等）" autofocus autocomplete="off">
+                <span class="input-group-text">大小</span>
+                <input type="number" class="form-control nr-size" value="320" min="2" max="99999" step="2" title="大小" placeholder="大小" />
+                <span class="input-group-text">标识</span>
+                <input type="text" class="form-control nr-value" placeholder="身份（昵称、标识等）" autofocus autocomplete="off">
             </div>
         </div>
-        <div class="col d-none">
+    </div>
+    <div class="row">
+        <div class="col-md-6 d-none">
             <div class="nr-view-1">
             </div>
             <div class="my-3">
@@ -28,7 +35,7 @@
                 <a href="javascript:void(0)" class="nr-down" data-type="image1">下载 JPG</a>
             </div>
         </div>
-        <div class="col d-none">
+        <div class="col-md-6 d-none">
             <div class="nr-view-2">
             </div>
             <div class="my-3">
@@ -85,7 +92,7 @@
 
             ii.defer = setTimeout(function () {
                 var value = $('.nr-value').val();
-                var size = $('.nr-size').val() || 420;
+                var size = $('.nr-size').val() || 320;
 
                 var svgicon = iisvg({ value, size });
                 $('.nr-view-1').empty().append(svgicon).parent().removeClass('d-none');

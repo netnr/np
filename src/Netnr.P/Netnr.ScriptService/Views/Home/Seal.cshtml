@@ -3,17 +3,14 @@
 
         <div class="col-md-12 mb-3">
             <div class="input-group">
-                <div class="custom-file">
-                    <input id="txtFile" type="file" class="custom-file-input" multiple accept="image/*">
-                    <label class="custom-file-label" id="pr">选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片</label>
-                </div>
+                <input id="txtFile" type="file" class="form-control" multiple accept="image/*">
             </div>
         </div>
 
         <div class="col-md-12 nrCogs">
             <div class="input-group d-none mb-3">
-                <div class="input-group-prepend">
-                    <select class="custom-select nrCogType" data-ov="text" onchange="seal.changeCogType(this)">
+                <div>
+                    <select class="form-select nrCogType" data-ov="text" onchange="seal.changeCogType(this)">
                         <optgroup label="水印类型">
                             <option value="text" selected>文本</option>
                             <option value="image">图片</option>
@@ -26,24 +23,32 @@
                 </div>
 
                 <input class="form-control nrCogText nrCogContent" placeholder="水印文字" value="Watermark 水印" oninput="seal.very()" />
-                <div class="input-group-prepend nrCogText">
+                <div class="nrCogText">
                     <input class="form-control nrCogFontSize" oninput="seal.very()" placeholder="水印大小字体样式" value="36px Josefin Slab" />
+                </div>
+                <div class="nrCogText">
                     <input class="form-control nrCogColor" oninput="seal.very()" style="width:100px" placeholder="字体颜色" value="#000000" />
                 </div>
 
-                <div class="custom-file d-none nrCogImage">
-                    <input type="file" class="custom-file-input nrCogLogo" placeholder="选择图片" accept="image/*" onchange="seal.changeCogLogo(this)">
-                    <label class="custom-file-label">选择图片</label>
-                </div>
-                <div class="input-group-prepend d-none nrCogImage">
+                <input type="file" class="form-control d-none nrCogImage nrCogLogo" placeholder="选择图片" accept="image/*" onchange="seal.changeCogLogo(this)">
+                <div class="d-none"></div>
+                <div class="d-none nrCogImage">
                     <input class="form-control nrCogLogoWidth" oninput="seal.very()" style="width:130px" placeholder="图片宽度" type="number" min="0" step="5" />
+                </div>
+                <div class="d-none nrCogImage">
                     <input class="form-control nrCogLogoHeight" oninput="seal.very()" style="width:130px" placeholder="图片高度" type="number" min="0" step="5" />
                 </div>
 
-                <div class="input-group-prepend">
+                <div>
                     <input class="form-control nrCogX" oninput="seal.very()" style="width:130px" placeholder="水平X轴定位" type="number" step="5" value="20" />
+                </div>
+                <div>
                     <input class="form-control nrCogY" oninput="seal.very()" style="width:130px" placeholder="垂直Y轴定位" type="number" step="5" value="20" />
+                </div>
+                <div>
                     <input class="form-control nrCogAlpha" oninput="seal.very()" style="width:100px" placeholder="透明度" type="number" value="0.4" min="0" max="1" step="0.1" />
+                </div>
+                <div>
                     <input class="form-control nrCogAngle" oninput="seal.very()" style="width:80px" placeholder="角度" type="number" value="0" min="0" max="360" step="5" />
                 </div>
             </div>

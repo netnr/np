@@ -6,7 +6,7 @@
         "url": "/wallpaper",
         "icon": "wallpaper",
         "title": "壁纸",
-        "remark": "源自360壁纸"
+        "remark": "源自 360 壁纸"
       },
       {
         "url": "/free",
@@ -24,14 +24,14 @@
         "url": "/ps",
         "icon": "ps",
         "title": "Photoshop",
-        "remark": "在线PS",
+        "remark": "在线 PS",
         "target": "_blank"
       },
       {
         "url": "/tv",
         "icon": "tv",
         "title": "在线电视",
-        "remark": "m3u8源播放"
+        "remark": "m3u8 源播放"
       },
       {
         "url": "/qrcode",
@@ -71,7 +71,7 @@
       {
         "url": "/vscode",
         "icon": "vsc",
-        "title": "VSCode编辑器",
+        "title": "VSCode 编辑器",
         "remark": "Monaco Editor 编辑器"
       },
       {
@@ -83,42 +83,42 @@
       {
         "url": "//md.js.org",
         "icon": "markdown",
-        "title": "Markdown编辑器"
+        "title": "Markdown 编辑器"
       },
       {
         "url": "//je.js.org",
         "icon": "json",
-        "title": "JSON编辑器"
+        "title": "JSON 编辑器"
       },
       {
         "url": "/nginx",
         "icon": "nginx",
-        "title": "Nginx编辑器",
-        "remark": "Nginx配置文件格式化"
+        "title": "Nginx 编辑器",
+        "remark": "Nginx 配置文件格式化"
       },
       {
         "url": "/filetobase64",
         "icon": "code",
-        "title": "文件转Base64",
-        "remark": "Base64编码转换"
+        "title": "文件转 Base64",
+        "remark": "Base64 编码转换"
       },
       {
         "url": "/jsontocsharp",
         "icon": "csharp",
-        "title": "JSON生成C#实体类",
-        "remark": "根据JSON生成Model"
+        "title": "JSON 生成 C# 实体类",
+        "remark": "根据 JSON 生成 Model"
       },
       {
         "url": "/jsontoxml",
         "icon": "xml",
-        "title": "JSON转换XML",
-        "remark": "JSON与XML相互转换"
+        "title": "JSON 转换 XML",
+        "remark": "JSON 与 XML 相互转换"
       },
       {
         "url": "/pdm",
         "icon": "pdm",
-        "title": "PDM查看",
-        "remark": "PowerDesigner解析、查看"
+        "title": "PDM 查看",
+        "remark": "PowerDesigner 解析、查看"
       },
       {
         "url": "/dk",
@@ -136,8 +136,8 @@
       {
         "url": "/jscss",
         "icon": "js",
-        "title": "JS、CSS工具",
-        "remark": "JS压缩、CSS压缩"
+        "title": "JS、CSS 工具",
+        "remark": "JS 压缩、CSS 压缩"
       },
       {
         "url": "/formatter",
@@ -148,8 +148,8 @@
       {
         "url": "/sqlformatter",
         "icon": "sql",
-        "title": "SQL格式化",
-        "remark": "美化SQL语句"
+        "title": "SQL 格式化",
+        "remark": "美化 SQL 语句"
       },
       {
         "url": "//zijian.aliyun.com",
@@ -160,7 +160,7 @@
       {
         "url": "//whois.aliyun.com",
         "icon": "whois",
-        "title": "Whois查询",
+        "title": "Whois 查询",
         "remark": "域名信息查询"
       },
       {
@@ -173,31 +173,31 @@
         "url": "/ip",
         "icon": "ip",
         "title": "IP",
-        "remark": "客户端IP地址"
+        "remark": "客户端 IP 地址"
       },
       {
         "url": "//ping.pe",
         "icon": "ping",
         "title": "Ping",
-        "remark": "Ping测试"
+        "remark": "Ping 测试"
       },
       {
         "url": "/pingcloud",
         "icon": "pingcloud",
-        "title": "Ping云",
-        "remark": "Ping各大云服务节点"
+        "title": "Ping 云",
+        "remark": "Ping 各大云服务节点"
       },
       {
         "url": "//www.chinassl.net/ssltools/convert-ssl.html",
         "icon": "ssl",
-        "title": "SSL证书转换",
+        "title": "SSL 证书转换",
         "remark": "格式转换"
       },
       {
         "url": "//getman.cn",
         "icon": "http",
-        "title": "HTTP请求",
-        "remark": "在线HTTP请求"
+        "title": "HTTP 请求",
+        "remark": "在线 HTTP 请求"
       },
       {
         "url": "/useragent",
@@ -208,7 +208,7 @@
       {
         "url": "/icp",
         "icon": "icp",
-        "title": "ICP备案查询"
+        "title": "ICP 备案查询"
       },
       {
         "url": "//tool.chinaz.com/regex/",
@@ -242,13 +242,13 @@
       {
         "url": "/svgo",
         "icon": "chain",
-        "title": "SVG雪碧图",
-        "remark": "优化合并SVG"
+        "title": "SVG 雪碧图",
+        "remark": "优化合并 SVG"
       },
       {
         "url": "//c.runoob.com/more/svgeditor/",
         "icon": "svge",
-        "title": "SVG编辑器"
+        "title": "SVG 编辑器"
       },
       {
         "url": "/textoimage",
@@ -260,7 +260,7 @@
         "url": "/swaggerto",
         "icon": "swagger",
         "title": "SwaggerTo",
-        "remark": "Swagger转换生成"
+        "remark": "Swagger 转换生成"
       },
       {
         "url": "/identicon",
@@ -276,13 +276,13 @@
       {
         "url": "//kms.netnr.eu.org",
         "icon": "microsoft",
-        "title": "KMS服务",
-        "remark": "激活Windows系统"
+        "title": "KMS 服务",
+        "remark": "激活 Windows 系统"
       },
       {
         "url": "/officeview",
         "icon": "office",
-        "title": "Office文档查看",
+        "title": "Office 文档查看",
         "remark": "Word、Excel、PPT"
       },
       {
@@ -305,8 +305,8 @@
       {
         "url": "/emoji",
         "icon": "emoji",
-        "title": "Emoji符号",
-        "remark": "Emoji表情"
+        "title": "Emoji 符号",
+        "remark": "Emoji 表情"
       },
       {
         "url": "/lottery",
@@ -316,7 +316,7 @@
       {
         "url": "//v.netnr.eu.org",
         "icon": "video",
-        "title": "VIP视频解析",
+        "title": "VIP 视频解析",
         "remark": "免费看会员视频"
       },
       {
@@ -347,20 +347,15 @@
         "remark": "随机数生成、随机分组"
       },
       {
-        "url": "/qiushibaike",
-        "icon": "qsbk",
-        "title": "糗事百科笑话"
+        "url": "/bmi",
+        "icon": "bmi",
+        "title": "体重标准",
+        "remark": "中国成人超重和肥胖标准"
       },
       {
         "url": "/purine",
         "icon": "purine",
         "title": "食物嘌呤含量"
-      },
-      {
-        "url": "/bmi",
-        "icon": "bmi",
-        "title": "体重标准",
-        "remark": "中国成人超重和肥胖标准"
       },
       {
         "url": "/gc",

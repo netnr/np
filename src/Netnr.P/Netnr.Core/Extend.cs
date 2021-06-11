@@ -179,11 +179,12 @@ namespace Netnr
             foreach (DataRow dr in table.Rows)
             {
                 var model = new T();
+                var pis = model.GetType().GetProperties();
                 foreach (DataColumn dc in dr.Table.Columns)
                 {
                     object drValue = dr[dc.ColumnName];
 
-                    var pi = model.GetType().GetProperties().FirstOrDefault(x => x.Name.ToLower() == dc.ColumnName.ToLower());
+                    var pi = pis.FirstOrDefault(x => x.Name.ToLower() == dc.ColumnName.ToLower());
 
                     Type type = pi.PropertyType;
                     if (pi.PropertyType.FullName.Contains("System.Nullable"))
@@ -191,7 +192,7 @@ namespace Netnr
                         type = Type.GetType("System." + pi.PropertyType.FullName.Split(',')[0].Split('.')[2]);
                     }
 
-                    if (pi != null && pi.CanWrite && (drValue != null && !Convert.IsDBNull(drValue)))
+                    if (pi != null && pi.CanWrite && (drValue != null && drValue is not DBNull))
                     {
                         try
                         {

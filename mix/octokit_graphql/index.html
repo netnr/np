@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <script src='octokit_graphql.min.js'></script>
+</head>
+
+<body>
+    <script>
+        graphql(`
+{
+    repository(owner: "netnr", name: "discuss") {
+        discussions(first: 10) {
+            # type: DiscussionConnection
+            totalCount # Int!
+            pageInfo {
+                # type: PageInfo(from the public schema)
+                startCursor
+                endCursor
+                hasNextPage
+                hasPreviousPage
+            }
+
+            edges {
+                # type: DiscussionEdge
+                cursor
+                node {
+                    # type: Discussion
+                    id
+                    title
+                }
+            }
+
+            nodes {
+                # type: Discussion
+                id
+                title
+            }
+        }
+    }
+}
+`, {
+            headers: {
+                authorization: 'token ghp_' + 'oacj1gy1bzVDxv9JCu9leDvvCSHTb53HBa9R',
+            },
+        }).then(x => {
+            console.log(x);
+        })
+
+    </script>
+</body>
+
+</html>

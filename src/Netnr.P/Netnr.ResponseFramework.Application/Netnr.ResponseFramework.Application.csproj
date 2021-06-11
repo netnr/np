@@ -17,7 +17,8 @@
   <ItemGroup>
     <PackageReference Include="NPOI" Version="2.5.3" />
     <PackageReference Include="FluentScheduler" Version="5.5.1" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.9" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.10" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,71 +1,49 @@
-<style>
-    input {
-        width: 120px !important;
-    }
-</style>
-
 <div class="container-fluid">
-    <div class="form-row">
-        <div class="col-auto mr-3 mb-3">
+
+    <div class="row gx-3 gy-3 align-items-center">
+
+        <div class="col-sm-auto">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">随机范围</span>
-                </div>
-                <div class="input-group-prepend">
-                    <input class="form-control nrRange1" title="开始值" type="number" value="1" step="1" />
-                </div>
-                <div class="input-group-prepend">
-                    <span class="input-group-text">~</span>
-                </div>
-                <div class="input-group-prepend">
-                    <input class="form-control nrRange2" title="结束值" type="number" value="10" step="1" />
-                </div>
+                <span class="input-group-text">随机范围</span>
+                <input class="form-control nrRange1" title="开始值" type="number" value="1" min="-999999" max="999999" step="1" />
+                <span class="input-group-text">~</span>
+                <input class="form-control nrRange2" title="结束值" type="number" value="10" min="-999999" max="999999" step="1" />
             </div>
         </div>
-        <div class="col-auto mr-3 mb-3">
+
+        <div class="col-sm-auto">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">随机个数</span>
-                </div>
-                <div class="input-group-prepend">
-                    <input class="form-control nrGetNum" title="生成的随机个数" type="number" value="10" step="1" />
-                </div>
+                <span class="input-group-text">随机个数</span>
+                <input class="form-control nrGetNum" title="生成的随机个数" type="number" value="10" min="1" max="999999" step="1" />
             </div>
         </div>
-        <div class="col-auto mr-3 mb-3">
+
+        <div class="col-sm-auto">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">允许重复</span>
-                </div>
-                <div class="input-group-prepend">
-                    <select class="custom-select nrRepeat">
-                        <option value="1" selected>唯一</option>
-                        <option value="2">重复</option>
-                    </select>
-                </div>
+                <span class="input-group-text">允许重复</span>
+                <select class="form-select nrRepeat">
+                    <option value="1" selected>唯一</option>
+                    <option value="2">重复</option>
+                </select>
             </div>
         </div>
-        <div class="col-auto mr-3 mb-3">
+
+        <div class="col-sm-auto">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">自动换行</span>
-                </div>
-                <div class="input-group-prepend">
-                    <input class="form-control nrNewLine" title="自动换行可实现分组" type="number" value="5" step="1" />
-                </div>
+                <span class="input-group-text">自动换行</span>
+                <input class="form-control nrNewLine" title="自动换行可实现分组" type="number" value="5" min="1" max="999999" step="1" />
             </div>
         </div>
-        <div class="col-auto">
+
+        <div class="col-sm-auto">
             <button class="btn btn-danger nrReset">重置</button>
+            <button class="btn btn-warning nrRm">刷新</button>
         </div>
-        <div class="col-md-12">
-            <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning nrRm">刷新</button>
-                </div>
-                <textarea class="form-control min300 nrRv"></textarea>
-            </div>
+
+        <div class="col-md-12 mb-3">
+            <textarea class="form-control fs-3 nrRv" rows="9"></textarea>
         </div>
+
     </div>
 </div>
 

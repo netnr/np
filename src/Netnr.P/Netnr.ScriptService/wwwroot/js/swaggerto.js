@@ -168,10 +168,11 @@ var st = {
                 aTag.remove();
             }
 
-            $('.nrDown').change(function () {
+            $('.nrDown').click(function (e) {
+                
                 if (("nmd" in window) && !$('.nrEditorSwagger3').hasClass("d-none")) {
-
-                    var that = nmd, bv = this.value;
+                    var target = e.target;
+                    var that = nmd, bv = target.innerHTML.toLowerCase();
                     switch (bv) {
                         case "markdown":
                             netnrmd.down(that.getmd(), 'swagger.md')
@@ -250,12 +251,8 @@ var st = {
                             break;
                     }
                 } else {
-                    setTimeout(function () {
-                        alert("请先点击 生成文档 再下载")
-                    }, 50)
+                    bs.alert("<h4>请先点击 转文档 再下载</h4>")
                 }
-
-                this.value = "";
             });
 
             //拖拽打开
@@ -405,11 +402,11 @@ var st = {
     },
 
     /**
-     * swagger 转 openapi
+     * swagger 转 openapi （线上接口转换）
      * @param {any} txt
      * @param {any} lang
      */
-    swaggerConvert: function (txt, lang) {
+    swaggerConvertOnline: function (txt, lang) {
         return fetch("https://converter.swagger.io/api/convert", {
             method: "POST",
             body: txt,
@@ -417,6 +414,21 @@ var st = {
                 "Content-Type": "application/" + lang
             }
         }).then(x => x.json())
+    },
+
+    /**
+     * swagger 转 openapi
+     * @param {any} txt
+     */
+    swaggerConvert: function (txt) {
+        var po = st.parseJsonOrYaml(txt);
+        return APISpecConverter.convert({
+            from: 'swagger_' + (po.data.swagger.indexOf("1.") == 0 ? "1" : "2"),
+            to: 'openapi_3',
+            source: po.data,
+        }).then(c => {
+            return c.spec;
+        });
     },
 
     /**
@@ -593,6 +605,7 @@ var st = {
                 }
 
                 var properties = st.jk("schema:properties", rb_content[i]);
+
                 if (properties != null) {
 
                     st.mdTableHeader(mds, "名称,类型,说明".split(','));
@@ -815,18 +828,20 @@ var st = {
      * @param {any} content
      */
     onlyJsonForContent: function (content) {
-        var ctk = Object.keys(content), keepKey;
-        if (ctk.indexOf("application/json") >= 0) {
-            keepKey = "application/json";
-        } else if (ctk.indexOf("text/json") >= 0) {
-            keepKey = "text/json";
-        }
-        if (keepKey) {
-            ctk.forEach(k => {
-                if (k != keepKey) {
-                    delete content[k]
-                }
-            })
+        if (content) {
+            var ctk = Object.keys(content), keepKey;
+            if (ctk.indexOf("application/json") >= 0) {
+                keepKey = "application/json";
+            } else if (ctk.indexOf("text/json") >= 0) {
+                keepKey = "text/json";
+            }
+            if (keepKey) {
+                ctk.forEach(k => {
+                    if (k != keepKey) {
+                        delete content[k]
+                    }
+                })
+            }
         }
 
         return content;
@@ -1066,9 +1081,13 @@ var st = {
                         var arrItemsType = st.jk("items:type", properties[k]);
 
                         if (arrRefName) {
-                            var rout = arguments.callee(arrRefName, swaggerJson)
-                            fieldObj.children = rout.fields;
-                            ov.push(rout.obj);
+                            if (arrRefName == refName) {
+                                ov.push("circular references 循环引用");
+                            } else {
+                                var rout = arguments.callee(arrRefName, swaggerJson)
+                                fieldObj.children = rout.fields;
+                                ov.push(rout.obj);
+                            }
                         } else if (arrItemsType) {
                             ov.push([st.buildTypeData(arrItemsType)])
                         }

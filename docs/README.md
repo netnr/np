@@ -39,7 +39,6 @@ netnr@netnr.com
 **Proxy**
 &nbsp; HTTP请求代理
 &nbsp; https://netnr-proxy.herokuapp.com
-&nbsp; https://netnr-proxy.azurewebsites.net
 
 **KMS**
 &nbsp; KMS激活服务，slmgr命令激活Windows系统、Office
@@ -54,11 +53,10 @@ netnr@netnr.com
 **FileServer**
 &nbsp; 上传文件服务器
 &nbsp; https://netnr-fs.herokuapp.com
-&nbsp; https://netnr-fs.azurewebsites.net
 
 **DataKit**
 &nbsp; 数据库工具及代码构建
-&nbsp; https://ss.js.org/dk
+&nbsp; https://ss.netnr.com/dk
 
 **CaptchaDemo**
 &nbsp; 验证码 Demo
@@ -75,6 +73,7 @@ netnr@netnr.com
 **uuid**
 &nbsp; 一个基于Git托管去中心化的收藏夹，书签
 &nbsp; https://uuid.fun
+&nbsp; https://uuid.pages.dev
 
 **NetnrMD**
 &nbsp; Markdown 编辑器
@@ -113,6 +112,11 @@ netnr@netnr.com
 **FontAwesome**
 &nbsp; Font Awesome 4 镜像
 &nbsp; https://fa.netnr.eu.org
+
+**mxGraph**
+&nbsp; mxGraph 镜像
+&nbsp; https://mxgraph.netnr.eu.org
+&nbsp; https://mxgraph.pages.dev
 
 **SiteBoot**
 &nbsp; 站点引导

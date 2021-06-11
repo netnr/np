@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -6,14 +5,13 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Netnr.Core;
 using Netnr.SharedFast;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Netnr.Chat
 {
@@ -35,10 +33,14 @@ namespace Netnr.Chat
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddControllersWithViews()/*.AddRazorRuntimeCompilation()*/;
+            IMvcBuilder builder = services.AddControllersWithViews();
+
+#if DEBUG
+            builder.AddRazorRuntimeCompilation();
             //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
             //发布时：建议删除该包，会生成一堆“垃圾”
             //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+#endif
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -57,37 +59,18 @@ namespace Netnr.Chat
                     Version = "v1"
                 });
 
-                //JwtBearer
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "请输入 /account/token 接口返回的 Token，前置Bearer。示例：Bearer x.y.z",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Scheme = "bearer",
-                    Type = SecuritySchemeType.Http
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new List<string>()
-                    }
-                });
-
                 //注释
-                "Chat,Fast".Split(',').ToList().ForEach(x =>
+                "Chat".Split(',').ToList().ForEach(x =>
                 {
                     c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
                 });
             });
+
+            //授权访问信息
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
+            //session
+            services.AddSession();
 
             //配置上传文件大小限制（详细信息：FormOptions）
             services.Configure<FormOptions>(options =>
@@ -96,30 +79,10 @@ namespace Netnr.Chat
             });
 
             //数据库连接池
-            services.AddDbContextPool<Data.ContextBaseFactory>(options =>
+            services.AddDbContextPool<Data.ContextBase>(options =>
             {
                 Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
-            }, 99);
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(GlobalTo.GetValue("TokenManagement:Secret"))),
-                    ValidIssuer = GlobalTo.GetValue("TokenManagement:Issuer"),
-                    ValidAudience = GlobalTo.GetValue("TokenManagement:Audience"),
-                    ClockSkew = TimeSpan.FromSeconds(GlobalTo.GetValue<int>("TokenManagement:AccessExpiration")),
-                    ValidateIssuer = true,
-                    ValidateAudience = true
-                };
-            });
+            }, 20);
 
             services.AddSignalR();
         }
@@ -180,7 +143,8 @@ namespace Netnr.Chat
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCookiePolicy();
+            //session
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

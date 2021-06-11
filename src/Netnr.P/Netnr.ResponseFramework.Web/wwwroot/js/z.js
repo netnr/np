@@ -1197,7 +1197,7 @@
                 ifr.className = "modalscroll";
                 ifr.style.cssText = "width:100%;height:" + this.heightIframe + "px;";
                 $(mo).find('div.modal-body').css('padding', 0).append(ifr);
-                $(ifr).load(function () {
+                $(ifr).on('load', function () {
                     typeof that.complete == "function" && that.complete.call(that);
                 })
             }

@@ -2,14 +2,10 @@
     <div class="row">
         <div class="col-md-12">
             <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
-                </div>                
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="seSpeedServer">
-                        <optgroup label="请选择节点"></optgroup>
-                    </select>
-                </div>
+                <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
+                <select class="form-select" id="seSpeedServer">
+                    <optgroup label="请选择节点"></optgroup>
+                </select>
             </div>
             <div id="divresult"></div>
         </div>
@@ -147,7 +143,7 @@
 
     $('#btnRunSpeedTest').click(function () {
         if (sp.start && new Date().valueOf() - sp.start <= sp.time) {
-            jz.msg('正在测速中');
+            bs.msg('正在测速中');
             return false;
         }
 

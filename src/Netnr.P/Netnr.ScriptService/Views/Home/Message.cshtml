@@ -1,11 +1,7 @@
 <style>
     .messagebox svg {
-        width: 32px;
-        height: 32px;
-    }
-
-    .messagebox textarea {
-        height: 90px;
+        width: 42px;
+        height: 42px;
     }
 
     .messagebox pre {
@@ -15,31 +11,22 @@
 </style>
 
 <div class="container-fluid">
-    <div class="row messagebox">
-        <div class="col-md-12">
-            <ul class="list-unstyled" id="messagelist"></ul>
+    <div class="row">
+        <div class="col-md-12 messagebox">
         </div>
-        <div class="col-md-12 my-3">
-            <form id="form1">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">昵称</span>
-                    </div>
-                    <input class="form-control" placeholder="输入昵称（可选）" name="UserNickname" maxlength="50">
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">内容</span>
-                    </div>
-                    <textarea class="form-control" name="Content" placeholder=" 内容：写留言内容，文明点 ^_^ &#xD;&#xA; 支持 Markdown &#xD;&#xA; 快捷提交：Ctrl + Enter"></textarea>
-                </div>
-            </form>
-            <button class="btn btn-warning" id="btnSave">留言</button>
+        <div class="col-md-12 py-3 position-sticky bottom-0 bg-body">
+            <div class="input-group mb-3">
+                <button class="btn btn-warning" id="btnSave">留言</button>
+                <input class="form-control" placeholder="输入昵称（可选）" name="UserNickname" maxlength="50">
+            </div>
+            <div class="input-group mb-3">
+                <textarea class="form-control" rows="2" name="Content" placeholder=" 写留言内容，文明点 ^_^ &#xD;&#xA; 快捷提交：Ctrl + Enter，支持 Markdown"></textarea>
+            </div>
         </div>
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("bmob.js,netnrmd.css,netnrmd.js,identicon.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("bmob.js,netnrmd.js,identicon.js"))
 
 <script>
     ss.bmobInit();
@@ -59,32 +46,47 @@
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
                     var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
-                    htm.push('<li class="media mb-3 border-bottom" id="' + id + '">');
-                    htm.push('<a class="mr-3" href="#' + id + '">' + iisvg({ value: nickname, size: 32 }).outerHTML + '</a>');
-                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + nickname + '<small class="mx-3 text-muted">' + this.createdAt + '</small><a class="text-warning" href="#' + id + '">#' + (i + 1) + '</a></h6>');
-                    if (this.IsBlock) {
-                        htm.push('<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>');
-                    } else {
-                        var vc = netnrmd.render(this.Content);
-                        vc = vc.replace(/@@\S+/g, function (n) {
-                            return '<span class="text-info">' + n + '</span>'
+                    var context = '<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>'
+                    if (!this.IsBlock) {
+                        context = netnrmd.render(this.Content).replace(/@@\S+/g, function (n) {
+                            return '<span class="text-primary">' + n + '</span>'
+
                         }).replace(/#\d+/g, function (n) {
                             return '<a href="' + n.replace("#", "#mi") + '" class="text-warning">' + n + '</a>'
                         });
-                        htm.push('<div class="text-break">' + vc + '</div>');
                     }
-                    htm.push('</div></li>');
+
+                    var itemtmp = `
+                                    <div class="d-flex mb-2" id="${id}">
+                                        <div class="flex-shrink-0 pt-2">
+                                            ${iisvg({ value: nickname, size: 42 }).outerHTML}
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <a class="text-primary text-decoration-none" role="button" onclick="mg.refTA(this)">${nickname}</a>
+                                            <small class="text-muted mx-3">${this.createdAt}</small>
+                                            <a class="text-warning" href="#${id}" role="button">#${i + 1}</a>
+                                            <div class="text-break mt-2">
+                                                ${context}
+                                            </div>
+                                        </div>
+                                    </div>`;
+
+                    htm.push(itemtmp);
                 });
                 if (htm.length) {
-                    $('#messagelist').html(htm.join(''));
+                    $('.messagebox').html(htm.join(''));
                 } else {
-                    $('#messagelist').html('no message');
+                    $('#messagebox').html('no message');
                 }
             }).catch(err => {
-                jz.alert("查询失败");
+                bs.alert("<h4>查询失败</h4>");
                 console.log(err);
                 ss.loading(0);
             });
+        },
+        refTA: function (that) {
+            var txt = $('textarea[name="Content"]');
+            txt.val("@@" + that.innerHTML + " " + txt.val());
         }
     }
 
@@ -101,20 +103,20 @@
         objv.UserNickname = un.val().trim();
         objv.Content = uc.val().substring(0, 9999);
         if (objv.Content == "") {
-            jz.msg("请输入内容")
+            bs.msg("<h4>请输入内容</h4>");
         } else {
             var query = mg.bquery;
             for (var i in objv) {
                 query.set(i, objv[i]);
             }
             query.save().then(res => {
-                jz.msg("操作成功");
+                bs.msg("<h4>操作成功</h4>");
                 uc.val('');
                 mg.list();
                 ss.ls["nickname"] = objv.UserNickname;
                 ss.lsSave();
             }).catch(err => {
-                jz.alert("查询失败");
+                bs.alert("<h4>查询失败</h4>");
                 console.log(err);
                 ss.loading(0);
             });

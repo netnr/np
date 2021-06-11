@@ -17,71 +17,83 @@ https://zme.ink
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
-    <title>Office文档查看 脚本服务</title>
+    <title>Office 文档查看 脚本服务</title>
 
-    <meta name="keywords" content="netnr NET牛人 Office文档查看" />
+    <meta name="keywords" content="netnr NET牛人 Office 文档查看" />
     <meta name="description" content="Script Services Word、Excel、PPT" />
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
+        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-                <span class="fa fa-align-justify"></span>
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="netnrnav horizontal">
-                <div class="netnrnav-wrapper">
-                    <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
-                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
                             <!--标题-->
-                                <a href='javascript:location.reload(false)' title="Word、Excel、PPT">
-                                    <svg class="titleicon"><use xlink:href="#office"></use></svg> Office&#x6587;&#x6863;&#x67E5;&#x770B;
+                                <a class="nav-link bg-body" href='javascript:location.reload(false)' title="Word、Excel、PPT">
+                                    <svg class="titleicon"><use xlink:href="#office"></use></svg> Office &#x6587;&#x6863;&#x67E5;&#x770B;
                                 </a>
                         </li>
-                        <li>
-                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                            <ul>
-                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
-            </div>
+            </nav>
         <div class="min300 mt-3">
             <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6 mb-3">
             <div class="input-group">
-                <span class="input-group-append">
-                    <span class="input-group-text">粘贴公网链接</span>
-                </span>
+                <span class="input-group-text">粘贴公网链接</span>
                 <input id="txtUrl" type="text" class="form-control" placeholder="请粘贴公网文档链接地址">
-                <span class="input-group-append">
-                    <span class="input-group-text">上传Office文档（Max 20MB）</span>
-                </span>
-                <div class="custom-file">
-                    <input id="txtFile" type="file" class="custom-file-input">
-                    <label class="custom-file-label" id="ps">选择（拖拽）本地 Word、Excel、PPT</label>
-                </div>
             </div>
-            <p>
-                <label>全屏完整链接：</label>
-                <a target="_blank" id="auri" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
-            </p>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">上传Office文档</span>
+                <input id="txtFile" type="file" class="form-control">
+                <span class="input-group-text d-none nr-update-progress"></span>
+            </div>
+        </div>
+        <div class="col-md-12 mb-3 d-none d-md-block">
+            <label>全屏完整链接：</label>
+            <a target="_blank" id="auri" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
         </div>
         <div class="col-md-12">
             <iframe src="about:blank" class="d-none" frameborder="0"></iframe>
@@ -93,8 +105,6 @@ https://zme.ink
     var ov = {
         api: "https://view.officeapps.live.com/op/embed.aspx?src=",
         init: function () {
-
-            $('#ps').attr('tip', $('#ps').html());
 
             //接收文件
             ss.receiveFiles(function (files) {
@@ -135,13 +145,14 @@ https://zme.ink
                 err.push('请选择 Office文档')
             }
             if (err.length) {
-                jz.alert(err.join('<br/>'))
+                bs.alert(err.join('<br/>'));
+                $("#txtFile").val('')
             } else {
                 //上传
                 var formData = new FormData();
                 formData.append("file", file);
 
-                $('#ps').html('正在准备上传 ');
+                ss.loading(1);
                 $.ajax({
                     url: "https://www.netnr.eu.org/api/v1/Upload",
                     type: "POST",
@@ -154,9 +165,9 @@ https://zme.ink
                         xhr.upload.addEventListener('progress', function (e) {
                             var rate = ((e.loaded / e.total) * 100).toFixed();
                             if (rate < 100) {
-                                $('#ps').html('已上传 ' + rate + ' %');
+                                $('.nr-update-progress').removeClass('d-none').html('已上传 ' + rate + ' %');
                             } else {
-                                $('#ps').html($('#ps').attr('tip'));
+                                $('.nr-update-progress').addClass('d-none');
                             }
                         })
                         return xhr;
@@ -166,15 +177,15 @@ https://zme.ink
                         if (data.code == 200) {
                             ov.view("https://www.netnr.eu.org" + data.data.path);
                         } else {
-                            jz.alert(data.msg)
+                            bs.msg("<h4>" + data.msg + "</h4>");
                         }
                     },
                     error: function () {
-                        jz.alert("上传出错");
+                        bs.msg("<h4>上传出错</h4>");
                     },
                     complete: function () {
                         $('#txtFile').val('');
-                        $('#ps').html($('#ps').attr('tip'));
+                        ss.loading(0);
                     }
                 });
             }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Netnr.Test.Controllers
 {
@@ -8,12 +9,12 @@ namespace Netnr.Test.Controllers
     {
         public IActionResult Index()
         {
-            var ass = System.Reflection.Assembly.GetExecutingAssembly();
-            var listController = ass.ExportedTypes.Where(x => x.BaseType?.FullName == "Microsoft.AspNetCore.Mvc.Controller").ToList();
+            var cm = MethodBase.GetCurrentMethod();
+            var listController = Assembly.GetExecutingAssembly().ExportedTypes.Where(x => x.BaseType == cm.DeclaringType.BaseType).ToList();
             var dicTree = new Dictionary<string, List<string>>();
             listController.ForEach(c =>
             {
-                var mis = c.GetMethods().Where(x => x.Module.Name == "Netnr.Test.dll").ToList();
+                var mis = c.GetMethods().Where(x => x.Module == cm.Module).ToList();
                 dicTree.Add(c.Name, mis.Select(x => x.Name).ToList());
             });
 

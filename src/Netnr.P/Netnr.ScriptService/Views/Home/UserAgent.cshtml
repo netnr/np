@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <input class="form-control mb-3" id="txtua" placeholder="请粘贴 User-Agent 信息" />
+            <input class="form-control mb-3 nr-ua" placeholder="请粘贴 User-Agent 信息" />
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -23,7 +23,7 @@
     var pg = {
         ua: navigator.userAgent,
         init: function () {
-            $('#txtua').on('input', function () {
+            $('.nr-ua').on('input', function () {
                 if (this.value == "") {
                     pg.parse(pg.ua);
                 } else {

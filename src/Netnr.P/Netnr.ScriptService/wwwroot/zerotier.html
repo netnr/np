@@ -24,77 +24,89 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
+        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-                <span class="fa fa-align-justify"></span>
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="netnrnav horizontal">
-                <div class="netnrnav-wrapper">
-                    <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
-                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
                             <!--标题-->
-                                <a href='javascript:location.reload(false)' title="ZeroTier 管理">
+                                <a class="nav-link bg-body" href='javascript:location.reload(false)' title="ZeroTier 管理">
                                     <svg class="titleicon"><use xlink:href="#p2p"></use></svg> ZeroTier
                                 </a>
                         </li>
-                        <li>
-                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                            <ul>
-                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
-            </div>
+            </nav>
         <div class="min300 mt-3">
             <div class="container-fluid">
     <div class="row">
-        <div class="col-auto">
+        <div class="col-md-6 mb-3">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Token</span>
-                </div>
+                <span class="input-group-text">Token</span>
                 <input class="form-control" id="txtToken" placeholder="请粘贴 API token" maxlength="32" />
-                <div class="input-group-prepend">
-                    <span class="input-group-text">NetworkId</span>
-                </div>
-                <input class="form-control" id="txtNetworkId" placeholder="请粘贴 NetworkId" maxlength="16" />
-                <div class="input-group-prepend">
-                    <span class="input-group-btn">
-                        <a class="btn btn-link" target="_blank" href="https://my.zerotier.com">ZeroTier</a>
-                    </span>
-                </div>
             </div>
         </div>
-        <div class="col-md-12 mt-3" id="PGrid">
-            <table id="table" class="text-nowrap"></table>
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">NetworkId</span>
+                <input class="form-control" id="txtNetworkId" placeholder="请粘贴 NetworkId" maxlength="16" />
+                <a class="btn btn-warning" target="_blank" href="https://my.zerotier.com">ZeroTier</a>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="grid ag-theme-alpine"></div>
         </div>
     </div>
 </div>
 
-<link href='https://cdn.jsdelivr.net/npm/bootstrap-table@1.18.3/dist/bootstrap-table.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/bootstrap-table@1.18.3/dist/bootstrap-table.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap-table@1.18.3/dist/extensions/filter-control/bootstrap-table-filter-control.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/ag-grid-enterprise@25.3.0/dist/ag-grid-enterprise.min.js'></script>
 
 
 <script>
     var zt = {
+        grid: null,
+        gbox: document.querySelector('.grid'),
         init: function () {
+            ss.agg.lk();
+
             $('#txtToken').on('input', function () {
                 ss.ls.token = this.value;
                 ss.lsSave();
@@ -128,66 +140,11 @@ https://zme.ink
                     url: "https://my.zerotier.com/api/network/" + ss.ls.networkId + "/member",
                     dataType: 'json',
                     success: function (data) {
-                        $('#table').bootstrapTable({
-                            filterControl: true,
-                            columns: [
-                                {
-                                    field: "online", title: "在线状态", sortable: true, filterControl: "select", formatter: function (value) {
-                                        if (value == true) {
-                                            return '✔'
-                                        } else {
-                                            return '✖'
-                                        }
-                                    }
-                                },
-                                { field: "nodeId", title: "节点ID", sortable: true, filterControl: "input" },
-                                {
-                                    field: "name", title: "名称", sortable: true, filterControl: "input", formatter: function (value, row) {
-                                        if (row.description != "") {
-                                            value += "（" + row.description + "）";
-                                        }
-                                        return value;
-                                    }
-                                },
-                                {
-                                    field: "managedIp", title: "托管IP", filterControl: "input", formatter: function (_value, row) {
-                                        return row.config.ipAssignments.join('<br/>');
-                                    }
-                                },
-                                {
-                                    field: "noAutoAssignIps", title: "自动分配IP", filterControl: "select", formatter: function (_value, row) {
-                                        return !row.config.noAutoAssignIps;
-                                    }
-                                },
-                                { field: "physicalAddress", title: "公网IP", sortable: true, filterControl: "input" },
-                                {
-                                    field: "creationTime", title: "创建时间", filterControl: "input", formatter: function (_value, row) {
-                                        return new Date(row.config.creationTime + 8 * 3600 * 1000).toISOString().replace("T", " ").substr(0, 19);
-                                    }
-                                },
-                                {
-                                    field: "lastOnline", title: "最后在线时间", filterControl: "input", formatter: function (value) {
-                                        if (value != 0) {
-                                            return new Date(value + 8 * 3600 * 1000).toISOString().replace("T", " ").substr(0, 19);
-                                        }
-                                        return "";
-                                    }
-                                },
-                                {
-                                    field: "authorized", title: "授权", sortable: true, filterControl: "select", formatter: function (_value, row) {
-                                        return row.config.authorized;
-                                    }
-                                },
-                                { field: "clientVersion", title: "客户端版本", sortable: true, filterControl: "select" }
-                            ],
-                            data: data,
-                            onLoadSuccess: function () {
-                                zt.resize();
-                            }
-                        });
+                        console.log(data);
+                        zt.view(data);
                     },
                     error: function () {
-                        jz.msg("载入失败")
+                        bs.msg("<h4>载入失败</h4>");
                     },
                     complete: function () {
                         ss.loading(0);
@@ -196,10 +153,104 @@ https://zme.ink
             }
         },
 
+        view: function (data) {
+            var gridOptions = {
+                columnDefs: [
+                    {
+                        field: "online", headerName: "在线状态", width: 150,
+                        cellRenderer: function (item) {
+                            if (item.value) {
+                                return '🔵'
+                            } else {
+                                return '🔴'
+                            }
+                        }
+                    },
+                    {
+                        field: "nodeId", headerName: "节点ID", width: 150
+                    },
+                    {
+                        field: "name", headerName: "名称",
+                        cellRenderer: function (item) {
+                            var val = item.value;
+                            if (item.data.description != "") {
+                                val += "（" + item.data.description + "）";
+                            }
+                            return val;
+                        }
+                    },
+                    {
+                        field: "managedIp", headerName: "托管IP",
+                        cellRenderer: function (item) {
+                            return item.data.config.ipAssignments.join('<br/>');
+                        }
+                    },
+                    {
+                        field: "noAutoAssignIps", headerName: "自动分配IP", width: 150,
+                        cellRenderer: function (item) {
+                            if (!item.data.config.noAutoAssignIps) {
+                                return '🔵'
+                            } else {
+                                return '🔴'
+                            }
+                        }
+                    },
+                    {
+                        field: "physicalAddress", headerName: "公网IP"
+                    },
+                    {
+                        field: "creationTime", headerName: "创建时间",
+                        cellRenderer: function (item) {
+                            return new Date(item.data.config.creationTime + 8 * 3600 * 1000).toISOString().replace("T", " ").substr(0, 19);
+                        }
+                    },
+                    {
+                        field: "lastOnline", headerName: "最后在线时间",
+                        cellRenderer: function (item) {
+                            if (item.value != 0) {
+                                return new Date(item.value + 8 * 3600 * 1000).toISOString().replace("T", " ").substr(0, 19);
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        field: "authorized", headerName: "授权", width: 100,
+                        cellRenderer: function (item) {
+                            if (item.data.config.authorized) {
+                                return '🔵'
+                            } else {
+                                return '🔴'
+                            }
+                        }
+                    },
+                    {
+                        field: "clientVersion", title: "客户端版本"
+                    }
+                ],
+                animateRows: true,
+                rowSelection: 'multiple',
+                groupSelectsChildren: true,
+                rowData: data,
+                enableRangeSelection: true,
+                defaultColDef: ss.agg.defaultColDef,
+                localeText: ss.agg.localeText,
+                components: {
+
+                },
+                onGridReady: function () {
+                    //表格创建完成后执行的事件
+                    //gridOptions.api.sizeColumnsToFit();//调整表格大小自适应
+                }
+            };
+
+            zt.grid = new agGrid.Grid(zt.gbox, gridOptions);
+
+            zt.resize();
+        },
+
         resize: function () {
-            $('#table').bootstrapTable('resetView', {
-                height: $(window).height() - $('#PGrid').offset().top - 15
-            });
+            var h = $(window).height() - $(zt.gbox).offset().top - 15;
+            zt.gbox.style.height = h + "px";
         }
     }
 

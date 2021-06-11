@@ -17,7 +17,7 @@ namespace Netnr.Tool.Items
                 do
                 {
                     var dp = Path.Combine(Environment.CurrentDirectory, "npp");
-                    Console.Write($"Enter the source directory (default {dp}):");
+                    Console.Write($"请输入源目录（默认 {dp}）：");
                     sourcePath = Console.ReadLine();
 
                     if (string.IsNullOrWhiteSpace(sourcePath))
@@ -28,7 +28,7 @@ namespace Netnr.Tool.Items
 
                 {
                     var dp = Path.Combine(Environment.CurrentDirectory, "np");
-                    Console.Write($"Enter the target directory (default {dp}):");
+                    Console.Write($"请输入目标目录（默认 {dp}）：");
                     targetPath = Console.ReadLine();
 
                     if (string.IsNullOrWhiteSpace(targetPath))
@@ -38,11 +38,11 @@ namespace Netnr.Tool.Items
                 }
 
                 var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel".Split(',').ToList();
-                Console.WriteLine($"Folder ignored :{ignoreForder.ToJson()}");
+                Console.WriteLine($"忽略文件夹 :{ignoreForder.ToJson()}");
 
                 Core.FileTo.CopyDirectory(sourcePath, targetPath, ignoreForder);
 
-                Console.WriteLine($"Copy completed{Environment.NewLine}");
+                Console.WriteLine($"拷贝完成{Environment.NewLine}");
 
                 //需要处理的项目名称
                 var listEp = "Netnr.Blog.Web".ToLower().Split(",").ToList();
@@ -64,11 +64,11 @@ namespace Netnr.Tool.Items
                     string pattern = @"\""(\S+)\"": \""(\S+)\""";
                     var ntxt = Regex.Replace(txt, pattern, rr =>
                     {
-                        if (listEk.Any(x => rr.Groups[1].Value.ToLower().Contains(x)))
+                        if (listEk.Any(x => rr.Groups[1].Value.Replace("_", "").ToLower().Contains(x)))
                         {
                             if (!isFound)
                             {
-                                Console.WriteLine($"{Environment.NewLine}Handle key:{filePath}");
+                                Console.WriteLine($"{Environment.NewLine}处理关键信息：{filePath}");
                             }
                             isFound = true;
 
@@ -98,7 +98,7 @@ namespace Netnr.Tool.Items
                     }
                 }
 
-                Console.WriteLine("Done");
+                Console.WriteLine("完成");
             }
             catch (Exception ex)
             {

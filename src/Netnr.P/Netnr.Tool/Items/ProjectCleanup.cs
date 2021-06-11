@@ -14,7 +14,7 @@ namespace Netnr.Tool.Items
                 do
                 {
                     var dp = Environment.CurrentDirectory.TrimEnd('/').TrimEnd('\\');
-                    Console.Write($"Enter the root directory (default {dp}):");
+                    Console.Write($"请输入根目录（默认 {dp}）：");
                     rootPath = Console.ReadLine();
 
                     if (string.IsNullOrWhiteSpace(rootPath))
@@ -25,7 +25,7 @@ namespace Netnr.Tool.Items
 
                 DirectoryTree(rootPath);
 
-                Console.WriteLine("Done");
+                Console.WriteLine("完成");
             }
             catch (Exception ex)
             {
@@ -45,7 +45,7 @@ namespace Netnr.Tool.Items
                     try
                     {
                         Directory.Delete(bin, true);
-                        Console.WriteLine("Delete：" + bin);
+                        Console.WriteLine("删除：" + bin);
                     }
                     catch (Exception ex)
                     {
@@ -57,7 +57,7 @@ namespace Netnr.Tool.Items
                     try
                     {
                         Directory.Delete(obj, true);
-                        Console.WriteLine("Delete：" + obj);
+                        Console.WriteLine("删除：" + obj);
                     }
                     catch (Exception ex)
                     {

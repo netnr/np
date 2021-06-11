@@ -50,7 +50,7 @@ namespace Netnr.Blog.Web.Apps
         {
             var key = GlobalTo.GetValue("VerifyCode:Key");
 
-            var token = Core.CalcTo.EnDES(new
+            var token = Core.CalcTo.AESEncrypt(new
             {
                 mo = new
                 {
@@ -81,7 +81,7 @@ namespace Netnr.Blog.Web.Apps
                 {
                     var key = GlobalTo.GetValue("VerifyCode:Key");
 
-                    var jo = Core.CalcTo.DeDES(token, key).ToJObject();
+                    var jo = Core.CalcTo.AESDecrypt(token, key).ToJObject();
 
                     if (DateTime.Now.ToTimestamp() < long.Parse(jo["expired"].ToString()))
                     {

@@ -22,6 +22,106 @@
             font-weight: 600;
             color: #42b983;
         }
+
+
+        /*目录*/
+        @@media (min-width: 800px) {
+            .nr-toc {
+                border: 1px solid #ddd;
+                display: block !important;
+            }
+        }
+
+        .toc {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            top: 15vh;
+            right: 2vw;
+            max-width: 200px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border-left: none;
+            padding: 0 15px 0 0;
+            background-color: white;
+            border-radius: 0 4px 4px 0;
+        }
+
+            .toc > .toc-list {
+                overflow: hidden;
+                position: relative;
+            }
+
+                .toc > .toc-list li {
+                    list-style: none;
+                    line-height: 2rem;
+                }
+
+        .toc-list {
+            margin: 0;
+            padding-left: 15px;
+        }
+
+        .toc-link {
+            display: block;
+            color: currentColor;
+            overflow: hidden;
+            text-decoration: none;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            height: 100%;
+        }
+
+        .is-collapsible {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: all 300ms ease-in-out;
+        }
+
+        .is-collapsed {
+            max-height: 0;
+        }
+
+        .is-position-fixed {
+            position: fixed !important;
+            top: 0;
+        }
+
+        .is-active-link {
+            font-weight: 700;
+        }
+
+        .toc-link::before {
+            background-color: #eee;
+            content: " ";
+            display: inline-block;
+            height: inherit;
+            left: 0;
+            margin-top: -1px;
+            position: absolute;
+            width: 3px;
+        }
+
+        .is-active-link::before {
+            background-color: orange;
+        }
+
+        .toc::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .toc::-webkit-scrollbar-corner {
+            background-color: inherit;
+        }
+
+        .toc::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.12);
+            border-radius: 5px;
+            border: 1px solid transparent;
+            height: 140px;
+            background-clip: content-box;
+        }
     </style>
 </head>
 <body>
@@ -83,12 +183,15 @@
 
     <div id="app">Loading ...</div>
 
+    <!--TOC-->
+    <div class="toc"></div>
+
     <!--SEO-->
     <div style="display:none">
         @Html.Raw(ViewData["DocSeo"])
     </div>
 
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("fa.css"))
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("fa.css,tocbot.js"))
 
     <script>
         window.$docsify = {
@@ -103,7 +206,7 @@
                         ch.push("<pre><code>");
                         try {
                             str = hljs.getLanguage(lang)
-                                ? hljs.highlight(lang, str).value
+                                ? hljs.highlight(str, { language: lang }).value
                                 : hljs.highlightAuto(str).value;
                             ch.push(str);
                         } catch (__) {
@@ -113,13 +216,40 @@
                         return ch.join('');
                     }
                 }
-            }
+            },
+            plugins: [
+                function (hook) {
+                    hook.doneEach(function () {
+
+                        tocbot.init({
+                            tocSelector: '.toc',
+                            contentSelector: '#main',
+                            headingSelector: 'h2, h3, h4, h5, h6',
+                            hasInnerContainers: true,
+                            scrollSmooth: false
+                        });
+
+                        var tocnode = document.querySelector('.toc');
+                        if (tocnode.children.length) {
+                            tocnode.classList.add("nr-toc");
+                            tocnode.querySelectorAll('a').forEach(item => {
+                                item.title = item.innerText;
+                                item.onclick = function (e) {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    document.querySelector('[data-id="' + this.hash.substring(1) + '"]').click();
+                                }
+                            });
+                        }
+                    });
+                }
+            ]
         };
 
         const nd = {
             sourceList: [
-                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.6.0/build/styles/vs.min.css",
-                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.6.0/build/highlight.min.js",
+                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.0.1/build/styles/vs.min.css",
+                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.0.1/build/highlight.min.js",
                 "https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/themes/vue.css",
                 "https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/docsify.min.js"
             ],

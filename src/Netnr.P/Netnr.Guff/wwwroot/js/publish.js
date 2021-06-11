@@ -210,7 +210,13 @@ $('#btnSave').click(function () {
     var uri = guff.host + 'api/v1/guff/' + (gp.id ? 'update' : 'add');
     $('input[name="GrId"]').val(gp.id || '');
 
-    guff.fetch(uri, $('#pform').serialize(), "post").then(x => x.json()).then(res => {
+    var fd = new FormData();
+    $('#pform').serializeArray().forEach(item => {
+        console.log(item);
+        fd.append(item.name, item.value);
+    })
+
+    guff.fetch(uri, fd, "post").then(x => x.json()).then(res => {
         $('#btnSave')[0].disabled = false;
         if (res.code == 200) {
             location.href = guff.loginLink().replace('login', 'detail#id=' + res.data);

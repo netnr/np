@@ -38,9 +38,9 @@ namespace Netnr.SharedAdo
         /// </summary>
         /// <param name="sql">SQL语句，支持多条</param>
         /// <param name="parameters">带参</param>
-        /// <param name="action">回调</param>
+        /// <param name="func">回调</param>
         /// <returns>返回数据集</returns>
-        public DataSet SqlQuery(string sql, DbParameter[] parameters = null, Action<DbCommand> action = null)
+        public DataSet SqlQuery(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null)
         {
             return SafeConn(() =>
             {
@@ -58,7 +58,10 @@ namespace Netnr.SharedAdo
                 foreach (var txt in listSql)
                 {
                     var dbc = GetCommand(txt, parameters);
-                    action?.Invoke(dbc);
+                    if (func != null)
+                    {
+                        dbc = func(dbc);
+                    }
                     var tds = dbc.ExecuteDataSet();
                     while (tds.Tables.Count > 0)
                     {
@@ -148,15 +151,29 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
+        /// 返回空表格
+        /// </summary>
+        /// <param name="table">数据库表名</param>
+        /// <param name="cb">构建对象，取引用符号</param>
+        /// <returns></returns>
+        public DataTable SqlEmptyTable(string table, DbCommandBuilder cb = null)
+        {
+            var dt = SqlQuery($"select * from {cb?.QuotePrefix}{table}{cb?.QuoteSuffix} where 0=1").Tables[0];
+            return dt;
+        }
+
+        /// <summary>
         /// 拿到 DbCommand
         /// </summary>
         /// <param name="sql">SQL语句</param>
         /// <param name="parameters">带参</param>
+        /// <param name="timeout">超时，默认 300 秒</param>
         /// <param name="commandType">类型</param>
         /// <returns></returns>
-        public DbCommand GetCommand(string sql, DbParameter[] parameters = null, CommandType commandType = CommandType.Text)
+        public DbCommand GetCommand(string sql, DbParameter[] parameters = null, int timeout = 300, CommandType commandType = CommandType.Text)
         {
             var cmd = Connection.CreateCommand();
+            cmd.CommandTimeout = timeout;
             cmd.CommandType = commandType;
             cmd.CommandText = sql;
 
@@ -237,15 +254,18 @@ namespace Netnr.SharedAdo
                         TableName = "table" + (ds.Tables.Count + 1).ToString()
                     };
 
-                    var readerSt = reader.GetSchemaTable();
                     var ctype = typeof(object);
-                    for (int i = 0; i < readerSt.Rows.Count; i++)
-                    {
-                        table.Columns.Add(new DataColumn(readerSt.Rows[i]["ColumnName"].ToString(), ctype));
-                    }
 
                     while (reader.Read())
                     {
+                        if (table.Columns.Count == 0)
+                        {
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                table.Columns.Add(new DataColumn(reader.GetName(i), ctype));
+                            }
+                        }
+
                         var dr = table.NewRow();
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
@@ -253,6 +273,16 @@ namespace Netnr.SharedAdo
                         }
                         table.Rows.Add(dr.ItemArray);
                     }
+
+                    if (table.Columns.Count == 0)
+                    {
+                        var readerSt = reader.GetSchemaTable();
+                        foreach (DataRow stdr in readerSt.Rows)
+                        {
+                            table.Columns.Add(new DataColumn(stdr["ColumnName"].ToString(), Type.GetType(stdr["DataType"].ToString())));
+                        }
+                    }
+
                     ds.Tables.Add(table);
 
                 } while (reader.NextResult());

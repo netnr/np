@@ -331,7 +331,7 @@
             <param name="path"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.Upload(System.Int32,System.Int32,System.String,Microsoft.AspNetCore.Http.FormFile)">
+        <member name="M:Netnr.FileServer.Controllers.SliceController.Upload(System.Int32,System.Int32,System.String,Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
             分片上传
             </summary>
@@ -339,6 +339,42 @@
             <param name="chunks"></param>
             <param name="sole"></param>
             <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.FileList">
+            <summary>
+            文件列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.FileDelete">
+            <summary>
+            文件删除
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.VideoInfo">
+            <summary>
+            视频信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.Sliced">
+            <summary>
+            切片
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.VideoList">
+            <summary>
+            视频列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.VideoDelete">
+            <summary>
+            视频删除
+            </summary>
             <returns></returns>
         </member>
         <member name="T:Netnr.FileServer.Model.FileRecord">
@@ -810,6 +846,13 @@
             </summary>
             <param name="ex"></param>
             <param name="showException">显示异常信息，默认true</param>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Try(System.Func{Netnr.SharedResultVM,Netnr.SharedResultVM})">
+            <summary>
+            通用的异常处理
+            </summary>
+            <param name="func"></param>
+            <returns></returns>
         </member>
         <member name="T:Netnr.SharedEnum">
             <summary>

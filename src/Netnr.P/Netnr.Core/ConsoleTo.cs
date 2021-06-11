@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Netnr.Core
 {
@@ -58,29 +59,70 @@ namespace Netnr.Core
 
             if (Monitor.TryEnter(WriteMark))
             {
-            wmark:
-
-                var sblog = new StringBuilder();
-                while (CurrentCacheLog.TryDequeue(out string log))
-                {
-                    sblog.AppendLine(log);
-                }
-                if (sblog != null)
-                {
-                    var now = DateTime.Now;
-                    var filename = $"console_{now:yyyyMMdd}.log";
-                    var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.Year.ToString(), filename);
-
-                    FileTo.WriteText(sblog.ToString(), path);
-                }
-
-                if (!CurrentCacheLog.IsEmpty)
-                {
-                    goto wmark;
-                }
-
+                SaveLog();
                 Monitor.Exit(WriteMark);
             }
+        }
+
+        /// <summary>
+        /// 保存日志
+        /// </summary>
+        private static void SaveLog()
+        {
+        wmark:
+            var sblog = new StringBuilder();
+            while (CurrentCacheLog.TryDequeue(out string log))
+            {
+                sblog.AppendLine(log);
+            }
+            if (sblog != null)
+            {
+                var now = DateTime.Now;
+                var filename = $"console_{now:yyyyMMdd}.log";
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.Year.ToString(), filename);
+
+                FileTo.WriteText(sblog.ToString(), path);
+            }
+
+            if (!CurrentCacheLog.IsEmpty)
+            {
+                goto wmark;
+            }
+        }
+
+        /// <summary>
+        /// 调用菜单
+        /// </summary>
+        /// <param name="ctype"></param>
+        public static void InvokeMenu(Type ctype)
+        {
+            var cms = ctype.GetMethods().ToList();
+            var mm = cms.First().Module;
+            cms = cms.Where(x => x.Module == mm).ToList();
+
+            Console.WriteLine(Environment.NewLine);
+            for (int i = 0; i < cms.Count; i++)
+            {
+                var mi = cms[i];
+                var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
+                if (!string.IsNullOrWhiteSpace(desc))
+                {
+                    Console.WriteLine($"    {i}、 {mi.Name} -> {desc}{Environment.NewLine}");
+                }
+            }
+
+            bool isMenumNum;
+            do
+            {
+                Console.Write("请输入数字：");
+                isMenumNum = int.TryParse(Console.ReadLine(), out int num) && num >= 0 && num < cms.Count;
+                if (isMenumNum)
+                {
+                    cms[num].Invoke(ctype, null);
+
+                    InvokeMenu(ctype);
+                }
+            } while (!isMenumNum);
         }
     }
 }

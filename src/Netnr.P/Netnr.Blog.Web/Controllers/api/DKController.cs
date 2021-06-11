@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.SharedDataKit.Applications;
+using Netnr.SharedDataKit;
 
 namespace Netnr.Blog.Web.Controllers.api
 {
@@ -20,7 +20,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM GetTable(SharedEnum.TypeDB? tdb, string conn)
         {
-            var vm = DataKitService.GetTable(tdb, conn);
+            var vm = DataKitTo.GetTable(tdb, conn);
             return vm;
         }
 
@@ -34,7 +34,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost]
         public SharedResultVM GetColumn([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "")
         {
-            var vm = DataKitService.GetColumn(tdb, conn, filterTableName);
+            var vm = DataKitTo.GetColumn(tdb, conn, filterTableName);
             return vm;
         }
 
@@ -49,7 +49,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM SetTableComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string TableComment)
         {
-            var vm = DataKitService.SetTableComment(tdb, conn, TableName, TableComment);
+            var vm = DataKitTo.SetTableComment(tdb, conn, TableName, TableComment);
             return vm;
         }
 
@@ -65,7 +65,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM SetColumnComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string FieldName, string FieldComment)
         {
-            var vm = DataKitService.SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
+            var vm = DataKitTo.SetColumnComment(tdb, conn, TableName, FieldName, FieldComment);
             return vm;
         }
 
@@ -85,7 +85,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM GetData(SharedEnum.TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
         {
-            var vm = DataKitService.GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
+            var vm = DataKitTo.GetData(tdb, conn, TableName, page, rows, sort, order, listFieldName, whereSql);
             return vm;
         }
 
@@ -98,7 +98,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM GetDEI(SharedEnum.TypeDB? tdb, string conn)
         {
-            var vm = DataKitService.GetDEI(tdb, conn);
+            var vm = DataKitTo.GetDEI(tdb, conn);
             return vm;
         }
     }

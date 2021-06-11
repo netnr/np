@@ -4,10 +4,10 @@ require(['vs/editor/editor.main'], function () {
         autosave: false
     });
 
-    nmd.setmd(nmd.obj.mebox.attr('data-value'));
+    nmd.setmd(nmd.obj.mebox.getAttribute('data-value'));
 
     $(window).on('load resize', function () {
-        var vh = $(window).height() - nmd.obj.container.offset().top - 15;
+        var vh = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 15;
         nmd.height(Math.max(100, vh));
     })
 

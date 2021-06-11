@@ -1,11 +1,10 @@
 require(['vs/editor/editor.main'], function () {
 
     window.nmd = new netnrmd('#mdeditor', {
-        storekey: "md_autosave_" + location.pathname.replace("/", "").toLowerCase(),
         //执行命令前回调
         cmdcallback: function (cmd) {
             if (cmd == "full") {
-                if (nmd.obj.editor.hasClass('netnrmd-fullscreen')) {
+                if (nmd.obj.editor.classList.contains('netnrmd-fullscreen')) {
                     $('#ModalWrite').addClass('modal');
                 } else {
                     $('#ModalWrite').removeClass('modal');
@@ -17,7 +16,7 @@ require(['vs/editor/editor.main'], function () {
     if (location.pathname == "/home/write") {
         //高度沉底
         $(window).on('load resize', function () {
-            var vh = $(window).height() - nmd.obj.container.offset().top - 20;
+            var vh = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 20;
             nmd.height(Math.max(100, vh));
         })
     }

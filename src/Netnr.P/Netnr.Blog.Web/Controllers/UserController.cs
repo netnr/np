@@ -680,7 +680,7 @@ namespace Netnr.Blog.Web.Controllers
                                                 mail = ToMail,
                                                 ts = DateTime.Now.ToTimestamp()
                                             }.ToJson();
-                                            var vcode = CalcTo.EnDES(vjson, GlobalTo.GetValue("VerifyCode:Key")).ToLower();
+                                            var vcode = CalcTo.AESEncrypt(vjson, GlobalTo.GetValue("VerifyCode:Key")).ToLower();
 
                                             var VerifyLink = string.Format(GlobalTo.GetValue("VerifyCode:Url"), vcode);
 
@@ -709,7 +709,7 @@ namespace Netnr.Blog.Web.Controllers
                     default:
                         try
                         {
-                            var vjson = CalcTo.DeDES(id, GlobalTo.GetValue("VerifyCode:Key")).ToJObject();
+                            var vjson = CalcTo.AESDecrypt(id, GlobalTo.GetValue("VerifyCode:Key")).ToJObject();
                             if (DateTime.Now.ToTimestamp() - Convert.ToInt32(vjson["ts"]) < 60 * 5)
                             {
                                 var mail = vjson["mail"].ToString();

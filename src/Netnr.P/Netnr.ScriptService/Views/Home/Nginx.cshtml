@@ -1,32 +1,11 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-md-12 mb-3">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnFormatterNginxConf" title="Shift+Alt+F 快捷格式化">格式化</button>
-                </div>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="seindent">
-                        <optgroup label="缩进">
-                            <option value="    ">4格</option>
-                            <option value="  ">2格</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="senewline">
-                        <optgroup label="格式化选项">
-                            <option value="1">大括号在行尾</option>
-                            <option value="2">大括号在行首（新的一行）</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-prepend pt-2 pl-3 text-muted">
-                    自动保存，可拖拽文件打开
-                </div>
+                <button class="btn btn-warning" id="btnFormatterNginxConf" title="Shift+Alt+F 快捷格式化">格式化</button>
             </div>
         </div>
-        <div class="col-md-12 mt-2">
+        <div class="col-md-12 mb-3">
             <div id="ebox" class="border position-relative">
                 <textarea class="form-control"></textarea>
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
@@ -68,14 +47,11 @@
     })
 
     $('#btnFormatterNginxConf').click(function () {
-        var indent = $('#seindent').val();
+        var indent = "    ";
         modifyOptions({ INDENTATION: indent });
         var cleanLines = clean_lines(cme.getValue());
-        var newline = $('#senewline').val();
-        if (newline == 1) {
-            modifyOptions({ trailingBlankLines: false });
-            cleanLines = join_opening_bracket(cleanLines);
-        }
+        modifyOptions({ trailingBlankLines: false });
+        cleanLines = join_opening_bracket(cleanLines);
         cleanLines = perform_indentation(cleanLines, indent);
         cme.setValue(cleanLines.join("\n"));
     });

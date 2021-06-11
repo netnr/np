@@ -24,52 +24,62 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
+        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-                <span class="fa fa-align-justify"></span>
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="netnrnav horizontal">
-                <div class="netnrnav-wrapper">
-                    <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
-                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
                             <!--标题-->
-                                <a href='javascript:location.reload(false)' title="匿名留言">
+                                <a class="nav-link bg-body" href='javascript:location.reload(false)' title="匿名留言">
                                     <svg class="titleicon"><use xlink:href="#message"></use></svg> &#x7559;&#x8A00;
                                 </a>
                         </li>
-                        <li>
-                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                            <ul>
-                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
-            </div>
+            </nav>
         <div class="min300 mt-3">
             <style>
     .messagebox svg {
-        width: 32px;
-        height: 32px;
-    }
-
-    .messagebox textarea {
-        height: 90px;
+        width: 42px;
+        height: 42px;
     }
 
     .messagebox pre {
@@ -79,33 +89,23 @@ https://zme.ink
 </style>
 
 <div class="container-fluid">
-    <div class="row messagebox">
-        <div class="col-md-12">
-            <ul class="list-unstyled" id="messagelist"></ul>
+    <div class="row">
+        <div class="col-md-12 messagebox">
         </div>
-        <div class="col-md-12 my-3">
-            <form id="form1">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">昵称</span>
-                    </div>
-                    <input class="form-control" placeholder="输入昵称（可选）" name="UserNickname" maxlength="50">
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">内容</span>
-                    </div>
-                    <textarea class="form-control" name="Content" placeholder=" 内容：写留言内容，文明点 ^_^ &#xD;&#xA; 支持 Markdown &#xD;&#xA; 快捷提交：Ctrl + Enter"></textarea>
-                </div>
-            </form>
-            <button class="btn btn-warning" id="btnSave">留言</button>
+        <div class="col-md-12 py-3 position-sticky bottom-0 bg-body">
+            <div class="input-group mb-3">
+                <button class="btn btn-warning" id="btnSave">留言</button>
+                <input class="form-control" placeholder="输入昵称（可选）" name="UserNickname" maxlength="50">
+            </div>
+            <div class="input-group mb-3">
+                <textarea class="form-control" rows="2" name="Content" placeholder=" 写留言内容，文明点 ^_^ &#xD;&#xA; 快捷提交：Ctrl + Enter，支持 Markdown"></textarea>
+            </div>
         </div>
     </div>
 </div>
 
 <script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/bmob/1.7.0/bmob.min.js?170'></script>
-<link href='https://cdn.jsdelivr.net/npm/netnrmd@2.6.3/src/netnrmd.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/netnrmd@2.6.3/src/netnrmd.bundle.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/netnrmd@3.0.0/src/netnrmd.bundle.js'></script>
 <script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/identicon/2.3.3/identicon.js'></script>
 
 
@@ -127,32 +127,47 @@ https://zme.ink
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
                     var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
-                    htm.push('<li class="media mb-3 border-bottom" id="' + id + '">');
-                    htm.push('<a class="mr-3" href="#' + id + '">' + iisvg({ value: nickname, size: 32 }).outerHTML + '</a>');
-                    htm.push('<div class="media-body"><h6 class="mt-0 mb-2 text-info">' + nickname + '<small class="mx-3 text-muted">' + this.createdAt + '</small><a class="text-warning" href="#' + id + '">#' + (i + 1) + '</a></h6>');
-                    if (this.IsBlock) {
-                        htm.push('<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>');
-                    } else {
-                        var vc = netnrmd.render(this.Content);
-                        vc = vc.replace(/@\S+/g, function (n) {
-                            return '<span class="text-info">' + n + '</span>'
+                    var context = '<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>'
+                    if (!this.IsBlock) {
+                        context = netnrmd.render(this.Content).replace(/@\S+/g, function (n) {
+                            return '<span class="text-primary">' + n + '</span>'
+
                         }).replace(/#\d+/g, function (n) {
                             return '<a href="' + n.replace("#", "#mi") + '" class="text-warning">' + n + '</a>'
                         });
-                        htm.push('<div class="text-break">' + vc + '</div>');
                     }
-                    htm.push('</div></li>');
+
+                    var itemtmp = `
+                                    <div class="d-flex mb-2" id="${id}">
+                                        <div class="flex-shrink-0 pt-2">
+                                            ${iisvg({ value: nickname, size: 42 }).outerHTML}
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <a class="text-primary text-decoration-none" role="button" onclick="mg.refTA(this)">${nickname}</a>
+                                            <small class="text-muted mx-3">${this.createdAt}</small>
+                                            <a class="text-warning" href="#${id}" role="button">#${i + 1}</a>
+                                            <div class="text-break mt-2">
+                                                ${context}
+                                            </div>
+                                        </div>
+                                    </div>`;
+
+                    htm.push(itemtmp);
                 });
                 if (htm.length) {
-                    $('#messagelist').html(htm.join(''));
+                    $('.messagebox').html(htm.join(''));
                 } else {
-                    $('#messagelist').html('no message');
+                    $('#messagebox').html('no message');
                 }
             }).catch(err => {
-                jz.alert("查询失败");
+                bs.alert("<h4>查询失败</h4>");
                 console.log(err);
                 ss.loading(0);
             });
+        },
+        refTA: function (that) {
+            var txt = $('textarea[name="Content"]');
+            txt.val("@" + that.innerHTML + " " + txt.val());
         }
     }
 
@@ -169,20 +184,20 @@ https://zme.ink
         objv.UserNickname = un.val().trim();
         objv.Content = uc.val().substring(0, 9999);
         if (objv.Content == "") {
-            jz.msg("请输入内容")
+            bs.msg("<h4>请输入内容</h4>");
         } else {
             var query = mg.bquery;
             for (var i in objv) {
                 query.set(i, objv[i]);
             }
             query.save().then(res => {
-                jz.msg("操作成功");
+                bs.msg("<h4>操作成功</h4>");
                 uc.val('');
                 mg.list();
                 ss.ls["nickname"] = objv.UserNickname;
                 ss.lsSave();
             }).catch(err => {
-                jz.alert("查询失败");
+                bs.alert("<h4>查询失败</h4>");
                 console.log(err);
                 ss.loading(0);
             });
@@ -192,6 +207,5 @@ https://zme.ink
     $('input[name="UserNickname"]').val(ss.lsStr("nickname"));
 </script>
         </div>
-            <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>

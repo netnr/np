@@ -1,34 +1,28 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="mb-2">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
-                    </div>
-                    <div class="input-group-prepend">
-                        <select class="custom-select" id="seLang">
-                            <option value="javascript">JS</option>
-                            <option value="typescript">TypeScript</option>
-                            <option value="html">HTML</option>
-                            <option value="html-vue">VUE</option>
-                            <option value="html-angular">Angular</option>
-                            <option value="css">CSS</option>
-                            <option value="less">LESS</option>
-                            <option value="scss">SCSS</option>
-                            <option value="json">JSON</option>
-                            <option value="json-json5">JSON5</option>
-                            <option value="markdown">Markdown</option>
-                            <option value="yaml">YAML</option>
-                            <option value="graphql">GraphQL</option>
-                        </select>
-                        <input type="number" class="form-control nr-tab-width" value="4" min="1" max="9" step="1" />
-                    </div>
-                    <div class="input-group-prepend pt-2 pl-3 text-muted">
-                        自动保存，可拖拽文件打开
-                    </div>
-                </div>
+        <div class="col-md-auto mb-3">
+            <div class="input-group">
+                <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
+                <select class="form-select" id="seLang">
+                    <option value="javascript">JS</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="html">HTML</option>
+                    <option value="html-vue">VUE</option>
+                    <option value="html-angular">Angular</option>
+                    <option value="css">CSS</option>
+                    <option value="less">LESS</option>
+                    <option value="scss">SCSS</option>
+                    <option value="json">JSON</option>
+                    <option value="json-json5">JSON5</option>
+                    <option value="markdown">Markdown</option>
+                    <option value="yaml">YAML</option>
+                    <option value="graphql">GraphQL</option>
+                </select>
+                <span class="input-group-text">间隔</span>
+                <input type="number" class="form-control nr-tab-width" value="4" min="1" max="9" step="1" />
             </div>
+        </div>
+        <div class="col-md-12">
             <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
@@ -103,7 +97,7 @@
                     ee.setValue(prettier.format(code, ops))
                 } catch (e) {
                     console.log(e);
-                    jz.msg("ERROR");
+                    bs.msg("<h4>ERROR</h4>");
                 }
             }
         });

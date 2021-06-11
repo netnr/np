@@ -1,37 +1,36 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 mb-3">
+        <div class="col-md-12">
 
-            <button class="btn btn-success nrBtnSwaggerUI">SwaggerUI</button>
+            <button class="btn btn-success mb-3 nrBtnSwaggerUI">SwaggerUI</button>
 
-            <div class="btn-group">
+            <div class="btn-group mb-3">
                 <button class="btn btn-secondary nrBtnYamlToJson">Yaml</button>
-                <div class="input-group-prepend">
-                    <span class="input-group-text">⇄</span>
-                </div>
+                <button class="btn btn-secondary">⇄</button>
                 <button class="btn btn-secondary nrBtnJsonToYaml">Json</button>
             </div>
 
-            <button class="btn btn-primary nrBtnSwaggerToOpenAPI">Swagger 转 OpenAPI</button>
-            <div class="btn-group">
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning nrTo">生成文档</button>
-                </div>
-                <div class="input-group-prepend">
-                    <select class="custom-select nrConfigOnlyJson">
-                        <option value="1">Only JSON</option>
+            <button class="btn btn-primary mb-3 nrBtnSwaggerToOpenAPI">Swagger 转 OpenAPI</button>
+
+            <div class="btn-group mb-3">
+                <button class="btn btn-warning nrTo">转文档</button>
+                <div>
+                    <select class="form-select nrConfigOnlyJson">
+                        <option value="1">仅 JSON</option>
                         <option value="0">不处理</option>
                     </select>
                 </div>
-                <div class="input-group-prepend">
-                    <select class="btn btn-secondary nrDown">
-                        <option value="">（下载）</option>
-                        <option value="markdown">Markdown</option>
-                        <option value="html">HTML</option>
-                        <option value="word">Word</option>
-                        <option value="pdf">PDF</option>
-                        <option value="png">PNG</option>
-                    </select>
+                <div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">下载</button>
+                        <ul class="dropdown-menu dropdown-menu-end nrDown">
+                            <li><button class="dropdown-item" type="button">Markdown</button></li>
+                            <li><button class="dropdown-item" type="button">HTML</button></li>
+                            <li><button class="dropdown-item" type="button">Word</button></li>
+                            <li><button class="dropdown-item" type="button">PDF</button></li>
+                            <li><button class="dropdown-item" type="button">PNG</button></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -48,6 +47,6 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,esprima.js,js-yaml.js,swagger-ui-dist.css,swagger-ui-dist.js,xml2json.js,monaco-editor"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,esprima.js,js-yaml.js,api-spec-converter.js,swagger-ui-dist.css,swagger-ui-dist.js,xml2json.js,monaco-editor"))
 
 <script src="/js/swaggerto.js" asp-append-version="true"></script>

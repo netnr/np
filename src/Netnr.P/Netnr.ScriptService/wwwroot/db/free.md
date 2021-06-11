@@ -1,8 +1,8 @@
 临时短信 Temporary SMS
 - <https://www.pdflibr.com>
-- <http://www.114sim.com>
+- <https://www.114sim.com>
 - <https://yunduanxin.net>
-- <http://www.shejiinn.com>
+- <https://www.shejiinn.com>
 - <https://ch.freephonenum.com>
 - <https://zh.mytrashmobile.com>
 - <https://www.receive-sms-online.info>

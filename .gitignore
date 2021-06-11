@@ -307,7 +307,11 @@ OpenCover/
 # customer
 .ignore
 .config
+.vscode
 .vercel
+.netlify
+src/Netnr.P/Netnr.Blog.Web/db/jieba/
+src/Netnr.P/Netnr.TemplatePage/
 log.db
 yarn.lock
 ip2region.db

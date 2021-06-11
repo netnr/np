@@ -1,43 +1,33 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="input-group">
-                <div class="input-group-append">
-                    <button class="btn btn-info" id="btnSqlFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
-                </div>
-                <div class="input-group-append">
-                    <select class="custom-select nrSqlConfigLanguage">
-                        <optgroup label="语言类型">
-                            <option value="sql">SQL</option>
-                            <!-- dialects -->
-                            <option value="redshift">AWS Redshift</option>
-                            <option value="db2">DB2</option>
-                            <option value="mariadb">MariaDB</option>
-                            <option value="mysql">MySQL</option>
-                            <option value="n1ql">N1QL</option>
-                            <option value="plsql">PL/SQL</option>
-                            <option value="postgresql">PostgreSQL</option>
-                            <option value="spark">Spark</option>
-                            <option value="tsql">Transact-SQL</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <select class="custom-select nrSqlConfigUpperCase">
-                        <optgroup label="关键字">
-                            <option value="1">大写</option>
-                            <option value="0">不处理</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <a target="_blank" class="btn btn-warning ml-3" href="https://sqlformat.darold.net/">pgFormatter</a>
-                <div class="input-group-prepend pt-2 pl-3 text-muted">
-                    自动保存，可拖拽文件打开
-                </div>
+        <div class="col-md-auto">
+            <div class="input-group mb-3">
+                <button class="btn btn-info" id="btnSqlFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
+                <select class="form-select nrSqlConfigLanguage">
+                    <optgroup label="语言类型">
+                        <option value="sql">SQL</option>
+                        <!-- dialects -->
+                        <option value="redshift">AWS Redshift</option>
+                        <option value="db2">DB2</option>
+                        <option value="mariadb">MariaDB</option>
+                        <option value="mysql">MySQL</option>
+                        <option value="n1ql">N1QL</option>
+                        <option value="plsql">PL/SQL</option>
+                        <option value="postgresql">PostgreSQL</option>
+                        <option value="spark">Spark</option>
+                        <option value="tsql">Transact-SQL</option>
+                    </optgroup>
+                </select>
+                <select class="form-select nrSqlConfigUpperCase">
+                    <optgroup label="关键字">
+                        <option value="1">大写</option>
+                        <option value="0">不处理</option>
+                    </optgroup>
+                </select>
+                <a target="_blank" class="btn btn-warning" href="https://sqlformat.darold.net/">pgFormatter</a>
             </div>
         </div>
-        <div class="col-md-12 mt-2">
+        <div class="col-md-12">
             <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>

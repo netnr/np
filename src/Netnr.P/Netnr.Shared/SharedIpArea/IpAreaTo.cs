@@ -20,7 +20,18 @@ namespace Netnr.SharedIpArea
 
         public IpAreaTo()
         {
-
+            if (!File.Exists(DbPath))
+            {
+                try
+                {
+                    using var wc = new System.Net.WebClient();
+                    wc.DownloadFile("https://cdn.jsdelivr.net/gh/lionsoul2014/ip2region/data/ip2region.db", DbPath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
         }
 
         /// <summary>

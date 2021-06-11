@@ -139,6 +139,6 @@ $('#ModalWrite').on('shown.bs.modal', function () {
 })
 
 function mdautoheight() {
-    var vh = $(window).height() - nmd.obj.container.offset().top - 30;
+    var vh = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 30;
     nmd.height(Math.max(100, vh));
 }

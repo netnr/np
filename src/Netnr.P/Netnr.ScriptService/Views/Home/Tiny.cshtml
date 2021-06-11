@@ -2,29 +2,22 @@
     <div class="row">
         <div class="col-md-12">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <div class="dropdown">
-                        <button class="btn btn-warning dropdown-toggle" title="设置" data-toggle="dropdown">
-                            配置 <i class="fa fa-cog"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <div class="form-group mx-2 mb-0" style="width:120px">
-                                <input class="form-control mb-2" type="number" title="默认原图宽度，不填自适应" placeholder="宽">
-                                <input class="form-control mb-2" type="number" title="默认原图高度，不填自适应" placeholder="高">
-                                <input class="form-control mb-2" type="number" title="图片质量，0-1，默认 0.7" min="0.1" max="1" step="0.1" value="0.7" placeholder="质量">
-                                <button class="btn btn-primary nrOptionsOk">确定</button>
-                                <button class="btn btn-danger nrOptionsReset">重置</button>
-                            </div>
+                <div class="dropdown">
+                    <button class="btn btn-warning dropdown-toggle" title="设置" data-bs-toggle="dropdown">
+                        配置 <i class="fa fa-cog"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="form-group mx-2 mb-0" style="width:130px">
+                            <input class="form-control mb-2" type="number" title="默认原图宽度，不填自适应" placeholder="宽">
+                            <input class="form-control mb-2" type="number" title="默认原图高度，不填自适应" placeholder="高">
+                            <input class="form-control mb-2" type="number" title="图片质量，0-1，默认 0.7" min="0.1" max="1" step="0.1" value="0.7" placeholder="质量">
+                            <button class="btn btn-primary nrOptionsOk">确定</button>
+                            <button class="btn btn-danger nrOptionsReset">重置</button>
                         </div>
                     </div>
                 </div>
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" multiple accept="image/*" id="txtFile">
-                    <label class="custom-file-label" for="txtFile">选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片（支持多选）</label>
-                </div>
-                <div class="input-group-prepend">
-                    <a class="btn btn-dark" target="_blank" href="https://tiny.netnr.eu.org" title="更专业的图片压缩工具">Squoosh</a>
-                </div>
+                <input type="file" class="form-control" multiple accept="image/*" id="txtFile">
+                <a class="btn btn-dark" target="_blank" href="https://tiny.netnr.eu.org" title="更专业的图片压缩工具">Squoosh</a>
             </div>
         </div>
         <div class="col-md-12 mt-3">
@@ -136,8 +129,8 @@
                 }
             }
             if (ignorefile.length) {
-                var ja = jz.alert('<textarea class="form-control text-nowrap min300">' + ignorefile.join('\r\n') + '</textarea>');
-                ja.fn.title.innerHTML = '已忽略非图片文件';
+                bs.alert('<textarea class="form-control text-nowrap" rows="10">' + ignorefile.join('\r\n') + '</textarea>');
+                bs.obj.alert._dialog.classList.remove('modal-sm');
             }
             $('#txtFile').val('');
             $('.nrDragTip').addClass('d-none');

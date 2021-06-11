@@ -1,6 +1,5 @@
 # Netnr.Login
-第三方 OAuth 授权登录  
-QQ、微信（WeChat）、微博（Weibo）、GitHub、码云（Gitee）、淘宝（天猫）、微软（Microsoft ）、钉钉（DingTalk）、谷歌（Google）、支付宝（AliPay）、StackOverflow
+第三方 OAuth 授权登录，QQ、微信（WeChat）、微博（Weibo）、GitHub、码云（Gitee）、淘宝（天猫）、微软（Microsoft ）、钉钉（DingTalk）、谷歌（Google）、支付宝（AliPay）、StackOverflow
 
 ### 安装 (NuGet)
 ```
@@ -67,8 +66,6 @@ Install-Package Netnr.Login
     </tr>
 </table>
 
-
-> 提醒：一般所有第三方登录都有一个 **state** 参数，用于防止CSRF攻击（防伪），可以利用该参数添加 登录、注册 的标注前缀
-
 ### 使用
-参考：`Netnr.Test/Controllers/LoginController.cs`
+参考：`Netnr.Test/Controllers/LoginController.cs`  
+提醒：一般第三方登录都有一个 **state** 参数，用于防止CSRF攻击（防伪），可以利用该参数添加 登录、注册、解绑等标注前缀

@@ -128,7 +128,6 @@
         };
         if (ops.method.toLowerCase() == "post") {
             ops.body = data;
-            ops.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
         return fetch(url, ops)
     },
@@ -851,8 +850,13 @@
 
             guff.dc["requestaction"] = "saveReply";
 
+            var fd = new FormData();
+            $('#rwform').serializeArray().forEach(item => {
+                fd.append(item.name, item.value);
+            });
+
             var uri = guff.host + "api/v1/guff/replyadd";
-            guff.fetch(uri, $('#rwform').serialize(), "post").then(x => x.json()).then(res => {
+            guff.fetch(uri, fd, "post").then(x => x.json()).then(res => {
                 guff.dc["requestaction"] = null;
                 console.log(res);
                 if (res.code == 200) {

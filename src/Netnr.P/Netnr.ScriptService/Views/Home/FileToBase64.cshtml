@@ -1,18 +1,18 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <label class="btn btn-success mb-0">
+            <label class="btn btn-warning mb-3">
                 <input type="file" class="d-none" id="txtFile" /> 选择（拖拽、粘贴）文件
             </label>
-            <label id="labSize" class="ml-3"></label>
+            <label id="labSize" class="ms-3"></label>
         </div>
-        <div class="col-md-12 my-2 nrEbox d-none">
+        <div class="col-md-12 mb-3 nrEbox d-none">
             <div id="editor" class="border overflow-hidden position-relative min300">
             </div>
         </div>
-        <div class="col-md-12 mb-2 d-none">
-            <button class="btn btn-success" id="btnBase64ToFile">Base64转文件</button>
-            <div id="viewBase64" class="mt-3"></div>
+        <div class="col-md-12 d-none">
+            <button class="btn btn-info mb-3" id="btnBase64ToFile">Base64 转文件</button>
+            <div id="viewBase64" class="mb-3"></div>
         </div>
     </div>
 </div>
@@ -46,12 +46,16 @@
     }
 
     function fileAsBase64(file) {
-        var r = new FileReader();
-        r.onload = function () {
-            showCode(this.result);
-            $('#labSize').html("大小：" + (this.result.length / 1024).toFixed(1) + " K");
-        }
-        r.readAsDataURL(file);
+        bs.msg("正在处理...");
+        setTimeout(function () {
+            var r = new FileReader();
+            r.onload = function () {
+                showCode(this.result);
+                $('#labSize').html("大小：" + (this.result.length / 1024).toFixed(1) + " K");
+                bs.obj.msgbox.firstChild.toast.hide();
+            }
+            r.readAsDataURL(file);
+        }, 100)
     }
 
     function base64AsBlob(code) {
@@ -95,11 +99,4 @@
         vnode.style.maxWidth = "100%";
         vbase.append(vnode);
     });
-
-    $(window).on('load', function () {
-        if (typeof (FileReader) === 'undefined') {
-            jz.alert("你的浏览器不支持 FileReader <br />请使用现代浏览器操作！");
-            $('#txtFile')[0].disabled = true;
-        }
-    })
 </script>

@@ -37,9 +37,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM List(string category, string q, int uid, string nv, string tag, string obj, int page = 1)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 //所属用户
                 var OwnerId = 0;
@@ -77,14 +75,9 @@ namespace Netnr.Blog.Web.Controllers.api
 
                     vm.Set(SharedEnum.RTag.success);
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
@@ -95,9 +88,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM Detail(string id)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
@@ -148,14 +139,9 @@ namespace Netnr.Blog.Web.Controllers.api
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
@@ -163,7 +149,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        [HttpPost]
         public SharedResultVM Add([FromForm] Domain.GuffRecord mo)
         {
             var vm = new SharedResultVM();
@@ -240,7 +226,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        [HttpPost]
         public SharedResultVM Update([FromForm] Domain.GuffRecord mo)
         {
             var vm = new SharedResultVM();
@@ -322,9 +308,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM Connection(string type, int ac, string id)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -427,14 +411,9 @@ namespace Netnr.Blog.Web.Controllers.api
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
@@ -443,7 +422,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="mo">内容，仅限内容字段必填，支持匿名回复</param>
         /// <param name="id">ID</param>
         /// <returns></returns>
-        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        [HttpPost]
         public SharedResultVM ReplyAdd([FromForm] Domain.UserReply mo, [FromForm] string id)
         {
             var vm = new SharedResultVM();
@@ -524,9 +503,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM ReplyList(string id, int page = 1)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -554,14 +531,9 @@ namespace Netnr.Blog.Web.Controllers.api
                 vm.Data = pvm;
 
                 vm.Set(SharedEnum.RTag.success);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
@@ -572,9 +544,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public SharedResultVM Delete(string id)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
@@ -615,14 +585,9 @@ namespace Netnr.Blog.Web.Controllers.api
                         vm.Set(SharedEnum.RTag.unauthorized);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
@@ -633,23 +598,16 @@ namespace Netnr.Blog.Web.Controllers.api
         [ResponseCache(Duration = 60)]
         public SharedResultVM HotTag()
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 var listTags = db.GuffRecord.OrderByDescending(x => x.GrCreateTime).Select(x => x.GrTag).Take(1000).ToList();
                 var orderTags = string.Join(",", listTags).Split(',').GroupBy(x => x).OrderByDescending(x => x.Count()).Select(x => x.Key).Take(20).ToList();
 
                 vm.Data = orderTags;
                 vm.Set(SharedEnum.RTag.success);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
     }
 }

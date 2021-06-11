@@ -15,8 +15,8 @@
 
         <div class="col-md-12">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="seGroup">
+                <div>
+                    <select class="form-select nr-group" id="seGroup">
                         <option value="">全部</option>
                         @foreach (var gi in NavService.Nav)
                         {
@@ -24,10 +24,7 @@
                         }
                     </select>
                 </div>
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnSearch">搜索</button>
-                </div>
-                <input type="text" class="form-control" placeholder="双击空白处 重置搜索条件" id="txtSearch" autocomplete="off">
+                <input type="text" class="form-control nr-search" placeholder="双击空白处 重置搜索条件" autocomplete="off">
             </div>
         </div>
     </div>
@@ -64,7 +61,7 @@
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="@href" @Html.Raw(target)>
+                                <a class="text-decoration-none" href="@href" @Html.Raw(target)>
                                     <svg><use xlink:href="#@item["icon"].ToString()"></use></svg>
                                     <h5 class="ov">@title</h5>
                                     <small>@remark</small>
@@ -79,7 +76,9 @@
 </div>
 
 <script>
-    function search(group, keywords) {
+    function search() {
+        var group = $('.nr-group').val(), keywords = $('.nr-search').val();
+
         keywords = keywords.trim().toLowerCase();
         var fb = $('.navbox');
         fb.find('a').each(function () {
@@ -114,38 +113,33 @@
     }
 
     function savels() {
-        ss.ls["ss-search"] = $('#txtSearch').val();
-        ss.ls["ss-group"] = $('#seGroup').val();
+        ss.ls["ss-search"] = $('.nr-search').val();
+        ss.ls["ss-group"] = $('.nr-group').val();
         ss.lsSave();
     }
 
     var lssearch = ss.lsStr("ss-search") || "",
         lsgroup = ss.lsStr("ss-group") || "";
 
-    $('#seGroup').change(function () {
+    $('.nr-group').change(function () {
         savels();
-        search($('#seGroup').val(), $('#txtSearch').val())
+        search();
     }).find('option').each(function () {
         if (this.value == lsgroup) {
-            $('#seGroup').val(this.value);
-            $('#btnSearch')[0].click();
+            $('.nr-group').val(this.value);
             return false;
         }
     });
 
-    $('#txtSearch').on('input', function () {
+    $('.nr-search').on('input', function () {
         savels();
-        search($('#seGroup').val(), $('#txtSearch').val())
+        search();
     }).val(lssearch);
 
-    $('#btnSearch').click(function () {
-        search($('#seGroup').val(), $('#txtSearch').val())
-    })[0].click();
-
     $(document).dblclick(function () {
-        $('#txtSearch').val('');
-        $('#seGroup').val('');
-        $('#btnSearch')[0].click();
+        $('.nr-search').val('');
+        $('.nr-group').val('');
+        search();
     });
 
     $('.navbox').find('a').each(function () {

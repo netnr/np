@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>netnr</Authors>
     <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
     <Description>集成三方登录，QQ、微信（WeChat）、微博、GitHub、码云（Gitee）、淘宝（天猫）、微软（Microsoft ）、钉钉、谷歌（Google）、支付宝（AliPay）、StackOverflow
-文档：https://zme.ink
+文档：https://netnr.eu.org
 </Description>
     <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects> 
-    <Version>4.0.0</Version>
-    <PackageReleaseNotes>去除 Netnr.Core 依赖
-微调 接口参数</PackageReleaseNotes>
+    <Version>4.0.1</Version>
+    <PackageReleaseNotes>升级依赖版本和更改图标</PackageReleaseNotes>
     <PackageTags>oauth2.0 login</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <DocumentationFile>Netnr.Login.xml</DocumentationFile>

@@ -1,94 +1,47 @@
 <style>
     body {
-        overflow-y: scroll;
         background-color: #ededed;
     }
 
-    /*导航*/
-    .dnav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 2;
-        width: 100%;
-        opacity: .4;
-        height: 35px;
-        background-color: #fff;
-        filter: alpha(opacity=40);
-        border-bottom: 1px solid #ededed;
-    }
-
-        .dnav a.ahome img {
-            height: 30px;
-            margin-top: 3px;
-            margin-left: 15%;
-        }
-
-        .dnav a, .dnav a:hover, .dnav a:active, .dnav a:focus {
-            outline: none;
-            box-shadow: none;
-            text-align: center;
-            border-color: transparent;
-            background-color: transparent;
-        }
-
-        .dnav:hover {
-            opacity: .9;
-            filter: alpha(opacity=90);
-        }
-
-        .dnav .btn-group {
-            margin-right: 15%;
-        }
-
-        .dnav .dropdown-menu {
-            min-width: 110px;
-        }
-
     .divWP {
-        margin-top: 30px;
+        margin-top: 45px;
     }
 
-        .divWP div.row {
-            margin-left: -10px;
-            margin-right: -10px;
+        .divWP div img {
+            width: 100%;
+            height: 100%;
+            cursor: zoom-in;
         }
 
-        .divWP div {
-            margin: 0;
-            padding: 0;
+        .divWP div.pu {
+            padding: 5px;
+            position: relative;
         }
 
-            .divWP div img {
-                width: 100%;
-                height: 100%;
-                cursor: zoom-in;
+            .divWP div.pu .list-group {
+                position: absolute;
+                top: 4px;
+                left: 4px;
+                width: 140px;
+                display: none;
+                opacity: .9;
             }
 
-            .divWP div.pu {
-                padding: 5px;
+                .divWP div.pu .list-group a {
+                    color: #777;
+                    border-radius: 0;
+                    padding: 3px 0 3px 6px;
+                }
+
+                .divWP div.pu .list-group .list-group-item svg {
+                    width: 18px;
+                    height: 18px;
+                    margin-right: 5px;
+                }
+
+            .divWP div.pu:hover .list-group {
+                display: block;
             }
-
-                .divWP div.pu .list-group {
-                    position: absolute;
-                    top: 4px;
-                    left: 4px;
-                    width: 115px;
-                    display: none;
-                    opacity: .8;
-                    filter: alpha(opacity=80);
-                }
-
-                    .divWP div.pu .list-group a {
-                        color: #777;
-                        border-radius: 0;
-                        padding: 3px 0 3px 6px;
-                    }
-
-                .divWP div.pu:hover .list-group {
-                    display: block;
-                }
 
 
     /*全屏查看*/
@@ -120,38 +73,42 @@
         }
 </style>
 
-<div class="dnav">
-    <a href="/" class="ahome">
-        <img src="/favicon.ico" />
-    </a>
-    <div class="btn-group float-right">
-        <label class="btn btn-light btn-sm m-0" title="如果无法显示图片，可以尝试勾选代理线路">
-            <input type="checkbox" value="1" class="nrUseProxy" /> 代理线路
-        </label>
-        <button class="btn btn-light btn-sm dropdown-toggle" id="ddType" data-toggle="dropdown">
-            壁纸分类
-        </button>
-        <div class="dropdown-menu dropdown-menu-right" id="dmType" style="max-height:400px;overflow-y:scroll">
-            <a class="dropdown-item" href="#">最新壁纸</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#36">4K专区</a>
-            <a class="dropdown-item" href="#6">美女模特</a>
-            <a class="dropdown-item" href="#30">爱情美图</a>
-            <a class="dropdown-item" href="#9">风景大片</a>
-            <a class="dropdown-item" href="#15">小清新</a>
-            <a class="dropdown-item" href="#26">动漫卡通</a>
-            <a class="dropdown-item" href="#11">明星风尚</a>
-            <a class="dropdown-item" href="#14">萌宠动物</a>
-            <a class="dropdown-item" href="#5">游戏壁纸</a>
-            <a class="dropdown-item" href="#12">汽车天下</a>
-            <a class="dropdown-item" href="#10">炫酷时尚</a>
-            <a class="dropdown-item" href="#29">月历壁纸</a>
-            <a class="dropdown-item" href="#7">影视剧照</a>
-            <a class="dropdown-item" href="#13">节日美图</a>
-            <a class="dropdown-item" href="#22">军事天地</a>
-            <a class="dropdown-item" href="#16">劲爆体育</a>
-            <a class="dropdown-item" href="#18">BABY秀</a>
-            <a class="dropdown-item" href="#35">文字控</a>
+<div class="container-fluid position-fixed" style="top:5px;opacity:0.4; z-index:1">
+    <div class="row">
+        <div class="col-auto">
+            <a href="/"><img src="/favicon.ico" style="height:38px" /></a>
+        </div>
+        <div class="col">
+        </div>
+        <div class="col-auto">
+            <select class="form-select nrUseProxy">
+                <option value="0">（选择代理）</option>
+                <option value="1">代理线路一</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select class="form-select nrType">
+                <option value="">最新壁纸</option>
+                <option disabled>---------</option>
+                <option value="36">4K专区</option>
+                <option value="6">美女模特</option>
+                <option value="30">爱情美图</option>
+                <option value="9">风景大片</option>
+                <option value="15">小清新</option>
+                <option value="26">动漫卡通</option>
+                <option value="11">明星风尚</option>
+                <option value="14">萌宠动物</option>
+                <option value="5">游戏壁纸</option>
+                <option value="12">汽车天下</option>
+                <option value="10">炫酷时尚</option>
+                <option value="29">月历壁纸</option>
+                <option value="7">影视剧照</option>
+                <option value="13">节日美图</option>
+                <option value="22">军事天地</option>
+                <option value="16">劲爆体育</option>
+                <option value="18">BABY秀</option>
+                <option value="35">文字控</option>
+            </select>
         </div>
     </div>
 </div>
@@ -165,7 +122,10 @@
         count: 12,
         total: 0,
         isload: false,
-        isend: false
+        isend: false,
+        icons: {
+            download: '<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="200" height="200"><path d="M640 512h118L513 784 268 512h116V144c0-8.8 7.2-16 16-16h224c8.8 0 16 7.2 16 16v368z" fill="#FFE449"/><path d="M513 804c-5.6 0-11-2.4-14.8-6.6l-245-272c-5.2-5.8-6.6-14.4-3.4-21.6 3.2-7.2 10.4-11.8 18.2-11.8h96V144c0-19.8 16.2-36 36-36h224c19.8 0 36 16.2 36 36v348h98c8 0 15 4.6 18.2 11.8 3.2 7.2 1.8 15.6-3.4 21.6l-245 272c-3.8 4.2-9.2 6.6-14.8 6.6zM313 532l200 222.2L713 532h-73c-11 0-20-9-20-20V148H404v364c0 11-9 20-20 20h-71zm583 384H128c-11 0-20-9-20-20s9-20 20-20h768c11 0 20 9 20 20s-9 20-20 20z" fill="#2660D0"/><path d="M574.4 266c-5.6 0-10-4.4-10-10v-64c0-5.6 4.4-10 10-10s10 4.4 10 10v64c0 5.6-4.4 10-10 10zm2 192c-5.6 0-10-4.4-10-10V292c0-5.6 4.4-10 10-10s10 4.4 10 10v156c0 5.6-4.4 10-10 10z" fill="#FFF"/></svg>'
+        }
     }, rt = {
         //随机一种布局模式
         LayoutMode: function () {
@@ -219,11 +179,11 @@
         DownView: function (item) {
             var size = ["img_1600_900", "img_1440_900", "img_1366_768", "img_1280_800", "img_1280_1024", "img_1024_768"], htm = [];
             htm.push("<div class='list-group'>");
-            htm.push("<a href='" + rt.urlProxy(item.url.replace("__85", "__100")) + "' target='_blank' class='list-group-item' download>▼ " + item.resolution + "</a>");
+            htm.push("<a href='" + rt.urlProxy(item.url.replace("__85", "__100")) + "' target='_blank' class='list-group-item' download>" + config.icons.download + item.resolution + "</a>");
             $(size).each(function () {
                 var url = item[this], txt = this.replace('img_', '').replace('_', 'x');
                 if (url) {
-                    htm.push("<a href='" + rt.urlProxy(url) + "' class='list-group-item' target='_blank' download>▼ " + txt + "</a>");
+                    htm.push("<a href='" + rt.urlProxy(url) + "' class='list-group-item' target='_blank' download>" + config.icons.download + txt + "</a>");
                 }
             });
             htm.push('</div>');
@@ -240,7 +200,7 @@
         },
         //拼接容器
         JoinBox: function (content, pu) {
-            return "<div class='col-sm-12 col-md-6 " + (pu ? "pu" : "") + " '>" + content + "</div>";
+            return "<div class='col-sm-12 col-md-6" + (pu ? "pu" : "") + " '>" + content + "</div>";
         },
         //呈现
         RenderView: function (json) {
@@ -305,23 +265,21 @@
     };
 
     //点击代理
-    $('.nrUseProxy').click(function () {
-        ss.ls["useProxy"] = this.checked ? 1 : 0;
+    $('.nrUseProxy').change(function () {
+        ss.ls["useProxy"] = this.value;
         ss.lsSave();
         location.reload(false);
-    })[0].checked = ss.lsStr("useProxy") == "1";
+    }).val(ss.lsStr("useProxy") || 0);
 
     //点击分类
-    $('#dmType').click(function (e) {
-        e = e || window.event;
-        var target = e.target || e.srcElement;
-        if (target.nodeName == "A") {
-            rt.ClearPage();
-            config.cid = target.hash.substring(1);
-            rt.LoadList();
-            document.title = target.innerHTML + " 在线壁纸 NET牛人";
-            ss.loading();
-        }
+    $('.nrType').change(function () {
+        rt.ClearPage();
+        config.cid = this.value;
+        location.hash = this.value;
+        rt.LoadList();
+
+        document.title = document.querySelector('.nrType').children[document.querySelector('.nrType').selectedIndex].innerHTML + " 在线壁纸 NET牛人";
+        ss.loading();
     });
 
     //点击列表
@@ -336,13 +294,9 @@
     //初始化载入最新
     $(window).on('load', function () {
         var dtype = location.hash;
-        $('#dmType').find('a').each(function () {
-            if (this.hash == dtype) {
-                config.cid = dtype.substring(1);
-                document.title = this.innerHTML + " 在线壁纸 NET牛人";
-                return false;
-            }
-        });
+        config.cid = dtype.substring(1);
+        $('.nrType').val(config.cid);
+        document.title = document.querySelector('.nrType').children[document.querySelector('.nrType').selectedIndex].innerHTML + " 在线壁纸 NET牛人";
         ss.loading();
         rt.LoadList();
     }).on('scroll mousewheel DOMMouseScroll', function () {

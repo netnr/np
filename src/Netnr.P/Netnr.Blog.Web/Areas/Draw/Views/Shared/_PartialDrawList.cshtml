@@ -49,7 +49,7 @@
                                 @item.DrName
                             </a>
                             <p class="text-muted small">@(string.IsNullOrWhiteSpace(item.DrRemark) ? "暂无备注" : item.DrRemark)</p>
-                            <p>
+                            <div>
                                 @if (item.DrType == "draw")
                                 {
                                     <span title="绘图" class="mr-2 badge badge-success text-white">Draw</span>
@@ -62,7 +62,7 @@
                                 <a href="/draw/user/@item.Uid">@item.Spare3</a>
                                 &nbsp;
                                 <span class="text-muted small">@item.DrCreateTime?.ToString("yyyy-MM-dd HH:mm")</span>
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>

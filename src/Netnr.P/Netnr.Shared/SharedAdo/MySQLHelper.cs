@@ -1,13 +1,11 @@
 ﻿#if Full || AdoMySQL
 
 using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Data;
-using MySqlConnector;
 using System.Data.Common;
 using System.Collections.Generic;
+using MySqlConnector;
 
 namespace Netnr.SharedAdo
 {
@@ -21,78 +19,81 @@ namespace Netnr.SharedAdo
         /// </summary>
         /// <param name="dt">数据表</param>
         /// <param name="table">数据库表名</param>
+        /// <param name="bulkCopy">设置表复制对象</param>
+        /// <param name="openTransaction">开启事务，默认不开启</param>
         /// <returns></returns>
-        public int BulkCopyMySQL(DataTable dt, string table)
+        public int BulkCopyMySQL(DataTable dt, string table, Action<MySqlBulkCopy> bulkCopy = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
-                var csvpath = Path.Combine(Path.GetTempPath(), "mysql_bulk_dt_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".csv");
-                var csvcontent = DataTableToCsv(dt);
-                using (var fs = new FileStream(csvpath, FileMode.Create))
-                {
-                    using var sw = new StreamWriter(fs, Encoding.UTF8);
-                    sw.WriteLine(csvcontent);
-                }
-
                 var connection = (MySqlConnection)Connection;
-                var bulk = new MySqlBulkLoader(connection)
+                MySqlTransaction transaction = openTransaction ? (MySqlTransaction)(Transaction = connection.BeginTransaction()) : null;
+
+                var bulk = new MySqlBulkCopy(connection, transaction)
                 {
-                    FieldTerminator = ",",
-                    FieldQuotationCharacter = '"',
-                    EscapeCharacter = '"',
-                    LineTerminator = "\r\n",
-                    FileName = csvpath,
-                    NumberOfLinesToSkip = 0,
-                    TableName = table
+                    DestinationTableName = table,
+                    BulkCopyTimeout = 3600
                 };
 
-                var columns = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
-                bulk.Columns.AddRange(columns);
+                bulkCopy?.Invoke(bulk);
 
-                int rows = bulk.Load();
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    bulk.ColumnMappings.Add(new MySqlBulkCopyColumnMapping(i, dt.Columns[i].ColumnName));
+                }
 
-                File.Delete(csvpath);
+                bulk.WriteToServer(dt);
 
-                return rows;
+                transaction?.Commit();
+
+                return dt.Rows.Count;
             });
         }
 
         /// <summary>
-        /// DataTable转换为标准的CSV
+        /// 表批量写入
+        /// 根据行数据 RowState 状态新增、修改
         /// </summary>
         /// <param name="dt">数据表</param>
+        /// <param name="table">数据库表名</param>
+        /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
+        /// <param name="openTransaction">开启事务，默认开启</param>
         /// <returns></returns>
-        private static string DataTableToCsv(DataTable dt)
+        public int BulkBatchMySQL(DataTable dt, string table, Action<MySqlDataAdapter, DataTable> dataAdapter = null, bool openTransaction = true)
         {
-            //以半角逗号（即,）作分隔符，列为空也要表达其存在。  
-            //列内容如存在半角逗号（即,）则用半角引号（即""）将该字段值包含起来。  
-            //列内容如存在半角引号（即"）则应替换成半角双引号（""）转义，并用半角引号（即""）将该字段值包含起来。  
-            StringBuilder sb = new();
-
-            foreach (DataRow dr in dt.Rows)
+            return SafeConn(() =>
             {
-                for (int i = 0; i < dt.Columns.Count; i++)
+                dt.TableName = table;
+
+                var connection = (MySqlConnection)Connection;
+                MySqlTransaction transaction = openTransaction ? (MySqlTransaction)(Transaction = connection.BeginTransaction()) : null;
+
+                var cb = new MySqlCommandBuilder();
+                var quoteTable = $"{cb.QuotePrefix}{table}{cb.QuoteSuffix}";
+                cb.DataAdapter = new MySqlDataAdapter
                 {
-                    if (i > 0)
-                    {
-                        sb.Append(',');
-                    }
+                    SelectCommand = new MySqlCommand($"select * from {quoteTable} where 0=1", connection, transaction)
+                };
+                cb.ConflictOption = ConflictOption.OverwriteChanges;
 
-                    var rc = dr[dt.Columns[i]].ToString();
-                    if (rc.Contains(","))
-                    {
-                        rc = "\"" + rc.Replace("\"", "\"\"") + "\"";
-                    }
+                var da = new MySqlDataAdapter
+                {
+                    InsertCommand = (MySqlCommand)cb.GetInsertCommand(true),
+                    UpdateCommand = (MySqlCommand)cb.GetUpdateCommand(true)
+                };
+                da.InsertCommand.CommandTimeout = 300;
+                da.UpdateCommand.CommandTimeout = 300;
 
-                    sb.Append(rc);
-                }
+                //执行前修改
+                dataAdapter?.Invoke(da, dt);
 
-                sb.AppendLine();
-            }
+                var num = da.Update(dt);
 
-            return sb.ToString();
+                transaction?.Commit();
+
+                return num;
+            });
         }
-
 
         /// <summary>
         /// 执行SQL语句，返回打印信息

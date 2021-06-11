@@ -145,7 +145,7 @@ uploader.on('uploadSuccess', function (file, res) {
     if (vurl) {
         $('#divnt').append(`
             <div class="input-group mt-3">
-	            <div class="input-group-prepend">
+	            <div>
                     <a class="btn btn-warning" href="`+ vurl + `" target="_blank">打开</a>
 	            </div>
 	            <input type="text" class="form-control" value="`+ vurl + `" onfocus="this.select()" />
@@ -499,7 +499,7 @@ $('#seup').change(function () {
 //获取 token
 function getToken() {
     if (!uploader.token_imgbbcom) {
-        $.get('https://netnr-proxy.openode.io/imgbb.com', null, function (html) {
+        $.get('https://cors.eu.org/imgbb.com', null, function (html) {
             html.replace(/auth_token=".*";/, function (at) {
                 uploader.token_imgbbcom = at.split('"')[1];
             })

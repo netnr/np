@@ -110,6 +110,27 @@ namespace Netnr
                 Msg = ex.Message;
             }
         }
+
+        /// <summary>
+        /// 通用的异常处理
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static SharedResultVM Try(Func<SharedResultVM, SharedResultVM> func)
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                vm = func(vm);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
     }
 }
 

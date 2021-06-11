@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.Core;
 using Netnr.SharedAdo;
+using Netnr.SharedCompile;
+using Netnr.SharedDataKit;
 using System;
-using System.Data.SQLite;
 using System.Threading.Tasks;
 
 namespace Netnr.Test.Controllers
@@ -20,7 +21,7 @@ namespace Netnr.Test.Controllers
         /// <param name="sql"></param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM Ado_SQLite(string conn = @"Data Source=https://cdn.jsdelivr.net/gh/netnr/static/2020/05/22/2037505934.db", string sql = "select sqlite_version();PRAGMA encoding;select datetime();")
+        public SharedResultVM To_Ado_SQLite(string conn = @"Data Source=https://cdn.jsdelivr.net/gh/netnr/static/2020/05/22/2037505934.db", string sql = "select sqlite_version();PRAGMA encoding;select datetime();")
         {
             var vm = new SharedResultVM();
 
@@ -36,7 +37,7 @@ namespace Netnr.Test.Controllers
                 conn = @$"Data Source={fileName}";
             }
 
-            var db = new DbHelper(new SQLiteConnection(conn));
+            var db = new DbHelper(new System.Data.SQLite.SQLiteConnection(conn));
             var ds = db.SqlQuery(sql);
 
             vm.Log.Add(conn);
@@ -45,6 +46,18 @@ namespace Netnr.Test.Controllers
             return vm;
         }
 
+        [HttpGet]
+        public SharedResultVM To_DataKit_Aid()
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.100.115)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=SMECQ;";
+                vm.Data = DataKitAidTo.SqlMappingCsharp(SharedEnum.TypeDB.Oracle, "PLTF_ACTIVITY", conn);
+                vm.Set(SharedEnum.RTag.success);
+
+                return vm;
+            });
+        }
 
         /// <summary>
         /// User-Agent
@@ -53,7 +66,7 @@ namespace Netnr.Test.Controllers
         /// <param name="loop">循环</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM UserAgentTo(string ua = "", int loop = 1)
+        public SharedResultVM To_UserAgent(string ua = "", int loop = 1)
         {
             var vm = new SharedResultVM();
 
@@ -71,6 +84,41 @@ namespace Netnr.Test.Controllers
             vm.Data = uainfo;
 
             return vm;
+        }
+
+        /// <summary>
+        /// 动态编译并执行
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM To_Compile()
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var code = @"
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+public class DynamicCompile
+{
+    public void Main()
+    {
+        Console.WriteLine(DateTime.Now);
+        Console.WriteLine(Environment.OSVersion);
+        Console.WriteLine(Environment.SystemDirectory);
+        Console.WriteLine(Environment.Version);
+        Console.WriteLine(RuntimeInformation.FrameworkDescription);
+        Console.WriteLine(RuntimeInformation.OSDescription);
+    }
+}
+";
+                vm.Msg = code;
+                vm.Log.AddRange(CompileTo.Executing(code, "System.Runtime.InteropServices.RuntimeInformation.dll".Split(",")).Split(Environment.NewLine));
+
+                return vm;
+            });
         }
 
     }

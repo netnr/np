@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-12">
             <input class="form-control" placeholder="例如：重要重庆" id="txtChinese" />
-            <select class="form-control my-2" multiple id="sePinyin"></select>
+            <textarea class="form-control my-3 nr-pinyin-out" rows="5"></textarea>
             源：<a href="/js/pinyin.js" target="_blank">pinyin.js</a>
         </div>
     </div>
@@ -11,13 +11,12 @@
 <script src="/js/pinyin.js" asp-append-version="true"></script>
 <script>
     $('#txtChinese').keyup(function () {
-        var select = document.getElementById('sePinyin');
-        select.options.length = 0;
+        var txt = $('.nr-pinyin-out');
         if (this.value != "") {
+            txt.val('');
+
             var arrPY = PY.QueryArray(this.value);
-            for (var i = 0; i < arrPY.length; i++) {
-                select.options.add(new Option(arrPY[i], arrPY[i]))
-            }
+            txt.val(arrPY.join('\n'));
         }
     });
 </script>

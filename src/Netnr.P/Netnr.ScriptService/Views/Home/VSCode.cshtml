@@ -1,27 +1,18 @@
-<div class="container-fluid">
+<div class="container-fluid d-none nr-vscode-box">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-auto">
             <div class="input-group">
-                <div class="input-group-append">
-                    <select class="custom-select" id="setheme">
-                        <optgroup label="Theme">
-                            <option value="vs">vs</option>
-                            <option value="vs-dark">vs-dark</option>
-                            <option value="hc-black">hc-black</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <select class="custom-select" id="selanguage">
-                        <optgroup label="Language"></optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
-                </div>
-                <div class="input-group-prepend pt-2 pl-3 text-muted">
-                    自动保存，可拖拽文件打开
-                </div>
+                <select class="form-select" id="selanguage">
+                    <optgroup label="Language"></optgroup>
+                </select>
+                <select class="form-select" id="setheme">
+                    <optgroup label="Theme">
+                        <option value="vs">vs</option>
+                        <option value="vs-dark">vs-dark</option>
+                        <option value="hc-black">hc-black</option>
+                    </optgroup>
+                </select>
+                <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
             </div>
         </div>
     </div>
@@ -34,14 +25,6 @@
     </div>
 </div>
 
-<script>
-    function AutoHeight() {
-        var ch = $(window).height() - $('#editor').offset().top - 20;
-        $('#editor').css('height', Math.max(200, ch));
-    }
-    AutoHeight();
-</script>
-
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
 <script>
@@ -52,9 +35,8 @@
 
     require(['vs/editor/editor.main'], function () {
         var modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
+        var te = $("#editor"), selang = $('#selanguage'), languagehtm = [];
 
-        var te = $("#editor"), selang = $('#selanguage'),
-            languagehtm = [];
         for (var i = 0; i < modesIds.length; i++) {
             var mo = modesIds[i];
             languagehtm.push('<option>' + mo + '</option>');
@@ -66,6 +48,8 @@
             language: defaultLang,
             theme: defaultTheme
         }));
+
+        document.querySelector('.nr-vscode-box').classList.remove("d-none");
 
         selang.change(function () {
             var oldModel = editor.getModel();
@@ -106,6 +90,11 @@
         editor.addCommand(monaco.KeyCode.PauseBreak, function () {
             $('#btnRun')[0].click();
         })
+
+        $(window).on("load resize", function () {
+            var ch = $(window).height() - $('#editor').offset().top - 20;
+            $('#editor').css('height', Math.max(200, ch));
+        });
     });
 
     $('#btnRun').click(function () {
@@ -130,6 +119,4 @@
         };
         reader.readAsText(file);
     });
-
-    $(window).resize(AutoHeight);
 </script>

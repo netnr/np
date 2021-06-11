@@ -46,71 +46,144 @@
             算法、加密、解密
             </summary>
         </member>
-        <member name="M:Netnr.Core.CalcTo.XorKey(System.String,System.Int32)">
+        <member name="F:Netnr.Core.CalcTo.encoding">
             <summary>
-            异或算法
+            编码
             </summary>
-            <param name="s">字符串</param>
-            <param name="key">异或因子 2-253</param>
-            <returns>返回异或后的字符串</returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.AESBuild(System.String,System.String)">
+            <summary>
+            AES 构建
+            </summary>
+            <param name="key">密钥，默认空</param>
+            <param name="iv">固定16位，默认空</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.AESEncrypt(System.String,System.Security.Cryptography.Aes)">
+            <summary>
+            AES 加密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="aesAlg">AES构建对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.AESEncrypt(System.String,System.String,System.String)">
+            <summary>
+            AES 加密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="key">密钥</param>
+            <param name="iv">iv 16位 默认空</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.AESDecrypt(System.String,System.Security.Cryptography.Aes)">
+            <summary>
+            AES 解密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="aesAlg">AES构建对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.AESDecrypt(System.String,System.String,System.String)">
+            <summary>
+            AES 解密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="key">密钥</param>
+            <param name="iv">iv 16位 默认空</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.DESBuild(System.String,System.String)">
+            <summary>
+            AES 构建
+            </summary>
+            <param name="key">密钥，默认空</param>
+            <param name="iv">固定8位，默认空</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.DESEncrypt(System.String,System.Security.Cryptography.DES)">
+            <summary>
+            DES 加密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="DESalg">DES 对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.DESEncrypt(System.String,System.String,System.String)">
+            <summary>
+            DES 加密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="key">密钥</param>
+            <param name="iv">固定8位，默认空</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.DESDecrypt(System.String,System.Security.Cryptography.DES)">
+            <summary>
+            DES 解密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="DESalg">DES 对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.DESDecrypt(System.String,System.String,System.String)">
+            <summary>
+            DES 解密
+            </summary>
+            <param name="txt">字符串</param>
+            <param name="key">密钥</param>
+            <param name="iv">默认为空</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.GetHashString(System.Security.Cryptography.HashAlgorithm,System.String)">
+            <summary>
+            SHA 加密
+            </summary>
+            <param name="ha"></param>
+            <param name="txt"></param>
+            <returns></returns>
         </member>
         <member name="M:Netnr.Core.CalcTo.MD5(System.String,System.Int32)">
             <summary>
             MD5加密 小写
             </summary>
-            <param name="s">需加密的字符串</param>
+            <param name="txt">需加密的字符串</param>
             <param name="len">长度 默认32 可选16</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CalcTo.EnDES(System.String,System.String)">
-            <summary> 
-            DES 加密 
-            </summary> 
-            <param name="Text">内容</param> 
-            <param name="sKey">密钥</param> 
-            <returns></returns> 
-        </member>
-        <member name="M:Netnr.Core.CalcTo.DeDES(System.String,System.String)">
-            <summary> 
-            DES 解密 
-            </summary> 
-            <param name="Text">内容</param> 
-            <param name="sKey">密钥</param> 
-            <returns></returns> 
-        </member>
-        <member name="M:Netnr.Core.CalcTo.SHA128(System.String)">
+        <member name="M:Netnr.Core.CalcTo.SHA_1(System.String)">
             <summary>
             20字节,160位
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CalcTo.SHA256(System.String)">
+        <member name="M:Netnr.Core.CalcTo.SHA_256(System.String)">
             <summary>
             32字节,256位
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CalcTo.SHA384(System.String)">
+        <member name="M:Netnr.Core.CalcTo.SHA_384(System.String)">
             <summary>
             48字节,384位
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CalcTo.SHA512(System.String)">
+        <member name="M:Netnr.Core.CalcTo.SHA_512(System.String)">
             <summary>
             64字节,512位
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Core.CalcTo.HMAC_SHA1(System.String,System.String)">
             <summary>
             HMAC_SHA1 加密
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
             <param name="key">密钥</param>
             <returns></returns>
         </member>
@@ -118,23 +191,31 @@
             <summary>
             HMAC_SHA256 加密
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
             <param name="key">密钥</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CalcTo.HMACSHA384(System.String,System.String)">
+        <member name="M:Netnr.Core.CalcTo.HMAC_SHA384(System.String,System.String)">
             <summary>
             HMACSHA384 加密
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
             <param name="key">密钥</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.CalcTo.HMACSHA512(System.String,System.String)">
+        <member name="M:Netnr.Core.CalcTo.HMAC_SHA512(System.String,System.String)">
             <summary>
             HMACSHA512 加密
             </summary>
-            <param name="str">内容</param>
+            <param name="txt">内容</param>
+            <param name="key">密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.HMAC_MD5(System.String,System.String)">
+            <summary>
+            HMACMD5 加密
+            </summary>
+            <param name="txt">内容</param>
             <param name="key">密钥</param>
             <returns></returns>
         </member>
@@ -227,6 +308,17 @@
             写入消息
             </summary>
             <param name="msg"></param>
+        </member>
+        <member name="M:Netnr.Core.ConsoleTo.SaveLog">
+            <summary>
+            保存日志
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.ConsoleTo.InvokeMenu(System.Type)">
+            <summary>
+            调用菜单
+            </summary>
+            <param name="ctype"></param>
         </member>
         <member name="T:Netnr.Core.FileTo">
             <summary>

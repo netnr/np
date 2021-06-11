@@ -61,6 +61,113 @@ try { eval("() => 1") } catch (e) { top.location = "https://ub.netnr.eu.org" }
     return ups;
 })(window);
 
+/**导航 */
+let bsnav = {
+    mask: function (yesno) {
+        if (yesno == true) {
+            document.querySelector('.bsnav-mask').classList.add('active');
+        }
+        else if (yesno == false) {
+            document.querySelector('.bsnav-mask').classList.remove('active');
+        }
+    },
+    offcanvas: function (yesno) {
+        bsnav.mask(yesno);
+
+        if (yesno == true) {
+            document.querySelector('.mobile-offcanvas').classList.add('show');
+            document.body.classList.add('offcanvas-active');
+        }
+        else if (yesno == false) {
+            document.querySelector('.mobile-offcanvas.show').classList.remove('show');
+            document.body.classList.remove('offcanvas-active');
+        }
+    },
+    init: function () {
+
+        document.body.addEventListener('click', function (e) {
+            var target = e.target;
+
+            //close
+            if (target.classList.contains("btn-close") && target.parentNode.classList.contains("bsnav-header")) {
+                e.preventDefault();
+                bsnav.offcanvas(false);
+            }
+            if (target.classList.contains("bsnav-mask")) {
+                bsnav.offcanvas(false);
+            }
+
+            //open
+            if (target.classList.contains("bsnav-menu-toggle") || target.parentNode.classList.contains("bsnav-menu-toggle")) {
+                bsnav.offcanvas(!document.querySelector('.mobile-offcanvas').classList.contains('show'));
+            }
+        });
+    }
+}
+
+bsnav.init();
+
+let bs = {
+    obj: {},
+    alert: function (content) {
+        if (bs.obj.alert) {
+            bs.obj.alert.dispose();
+        }
+
+        var dom = document.createElement("div");
+        dom.className = "modal";
+        dom.innerHTML = `
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Message</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ${content}
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">确定</button>
+      </div>
+    </div>
+  </div>`;
+
+        document.body.appendChild(dom);
+        bs.obj.alert = new bootstrap.Modal(dom);
+        bs.obj.alert.show();
+    },
+    msg: function (content) {
+        if (!bs.obj.msgbox) {
+            bs.obj.msgbox = document.createElement("div");
+            bs.obj.msgbox.className = "toast-container position-fixed top-50 start-50 translate-middle p-3";
+            bs.obj.msgbox.style.zIndex = 9;
+            document.body.appendChild(bs.obj.msgbox);
+        }
+
+        var dom = document.createElement("div");
+        dom.innerHTML = `<div class="toast" data-bs-autohide="true">
+            <div class="toast-header">
+                <img src="/favicon.ico" class="rounded me-2" alt="icon" style="height:18px">
+                <strong class="me-auto pt-1">Message</strong>
+                <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+                <button type="button" class="btn-close me-1" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${content}
+            </div>
+        </div>`;
+
+        var toastdom = dom.children[0];
+        bs.obj.msgbox.appendChild(toastdom);
+        var toast = new bootstrap.Toast(toastdom);
+        toastdom.addEventListener('hidden.bs.toast', function () {
+            this.toast.dispose();
+            this.remove();
+        })
+        toastdom.toast = toast;
+        toast.show();
+    }
+}
 
 /* ScriptService */
 var ss = {
@@ -89,12 +196,8 @@ var ss = {
     init: function () {
 
         //icon
-        $.ajax({
-            url: "/images/icon.svg?202103",
-            dataType: "text",
-            success: function (svg) {
-                $('body').append('<div class="d-none">' + svg + '</div>');
-            }
+        ss.loadPath("/images/icon.svg", "20210518").then(res => {
+            $('body').append('<div class="d-none">' + res + '</div>');
         })
 
         ss.lsInit();
@@ -111,6 +214,35 @@ var ss = {
                     mebox.removeClass('position-relative')
                 }
             })
+        })
+    },
+
+    /**
+     * 从路径加载资源（优先取缓存）
+     * @param {any} path 路径
+     * @param {any} version 缓存
+     */
+    loadPath: function (path, version) {
+        return new Promise(function (resolve) {
+            var pv = localStorage.getItem(path), data;
+            try {
+                if (pv != null) {
+                    var json = JSON.parse(pv);
+                    if (json.version == version) {
+                        data = json.data;
+                    }
+                }
+            } catch (e) { }
+            if (data == null) {
+                console.log('server')
+                fetch(path + "?" + version).then(x => x.text()).then(res => {
+                    localStorage.setItem(path, JSON.stringify({ data: res, version }));
+                    resolve(res);
+                })
+            } else {
+                console.log('local')
+                resolve(data);
+            }
         })
     },
 

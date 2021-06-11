@@ -51,7 +51,7 @@
     <div class="row">
         <div class="col-md-12">
             <!--搜索-->
-            <div class="input-group" style="position:relative">
+            <div class="input-group position-relative">
                 <input id="txtSearch" type="text" class="form-control" placeholder="输入城市名 ， 例如：重庆 或 CQ" autocomplete="off">
                 <div id="divWeatherCode"></div>
             </div>
@@ -95,12 +95,12 @@
                     htm += '<div class="col-md-4 col-sm-6">' + data.data.ganmao + '</div>';
                     $("#divweather").html(htm);
                 } else {
-                    jz.alert("查询失败")
+                    bs.alert("<h4>查询失败</h4>")
                 }
             },
             error: function () {
                 ss.loading(0);
-                jz.msg("网络错误");
+                bs.msg("<h4>网络错误</h4>")
             },
             complete: function () {
                 ss.loading(0);

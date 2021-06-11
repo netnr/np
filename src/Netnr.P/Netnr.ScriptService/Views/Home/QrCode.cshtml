@@ -8,29 +8,21 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">生成</span>
-                </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">生成</span>
                 <textarea id="txt" class="form-control tah" placeholder="内容：网址、电话、邮箱等"></textarea>
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning nrBtnConfig">配置</button>
-                </div>
+                <button class="btn btn-warning nrBtnConfig">配置</button>
             </div>
-            <textarea class="form-control mt-3 min300 d-none nrTxtConfig"></textarea>
-            <div id="divCodeResult" class="mt-3"></div>
+            <textarea class="form-control mb-3 d-none nrTxtConfig" rows="11"></textarea>
+            <div id="divCodeResult" class="mb-3"></div>
         </div>
+
         <div class="col-md-6">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">识别</span>
-                </div>
-                <div class="custom-file">
-                    <input id="txtFile" type="file" class="custom-file-input" accept="image/*">
-                    <label class="custom-file-label" id="pr">选择图片 或 拖拽图片文件 或 Ctrl + V 粘贴图片</label>
-                </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">识别</span>
+                <input id="txtFile" type="file" class="form-control" accept="image/*">
             </div>
-            <textarea class="form-control mt-3 nrResultCode d-none min300"></textarea>
+            <textarea class="form-control mb-3 nrResultCode d-none"></textarea>
         </div>
     </div>
 </div>
@@ -82,7 +74,7 @@
             QRCode.toDataURL(txt, options, function (err, qrout) {
                 if (err) {
                     console.log(err);
-                    jz.msg("生成出错");
+                    bs.msg("生成出错");
                 } else {
                     var img = new Image();
                     img.src = qrout;
@@ -114,7 +106,7 @@
                         console.log(code);
                         $('.nrResultCode').removeClass('d-none').val(code.data);
                     } else {
-                        jz.msg("识别二维码失败")
+                        bs.msg("识别二维码失败")
                     }
                 }
             }

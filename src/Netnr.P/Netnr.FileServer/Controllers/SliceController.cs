@@ -43,7 +43,8 @@ namespace Netnr.FileServer.Controllers
         /// <param name="sole"></param>
         /// <param name="file"></param>
         /// <returns></returns>
-        public SharedResultVM Upload([FromForm] int chunk, [FromForm] int chunks, [FromForm] string sole, [FromForm] FormFile file)
+        [HttpPost]
+        public SharedResultVM Upload([FromForm] int chunk, [FromForm] int chunks, [FromForm] string sole, IFormFile file)
         {
             var vm = new SharedResultVM();
             try
@@ -168,6 +169,11 @@ namespace Netnr.FileServer.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// 文件列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public SharedResultVM FileList()
         {
             var vm = new SharedResultVM();
@@ -183,6 +189,11 @@ namespace Netnr.FileServer.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// 文件删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public SharedResultVM FileDelete()
         {
             var vm = new SharedResultVM();
@@ -198,6 +209,11 @@ namespace Netnr.FileServer.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// 视频信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public SharedResultVM VideoInfo()
         {
             var vm = new SharedResultVM();
@@ -213,6 +229,11 @@ namespace Netnr.FileServer.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// 切片
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public SharedResultVM Sliced()
         {
             var vm = new SharedResultVM();
@@ -228,6 +249,11 @@ namespace Netnr.FileServer.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// 视频列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public SharedResultVM VideoList()
         {
             var vm = new SharedResultVM();
@@ -243,6 +269,11 @@ namespace Netnr.FileServer.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// 视频删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public SharedResultVM VideoDelete()
         {
             var vm = new SharedResultVM();

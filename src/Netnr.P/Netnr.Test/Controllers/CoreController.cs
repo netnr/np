@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using Netnr.Core;
+using System.Text;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace Netnr.Test.Controllers
 {
@@ -99,5 +102,42 @@ namespace Netnr.Test.Controllers
             return Content(type == "json" ? ss.ToJson(true) : ss.ToView());
         }
 
+        /// <summary>
+        /// 加密/解码
+        /// </summary>
+        /// <param name="txt"></param>
+        /// <param name="key"></param>
+        /// <param name="iv"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM ToCalc(string txt = "123 abc", string key = "321", string iv = "")
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                vm.Log.Add($"encoding：{CalcTo.encoding}");
+                vm.Log.Add($"txt：{txt}，Key：{key}，IV：{iv}");
+                vm.Log.Add(string.Empty);
+                vm.Log.Add($"AES Encrypt：{CalcTo.AESEncrypt(txt, key)}");
+                vm.Log.Add($"AES Decrypt：{CalcTo.AESDecrypt(CalcTo.AESEncrypt(txt, key), key)}");
+                vm.Log.Add(string.Empty);
+                vm.Log.Add($"DES Encrypt：{CalcTo.DESEncrypt(txt, key)}");
+                vm.Log.Add($"DES Decrypt：{CalcTo.DESDecrypt(CalcTo.DESEncrypt(txt, key), key)}");
+                vm.Log.Add(string.Empty);
+                vm.Log.Add($"MD5：{CalcTo.MD5(txt)}");
+                vm.Log.Add(string.Empty);
+                vm.Log.Add($"SHA_1：{CalcTo.SHA_1(txt)}");
+                vm.Log.Add($"SHA_256：{CalcTo.SHA_256(txt)}");
+                vm.Log.Add($"SHA_384：{CalcTo.SHA_384(txt)}");
+                vm.Log.Add($"SHA_512：{CalcTo.SHA_512(txt)}");
+                vm.Log.Add(string.Empty);
+                vm.Log.Add($"HMAC_SHA1：{CalcTo.HMAC_SHA1(txt, key)}");
+                vm.Log.Add($"HMAC_SHA256：{CalcTo.HMAC_SHA256(txt, key)}");
+                vm.Log.Add($"HMAC_SHA384：{CalcTo.HMAC_SHA384(txt, key)}");
+                vm.Log.Add($"HMAC_SHA512：{CalcTo.HMAC_SHA512(txt, key)}");
+                vm.Log.Add($"HMAC_MD5：{CalcTo.HMAC_MD5(txt, key)}");
+
+                return vm;
+            });
+        }
     }
 }

@@ -1,10 +1,3 @@
-<style>
-    .tab-pane {
-        border: 1px solid #ddd;
-        border-top: none;
-    }
-</style>
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 mb-3">
@@ -18,34 +11,43 @@
     <div class="row" title="散列/哈希">
         <div class="col-md-12">
             <hr />
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button class="btn btn-success">MD5</button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-success">SHA1</button>
-                <button type="button" class="btn btn-outline-secondary">224</button>
-                <button type="button" class="btn btn-outline-secondary">256</button>
-                <button type="button" class="btn btn-outline-secondary">384</button>
-                <button type="button" class="btn btn-outline-secondary">512</button>
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item">224</button></li>
+                    <li><button class="dropdown-item">256</button></li>
+                    <li><button class="dropdown-item">384</button></li>
+                    <li><button class="dropdown-item">512</button></li>
+                </ul>
             </div>
         </div>
         <div class="col-md-12">
             <hr />
-            <div class="btn-group">
+            <div class="btn-group mb-2">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success">HmacSHA1</button>
+                    <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item">224</button></li>
+                        <li><button class="dropdown-item">256</button></li>
+                        <li><button class="dropdown-item">384</button></li>
+                        <li><button class="dropdown-item">512</button></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item">HmacMD5</button></li>
+                    </ul>
+                </div>
                 <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">密钥</span>
-                    </div>
+                    <span class="input-group-text">密钥</span>
                     <input type="text" class="form-control" id="txtKey2" placeholder="HmacSHA、HmacMD5密钥">
                 </div>
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-success">HmacSHA1</button>
-                <button type="button" class="btn btn-outline-secondary">224</button>
-                <button type="button" class="btn btn-outline-secondary">256</button>
-                <button type="button" class="btn btn-outline-secondary">384</button>
-                <button type="button" class="btn btn-outline-secondary">512</button>
-                <button type="button" class="btn btn-outline-secondary">HmacMD5</button>
             </div>
         </div>
     </div>
@@ -53,31 +55,29 @@
     <div class="row" title="加密/解密">
         <div class="col-md-12">
             <hr />
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">密钥</span>
-                    </div>
+                    <span class="input-group-text">密钥</span>
                     <input type="text" class="form-control" id="txtKey1" placeholder="请输入密钥">
                 </div>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-warning">AES</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-warning">DES</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-warning">RC4</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-warning">Rabbit</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-warning">TripleDES</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
@@ -87,27 +87,27 @@
     <div class="row" title="编码转换">
         <div class="col-md-12">
             <hr />
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-info">Base64</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-info">encodeURI</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-info">encodeURIComponent</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-info">Unicode</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-info">ASCII</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-info">HtmlEncode</button>
                 <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
             </div>
@@ -117,7 +117,7 @@
     <div class="row" title="其他">
         <div class="col-md-12 mb-3">
             <hr />
-            <div class="btn-group">
+            <div class="btn-group mb-2">
                 <button type="button" class="btn btn-dark">UUID</button>
             </div>
         </div>

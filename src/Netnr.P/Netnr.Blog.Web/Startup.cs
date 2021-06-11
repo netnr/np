@@ -24,8 +24,33 @@ namespace Netnr.Blog.Web
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
 
+            //编码注册
+            GlobalTo.EncodingReg();
+
             //设置日志
             LoggingTo.OptionsDbRoot = GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath);
+
+            //结巴词典路径
+            var jbPath = Core.PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
+            if (!System.IO.Directory.Exists(jbPath))
+            {
+                System.IO.Directory.CreateDirectory(jbPath);
+                try
+                {
+                    var dhost = "https://cdn.jsdelivr.net/gh/anderscui/jieba.NET@0.42.2/src/Segmenter/Resources/";
+                    using var wc = new System.Net.WebClient();
+                    "prob_trans.json,prob_emit.json,idf.txt,pos_prob_start.json,pos_prob_trans.json,pos_prob_emit.json,char_state_tab.json".Split(',').ToList().ForEach(file =>
+                    {
+                        var fullPath = Core.PathTo.Combine(jbPath, file);
+                        wc.DownloadFile(dhost + file, fullPath);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+            JiebaNet.Segmenter.ConfigManager.ConfigFileBaseDir = jbPath;
 
             #region 第三方登录
             new List<Type>
@@ -173,7 +198,6 @@ namespace Netnr.Blog.Web
             if (db.Database.EnsureCreated())
             {
                 var jobj = Core.FileTo.ReadText(GlobalTo.ContentRootPath + "/db/data.json").ToJObject();
-                Console.WriteLine(jobj["log"]);
 
                 //从JSON写入数据库
                 var jodb = jobj["data"];

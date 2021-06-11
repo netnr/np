@@ -19,7 +19,7 @@ namespace Netnr.Tool.Items
                 do
                 {
                     var dp = Environment.CurrentDirectory.TrimEnd('/').TrimEnd('\\');
-                    Console.Write($"Enter the file or folder path (default {dp}):");
+                    Console.Write($"请输入文件或文件夹路径（默认 {dp}）：");
                     rootPath = Console.ReadLine();
 
                     if (string.IsNullOrWhiteSpace(rootPath))
@@ -32,7 +32,7 @@ namespace Netnr.Tool.Items
                 var badec = false;
                 do
                 {
-                    Console.Write($"Set new encoding (default {newec.BodyName}):");
+                    Console.Write($"设置新的编码（默认 {newec.BodyName})：");
 
                     try
                     {
@@ -58,7 +58,7 @@ namespace Netnr.Tool.Items
                 else if (Directory.Exists(rootPath))
                 {
                     var filterExtension = "*";
-                    Console.Write($"Set file extension, like: .md .js ,default {filterExtension}):");
+                    Console.Write($"设置文件格式，如：.md .js ，默认 {filterExtension}）：");
                     var nfe = Console.ReadLine();
 
                     var listFe = new List<string>();
@@ -98,7 +98,7 @@ namespace Netnr.Tool.Items
             if (ff == null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Unrecognized text encoding , Skipped {path}");
+                Console.WriteLine($"未识别文本编码，已跳过 {path}");
                 Console.ForegroundColor = ConsoleColor.White;
             }
             else
@@ -113,7 +113,7 @@ namespace Netnr.Tool.Items
                 var txt = File.ReadAllText(path, ff.Encoding);
                 File.WriteAllText(path, txt, newec);
 
-                Console.Write($" Done {Environment.NewLine}");
+                Console.Write($" 完成 {Environment.NewLine}");
             }
         }
     }

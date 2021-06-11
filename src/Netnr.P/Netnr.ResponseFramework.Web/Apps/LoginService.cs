@@ -68,7 +68,7 @@ namespace Netnr.ResponseFramework.Web.Apps
         {
             var key = GlobalTo.GetValue("VerifyCode:Key");
 
-            var token = CalcTo.EnDES(new
+            var token = CalcTo.AESEncrypt(new
             {
                 mo,
                 expired = DateTime.Now.AddDays(10).ToTimestamp()
@@ -92,7 +92,7 @@ namespace Netnr.ResponseFramework.Web.Apps
                 {
                     var key = GlobalTo.GetValue("VerifyCode:Key");
 
-                    var jo = CalcTo.DeDES(token, key).ToJObject();
+                    var jo = CalcTo.AESDecrypt(token, key).ToJObject();
 
                     if (DateTime.Now.ToTimestamp() < long.Parse(jo["expired"].ToString()))
                     {

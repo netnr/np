@@ -24,40 +24,54 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-nav/1.1.3/netnrnav.bundle.min.js' ></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jzjs@2.0.2/2.0.2/jz.min.js'></script>
-        <link href="/css/global.css?v=NAI_hOr6ZSg5NjaPo94olMdf7kAXXyp9gYOiuK69lLE" rel="stylesheet" />
-        <script src="/js/global.js?v=tHvZ7qQqB3gnBYWpEewcZOkY9G2qFtpOvwom7GXe2m0"></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
+        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
             <!--导航-->
-            <button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-                <span class="fa fa-align-justify"></span>
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="netnrnav horizontal">
-                <div class="netnrnav-wrapper">
-                    <ul>
-                        <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.ico" /> 首页</a></li>
-                        <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                        <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                        <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                        <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                        <li><a href="/" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                        <li style="background-image: radial-gradient(ellipse, white, rgb(227, 248, 240))">
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
                             <!--标题-->
                         </li>
-                        <li>
-                            <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                            <ul>
-                                <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                                <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
-            </div>
+            </nav>
         <div class="min300 mt-3">
             
 <div class="container-fluid">
@@ -66,8 +80,8 @@ https://zme.ink
 
         <div class="col-md-12">
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="seGroup">
+                <div>
+                    <select class="form-select nr-group" id="seGroup">
                         <option value="">全部</option>
                             <option value="&#x70ED;&#x95E8;">&#x70ED;&#x95E8;</option>
                             <option value="&#x5F00;&#x53D1;">&#x5F00;&#x53D1;</option>
@@ -76,10 +90,7 @@ https://zme.ink
                             <option value="&#x5173;&#x4E8E;">&#x5173;&#x4E8E;</option>
                     </select>
                 </div>
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnSearch">搜索</button>
-                </div>
-                <input type="text" class="form-control" placeholder="双击空白处 重置搜索条件" id="txtSearch" autocomplete="off">
+                <input type="text" class="form-control nr-search" placeholder="双击空白处 重置搜索条件" autocomplete="off">
             </div>
         </div>
     </div>
@@ -90,10 +101,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/wallpaper" >
+                                <a class="text-decoration-none" href="/wallpaper" >
                                     <svg><use xlink:href="#wallpaper"></use></svg>
                                     <h5 class="ov">壁纸</h5>
-                                    <small>源自360壁纸</small>
+                                    <small>源自 360 壁纸</small>
                                 </a>
                             </div>
                         </div>
@@ -101,7 +112,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/free" >
+                                <a class="text-decoration-none" href="/free" >
                                     <svg><use xlink:href="#free"></use></svg>
                                     <h5 class="ov">免费</h5>
                                     <small>免费的资源</small>
@@ -112,7 +123,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/bed" >
+                                <a class="text-decoration-none" href="/bed" >
                                     <svg><use xlink:href="#img"></use></svg>
                                     <h5 class="ov">图床</h5>
                                     <small>图床大集合</small>
@@ -123,10 +134,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/ps" target='_blank'>
+                                <a class="text-decoration-none" href="/ps" target='_blank'>
                                     <svg><use xlink:href="#ps"></use></svg>
                                     <h5 class="ov">Photoshop</h5>
-                                    <small>在线PS</small>
+                                    <small>在线 PS</small>
                                 </a>
                             </div>
                         </div>
@@ -134,10 +145,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/tv" >
+                                <a class="text-decoration-none" href="/tv" >
                                     <svg><use xlink:href="#tv"></use></svg>
                                     <h5 class="ov">在线电视</h5>
-                                    <small>m3u8源播放</small>
+                                    <small>m3u8 源播放</small>
                                 </a>
                             </div>
                         </div>
@@ -145,7 +156,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/qrcode" >
+                                <a class="text-decoration-none" href="/qrcode" >
                                     <svg><use xlink:href="#qrcode"></use></svg>
                                     <h5 class="ov">生成二维码</h5>
                                     <small>识别二维码</small>
@@ -156,7 +167,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/speedtest" >
+                                <a class="text-decoration-none" href="/speedtest" >
                                     <svg><use xlink:href="#speed"></use></svg>
                                     <h5 class="ov">网络测速</h5>
                                     <small>资源下载速率</small>
@@ -167,7 +178,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/idcard" >
+                                <a class="text-decoration-none" href="/idcard" >
                                     <svg><use xlink:href="#idcard"></use></svg>
                                     <h5 class="ov">身份证号码查询</h5>
                                     <small>查询地区、性别，纠正尾数</small>
@@ -178,7 +189,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/zoning" >
+                                <a class="text-decoration-none" href="/zoning" >
                                     <svg><use xlink:href="#zoning"></use></svg>
                                     <h5 class="ov">行政区划</h5>
                                     <small>五级行政区划</small>
@@ -192,7 +203,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/code" >
+                                <a class="text-decoration-none" href="/code" >
                                     <svg><use xlink:href="#lock"></use></svg>
                                     <h5 class="ov">加密转码</h5>
                                     <small>加密、解密、编码、转码</small>
@@ -203,9 +214,9 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/vscode" >
+                                <a class="text-decoration-none" href="/vscode" >
                                     <svg><use xlink:href="#vsc"></use></svg>
-                                    <h5 class="ov">VSCode编辑器</h5>
+                                    <h5 class="ov">VSCode 编辑器</h5>
                                     <small>Monaco Editor 编辑器</small>
                                 </a>
                             </div>
@@ -214,7 +225,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/diff" >
+                                <a class="text-decoration-none" href="/diff" >
                                     <svg><use xlink:href="#diff"></use></svg>
                                     <h5 class="ov">文本对比</h5>
                                     <small>Monaco Editor 文件对比</small>
@@ -225,10 +236,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//md.js.org" target='_blank'>
+                                <a class="text-decoration-none" href="//md.js.org" target='_blank'>
                                     <svg><use xlink:href="#markdown"></use></svg>
-                                    <h5 class="ov">Markdown编辑器</h5>
-                                    <small>Markdown编辑器</small>
+                                    <h5 class="ov">Markdown 编辑器</h5>
+                                    <small>Markdown 编辑器</small>
                                 </a>
                             </div>
                         </div>
@@ -236,10 +247,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//je.js.org" target='_blank'>
+                                <a class="text-decoration-none" href="//je.js.org" target='_blank'>
                                     <svg><use xlink:href="#json"></use></svg>
-                                    <h5 class="ov">JSON编辑器</h5>
-                                    <small>JSON编辑器</small>
+                                    <h5 class="ov">JSON 编辑器</h5>
+                                    <small>JSON 编辑器</small>
                                 </a>
                             </div>
                         </div>
@@ -247,10 +258,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/nginx" >
+                                <a class="text-decoration-none" href="/nginx" >
                                     <svg><use xlink:href="#nginx"></use></svg>
-                                    <h5 class="ov">Nginx编辑器</h5>
-                                    <small>Nginx配置文件格式化</small>
+                                    <h5 class="ov">Nginx 编辑器</h5>
+                                    <small>Nginx 配置文件格式化</small>
                                 </a>
                             </div>
                         </div>
@@ -258,10 +269,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/filetobase64" >
+                                <a class="text-decoration-none" href="/filetobase64" >
                                     <svg><use xlink:href="#code"></use></svg>
-                                    <h5 class="ov">文件转Base64</h5>
-                                    <small>Base64编码转换</small>
+                                    <h5 class="ov">文件转 Base64</h5>
+                                    <small>Base64 编码转换</small>
                                 </a>
                             </div>
                         </div>
@@ -269,10 +280,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/jsontocsharp" >
+                                <a class="text-decoration-none" href="/jsontocsharp" >
                                     <svg><use xlink:href="#csharp"></use></svg>
-                                    <h5 class="ov">JSON生成C#实体类</h5>
-                                    <small>根据JSON生成Model</small>
+                                    <h5 class="ov">JSON 生成 C# 实体类</h5>
+                                    <small>根据 JSON 生成 Model</small>
                                 </a>
                             </div>
                         </div>
@@ -280,10 +291,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/jsontoxml" >
+                                <a class="text-decoration-none" href="/jsontoxml" >
                                     <svg><use xlink:href="#xml"></use></svg>
-                                    <h5 class="ov">JSON转换XML</h5>
-                                    <small>JSON与XML相互转换</small>
+                                    <h5 class="ov">JSON 转换 XML</h5>
+                                    <small>JSON 与 XML 相互转换</small>
                                 </a>
                             </div>
                         </div>
@@ -291,10 +302,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/pdm" >
+                                <a class="text-decoration-none" href="/pdm" >
                                     <svg><use xlink:href="#pdm"></use></svg>
-                                    <h5 class="ov">PDM查看</h5>
-                                    <small>PowerDesigner解析、查看</small>
+                                    <h5 class="ov">PDM 查看</h5>
+                                    <small>PowerDesigner 解析、查看</small>
                                 </a>
                             </div>
                         </div>
@@ -302,7 +313,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/dk" target='_blank'>
+                                <a class="text-decoration-none" href="/dk" target='_blank'>
                                     <svg><use xlink:href="#db"></use></svg>
                                     <h5 class="ov">DataKit</h5>
                                     <small>数据库工具及代码构建</small>
@@ -313,7 +324,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/zerotier" >
+                                <a class="text-decoration-none" href="/zerotier" >
                                     <svg><use xlink:href="#p2p"></use></svg>
                                     <h5 class="ov">ZeroTier</h5>
                                     <small>ZeroTier 管理</small>
@@ -324,10 +335,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/jscss" >
+                                <a class="text-decoration-none" href="/jscss" >
                                     <svg><use xlink:href="#js"></use></svg>
-                                    <h5 class="ov">JS、CSS工具</h5>
-                                    <small>JS压缩、CSS压缩</small>
+                                    <h5 class="ov">JS、CSS 工具</h5>
+                                    <small>JS 压缩、CSS 压缩</small>
                                 </a>
                             </div>
                         </div>
@@ -335,7 +346,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/formatter" >
+                                <a class="text-decoration-none" href="/formatter" >
                                     <svg><use xlink:href="#formatter"></use></svg>
                                     <h5 class="ov">代码格式化</h5>
                                     <small>Js、Css、Html、TypeScript、Yaml</small>
@@ -346,10 +357,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/sqlformatter" >
+                                <a class="text-decoration-none" href="/sqlformatter" >
                                     <svg><use xlink:href="#sql"></use></svg>
-                                    <h5 class="ov">SQL格式化</h5>
-                                    <small>美化SQL语句</small>
+                                    <h5 class="ov">SQL 格式化</h5>
+                                    <small>美化 SQL 语句</small>
                                 </a>
                             </div>
                         </div>
@@ -357,7 +368,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//zijian.aliyun.com" target='_blank'>
+                                <a class="text-decoration-none" href="//zijian.aliyun.com" target='_blank'>
                                     <svg><use xlink:href="#detect"></use></svg>
                                     <h5 class="ov">域名检测</h5>
                                     <small>检测域名状态、DNS、站点</small>
@@ -368,9 +379,9 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//whois.aliyun.com" target='_blank'>
+                                <a class="text-decoration-none" href="//whois.aliyun.com" target='_blank'>
                                     <svg><use xlink:href="#whois"></use></svg>
-                                    <h5 class="ov">Whois查询</h5>
+                                    <h5 class="ov">Whois 查询</h5>
                                     <small>域名信息查询</small>
                                 </a>
                             </div>
@@ -379,7 +390,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//check-host.net" target='_blank'>
+                                <a class="text-decoration-none" href="//check-host.net" target='_blank'>
                                     <svg><use xlink:href="#host"></use></svg>
                                     <h5 class="ov">检测主机</h5>
                                     <small>CHECK-HOST</small>
@@ -390,10 +401,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/ip" >
+                                <a class="text-decoration-none" href="/ip" >
                                     <svg><use xlink:href="#ip"></use></svg>
                                     <h5 class="ov">IP</h5>
-                                    <small>客户端IP地址</small>
+                                    <small>客户端 IP 地址</small>
                                 </a>
                             </div>
                         </div>
@@ -401,10 +412,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//ping.pe" target='_blank'>
+                                <a class="text-decoration-none" href="//ping.pe" target='_blank'>
                                     <svg><use xlink:href="#ping"></use></svg>
                                     <h5 class="ov">Ping</h5>
-                                    <small>Ping测试</small>
+                                    <small>Ping 测试</small>
                                 </a>
                             </div>
                         </div>
@@ -412,10 +423,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/pingcloud" >
+                                <a class="text-decoration-none" href="/pingcloud" >
                                     <svg><use xlink:href="#pingcloud"></use></svg>
-                                    <h5 class="ov">Ping云</h5>
-                                    <small>Ping各大云服务节点</small>
+                                    <h5 class="ov">Ping 云</h5>
+                                    <small>Ping 各大云服务节点</small>
                                 </a>
                             </div>
                         </div>
@@ -423,9 +434,9 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//www.chinassl.net/ssltools/convert-ssl.html" target='_blank'>
+                                <a class="text-decoration-none" href="//www.chinassl.net/ssltools/convert-ssl.html" target='_blank'>
                                     <svg><use xlink:href="#ssl"></use></svg>
-                                    <h5 class="ov">SSL证书转换</h5>
+                                    <h5 class="ov">SSL 证书转换</h5>
                                     <small>格式转换</small>
                                 </a>
                             </div>
@@ -434,10 +445,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//getman.cn" target='_blank'>
+                                <a class="text-decoration-none" href="//getman.cn" target='_blank'>
                                     <svg><use xlink:href="#http"></use></svg>
-                                    <h5 class="ov">HTTP请求</h5>
-                                    <small>在线HTTP请求</small>
+                                    <h5 class="ov">HTTP 请求</h5>
+                                    <small>在线 HTTP 请求</small>
                                 </a>
                             </div>
                         </div>
@@ -445,7 +456,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/useragent" >
+                                <a class="text-decoration-none" href="/useragent" >
                                     <svg><use xlink:href="#info"></use></svg>
                                     <h5 class="ov">UserAgent</h5>
                                     <small>客户端信息</small>
@@ -456,10 +467,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/icp" >
+                                <a class="text-decoration-none" href="/icp" >
                                     <svg><use xlink:href="#icp"></use></svg>
-                                    <h5 class="ov">ICP备案查询</h5>
-                                    <small>ICP备案查询</small>
+                                    <h5 class="ov">ICP 备案查询</h5>
+                                    <small>ICP 备案查询</small>
                                 </a>
                             </div>
                         </div>
@@ -467,7 +478,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//tool.chinaz.com/regex/" target='_blank'>
+                                <a class="text-decoration-none" href="//tool.chinaz.com/regex/" target='_blank'>
                                     <svg><use xlink:href="#regex"></use></svg>
                                     <h5 class="ov">正则表达式</h5>
                                     <small>正则表达式</small>
@@ -478,7 +489,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/pinyin" >
+                                <a class="text-decoration-none" href="/pinyin" >
                                     <svg><use xlink:href="#translate"></use></svg>
                                     <h5 class="ov">汉字转拼音</h5>
                                     <small>汉字转拼音</small>
@@ -489,7 +500,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//zidian.netnr.eu.org" target='_blank'>
+                                <a class="text-decoration-none" href="//zidian.netnr.eu.org" target='_blank'>
                                     <svg><use xlink:href="#dictionary"></use></svg>
                                     <h5 class="ov">字典</h5>
                                     <small>字、词、成语</small>
@@ -500,7 +511,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//www.iconfont.cn" target='_blank'>
+                                <a class="text-decoration-none" href="//www.iconfont.cn" target='_blank'>
                                     <svg><use xlink:href="#vector"></use></svg>
                                     <h5 class="ov">阿里矢量图标</h5>
                                     <small>矢量图标库</small>
@@ -511,10 +522,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/svgo" >
+                                <a class="text-decoration-none" href="/svgo" >
                                     <svg><use xlink:href="#chain"></use></svg>
-                                    <h5 class="ov">SVG雪碧图</h5>
-                                    <small>优化合并SVG</small>
+                                    <h5 class="ov">SVG 雪碧图</h5>
+                                    <small>优化合并 SVG</small>
                                 </a>
                             </div>
                         </div>
@@ -522,10 +533,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//c.runoob.com/more/svgeditor/" target='_blank'>
+                                <a class="text-decoration-none" href="//c.runoob.com/more/svgeditor/" target='_blank'>
                                     <svg><use xlink:href="#svge"></use></svg>
-                                    <h5 class="ov">SVG编辑器</h5>
-                                    <small>SVG编辑器</small>
+                                    <h5 class="ov">SVG 编辑器</h5>
+                                    <small>SVG 编辑器</small>
                                 </a>
                             </div>
                         </div>
@@ -533,7 +544,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/textoimage" >
+                                <a class="text-decoration-none" href="/textoimage" >
                                     <svg><use xlink:href="#textoimage"></use></svg>
                                     <h5 class="ov">文本转图片</h5>
                                     <small>图片转文本</small>
@@ -544,10 +555,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/swaggerto" >
+                                <a class="text-decoration-none" href="/swaggerto" >
                                     <svg><use xlink:href="#swagger"></use></svg>
                                     <h5 class="ov">SwaggerTo</h5>
-                                    <small>Swagger转换生成</small>
+                                    <small>Swagger 转换生成</small>
                                 </a>
                             </div>
                         </div>
@@ -555,7 +566,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/identicon" >
+                                <a class="text-decoration-none" href="/identicon" >
                                     <svg><use xlink:href="#pixel"></use></svg>
                                     <h5 class="ov">身份图标</h5>
                                     <small>生成哈希头像</small>
@@ -569,10 +580,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//kms.netnr.eu.org" target='_blank'>
+                                <a class="text-decoration-none" href="//kms.netnr.eu.org" target='_blank'>
                                     <svg><use xlink:href="#microsoft"></use></svg>
-                                    <h5 class="ov">KMS服务</h5>
-                                    <small>激活Windows系统</small>
+                                    <h5 class="ov">KMS 服务</h5>
+                                    <small>激活 Windows 系统</small>
                                 </a>
                             </div>
                         </div>
@@ -580,9 +591,9 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/officeview" >
+                                <a class="text-decoration-none" href="/officeview" >
                                     <svg><use xlink:href="#office"></use></svg>
-                                    <h5 class="ov">Office文档查看</h5>
+                                    <h5 class="ov">Office 文档查看</h5>
                                     <small>Word、Excel、PPT</small>
                                 </a>
                             </div>
@@ -591,7 +602,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/tiny" >
+                                <a class="text-decoration-none" href="/tiny" >
                                     <svg><use xlink:href="#tiny"></use></svg>
                                     <h5 class="ov">图片压缩</h5>
                                     <small>图片压缩</small>
@@ -602,7 +613,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/seal" >
+                                <a class="text-decoration-none" href="/seal" >
                                     <svg><use xlink:href="#seal"></use></svg>
                                     <h5 class="ov">印</h5>
                                     <small>添加水印、印章</small>
@@ -613,7 +624,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/symbol" >
+                                <a class="text-decoration-none" href="/symbol" >
                                     <svg><use xlink:href="#symbol"></use></svg>
                                     <h5 class="ov">特殊符号</h5>
                                     <small>特殊符号</small>
@@ -624,10 +635,10 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/emoji" >
+                                <a class="text-decoration-none" href="/emoji" >
                                     <svg><use xlink:href="#emoji"></use></svg>
-                                    <h5 class="ov">Emoji符号</h5>
-                                    <small>Emoji表情</small>
+                                    <h5 class="ov">Emoji 符号</h5>
+                                    <small>Emoji 表情</small>
                                 </a>
                             </div>
                         </div>
@@ -635,7 +646,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/lottery" >
+                                <a class="text-decoration-none" href="/lottery" >
                                     <svg><use xlink:href="#lottery"></use></svg>
                                     <h5 class="ov">彩票查询</h5>
                                     <small>彩票查询</small>
@@ -646,9 +657,9 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//v.netnr.eu.org" target='_blank'>
+                                <a class="text-decoration-none" href="//v.netnr.eu.org" target='_blank'>
                                     <svg><use xlink:href="#video"></use></svg>
-                                    <h5 class="ov">VIP视频解析</h5>
+                                    <h5 class="ov">VIP 视频解析</h5>
                                     <small>免费看会员视频</small>
                                 </a>
                             </div>
@@ -657,7 +668,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/express" >
+                                <a class="text-decoration-none" href="/express" >
                                     <svg><use xlink:href="#express"></use></svg>
                                     <h5 class="ov">快递查询</h5>
                                     <small>一键查询快递</small>
@@ -668,7 +679,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/weather" >
+                                <a class="text-decoration-none" href="/weather" >
                                     <svg><use xlink:href="#weather"></use></svg>
                                     <h5 class="ov">天气预报</h5>
                                     <small>天气预报</small>
@@ -679,7 +690,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/rmb" >
+                                <a class="text-decoration-none" href="/rmb" >
                                     <svg><use xlink:href="#rmb"></use></svg>
                                     <h5 class="ov">人民币转大写</h5>
                                     <small>人民币转大写</small>
@@ -690,7 +701,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/randomcode" >
+                                <a class="text-decoration-none" href="/randomcode" >
                                     <svg><use xlink:href="#key"></use></svg>
                                     <h5 class="ov">生成随机密码</h5>
                                     <small>生成随机密码</small>
@@ -701,7 +712,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/randommatch" >
+                                <a class="text-decoration-none" href="/randommatch" >
                                     <svg><use xlink:href="#dice"></use></svg>
                                     <h5 class="ov">随机匹配</h5>
                                     <small>随机数生成、随机分组</small>
@@ -712,29 +723,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/qiushibaike" >
-                                    <svg><use xlink:href="#qsbk"></use></svg>
-                                    <h5 class="ov">糗事百科笑话</h5>
-                                    <small>糗事百科笑话</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/purine" >
-                                    <svg><use xlink:href="#purine"></use></svg>
-                                    <h5 class="ov">食物嘌呤含量</h5>
-                                    <small>食物嘌呤含量</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="/bmi" >
+                                <a class="text-decoration-none" href="/bmi" >
                                     <svg><use xlink:href="#bmi"></use></svg>
                                     <h5 class="ov">体重标准</h5>
                                     <small>中国成人超重和肥胖标准</small>
@@ -745,7 +734,18 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/gc" >
+                                <a class="text-decoration-none" href="/purine" >
+                                    <svg><use xlink:href="#purine"></use></svg>
+                                    <h5 class="ov">食物嘌呤含量</h5>
+                                    <small>食物嘌呤含量</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a class="text-decoration-none" href="/gc" >
                                     <svg><use xlink:href="#gc"></use></svg>
                                     <h5 class="ov">垃圾分类</h5>
                                     <small>垃圾分类查询</small>
@@ -759,7 +759,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/ocr" >
+                                <a class="text-decoration-none" href="/ocr" >
                                     <svg><use xlink:href="#ocr"></use></svg>
                                     <h5 class="ov">OCR</h5>
                                     <small>识别图片内容</small>
@@ -770,7 +770,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/nsfw" >
+                                <a class="text-decoration-none" href="/nsfw" >
                                     <svg><use xlink:href="#nsfw"></use></svg>
                                     <h5 class="ov">图片审查</h5>
                                     <small>绘画、变态、中立、色情、性感</small>
@@ -781,7 +781,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/nlp" >
+                                <a class="text-decoration-none" href="/nlp" >
                                     <svg><use xlink:href="#nlp"></use></svg>
                                     <h5 class="ov">自然语言处理</h5>
                                     <small>分词、关键词</small>
@@ -795,7 +795,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/overview" >
+                                <a class="text-decoration-none" href="/overview" >
                                     <svg><use xlink:href="#overview"></use></svg>
                                     <h5 class="ov">概述</h5>
                                     <small>脚本服务</small>
@@ -806,7 +806,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="/message" >
+                                <a class="text-decoration-none" href="/message" >
                                     <svg><use xlink:href="#message"></use></svg>
                                     <h5 class="ov">留言</h5>
                                     <small>匿名留言</small>
@@ -817,7 +817,7 @@ https://zme.ink
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="//zme.ink" target='_blank'>
+                                <a class="text-decoration-none" href="//zme.ink" target='_blank'>
                                     <svg><use xlink:href="#love"></use></svg>
                                     <h5 class="ov">联系赞助</h5>
                                     <small>Sponsors</small>
@@ -830,7 +830,9 @@ https://zme.ink
 </div>
 
 <script>
-    function search(group, keywords) {
+    function search() {
+        var group = $('.nr-group').val(), keywords = $('.nr-search').val();
+
         keywords = keywords.trim().toLowerCase();
         var fb = $('.navbox');
         fb.find('a').each(function () {
@@ -865,38 +867,33 @@ https://zme.ink
     }
 
     function savels() {
-        ss.ls["ss-search"] = $('#txtSearch').val();
-        ss.ls["ss-group"] = $('#seGroup').val();
+        ss.ls["ss-search"] = $('.nr-search').val();
+        ss.ls["ss-group"] = $('.nr-group').val();
         ss.lsSave();
     }
 
     var lssearch = ss.lsStr("ss-search") || "",
         lsgroup = ss.lsStr("ss-group") || "";
 
-    $('#seGroup').change(function () {
+    $('.nr-group').change(function () {
         savels();
-        search($('#seGroup').val(), $('#txtSearch').val())
+        search();
     }).find('option').each(function () {
         if (this.value == lsgroup) {
-            $('#seGroup').val(this.value);
-            $('#btnSearch')[0].click();
+            $('.nr-group').val(this.value);
             return false;
         }
     });
 
-    $('#txtSearch').on('input', function () {
+    $('.nr-search').on('input', function () {
         savels();
-        search($('#seGroup').val(), $('#txtSearch').val())
+        search();
     }).val(lssearch);
 
-    $('#btnSearch').click(function () {
-        search($('#seGroup').val(), $('#txtSearch').val())
-    })[0].click();
-
     $(document).dblclick(function () {
-        $('#txtSearch').val('');
-        $('#seGroup').val('');
-        $('#btnSearch')[0].click();
+        $('.nr-search').val('');
+        $('.nr-group').val('');
+        search();
     });
 
     $('.navbox').find('a').each(function () {
@@ -908,6 +905,5 @@ https://zme.ink
     });
 </script>
         </div>
-            <a href="javascript:ss.toTop();" class="totop" title="返回顶部">ˆ</a>
 </body>
 </html>
