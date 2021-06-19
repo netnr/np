@@ -28,8 +28,8 @@ https://zme.ink
 <link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=L29jebourX_EDDwhTiEStVtsdN8_Lcrk-kCgMdkwUOE" rel="stylesheet" />
-        <script src="/js/global.js?v=LDoZby-XzeZgTPDEu5mXtbfEMEWyeeDhg0tTuDIhraU"></script>
+        <link href="/css/global.css?v=iMQIP4wyDC9xXUOkdTyigst5W-JZE3djrsOMLIZdzB8" rel="stylesheet" />
+        <script src="/js/global.js?v=70q1prkl8V0B7LvdO7bKVgBsOjjHZKJGZmW4hKLVYns"></script>
             <!--导航-->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -78,20 +78,19 @@ https://zme.ink
     <div class="row">
 
 
-        <div class="col-md-12">
-            <div class="input-group">
-                <div>
-                    <select class="form-select nr-group" id="seGroup">
-                        <option value="">全部</option>
-                            <option value="&#x70ED;&#x95E8;">&#x70ED;&#x95E8;</option>
-                            <option value="&#x5F00;&#x53D1;">&#x5F00;&#x53D1;</option>
-                            <option value="&#x751F;&#x6D3B;">&#x751F;&#x6D3B;</option>
-                            <option value="AI">AI</option>
-                            <option value="&#x5173;&#x4E8E;">&#x5173;&#x4E8E;</option>
-                    </select>
-                </div>
-                <input type="text" class="form-control nr-search" placeholder="双击空白处 重置搜索条件" autocomplete="off">
-            </div>
+        <div class="col-auto">
+            <select class="form-select nr-group" id="seGroup">
+                <option value="">全部</option>
+                    <option value="&#x70ED;&#x95E8;">&#x70ED;&#x95E8;</option>
+                    <option value="&#x5F00;&#x53D1;">&#x5F00;&#x53D1;</option>
+                    <option value="&#x751F;&#x6D3B;">&#x751F;&#x6D3B;</option>
+                    <option value="AI">AI</option>
+                    <option value="&#x5173;&#x4E8E;">&#x5173;&#x4E8E;</option>
+            </select>
+        </div>
+
+        <div class="col">
+            <input type="text" class="form-control nr-search" placeholder="双击空白处 重置搜索条件" autocomplete="off">
         </div>
     </div>
 
@@ -103,7 +102,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/wallpaper" >
                                     <svg><use xlink:href="#wallpaper"></use></svg>
-                                    <h5 class="ov">壁纸</h5>
+                                    <b class="ov">壁纸</b>
                                     <small>源自 360 壁纸</small>
                                 </a>
                             </div>
@@ -114,19 +113,8 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/free" >
                                     <svg><use xlink:href="#free"></use></svg>
-                                    <h5 class="ov">免费</h5>
+                                    <b class="ov">免费</b>
                                     <small>免费的资源</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a class="text-decoration-none" href="/bed" >
-                                    <svg><use xlink:href="#img"></use></svg>
-                                    <h5 class="ov">图床</h5>
-                                    <small>图床大集合</small>
                                 </a>
                             </div>
                         </div>
@@ -136,7 +124,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/ps" target='_blank'>
                                     <svg><use xlink:href="#ps"></use></svg>
-                                    <h5 class="ov">Photoshop</h5>
+                                    <b class="ov">Photoshop</b>
                                     <small>在线 PS</small>
                                 </a>
                             </div>
@@ -147,7 +135,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/tv" >
                                     <svg><use xlink:href="#tv"></use></svg>
-                                    <h5 class="ov">在线电视</h5>
+                                    <b class="ov">在线电视</b>
                                     <small>m3u8 源播放</small>
                                 </a>
                             </div>
@@ -158,7 +146,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/qrcode" >
                                     <svg><use xlink:href="#qrcode"></use></svg>
-                                    <h5 class="ov">生成二维码</h5>
+                                    <b class="ov">生成二维码</b>
                                     <small>识别二维码</small>
                                 </a>
                             </div>
@@ -169,7 +157,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/speedtest" >
                                     <svg><use xlink:href="#speed"></use></svg>
-                                    <h5 class="ov">网络测速</h5>
+                                    <b class="ov">网络测速</b>
                                     <small>资源下载速率</small>
                                 </a>
                             </div>
@@ -180,7 +168,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/idcard" >
                                     <svg><use xlink:href="#idcard"></use></svg>
-                                    <h5 class="ov">身份证号码查询</h5>
+                                    <b class="ov">身份证号码查询</b>
                                     <small>查询地区、性别，纠正尾数</small>
                                 </a>
                             </div>
@@ -191,7 +179,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/zoning" >
                                     <svg><use xlink:href="#zoning"></use></svg>
-                                    <h5 class="ov">行政区划</h5>
+                                    <b class="ov">行政区划</b>
                                     <small>五级行政区划</small>
                                 </a>
                             </div>
@@ -205,7 +193,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/code" >
                                     <svg><use xlink:href="#lock"></use></svg>
-                                    <h5 class="ov">加密转码</h5>
+                                    <b class="ov">加密转码</b>
                                     <small>加密、解密、编码、转码</small>
                                 </a>
                             </div>
@@ -216,7 +204,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/vscode" >
                                     <svg><use xlink:href="#vsc"></use></svg>
-                                    <h5 class="ov">VSCode 编辑器</h5>
+                                    <b class="ov">VSCode 编辑器</b>
                                     <small>Monaco Editor 编辑器</small>
                                 </a>
                             </div>
@@ -227,7 +215,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/diff" >
                                     <svg><use xlink:href="#diff"></use></svg>
-                                    <h5 class="ov">文本对比</h5>
+                                    <b class="ov">文本对比</b>
                                     <small>Monaco Editor 文件对比</small>
                                 </a>
                             </div>
@@ -238,7 +226,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//md.js.org" target='_blank'>
                                     <svg><use xlink:href="#markdown"></use></svg>
-                                    <h5 class="ov">Markdown 编辑器</h5>
+                                    <b class="ov">Markdown 编辑器</b>
                                     <small>Markdown 编辑器</small>
                                 </a>
                             </div>
@@ -249,7 +237,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//je.js.org" target='_blank'>
                                     <svg><use xlink:href="#json"></use></svg>
-                                    <h5 class="ov">JSON 编辑器</h5>
+                                    <b class="ov">JSON 编辑器</b>
                                     <small>JSON 编辑器</small>
                                 </a>
                             </div>
@@ -260,7 +248,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/nginx" >
                                     <svg><use xlink:href="#nginx"></use></svg>
-                                    <h5 class="ov">Nginx 编辑器</h5>
+                                    <b class="ov">Nginx 编辑器</b>
                                     <small>Nginx 配置文件格式化</small>
                                 </a>
                             </div>
@@ -271,7 +259,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/filetobase64" >
                                     <svg><use xlink:href="#code"></use></svg>
-                                    <h5 class="ov">文件转 Base64</h5>
+                                    <b class="ov">文件转 Base64</b>
                                     <small>Base64 编码转换</small>
                                 </a>
                             </div>
@@ -282,7 +270,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/jsontocsharp" >
                                     <svg><use xlink:href="#csharp"></use></svg>
-                                    <h5 class="ov">JSON 生成 C# 实体类</h5>
+                                    <b class="ov">JSON 生成 C# 实体类</b>
                                     <small>根据 JSON 生成 Model</small>
                                 </a>
                             </div>
@@ -293,7 +281,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/jsontoxml" >
                                     <svg><use xlink:href="#xml"></use></svg>
-                                    <h5 class="ov">JSON 转换 XML</h5>
+                                    <b class="ov">JSON 转换 XML</b>
                                     <small>JSON 与 XML 相互转换</small>
                                 </a>
                             </div>
@@ -304,7 +292,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/pdm" >
                                     <svg><use xlink:href="#pdm"></use></svg>
-                                    <h5 class="ov">PDM 查看</h5>
+                                    <b class="ov">PDM 查看</b>
                                     <small>PowerDesigner 解析、查看</small>
                                 </a>
                             </div>
@@ -315,7 +303,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/dk" target='_blank'>
                                     <svg><use xlink:href="#db"></use></svg>
-                                    <h5 class="ov">DataKit</h5>
+                                    <b class="ov">DataKit</b>
                                     <small>数据库工具及代码构建</small>
                                 </a>
                             </div>
@@ -326,7 +314,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/zerotier" >
                                     <svg><use xlink:href="#p2p"></use></svg>
-                                    <h5 class="ov">ZeroTier</h5>
+                                    <b class="ov">ZeroTier</b>
                                     <small>ZeroTier 管理</small>
                                 </a>
                             </div>
@@ -337,7 +325,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/jscss" >
                                     <svg><use xlink:href="#js"></use></svg>
-                                    <h5 class="ov">JS、CSS 工具</h5>
+                                    <b class="ov">JS、CSS 工具</b>
                                     <small>JS 压缩、CSS 压缩</small>
                                 </a>
                             </div>
@@ -348,7 +336,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/formatter" >
                                     <svg><use xlink:href="#formatter"></use></svg>
-                                    <h5 class="ov">代码格式化</h5>
+                                    <b class="ov">代码格式化</b>
                                     <small>Js、Css、Html、TypeScript、Yaml</small>
                                 </a>
                             </div>
@@ -359,7 +347,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/sqlformatter" >
                                     <svg><use xlink:href="#sql"></use></svg>
-                                    <h5 class="ov">SQL 格式化</h5>
+                                    <b class="ov">SQL 格式化</b>
                                     <small>美化 SQL 语句</small>
                                 </a>
                             </div>
@@ -370,7 +358,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//zijian.aliyun.com" target='_blank'>
                                     <svg><use xlink:href="#detect"></use></svg>
-                                    <h5 class="ov">域名检测</h5>
+                                    <b class="ov">域名检测</b>
                                     <small>检测域名状态、DNS、站点</small>
                                 </a>
                             </div>
@@ -381,7 +369,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//whois.aliyun.com" target='_blank'>
                                     <svg><use xlink:href="#whois"></use></svg>
-                                    <h5 class="ov">Whois 查询</h5>
+                                    <b class="ov">Whois 查询</b>
                                     <small>域名信息查询</small>
                                 </a>
                             </div>
@@ -392,7 +380,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//check-host.net" target='_blank'>
                                     <svg><use xlink:href="#host"></use></svg>
-                                    <h5 class="ov">检测主机</h5>
+                                    <b class="ov">检测主机</b>
                                     <small>CHECK-HOST</small>
                                 </a>
                             </div>
@@ -403,7 +391,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/ip" >
                                     <svg><use xlink:href="#ip"></use></svg>
-                                    <h5 class="ov">IP</h5>
+                                    <b class="ov">IP</b>
                                     <small>客户端 IP 地址</small>
                                 </a>
                             </div>
@@ -414,7 +402,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//ping.pe" target='_blank'>
                                     <svg><use xlink:href="#ping"></use></svg>
-                                    <h5 class="ov">Ping</h5>
+                                    <b class="ov">Ping</b>
                                     <small>Ping 测试</small>
                                 </a>
                             </div>
@@ -425,7 +413,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/pingcloud" >
                                     <svg><use xlink:href="#pingcloud"></use></svg>
-                                    <h5 class="ov">Ping 云</h5>
+                                    <b class="ov">Ping 云</b>
                                     <small>Ping 各大云服务节点</small>
                                 </a>
                             </div>
@@ -436,7 +424,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//www.chinassl.net/ssltools/convert-ssl.html" target='_blank'>
                                     <svg><use xlink:href="#ssl"></use></svg>
-                                    <h5 class="ov">SSL 证书转换</h5>
+                                    <b class="ov">SSL 证书转换</b>
                                     <small>格式转换</small>
                                 </a>
                             </div>
@@ -447,7 +435,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//getman.cn" target='_blank'>
                                     <svg><use xlink:href="#http"></use></svg>
-                                    <h5 class="ov">HTTP 请求</h5>
+                                    <b class="ov">HTTP 请求</b>
                                     <small>在线 HTTP 请求</small>
                                 </a>
                             </div>
@@ -458,7 +446,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/useragent" >
                                     <svg><use xlink:href="#info"></use></svg>
-                                    <h5 class="ov">UserAgent</h5>
+                                    <b class="ov">UserAgent</b>
                                     <small>客户端信息</small>
                                 </a>
                             </div>
@@ -469,7 +457,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/icp" >
                                     <svg><use xlink:href="#icp"></use></svg>
-                                    <h5 class="ov">ICP 备案查询</h5>
+                                    <b class="ov">ICP 备案查询</b>
                                     <small>ICP 备案查询</small>
                                 </a>
                             </div>
@@ -480,19 +468,8 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//tool.chinaz.com/regex/" target='_blank'>
                                     <svg><use xlink:href="#regex"></use></svg>
-                                    <h5 class="ov">正则表达式</h5>
+                                    <b class="ov">正则表达式</b>
                                     <small>正则表达式</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a class="text-decoration-none" href="/pinyin" >
-                                    <svg><use xlink:href="#translate"></use></svg>
-                                    <h5 class="ov">汉字转拼音</h5>
-                                    <small>汉字转拼音</small>
                                 </a>
                             </div>
                         </div>
@@ -502,7 +479,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//zidian.netnr.eu.org" target='_blank'>
                                     <svg><use xlink:href="#dictionary"></use></svg>
-                                    <h5 class="ov">字典</h5>
+                                    <b class="ov">字典</b>
                                     <small>字、词、成语</small>
                                 </a>
                             </div>
@@ -513,7 +490,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//www.iconfont.cn" target='_blank'>
                                     <svg><use xlink:href="#vector"></use></svg>
-                                    <h5 class="ov">阿里矢量图标</h5>
+                                    <b class="ov">阿里矢量图标</b>
                                     <small>矢量图标库</small>
                                 </a>
                             </div>
@@ -524,19 +501,8 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/svgo" >
                                     <svg><use xlink:href="#chain"></use></svg>
-                                    <h5 class="ov">SVG 雪碧图</h5>
+                                    <b class="ov">SVG 雪碧图</b>
                                     <small>优化合并 SVG</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <a class="text-decoration-none" href="//c.runoob.com/more/svgeditor/" target='_blank'>
-                                    <svg><use xlink:href="#svge"></use></svg>
-                                    <h5 class="ov">SVG 编辑器</h5>
-                                    <small>SVG 编辑器</small>
                                 </a>
                             </div>
                         </div>
@@ -546,7 +512,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/textoimage" >
                                     <svg><use xlink:href="#textoimage"></use></svg>
-                                    <h5 class="ov">文本转图片</h5>
+                                    <b class="ov">文本转图片</b>
                                     <small>图片转文本</small>
                                 </a>
                             </div>
@@ -557,7 +523,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/swaggerto" >
                                     <svg><use xlink:href="#swagger"></use></svg>
-                                    <h5 class="ov">SwaggerTo</h5>
+                                    <b class="ov">SwaggerTo</b>
                                     <small>Swagger 转换生成</small>
                                 </a>
                             </div>
@@ -568,8 +534,30 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/identicon" >
                                     <svg><use xlink:href="#pixel"></use></svg>
-                                    <h5 class="ov">身份图标</h5>
+                                    <b class="ov">身份图标</b>
                                     <small>生成哈希头像</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a class="text-decoration-none" href="/bed" >
+                                    <svg><use xlink:href="#img"></use></svg>
+                                    <b class="ov">图床</b>
+                                    <small>图床大集合</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <a class="text-decoration-none" href="/gitstorage" >
+                                    <svg><use xlink:href="#gitpush"></use></svg>
+                                    <b class="ov">GitStorage</b>
+                                    <small>GitHub push</small>
                                 </a>
                             </div>
                         </div>
@@ -582,7 +570,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//kms.netnr.eu.org" target='_blank'>
                                     <svg><use xlink:href="#microsoft"></use></svg>
-                                    <h5 class="ov">KMS 服务</h5>
+                                    <b class="ov">KMS 服务</b>
                                     <small>激活 Windows 系统</small>
                                 </a>
                             </div>
@@ -593,7 +581,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/officeview" >
                                     <svg><use xlink:href="#office"></use></svg>
-                                    <h5 class="ov">Office 文档查看</h5>
+                                    <b class="ov">Office 文档查看</b>
                                     <small>Word、Excel、PPT</small>
                                 </a>
                             </div>
@@ -604,7 +592,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/tiny" >
                                     <svg><use xlink:href="#tiny"></use></svg>
-                                    <h5 class="ov">图片压缩</h5>
+                                    <b class="ov">图片压缩</b>
                                     <small>图片压缩</small>
                                 </a>
                             </div>
@@ -615,7 +603,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/seal" >
                                     <svg><use xlink:href="#seal"></use></svg>
-                                    <h5 class="ov">印</h5>
+                                    <b class="ov">印</b>
                                     <small>添加水印、印章</small>
                                 </a>
                             </div>
@@ -626,7 +614,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/symbol" >
                                     <svg><use xlink:href="#symbol"></use></svg>
-                                    <h5 class="ov">特殊符号</h5>
+                                    <b class="ov">特殊符号</b>
                                     <small>特殊符号</small>
                                 </a>
                             </div>
@@ -637,7 +625,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/emoji" >
                                     <svg><use xlink:href="#emoji"></use></svg>
-                                    <h5 class="ov">Emoji 符号</h5>
+                                    <b class="ov">Emoji 符号</b>
                                     <small>Emoji 表情</small>
                                 </a>
                             </div>
@@ -648,7 +636,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/lottery" >
                                     <svg><use xlink:href="#lottery"></use></svg>
-                                    <h5 class="ov">彩票查询</h5>
+                                    <b class="ov">彩票查询</b>
                                     <small>彩票查询</small>
                                 </a>
                             </div>
@@ -659,7 +647,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//v.netnr.eu.org" target='_blank'>
                                     <svg><use xlink:href="#video"></use></svg>
-                                    <h5 class="ov">VIP 视频解析</h5>
+                                    <b class="ov">VIP 视频解析</b>
                                     <small>免费看会员视频</small>
                                 </a>
                             </div>
@@ -670,7 +658,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/express" >
                                     <svg><use xlink:href="#express"></use></svg>
-                                    <h5 class="ov">快递查询</h5>
+                                    <b class="ov">快递查询</b>
                                     <small>一键查询快递</small>
                                 </a>
                             </div>
@@ -681,7 +669,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/weather" >
                                     <svg><use xlink:href="#weather"></use></svg>
-                                    <h5 class="ov">天气预报</h5>
+                                    <b class="ov">天气预报</b>
                                     <small>天气预报</small>
                                 </a>
                             </div>
@@ -692,7 +680,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/rmb" >
                                     <svg><use xlink:href="#rmb"></use></svg>
-                                    <h5 class="ov">人民币转大写</h5>
+                                    <b class="ov">人民币转大写</b>
                                     <small>人民币转大写</small>
                                 </a>
                             </div>
@@ -703,7 +691,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/randomcode" >
                                     <svg><use xlink:href="#key"></use></svg>
-                                    <h5 class="ov">生成随机密码</h5>
+                                    <b class="ov">生成随机密码</b>
                                     <small>生成随机密码</small>
                                 </a>
                             </div>
@@ -714,7 +702,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/randommatch" >
                                     <svg><use xlink:href="#dice"></use></svg>
-                                    <h5 class="ov">随机匹配</h5>
+                                    <b class="ov">随机匹配</b>
                                     <small>随机数生成、随机分组</small>
                                 </a>
                             </div>
@@ -725,7 +713,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/bmi" >
                                     <svg><use xlink:href="#bmi"></use></svg>
-                                    <h5 class="ov">体重标准</h5>
+                                    <b class="ov">体重标准</b>
                                     <small>中国成人超重和肥胖标准</small>
                                 </a>
                             </div>
@@ -736,7 +724,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/purine" >
                                     <svg><use xlink:href="#purine"></use></svg>
-                                    <h5 class="ov">食物嘌呤含量</h5>
+                                    <b class="ov">食物嘌呤含量</b>
                                     <small>食物嘌呤含量</small>
                                 </a>
                             </div>
@@ -747,7 +735,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/gc" >
                                     <svg><use xlink:href="#gc"></use></svg>
-                                    <h5 class="ov">垃圾分类</h5>
+                                    <b class="ov">垃圾分类</b>
                                     <small>垃圾分类查询</small>
                                 </a>
                             </div>
@@ -761,7 +749,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/ocr" >
                                     <svg><use xlink:href="#ocr"></use></svg>
-                                    <h5 class="ov">OCR</h5>
+                                    <b class="ov">OCR</b>
                                     <small>识别图片内容</small>
                                 </a>
                             </div>
@@ -772,7 +760,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/nsfw" >
                                     <svg><use xlink:href="#nsfw"></use></svg>
-                                    <h5 class="ov">图片审查</h5>
+                                    <b class="ov">图片审查</b>
                                     <small>绘画、变态、中立、色情、性感</small>
                                 </a>
                             </div>
@@ -783,7 +771,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/nlp" >
                                     <svg><use xlink:href="#nlp"></use></svg>
-                                    <h5 class="ov">自然语言处理</h5>
+                                    <b class="ov">自然语言处理</b>
                                     <small>分词、关键词</small>
                                 </a>
                             </div>
@@ -797,7 +785,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/overview" >
                                     <svg><use xlink:href="#overview"></use></svg>
-                                    <h5 class="ov">概述</h5>
+                                    <b class="ov">概述</b>
                                     <small>脚本服务</small>
                                 </a>
                             </div>
@@ -808,7 +796,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="/message" >
                                     <svg><use xlink:href="#message"></use></svg>
-                                    <h5 class="ov">留言</h5>
+                                    <b class="ov">留言</b>
                                     <small>匿名留言</small>
                                 </a>
                             </div>
@@ -819,7 +807,7 @@ https://zme.ink
                             <div class="card-body">
                                 <a class="text-decoration-none" href="//zme.ink" target='_blank'>
                                     <svg><use xlink:href="#love"></use></svg>
-                                    <h5 class="ov">联系赞助</h5>
+                                    <b class="ov">联系赞助</b>
                                     <small>Sponsors</small>
                                 </a>
                             </div>

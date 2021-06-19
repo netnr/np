@@ -3,7 +3,7 @@
         <div class="col-md-12">
             <div class="mb-3">
                 <label class="form-label">
-                    <a href="@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/ip" target="_blank">@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/ip</a>
+                    <a href="https://www.netnr.eu.org/api/v1/IP" target="_blank">https://www.netnr.eu.org/api/v1/IP</a>
                 </label>
                 <input class="form-control fs-3" id="txtZme" placeholder="Loading...">
             </div>
@@ -28,8 +28,8 @@
 <script src="https://pv.sohu.com/cityjson"></script>
 <script>
     try {
-        $.get(`${ss.apiServer}/ip`, null, function (data) {
-            $('#txtZme').val(data);
+        fetch(`${ss.apiServer}/api/v1/IP`).then(x => x.text()).then(res => {
+            $('#txtZme').val(res.split(',')[0]);
         });
 
         $('#txtSohu').val(returnCitySN.cip);

@@ -151,64 +151,68 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new SharedResultVM();
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
-
             try
             {
-                var ppath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
-                if (!Directory.Exists(ppath))
+                vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                if (vm.Code == 200)
                 {
-                    Directory.CreateDirectory(ppath);
-                }
+                    var uinfo = Apps.LoginService.Get(HttpContext);
 
-                if (string.IsNullOrWhiteSpace(uinfo.UserPhoto))
-                {
-                    uinfo.UserPhoto = UniqueTo.LongId() + ".jpg";
-                }
-                var upname = uinfo.UserPhoto.Split('?')[0];
-                var npnew = upname + "?" + DateTime.Now.ToTimestamp();
+                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
+                    if (!Directory.Exists(ppath))
+                    {
+                        Directory.CreateDirectory(ppath);
+                    }
 
-                switch (type)
-                {
-                    case "file":
-                        {
-                            source = source.Substring(source.LastIndexOf(",") + 1);
-                            byte[] bytes = Convert.FromBase64String(source);
-                            using var ms = new MemoryStream(bytes);
-                            using var bmp = new System.Drawing.Bitmap(ms);
-                            bmp.Save(PathTo.Combine(ppath, upname), ImageFormat.Jpeg);
+                    if (string.IsNullOrWhiteSpace(uinfo.UserPhoto))
+                    {
+                        uinfo.UserPhoto = UniqueTo.LongId() + ".jpg";
+                    }
+                    var upname = uinfo.UserPhoto.Split('?')[0];
+                    var npnew = upname + "?" + DateTime.Now.ToTimestamp();
 
-                            var usermo = db.UserInfo.Find(uinfo.UserId);
-                            usermo.UserPhoto = npnew;
-                            db.UserInfo.Update(usermo);
-                            int num = db.SaveChanges();
-                            if (num > 0)
+                    switch (type)
+                    {
+                        case "file":
                             {
-                                using var ac = new AccountController(db);
-                                ac.SetAuth(HttpContext, usermo);
+                                source = source[(source.LastIndexOf(",") + 1)..];
+                                byte[] bytes = Convert.FromBase64String(source);
+                                using var ms = new MemoryStream(bytes);
+                                using var bmp = new System.Drawing.Bitmap(ms);
+                                bmp.Save(PathTo.Combine(ppath, upname), ImageFormat.Jpeg);
+
+                                var usermo = db.UserInfo.Find(uinfo.UserId);
+                                usermo.UserPhoto = npnew;
+                                db.UserInfo.Update(usermo);
+                                int num = db.SaveChanges();
+                                if (num > 0)
+                                {
+                                    using var ac = new AccountController(db);
+                                    ac.SetAuth(HttpContext, usermo);
+                                }
+
+                                vm.Set(SharedEnum.RTag.success);
                             }
-
-                            vm.Set(SharedEnum.RTag.success);
-                        }
-                        break;
-                    case "link":
-                        {
-                            using var wc = new System.Net.WebClient();
-                            wc.DownloadFile(source, PathTo.Combine(ppath, upname));
-
-                            var usermo = db.UserInfo.Find(uinfo.UserId);
-                            usermo.UserPhoto = npnew;
-                            db.UserInfo.Update(usermo);
-                            int num = db.SaveChanges();
-                            if (num > 0)
+                            break;
+                        case "link":
                             {
-                                using var ac = new AccountController(db);
-                                ac.SetAuth(HttpContext, usermo);
-                            }
+                                using var wc = new System.Net.WebClient();
+                                wc.DownloadFile(source, PathTo.Combine(ppath, upname));
 
-                            vm.Set(SharedEnum.RTag.success);
-                        }
-                        break;
+                                var usermo = db.UserInfo.Find(uinfo.UserId);
+                                usermo.UserPhoto = npnew;
+                                db.UserInfo.Update(usermo);
+                                int num = db.SaveChanges();
+                                if (num > 0)
+                                {
+                                    using var ac = new AccountController(db);
+                                    ac.SetAuth(HttpContext, usermo);
+                                }
+
+                                vm.Set(SharedEnum.RTag.success);
+                            }
+                            break;
+                    }
                 }
             }
             catch (Exception ex)

@@ -371,14 +371,13 @@
             HTTP请求
             </summary>
         </member>
-        <member name="M:Netnr.Core.HttpTo.HWRequest(System.String,System.String,System.String,System.String)">
+        <member name="M:Netnr.Core.HttpTo.HWRequest(System.String,System.String,System.Byte[])">
             <summary>
             HttpWebRequest对象
             </summary>
             <param name="url">地址</param>
             <param name="type">请求类型，默认GET</param>
             <param name="data">发送数据，非GET、DELETE请求</param>
-            <param name="charset">编码，默认utf-8</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Core.HttpTo.Url(System.Net.HttpWebRequest,System.String)">
@@ -387,6 +386,15 @@
             </summary>
             <param name="request">HttpWebRequest对象</param>
             <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.HttpTo.Url(System.Net.HttpWebRequest,System.Net.HttpWebResponse@,System.String)">
+            <summary>
+            HTTP请求
+            </summary>
+            <param name="request">HttpWebRequest对象</param>
+            <param name="charset">编码，默认utf-8</param>
+            <param name="response">输出</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Core.HttpTo.Get(System.String,System.String)">
@@ -403,6 +411,15 @@
             </summary>
             <param name="url">地址</param>
             <param name="data">发送数据</param>
+            <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.HttpTo.Post(System.String,System.Byte[],System.String)">
+            <summary>
+            POST请求
+            </summary>
+            <param name="url">地址</param>
+            <param name="bytes">发送数据</param>
             <param name="charset">编码，默认utf-8</param>
             <returns></returns>
         </member>

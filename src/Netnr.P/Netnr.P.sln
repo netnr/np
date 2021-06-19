@@ -90,6 +90,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.DataX", "Netnr.DataX\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.TemplatePage", "Netnr.TemplatePage\Netnr.TemplatePage.csproj", "{8329EAAE-4467-4332-A86E-DBC69991BBE2}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mix", "..\..\mix\", "{58B01763-7D4F-4168-B6BE-DABE92007795}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_4920"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\mix\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_4920\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_4920"
+		Release.AspNetCompiler.PhysicalPath = "..\..\mix\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_4920\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "4920"
+		SlnRelativePath = "..\..\mix\"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Netnr.Shared\Netnr.Shared.projitems*{0d99d943-8dd0-4458-9910-27b300b0d569}*SharedItemsImports = 5
@@ -203,6 +224,10 @@ Global
 		{8329EAAE-4467-4332-A86E-DBC69991BBE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8329EAAE-4467-4332-A86E-DBC69991BBE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8329EAAE-4467-4332-A86E-DBC69991BBE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

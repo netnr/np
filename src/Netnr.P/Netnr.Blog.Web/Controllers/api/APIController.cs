@@ -714,13 +714,16 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         [HttpPost]
         [HttpPut]
+        [HttpHead]
         [HttpPatch]
         [HttpDelete]
         [HttpOptions]
         [Apps.FilterConfigs.AllowCors]
         public ActionResult Proxy(string url, string charset = "utf-8")
         {
-            var result = string.Empty;
+            var outCode = 500;
+            var outContent = string.Empty;
+            var outContentType = "application/json; charset=utf-8";
 
             try
             {
@@ -729,17 +732,17 @@ namespace Netnr.Blog.Web.Controllers.api
 
                 if (!GlobalTo.GetValue<bool>("ReadOnly"))
                 {
-                    return Ok();
+                    return BadRequest("Refuse");
                 }
 
                 var keywordBlacklist = new List<string> { ".m3u8", ".mpd", ".m4v" };
                 if (string.IsNullOrWhiteSpace(url) || url.Length < 3)
                 {
-                    result = "url invalid";
+                    return Ok("Url Invalid");
                 }
                 else if (keywordBlacklist.Any(x => url.Contains(x)))
                 {
-                    result = $"The keyword '{string.Join(" ", keywordBlacklist)}' was blacklisted by the operator of this proxy.";
+                    return BadRequest($"The keyword '{string.Join(" ", keywordBlacklist)}' was blacklisted by the operator of this proxy.");
                 }
                 else
                 {
@@ -750,28 +753,39 @@ namespace Netnr.Blog.Web.Controllers.api
 
                     var ct = Request.Headers["Content-Type"].ToString();
 
-                    string data = null;
+                    byte[] data = null;
 
                     if (Request.Method != "GET")
                     {
                         try
                         {
-                            if (ct.StartsWith("application/x-www-form-urlencoded") || ct.StartsWith("multipart/form-data"))
+                            if (ct.StartsWith("application/json"))
+                            {
+                                using var ms = new MemoryStream();
+                                Request.Body.CopyToAsync(ms).Wait();
+                                data = ms.ToArray();
+                            }
+                            else if (ct.StartsWith("application/x-www-form-urlencoded") || ct.StartsWith("multipart/form-data"))
                             {
                                 var sb = new StringBuilder();
+
                                 foreach (var key in Request.Form.Keys)
                                 {
                                     sb.Append($"&{key}={Request.Form[key].ToString().ToEncode()}");
                                 }
-                                data = sb.Remove(0, 1).ToString();
+
+                                data = Encoding.GetEncoding(charset).GetBytes(sb.Remove(0, 1).ToString());
                             }
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            Console.WriteLine(ex.Message);
                         }
                     }
 
-                    var hwr = HttpTo.HWRequest(url, Request.Method, data, charset);
+                    var hwr = HttpTo.HWRequest(url, Request.Method, data);
+                    //hwr.Proxy = new WebProxy("127.0.0.1", 1081);
+
                     var skipHeader = new List<string> { "Content-Length", "Content-Type", "Referer", "Cookie", "Host", "origin" };
                     foreach (var key in Request.Headers.Keys)
                     {
@@ -781,30 +795,40 @@ namespace Netnr.Blog.Web.Controllers.api
                         }
                     }
 
-                    result = HttpTo.Url(hwr, charset);
+                    HttpWebResponse response = null;
+                    outContent = HttpTo.Url(hwr, ref response, charset);
+                    outCode = (int)response.StatusCode;
+                    outContentType = response.ContentType;
                 }
             }
             catch (WebException ex)
             {
                 var response = (HttpWebResponse)ex.Response;
-                var cr = new ContentResult()
+                if (response == null)
                 {
-                    Content = response.StatusDescription,
-                    StatusCode = (int)response.StatusCode,
-                    ContentType = response.Headers[HttpRequestHeader.ContentType]
-                };
-                return cr;
+                    outContent = ex.Message;
+                }
+                else
+                {
+                    outCode = (int)response.StatusCode;
+                    outContent = response.Headers[HttpRequestHeader.ContentType];
+                }
             }
             catch (Exception ex)
             {
-                result = new
+                outContent = new
                 {
                     code = -1,
                     msg = ex
                 }.ToJson();
             }
 
-            return Content(result);
+            return new ContentResult
+            {
+                StatusCode = outCode,
+                Content = outContent,
+                ContentType = outContentType
+            };
         }
 
         /// <summary>
@@ -814,6 +838,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="fileName">文件（可选，默认 cmd.exe 或 bash ）</param>
         /// <returns></returns>
         [HttpGet]
+        [Apps.FilterConfigs.IsAdmin]
         public SharedResultVM CommandLine(string arguments, string fileName)
         {
             return SharedResultVM.Try(vm =>

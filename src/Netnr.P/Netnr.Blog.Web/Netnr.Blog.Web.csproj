@@ -25,8 +25,8 @@
 		<PackageReference Include="Qiniu.Shared" Version="7.2.15" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.4" />
-		<PackageReference Include="SkiaSharp" Version="2.80.3-preview.90" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.90" />
+		<PackageReference Include="SkiaSharp" Version="2.80.3-preview.93" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.93" />
 		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
@@ -39,6 +39,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="db\jieba\idf.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="db\README.md">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -46,12 +49,6 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
-
-	<ProjectExtensions>
-		<VisualStudio>
-			<UserProperties appsettings_1json__JsonSchema="" />
-		</VisualStudio>
-	</ProjectExtensions>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 

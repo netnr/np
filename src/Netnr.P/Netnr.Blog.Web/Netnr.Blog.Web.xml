@@ -1171,17 +1171,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Web.Controllers.TestController">
-            <summary>
-            测试
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.TestController.Index">
-            <summary>
-            起始页
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.Blog.Web.Controllers.UController">
             <summary>
             用户主页

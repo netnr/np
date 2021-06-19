@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading;
 using Netnr.SharedFast;
 using System.IO;
+using System.Text;
 
 namespace Netnr.Blog.Application
 {
@@ -389,6 +390,8 @@ namespace Netnr.Blog.Application
                             };
 
                             jo["files"] = jf;
+
+                            byte[] sendData = Encoding.UTF8.GetBytes(jo.ToJson());
                             #endregion
 
                             switch (st)
@@ -404,7 +407,7 @@ namespace Netnr.Blog.Application
 
                                         //GitHub
                                         {
-                                            var hwr = Core.HttpTo.HWRequest("https://api.github.com/gists", "POST", jo.ToJson());
+                                            var hwr = Core.HttpTo.HWRequest("https://api.github.com/gists", "POST", sendData);
                                             hwr.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
                                             hwr.ContentType = "application/json";
                                             hwr.UserAgent = "Netnr Agent";
@@ -417,7 +420,7 @@ namespace Netnr.Blog.Application
 
                                         //Gitee
                                         {
-                                            var hwr = Core.HttpTo.HWRequest("https://gitee.com/api/v5/gists", "POST", jo.ToJson());
+                                            var hwr = Core.HttpTo.HWRequest("https://gitee.com/api/v5/gists", "POST", sendData);
                                             hwr.ContentType = "application/json";
 
                                             var rt = Core.HttpTo.Url(hwr);
@@ -443,7 +446,7 @@ namespace Netnr.Blog.Application
 
                                         //GitHub
                                         {
-                                            var hwr = Core.HttpTo.HWRequest("https://api.github.com/gists/" + gs.GsGitHubId, "PATCH", jo.ToJson());
+                                            var hwr = Core.HttpTo.HWRequest("https://api.github.com/gists/" + gs.GsGitHubId, "PATCH", sendData);
                                             hwr.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
                                             hwr.ContentType = "application/json";
                                             hwr.UserAgent = "Netnr Agent";
@@ -455,7 +458,7 @@ namespace Netnr.Blog.Application
 
                                         //Gitee
                                         {
-                                            var hwr = Core.HttpTo.HWRequest("https://gitee.com/api/v5/gists/" + gs.GsGiteeId, "PATCH", jo.ToJson());
+                                            var hwr = Core.HttpTo.HWRequest("https://gitee.com/api/v5/gists/" + gs.GsGiteeId, "PATCH", sendData);
                                             hwr.ContentType = "application/json";
 
                                             _ = Core.HttpTo.Url(hwr);

@@ -15,12 +15,6 @@
         "remark": "免费的资源"
       },
       {
-        "url": "/bed",
-        "icon": "img",
-        "title": "图床",
-        "remark": "图床大集合"
-      },
-      {
         "url": "/ps",
         "icon": "ps",
         "title": "Photoshop",
@@ -216,11 +210,6 @@
         "title": "正则表达式"
       },
       {
-        "url": "/pinyin",
-        "icon": "translate",
-        "title": "汉字转拼音"
-      },
-      {
         "url": "//zidian.netnr.eu.org",
         "icon": "dictionary",
         "title": "字典",
@@ -246,11 +235,6 @@
         "remark": "优化合并 SVG"
       },
       {
-        "url": "//c.runoob.com/more/svgeditor/",
-        "icon": "svge",
-        "title": "SVG 编辑器"
-      },
-      {
         "url": "/textoimage",
         "icon": "textoimage",
         "title": "文本转图片",
@@ -267,6 +251,18 @@
         "icon": "pixel",
         "title": "身份图标",
         "remark": "生成哈希头像"
+      },
+      {
+        "url": "/bed",
+        "icon": "img",
+        "title": "图床",
+        "remark": "图床大集合"
+      },
+      {
+        "url": "/gitstorage",
+        "icon": "gitpush",
+        "title": "GitStorage",
+        "remark": "GitHub push"
       }
     ]
   },

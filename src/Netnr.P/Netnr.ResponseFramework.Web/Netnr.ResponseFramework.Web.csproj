@@ -22,8 +22,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.4" />
     <PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
     <PackageReference Include="IP2Region" Version="1.2.0" />
-    <PackageReference Include="SkiaSharp" Version="2.80.3-preview.90" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.90" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3-preview.93" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.93" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
@@ -53,8 +53,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
-  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
   <Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 

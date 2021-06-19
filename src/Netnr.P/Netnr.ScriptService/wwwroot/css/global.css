@@ -143,8 +143,8 @@ body.offcanvas-active {
 
     .navbar-orange .navbar-nav .nav-link {
         color: #444;
-        padding: 0.7rem;
         font-weight: 600;
+        padding: 0.8em 1em;
         border: 2px solid transparent;
     }
 
@@ -251,9 +251,14 @@ body.offcanvas-active {
 
     .navbox a svg {
         float: left;
-        width: 56px;
-        height: 56px;
-        margin: 0 14px 0 4px;
+        width: 3em;
+        height: 3em;
+        margin: 0 .8em 0 .2em;
+    }
+
+    .navbox a .ov {
+        font-weight: 500;
+        font-size: 1.4em;
     }
 
 .titleicon {

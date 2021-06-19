@@ -3,11 +3,6 @@ Font Awesome 4 Mirror
 
 ---
 
-### GitStorage
-GitHub Storage
-
----
-
 ### jCute
 JavaScript Library
 

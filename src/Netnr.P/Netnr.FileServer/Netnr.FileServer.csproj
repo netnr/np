@@ -53,12 +53,6 @@
     <ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties appsettings_1json__JsonSchema="" />
-    </VisualStudio>
-  </ProjectExtensions>
-
   <Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 </Project>

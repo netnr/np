@@ -49,7 +49,7 @@
             <div class="mb-3 rounded sbox">
                 <div class="sbox-scanner d-none"></div>
                 <div class="sbox-screen">
-                    <img src="@Netnr.SharedFast.GlobalTo.GetValue("Common:ApiServer")/svg/400*200" id="imgview" />
+                    <img src="https://www.netnr.eu.org/api/v1/SVGPIG/400*200" id="imgview" />
                 </div>
             </div>
         </div>
@@ -110,7 +110,7 @@
                 }
                 if (!isImg) {
                     bs.alert('<h4>不是图片哦</h4>');
-                    pg.iv.src = `${ss.apiServer}/svg/400*200`;
+                    pg.iv.src = `${ss.apiServer}/v1/SVGPIG/400*200`;
                 }
             }, "#txtFile");
 

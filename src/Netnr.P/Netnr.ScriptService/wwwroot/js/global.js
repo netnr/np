@@ -171,7 +171,7 @@ let bs = {
 
 /* ScriptService */
 var ss = {
-    apiServer: "https://api.netnr.eu.org",
+    apiServer: "https://www.netnr.eu.org",
     meConfig: function (config) {
         var ops = {
             value: "",
@@ -179,8 +179,8 @@ var ss = {
             fontSize: 18,
             automaticLayout: true,
             scrollbar: {
-                verticalScrollbarSize: 9,
-                horizontalScrollbarSize: 9
+                verticalScrollbarSize: 13,
+                horizontalScrollbarSize: 13
             },
             minimap: {
                 enabled: true
@@ -196,7 +196,7 @@ var ss = {
     init: function () {
 
         //icon
-        ss.loadPath("/images/icon.svg", "20210518").then(res => {
+        ss.loadPath("/images/icon.svg", "20210619").then(res => {
             $('body').append('<div class="d-none">' + res + '</div>');
         })
 
@@ -234,13 +234,11 @@ var ss = {
                 }
             } catch (e) { }
             if (data == null) {
-                console.log('server')
                 fetch(path + "?" + version).then(x => x.text()).then(res => {
                     localStorage.setItem(path, JSON.stringify({ data: res, version }));
                     resolve(res);
                 })
             } else {
-                console.log('local')
                 resolve(data);
             }
         })

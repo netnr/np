@@ -1,2 +1,0 @@
-﻿# Git Storage
-GitHub Storage

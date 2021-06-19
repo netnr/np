@@ -1,15 +1,13 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 mb-3">
-            <div class="mx-auto">
-                <div class="input-group">
-                    <select class="form-select" id="seM3u8"></select>
-                    <input id="txtM3u8" class="form-control" placeholder="请粘贴 M3U8 播放源（http 协议播放源须允许）" />
-                </div>
-            </div>
+        <div class="col-md-auto mb-3">
+            <select class="form-select nr-select-m3u8"></select>
+        </div>
+        <div class="col-md mb-3">
+            <input class="form-control nr-text-m3u8" placeholder="请粘贴 M3U8 播放源（http 协议播放源须允许）" />
         </div>
         <div class="col-md-12">
-            <video id="video" controls class="mw-100"></video>
+            <video controls class="mw-100"></video>
         </div>
     </div>
 </div>
@@ -18,39 +16,32 @@
 
 <script>
     var vd = {
-        m3u8: function () { return document.getElementById('seM3u8').value },
-        video: document.getElementById('video'),
+        video: document.querySelector('video'),
 
         init: function () {
-            $.ajax({
-                url: "/lib/m3u8/tv.txt",
-                success: function (data) {
-                    var ds = data.split('#EXTINF:-1'), sehtm = [];
-                    $.each(ds, function () {
-                        var d = this;
-                        var matchm3u8 = /http(.*).m3u8/i.exec(d);
-                        var namem3u8 = /,(.*)/.exec(d)
+            fetch('/lib/m3u8/tv.txt').then(x => x.text()).then(res => {
+                var ds = res.split('#EXTINF:-1'), sehtm = [];
+                ds.forEach(item => {
+                    var matchm3u8 = /http(.*).m3u8/i.exec(item);
+                    var namem3u8 = /,(.*)/.exec(item)
 
-                        if (matchm3u8 && namem3u8) {
-                            sehtm.push('<option value="' + matchm3u8[0] + '">' + namem3u8[1] + '</option>')
-                        }
-                    })
+                    if (matchm3u8 && namem3u8) {
+                        sehtm.push('<option value="' + matchm3u8[0] + '">' + namem3u8[1] + '</option>')
+                    }
+                })
 
-                    $('#seM3u8').html(sehtm.join(''));
-
-                    vd.play(vd.m3u8(), 1);
-                }
+                document.querySelector('.nr-select-m3u8').innerHTML = sehtm.join('');
             })
 
-            document.getElementById('txtM3u8').oninput = function () {
+            document.querySelector('.nr-text-m3u8').addEventListener('input', function () {
                 if (this.value.toLowerCase().indexOf('.m3u8') >= 0) {
                     vd.play(this.value, 1);
                 }
-            }
+            }, false);
 
-            document.getElementById('seM3u8').onchange = function () {
+            document.querySelector('.nr-select-m3u8').addEventListener('change', function () {
                 vd.play(this.value, 1);
-            }
+            }, false);
 
             vd.autoSize();
             window.onresize = vd.autoSize;
@@ -67,7 +58,7 @@
             else if (vd.video.canPlayType('application/vnd.apple.mpegurl')) {
                 vd.video.src = m3u8;
                 vd.video.addEventListener('loadedmetadata', function () {
-                    isplay && video.play();
+                    isplay && vd.video.load();
                 });
             } else {
                 vd.video.parentNode.innerHTML = "您的浏览器不支持，请换Chrome浏览器、Firefox浏览器";

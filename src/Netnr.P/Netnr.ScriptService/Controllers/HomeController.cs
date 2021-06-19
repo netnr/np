@@ -199,15 +199,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 汉字转拼音
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Pinyin()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 网络测速
         /// </summary>
         /// <returns></returns>
@@ -464,6 +455,11 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Identicon()
+        {
+            return View();
+        }
+
+        public IActionResult GitStorage()
         {
             return View();
         }

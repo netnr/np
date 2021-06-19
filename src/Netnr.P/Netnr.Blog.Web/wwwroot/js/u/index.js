@@ -60,7 +60,7 @@ $('#btnSaveUserPhoto').click(function () {
             if (data.code == 200) {
                 location.reload(false);
             } else {
-                jz.alert(data.msg);
+                jz.alert(data.msg + '<br/>' + data.log.join(''));
             }
         },
         error: function (ex) {

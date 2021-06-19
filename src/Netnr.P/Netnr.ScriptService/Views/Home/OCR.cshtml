@@ -111,45 +111,29 @@
                 var formData = new FormData();
                 formData.append("file", file);
 
-                $.ajax({
-                    url: `${ss.apiServer}/aip/ocr`,
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    xhr: function () {
-                        xhr = $.ajaxSettings.xhr();
-                        xhr.upload.addEventListener('progress', function (e) {
-                            var rate = ((e.loaded / e.total) * 100).toFixed();
-                            if (rate < 100) {
-                                console.log('已上传 ' + rate + '%');
-                            } else {
-                                console.log('正在识别...');
-                            }
-                        })
-                        return xhr;
-                    },
-                    success: function (data) {
-                        console.log(data);
-                        if (data.code == 200 && data.data.words_result) {
-                            var wrs = [];
-                            $.each(data.data.words_result, function () {
-                                wrs.push(this.words);
-                            });
-                            $('#txtResult').removeClass('d-none').val(wrs.join('\r\n'));
-                            document.documentElement.scrollTo(0, document.body.scrollHeight)
-                        } else {
-                            bs.alert('<h4>接口异常</h4>');
-                        }
-                    },
-                    error: function () {
-                        bs.alert('<h4>上传出错</h4>');
-                    },
-                    complete: function () {
-                        ss.loading(0);
+                fetch(`${ss.apiServer}/api/v1/OCR`, {
+                    method: 'POST',
+                    body: formData
+                }).then(x => x.json()).then(res => {
+                    ss.loading(0);
+
+                    console.log(res);
+                    if (res.code == 200 && res.data.words_result) {
+                        var wrs = [];
+                        $.each(res.data.words_result, function () {
+                            wrs.push(this.words);
+                        });
+                        $('#txtResult').removeClass('d-none').val(wrs.join('\r\n'));
+                        document.documentElement.scrollTo(0, document.body.scrollHeight)
+                    } else {
+                        bs.alert('<h4>接口异常</h4>');
                     }
-                });
+                }).catch(err => {
+                    ss.loading(0);
+
+                    console.log(err);
+                    bs.alert('<h4>上传出错</h4>');
+                })
             }
         }
     }

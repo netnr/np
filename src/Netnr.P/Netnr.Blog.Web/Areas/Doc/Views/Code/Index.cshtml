@@ -47,20 +47,17 @@
             border-radius: 0 4px 4px 0;
         }
 
-            .toc > .toc-list {
-                overflow: hidden;
-                position: relative;
-            }
-
-                .toc > .toc-list li {
-                    list-style: none;
-                    line-height: 2rem;
-                }
-
         .toc-list {
             margin: 0;
+            overflow: hidden;
+            position: relative;
             padding-left: 15px;
         }
+
+            .toc-list li {
+                list-style: none;
+                line-height: 2rem;
+            }
 
         .toc-link {
             display: block;
@@ -80,11 +77,6 @@
 
         .is-collapsed {
             max-height: 0;
-        }
-
-        .is-position-fixed {
-            position: fixed !important;
-            top: 0;
         }
 
         .is-active-link {
@@ -224,9 +216,7 @@
                         tocbot.init({
                             tocSelector: '.toc',
                             contentSelector: '#main',
-                            headingSelector: 'h2, h3, h4, h5, h6',
-                            hasInnerContainers: true,
-                            scrollSmooth: false
+                            headingSelector: 'h2, h3, h4, h5, h6'
                         });
 
                         var tocnode = document.querySelector('.toc');

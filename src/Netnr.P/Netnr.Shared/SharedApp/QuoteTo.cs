@@ -314,7 +314,7 @@ namespace Netnr.SharedApp
                         break;
 
                     case "monaco-editor":
-                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.24.0/min/vs/loader.js'></script>");
+                        vh.Add("<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.25.0/min/vs/loader.js'></script>");
                         vh.Add(@"
                                 <script>
                                     function htmlDecode(html) {
@@ -325,7 +325,7 @@ namespace Netnr.SharedApp
 
                                     require.config({
                                         paths: {
-                                            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.24.0/min/vs'
+                                            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.25.0/min/vs'
                                         },
                                         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                     });

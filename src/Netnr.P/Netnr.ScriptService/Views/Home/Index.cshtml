@@ -13,19 +13,18 @@
             </div>
         }
 
-        <div class="col-md-12">
-            <div class="input-group">
-                <div>
-                    <select class="form-select nr-group" id="seGroup">
-                        <option value="">全部</option>
-                        @foreach (var gi in NavService.Nav)
-                        {
-                            <option value="@gi["group"].ToString()">@gi["group"].ToString()</option>
-                        }
-                    </select>
-                </div>
-                <input type="text" class="form-control nr-search" placeholder="双击空白处 重置搜索条件" autocomplete="off">
-            </div>
+        <div class="col-auto">
+            <select class="form-select nr-group" id="seGroup">
+                <option value="">全部</option>
+                @foreach (var gi in NavService.Nav)
+                {
+                    <option value="@gi["group"].ToString()">@gi["group"].ToString()</option>
+                }
+            </select>
+        </div>
+
+        <div class="col">
+            <input type="text" class="form-control nr-search" placeholder="双击空白处 重置搜索条件" autocomplete="off">
         </div>
     </div>
 
@@ -63,7 +62,7 @@
                             <div class="card-body">
                                 <a class="text-decoration-none" href="@href" @Html.Raw(target)>
                                     <svg><use xlink:href="#@item["icon"].ToString()"></use></svg>
-                                    <h5 class="ov">@title</h5>
+                                    <b class="ov">@title</b>
                                     <small>@remark</small>
                                 </a>
                             </div>

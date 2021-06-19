@@ -24,7 +24,7 @@
             $('#btnOk').html('稍等');
             $('#btnOk')[0].disabled = true;
             $.ajax({
-                url: `${ss.apiServer}/analysis`,
+                url: `${ss.apiServer}/api/v1/Analysis`,
                 type: 'POST',
                 data: {
                     ctype: $('#sem').val(),
