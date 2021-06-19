@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>netnr</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <meta name="keywords" content="netnr,NET牛人" />
+    <meta name="description" content="netnr,NET牛人,Netnr Project">
+
+    <style>
+        .sidebar ul li p.active > a {
+            border-right: 2px solid;
+            font-weight: 600;
+            color: #42b983;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">Loading ...</div>
+
+    <!--SEO-->
+    <div style="display:none">
+        {SEO}
+    </div>
+
+    <script>
+        window.$docsify = {
+            repo: 'netnr',
+            noEmoji: true,
+            auto2top: true,
+            loadSidebar: true,
+            relativePath: true,
+            routerMode: location.hostname == "localhost" ? "hash" : "history",
+            markdown: {
+                renderer: {
+                    code: function (str, lang) {
+                        let ch = [];
+                        ch.push("<pre><code>");
+                        try {
+                            str = hljs.getLanguage(lang)
+                                ? hljs.highlight(str, { language: lang }).value
+                                : hljs.highlightAuto(str).value;
+                            ch.push(str);
+                        } catch (__) {
+                            ch.push(str);
+                        }
+                        ch.push("</code></pre>");
+                        return ch.join('');
+                    }
+                }
+            }
+        };
+    </script>
+
+    <script>
+        const nd = {
+            sourceList: [
+                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.0.1/build/styles/vs.min.css",
+                "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.0.1/build/highlight.min.js",
+                "https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/themes/vue.css",
+                "https://cdn.jsdelivr.net/npm/docsify@4.12.1/lib/docsify.min.js"
+            ],
+            createNode: function (nn, html) {
+                let em = document.createElement(nn);
+                em.innerHTML = html;
+                return em;
+            },
+            init: function () {
+                let pas = [];
+                nd.sourceList.forEach(u => {
+                    pas.push(fetch(u).then(x => x.text()));
+                });
+
+                Promise.all(pas).then(res => {
+
+                    var head = document.getElementsByTagName("HEAD")[0];
+
+                    head.appendChild(nd.createNode("STYLE", res[0]));
+                    head.appendChild(nd.createNode("SCRIPT", res[1]));
+                    head.appendChild(nd.createNode("STYLE", "*" + res[2].split(';*')[1]));
+                    head.appendChild(nd.createNode("SCRIPT", res[3]));
+                })
+            }
+        }
+
+        nd.init();
+    </script>
+</body>
+</html>
