@@ -10,7 +10,7 @@ namespace Netnr.CaptchaDemo
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.CaptchaDemo.dll "https://*:591"
+        //dotnet Netnr.CaptchaDemo.dll "https://*:9959"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

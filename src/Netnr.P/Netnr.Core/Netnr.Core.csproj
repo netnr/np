@@ -29,7 +29,7 @@
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Runtime.Caching">
-			<Version>5.0.0</Version>
+			<Version>6.0.0-preview.5.21301.5</Version>
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">

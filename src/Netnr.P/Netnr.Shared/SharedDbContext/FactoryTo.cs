@@ -47,22 +47,34 @@ namespace Netnr.SharedDbContext
                 switch (tdb)
                 {
                     case SharedEnum.TypeDB.InMemory:
+#if DbContextInMemory
                         builder.UseInMemoryDatabase(connnectionString);
+#endif
                         break;
                     case SharedEnum.TypeDB.SQLite:
+#if DbContextSQLite
                         builder.UseSqlite(connnectionString);
+#endif
                         break;
                     case SharedEnum.TypeDB.MySQL:
+#if DbContextMySQL
                         builder.UseMySql(connnectionString, ServerVersion.AutoDetect(connnectionString));
+#endif
                         break;
                     case SharedEnum.TypeDB.Oracle:
+#if DbContextOracle
                         builder.UseOracle(connnectionString);
+#endif
                         break;
                     case SharedEnum.TypeDB.SQLServer:
+#if DbContextSQLServer
                         builder.UseSqlServer(connnectionString);
+#endif
                         break;
                     case SharedEnum.TypeDB.PostgreSQL:
+#if DbContextPostgreSQL
                         builder.UseNpgsql(connnectionString);
+#endif
                         break;
                 }
             }
@@ -85,8 +97,7 @@ namespace Netnr.SharedDbContext
                 case 2:
                     {
                         var ckey = "CONNED" + conn.GetHashCode();
-                        var cval = Core.CacheTo.Get(ckey) as string;
-                        if (cval == null)
+                        if (Core.CacheTo.Get(ckey) is not string cval)
                         {
                             var clow = conn.ToLower();
                             var pts = new List<string> { "database", "server", "filename", "source", "user" };
@@ -104,10 +115,7 @@ namespace Netnr.SharedDbContext
                     }
                 //加密
                 default:
-                    {
-                        conn = Core.CalcTo.DESEncrypt(conn, pwd);
-                        return conn;
-                    }
+                    return conn = Core.CalcTo.AESEncrypt(conn, pwd);
             }
         }
     }

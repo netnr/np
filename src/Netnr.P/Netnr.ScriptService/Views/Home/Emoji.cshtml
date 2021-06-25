@@ -6,6 +6,7 @@
     }
 
         .divHtmlMark ul li {
+            cursor: pointer;
             display: inline-block;
         }
 
@@ -17,7 +18,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12 mb-4">
-            <p>搜索文字：<code>Ctrl+U</code> 打开后再按 <code>Ctrl+F</code></p>
+            <p>搜索文字：<code>Ctrl+U</code> 打开后再按 <code>Ctrl+F</code> 点击复制</p>
             <div class="divHtmlMark hidtext">
                 <h4>星座</h4>
                 <ul>
@@ -886,3 +887,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.body.addEventListener('click', function (e) {
+        var target = e.target;
+        if (target.nodeName == "SPAN" || target.nodeName == "LI") {
+            navigator.clipboard.writeText(target.innerText);
+        }
+    }, false);
+</script>

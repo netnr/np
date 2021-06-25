@@ -32,22 +32,9 @@ namespace Netnr.Blog.Application
                 /// </summary>
                 public Reg()
                 {
-                    Schedule<BackupDataBaseJob>().ToRunEvery(1).Days().At(5, 5);
-
                     Schedule<GistSyncJob>().ToRunEvery(2).Hours();
 
                     Schedule<HandleOperationRecordJob>().ToRunEvery(30).Minutes();
-                }
-            }
-
-            /// <summary>
-            /// 数据库备份任务
-            /// </summary>
-            public class BackupDataBaseJob : IJob
-            {
-                void IJob.Execute()
-                {
-                    Core.ConsoleTo.Log(BackupDataBase().ToJson());
                 }
             }
 
@@ -72,111 +59,6 @@ namespace Netnr.Blog.Application
                     Core.ConsoleTo.Log(HandleOperationRecord().ToJson());
                 }
             }
-        }
-
-        /// <summary>
-        /// 备份数据库
-        /// </summary>
-        public static SharedResultVM BackupDataBase()
-        {
-            var vm = new SharedResultVM();
-
-            try
-            {
-                var listMsg = new List<object>() { "备份数据库" };
-
-
-                var kp = $"Work:BackupDataBase:{GlobalTo.TDB}:";
-
-                if (GlobalTo.GetValue<bool>(kp + "enable") == true)
-                {
-                    var cmd = GlobalTo.GetValue(kp + "cmd");
-                    var sql = GlobalTo.GetValue(kp + "sql");
-
-                    if (!string.IsNullOrWhiteSpace(cmd))
-                    {
-                        var er = Core.CmdTo.Execute(cmd).CrOutput;
-                        vm.Log.Add($"执行CMD：{cmd}");
-                        vm.Log.Add($"结果输出：{er}");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(sql))
-                    {
-                        using var conn = Data.ContextBaseFactory.CreateDbContext().Database.GetDbConnection();
-                        conn.Open();
-                        var connCmd = conn.CreateCommand();
-                        connCmd.CommandText = sql;
-                        int en = connCmd.ExecuteNonQuery();
-
-                        vm.Log.Add($"执行SQL：{sql}");
-                        vm.Log.Add($"受影响行数：{en}");
-                    }
-
-                    vm.Set(SharedEnum.RTag.success);
-                }
-                else
-                {
-                    vm.Set(SharedEnum.RTag.lack);
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 导出数据库
-        /// </summary>
-        /// <returns></returns>
-        public static SharedResultVM ExportDataBase()
-        {
-            var vm = new SharedResultVM();
-
-            try
-            {
-                using var db = Data.ContextBaseFactory.CreateDbContext();
-                var dicDbSet = Data.ContextBase.GetDicDbSet(db);
-
-                var rows = 0;
-                var dicOut = new Dictionary<string, object> { };
-                foreach (var key in dicDbSet.Keys)
-                {
-                    var dbset = dicDbSet[key] as IQueryable<object>;
-                    var list = dbset.ToList();
-                    rows += list.Count;
-
-                    dicOut.Add(key, list);
-                }
-
-                vm.Data = dicOut;
-
-                vm.Log.Add($"时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                vm.Log.Add($"驱动：{db.Database.ProviderName}");
-
-                var conn = db.Database.GetDbConnection();
-                vm.Log.Add($"数据库：{conn.Database}");
-                conn.Open();
-                vm.Log.Add($"版本号：{conn.ServerVersion}");
-                conn.Close();
-
-                vm.Log.Add($"导出数据表 {dicOut.Keys.Count} 个，共 {rows} 行");
-
-                vm.Set(SharedEnum.RTag.success);
-
-                var fullPath = Path.Combine(Path.GetTempPath(), "data.json");
-                Core.FileTo.WriteText(vm.ToJson(), fullPath, false);
-
-                vm.Data = null;
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
         }
 
         /// <summary>

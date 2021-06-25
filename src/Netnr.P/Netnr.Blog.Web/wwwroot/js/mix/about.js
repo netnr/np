@@ -9,9 +9,9 @@ function loadOSinfo() {
         dataType: 'json',
         success: function (data, _status, xhr) {
             if (data.code == 200) {
-                var ssinfo = ' 💖 站龄： ' + document.getElementById("hid_rt").value + ' 天\n\n';
+                var ssinfo = ' Duration: ' + document.getElementById("hid_rt").value + ' Days\n\n';
                 xhr.getAllResponseHeaders().replace(/server: (.*)/, function () {
-                    ssinfo += ' 🌺 服务： ' + arguments[1] + "\n\n";
+                    ssinfo += ' Server: ' + arguments[1] + "\n\n";
                 })
                 ssinfo += data.data.trim();
                 $('.nr-ss').html(ssinfo).css('white-space', 'pre-line');

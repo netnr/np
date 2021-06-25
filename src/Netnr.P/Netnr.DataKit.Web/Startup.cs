@@ -48,10 +48,7 @@ namespace Netnr.DataKit.Web
                     })
                 });
 
-                "DataKit.Web".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr.DataKit.Web.xml", true);
             });
         }
 

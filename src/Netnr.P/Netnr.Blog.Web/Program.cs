@@ -11,7 +11,7 @@ namespace Netnr.Blog.Web
             CreateHostBuilder(args).Build().Run();
         }
 
-        /// dotnet Netnr.Web.dll "https://*:50"
+        /// dotnet Netnr.Blog.dll "https://*:9950"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

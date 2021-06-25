@@ -399,8 +399,8 @@ namespace Netnr.Core
             {
                 try
                 {
-                    var meminfo = FileTo.ReadText("/proc/cpuinfo");
-                    var pitem = meminfo.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).FirstOrDefault(x => x.StartsWith(pkey));
+                    var meminfo = FileTo.ReadText("/proc/cpuinfo") + Environment.NewLine + CmdTo.Execute("lscpu").CrOutput;
+                    var pitem = meminfo.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).FirstOrDefault(x => x.StartsWith(pkey, StringComparison.OrdinalIgnoreCase));
 
                     var pvalue = pitem.Split(':')[1].Trim();
 
@@ -409,6 +409,7 @@ namespace Netnr.Core
                 catch (Exception ex)
                 {
                     Console.WriteLine("/proc/cpuinfo");
+                    Console.WriteLine("lscpu");
                     Console.WriteLine(ex);
                 }
                 return null;
@@ -428,13 +429,17 @@ namespace Netnr.Core
                     foreach (var devitem in listdev)
                     {
                         var dis = devitem.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-
-                        listld.Add(new
+                        var size = long.Parse(dis[1]) * 1024;
+                        //大于 1GB
+                        if (size > 1073741824)
                         {
-                            Name = dis[0],
-                            Size = long.Parse(dis[1]) * 1024,
-                            FreeSpace = long.Parse(dis[3]) * 1024
-                        });
+                            listld.Add(new
+                            {
+                                Name = dis[0],
+                                Size = size,
+                                FreeSpace = long.Parse(dis[3]) * 1024
+                            });
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -553,17 +558,17 @@ namespace Netnr.Core
             var dic = new Dictionary<int, string>
             {
                 { 0, "" },
-                { 1, $" 🎨  框架： {FrameworkDescription}" },
-                { 2, $" 🔵  开机： {Math.Round(TickCount*1.0/1000/24/3600,2)} 天" },
-                { 3, $" 🌟  系统： {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " ，64Bit" : "")}" },
-                { 4, $" 📌  内核： {OSVersion.VersionString}" },
-                { 5, $" 😳  用户： {UserName}" },
-                { 6, $" 📊   CPU： {ProcessorName} ，{ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
-                { 7, $" 📀  内存： {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
+                { 1, $" Framework: {FrameworkDescription}" },
+                { 2, $" Boot: {Math.Round(TickCount*1.0/1000/24/3600,2)} Days" },
+                { 3, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
+                { 4, $" OSVersion: {OSVersion.VersionString}" },
+                { 5, $" User: {UserName}" },
+                { 6, $" CPU: {ProcessorName} , {ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
+                { 7, $" RAM: {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
             };
             if (SwapTotal > 0)
             {
-                dic.Add(8, $" 💿  Swap： {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
+                dic.Add(8, $" Swap: {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
             }
 
             var lgds = LogicalDisk as List<object>;
@@ -577,7 +582,7 @@ namespace Netnr.Core
                 var name = gt.GetProperty("Name").GetValue(lgdi).ToString();
                 listlgd.Add(ProgressBar(size - fs, size, true, name));
             }
-            dic.Add(9, $" 💿  磁盘： {string.Join(" ", listlgd)}");
+            dic.Add(9, $" Disk: {string.Join(" ", listlgd)}");
 
             //排序
             var list = dic.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value).Values.ToList();
@@ -618,11 +623,11 @@ namespace Netnr.Core
             };
             while (--v3 > 0)
             {
-                listpb.Add("◼");
+                listpb.Add("|");
             }
             while (listpb.Count < vt)
             {
-                listpb.Add("◻");
+                listpb.Add("-");
             }
             var text = unit + desc;
             if (!string.IsNullOrEmpty(text))

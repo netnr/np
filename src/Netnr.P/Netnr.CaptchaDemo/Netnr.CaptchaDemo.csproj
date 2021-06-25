@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>7726709b-cd20-47b0-94a6-cacaf37d283f</UserSecretsId>
   </PropertyGroup>
 
@@ -15,11 +15,11 @@
 
   <ItemGroup>
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.24.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.7" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0-preview.5.21301.17" Condition="'$(Configuration)' == 'Debug'" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
     <PackageReference Include="SkiaSharp" Version="2.80.3-preview.93" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.93" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.5.21301.5" />
   </ItemGroup>
 
 </Project>

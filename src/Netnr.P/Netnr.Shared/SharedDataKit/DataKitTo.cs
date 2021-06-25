@@ -66,7 +66,7 @@ namespace Netnr.SharedDataKit
                         }
 
                         //下载
-                        new System.Net.WebClient().DownloadFile(ds, dspath + dsname);
+                        //new System.Net.WebClient().DownloadFile(ds, dspath + dsname);
                     }
 
                     vm.Data = "Data Source=" + dspath + dsname;

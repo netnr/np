@@ -42,7 +42,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedResultVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedEnum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDbContext\FactoryTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDbContext\ExtendTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedIpArea\IpAreaTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedLogging\LoggingModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedLogging\LoggingResultVM.cs" />

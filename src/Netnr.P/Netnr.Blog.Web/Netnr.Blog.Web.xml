@@ -563,7 +563,7 @@
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.api.APIController.Analysis(System.Int32,System.String)">
             <summary>
-            内容分词解析(结巴)
+            内容分词解析（结巴）
             </summary>
             <param name="ctype">命令类型，0：分词（默认，可不传）；1：关键词提取；2：词性标注</param>
             <param name="content">内容</param>
@@ -681,11 +681,6 @@
         <member name="T:Netnr.Blog.Web.Controllers.api.APIController.TaskItem">
             <summary>
             任务项
-            </summary>
-        </member>
-        <member name="F:Netnr.Blog.Web.Controllers.api.APIController.TaskItem.BackupDataBase">
-            <summary>
-            备份数据库
             </summary>
         </member>
         <member name="F:Netnr.Blog.Web.Controllers.api.APIController.TaskItem.ExportDataBase">
@@ -1302,7 +1297,7 @@
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Program.CreateHostBuilder(System.String[])">
-            dotnet Netnr.Web.dll "https://*:50"
+            dotnet Netnr.Blog.dll "https://*:9950"
         </member>
         <member name="T:Netnr.SharedApp.BuildTo">
             <summary>

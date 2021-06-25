@@ -296,38 +296,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Netnr.ResponseFramework.Application.TaskService.DatabaseAsJson">
-            <summary>
-            - 数据库数据存储为JSON（备份数据）
-            - 根据JSON反序列化导入（重置数据）
-            </summary>
-        </member>
-        <member name="F:Netnr.ResponseFramework.Application.TaskService.DatabaseAsJson.fullJsonData">
-            <summary>
-            JSON存储路径
-            </summary>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.TaskService.DatabaseAsJson.Tables(Microsoft.EntityFrameworkCore.DbContext)">
-            <summary>
-            获取所有表
-            </summary>
-            <param name="db"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.TaskService.DatabaseAsJson.WriteToJson(System.Boolean)">
-            <summary>
-            写入JSON文件
-            </summary>
-            <param name="CoverJson">写入JSON文件，默认 false</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.TaskService.DatabaseAsJson.ReadToJson(System.Boolean)">
-            <summary>
-            读取JSON文件
-            </summary>
-            <param name="isClear">是否清理表，默认清理</param>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM">
             <summary>
             表单组件参数项

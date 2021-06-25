@@ -380,21 +380,30 @@
             <param name="data">发送数据，非GET、DELETE请求</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Core.HttpTo.Url(System.Net.HttpWebRequest,System.String)">
-            <summary>
-            HTTP请求
-            </summary>
-            <param name="request">HttpWebRequest对象</param>
-            <param name="charset">编码，默认utf-8</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Core.HttpTo.Url(System.Net.HttpWebRequest,System.Net.HttpWebResponse@,System.String)">
+        <member name="M:Netnr.Core.HttpTo.Stream(System.Net.HttpWebRequest,System.Net.HttpWebResponse@,System.String)">
             <summary>
             HTTP请求
             </summary>
             <param name="request">HttpWebRequest对象</param>
             <param name="charset">编码，默认utf-8</param>
             <param name="response">输出</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.HttpTo.DownloadSave(System.Net.HttpWebRequest,System.String,System.String)">
+            <summary>
+            HTTP请求
+            </summary>
+            <param name="request">HttpWebRequest对象</param>
+            <param name="fullFilePath">存储完整路径</param>
+            <param name="charset">编码，默认utf-8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.HttpTo.Url(System.Net.HttpWebRequest,System.String)">
+            <summary>
+            HTTP请求
+            </summary>
+            <param name="request">HttpWebRequest对象</param>
+            <param name="charset">编码，默认utf-8</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Core.HttpTo.Get(System.String,System.String)">

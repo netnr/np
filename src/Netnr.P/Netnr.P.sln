@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31410.414
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Core", "Netnr.Core\Netnr.Core.csproj", "{7E8538A4-3518-4E49-AE28-2C77E59E60B0}"
 EndProject
@@ -40,8 +40,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Blog.Data", "Netnr.Blog.Data\Netnr.Blog.Data.csproj", "{6294172A-81F8-4286-BE0B-495BDB872438}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Blog.Application", "Netnr.Blog.Application\Netnr.Blog.Application.csproj", "{E6561193-B387-404E-AC3A-0CE9D267BF26}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Blog.Web", "Netnr.Blog.Web\Netnr.Blog.Web.csproj", "{E0F5AF79-7F30-4417-8E1B-346D44990D1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.ResponseFramework.Domain", "Netnr.ResponseFramework.Domain\Netnr.ResponseFramework.Domain.csproj", "{C7DADE7C-5FC1-437A-8157-0529EA35A88E}"
 EndProject
@@ -111,6 +109,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mix", "..\..\mix\", "{58B01
 		SlnRelativePath = "..\..\mix\"
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Blog.Web", "Netnr.Blog.Web\Netnr.Blog.Web.csproj", "{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Netnr.Shared\Netnr.Shared.projitems*{0d99d943-8dd0-4458-9910-27b300b0d569}*SharedItemsImports = 5
@@ -122,9 +122,9 @@ Global
 		Netnr.Shared\Netnr.Shared.projitems*{7bca6cdb-6e14-41e9-986d-0390582e2dab}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{8329eaae-4467-4332-a86e-dbc69991bbe2}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{962f1f29-4ddc-48c6-8043-915240872570}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{9a7be0e5-e753-42ec-8b26-2835b9407bbb}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{c3e1dc11-4331-48bf-9e8b-df32b2c053d0}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{c8137a02-02d6-4765-8aea-f9b352cd15d5}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{e0f5af79-7f30-4417-8e1b-346d44990d1e}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{e46fa4e1-44e6-48a8-a5b8-3f98000ae7bf}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{f500586b-5ae0-4283-b959-2654a3e21b6b}*SharedItemsImports = 5
 	EndGlobalSection
@@ -177,10 +177,6 @@ Global
 		{E6561193-B387-404E-AC3A-0CE9D267BF26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6561193-B387-404E-AC3A-0CE9D267BF26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6561193-B387-404E-AC3A-0CE9D267BF26}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0F5AF79-7F30-4417-8E1B-346D44990D1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0F5AF79-7F30-4417-8E1B-346D44990D1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0F5AF79-7F30-4417-8E1B-346D44990D1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0F5AF79-7F30-4417-8E1B-346D44990D1E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C7DADE7C-5FC1-437A-8157-0529EA35A88E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C7DADE7C-5FC1-437A-8157-0529EA35A88E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7DADE7C-5FC1-437A-8157-0529EA35A88E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -228,6 +224,10 @@ Global
 		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -244,7 +244,6 @@ Global
 		{AB17B140-0696-4E64-AA2D-57B1C33618B5} = {0668834E-BA3C-4AFA-B222-820234F53CD2}
 		{6294172A-81F8-4286-BE0B-495BDB872438} = {0668834E-BA3C-4AFA-B222-820234F53CD2}
 		{E6561193-B387-404E-AC3A-0CE9D267BF26} = {0668834E-BA3C-4AFA-B222-820234F53CD2}
-		{E0F5AF79-7F30-4417-8E1B-346D44990D1E} = {0668834E-BA3C-4AFA-B222-820234F53CD2}
 		{C7DADE7C-5FC1-437A-8157-0529EA35A88E} = {9C11B0FC-3722-48BC-8E3D-3416F980790F}
 		{7BCA6CDB-6E14-41E9-986D-0390582E2DAB} = {9C11B0FC-3722-48BC-8E3D-3416F980790F}
 		{C3E1DC11-4331-48BF-9E8B-DF32B2C053D0} = {9C11B0FC-3722-48BC-8E3D-3416F980790F}
@@ -255,6 +254,7 @@ Global
 		{3770B6CC-FF8A-4059-B511-3673238E455D} = {A01BEDFB-24F0-4B11-870E-0BB6016D2228}
 		{0D99D943-8DD0-4458-9910-27B300B0D569} = {70A676C8-6AEA-46EB-BFC9-FC295EAEB351}
 		{8329EAAE-4467-4332-A86E-DBC69991BBE2} = {A01BEDFB-24F0-4B11-870E-0BB6016D2228}
+		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB} = {0668834E-BA3C-4AFA-B222-820234F53CD2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B748ADB4-97F0-4295-BA4D-ACC3AB5DA0B2}

@@ -15,15 +15,15 @@ require(['vs/editor/editor.main'], function () {
     editor = monaco.editor.create(te[0], {
         value: $('#hidContent').val(),
         language: selang.val(),
-        automaticLayout: true,
-        scrollWidth: 5,
-        scrollbar: {
-            verticalScrollbarSize: 9,
-            horizontalScrollbarSize: 9
-        },
         theme: $('#setheme').attr('data-value'),
+        fontSize: 18,
+        automaticLayout: true,
+        scrollbar: {
+            verticalScrollbarSize: 13,
+            horizontalScrollbarSize: 13
+        },
         minimap: {
-            enabled: false
+            enabled: true
         }
     });
 

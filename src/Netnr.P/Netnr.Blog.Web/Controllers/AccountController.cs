@@ -688,7 +688,6 @@ namespace Netnr.Blog.Web.Controllers
                                     {
                                         try
                                         {
-                                            using var wc = new System.Net.WebClient();
                                             var ppath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
                                             if (!System.IO.Directory.Exists(ppath))
@@ -696,7 +695,7 @@ namespace Netnr.Blog.Web.Controllers
                                                 System.IO.Directory.CreateDirectory(ppath);
                                             }
 
-                                            wc.DownloadFile(avatar, PathTo.Combine(ppath, mo.UserPhoto));
+                                            HttpTo.DownloadSave(HttpTo.HWRequest(avatar), PathTo.Combine(ppath, mo.UserPhoto));
                                         }
                                         catch (Exception)
                                         {

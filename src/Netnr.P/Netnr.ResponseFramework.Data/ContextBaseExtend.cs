@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Netnr.SharedFast;
 
-namespace Netnr.Blog.Data
+namespace Netnr.ResponseFramework.Data
 {
     /// <summary>
     /// 扩展
@@ -21,7 +18,7 @@ namespace Netnr.Blog.Data
         /// <param name="args"></param>
         public static Dictionary<string, object> GetDicDbSet(ContextBase db)
         {
-            var dic = GetDicDbSet(db.DocSet, db.DocSetDetail, db.Draw, db.GiftRecord, db.GiftRecordDetail, db.Gist, db.GistSync, db.KeyValues, db.KeyValueSynonym, db.Notepad, db.OperationRecord, db.Run, db.Tags, db.UserConnection, db.UserInfo, db.UserMessage, db.UserReply, db.UserWriting, db.UserWritingTags);
+            var dic = GetDicDbSet(db.SysButton, db.SysDictionary, db.SysLog, db.SysMenu, db.SysRole, db.SysTableConfig, db.SysUser, db.TempExample, db.TempInvoiceDetail, db.TempInvoiceMain);
             return dic;
         }
 
@@ -146,41 +143,6 @@ namespace Netnr.Blog.Data
             }
 
             return vm;
-        }
-
-        /// <summary>
-        /// 只读（1分钟后生效，为初始化数据预留时间）
-        /// </summary>
-        public static void IsReadOnly()
-        {
-            if (GlobalTo.GetValue<bool>("ReadOnly") && Process.GetCurrentProcess().StartTime.AddMinutes(1) < DateTime.Now)
-            {
-                throw new Exception("The database is read-only");
-            }
-        }
-
-        public override int SaveChanges()
-        {
-            IsReadOnly();
-            return base.SaveChanges();
-        }
-
-        public override int SaveChanges(bool acceptAllChangesOnSuccess)
-        {
-            IsReadOnly();
-            return base.SaveChanges(acceptAllChangesOnSuccess);
-        }
-
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-        {
-            IsReadOnly();
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            IsReadOnly();
-            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

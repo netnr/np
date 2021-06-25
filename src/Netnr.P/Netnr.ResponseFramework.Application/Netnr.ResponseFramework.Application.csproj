@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,18 +17,12 @@
   <ItemGroup>
     <PackageReference Include="NPOI" Version="2.5.3" />
     <PackageReference Include="FluentScheduler" Version="5.5.1" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.10" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Netnr.ResponseFramework.Data\Netnr.ResponseFramework.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Netnr.ResponseFramework.Application.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

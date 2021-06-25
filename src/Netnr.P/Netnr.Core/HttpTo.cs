@@ -44,21 +44,9 @@ namespace Netnr.Core
         /// </summary>
         /// <param name="request">HttpWebRequest对象</param>
         /// <param name="charset">编码，默认utf-8</param>
-        /// <returns></returns>
-        public static string Url(HttpWebRequest request, string charset = "utf-8")
-        {
-            HttpWebResponse response = null;
-            return Url(request, ref response, charset);
-        }
-
-        /// <summary>
-        /// HTTP请求
-        /// </summary>
-        /// <param name="request">HttpWebRequest对象</param>
-        /// <param name="charset">编码，默认utf-8</param>
         /// <param name="response">输出</param>
         /// <returns></returns>
-        public static string Url(HttpWebRequest request, ref HttpWebResponse response, string charset = "utf-8")
+        public static StreamReader Stream(HttpWebRequest request, ref HttpWebResponse response, string charset = "utf-8")
         {
             response = (HttpWebResponse)request.GetResponse();
 
@@ -66,9 +54,42 @@ namespace Netnr.Core
             if (string.Compare(response.ContentEncoding, "gzip", true) >= 0)
                 responseStream = new System.IO.Compression.GZipStream(responseStream, System.IO.Compression.CompressionMode.Decompress);
 
-            using var sr = new StreamReader(responseStream, Encoding.GetEncoding(charset));
-            var result = sr.ReadToEnd();
-            return result;
+            return string.IsNullOrEmpty(charset) ?
+                new StreamReader(responseStream) : new StreamReader(responseStream, Encoding.GetEncoding(charset));
+        }
+
+        /// <summary>
+        /// HTTP请求
+        /// </summary>
+        /// <param name="request">HttpWebRequest对象</param>
+        /// <param name="fullFilePath">存储完整路径</param>
+        /// <param name="charset">编码，默认utf-8</param>
+        /// <returns></returns>
+        public static void DownloadSave(HttpWebRequest request, string fullFilePath, string charset = "utf-8")
+        {
+            HttpWebResponse response = null;
+            var stream = Stream(request, ref response, charset);
+
+            using MemoryStream ms = new();
+            stream.BaseStream.CopyTo(ms);
+            var bytes = ms.ToArray();
+
+            using var fs = new FileStream(fullFilePath, FileMode.Create);
+            fs.Write(bytes, 0, bytes.Length);
+            fs.Flush();
+        }
+
+        /// <summary>
+        /// HTTP请求
+        /// </summary>
+        /// <param name="request">HttpWebRequest对象</param>
+        /// <param name="charset">编码，默认utf-8</param>
+        /// <returns></returns>
+        public static string Url(HttpWebRequest request, string charset = "utf-8")
+        {
+            HttpWebResponse response = null;
+            var stream = Stream(request, ref response, charset);
+            return stream.ReadToEnd();
         }
 
         /// <summary>

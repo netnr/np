@@ -62,10 +62,6 @@ netnr@netnr.com
 &nbsp; 验证码 Demo
 &nbsp; https://netnr-captcha.herokuapp.com
 
-**GitStorage**
-&nbsp; GitHub Storage
-&nbsp; https://gs.netnr.eu.org
-
 **Static**
 &nbsp; 个站静态资源
 &nbsp; https://s1.netnr.eu.org

@@ -205,7 +205,7 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
-        /// 内容分词解析(结巴)
+        /// 内容分词解析（结巴）
         /// </summary>
         /// <param name="ctype">命令类型，0：分词（默认，可不传）；1：关键词提取；2：词性标注</param>
         /// <param name="content">内容</param>
@@ -432,7 +432,8 @@ namespace Netnr.Blog.Web.Controllers.api
                     { "Receipt", "通用票据识别 200次/天" },
                     { "VehicleLicense", "行驶证识别 200次/天" },
                     { "DrivingLicense", "驾驶证识别 200次/天" },
-                    { "LicensePlate", "车牌识别 200次/天" }
+                    { "LicensePlate", "车牌识别 200次/天" },
+                    { "Seal", "印章识别 100次/天" }
                 }
             };
             vm.Set(SharedEnum.RTag.success);
@@ -539,6 +540,11 @@ namespace Netnr.Blog.Web.Controllers.api
                     case "licenseplate":
                         vm.Log.Add("车牌识别 200次/天");
                         vm.Data = ocr.LicensePlate(bytes);
+                        vm.Set(SharedEnum.RTag.success);
+                        break;
+                    case "seal":
+                        vm.Log.Add("印章识别 100次/天");
+                        vm.Data = ocr.Seal(bytes);
                         vm.Set(SharedEnum.RTag.success);
                         break;
                     default:
@@ -796,9 +802,18 @@ namespace Netnr.Blog.Web.Controllers.api
                     }
 
                     HttpWebResponse response = null;
-                    outContent = HttpTo.Url(hwr, ref response, charset);
-                    outCode = (int)response.StatusCode;
-                    outContentType = response.ContentType;
+                    var stream = HttpTo.Stream(hwr, ref response, charset);
+
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        return File(stream.BaseStream, response.ContentType, Path.GetFileName(url));
+                    }
+                    else
+                    {
+                        outContent = stream.ReadToEnd();
+                        outCode = (int)response.StatusCode;
+                        outContentType = response.ContentType;
+                    }
                 }
             }
             catch (WebException ex)
@@ -868,10 +883,6 @@ namespace Netnr.Blog.Web.Controllers.api
         public enum TaskItem
         {
             /// <summary>
-            /// 备份数据库
-            /// </summary>
-            BackupDataBase,
-            /// <summary>
             /// 导出数据库
             /// </summary>
             ExportDataBase,
@@ -912,12 +923,8 @@ namespace Netnr.Blog.Web.Controllers.api
                         vm.Set(SharedEnum.RTag.invalid);
                         break;
 
-                    case TaskItem.BackupDataBase:
-                        vm = Application.TaskService.BackupDataBase();
-                        break;
-
                     case TaskItem.ExportDataBase:
-                        vm = Application.TaskService.ExportDataBase();
+                        vm = Data.ContextBase.ExportDataBase(Path.Combine(Path.GetTempPath(), "data.json"));
                         break;
 
                     case TaskItem.ExportSampleData:

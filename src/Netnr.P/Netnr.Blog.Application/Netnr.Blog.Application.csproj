@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>Netnr.Blog.Application.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,12 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Netnr.Blog.Data\Netnr.Blog.Data.csproj" />
     <ProjectReference Include="..\Netnr.Login\Netnr.Login.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Netnr.Blog.Application.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

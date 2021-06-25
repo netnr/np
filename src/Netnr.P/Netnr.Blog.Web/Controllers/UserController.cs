@@ -196,8 +196,7 @@ namespace Netnr.Blog.Web.Controllers
                             break;
                         case "link":
                             {
-                                using var wc = new System.Net.WebClient();
-                                wc.DownloadFile(source, PathTo.Combine(ppath, upname));
+                                HttpTo.DownloadSave(HttpTo.HWRequest(source), PathTo.Combine(ppath, upname));
 
                                 var usermo = db.UserInfo.Find(uinfo.UserId);
                                 usermo.UserPhoto = npnew;

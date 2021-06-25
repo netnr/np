@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using Netnr.SharedUserAgent;
 using Netnr.SharedApp;
+using Netnr.SharedFast;
+using Netnr.Core;
+using System;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -48,36 +51,52 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             var vm = new SharedResultVM();
 
-            switch (ti)
+            var ck = "Global_ServiceDo";
+            var msg = CacheTo.Get(ck)?.ToString();
+            if (!string.IsNullOrWhiteSpace(msg))
             {
-                case ServiceItem.DatabaseReset:
-                    {
-                        if (new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
+                vm.Set(SharedEnum.RTag.refuse);
+                vm.Msg = msg;
+            }
+            else
+            {
+                CacheTo.Set(ck, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 正在执行 {ti}", 600, false);
+
+                switch (ti)
+                {
+                    case ServiceItem.DatabaseReset:
                         {
-                            vm.Set(SharedEnum.RTag.refuse);
-                            vm.Msg = "are you human？";
+                            if (new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
+                            {
+                                vm.Set(SharedEnum.RTag.refuse);
+                                vm.Msg = "are you human？";
+                            }
+                            else
+                            {
+                                var jsonPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
+                                vm = ContextBase.ImportDataBase(jsonPath);
+                            }
                         }
-                        else
+                        break;
+
+                    case ServiceItem.DatabaseBackup:
                         {
-                            vm = Application.TaskService.DatabaseAsJson.ReadToJson();
+                            //是否覆盖JSON文件，默认不覆盖，避免线上重置功能被破坏
+                            var CoverJson = false;
+
+                            var jsonPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
+                            vm = ContextBase.ExportDataBase(CoverJson ? jsonPath : null);
                         }
-                    }
-                    break;
+                        break;
 
-                case ServiceItem.DatabaseBackup:
-                    {
-                        //是否覆盖JSON文件，默认不覆盖，避免线上重置功能被破坏
-                        var CoverJson = false;
+                    case ServiceItem.ClearTmp:
+                        {
+                            vm = Application.TaskService.ClearTmp();
+                        }
+                        break;
+                }
 
-                        vm = Application.TaskService.DatabaseAsJson.WriteToJson(CoverJson);
-                    }
-                    break;
-
-                case ServiceItem.ClearTmp:
-                    {
-                        vm = Application.TaskService.ClearTmp();
-                    }
-                    break;
+                CacheTo.Remove(ck);
             }
 
             return vm;

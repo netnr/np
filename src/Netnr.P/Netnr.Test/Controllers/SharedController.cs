@@ -31,8 +31,7 @@ namespace Netnr.Test.Controllers
                 var fileName = PathTo.Combine(System.IO.Path.GetTempPath(), dbname);
                 if (!System.IO.File.Exists(fileName))
                 {
-                    using var wc = new System.Net.WebClient();
-                    wc.DownloadFile(conn.Split('=')[1], fileName);
+                    HttpTo.DownloadSave(HttpTo.HWRequest(conn.Split('=')[1]), fileName);
                 }
                 conn = @$"Data Source={fileName}";
             }

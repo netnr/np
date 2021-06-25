@@ -22,6 +22,7 @@ namespace Netnr.Blog.Web.Controllers
         /// 服务器状态
         /// </summary>
         /// <returns></returns>
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 10)]
         public SharedResultVM AboutServerStatus()
@@ -30,7 +31,13 @@ namespace Netnr.Blog.Web.Controllers
 
             try
             {
-                var ss = new SystemStatusTo();
+                var ckss = "Global_SystemStatus";
+                if (CacheTo.Get(ckss) is not SystemStatusTo ss)
+                {
+                    ss = new SystemStatusTo();
+                    CacheTo.Set(ckss, ss, 10, false);
+                }
+
                 vm.Log.Add(ss);
                 vm.Data = ss.ToView();
                 vm.Set(SharedEnum.RTag.success);

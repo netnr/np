@@ -20,7 +20,7 @@ namespace Netnr.Test.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM CmdTo_1()
+        public SharedResultVM ToCmd_1()
         {
             var vm = new SharedResultVM();
 
@@ -69,7 +69,7 @@ namespace Netnr.Test.Controllers
         /// <param name="fileName">应用程序</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM CmdTo_2(string args = @"-i E:\package\video\cspk.mp4", string fileName = "ffmpeg")
+        public SharedResultVM ToCmd_2(string args = @"-i E:\package\video\cspk.mp4", string fileName = "ffmpeg")
         {
             var vm = new SharedResultVM();
 
@@ -96,7 +96,7 @@ namespace Netnr.Test.Controllers
         /// <param name="type">json 或 view</param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult SystemStatusTo(string type = "json")
+        public IActionResult ToSystemStatus(string type = "json")
         {
             var ss = new SystemStatusTo();
             return Content(type == "json" ? ss.ToJson(true) : ss.ToView());
@@ -138,6 +138,22 @@ namespace Netnr.Test.Controllers
 
                 return vm;
             });
+        }
+
+        /// <summary>
+        /// 下载
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM ToHttp_DownloadSave(string url = "https://img01.sogoucdn.com/app/a/100540022/2021053117531272442865.png", string path = @"D:\tmp\abc.png")
+        {
+            var vm = new SharedResultVM();
+
+            HttpTo.DownloadSave(HttpTo.HWRequest(url), path);
+
+            vm.Set(SharedEnum.RTag.success);
+
+            return vm;
         }
     }
 }

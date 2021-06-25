@@ -726,9 +726,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.QueryServerInfo">
+        <member name="M:Netnr.ResponseFramework.Web.Controllers.ToolController.ServerStatus">
             <summary>
-            查询服务器信息
+            服务器状态
             </summary>
             <returns></returns>
         </member>

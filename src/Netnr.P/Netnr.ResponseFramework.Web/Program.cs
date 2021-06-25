@@ -11,7 +11,7 @@ namespace Netnr.ResponseFramework.Web
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.ResponseFramework.dll "https://*:51"
+        //dotnet Netnr.ResponseFramework.Web.dll "https://*:9951"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

@@ -917,44 +917,5 @@
             <param name="pwd">密码</param>
             <param name="ed">1加密 2解密</param>
         </member>
-        <member name="T:Netnr.SharedDbContext.ExtendTo">
-            <summary>
-            EF上下文执行SQL扩展
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedDbContext.ExtendTo.SqlQuery(Microsoft.EntityFrameworkCore.DbContext,System.String,System.Data.Common.DbParameter[])">
-            <summary>
-            执行SQL返回表
-            </summary>
-            <param name="context"></param>
-            <param name="sql"></param>
-            <param name="parameters"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDbContext.ExtendTo.SqlExecute(Microsoft.EntityFrameworkCore.DbContext,System.String,System.Data.Common.DbParameter[])">
-            <summary>
-            执行SQL返回受影响行数
-            </summary>
-            <param name="context"></param>
-            <param name="sql"></param>
-            <param name="parameters"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDbContext.ExtendTo.SqlExecute(Microsoft.EntityFrameworkCore.DbContext,System.Collections.Generic.List{System.String},System.Int32)">
-            <summary>
-            事务执行批量SQL，可自定义SQL分批大小
-            </summary>
-            <param name="context"></param>
-            <param name="listSql">批量脚本</param>
-            <param name="sqlBatchSize">脚本分批大小，单位：字节（byte），默认：1024 * 100 = 100KB</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDbContext.ExtendTo.Ros(Microsoft.EntityFrameworkCore.DbContext)">
-            <summary>
-            引用对象符号
-            </summary>
-            <param name="context"></param>
-            <returns></returns>
-        </member>
     </members>
 </doc>

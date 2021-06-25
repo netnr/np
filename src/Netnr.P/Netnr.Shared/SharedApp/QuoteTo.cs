@@ -230,6 +230,10 @@ namespace Netnr.SharedApp
                         vh.Add("<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/svgo/2.3.0/svgo.min.js'></script>");
                         break;
 
+                    case "device-detector.js":
+                        vh.Add("<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/device-detector/2.2.9/dd.min.js'></script>");
+                        break;
+
                     case "html2canvas.js":
                         vh.Add("<script src='https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'></script>");
                         break;

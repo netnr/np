@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Linq;
+using System;
 using Netnr.ResponseFramework.Data;
 using Newtonsoft.Json.Converters;
 using Netnr.SharedFast;
@@ -68,10 +68,7 @@ namespace Netnr.ResponseFramework.Web
                     })
                 });
 
-                "ResponseFramework.Web,ResponseFramework.Application".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr.ResponseFramework.Web.xml", true);
             });
             //swagger枚举显示名称
             services.AddSwaggerGenNewtonsoftSupport();
@@ -120,7 +117,9 @@ namespace Netnr.ResponseFramework.Web
             if (db.Database.EnsureCreated())
             {
                 //重置数据库
-                Application.TaskService.DatabaseAsJson.ReadToJson();
+                var jsonPath = Core.PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
+                var vm = ContextBase.ImportDataBase(jsonPath);
+                Console.WriteLine(vm.ToJson(true));
             }
 
             //配置swagger（生产环境不需要，把该代码移至 是开发环境 条件里面）

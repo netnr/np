@@ -79,42 +79,34 @@ https://zme.ink
             <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <input class="form-control mb-3 nr-ua" placeholder="请粘贴 User-Agent 信息" />
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>浏览器</th>
-                        <th>内核</th>
-                        <th>系统</th>
-                        <th>设备</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <input class="form-control fs-5 mb-3 nr-ua" placeholder="请粘贴 User-Agent 信息" />
         </div>
     </div>
+    <div class="row nr-result"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/device-detector/2.2.9/dd.min.js"></script>
+<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/device-detector/2.2.9/dd.min.js'></script>
+
 
 <script>
     var pg = {
         ua: navigator.userAgent,
         init: function () {
-            $('.nr-ua').on('input', function () {
+            document.querySelector('.nr-ua').addEventListener('input', function () {
                 if (this.value == "") {
                     pg.parse(pg.ua);
                 } else {
                     pg.parse(this.value);
                 }
-            }).val(pg.ua);
+            }, false);
 
+            document.querySelector('.nr-ua').value = pg.ua;
             pg.parse(pg.ua);
         },
         parse: function (ua) {
             var uaobj = dd(ua);
             if (uaobj.bot) {
-                $('table').find('tbody').html(`<tr><td colspan="4"><pre class="m-0 p-3">${JSON.stringify(uaobj.bot, null, 2)}</pre></td></tr>`);
+                document.querySelector('.nr-result').innerHTML = `<div class="col-md-12"><pre class="bg-dark rounded text-white fs-5 m-0 p-3">${JSON.stringify(uaobj.bot, null, 2)}</pre></div>`;
             } else {
                 var uc = uaobj.client,
                     uo = uaobj.os,
@@ -124,7 +116,12 @@ https://zme.ink
                     oi = `${uo.name} ${uo.version} ${uo.platform}`,
                     di = `${ud.brand} ${ud.model}`;
 
-                $('table').find('tbody').html(`<tr><td>${ci}</td><td>${ei}</td><td>${oi}</td><td>${di}</td></tr>`);
+                document.querySelector('.nr-result').innerHTML = `
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">浏览器：${ci}</div></div>
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">内核：${ei}</div></div>
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">系统：${oi}</div></div>
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">设备：${di}</div></div>
+                `;
             }
         }
     }

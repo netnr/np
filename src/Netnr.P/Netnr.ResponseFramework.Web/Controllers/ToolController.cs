@@ -23,18 +23,25 @@ namespace Netnr.ResponseFramework.Web.Controllers
         }
 
         /// <summary>
-        /// 查询服务器信息
+        /// 服务器状态
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 10)]
-        public SharedResultVM QueryServerInfo()
+        public SharedResultVM ServerStatus()
         {
             var vm = new SharedResultVM();
 
             try
             {
-                var ss = new SystemStatusTo();
+                var ckss = "Global_SystemStatus";
+                if (CacheTo.Get(ckss) is not SystemStatusTo ss)
+                {
+                    ss = new SystemStatusTo();
+                    CacheTo.Set(ckss, ss, 10, false);
+                }
+
                 vm.Log.Add(ss);
                 vm.Data = ss.ToView();
                 vm.Set(SharedEnum.RTag.success);

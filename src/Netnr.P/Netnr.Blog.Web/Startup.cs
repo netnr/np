@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Newtonsoft.Json.Linq;
+using Netnr.Core;
 using Netnr.Login;
 using Netnr.SharedFast;
 using Netnr.SharedLogging;
@@ -31,18 +31,17 @@ namespace Netnr.Blog.Web
             LoggingTo.OptionsDbRoot = GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath);
 
             //结巴词典路径
-            var jbPath = Core.PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
+            var jbPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
             if (!System.IO.Directory.Exists(jbPath))
             {
                 System.IO.Directory.CreateDirectory(jbPath);
                 try
                 {
                     var dhost = "https://cdn.jsdelivr.net/gh/anderscui/jieba.NET@0.42.2/src/Segmenter/Resources/";
-                    using var wc = new System.Net.WebClient();
                     "prob_trans.json,prob_emit.json,idf.txt,pos_prob_start.json,pos_prob_trans.json,pos_prob_emit.json,char_state_tab.json".Split(',').ToList().ForEach(file =>
                     {
-                        var fullPath = Core.PathTo.Combine(jbPath, file);
-                        wc.DownloadFile(dhost + file, fullPath);
+                        var fullPath = PathTo.Combine(jbPath, file);
+                        HttpTo.DownloadSave(HttpTo.HWRequest(dhost + file), fullPath);
                     });
                 }
                 catch (Exception ex)
@@ -97,7 +96,7 @@ namespace Netnr.Blog.Web
                 }
             });
 
-            IMvcBuilder builder = services.AddControllersWithViews(options =>
+            services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
                 options.Filters.Add(new Apps.FilterConfigs.ErrorActionFilter());
@@ -108,10 +107,6 @@ namespace Netnr.Blog.Web
                 //注册全局授权访问时登录标记是否有效
                 options.Filters.Add(new Apps.FilterConfigs.LoginSignValid());
             });
-
-#if DEBUG
-            builder.AddRazorRuntimeCompilation();
-#endif
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -137,10 +132,7 @@ namespace Netnr.Blog.Web
                     })
                 });
 
-                "Blog.Web,Blog.Application".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(AppContext.BaseDirectory + $"Netnr.{x}.xml", true);
-                });
+                c.IncludeXmlComments(AppContext.BaseDirectory + $"Netnr.Blog.Web.xml", true);
             });
             //swagger枚举显示名称
             services.AddSwaggerGenNewtonsoftSupport();
@@ -197,28 +189,9 @@ namespace Netnr.Blog.Web
             //数据库不存在则创建，创建后返回true
             if (db.Database.EnsureCreated())
             {
-                var jobj = Core.FileTo.ReadText(GlobalTo.ContentRootPath + "/db/data.json").ToJObject();
-
-                //从JSON写入数据库
-                var jodb = jobj["data"];
-
-                var dicDbSet = Data.ContextBase.GetDicDbSet(db);
-                foreach (var table in dicDbSet.Keys)
-                {
-                    var dbset = dicDbSet[table];
-                    var gt = dbset.GetType();
-                    var ttype = Type.GetType(gt.FullName.Split("[[")[1].TrimEnd(']'));
-
-                    var jarows = jodb[table] as JArray;
-                    for (int i = 0; i < jarows?.Count; i++)
-                    {
-                        var mo = jarows[i].ToJson().ToType(ttype);
-                        gt.GetMethod("Add").Invoke(dbset, new object[] { mo });
-                    }
-                }
-
-                var num = db.SaveChanges();
-                Console.WriteLine($"Initialize the database, write {num} rows of data");
+                var jsonPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
+                var vm = Data.ContextBase.ImportDataBase(jsonPath);
+                Console.WriteLine(vm.ToJson(true));
             }
 
             //配置swagger
