@@ -46,9 +46,9 @@ netnr@netnr.com
 
 **ScriptService**
 &nbsp; 脚本服务
-&nbsp; https://ss.netnr.eu.org
-&nbsp; https://ss.netnr.com
 &nbsp; https://ss.js.org
+&nbsp; https://ss.netnr.com
+&nbsp; https://ss.netnr.eu.org
 
 **FileServer**
 &nbsp; 上传文件服务器
@@ -69,7 +69,6 @@ netnr@netnr.com
 **uuid**
 &nbsp; 一个基于Git托管去中心化的收藏夹，书签
 &nbsp; https://uuid.fun
-&nbsp; https://uuid.pages.dev
 
 **NetnrMD**
 &nbsp; Markdown 编辑器
