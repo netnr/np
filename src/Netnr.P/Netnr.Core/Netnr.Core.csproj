@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net45;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net461;netstandard2.1</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Description>开发常用的核心类库；文档：https://netnr.eu.org</Description>
 		<Copyright>netnr</Copyright>
@@ -29,10 +29,11 @@
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Runtime.Caching">
-			<Version>6.0.0-preview.5.21301.5</Version>
+			<Version>6.0.0-preview.6.21352.12</Version>
 		</PackageReference>
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+		<PackageReference Include="System.IO.Compression" Version="4.3.0" />
 		<PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
 	</ItemGroup>
 

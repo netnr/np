@@ -1,30 +1,50 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
-
-namespace Netnr.ResponseFramework.Domain
+﻿namespace Netnr.ResponseFramework.Domain
 {
+    /// <summary>
+    /// 单据明细
+    /// </summary>
     public partial class TempInvoiceDetail
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string TidId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 单据主表ID
+        /// </summary>
         public string TimId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 单据号
+        /// </summary>
         public string TimNo { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? TidOrder { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 商品ID
+        /// </summary>
         public string GoodsId { get; set; }
+        /// <summary>
+        /// 商品数量
+        /// </summary>
         public int? GoodsCount { get; set; }
+        /// <summary>
+        /// 商品成本
+        /// </summary>
         public decimal? GoodsCost { get; set; }
+        /// <summary>
+        /// 商品售价
+        /// </summary>
         public decimal? GoodsPrice { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

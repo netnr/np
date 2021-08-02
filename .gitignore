@@ -311,7 +311,8 @@ OpenCover/
 .vercel
 .netlify
 src/Netnr.P/Netnr.Blog.Web/db/jieba/
-src/Netnr.P/Netnr.TemplatePage/
+src/Netnr.P/Netnr.DataX/ud/hub/
+src/Netnr.P/Netnr.DataKit.Web/wwwroot/lib/ndk/icon/
 log.db
 yarn.lock
 ip2region.db

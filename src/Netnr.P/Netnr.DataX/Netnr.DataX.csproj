@@ -7,11 +7,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>TRACE;Public;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DataKit</DefineConstants>
+		<DefineConstants>TRACE;Public;AdoFull;DataKit</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;Public;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DataKit</DefineConstants>
+		<DefineConstants>TRACE;Public;AdoFull;DataKit</DefineConstants>
 	</PropertyGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
@@ -21,13 +21,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0-preview.5.21301.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0-preview.6.21352.12" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
-		<PackageReference Include="MySqlConnector" Version="1.3.10" />
-		<PackageReference Include="Npgsql" Version="6.0.0-preview4" />
+		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.1" />
+		<PackageReference Include="Npgsql" Version="6.0.0-preview5" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.1" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
-		<PackageReference Include="Microsoft.CodeAnalysis" Version="3.11.0-1.final" />
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.0-2.final" />
 		<PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
 	</ItemGroup>
 
@@ -37,6 +37,9 @@
 
 	<ItemGroup>
 	  <None Update="ud\config-test.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="ud\hub\README.md">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="ud\init.json">

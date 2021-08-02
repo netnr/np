@@ -13,12 +13,12 @@
 
     <title>VIP视频解析</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" async>
+    <link href="https://code.bdstatic.com/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" async>
 
     <style>
         body {
             overflow: hidden;
-            background-color: #000;
+            background-color: #22272e;
         }
 
         select, input {
@@ -33,18 +33,20 @@
     </style>
 </head>
 <body>
-    <div class="my-1">
-        <div class="input-group input-group-sm">
-            <div class="input-group-prepend">
-                <button class="btn btn-secondary btn-sm" id="btnPlay">播放</button>
+    <div class="container-fluid">
+        <div class="row my-3">
+            <div class="col-auto">
+                <button class="btn btn-secondary" id="btnPlay">播放</button>
             </div>
-            <div class="input-group-append">
-                <select class="custom-select custom-select-sm" id="seVtype">
+            <div class="col-auto">
+                <select class="form-select" id="seVtype">
                 </select>
             </div>
-            <input type="text" class="form-control" placeholder="请粘贴VIP视频链接，回车" autocomplete="off" autofocus id="txtVipUri" />
-            <div class="input-group-append">
-                <a class="btn btn-dark" href="vip.crx">插件下载</a>
+            <div class="col">
+                <input type="text" class="form-control" placeholder="请粘贴VIP视频链接，回车" autocomplete="off" autofocus id="txtVipUri" />
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-secondary" href="vip.crx">插件下载</a>
             </div>
         </div>
     </div>
@@ -57,7 +59,6 @@
         //线路
         var vipSource = [
             "https://api.sigujx.com/jx/?url=",
-            "https://jiexi.380k.com/?url=",
             "https://vip.bljiex.com/?v=",
             "https://jx.147g.cc/?url=",
             "https://jx.wzslw.cn/?url="

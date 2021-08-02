@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,7 +47,7 @@ namespace Netnr.DataKit.Web
                     })
                 });
 
-                c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr.DataKit.Web.xml", true);
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
         }
 

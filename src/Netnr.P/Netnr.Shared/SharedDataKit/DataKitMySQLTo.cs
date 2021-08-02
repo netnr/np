@@ -2,10 +2,10 @@
 
 using System;
 using System.Data;
-using System.Linq;
+using System.Data.Common;
 using System.Collections.Generic;
-using MySqlConnector;
 using Netnr.SharedAdo;
+using System.Linq;
 
 namespace Netnr.SharedDataKit
 {
@@ -15,9 +15,9 @@ namespace Netnr.SharedDataKit
     public class DataKitMySQLTo : IDataKitTo
     {
         /// <summary>
-        /// 连接字符串
+        /// 连接
         /// </summary>
-        public string connectionString;
+        public DbConnection dbConnection;
 
         /// <summary>
         /// 数据库上下文
@@ -27,165 +27,124 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="conn">连接字符串</param>
-        public DataKitMySQLTo(string conn)
+        /// <param name="dbConn">连接</param>
+        public DataKitMySQLTo(DbConnection dbConn)
         {
-            db = new DbHelper(new MySqlConnection(connectionString = conn));
+            db = new DbHelper(dbConnection = dbConn);
         }
 
         /// <summary>
-        /// 获取数据库名称
+        /// 默认库名
         /// </summary>
-        public string DataBaseName()
-        {
-            return connectionString.Split(';').ToList().FirstOrDefault(x => x.StartsWith("database=", StringComparison.OrdinalIgnoreCase))[9..].Replace("'", "");
-        }
-
-        /// <summary>
-        /// 获取所有表信息的SQL脚本
-        /// </summary>
-        public string GetTableSQL()
-        {
-            return $@"
-                    SELECT
-                        table_name AS TableName,
-                        table_comment AS TableComment
-                    FROM
-                        information_schema.tables
-                    WHERE
-                        table_schema = '{DataBaseName()}'
-                    ORDER BY table_name";
-        }
-
-        /// <summary>
-        /// 获取所有列信息的SQL脚本
-        /// </summary>
-        /// <param name="sqlWhere">SQL条件</param>
         /// <returns></returns>
-        public string GetColumnSQL(string sqlWhere)
+        public string DefaultDatabaseName()
         {
-            return $@" 
-                    SELECT
-                        T.table_name AS TableName,
-                        T.table_comment AS TableComment,
-                        C.column_name AS FieldName,
-                        C.column_type AS DataTypeLength,
-                        C.data_type AS DataType,
-                        CASE
-                        WHEN C.character_maximum_length IS NOT NULL THEN C.character_maximum_length
-                        WHEN C.numeric_precision IS NOT NULL THEN C.numeric_precision
-                        ELSE NULL
-                        end AS DataLength,
-                        C.numeric_scale AS DataScale,
-                        C.ordinal_position AS FieldOrder,
-                        CASE
-                        WHEN (
-                            SELECT
-                            Count(1)
-                            FROM
-                            information_schema.key_column_usage
-                            WHERE
-                            table_schema = T.table_schema
-                            AND table_name = T.table_name
-                            AND column_name = C.column_name
-                            LIMIT
-                            0, 1
-                        ) = 0 THEN ''
-                        ELSE 'YES'
-                        end AS PrimaryKey,
-                        CASE
-                        WHEN C.EXTRA = 'auto_increment' THEN 'YES'
-                        ELSE ''
-                        END AS AutoAdd,
-                        CASE
-                        WHEN C.is_nullable = 'YES' THEN ''
-                        ELSE 'YES'
-                        end AS NotNull,
-                        C.column_default AS DefaultValue,
-                        C.column_comment AS FieldComment
-                    FROM
-                        information_schema.columns C
-                        LEFT JOIN information_schema.tables T ON C.table_schema = T.table_schema
-                        AND C.table_name = T.table_name
-                    WHERE
-                        T.table_schema = '{DataBaseName()}'
-                        AND 1 = 1 {sqlWhere}
-                    ORDER BY
-                        T.table_name,
-                        C.ordinal_position";
+            return dbConnection.Database;
         }
 
         /// <summary>
-        /// 设置表注释的SQL脚本
+        /// 获取库
         /// </summary>
-        /// <param name="dataTableName">表名</param>
-        /// <param name="comment">注释内容</param>
         /// <returns></returns>
-        public static string SetTableCommentSQL(string dataTableName, string comment)
+        public List<DatabaseVM> GetDatabase()
         {
-            return $"ALTER TABLE `{dataTableName}` COMMENT '{comment}'";
-        }
-
-        /// <summary>
-        /// 设置列注释的SQL脚本
-        /// </summary>
-        /// <param name="dataTableName">表名</param>
-        /// <param name="dataColumnName">列名</param>
-        /// <param name="comment">注释内容</param>
-        /// <returns></returns>
-        public static string SetColumnCommentSQL(string dataTableName, string dataColumnName, string comment)
-        {
-            return $"ALTER TABLE `{dataTableName}` MODIFY COLUMN `{dataColumnName}` INT COMMENT '{comment}'";
-        }
-
-        /// <summary>
-        /// 获取所有列
-        /// </summary>
-        /// <param name="listTableName">表名</param>
-        /// <returns></returns>
-        public List<TableColumnVM> GetColumn(List<string> listTableName = null)
-        {
-            var whereSql = string.Empty;
-
-            if (listTableName?.Count > 0)
-            {
-                listTableName.ForEach(x => x = x.Replace("'", ""));
-
-                whereSql = "AND T.table_name in ('" + string.Join("','", listTableName) + "')";
-            }
-
-            var sql = GetColumnSQL(whereSql);
-
+            var sql = Configs.GetDatabaseMySQL();
             var ds = db.SqlQuery(sql);
 
-            var list = ds.Tables[0].ToModel<TableColumnVM>();
-
+            var list = ds.Tables[0].ToModel<DatabaseVM>();
             return list;
         }
 
         /// <summary>
-        /// 获取所有表
+        /// 获取表
         /// </summary>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public List<TableNameVM> GetTable()
+        public List<TableVM> GetTable(string DatabaseName = null)
         {
-            var sql = GetTableSQL();
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var sql = Configs.GetTableMySQL(DatabaseName);
             var ds = db.SqlQuery(sql);
 
-            var list = ds.Tables[0].ToModel<TableNameVM>();
+            var list = ds.Tables[0].ToModel<TableVM>();
+            return list;
+        }
 
+        /// <summary>
+        /// 表DDL
+        /// </summary>
+        /// <param name="filterTableName"></param>
+        /// <param name="DatabaseName"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> GetTableDDL(string filterTableName = null, string DatabaseName = null)
+        {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var listTable = string.IsNullOrWhiteSpace(filterTableName)
+                ? GetTable(DatabaseName).Select(x => x.TableName).ToList()
+                : filterTableName.Replace("'", "").Split(',').ToList();
+
+            var sql = Configs.GetTableDDLMySQL(DatabaseName, listTable);
+            var ds = db.SqlQuery(sql);
+
+            var dic = new Dictionary<string, string>();
+            foreach (DataTable dt in ds.Tables)
+            {
+                var dr = dt.Rows[0];
+                dic.Add(dr[0].ToString(), dr[1].ToString());
+            }
+
+            return dic;
+        }
+
+        /// <summary>
+        /// 获取列
+        /// </summary>
+        /// <param name="filterTableName"></param>
+        /// <param name="DatabaseName"></param>
+        /// <returns></returns>
+        public List<ColumnVM> GetColumn(string filterTableName = null, string DatabaseName = null)
+        {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var where = string.Empty;
+            if (!string.IsNullOrWhiteSpace(filterTableName))
+            {
+                where = $"AND t1.TABLE_NAME IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
+            }
+
+            var sql = Configs.GetColumnMySQL(DatabaseName, where);
+            var ds = db.SqlQuery(sql);
+
+            var list = ds.Tables[0].ToModel<ColumnVM>();
             return list;
         }
 
         /// <summary>
         /// 设置表注释
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="TableComment">表注释</param>
+        /// <param name="TableName"></param>
+        /// <param name="TableComment"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public bool SetTableComment(string TableName, string TableComment)
+        public bool SetTableComment(string TableName, string TableComment, string DatabaseName = null)
         {
-            var sql = SetTableCommentSQL(TableName.Replace("`", "``"), TableComment.Replace("'", "''"));
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var sql = Configs.SetTableCommentMySQL(DatabaseName, TableName, TableComment);
             _ = db.SqlExecute(sql);
             return true;
         }
@@ -193,31 +152,47 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 设置列注释
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="FieldName">列名</param>
-        /// <param name="FieldComment">列注释</param>
+        /// <param name="TableName"></param>
+        /// <param name="ColumnName"></param>
+        /// <param name="ColumnComment"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public bool SetColumnComment(string TableName, string FieldName, string FieldComment)
+        public bool SetColumnComment(string TableName, string ColumnName, string ColumnComment, string DatabaseName = null)
         {
-            var sql = SetColumnCommentSQL(TableName.Replace("`", "``"), FieldName.Replace("`", "``"), FieldComment.Replace("'", "''"));
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var sql = Configs.SetColumnCommentMySQL(DatabaseName, TableName, ColumnName, ColumnComment);
             _ = db.SqlExecute(sql);
             return true;
         }
 
         /// <summary>
-        /// 查询数据
+        /// 获取表数据
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="page">页码</param>
-        /// <param name="rows">页量</param>
-        /// <param name="sort">排序字段</param>
-        /// <param name="order">排序方式</param>
-        /// <param name="listFieldName">查询列，默认为 *</param>
-        /// <param name="whereSql">条件</param>
-        /// <param name="total">返回总条数</param>
+        /// <param name="TableName"></param>
+        /// <param name="page"></param>
+        /// <param name="rows"></param>
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        /// <param name="listFieldName"></param>
+        /// <param name="whereSql"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, out int total)
+        public Tuple<DataTable, int> GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string DatabaseName = null)
         {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            if (string.IsNullOrWhiteSpace(listFieldName))
+            {
+                listFieldName = "*";
+            }
+
             if (string.IsNullOrWhiteSpace(whereSql))
             {
                 whereSql = "";
@@ -229,17 +204,18 @@ namespace Netnr.SharedDataKit
 
             var sql = $@"
                         SELECT {listFieldName}
-                        FROM {TableName} {whereSql}
+                        FROM {DatabaseName}.{TableName} {whereSql}
                         ORDER BY {sort} {order}
                         LIMIT {(page - 1) * rows},{rows}";
 
-            sql += $";select count(1) as total from {TableName} {whereSql}";
+            sql += $";select count(1) as total from {DatabaseName}.{TableName} {whereSql}";
 
             var ds = db.SqlQuery(sql);
 
             var dt = ds.Tables[0];
-            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out total);
-            return dt;
+            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out int total);
+
+            return new Tuple<DataTable, int>(dt, total);
         }
 
         /// <summary>

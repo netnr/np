@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
 using Netnr.Blog.Application.ViewModel;
@@ -300,10 +299,17 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
                     else
                     {
                         //查询原创建时间
-                        var currmo = db.DocSetDetail.AsNoTracking().FirstOrDefault(x => x.DsdId == mo.DsdId);
-                        mo.DsdCreateTime = currmo.DsdCreateTime;
+                        var currmo = db.DocSetDetail.FirstOrDefault(x => x.DsdId == mo.DsdId);
+                        if (currmo != null)
+                        {
+                            currmo.DsdTitle = mo.DsdTitle;
+                            currmo.DsdPid = mo.DsdPid;
+                            currmo.DsdOrder = mo.DsdOrder;
+                            currmo.DsdContentMd = mo.DsdContentMd;
+                            currmo.DsdContentHtml = mo.DsdContentHtml;
 
-                        db.DocSetDetail.Update(mo);
+                            db.DocSetDetail.Update(currmo);
+                        }
                     }
 
                     int num = db.SaveChanges();

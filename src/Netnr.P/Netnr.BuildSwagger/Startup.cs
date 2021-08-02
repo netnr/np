@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -32,7 +33,8 @@ namespace Netnr.BuildSwagger
                         "请求最大限制（包含文件）：<b>5MB</b>"
                     })
                 });
-                c.IncludeXmlComments(System.AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
+
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
         }
 

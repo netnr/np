@@ -1,30 +1,38 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
-
-namespace Netnr.Blog.Domain
+﻿namespace Netnr.Blog.Domain
 {
-    [Index(nameof(TagId), Name = "IDXUserWritingTags_TagId")]
-    [Index(nameof(TagName), Name = "IDXUserWritingTags_TagName")]
-    [Index(nameof(UwId), Name = "IDXUserWritingTags_UwId")]
+    /// <summary>
+    /// 写作标签关联
+    /// </summary>
     public partial class UserWritingTags
     {
-        [Key]
         public int UwtId { get; set; }
+        /// <summary>
+        /// 写作表ID
+        /// </summary>
         public int UwId { get; set; }
+        /// <summary>
+        /// 标签表ID
+        /// </summary>
         public int? TagId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 标签名
+        /// </summary>
         public string TagName { get; set; }
-        [Column(TypeName = "varchar(20)")]
+        /// <summary>
+        /// 标签编码
+        /// </summary>
         public string TagCode { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

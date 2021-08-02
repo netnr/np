@@ -1,4 +1,4 @@
-﻿#if Full || AdoOracle
+﻿#if Full || AdoFull || AdoOracle
 
 using System;
 using System.Data;

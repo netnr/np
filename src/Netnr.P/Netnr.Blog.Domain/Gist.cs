@@ -1,48 +1,80 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(GistCode), Name = "IDXGist_GistCode")]
-    [Index(nameof(Uid), Name = "IDXGist_Uid")]
+    /// <summary>
+    /// 代码片段
+    /// </summary>
     public partial class Gist
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string GistId { get; set; }
+        /// <summary>
+        /// 所属用户
+        /// </summary>
         public int? Uid { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 唯一编码
+        /// </summary>
         public string GistCode { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 文件名
+        /// </summary>
         public string GistFilename { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容
+        /// </summary>
         public string GistContent { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 预览内容，前10行
+        /// </summary>
         public string GistContentPreview { get; set; }
+        /// <summary>
+        /// 行数
+        /// </summary>
         public int? GistRow { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 语言
+        /// </summary>
         public string GistLanguage { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 主题
+        /// </summary>
         public string GistTheme { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string GistRemark { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 标签
+        /// </summary>
         public string GistTags { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? GistCreateTime { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 修改时间
+        /// </summary>
         public DateTime? GistUpdateTime { get; set; }
+        /// <summary>
+        /// 1公开，2私有
+        /// </summary>
         public int? GistOpen { get; set; }
+        /// <summary>
+        /// 状态 1正常
+        /// </summary>
         public int? GistStatus { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

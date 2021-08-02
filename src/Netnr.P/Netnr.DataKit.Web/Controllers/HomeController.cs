@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.DataKit.Web.Controllers
 {
@@ -9,13 +7,7 @@ namespace Netnr.DataKit.Web.Controllers
         [ResponseCache(Duration = 5)]
         public IActionResult Index()
         {
-            string ih = FileTo.ReadText(PathTo.Combine(GlobalTo.WebRootPath, "lib/dk/dk.html"));
-            return new ContentResult()
-            {
-                Content = ih,
-                StatusCode = 200,
-                ContentType = "text/html"
-            };
+            return Redirect("/lib/ndk/ndk.html");
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Netnr
 {
@@ -277,6 +278,19 @@ namespace Netnr
         {
             var d = datetime.ToTimestamp() * 1.0 / 3600 / 24;
             return (int)Math.Ceiling(d);
+        }
+
+        /// <summary>
+        /// 拓展批量添加
+        /// </summary>
+        /// <param name="oc"></param>
+        /// <param name="list"></param>
+        public static void AddRange(this ObservableCollection<object> oc, IEnumerable<object> list)
+        {
+            foreach (var item in list)
+            {
+                oc.Add(item);
+            }
         }
     }
 }

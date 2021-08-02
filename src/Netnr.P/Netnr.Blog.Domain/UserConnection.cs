@@ -1,31 +1,41 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), Name = "IDXUserConnection_Uid")]
+    /// <summary>
+    /// 用户关联
+    /// </summary>
     public partial class UserConnection
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string UconnId { get; set; }
         public int? Uid { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 关联分类
+        /// </summary>
         public string UconnTargetType { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 关联目标ID
+        /// </summary>
         public string UconnTargetId { get; set; }
+        /// <summary>
+        /// 1点赞，2收藏，3关注
+        /// </summary>
         public int? UconnAction { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? UconnCreateTime { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

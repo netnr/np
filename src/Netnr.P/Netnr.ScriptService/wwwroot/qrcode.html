@@ -24,12 +24,12 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
-<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=iMQIP4wyDC9xXUOkdTyigst5W-JZE3djrsOMLIZdzB8" rel="stylesheet" />
-        <script src="/js/global.js?v=70q1prkl8V0B7LvdO7bKVgBsOjjHZKJGZmW4hKLVYns"></script>
+<link href='https://code.bdstatic.com/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
+<script src='https://code.bdstatic.com/npm/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://code.bdstatic.com/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=Fvvn7s9TPSb5hh48-nQwuh1-D6eIgfW6KErxCYjF_QA"></script>
             <!--导航-->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -87,7 +87,7 @@ https://zme.ink
     <div class="row">
         <div class="col-md-6">
             <div class="input-group mb-3">
-                <span class="input-group-text">生成</span>
+                <span class="input-group-text">生成二维码</span>
                 <textarea id="txt" class="form-control tah" placeholder="内容：网址、电话、邮箱等"></textarea>
                 <button class="btn btn-warning nrBtnConfig">配置</button>
             </div>
@@ -97,7 +97,7 @@ https://zme.ink
 
         <div class="col-md-6">
             <div class="input-group mb-3">
-                <span class="input-group-text">识别</span>
+                <span class="input-group-text">识别二维码</span>
                 <input id="txtFile" type="file" class="form-control" accept="image/*">
             </div>
             <textarea class="form-control mb-3 nrResultCode d-none"></textarea>
@@ -105,8 +105,8 @@ https://zme.ink
     </div>
 </div>
 
-<script src='https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'></script>
+<script src='https://code.bdstatic.com/npm/qrcode@1.4.4/build/qrcode.min.js'></script>
+<script src='https://code.bdstatic.com/npm/jsqr@1.4.0/dist/jsQR.js'></script>
 
 
 <script>
@@ -138,11 +138,23 @@ https://zme.ink
                 }
             });
 
+            //支持hash接口
+            window.onhashchange = qrc.handlerHash();
+            qrc.handlerHash();
+
             //接收
             ss.receiveFiles(function (files) {
                 var file = files[0];
                 qrc.decode(file);
             }, "#txtFile");
+        },
+        handlerHash: function () {
+            var pars = new URLSearchParams(location.hash.substring(1));
+            var text = pars.get('text');
+            if (text != null && text != "") {
+                $('#txt').val(text);
+                qrc.encode();
+            }
         },
         encode: function () {
             var txt = $('#txt').val();

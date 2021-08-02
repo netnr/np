@@ -717,7 +717,6 @@ namespace Netnr.Blog.Web.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
                 Apps.FilterConfigs.WriteLog(HttpContext, ex);
                 Response.Headers["X-Output-Msg"] = ex.ToJson();
                 vm.Set(ex);

@@ -24,12 +24,12 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
-<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=iMQIP4wyDC9xXUOkdTyigst5W-JZE3djrsOMLIZdzB8" rel="stylesheet" />
-        <script src="/js/global.js?v=70q1prkl8V0B7LvdO7bKVgBsOjjHZKJGZmW4hKLVYns"></script>
+<link href='https://code.bdstatic.com/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
+<script src='https://code.bdstatic.com/npm/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://code.bdstatic.com/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=Fvvn7s9TPSb5hh48-nQwuh1-D6eIgfW6KErxCYjF_QA"></script>
             <!--导航-->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -78,29 +78,33 @@ https://zme.ink
         <div class="min300 mt-3">
             <div class="container-fluid">
     <div class="row">
-        <div class="col-md-6 mb-3">
-            <div class="input-group">
-                <button class="btn btn-warning" id="btnToImage">转成图片</button>
-                <input id="txtFile" type="file" class="form-control">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <div id="editor" class="border overflow-hidden position-relative" style="height:200px">
+                </div>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="input-group">
-                <button class="btn btn-danger" id="btnToText">转回文本</button>
+        <div class="col-md-6">
+            <div class="input-group mb-3">
+                <button class="btn btn-warning" id="btnToImage">文本转图片</button>
+                <input id="txtFile1" type="file" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group mb-3">
+                <input id="txtFile2" type="file" class="form-control" accept="image/*">
                 <input class="form-control" id="txtUri" placeholder="粘贴图片链接转为文本（须支持跨域）" />
-                <button class="btn btn-info" id="btnToTextDemo">例子</button>
+                <button class="btn btn-danger" id="btnToText">图片链接转文本</button>
+                <button class="btn btn-dark" id="btnToTextDemo">Demo</button>
             </div>
         </div>
         <div class="col-md-12 mb-3">
-            <div id="editor" class="border overflow-hidden position-relative min300">
+            <div class="mb-3 nrView d-none">
+                <img class="mw-100 border" style="height:200px" />
+                <br />
+                <a href="javascript:void(0)" target="_blank" download="tti.png">下载</a>
             </div>
-        </div>
-        <div class="col-md-12 mb-3 nrView d-none">
-            <img class="mw-100 border" style="height:200px" />
-            <br />
-            <a href="javascript:void(0)" target="_blank" download="tti.png">下载</a>
-        </div>
-        <div class="col-md-12 mb-3">
+
             <p>把文字转换为图片；转换后的图片可转回文字（图片未压缩等丢失信息的操作）</p>
             <p>可以把文字转为图片后上传到图床（图床选不处理图片保存原图的厂商，且支持跨域）用于存储</p>
             <p class="text-danger">警告：非文字转成的图片解析后是乱码，而且耗时很久，容易卡死浏览器</p>
@@ -108,7 +112,7 @@ https://zme.ink
     </div>
 </div>
 
-<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.25.0/min/vs/loader.js'></script>
+<script src='https://code.bdstatic.com/npm/monaco-editor@0.26.1/min/vs/loader.js'></script>
 
 <script>
     function htmlDecode(html) {
@@ -119,13 +123,13 @@ https://zme.ink
 
     require.config({
         paths: {
-            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.25.0/min/vs'
+            vs: 'https://code.bdstatic.com/npm/monaco-editor@0.26.1/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
 </script>
                         
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/text-to-image/20201119/tti.js'></script>
+<script src='https://cdn.netnr.eu.org/libs/text-to-image/20201119/tti.js'></script>
 
 
 <script>
@@ -134,6 +138,25 @@ https://zme.ink
         tti: new tti(),
         editor: null,
         init: function () {
+
+            //转图片
+            $('#btnToImage').click(function () {
+                var txt = ti.editor.getValue();
+                if (txt != "") {
+                    ti.showImage(txt);
+                }
+            });
+            $('#txtFile1').change(function () {
+                var file = this.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        ti.editor.setValue(e.target.result);
+                        $('#btnToImage')[0].click();
+                    };
+                    reader.readAsText(file);
+                }
+            })
 
             //接收文件
             ss.receiveFiles(function (files) {
@@ -144,29 +167,27 @@ https://zme.ink
                     ti.showText(URL.createObjectURL(file));
                 } else {
                     var reader = new FileReader();
-                    reader.onload = function () {
-                        if (reader.result) {
-                            ti.editor.setValue(reader.result);
-                        }
+                    reader.onload = function (e) {
+                        ti.editor.setValue(e.target.result);
+                        $('#btnToImage')[0].click();
                     };
                     reader.readAsText(file);
                 }
-            }, "#txtFile");
-
-            $('#btnToImage').click(function () {
-                var txt = ti.editor.getValue();
-                if (txt != "") {
-                    ti.showImage(txt);
-                }
             });
 
+            //转文本
+            $('#txtFile2').change(function () {
+                var file = this.files[0];
+                if (file && file.type.indexOf("image") == 0) {
+                    ti.showText(URL.createObjectURL(file));
+                }
+            })
             $('#btnToText').click(function () {
                 var uri = $('#txtUri').val();
                 if (uri != "") {
                     ti.showText(uri);
                 }
             });
-
             $('#btnToTextDemo').click(function () {
                 var uri = 'https://img14.360buyimg.com/ddimg/jfs/t1/125681/26/19217/154989/5fb66c5fE20b7c048/fa5a3f63b1179289.png';
                 $('#txtUri').val(uri);
@@ -174,6 +195,22 @@ https://zme.ink
             });
 
             ti.showCode('');
+        },
+        viewFile: function (file, cb) {
+            if (file) {
+                if (file.type.indexOf("image") == 0) {
+                    ti.showText(URL.createObjectURL(file));
+                    cb && cb();
+                } else {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        ti.editor.setValue(e.target.result);
+                        $('#btnToImage')[0].click();
+                        cb && cb();
+                    };
+                    reader.readAsText(file);
+                }
+            }
         },
         showCode: function (code) {
             if (ti.editor) {

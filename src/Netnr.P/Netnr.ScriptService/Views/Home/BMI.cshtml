@@ -10,12 +10,14 @@
             <div class="input-group input-group-lg">
                 <span class="input-group-text">体重</span>
                 <input type="number" id="txt1" class="form-control" placeholder="体重（单位：千克/kg）" min="25" max="300" step="1" maxlength="3" />
+                <span class="input-group-text">KG</span>
             </div>
         </div>
         <div class="col-md mb-3">
             <div class="input-group input-group-lg">
                 <span class="input-group-text">身高</span>
-                <input type="number" id="txt2" class="form-control" placeholder="身高（单位：米/m）" min="1" max="3" step="0.1" maxlength="4" />
+                <input type="number" id="txt2" class="form-control" placeholder="身高（单位：厘米/cm）" min="1" max="300" step="1" maxlength="3" />
+                <span class="input-group-text">CM</span>
             </div>
         </div>
         <div class="col-md mb-3">
@@ -51,8 +53,8 @@
 
     <div class="row">
         <div class="col-md-12">
-            <p>计算公式： BMI = 体重(KG) ÷ 身高²(M)</p>
-            <p>比如：小M是一个60公斤的人，身高是1.7米，则他的计算结果应该是：60÷1.7² =20.76</p>
+            <p>计算公式： BMI = 体重 (KG) ÷ 身高 ²(M)</p>
+            <p>比如：小明是一个 60 公斤的人，身高是 1.7 米，则他的计算结果应该是：60÷1.7² =20.76</p>
             <p>一个人的健康指数范围应该是在：18.5～24，指数在这之间是最好最正常的！</p>
         </div>
     </div>
@@ -70,6 +72,7 @@
             m = parseFloat(m) || 0;
             var bmi = '', bgc = '';
             if (kg && m) {
+                m = m / 100;
                 bmi = (kg / Math.pow(m, 2)).toFixed(2);
                 if (bmi >= 28) {
                     bgc = 'danger';

@@ -24,12 +24,12 @@ https://zme.ink
 
 </head>
 <body>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' />
-<link href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=iMQIP4wyDC9xXUOkdTyigst5W-JZE3djrsOMLIZdzB8" rel="stylesheet" />
-        <script src="/js/global.js?v=70q1prkl8V0B7LvdO7bKVgBsOjjHZKJGZmW4hKLVYns"></script>
+<link href='https://code.bdstatic.com/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' />
+<script src='https://code.bdstatic.com/npm/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://code.bdstatic.com/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=Fvvn7s9TPSb5hh48-nQwuh1-D6eIgfW6KErxCYjF_QA"></script>
             <!--导航-->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -87,18 +87,20 @@ https://zme.ink
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="input-group">
-                <div>
-                    <select class="form-select nrSeMerge">
-                        <option value="1">合并</option>
-                        <option value="0">优化</option>
-                    </select>
-                </div>
-                <button class="btn btn-warning nrDown">下载</button>
-                <input id="txtFile" type="file" class="form-control" multiple accept="*">
-            </div>
+        <div class="col-auto">
+            <select class="form-select nrSeMerge">
+                <option value="1">合并</option>
+                <option value="0">优化</option>
+            </select>
         </div>
+        <div class="col-auto">
+            <button class="btn btn-warning nrDown">下载</button>
+        </div>
+        <div class="col">
+            <input id="txtFile" type="file" class="form-control" multiple accept="*">
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-6 d-none mt-3">
             <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
@@ -111,9 +113,9 @@ https://zme.ink
     </div>
 </div>
 
-<script src='https://cdn.jsdelivr.net/gh/netnr/cdn/libs/svgo/2.3.0/svgo.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/monaco-editor@0.25.0/min/vs/loader.js'></script>
+<script src='https://cdn.netnr.eu.org/libs/svgo/2.3.0/svgo.min.js'></script>
+<script src='https://code.bdstatic.com/npm/jszip@3.6.0/dist/jszip.min.js'></script>
+<script src='https://code.bdstatic.com/npm/monaco-editor@0.26.1/min/vs/loader.js'></script>
 
 <script>
     function htmlDecode(html) {
@@ -124,7 +126,7 @@ https://zme.ink
 
     require.config({
         paths: {
-            vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.25.0/min/vs'
+            vs: 'https://code.bdstatic.com/npm/monaco-editor@0.26.1/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
@@ -133,168 +135,168 @@ https://zme.ink
 
 
 <script>
-    var so = {
-        svgJson: [],
-        svgOut: null,
-        readFiles: function (files) {
-            var arr = [];
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                if (file.name.toLowerCase().includes(".svg")) {
-                    arr.push(so.readFile(file));
+        var so = {
+            svgJson: [],
+            svgOut: null,
+            readFiles: function (files) {
+                var arr = [];
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    if (file.name.toLowerCase().includes(".svg")) {
+                        arr.push(so.readFile(file));
+                    }
                 }
-            }
 
-            Promise.all(arr).then(json => {
-                so.svgJson = json;
+                Promise.all(arr).then(json => {
+                    so.svgJson = json;
 
-                $("#txtFile").val('');
-                var merge = $('.nrSeMerge').val();
+                    $("#txtFile").val('');
+                    var merge = $('.nrSeMerge').val();
 
-                so.svgOut = so.op(json, merge);
+                    so.svgOut = so.op(json, merge);
 
-                $('#editor').parent().removeClass('d-none');
-                $('#preview').parent().removeClass('d-none');
+                    $('#editor').parent().removeClass('d-none');
+                    $('#preview').parent().removeClass('d-none');
 
-                var html = [];
-                if (merge == "1") {
-                    html.push(so.svgOut);
-                    html.push("\n<!--使用-->");
-                    $(so.svgOut).find('symbol').each(function () {
-                        var id = $(this).attr('id');
-                        html.push(`<svg><use xlink:href="#${id}"></use></svg>`);
-                    });
-                } else {
-                    so.svgOut.forEach(item => {
-                        html.push(item.data + "\n");
-                    });
-                }
-                editor.setValue(html.join('\n'));
-                so.viewIframe();
-            });
-        },
-        op: function (json, merge) {
-            var results = [];
-            json.forEach(item => {
-                var result = svgo(item.text, {
-                    multipass: true,
-                    path: item.path
+                    var html = [];
+                    if (merge == "1") {
+                        html.push(so.svgOut);
+                        html.push("\n<!--使用-->");
+                        $(so.svgOut).find('symbol').each(function () {
+                            var id = $(this).attr('id');
+                            html.push(`<svg><use xlink:href="#${id}"></use></svg>`);
+                        });
+                    } else {
+                        so.svgOut.forEach(item => {
+                            html.push(item.data + "\n");
+                        });
+                    }
+                    editor.setValue(html.join('\n'));
+                    so.viewIframe();
                 });
+            },
+            op: function (json, merge) {
+                var results = [];
+                json.forEach(item => {
+                    var result = svgo(item.text, {
+                        multipass: true,
+                        path: item.path
+                    });
 
-                result.data = result.data.replace(' class="icon" ', ' ').replace("<defs><style/></defs>", "");
+                    result.data = result.data.replace(' class="icon" ', ' ').replace("<defs><style/></defs>", "");
+
+                    //合并
+                    if (merge == 1) {
+                        result.data = result.data.replace('<svg ', `<symbol id="${result.path.replace(".svg", "")}" `)
+                            .replace(' xmlns="http://www.w3.org/2000/svg"', '')
+                            .replace(/ width="(\d+)"/, "")
+                            .replace(/ height="(\d+)"/, "")
+                            .replace(/ width="(\d+.\d+)"/, "")
+                            .replace(/ height="(\d+.\d+)"/, "")
+                            .replace("</svg>", "</symbol>");
+                        results.push(result.data);
+                    } else {
+                        results.push(result);
+                    }
+                })
 
                 //合并
                 if (merge == 1) {
-                    result.data = result.data.replace('<svg ', `<symbol id="${result.path.replace(".svg", "")}" `)
-                        .replace(' xmlns="http://www.w3.org/2000/svg"', '')
-                        .replace(/ width="(\d+)"/, "")
-                        .replace(/ height="(\d+)"/, "")
-                        .replace(/ width="(\d+.\d+)"/, "")
-                        .replace(/ height="(\d+.\d+)"/, "")
-                        .replace("</svg>", "</symbol>");
-                    results.push(result.data);
-                } else {
-                    results.push(result);
+                    results.splice(0, 0, '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" style="display:none;">');
+                    results.push('</svg>');
+                    results = results.join('');
                 }
-            })
 
-            //合并
-            if (merge == 1) {
-                results.splice(0, 0, '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" style="display:none;">');
-                results.push('</svg>');
-                results = results.join('');
+                return results;
+            },
+            readFile: function (file) {
+                return new Promise((resolve) => {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var obj = { path: file.name, text: e.target.result };
+                        resolve(obj);
+                    };
+                    reader.readAsText(file);
+                });
+            },
+            viewIframe: function () {
+                var html = editor.getValue();
+                var iframebox = $('#preview');
+                iframebox.children('iframe').remove();
+
+                var iframe = document.createElement('iframe');
+                iframe.name = "Run preview";
+                iframebox.append(iframe);
+                iframe.onload = function () {
+                    var style = document.createElement("STYLE");
+                    style.innerHTML = `
+    svg {
+        height: 5rem;
+        margin: .5rem;
+        padding: .5rem;
+        max-width: 5rem;
+    }
+
+    svg:hover {
+        transition: transform 1.5s;
+        transform: rotate(360deg);
+    }
+    `;
+                    iframe.contentWindow.document.head.appendChild(style);
+                }
+                iframe.contentWindow.document.open();
+                iframe.contentWindow.document.write(html);
+                iframe.contentWindow.document.close();
+            },
+            resize: function () {
+                var vh = $(window).height() - 140;
+                $('#editor').height(vh);
+                $('#preview').height(vh);
             }
+        };
 
-            return results;
-        },
-        readFile: function (file) {
-            return new Promise((resolve) => {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    var obj = { path: file.name, text: e.target.result };
-                    resolve(obj);
-                };
-                reader.readAsText(file);
+        require(['vs/editor/editor.main'], function () {
+            window.editor = monaco.editor.create($("#editor")[0], ss.meConfig({
+                language: "html",
+                wordWrap: "on"
+            }));
+
+            editor.addCommand(monaco.KeyCode.PauseBreak, function () {
+                so.viewIframe();
             });
-        },
-        viewIframe: function () {
-            var html = editor.getValue();
-            var iframebox = $('#preview');
-            iframebox.children('iframe').remove();
 
-            var iframe = document.createElement('iframe');
-            iframe.name = "Run preview";
-            iframebox.append(iframe);
-            iframe.onload = function () {
-                var style = document.createElement("STYLE");
-                style.innerHTML = `
-svg {
-    height: 5rem;
-    margin: .5rem;
-    padding: .5rem;
-    max-width: 5rem;
-}
-
-svg:hover {
-    transition: transform 1.5s;
-    transform: rotate(360deg);
-}
-`;
-                iframe.contentWindow.document.head.appendChild(style);
-            }
-            iframe.contentWindow.document.open();
-            iframe.contentWindow.document.write(html);
-            iframe.contentWindow.document.close();
-        },
-        resize: function () {
-            var vh = $(window).height() - 140;
-            $('#editor').height(vh);
-            $('#preview').height(vh);
-        }
-    };
-
-    require(['vs/editor/editor.main'], function () {
-        window.editor = monaco.editor.create($("#editor")[0], ss.meConfig({
-            language: "html",
-            wordWrap: "on"
-        }));
-
-        editor.addCommand(monaco.KeyCode.PauseBreak, function () {
-            so.viewIframe();
-        });
-
-        $('.nrDown').click(function () {
-            if (so.svgOut) {
-                if (typeof so.svgOut == "string") {
-                    ss.dowload(so.svgOut, "icon.svg");
-                } else {
-                    if (so.svgOut.length == 1) {
-                        ss.dowload(so.svgOut[0].data, so.svgOut[0].path);
+            $('.nrDown').click(function () {
+                if (so.svgOut) {
+                    if (typeof so.svgOut == "string") {
+                        ss.dowload(so.svgOut, "icon.svg");
                     } else {
-                        var zip = new JSZip();
-                        $.each(so.svgOut, function () {
-                            zip.file(this.path, this.data);
-                        });
-                        zip.generateAsync({ type: "blob" }).then(function (content) {
-                            ss.dowload(content, "icon.zip");
-                        });
+                        if (so.svgOut.length == 1) {
+                            ss.dowload(so.svgOut[0].data, so.svgOut[0].path);
+                        } else {
+                            var zip = new JSZip();
+                            $.each(so.svgOut, function () {
+                                zip.file(this.path, this.data);
+                            });
+                            zip.generateAsync({ type: "blob" }).then(function (content) {
+                                ss.dowload(content, "icon.zip");
+                            });
+                        }
                     }
+                } else {
+                    alert("请选择或拖拽 SVG 文件后再下载")
                 }
-            } else {
-                alert("请选择或拖拽 SVG 文件后再下载")
-            }
+            });
+
+            so.resize();
+            $(window).on('load resize', function () {
+                so.resize();
+            })
         });
 
-        so.resize();
-        $(window).on('load resize', function () {
-            so.resize();
-        })
-    });
-
-    //接收文件
-    ss.receiveFiles(function (files) {
-        so.readFiles(files);
-    }, "#txtFile");
+        //接收文件
+        ss.receiveFiles(function (files) {
+            so.readFiles(files);
+        }, "#txtFile");
 </script>
         </div>
 </body>

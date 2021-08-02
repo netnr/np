@@ -20,9 +20,16 @@
   //"nd-conn": "Data Source=D:\\tmp\\tmp.db",
   //"nd-type": "SQLite",
 
-  "od-conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=tmp",
-  "od-type": "MySQL",
+  "od-conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME;",
+  "od-type": "SQLServer",
 
-  "nd-conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME;",
-  "nd-type": "SQLServer"
+  "nd-conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=cqsme_platform_main",
+  "nd-type": "MySQL"
+
+  //"od-conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=cqsme_platform_main",
+  //"od-type": "MySQL",
+
+  //"nd-conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=diff-main",
+  //"nd-type": "MySQL"
+
 }

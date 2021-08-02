@@ -74,7 +74,7 @@ gdct.onComplete(function () {
     //载入拖拽并启用
     if (!gdct.dnd) {
         gdct.dnd = 1;
-        $.getScript('https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui-extension/20191228/datagrid-dnd.min.js', function () {
+        $.getScript('https://cdn.netnr.eu.org/libs/jquery-easyui-extension/20191228/datagrid-dnd.min.js', function () {
             gdct.func('enableDnd');
         })
     } else {

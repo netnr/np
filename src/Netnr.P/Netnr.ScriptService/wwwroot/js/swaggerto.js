@@ -11,7 +11,7 @@ var st = {
             sui.height(vh);
 
             if ("nmd" in window) {
-                var ch = $(window).height() - nmd.obj.container.offset().top - 20;
+                var ch = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 20;
                 nmd.height(Math.max(200, ch));
             }
         }).on('hashchange', function () {
@@ -135,7 +135,7 @@ var st = {
                         autosave: false
                     });
 
-                    var ch = $(window).height() - nmd.obj.container.offset().top - 20;
+                    var ch = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 20;
                     nmd.height(Math.max(200, ch));
                 }
 
@@ -181,7 +181,7 @@ var st = {
                         case "word":
                             {
                                 var netnrmd_body = that.gethtml();
-                                $.get("https://cdn.jsdelivr.net/npm/netnrmd@2.6.3/src/netnrmd.css", null, function (netnrmd_style) {
+                                $.get("https://code.bdstatic.com/npm/netnrmd@2.6.3/src/netnrmd.css", null, function (netnrmd_style) {
                                     var html = `
                                                 <!DOCTYPE html>
                                                 <html>
@@ -201,7 +201,7 @@ var st = {
                                         netnrmd.down(html, 'swagger.html');
                                     }
                                     else if (bv == "word") {
-                                        require(['https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js'], function (module) {
+                                        require(['https://code.bdstatic.com/npm/html-docx-js@0.3.1/dist/html-docx.min.js'], function (module) {
                                             netnrmd.down(module.asBlob(html), "swagger.docx");
                                         });
                                     }
@@ -209,7 +209,7 @@ var st = {
                             }
                             break;
                         case "pdf":
-                            require(['https://cdn.jsdelivr.net/gh/eKoopmans/html2pdf.js/dist/html2pdf.bundle.min.js'], function (module) {
+                            require(['https://cdn.netnr.eu.org/libs/html2pdf/0.9.3/html2pdf.bundle.min.js'], function (module) {
                                 var ch = that.obj.view.height();
                                 that.obj.view.height('auto');
                                 var vm = that.obj.viewmodel;
@@ -232,7 +232,7 @@ var st = {
                                     backvm = true;
                                 }
 
-                                require(['https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'], function (module) {
+                                require(['https://code.bdstatic.com/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'], function (module) {
                                     var ch = that.obj.view.height();
                                     that.obj.view.height('auto');
                                     module(that.obj.view[0], {
@@ -253,6 +253,11 @@ var st = {
                 } else {
                     bs.alert("<h4>请先点击 转文档 再下载</h4>")
                 }
+            });
+
+            //demo
+            $('.nr-demo').click(function () {
+                location.hash = "https://httpbin.org/spec.json";
             });
 
             //拖拽打开

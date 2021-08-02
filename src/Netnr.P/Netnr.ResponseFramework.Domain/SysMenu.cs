@@ -1,25 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
-
-namespace Netnr.ResponseFramework.Domain
+﻿namespace Netnr.ResponseFramework.Domain
 {
+    /// <summary>
+    /// 系统菜单表
+    /// </summary>
     public partial class SysMenu
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string SmId { get; set; }
-        [Column(TypeName = "varchar(50)")]
         public string SmPid { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string SmName { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 链接
+        /// </summary>
         public string SmUrl { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? SmOrder { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 图标
+        /// </summary>
         public string SmIcon { get; set; }
+        /// <summary>
+        /// 状态，1启用
+        /// </summary>
         public int? SmStatus { get; set; }
+        /// <summary>
+        /// 分组，默认1，比如移动端为2
+        /// </summary>
         public int? SmGroup { get; set; }
     }
 }

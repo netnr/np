@@ -7,6 +7,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using Netnr.SharedFast;
+using System;
 
 namespace Netnr.FileServer
 {
@@ -58,7 +59,7 @@ namespace Netnr.FileServer
                     })
                 });
 
-                c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr.FileServer.xml", true);
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
 
             //配置上传文件大小限制（详细信息：FormOptions）

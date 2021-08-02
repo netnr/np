@@ -1,4 +1,4 @@
-﻿#if Full || AdoSQLite
+﻿#if Full || AdoFull || AdoSQLite
 
 using System;
 using System.Data;

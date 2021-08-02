@@ -4,7 +4,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Data;
-using System.Collections.Generic;
+using System.Data.SQLite;
+using MySqlConnector;
+using Oracle.ManagedDataAccess.Client;
+using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace Netnr.SharedDataKit
 {
@@ -14,121 +18,91 @@ namespace Netnr.SharedDataKit
     public partial class DataKitTo
     {
         /// <summary>
-        /// 赋值
+        /// 入口
         /// </summary>
         /// <param name="tdb"></param>
         /// <param name="conn"></param>
-        private static SharedResultVM ForTypeDBSetConn(SharedEnum.TypeDB? tdb, string conn)
-        {
-            var vm = new SharedResultVM();
-
-            if (tdb == null)
-            {
-                vm.Set(SharedEnum.RTag.lack);
-                vm.Msg = "数据库类型不能为空";
-            }
-            else if (string.IsNullOrWhiteSpace(conn))
-            {
-                vm.Set(SharedEnum.RTag.lack);
-                vm.Msg = "连接字符串不能为空";
-            }
-            else if (tdb == SharedEnum.TypeDB.SQLite)
-            {
-                //下载 SQLite 文件
-                var ds = conn[12..].TrimEnd(';');
-                //路径
-                var dspath = AppContext.BaseDirectory + "tmp/";
-                if (!Directory.Exists(dspath))
-                {
-                    _ = Directory.CreateDirectory(dspath);
-                }
-                //文件名
-                var dsname = $"{DateTime.Now:yyyyMMdd}_{Math.Abs(ds.GetHashCode())}.db";
-
-                //网络路径
-                if (ds.ToLower().StartsWith("http"))
-                {
-                    //不存在则下载
-                    if (!File.Exists(dspath + dsname))
-                    {
-                        //删除超过1天的下载文件
-                        var files = Directory.GetFiles(dspath);
-                        foreach (var file in files)
-                        {
-                            var ct = Path.GetFileName(file).Split('_')[0];
-                            if (ct.Length == 8)
-                            {
-                                if ((DateTime.Now - DateTime.Parse(ct.Insert(4, "-").Insert(7, "-"))).TotalDays >= 1)
-                                {
-                                    File.Delete(file);
-                                }
-                            }
-                        }
-
-                        //下载
-                        //new System.Net.WebClient().DownloadFile(ds, dspath + dsname);
-                    }
-
-                    vm.Data = "Data Source=" + dspath + dsname;
-                }
-                else
-                {
-                    vm.Data = "Data Source=" + ds;
-                }
-
-                vm.Set(SharedEnum.RTag.success);
-            }
-            else
-            {
-                vm.Data = conn;
-                vm.Set(SharedEnum.RTag.success);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 获取所有表名及注释
-        /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
-        /// <param name="conn">连接字符串</param>
+        /// <param name="func"></param>
         /// <returns></returns>
-        public static SharedResultVM GetTable(SharedEnum.TypeDB? tdb, string conn)
+        private static SharedResultVM Entry(SharedEnum.TypeDB? tdb, string conn, Func<SharedResultVM, IDataKitTo, SharedResultVM> func)
         {
             var vm = new SharedResultVM();
 
             try
             {
-                var tvm = ForTypeDBSetConn(tdb, conn);
-
-                if (tvm.Code == 200)
+                //内部上下文
+                Tuple<SharedEnum.TypeDB, string> cdb = Core.CacheTo.Get("CDB") as Tuple<SharedEnum.TypeDB, string>;
+                if (cdb != null)
                 {
-                    conn = tvm.Data.ToString();
-                    switch (tdb)
+                    tdb = cdb.Item1;
+                    conn = cdb.Item2;
+                }
+
+                if (tdb == null)
+                {
+                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Msg = "数据库类型不能为空";
+                }
+                else if (string.IsNullOrWhiteSpace(conn))
+                {
+                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Msg = "连接字符串不能为空";
+                }
+
+                IDataKitTo dkto = null;
+
+                if (string.IsNullOrWhiteSpace(vm.Msg))
+                {
+                    //额外处理 SQLite
+                    if (tdb == SharedEnum.TypeDB.SQLite)
                     {
-                        case SharedEnum.TypeDB.MySQL:
-                            vm.Data = new DataKitMySQLTo(conn).GetTable();
-                            break;
-                        case SharedEnum.TypeDB.SQLite:
-                            vm.Data = new DataKitSQLiteTo(conn).GetTable();
-                            break;
-                        case SharedEnum.TypeDB.Oracle:
-                            vm.Data = new DataKitOracleTo(conn).GetTable();
-                            break;
-                        case SharedEnum.TypeDB.SQLServer:
-                            vm.Data = new DataKitSQLServerTo(conn).GetTable();
-                            break;
-                        case SharedEnum.TypeDB.PostgreSQL:
-                            vm.Data = new DataKitPostgreSQLTo(conn).GetTable();
-                            break;
+                        //下载 SQLite 文件
+                        var ds = conn[12..].TrimEnd(';');
+                        //路径
+                        var dspath = Path.GetTempPath();
+                        //文件名
+                        var dsname = Path.GetFileName(ds);
+                        var fullPath = Path.Combine(dspath, dsname);
+
+                        //网络路径
+                        if (ds.ToLower().StartsWith("http"))
+                        {
+                            //不存在则下载
+                            if (!File.Exists(fullPath))
+                            {
+                                //下载
+                                Core.HttpTo.DownloadSave(Core.HttpTo.HWRequest(ds), fullPath);
+                            }
+
+                            conn = "Data Source=" + fullPath;
+                        }
+                        else
+                        {
+                            conn = "Data Source=" + ds;
+                        }
                     }
 
-                    vm.Set(SharedEnum.RTag.success);
+                    switch (tdb.Value)
+                    {
+                        case SharedEnum.TypeDB.SQLite:
+                            dkto = new DataKitSQLiteTo(new SQLiteConnection(conn));
+                            break;
+                        case SharedEnum.TypeDB.MySQL:
+                            dkto = new DataKitMySQLTo(new MySqlConnection(conn));
+                            break;
+                        case SharedEnum.TypeDB.Oracle:
+                            dkto = new DataKitOracleTo(new OracleConnection(conn));
+                            break;
+                        case SharedEnum.TypeDB.SQLServer:
+                            dkto = new DataKitSQLServerTo(new SqlConnection(conn));
+                            break;
+                        case SharedEnum.TypeDB.PostgreSQL:
+                            dkto = new DataKitPostgreSQLTo(new NpgsqlConnection(conn));
+                            break;
+                    }
                 }
-                else
-                {
-                    vm = tvm;
-                }
+
+                vm = func(vm, dkto);
             }
             catch (Exception ex)
             {
@@ -139,177 +113,135 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
-        /// 获取所有列
+        /// 获取库
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
+        /// <param name="conn">连接字符串</param>
+        /// <returns></returns>
+        public static SharedResultVM GetDatabase(SharedEnum.TypeDB? tdb, string conn)
+        {
+            return Entry(tdb, conn, (vm, dk) =>
+            {
+                if (dk != null)
+                {
+                    vm.Data = dk.GetDatabase();
+                    vm.Set(SharedEnum.RTag.success);
+                }
+                return vm;
+            });
+        }
+
+        /// <summary>
+        /// 获取表
+        /// </summary>
+        /// <param name="tdb">数据库类型</param>
+        /// <param name="conn">连接字符串</param>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <returns></returns>
+        public static SharedResultVM GetTable(SharedEnum.TypeDB? tdb, string conn, string DatabaseName = null)
+        {
+            return Entry(tdb, conn, (vm, dk) =>
+            {
+                if (dk != null)
+                {
+                    vm.Data = dk.GetTable(DatabaseName);
+                    vm.Set(SharedEnum.RTag.success);
+                }
+                return vm;
+            });
+        }
+
+        /// <summary>
+        /// 表DDL
+        /// </summary>
+        /// <param name="tdb"></param>
+        /// <param name="conn"></param>
+        /// <param name="filterTableName"></param>
+        /// <param name="DatabaseName"></param>
+        /// <returns></returns>
+        public static SharedResultVM GetTableDDL(SharedEnum.TypeDB? tdb, string conn, string filterTableName = null, string DatabaseName = null)
+        {
+            return Entry(tdb, conn, (vm, dk) =>
+            {
+                if (dk != null)
+                {
+                    vm.Data = dk.GetTableDDL(filterTableName, DatabaseName);
+                    vm.Set(SharedEnum.RTag.success);
+                }
+                return vm;
+            });
+        }
+
+        /// <summary>
+        /// 获取列
+        /// </summary>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+        /// <param name="DatabaseName">数据库名</param>
         /// <returns></returns>
-        public static SharedResultVM GetColumn(SharedEnum.TypeDB? tdb, string conn, string filterTableName = "")
+        public static SharedResultVM GetColumn(SharedEnum.TypeDB? tdb, string conn, string filterTableName = null, string DatabaseName = null)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return Entry(tdb, conn, (vm, dk) =>
             {
-                var listTableName = new List<string>();
-                if (!string.IsNullOrWhiteSpace(filterTableName))
+                if (dk != null)
                 {
-                    listTableName = filterTableName.Split(',').ToList();
-                }
-                else
-                {
-                    listTableName = null;
-                }
-
-                var tvm = ForTypeDBSetConn(tdb, conn);
-                if (tvm.Code == 200)
-                {
-                    conn = tvm.Data.ToString();
-                    switch (tdb)
-                    {
-                        case SharedEnum.TypeDB.MySQL:
-                            vm.Data = new DataKitMySQLTo(conn).GetColumn(listTableName);
-                            break;
-                        case SharedEnum.TypeDB.SQLite:
-                            vm.Data = new DataKitSQLiteTo(conn).GetColumn(listTableName);
-                            break;
-                        case SharedEnum.TypeDB.Oracle:
-                            vm.Data = new DataKitOracleTo(conn).GetColumn(listTableName);
-                            break;
-                        case SharedEnum.TypeDB.SQLServer:
-                            vm.Data = new DataKitSQLServerTo(conn).GetColumn(listTableName);
-                            break;
-                        case SharedEnum.TypeDB.PostgreSQL:
-                            vm.Data = new DataKitPostgreSQLTo(conn).GetColumn(listTableName);
-                            break;
-                    }
-
+                    vm.Data = dk.GetColumn(filterTableName, DatabaseName);
                     vm.Set(SharedEnum.RTag.success);
                 }
-                else
-                {
-                    vm = tvm;
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
         /// 设置表注释
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="TableName">表名</param>
         /// <param name="TableComment">表注释</param>
+        /// <param name="DatabaseName">数据库名</param>
         /// <returns></returns>
-        public static SharedResultVM SetTableComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string TableComment)
+        public static SharedResultVM SetTableComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string TableComment, string DatabaseName = null)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return Entry(tdb, conn, (vm, dk) =>
             {
-                var tvm = ForTypeDBSetConn(tdb, conn);
-
-                if (tvm.Code == 200)
+                if (dk != null)
                 {
-                    conn = tvm.Data.ToString();
-                    switch (tdb)
-                    {
-                        case SharedEnum.TypeDB.MySQL:
-                            vm.Data = new DataKitMySQLTo(conn).SetTableComment(TableName, TableComment);
-                            break;
-                        case SharedEnum.TypeDB.SQLite:
-                            vm.Data = new DataKitSQLiteTo(conn).SetTableComment(TableName, TableComment);
-                            break;
-                        case SharedEnum.TypeDB.Oracle:
-                            vm.Data = new DataKitOracleTo(conn).SetTableComment(TableName, TableComment);
-                            break;
-                        case SharedEnum.TypeDB.SQLServer:
-                            vm.Data = new DataKitSQLServerTo(conn).SetTableComment(TableName, TableComment);
-                            break;
-                        case SharedEnum.TypeDB.PostgreSQL:
-                            vm.Data = new DataKitPostgreSQLTo(conn).SetTableComment(TableName, TableComment);
-                            break;
-                    }
-
+                    vm.Data = dk.SetTableComment(TableName, TableComment, DatabaseName);
                     vm.Set(SharedEnum.RTag.success);
                 }
-                else
-                {
-                    vm = tvm;
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
         /// 设置列注释
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="TableName">表名</param>
-        /// <param name="FieldName">列名</param>
-        /// <param name="FieldComment">列注释</param>
+        /// <param name="ColumnName">列名</param>
+        /// <param name="ColumnComment">列注释</param>
+        /// <param name="DatabaseName">数据库名</param>
         /// <returns></returns>
-        public static SharedResultVM SetColumnComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string FieldName, string FieldComment)
+        public static SharedResultVM SetColumnComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string ColumnName, string ColumnComment, string DatabaseName = null)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return Entry(tdb, conn, (vm, dk) =>
             {
-                var tvm = ForTypeDBSetConn(tdb, conn);
-
-                if (tvm.Code == 200)
+                if (dk != null)
                 {
-                    conn = tvm.Data.ToString();
-                    switch (tdb)
-                    {
-                        case SharedEnum.TypeDB.MySQL:
-                            vm.Data = new DataKitMySQLTo(conn).SetColumnComment(TableName, FieldName, FieldComment);
-                            break;
-                        case SharedEnum.TypeDB.SQLite:
-                            vm.Data = new DataKitSQLiteTo(conn).SetColumnComment(TableName, FieldName, FieldComment);
-                            break;
-                        case SharedEnum.TypeDB.Oracle:
-                            vm.Data = new DataKitOracleTo(conn).SetColumnComment(TableName, FieldName, FieldComment);
-                            break;
-                        case SharedEnum.TypeDB.SQLServer:
-                            vm.Data = new DataKitSQLServerTo(conn).SetColumnComment(TableName, FieldName, FieldComment);
-                            break;
-                        case SharedEnum.TypeDB.PostgreSQL:
-                            vm.Data = new DataKitPostgreSQLTo(conn).SetColumnComment(TableName, FieldName, FieldComment);
-                            break;
-                    }
-
+                    vm.Data = dk.SetColumnComment(TableName, ColumnName, ColumnComment, DatabaseName);
                     vm.Set(SharedEnum.RTag.success);
                 }
-                else
-                {
-                    vm = tvm;
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
         /// 查询数据
         /// </summary>
-        /// <param name="tdb">数据库类型（0：MySQL，1：SQLite，2：Oracle，3：SQLServer，4：PostgreSQL）</param>
+        /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
         /// <param name="TableName">表名</param>
         /// <param name="page">页码</param>
@@ -318,85 +250,24 @@ namespace Netnr.SharedDataKit
         /// <param name="order">排序方式</param>
         /// <param name="listFieldName">查询列，默认为 *</param>
         /// <param name="whereSql">条件</param>
+        /// <param name="DatabaseName">数据库名</param>
         /// <returns></returns>
-        public static SharedResultVM GetData(SharedEnum.TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql)
+        public static SharedResultVM GetData(SharedEnum.TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string DatabaseName = null)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return Entry(tdb, conn, (vm, dk) =>
             {
-                if (string.IsNullOrWhiteSpace(listFieldName))
+                if (dk != null)
                 {
-                    listFieldName = "*";
-                }
-
-                var tvm = ForTypeDBSetConn(tdb, conn);
-
-                if (tvm.Code == 200)
-                {
-                    conn = tvm.Data.ToString();
-                    switch (tdb)
+                    var gd = dk.GetData(TableName, page, rows, sort, order, listFieldName, whereSql, DatabaseName);
+                    vm.Data = new
                     {
-                        case SharedEnum.TypeDB.MySQL:
-                            {
-                                vm.Data = new
-                                {
-                                    data = new DataKitMySQLTo(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
-                                    total
-                                };
-                            }
-                            break;
-                        case SharedEnum.TypeDB.SQLite:
-                            {
-                                vm.Data = new
-                                {
-                                    data = new DataKitSQLiteTo(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
-                                    total
-                                };
-                            }
-                            break;
-                        case SharedEnum.TypeDB.Oracle:
-                            {
-                                vm.Data = new
-                                {
-                                    data = new DataKitOracleTo(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
-                                    total
-                                };
-                            }
-                            break;
-                        case SharedEnum.TypeDB.SQLServer:
-                            {
-                                vm.Data = new
-                                {
-                                    data = new DataKitSQLServerTo(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
-                                    total
-                                };
-                            }
-                            break;
-                        case SharedEnum.TypeDB.PostgreSQL:
-                            {
-                                vm.Data = new
-                                {
-                                    data = new DataKitPostgreSQLTo(conn).GetData(TableName, page, rows, sort, order, listFieldName, whereSql, out int total),
-                                    total
-                                };
-                            }
-                            break;
-                    }
-
+                        data = gd.Item1,
+                        total = gd.Item2
+                    };
                     vm.Set(SharedEnum.RTag.success);
                 }
-                else
-                {
-                    vm = tvm;
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
@@ -407,47 +278,15 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM GetDEI(SharedEnum.TypeDB? tdb, string conn)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return Entry(tdb, conn, (vm, dk) =>
             {
-                var tvm = ForTypeDBSetConn(tdb, conn);
-
-                if (tvm.Code == 200)
+                if (dk != null)
                 {
-                    conn = tvm.Data.ToString();
-                    switch (tdb)
-                    {
-                        case SharedEnum.TypeDB.MySQL:
-                            vm.Data = new DataKitMySQLTo(conn).GetDEI();
-                            break;
-                        case SharedEnum.TypeDB.SQLite:
-                            vm.Data = new DataKitSQLiteTo(conn).GetDEI();
-                            break;
-                        case SharedEnum.TypeDB.Oracle:
-                            vm.Data = new DataKitOracleTo(conn).GetDEI();
-                            break;
-                        case SharedEnum.TypeDB.SQLServer:
-                            vm.Data = new DataKitSQLServerTo(conn).GetDEI();
-                            break;
-                        case SharedEnum.TypeDB.PostgreSQL:
-                            vm.Data = new DataKitPostgreSQLTo(conn).GetDEI();
-                            break;
-                    }
-
+                    vm.Data = dk.GetDEI();
                     vm.Set(SharedEnum.RTag.success);
                 }
-                else
-                {
-                    vm = tvm;
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>

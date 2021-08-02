@@ -193,6 +193,15 @@ var ss = {
         }
         return ops;
     },
+    keepSetValue: function (me, text) {
+        var cpos = me.getPosition();
+        me.executeEdits('', [{
+            range: me.getModel().getFullModelRange(),
+            text: text
+        }]);
+        me.setSelection(new monaco.Range(0, 0, 0, 0));
+        me.setPosition(cpos);
+    },
     init: function () {
 
         //icon

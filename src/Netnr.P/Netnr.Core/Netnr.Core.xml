@@ -571,6 +571,22 @@
             <param name="txt">内容</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Core.ParsingTo.FormatByteSize(System.Double,System.Int32)">
+            <summary>
+            字节可视化
+            </summary>
+            <param name="size">字节大小</param>
+            <param name="keep">保留</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.ParsingTo.FormatMillisecondsSize(System.Double,System.String)">
+            <summary>
+            毫秒可视化
+            </summary>
+            <param name="ms">秒</param>
+            <param name="format">格式化</param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Core.PathTo">
             <summary>
             路径
@@ -1047,6 +1063,32 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Netnr.Core.ZipTo">
+            <summary>
+            压缩
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.ZipTo.Create(System.Collections.Generic.Dictionary{System.String,System.String},System.String)">
+            <summary>
+            创建打包
+            </summary>
+            <param name="pathName">文件完整路径-（可选）包内文件名</param>
+            <param name="zipPath">zip 完整路径，默认添加的第一个文件同目录下</param>
+        </member>
+        <member name="M:Netnr.Core.ZipTo.Create(System.String,System.String)">
+            <summary>
+            创建打包
+            </summary>
+            <param name="fullPath">需打包的文件夹完整路径</param>
+            <param name="zipPath">zip 完整路径，默认文件夹同目录</param>
+        </member>
+        <member name="M:Netnr.Core.ZipTo.Extract(System.String,System.String)">
+            <summary>
+            解压提取
+            </summary>
+            <param name="zipPath">zip 完整路径</param>
+            <param name="dirName">文件完整路径-包内文件名（可选）</param>
+        </member>
         <member name="T:Netnr.Extend">
             <summary>
             常用方法拓展
@@ -1163,6 +1205,13 @@
             </summary>
             <param name="datetime"></param>
             <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.AddRange(System.Collections.ObjectModel.ObservableCollection{System.Object},System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            拓展批量添加
+            </summary>
+            <param name="oc"></param>
+            <param name="list"></param>
         </member>
     </members>
 </doc>

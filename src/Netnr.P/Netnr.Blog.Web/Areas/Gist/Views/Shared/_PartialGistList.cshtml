@@ -63,7 +63,7 @@
                     }
                     else
                     {
-                        <pre class="card-body monaco-editor vcln" style="height:@((item.GistContentPreview.Split('\n').Length*22).ToString()+"px")" data-lang="@item.GistLanguage">@item.GistContentPreview.TrimEnd('\r')</pre>
+                        <pre class="card-body monaco-editor vcln" style="height:@((item.GistContentPreview.Split('\n').Length*24).ToString()+"px")" data-lang="@item.GistLanguage">@item.GistContentPreview.TrimEnd('\r')</pre>
                     }
                 </div>
             </div>
@@ -96,7 +96,7 @@
                     horizontalScrollbarSize: 0,
                     alwaysConsumeMouseWheel: false
                 },
-                fontSize: 16,
+                fontSize: 18,
                 readOnly: true,
                 theme: that.attr('data-theme'),
                 minimap: {

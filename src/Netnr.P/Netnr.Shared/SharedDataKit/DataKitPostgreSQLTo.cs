@@ -1,8 +1,9 @@
 ﻿#if Full || DataKit
 
+using System;
 using System.Data;
+using System.Data.Common;
 using System.Collections.Generic;
-using Npgsql;
 using Netnr.SharedAdo;
 
 namespace Netnr.SharedDataKit
@@ -13,9 +14,9 @@ namespace Netnr.SharedDataKit
     public class DataKitPostgreSQLTo : IDataKitTo
     {
         /// <summary>
-        /// 连接字符串
+        /// 连接
         /// </summary>
-        public string connectionString;
+        public DbConnection dbConnection;
 
         /// <summary>
         /// 数据库上下文
@@ -25,189 +26,82 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="conn">连接字符串</param>
-        public DataKitPostgreSQLTo(string conn)
+        /// <param name="dbConn">连接</param>
+        public DataKitPostgreSQLTo(DbConnection dbConn)
         {
-            db = new DbHelper(new NpgsqlConnection(connectionString = conn));
+            db = new DbHelper(dbConnection = dbConn);
         }
 
         /// <summary>
-        /// 获取所有表信息的SQL脚本
+        /// 默认库名
         /// </summary>
-        public static string GetTableSQL()
-        {
-            return @"
-                    SELECT
-                        relname AS TableName,
-                        Cast (
-                        Obj_description (relfilenode, 'pg_class') AS VARCHAR
-                        ) AS TableComment
-                    FROM
-                        pg_class C
-                    WHERE
-                        relkind = 'r'
-                        AND relname NOT LIKE 'pg_%'
-                        AND relname NOT LIKE 'sql_%'
-                    ORDER BY
-                        relname
-                ";
-        }
-
-        /// <summary>
-        /// 获取所有列信息的SQL脚本
-        /// </summary>
-        /// <param name="sqlWhere">SQL条件</param>
         /// <returns></returns>
-        public static string GetColumnSQL(string sqlWhere)
+        public string DefaultDatabaseName()
         {
-            return $@"
-                    SELECT
-                        C.relname AS TableName,
-                        CAST(
-                        obj_description(relfilenode, 'pg_class') AS VARCHAR
-                        ) AS TableComment,
-                        A.attname AS FieldName,
-                        concat_ws(
-                        '',
-                        T.typname,
-                        SUBSTRING(
-                            format_type(A.atttypid, A.atttypmod)
-                            FROM
-                            '\(.*\)'
-                        )
-                        ) AS DataTypeLength,
-                        T.typname AS DataType,
-                        SUBSTRING(
-                        format_type(A.atttypid, A.atttypmod)
-                        FROM
-                            '\d+'
-                        ) AS DataLength,
-                        REPLACE(
-                        SUBSTRING(
-                            format_type(A.atttypid, A.atttypmod)
-                            FROM
-                            '\,\d+'
-                        ),
-                        ',',
-                        ''
-                        ) AS DataScale,
-                        A.attnum AS FieldOrder,
-                        CASE
-                        WHEN EXISTS (
-                            SELECT
-                            pg_attribute.attname
-                            FROM
-                            pg_constraint
-                            INNER JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
-                            INNER JOIN pg_attribute ON pg_attribute.attrelid = pg_class.oid
-                            AND pg_attribute.attnum = pg_constraint.conkey [1]
-                            WHERE
-                            relname = C.relname
-                            AND attname = A.attname
-                        ) THEN 'YES'
-                        ELSE ''
-                        END AS PrimaryKey,
-                        CASE
-                        A.attnotnull
-                        WHEN 't' THEN 'YES'
-                        ELSE ''
-                        END AS NotNull,
-                        D.adsrc AS DefaultValue,
-                        col_description(A.attrelid, A.attnum) AS FieldComment
-                    FROM
-                        pg_class C
-                        LEFT JOIN pg_attribute A ON A.attrelid = C.oid
-                        LEFT JOIN pg_type T ON A.atttypid = T.oid
-                        LEFT JOIN (
-                        SELECT
-                            T1.relname,
-                            T2.attname,
-                            pg_get_expr(T3.adbin,T3.adrelid) as adsrc
-                        FROM
-                            pg_class T1,
-                            pg_attribute T2,
-                            pg_attrdef T3
-                        WHERE
-                            T3.adrelid = T1.oid
-                            AND adnum = T2.attnum
-                            AND attrelid = T1.oid
-                        ) D ON D.relname = C.relname
-                        AND D.attname = A.attname
-                    WHERE
-                        C.relname IN (
-                            SELECT
-                            relname
-                            FROM
-                            pg_class
-                            WHERE
-                            relkind = 'r'
-                            AND relname NOT LIKE 'pg_%'
-                            AND relname NOT LIKE 'sql_%'
-                        )
-                        AND A.attnum > 0 {sqlWhere}
-                    ORDER BY
-                        C.relname,
-                        A.attnum
-                    ";
+            return dbConnection.Database;
         }
 
         /// <summary>
-        /// 设置表注释的SQL脚本
+        /// 获取库
         /// </summary>
-        /// <param name="dataTableName">表名</param>
-        /// <param name="comment">注释内容</param>
         /// <returns></returns>
-        public static string SetTableCommentSQL(string dataTableName, string comment)
+        public List<DatabaseVM> GetDatabase()
         {
-            return $"COMMENT ON TABLE \"{dataTableName}\" IS '{comment}'";
-        }
-
-        /// <summary>
-        /// 设置列注释的SQL脚本
-        /// </summary>
-        /// <param name="dataTableName">表名</param>
-        /// <param name="dataColumnName">列名</param>
-        /// <param name="comment">注释内容</param>
-        /// <returns></returns>
-        public static string SetColumnCommentSQL(string dataTableName, string dataColumnName, string comment)
-        {
-            return $"COMMENT ON COLUMN \"{dataTableName}\".\"{dataColumnName}\" IS '{comment}'";
-        }
-
-        /// <summary>
-        /// 获取所有列
-        /// </summary>
-        /// <param name="listTableName">表名</param>
-        /// <returns></returns>
-        public List<TableColumnVM> GetColumn(List<string> listTableName = null)
-        {
-            var whereSql = string.Empty;
-
-            if (listTableName?.Count > 0)
-            {
-                listTableName.ForEach(x => x = x.Replace("'", ""));
-
-                whereSql = "AND C.relname IN ('" + string.Join("','", listTableName) + "')";
-            }
-
-            var sql = GetColumnSQL(whereSql);
+            var sql = Configs.GetDatabasePostgreSQL();
             var ds = db.SqlQuery(sql);
 
-            var list = ds.Tables[0].ToModel<TableColumnVM>();
-
+            var list = ds.Tables[0].ToModel<DatabaseVM>();
             return list;
         }
 
         /// <summary>
-        /// 获取所有表
+        /// 获取表
         /// </summary>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public List<TableNameVM> GetTable()
+        public List<TableVM> GetTable(string DatabaseName = null)
         {
-            var sql = GetTableSQL();
+            var sql = Configs.GetTablePostgreSQL();
             var ds = db.SqlQuery(sql);
 
-            var list = ds.Tables[0].ToModel<TableNameVM>();
+            var list = ds.Tables[0].ToModel<TableVM>();
+            return list;
+        }
+
+        /// <summary>
+        /// 表DDL
+        /// </summary>
+        /// <param name="filterTableName"></param>
+        /// <param name="DatabaseName"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> GetTableDDL(string filterTableName = null, string DatabaseName = null)
+        {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取列
+        /// </summary>
+        /// <param name="filterTableName"></param>
+        /// <param name="DatabaseName"></param>
+        /// <returns></returns>
+        public List<ColumnVM> GetColumn(string filterTableName = null, string DatabaseName = null)
+        {
+            var where = string.Empty;
+            if (!string.IsNullOrWhiteSpace(filterTableName))
+            {
+                where = $"AND c1.relname IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
+            }
+
+            var sql = Configs.GetColumnPostgreSQL(where);
+            var ds = db.SqlQuery(sql);
+
+            var list = ds.Tables[0].ToModel<ColumnVM>();
 
             return list;
         }
@@ -215,12 +109,13 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 设置表注释
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="TableComment">表注释</param>
+        /// <param name="TableName"></param>
+        /// <param name="TableComment"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public bool SetTableComment(string TableName, string TableComment)
+        public bool SetTableComment(string TableName, string TableComment, string DatabaseName = null)
         {
-            var sql = SetTableCommentSQL(TableName.Replace("\"", ""), TableComment.Replace("'", "''"));
+            var sql = Configs.SetTableCommentPostgreSQL(TableName, TableComment);
             _ = db.SqlExecute(sql);
             return true;
         }
@@ -228,31 +123,42 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 设置列注释
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="FieldName">列名</param>
-        /// <param name="FieldComment">列注释</param>
+        /// <param name="TableName"></param>
+        /// <param name="ColumnName"></param>
+        /// <param name="ColumnComment"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public bool SetColumnComment(string TableName, string FieldName, string FieldComment)
+        public bool SetColumnComment(string TableName, string ColumnName, string ColumnComment, string DatabaseName = null)
         {
-            var sql = SetColumnCommentSQL(TableName.Replace("\"", ""), FieldName.Replace("\"", ""), FieldComment.Replace("'", "''"));
+            var sql = Configs.SetColumnCommentPostgreSQL(TableName, ColumnName, ColumnComment);
             _ = db.SqlExecute(sql);
             return true;
         }
 
         /// <summary>
-        /// 查询数据
+        /// 获取表数据
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="page">页码</param>
-        /// <param name="rows">页量</param>
-        /// <param name="sort">排序字段</param>
-        /// <param name="order">排序方式</param>
-        /// <param name="listFieldName">查询列，默认为 *</param>
-        /// <param name="whereSql">条件</param>
-        /// <param name="total">返回总条数</param>
+        /// <param name="TableName"></param>
+        /// <param name="page"></param>
+        /// <param name="rows"></param>
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        /// <param name="listFieldName"></param>
+        /// <param name="whereSql"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, out int total)
+        public Tuple<DataTable, int> GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string DatabaseName = null)
         {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            if (string.IsNullOrWhiteSpace(listFieldName))
+            {
+                listFieldName = "*";
+            }
+
             if (listFieldName != "*")
             {
                 listFieldName = "\"" + string.Join("\",\"", listFieldName.Split(',')) + "\"";
@@ -285,8 +191,9 @@ namespace Netnr.SharedDataKit
             var ds = db.SqlQuery(sql);
 
             var dt = ds.Tables[0];
-            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out total);
-            return dt;
+            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out int total);
+
+            return new Tuple<DataTable, int>(dt, total);
         }
 
         /// <summary>

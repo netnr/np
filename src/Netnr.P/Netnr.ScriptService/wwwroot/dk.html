@@ -13,9 +13,9 @@
     <meta name="keywords" content="netnr,NET牛人,Netnr.DataKit" />
     <meta name="description" content="netnr,NET牛人,数据库工具及代码构建" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" async />
-    <link href="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui/1.9.0/themes/metro/easyui.min.css" rel="stylesheet" />
+    <link href="https://code.bdstatic.com/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" async />
+    <link href="https://cdn.netnr.eu.org/libs/jquery-easyui/1.9.x/themes/metro/easyui.css" rel="stylesheet" />
 
     <style>
         html {
@@ -447,19 +447,19 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui/1.9.0/jquery.easyui.min.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
+    <script src="https://cdn.netnr.eu.org/libs/jquery-easyui/1.9.x/jquery.easyui.min.js"></script>
+    <script src="https://cdn.netnr.eu.org/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.12.1/dist/polyfill.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/@babel/polyfill@7.12.1/dist/polyfill.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/jszip@3.6.0/dist/jszip.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs/loader.js"></script>
+    <script src="https://code.bdstatic.com/npm/monaco-editor@0.23.0/min/vs/loader.js"></script>
 
     <script>
         var dk = {
@@ -619,7 +619,7 @@
                 dk.addDbConn("MySQL", "Data Source=den1.mysql5.gear.host;User Id=rfmysql;Password=Vr8a474!nW4!;Database=rfmysql;");
                 dk.addDbConn("SQLServer", "Server=den1.mssql7.gear.host;uid=rfmssql;pwd=Cj24-GXLO9-H;database=rfmssql;");
                 dk.addDbConn("PostgreSQL", "Host=satao.db.elephantsql.com;Username=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;");
-                dk.addDbConn("SQLite", "Data Source=https://cdn.jsdelivr.net/gh/netnr/static/2020/05/22/2037505934.db");
+                dk.addDbConn("SQLite", "Data Source=https://s1.netnr.eu.org/2020/05/22/2037505934.db");
 
                 //渲染本地连接记录
                 dk.viewConn();
@@ -867,7 +867,7 @@
 
                 //初始化编辑器
                 require.config({
-                    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs" },
+                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.23.0/min/vs" },
                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                 });
                 //调试
@@ -1061,7 +1061,7 @@
 
                 //加载示例
                 $('#btnExtendLoadDemo').click(function () {
-                    var uri = 'https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-datakit-extension/0.0.1/demo.js';
+                    var uri = 'https://cdn.netnr.eu.org/libs/netnr-datakit-extension/0.0.1/demo.js';
                     $.ajax({
                         url: uri,
                         success: function (res) {

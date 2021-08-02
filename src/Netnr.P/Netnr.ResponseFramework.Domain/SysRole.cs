@@ -1,27 +1,40 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
 
 namespace Netnr.ResponseFramework.Domain
 {
+    /// <summary>
+    /// 系统角色表
+    /// </summary>
     public partial class SysRole
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string SrId { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string SrName { get; set; }
+        /// <summary>
+        /// 状态，1启用
+        /// </summary>
         public int? SrStatus { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 描述
+        /// </summary>
         public string SrDescribe { get; set; }
+        /// <summary>
+        /// 分组
+        /// </summary>
         public int? SrGroup { get; set; }
-        [Column(TypeName = "text")]
+        /// <summary>
+        /// 菜单
+        /// </summary>
         public string SrMenus { get; set; }
-        [Column(TypeName = "text")]
+        /// <summary>
+        /// 按钮
+        /// </summary>
         public string SrButtons { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? SrCreateTime { get; set; }
     }
 }

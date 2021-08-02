@@ -1,43 +1,65 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(GrId), nameof(Gid), Name = "IDXGiftRecordDetail_GrId_Gid")]
+    /// <summary>
+    /// 礼薄明细
+    /// </summary>
     public partial class GiftRecordDetail
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string GrdId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 主表ID
+        /// </summary>
         public string GrId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 送礼人
+        /// </summary>
         public string GrdGiverName { get; set; }
+        /// <summary>
+        /// 礼金
+        /// </summary>
         public decimal? GrdCash { get; set; }
-        [Column(TypeName = "varchar(255)")]
+        /// <summary>
+        /// 礼物
+        /// </summary>
         public string GrdGoods { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 时间
+        /// </summary>
         public DateTime? GrdCreateTime { get; set; }
-        [Column(TypeName = "varchar(255)")]
         public string GrdRemark { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 主表ID
+        /// </summary>
         public string Gid { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 送礼人
+        /// </summary>
         public string GiverName { get; set; }
+        /// <summary>
+        /// 礼金
+        /// </summary>
         public decimal? GiftCash { get; set; }
-        [Column(TypeName = "varchar(255)")]
+        /// <summary>
+        /// 礼物
+        /// </summary>
         public string GiftGoods { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 时间
+        /// </summary>
         public DateTime? CreateTime { get; set; }
     }
 }

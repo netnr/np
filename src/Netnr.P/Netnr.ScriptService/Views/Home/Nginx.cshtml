@@ -1,58 +1,24 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 mb-3">
-            <div class="input-group">
-                <button class="btn btn-warning" id="btnFormatterNginxConf" title="Shift+Alt+F 快捷格式化">格式化</button>
-            </div>
+        <div class="col-auto">
+            <button class="btn btn-warning" id="btnFormatterNginxConf" title="Shift+Alt+F 快捷格式化">格式化</button>
         </div>
-        <div class="col-md-12">
-            <div id="ebox" class="border position-relative">
-                <textarea class="form-control"></textarea>
+        <div class="col-auto">
+            <select class="form-select nr-theme">
+                <optgroup label="Theme">
+                    <option value="vs">vs</option>
+                    <option value="vs-dark">vs-dark</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="col-md-12 mt-3">
+            <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
         </div>
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("codemirror,codemirror-nginx,nginxbeautifier"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("nginxbeautifier,monaco-editor"))
 
-<script>
-    var ebox = $('#ebox');
-
-    var cme = CodeMirror.fromTextArea(ebox.children()[0], {
-        mode: 'nginx',
-        lineNumbers: true,
-        extraKeys: {
-            "Shift-Alt-F": function () {
-                $('#btnFormatterNginxConf')[0].click();
-            },
-            "Shift-Ctrl-F": function () {
-                $('#btnFormatterNginxConf')[0].click();
-            }
-        }
-    })
-    cme.setValue(ss.lsStr("txt"));
-    cme.on("change", function () {
-        ss.ls.txt = cme.getValue();
-        ss.lsSave();
-    });
-
-    $(window).on('load resize', function () {
-        cme.setSize("100%", $(this).height() - ebox.offset().top - 15);
-    }).click(function (e) {
-        var target = e.target || window.event.srcElement;
-        if (target.nodeName == "I" && target.className.indexOf('fa-arrows-alt') >= 0) {
-            cme.setSize("100%", $(this).height() - ebox.offset().top - 15);
-        }
-    })
-
-    $('#btnFormatterNginxConf').click(function () {
-        var indent = "    ";
-        modifyOptions({ INDENTATION: indent });
-        var cleanLines = clean_lines(cme.getValue());
-        modifyOptions({ trailingBlankLines: false });
-        cleanLines = join_opening_bracket(cleanLines);
-        cleanLines = perform_indentation(cleanLines, indent);
-        cme.setValue(cleanLines.join("\n"));
-    });
-</script>
+<script src="/js/nginx.js" asp-append-version="true"></script>

@@ -34,6 +34,9 @@
         defaultTheme = ss.lsStr("vscode-theme") || 'vs';
 
     require(['vs/editor/editor.main'], function () {
+        //xml formatter
+        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
+
         var modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
         var te = $("#editor"), selang = $('#selanguage'), languagehtm = [];
 

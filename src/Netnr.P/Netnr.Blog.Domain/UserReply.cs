@@ -1,41 +1,68 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(UrTargetType), nameof(UrTargetId), Name = "IDXUserReply_UrTargetType_UrTargetId")]
+    /// <summary>
+    /// 用户回复
+    /// </summary>
     public partial class UserReply
     {
-        [Key]
         public int UrId { get; set; }
+        /// <summary>
+        /// 登录用户ID，匿名用户为0
+        /// </summary>
         public int? Uid { get; set; }
-        [Column(TypeName = "varchar(20)")]
+        /// <summary>
+        /// 匿名用户
+        /// </summary>
         public string UrAnonymousName { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 匿名链接
+        /// </summary>
         public string UrAnonymousLink { get; set; }
-        [Column(TypeName = "varchar(100)")]
+        /// <summary>
+        /// 匿名邮箱
+        /// </summary>
         public string UrAnonymousMail { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 目标分类
+        /// </summary>
         public string UrTargetType { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 目标ID
+        /// </summary>
         public string UrTargetId { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 回复内容
+        /// </summary>
         public string UrContent { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 回复内容
+        /// </summary>
         public string UrContentMd { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 回复时间
+        /// </summary>
         public DateTime? UrCreateTime { get; set; }
+        /// <summary>
+        /// 状态，1正常，2block
+        /// </summary>
         public int? UrStatus { get; set; }
+        /// <summary>
+        /// 目标PID
+        /// </summary>
         public int? UrTargetPid { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

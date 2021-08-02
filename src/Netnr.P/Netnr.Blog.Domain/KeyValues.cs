@@ -1,41 +1,58 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
-
-namespace Netnr.Blog.Domain
+﻿namespace Netnr.Blog.Domain
 {
-    [Index(nameof(KeyName), Name = "IDXKeyValues_KeyName", IsUnique = true)]
+    /// <summary>
+    /// 键值
+    /// </summary>
     public partial class KeyValues
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string KeyId { get; set; }
-        [Column(TypeName = "varchar(255)")]
+        /// <summary>
+        /// 键名
+        /// </summary>
         public string KeyName { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 键值
+        /// </summary>
         public string KeyValue { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 键值
+        /// </summary>
         public string KeyValue1 { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 键值
+        /// </summary>
         public string KeyValue2 { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 键值
+        /// </summary>
         public string KeyValue3 { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 键值
+        /// </summary>
         public string KeyValue4 { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 键值
+        /// </summary>
         public string KeyValue5 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 分类
+        /// </summary>
         public string KeyType { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string KeyRemark { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

@@ -1,39 +1,64 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), Name = "IDXDraw_Uid")]
+    /// <summary>
+    /// 绘制
+    /// </summary>
     public partial class Draw
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string DrId { get; set; }
+        /// <summary>
+        /// 创建用户
+        /// </summary>
         public int? Uid { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string DrType { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 分类：Draw、Mind
+        /// </summary>
         public string DrName { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容
+        /// </summary>
         public string DrContent { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string DrRemark { get; set; }
-        [Column(TypeName = "varchar(20)")]
+        /// <summary>
+        /// 类别
+        /// </summary>
         public string DrCategory { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? DrOrder { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? DrCreateTime { get; set; }
+        /// <summary>
+        /// 状态：1正常，-1删除
+        /// </summary>
         public int? DrStatus { get; set; }
+        /// <summary>
+        /// 公开：1公开，2私有
+        /// </summary>
         public int? DrOpen { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 分享码
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

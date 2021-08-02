@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Netnr.ResponseFramework.Data;
 using Netnr.SharedUserAgent;
 using Netnr.SharedApp;
 using Netnr.SharedFast;
 using Netnr.Core;
+using System.IO;
 using System;
+using System.Linq;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -14,92 +17,140 @@ namespace Netnr.ResponseFramework.Web.Controllers
     [Route("[controller]/[action]")]
     public class ServicesController : Controller
     {
-        public ContextBase db;
-        public ServicesController(ContextBase cb)
-        {
-            db = cb;
-        }
-
-        /// <summary>
-        /// 服务项
-        /// </summary>
-        public enum ServiceItem
-        {
-            /// <summary>
-            /// 重置数据库（读取JSON文件）
-            /// </summary>
-            DatabaseReset,
-
-            /// <summary>
-            /// 备份数据库（写入JSON文件）
-            /// </summary>
-            DatabaseBackup,
-
-            /// <summary>
-            /// 清理临时目录
-            /// </summary>
-            ClearTmp
-        }
-
         /// <summary>
         /// 服务
         /// </summary>
-        /// <param name="ti">服务项</param>
+        /// <returns></returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IActionResult Index()
+        {
+            return Content("Servers is OK");
+        }
+
+        /// <summary>
+        /// 数据库重置
+        /// </summary>
+        /// <param name="zipName">文件名</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM Index(ServiceItem ti)
+        [ResponseCache(Duration = 10)]
+        public SharedResultVM DatabaseReset(string zipName = "db/backup.zip")
         {
-            var vm = new SharedResultVM();
-
-            var ck = "Global_ServiceDo";
-            var msg = CacheTo.Get(ck)?.ToString();
-            if (!string.IsNullOrWhiteSpace(msg))
+            return SharedResultVM.Try(vm =>
             {
-                vm.Set(SharedEnum.RTag.refuse);
-                vm.Msg = msg;
-            }
-            else
-            {
-                CacheTo.Set(ck, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 正在执行 {ti}", 600, false);
-
-                switch (ti)
+                if (HttpContext != null && new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
                 {
-                    case ServiceItem.DatabaseReset:
-                        {
-                            if (new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
-                            {
-                                vm.Set(SharedEnum.RTag.refuse);
-                                vm.Msg = "are you human？";
-                            }
-                            else
-                            {
-                                var jsonPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
-                                vm = ContextBase.ImportDataBase(jsonPath);
-                            }
-                        }
-                        break;
+                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Msg = "are you human？";
+                }
+                else
+                {
+                    var fullPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName);
 
-                    case ServiceItem.DatabaseBackup:
-                        {
-                            //是否覆盖JSON文件，默认不覆盖，避免线上重置功能被破坏
-                            var CoverJson = false;
+                    var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
 
-                            var jsonPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
-                            vm = ContextBase.ExportDataBase(CoverJson ? jsonPath : null);
-                        }
-                        break;
-
-                    case ServiceItem.ClearTmp:
-                        {
-                            vm = Application.TaskService.ClearTmp();
-                        }
-                        break;
+                    vm = SharedDataKit.DataKitAidTo.DatabaseImport(GlobalTo.TDB, conn, fullPath, true);
                 }
 
-                CacheTo.Remove(ck);
-            }
+                return vm;
+            });
+        }
 
-            return vm;
+        /// <summary>
+        /// 数据库导出
+        /// </summary>
+        /// <param name="zipName">文件名</param>
+        /// <returns></returns>
+        [HttpGet]
+        [ResponseCache(Duration = 10)]
+        public SharedResultVM DatabaseExport(string zipName = "db/backup.zip")
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                //是否覆盖备份，默认不覆盖，避免线上重置功能被破坏
+                var CoverBack = false;
+
+                if (CoverBack)
+                {
+                    var fullPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName);
+
+                    var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
+
+                    vm = SharedDataKit.DataKitAidTo.DatabaseExport(GlobalTo.TDB, conn, fullPath);
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Msg = "已被限制导出覆盖";
+                }
+
+                return vm;
+            });
+        }
+
+        /// <summary>
+        /// 清理临时目录
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ResponseCache(Duration = 10)]
+        public SharedResultVM ClearTmp()
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                string directoryPath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:TmpDir"));
+
+                vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 清理临时目录：{directoryPath}");
+
+                if (!Directory.Exists(directoryPath))
+                {
+                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Msg = "文件路径不存在";
+                }
+                else
+                {
+                    int delFileCount = 0;
+                    int delFolderCount = 0;
+
+                    //删除文件
+                    var listFile = Directory.GetFiles(directoryPath).ToList();
+                    foreach (var path in listFile)
+                    {
+                        if (!path.Contains("README"))
+                        {
+                            try
+                            {
+                                System.IO.File.Delete(path);
+                                delFileCount++;
+                            }
+                            catch (Exception ex)
+                            {
+                                vm.Log.Add($"删除文件异常：{ex.Message}");
+                            }
+                        }
+                    }
+
+                    //删除文件夹
+                    var listFolder = Directory.GetDirectories(directoryPath).ToList();
+                    foreach (var path in listFolder)
+                    {
+                        try
+                        {
+                            Directory.Delete(path, true);
+                            delFolderCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            vm.Log.Add($"删除文件夹异常：{ex.Message}");
+                        }
+                    }
+
+                    vm.Log.Insert(0, $"删除文件{delFileCount}个，删除{delFolderCount}个文件夹");
+                    vm.Set(SharedEnum.RTag.success);
+                }
+
+                return vm;
+            });
         }
     }
 }

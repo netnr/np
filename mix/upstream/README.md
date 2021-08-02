@@ -39,8 +39,7 @@ upstream(hosts, function (fast, ok) {
 //主机头跳转或404等，须请求具体路径的情况
 upstream([
     "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js",
-    "https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js",
-    "https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"
+    "https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"
 ], function (fast, ok) {
     console.log(fast, ok);
     //根据ok变量提取可用的源

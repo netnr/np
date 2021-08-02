@@ -41,8 +41,17 @@ namespace Netnr.DataX.Domain
 
                 OdTypeDB = DataKitAidTo.GetTypeDB(Config["od-type"].ToString());
                 OdConn = Config["od-conn"].ToString();
+                if (OdTypeDB == SharedEnum.TypeDB.MySQL && !OdConn.Contains("AllowLoadLocalInfile"))
+                {
+                    OdConn = OdConn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
+                }
+
                 NdTypeDB = DataKitAidTo.GetTypeDB(Config["nd-type"].ToString());
                 NdConn = Config["nd-conn"].ToString();
+                if (NdTypeDB == SharedEnum.TypeDB.MySQL && !NdConn.Contains("AllowLoadLocalInfile"))
+                {
+                    NdConn = NdConn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
+                }
 
                 MappingFullMatchTable = Init["table-mapping-full-match"].Value<bool>();
                 MappingFullMatchColumn = Init["column-mapping-full-match"].Value<bool>();
@@ -67,6 +76,17 @@ namespace Netnr.DataX.Domain
         /// DX 根路径
         /// </summary>
         public string DXPath { get; set; }
+
+        /// <summary>
+        /// DX 枢纽
+        /// </summary>
+        public string DXHub
+        {
+            get
+            {
+                return PathTo.Combine(DXPath, "hub");
+            }
+        }
 
         /// <summary>
         /// 配置

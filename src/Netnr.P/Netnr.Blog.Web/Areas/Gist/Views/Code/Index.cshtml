@@ -116,7 +116,7 @@
                 }
                 else
                 {
-                    <pre class="card-body monaco-editor vcln markdown-body" style="height:@((22*Model.GistRow+9).ToString()+"px");" data-lang="@Model.GistLanguage" data-theme="@Model.GistTheme">@Model.GistContent</pre>
+                    <pre class="card-body monaco-editor vcln markdown-body" style="height:@((24*Model.GistRow+9).ToString()+"px");" data-lang="@Model.GistLanguage" data-theme="@Model.GistTheme">@Model.GistContent</pre>
                     @Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
                     <script>
@@ -137,7 +137,7 @@
                                     horizontalScrollbarSize: 9,
                                     alwaysConsumeMouseWheel: false
                                 },
-                                fontSize: 16,
+                                fontSize: 18,
                                 readOnly: true,
                                 theme: gc.attr('data-theme'),
                                 minimap: {

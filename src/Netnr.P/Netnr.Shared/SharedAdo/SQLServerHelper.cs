@@ -1,4 +1,4 @@
-﻿#if Full || AdoSQLServer
+﻿#if Full || AdoFull || AdoSQLServer
 
 using System;
 using System.Data;
@@ -26,7 +26,7 @@ namespace Netnr.SharedAdo
             {
                 var connection = (SqlConnection)Connection;
 
-                using var bulk = new SqlBulkCopy(connection)
+                using var bulk = new SqlBulkCopy(connection, SqlBulkCopyOptions.KeepIdentity, null)
                 {
                     DestinationTableName = table,
                     BatchSize = dt.Rows.Count,

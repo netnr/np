@@ -1,4 +1,4 @@
-﻿#if Full || AdoPostgreSQL
+﻿#if Full || AdoFull || AdoPostgreSQL
 
 using System;
 using System.Data;

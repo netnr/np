@@ -1,44 +1,68 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.ResponseFramework.Domain
 {
-    [Index(nameof(LogCreateTime), Name = "IDXSysLog_LogCreateTime")]
+    /// <summary>
+    /// 系统日志表
+    /// </summary>
     public partial class SysLog
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string LogId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 用户名
+        /// </summary>
         public string SuName { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 昵称
+        /// </summary>
         public string SuNickname { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 动作
+        /// </summary>
         public string LogAction { get; set; }
-        [Column(TypeName = "text")]
+        /// <summary>
+        /// 内容
+        /// </summary>
         public string LogContent { get; set; }
-        [Column(TypeName = "varchar(500)")]
+        /// <summary>
+        /// 链接
+        /// </summary>
         public string LogUrl { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// IP
+        /// </summary>
         public string LogIp { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// IP归属地
+        /// </summary>
         public string LogArea { get; set; }
-        [Column(TypeName = "text")]
+        /// <summary>
+        /// User-Agent
+        /// </summary>
         public string LogUserAgent { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 浏览器
+        /// </summary>
         public string LogBrowserName { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 客户端操作系统
+        /// </summary>
         public string LogSystemName { get; set; }
+        /// <summary>
+        /// 分组（1：默认；2：爬虫）
+        /// </summary>
         public int? LogGroup { get; set; }
-        [Column(TypeName = "varchar(10)")]
+        /// <summary>
+        /// 级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）
+        /// </summary>
         public string LogLevel { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? LogCreateTime { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string LogRemark { get; set; }
     }
 }

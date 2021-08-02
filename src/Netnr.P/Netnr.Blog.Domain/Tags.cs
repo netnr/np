@@ -1,35 +1,54 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
-
-namespace Netnr.Blog.Domain
+﻿namespace Netnr.Blog.Domain
 {
-    [Index(nameof(TagName), Name = "IDXTags_TagName", IsUnique = true)]
-    [Index(nameof(TagOwner), nameof(TagPid), nameof(TagOrder), Name = "IDXTags_TagOwner_TagPid_TagOrder")]
+    /// <summary>
+    /// 标签
+    /// </summary>
     public partial class Tags
     {
-        [Key]
         public int TagId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 标签名
+        /// </summary>
         public string TagName { get; set; }
-        [Column(TypeName = "varchar(20)")]
+        /// <summary>
+        /// 标签码
+        /// </summary>
         public string TagCode { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 标签图标
+        /// </summary>
         public string TagIcon { get; set; }
+        /// <summary>
+        /// Pid
+        /// </summary>
         public int? TagPid { get; set; }
+        /// <summary>
+        /// 创建用户UID，系统标签为0
+        /// </summary>
         public int? TagOwner { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? TagOrder { get; set; }
+        /// <summary>
+        /// 状态 1启用
+        /// </summary>
         public int? TagStatus { get; set; }
+        /// <summary>
+        /// 热度
+        /// </summary>
         public int? TagHot { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
-        public int? TagState { get; set; }
     }
 }

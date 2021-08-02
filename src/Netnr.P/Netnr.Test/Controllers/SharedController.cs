@@ -21,7 +21,7 @@ namespace Netnr.Test.Controllers
         /// <param name="sql"></param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM To_Ado_SQLite(string conn = @"Data Source=https://cdn.jsdelivr.net/gh/netnr/static/2020/05/22/2037505934.db", string sql = "select sqlite_version();PRAGMA encoding;select datetime();")
+        public SharedResultVM To_Ado_SQLite(string conn = @"Data Source=https://s1.netnr.eu.org/2020/05/22/2037505934.db", string sql = "select sqlite_version();PRAGMA encoding;select datetime();")
         {
             var vm = new SharedResultVM();
 
@@ -45,6 +45,10 @@ namespace Netnr.Test.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public SharedResultVM To_DataKit_Aid()
         {
@@ -114,7 +118,11 @@ public class DynamicCompile
 }
 ";
                 vm.Msg = code;
-                vm.Log.AddRange(CompileTo.Executing(code, "System.Runtime.InteropServices.RuntimeInformation.dll".Split(",")).Split(Environment.NewLine));
+                var ce = CompileTo.Executing(code, "System.Runtime.InteropServices.RuntimeInformation.dll".Split(",")).Split(Environment.NewLine);
+                foreach (var item in ce)
+                {
+                    vm.Log.Add(item);
+                }
 
                 return vm;
             });

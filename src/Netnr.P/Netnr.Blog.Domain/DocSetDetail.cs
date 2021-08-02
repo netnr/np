@@ -1,42 +1,68 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(DsCode), Name = "IDXDocSetDetail_DsCode")]
+    /// <summary>
+    /// 文档明细
+    /// </summary>
     public partial class DocSetDetail
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string DsdId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 父ID
+        /// </summary>
         public string DsdPid { get; set; }
+        /// <summary>
+        /// 所属用户
+        /// </summary>
         public int? Uid { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 文档集唯一编码
+        /// </summary>
         public string DsCode { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 标题
+        /// </summary>
         public string DsdTitle { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容Markdown
+        /// </summary>
         public string DsdContentMd { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容Html
+        /// </summary>
         public string DsdContentHtml { get; set; }
-        [Column(TypeName = "datetime")]
-        public DateTime? DsdCreateTime { get; set; }
-        [Column(TypeName = "datetime")]
-        public DateTime? DsdUpdateTime { get; set; }
-        public int? DsdOrder { get; set; }
-        [Column(TypeName = "varchar(50)")]
-        public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
-        public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
-        public string Spare3 { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容
+        /// </summary>
         public string DsdContent { get; set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime? DsdCreateTime { get; set; }
+        /// <summary>
+        /// 修改时间
+        /// </summary>
+        public DateTime? DsdUpdateTime { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
+        public int? DsdOrder { get; set; }
+        /// <summary>
+        /// 备用
+        /// </summary>
+        public string Spare1 { get; set; }
+        /// <summary>
+        /// 备用
+        /// </summary>
+        public string Spare2 { get; set; }
+        /// <summary>
+        /// 备用
+        /// </summary>
+        public string Spare3 { get; set; }
+        /// <summary>
+        /// 1是最新
+        /// </summary>
         public int? DsdLetest { get; set; }
     }
 }

@@ -6,12 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Netnr.Core;
 using Netnr.SharedFast;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Netnr.Chat
 {
@@ -60,10 +60,7 @@ namespace Netnr.Chat
                 });
 
                 //注释
-                "Chat".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
 
             //授权访问信息

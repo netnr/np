@@ -10,8 +10,6 @@ namespace Netnr.Guff
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.Guff.dll "http://*:53"
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

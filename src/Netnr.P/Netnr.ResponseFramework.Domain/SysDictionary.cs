@@ -1,35 +1,50 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
-
-namespace Netnr.ResponseFramework.Domain
+﻿namespace Netnr.ResponseFramework.Domain
 {
-    [Index(nameof(SdType), Name = "IDXSysDictionary_SdType")]
+    /// <summary>
+    /// 系统字典表
+    /// </summary>
     public partial class SysDictionary
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string SdId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 上级ID
+        /// </summary>
         public string SdPid { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 字典类别
+        /// </summary>
         public string SdType { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 键
+        /// </summary>
         public string SdKey { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 值
+        /// </summary>
         public string SdValue { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? SdOrder { get; set; }
+        /// <summary>
+        /// 状态：1正常，-1删除，2停用
+        /// </summary>
         public int? SdStatus { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string SdRemark { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 特性
+        /// </summary>
         public string SdAttribute1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 特性
+        /// </summary>
         public string SdAttribute2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 特性
+        /// </summary>
         public string SdAttribute3 { get; set; }
     }
 }

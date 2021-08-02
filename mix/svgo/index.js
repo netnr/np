@@ -1,2 +1,1 @@
-const { optimize } = require('svgo');
-window.svgo = optimize;
+global.svgo = require('svgo').optimize;

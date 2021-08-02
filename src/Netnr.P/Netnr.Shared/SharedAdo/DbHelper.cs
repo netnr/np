@@ -1,4 +1,4 @@
-﻿#if Full || Ado
+﻿#if Full || Ado || AdoFull
 
 using System;
 using System.Linq;
@@ -125,7 +125,7 @@ namespace Netnr.SharedAdo
                 foreach (var sql in listSql)
                 {
                     currSqlSize += Encoding.Default.GetBytes(sql).Length;
-                    sbsql.AppendLine(sql + ";");
+                    sbsql.AppendLine(sql.TrimEnd(';') + ";");
                     if (currSqlSize > sqlBatchSize)
                     {
                         listBatchSql.Add(sbsql.ToString());
@@ -213,8 +213,8 @@ namespace Netnr.SharedAdo
             }
             catch (Exception ex)
             {
-                Transaction?.Rollback();
                 Console.WriteLine(ex);
+                Transaction?.Rollback();
                 throw;
             }
             finally
@@ -241,64 +241,18 @@ namespace Netnr.SharedAdo
         public static DataSet ExecuteDataSet(this DbCommand dbCommand)
         {
             var ds = new DataSet();
+
             var reader = dbCommand.ExecuteReader();
 
-            var isSQLite = dbCommand.Connection.GetType().FullName.ToLower().Contains("sqlite");
-            // https://github.com/dotnet/efcore/issues/23490
-            if (isSQLite)
+            do
             {
-                do
+                var table = new DataTable
                 {
-                    var table = new DataTable
-                    {
-                        TableName = "table" + (ds.Tables.Count + 1).ToString()
-                    };
-
-                    var ctype = typeof(object);
-
-                    while (reader.Read())
-                    {
-                        if (table.Columns.Count == 0)
-                        {
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                table.Columns.Add(new DataColumn(reader.GetName(i), ctype));
-                            }
-                        }
-
-                        var dr = table.NewRow();
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            dr[i] = reader.GetValue(i);
-                        }
-                        table.Rows.Add(dr.ItemArray);
-                    }
-
-                    if (table.Columns.Count == 0)
-                    {
-                        var readerSt = reader.GetSchemaTable();
-                        foreach (DataRow stdr in readerSt.Rows)
-                        {
-                            table.Columns.Add(new DataColumn(stdr["ColumnName"].ToString(), Type.GetType(stdr["DataType"].ToString())));
-                        }
-                    }
-
-                    ds.Tables.Add(table);
-
-                } while (reader.NextResult());
-            }
-            else
-            {
-                do
-                {
-                    var table = new DataTable
-                    {
-                        TableName = "table" + (ds.Tables.Count + 1).ToString()
-                    };
-                    table.Load(reader);
-                    ds.Tables.Add(table);
-                } while (!reader.IsClosed);
-            }
+                    TableName = "table" + (ds.Tables.Count + 1).ToString()
+                };
+                table.Load(reader);
+                ds.Tables.Add(table);
+            } while (!reader.IsClosed);
 
             return ds;
         }

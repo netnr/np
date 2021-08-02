@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System;
-using System.Linq;
 using Netnr.Core;
-using System.Text;
-using System.Security.Cryptography;
-using System.IO;
+using System.Collections.ObjectModel;
 
 namespace Netnr.Test.Controllers
 {
@@ -57,7 +54,10 @@ namespace Netnr.Test.Controllers
                 vm.Log.Add(cr.CrOutput);
             });
 
-            vm.Log.ForEach(x => Console.WriteLine(x));
+            foreach (var item in vm.Log)
+            {
+                Console.WriteLine(item);
+            }            
 
             return vm;
         }

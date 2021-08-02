@@ -1,61 +1,60 @@
 <div class="container-fluid">
     <div class="row">
-
         <div class="col-md-12 mb-3">
-            <div class="input-group">
-                <input id="txtFile" type="file" class="form-control" multiple accept="image/*">
-            </div>
+            <input id="txtFile" type="file" class="form-control" multiple accept="image/*">
         </div>
-
-        <div class="col-md-12 nrCogs">
-            <div class="input-group d-none mb-3">
-                <div>
-                    <select class="form-select nrCogType" data-ov="text" onchange="seal.changeCogType(this)">
-                        <optgroup label="水印类型">
-                            <option value="text" selected>文本</option>
-                            <option value="image">图片</option>
-                        </optgroup>
-                        <optgroup label="命令">
-                            <option value="add" style="color:green">新增</option>
-                            <option value="del" style="color:red">删除</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <input class="form-control nrCogText nrCogContent" placeholder="水印文字" value="Watermark 水印" oninput="seal.very()" />
-                <div class="nrCogText">
-                    <input class="form-control nrCogFontSize" oninput="seal.very()" placeholder="水印大小字体样式" value="36px Josefin Slab" />
-                </div>
-                <div class="nrCogText">
-                    <input class="form-control nrCogColor" oninput="seal.very()" style="width:100px" placeholder="字体颜色" value="#000000" />
-                </div>
-
-                <input type="file" class="form-control d-none nrCogImage nrCogLogo" placeholder="选择图片" accept="image/*" onchange="seal.changeCogLogo(this)">
-                <div class="d-none"></div>
-                <div class="d-none nrCogImage">
-                    <input class="form-control nrCogLogoWidth" oninput="seal.very()" style="width:130px" placeholder="图片宽度" type="number" min="0" step="5" />
-                </div>
-                <div class="d-none nrCogImage">
-                    <input class="form-control nrCogLogoHeight" oninput="seal.very()" style="width:130px" placeholder="图片高度" type="number" min="0" step="5" />
-                </div>
-
-                <div>
-                    <input class="form-control nrCogX" oninput="seal.very()" style="width:130px" placeholder="水平X轴定位" type="number" step="5" value="20" />
-                </div>
-                <div>
-                    <input class="form-control nrCogY" oninput="seal.very()" style="width:130px" placeholder="垂直Y轴定位" type="number" step="5" value="20" />
-                </div>
-                <div>
-                    <input class="form-control nrCogAlpha" oninput="seal.very()" style="width:100px" placeholder="透明度" type="number" value="0.4" min="0" max="1" step="0.1" />
-                </div>
-                <div>
-                    <input class="form-control nrCogAngle" oninput="seal.very()" style="width:80px" placeholder="角度" type="number" value="0" min="0" max="360" step="5" />
-                </div>
-            </div>
-        </div>
-
     </div>
-    <div class="row mb-3 nrView">
+
+    <div class="nrCogs">
+        <div class="row d-none">
+            <div class="col-auto mb-2">
+                <select class="form-select nrCogType bg-light" data-ov="text" onchange="seal.changeCogType(this)">
+                    <optgroup label="水印类型">
+                        <option value="text" selected>文本</option>
+                        <option value="image">图片</option>
+                    </optgroup>
+                    <optgroup label="命令">
+                        <option value="add" class="text-success">新增</option>
+                        <option value="del" class="text-danger">删除</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="col-auto mb-2 nrCogText">
+                <input class="form-control nrCogContent" placeholder="水印文字" value="Watermark 水印" oninput="seal.very()" />
+            </div>
+            <div class="col-auto mb-2 nrCogText">
+                <input class="form-control nrCogFontSize" oninput="seal.very()" placeholder="水印大小字体样式" value="36px Josefin Slab" />
+            </div>
+            <div class="col-auto mb-2 nrCogText">
+                <input class="nrCogColor" style="width:50px;height:38px;" type="color" oninput="seal.very()" placeholder="字体颜色" value="#000000" />
+            </div>
+
+            <div class="col-auto mb-2 d-none nrCogImage">
+                <input type="file" class="form-control nrCogLogo" placeholder="选择图片" accept="image/*" onchange="seal.changeCogLogo(this)">
+            </div>
+            <div class="col-auto mb-2 d-none nrCogImage">
+                <input class="form-control nrCogLogoWidth" oninput="seal.very()" placeholder="图宽" type="number" min="0" max="99999" step="5" />
+            </div>
+            <div class="col-auto mb-2 d-none nrCogImage">
+                <input class="form-control nrCogLogoHeight" oninput="seal.very()" placeholder="图高" type="number" min="0" max="99999" step="5" />
+            </div>
+
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogX" oninput="seal.very()" placeholder="X轴" type="number" min="0" max="99999" step="5" value="20" />
+            </div>
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogY" oninput="seal.very()" placeholder="Y轴" type="number" min="0" max="99999" step="5" value="20" />
+            </div>
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogAlpha" oninput="seal.very()" placeholder="透明度" type="number" value="0.4" min="0" max="1" step="0.1" />
+            </div>
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogAngle" oninput="seal.very()" placeholder="角度" type="number" value="0" min="0" max="360" step="5" />
+            </div>
+        </div>
+    </div>
+    <div class="row nrView">
     </div>
 </div>
 
@@ -96,8 +95,8 @@
         },
         cogAdd: function (cog) {
             var nrc = $('.nrCogs'), newCog = nrc.children().first().clone().removeClass('d-none');
-            newCog.children('.nrCogImage').addClass('d-none');
-            newCog.children('.nrCogText').removeClass('d-none');
+            newCog.find('.nrCogImage').addClass('d-none');
+            newCog.find('.nrCogText').removeClass('d-none');
             if (cog) {
                 cog.after(newCog);
             } else {
@@ -110,21 +109,23 @@
                 case "add":
                     seal.cogAdd(cog);
                     that.value = ov;
+                    seal.very();
                     break;
                 case "del":
                     if (cog.parent().children().length == 2) {
                         seal.cogAdd();
                     }
                     cog.remove();
+                    seal.very();
                     break;
                 case "text":
-                    cog.children('.nrCogText').removeClass('d-none');
-                    cog.children('.nrCogImage').addClass('d-none');
+                    cog.find('.nrCogText').removeClass('d-none');
+                    cog.find('.nrCogImage').addClass('d-none');
                     that.setAttribute('data-ov', that.value);
                     break;
                 case "image":
-                    cog.children('.nrCogText').addClass('d-none');
-                    cog.children('.nrCogImage').removeClass('d-none');
+                    cog.find('.nrCogText').addClass('d-none');
+                    cog.find('.nrCogImage').removeClass('d-none');
                     that.setAttribute('data-ov', that.value);
                     break;
             }
@@ -133,10 +134,9 @@
             var file = that.files[0];
             if (file) {
                 if (file.type.indexOf("image") == 0) {
-                    $(that).next().html(file.name);
                     var img = new Image();
                     img.onload = function () {
-                        var cwh = $(that).parent().next();
+                        var cwh = $(that).parent().parent();
                         cwh.find('.nrCogLogoWidth').val(this.width);
                         cwh.find('.nrCogLogoHeight').val(this.height);
 
@@ -144,10 +144,8 @@
                     }
                     img.src = URL.createObjectURL(file);
                 } else {
-                    that.val('');
+                    that.value = "";
                 }
-            } else {
-                $(that).next().html(file.placeholder);
             }
         },
         very: function () {
@@ -232,11 +230,11 @@
                 seal.imgs.forEach(fi => {
                     var img = new Image();
                     img.className = "mw-100 border";
-                    img.style.maxHeight = "600px";
+                    img.style.maxHeight = "300px";
                     if (fi.fileOutput) {
                         img.src = URL.createObjectURL(fi.fileOutput);
                     }
-                    var col = $('<div class="col-md-6 mt-3 text-center nrOutput"></div>').append(img);
+                    var col = $('<div class="col-auto mb-3 text-center nrOutput"></div>').append(img);
                     $('.nrView').append(col);
                 })
             } else {

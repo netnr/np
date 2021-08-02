@@ -1,10 +1,8 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
-            <div class="btn-group mb-3">
-                <button type="button" class="btn btn-warning" id="btnFn1" title="Terser">压缩 JS</button>
-                <button type="button" class="btn btn-success" id="btnFn2" title="CleanCSS">压缩 CSS</button>
-            </div>
+            <button type="button" class="btn mb-3 btn-warning" id="btnFn1" title="Terser">压缩 JS</button>
+            <button type="button" class="btn mb-3 btn-success" id="btnFn2" title="CleanCSS">压缩 CSS</button>
             <div id="editor1" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
@@ -23,7 +21,7 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("terser.js,cleancss.js,monaco-editor"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("terser.js,clean-css.js,monaco-editor"))
 
 <script>
 

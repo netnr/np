@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using UtfUnknown;
 using System.Collections.Generic;
 
 namespace Netnr.Tool.Items
@@ -28,7 +27,7 @@ namespace Netnr.Tool.Items
                     }
                 } while (!Directory.Exists(rootPath) && !File.Exists(rootPath));
 
-                Encoding newec = Encoding.UTF8;
+                Encoding newec = new UTF8Encoding(false);
                 var badec = false;
                 do
                 {
@@ -94,27 +93,37 @@ namespace Netnr.Tool.Items
 
         public static void ConvertEncoding(string path, Encoding newec)
         {
-            var ff = CharsetDetector.DetectFromFile(path).Detected;
-            if (ff == null)
+            var ff = GetFileEncoding(path);
+            if (ff.BodyName != newec.BodyName)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"未识别文本编码，已跳过 {path}");
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            Console.Write($"{ff.BodyName} => {newec.BodyName} , {path}");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            var txt = File.ReadAllText(path, ff);
+            File.WriteAllText(path, txt, newec);
+
+            Console.Write($" Done {Environment.NewLine}");
+        }
+
+        public static Encoding GetFileEncoding(string path)
+        {
+            var contentWithUTF8 = File.ReadAllText(path, Encoding.UTF8);
+            var contentWithGBK = File.ReadAllText(path, Encoding.GetEncoding("GBK"));
+            if (contentWithUTF8.Length < contentWithGBK.Length)
+                return Encoding.UTF8;
+            else if (contentWithUTF8.Length == contentWithGBK.Length)
+            {
+                using (var reader = new StreamReader(path, true))
+                {
+                    reader.Peek();
+                    return reader.CurrentEncoding;
+                }
             }
             else
-            {
-                if (ff.Encoding.BodyName != newec.BodyName)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                }
-                Console.Write($"{ff.Encoding.BodyName} => {newec.BodyName} , {path}");
-                Console.ForegroundColor = ConsoleColor.White;
+                return Encoding.GetEncoding("GBK");
 
-                var txt = File.ReadAllText(path, ff.Encoding);
-                File.WriteAllText(path, txt, newec);
-
-                Console.Write($" 完成 {Environment.NewLine}");
-            }
         }
     }
 }

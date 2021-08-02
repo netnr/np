@@ -1,29 +1,44 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
 
 namespace Netnr.ResponseFramework.Domain
 {
+    /// <summary>
+    /// 系统用户表
+    /// </summary>
     public partial class SysUser
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string SuId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 角色
+        /// </summary>
         public string SrId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 账号
+        /// </summary>
         public string SuName { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 密码
+        /// </summary>
         public string SuPwd { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 昵称
+        /// </summary>
         public string SuNickname { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? SuCreateTime { get; set; }
+        /// <summary>
+        /// 状态，1正常
+        /// </summary>
         public int? SuStatus { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 登录标识
+        /// </summary>
         public string SuSign { get; set; }
+        /// <summary>
+        /// 分组
+        /// </summary>
         public int? SuGroup { get; set; }
     }
 }

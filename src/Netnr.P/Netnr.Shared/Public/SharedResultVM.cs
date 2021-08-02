@@ -4,6 +4,8 @@ using System;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Netnr
 {
@@ -12,7 +14,7 @@ namespace Netnr
     /// </summary>
     public class SharedResultVM
     {
-        private readonly Stopwatch sw;
+        readonly Stopwatch sw;
         private double et = 0;
 
         /// <summary>
@@ -46,7 +48,25 @@ namespace Netnr
         /// 日志
         /// </summary>
         [JsonProperty("log")]
-        public List<object> Log { get; set; } = new List<object>();
+        public ObservableCollection<object> Log { get; set; } = new ObservableCollection<object>();
+
+        /// <summary>
+        /// 日志事件
+        /// </summary>
+        /// <param name="le"></param>
+        public void LogEvent(Action<NotifyCollectionChangedEventArgs> le)
+        {
+            if (le != null)
+            {
+                Log.CollectionChanged += new NotifyCollectionChangedEventHandler(delegate (object sender, NotifyCollectionChangedEventArgs e)
+                {
+                    if (e.Action == NotifyCollectionChangedAction.Add)
+                    {
+                        le(e);
+                    }
+                });
+            }
+        }
 
         /// <summary>
         /// 用时，毫秒
@@ -61,6 +81,18 @@ namespace Netnr
         }
 
         /// <summary>
+        /// 用时，可视化
+        /// </summary>
+        [JsonProperty("useTimeFormat")]
+        public string UseTimeFormat
+        {
+            get
+            {
+                return TimeSpan.FromMilliseconds(sw.Elapsed.TotalMilliseconds).ToString(@"hh\:mm\:ss\:fff");
+            }
+        }
+
+        /// <summary>
         /// 片段耗时，毫秒
         /// </summary>
         /// <returns></returns>
@@ -69,6 +101,18 @@ namespace Netnr
             var pt = sw.Elapsed.TotalMilliseconds - et;
             et = sw.Elapsed.TotalMilliseconds;
             return pt;
+        }
+
+        /// <summary>
+        /// 片段耗时，毫秒，可视化
+        /// </summary>
+        /// <param name="format">格式化</param>
+        /// <returns></returns>
+        public string PartTimeFormat(string format = @"hh\:mm\:ss\:fff")
+        {
+            var pt = sw.Elapsed.TotalMilliseconds - et;
+            et = sw.Elapsed.TotalMilliseconds;
+            return TimeSpan.FromMilliseconds(pt).ToString(format);
         }
 
         /// <summary>
@@ -104,6 +148,8 @@ namespace Netnr
         /// <param name="showException">显示异常信息，默认true</param>
         public void Set(Exception ex, bool showException = true)
         {
+            Debug.WriteLine(ex);
+            Console.WriteLine(ex);
             Set(SharedEnum.RTag.exception);
             if (showException)
             {

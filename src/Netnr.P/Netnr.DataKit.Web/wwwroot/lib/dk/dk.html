@@ -13,9 +13,9 @@
     <meta name="keywords" content="netnr,NET牛人,Netnr.DataKit" />
     <meta name="description" content="netnr,NET牛人,数据库工具及代码构建" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" async />
-    <link href="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui/1.9.0/themes/metro/easyui.min.css" rel="stylesheet" />
+    <link href="https://code.bdstatic.com/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" async />
+    <link href="https://cdn.netnr.eu.org/libs/jquery-easyui/1.9.x/themes/metro/easyui.css" rel="stylesheet" />
 
     <style>
         html {
@@ -447,19 +447,19 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui/1.9.0/jquery.easyui.min.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/netnr/cdn/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
+    <script src="https://cdn.netnr.eu.org/libs/jquery-easyui/1.9.x/jquery.easyui.min.js"></script>
+    <script src="https://cdn.netnr.eu.org/libs/jquery-easyui-extension/20191228/datagrid-groupview.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.12.1/dist/polyfill.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/@babel/polyfill@7.12.1/dist/polyfill.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/jszip@3.6.0/dist/jszip.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs/loader.js"></script>
+    <script src="https://code.bdstatic.com/npm/monaco-editor@0.23.0/min/vs/loader.js"></script>
 
     <script>
         var dk = {
@@ -619,7 +619,7 @@
                 dk.addDbConn("MySQL", "Data Source=den1.mysql5.gear.host;User Id=rfmysql;Password=Vr8a474!nW4!;Database=rfmysql;");
                 dk.addDbConn("SQLServer", "Server=den1.mssql7.gear.host;uid=rfmssql;pwd=Cj24-GXLO9-H;database=rfmssql;");
                 dk.addDbConn("PostgreSQL", "Host=satao.db.elephantsql.com;Username=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;");
-                dk.addDbConn("SQLite", "Data Source=https://cdn.jsdelivr.net/gh/netnr/static/2020/05/22/2037505934.db");
+                dk.addDbConn("SQLite", "Data Source=https://s1.netnr.eu.org/2020/05/22/2037505934.db");
 
                 //渲染本地连接记录
                 dk.viewConn();
@@ -867,7 +867,7 @@
 
                 //初始化编辑器
                 require.config({
-                    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.23.0/min/vs" },
+                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.23.0/min/vs" },
                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                 });
                 //调试
@@ -1023,7 +1023,7 @@
                     if (row) {
                         var newcomment = $('#commentModalCenter').find('textarea').val();
                         //列注释
-                        if ("FieldComment" in row) {
+                        if ("ColumnComment" in row) {
                             dk.setColumnComment(row, newcomment);
                         } else {
                             dk.setTableComment(row, newcomment);
@@ -1061,7 +1061,7 @@
 
                 //加载示例
                 $('#btnExtendLoadDemo').click(function () {
-                    var uri = 'https://cdn.jsdelivr.net/gh/netnr/cdn/libs/netnr-datakit-extension/0.0.1/demo.js';
+                    var uri = 'https://cdn.netnr.eu.org/libs/netnr-datakit-extension/0.0.1/demo.js';
                     $.ajax({
                         url: uri,
                         success: function (res) {
@@ -1119,7 +1119,7 @@
                             var cdi = dk.dc.column.data[ri];
                             column1.push(cdi);
                             if ($(this).hasClass('datagrid-row-selected')) {
-                                fields.push(cdi.FieldName);
+                                fields.push(cdi.ColumnName);
                                 column2.push(cdi);
                             }
 
@@ -1132,12 +1132,12 @@
                                 while (wi - 999 < ri && sort == null) {
                                     var cdi = dk.dc.column.data[wi++];
                                     if (cdi && cdi.TableName == table && cdi.PrimaryKey == "YES") {
-                                        sort = cdi.FieldName;
+                                        sort = cdi.ColumnName;
                                     }
                                 }
                                 //取第一列
                                 if (sort == null) {
-                                    sort = fr.FieldName;
+                                    sort = fr.ColumnName;
                                 }
                             }
                         })
@@ -1515,7 +1515,7 @@
                     tc.rows = dk.dc.dataWhere.rows || 30;
                     tc.sort = dk.dc.dataWhere.sort;
                     tc.order = dk.dc.dataWhere.order || "asc";
-                    tc.listFieldName = dk.dc.dataWhere.fields.join(',');
+                    tc.listColumnName = dk.dc.dataWhere.fields.join(',');
                     tc.whereSql = $('.dkn-queryDataWhereSql').val();
 
                     $('.dkn-loadFilterData').children('i').addClass('fa-spin');
@@ -1637,16 +1637,16 @@
                 var cols = [
                     { field: "ck", checkbox: true },
                     { field: "TableName", title: "表名", hidden: true, width: 200 },
-                    { field: "FieldName", title: "字段", width: 150 },
+                    { field: "ColumnName", title: "字段", width: 150 },
                     { field: "DataType", title: "类型", width: 100 },
                     { field: "DataLength", title: "长度", halign: "center", align: "center", width: 90 },
                     { field: "DataScale", title: "精度", halign: "center", align: "center", width: 50 },
-                    { field: "FieldOrder", title: "排序", halign: "center", align: "center", width: 50 },
+                    { field: "ColumnOrder", title: "排序", halign: "center", align: "center", width: 50 },
                     { field: "PrimaryKey", title: "主键", halign: "center", align: "center", width: 60 },
                     { field: "AutoAdd", title: "自增", halign: "center", align: "center", width: 60 },
                     { field: "NotNull", title: "必填", halign: "center", align: "center", width: 60 },
-                    { field: "DefaultValue", title: "默认值", halign: "center", align: "center", width: 80 },
-                    { field: "FieldComment", title: "注释", width: 420 }
+                    { field: "ColumnDefault", title: "默认值", halign: "center", align: "center", width: 80 },
+                    { field: "ColumnComment", title: "注释", width: 420 }
                 ];
                 if ((dk.dc.column.data || []).length <= dk.dc.autoWidthRow) {
                     $.each(cols, function () {
@@ -1672,7 +1672,7 @@
                         return htm.join('');
                     },
                     onDblClickCell: function (index, field) {
-                        if (field == "FieldComment" && dk.dc.tdbName.toLowerCase() != "sqlite") {
+                        if (field == "ColumnComment" && dk.dc.tdbName.toLowerCase() != "sqlite") {
                             var row = $('#Grid2').datagrid('getRows')[index];
                             dk.dc.row = row;
                             dk.dc.rowIndex = index;
@@ -1700,8 +1700,8 @@
                 $.each(dk.dc.dataWhere.column, function () {
                     var oi = this;
                     cols.push({
-                        field: oi.FieldName,
-                        title: oi.FieldName + ((oi.FieldComment == null || oi.FieldComment == "") ? "" : "（" + dk.htmlEncode(oi.FieldComment) + "）"),
+                        field: oi.ColumnName,
+                        title: oi.ColumnName + ((oi.ColumnComment == null || oi.ColumnComment == "") ? "" : "（" + dk.htmlEncode(oi.ColumnComment) + "）"),
                         sortable: true,
                         width: dk.dc.dataWhere.rows <= dk.dc.autoWidthRow ? null : 200,
                         formatter: function (value) {
@@ -1962,7 +1962,7 @@
                         tablemd.push('|字段|类型|主键|自增|必填|默认值|注释|');
                         tablemd.push('|----|----|:-----:|:-----:|:-----:|:-----:|-----|');
                     }
-                    tablemd.push('|' + x.FieldName + ' |' + x.DataTypeLength + ' |' + (x.PrimaryKey || "") + ' |' + (x.AutoAdd || "") + ' |' + (x.NotNull || "") + ' |' + (x.DefaultValue || "") + ' |' + dk.noLineBreak(x.FieldComment, '<br />').replace(/\[/g, '\\[').replace(/\(/g, '\\(') + ' |');
+                    tablemd.push('|' + x.ColumnName + ' |' + x.ColumnType + ' |' + (x.PrimaryKey || "") + ' |' + (x.AutoAdd || "") + ' |' + (x.NotNull || "") + ' |' + (x.ColumnDefault || "") + ' |' + dk.noLineBreak(x.ColumnComment, '<br />').replace(/\[/g, '\\[').replace(/\(/g, '\\(') + ' |');
                 }
                 var code = tablemd.join('\n');
                 if (ops.copy) {
@@ -2210,8 +2210,8 @@
              */
             editColumnComment: function (row) {
                 var cmc = $('#commentModalCenter');
-                cmc.find('.modal-body').find('h5').html(row.TableName + ' . ' + row.FieldName);
-                cmc.find('textarea').val(row.FieldComment || "");
+                cmc.find('.modal-body').find('h5').html(row.TableName + ' . ' + row.ColumnName);
+                cmc.find('textarea').val(row.ColumnComment || "");
                 cmc.modal();
             },
 
@@ -2266,9 +2266,9 @@
             /**
              * 修改列注释
              * @param row 数据行
-             * @param FieldComment 列注释
+             * @param ColumnComment 列注释
              */
-            setColumnComment: function (row, FieldComment) {
+            setColumnComment: function (row, ColumnComment) {
                 var tc = dk.getTC();
 
                 if (tc.err.length == 0) {
@@ -2279,8 +2279,8 @@
                     dk.dc.requestActive = "setColumnComment";
 
                     tc.TableName = row.TableName;
-                    tc.FieldName = row.FieldName;
-                    tc.FieldComment = FieldComment;
+                    tc.ColumnName = row.ColumnName;
+                    tc.ColumnComment = ColumnComment;
 
                     $('.dkn-updateCommentWait').removeClass('invisible').addClass('visible');
 
@@ -2294,7 +2294,7 @@
                             if (data.code == 200) {
                                 $('#Grid2').datagrid('updateRow', {
                                     index: dk.dc.rowIndex,
-                                    row: { FieldComment: FieldComment }
+                                    row: { ColumnComment: ColumnComment }
                                 });
                                 $('#commentModalCenter').modal('hide');
                             } else {
@@ -2489,7 +2489,7 @@
                                     //项注释
                                     if (pa.comment) {
                                         ts.push('\t\t' + '/// <summary>');
-                                        $.each((ri.FieldComment || "").split('\n'), function () {
+                                        $.each((ri.ColumnComment || "").split('\n'), function () {
                                             ts.push('\t\t' + '/// ' + this);
                                         });
                                         ts.push('\t\t' + '/// </summary>');
@@ -2519,7 +2519,7 @@
                                             lgtype += "?";
                                         }
                                     }
-                                    ts.push('\t\t' + 'public ' + lgtype + ' ' + ri.FieldName + ' { get; set; }');
+                                    ts.push('\t\t' + 'public ' + lgtype + ' ' + ri.ColumnName + ' { get; set; }');
                                 }
                                 ts.push('\t' + '}');
                                 ts.push('}');
@@ -2606,7 +2606,7 @@
 
                                 for (var i = 0; i < rs.length; i++) {
                                     var ri = rs[i];
-                                    fields.push(ri.FieldName);
+                                    fields.push(ri.ColumnName);
                                     var dbm = dk.build.typeMapping.csharp[tdbname];
                                     ri.omi = $(dbm).filter(function () { return this.db.toLowerCase() == ri.DataType.toLowerCase() })[0] || {};
                                     if (ri.PrimaryKey == "YES") {
@@ -2682,7 +2682,7 @@
                                         pm = "Int32";
                                     }
 
-                                    var newpm = 'new ' + dbpm + '("' + pmprefix + ri.FieldName + '", ' + dbtypeEnum + '.' + pm;
+                                    var newpm = 'new ' + dbpm + '("' + pmprefix + ri.ColumnName + '", ' + dbtypeEnum + '.' + pm;
 
                                     //Oracle Large Object 不指定长度
                                     var isoc = tdbname == "Oracle" && pm.slice(-3) == "lob";
@@ -2699,7 +2699,7 @@
                                 ts.push('\t\t\t' + '};');
                                 for (var i = 0; i < rs.length; i++) {
                                     var ri = rs[i];
-                                    ts.push('\t\t\t' + 'parameters[' + i + '].Value = model.' + ri.FieldName + ';');
+                                    ts.push('\t\t\t' + 'parameters[' + i + '].Value = model.' + ri.ColumnName + ';');
                                 }
                                 ts.push('');
                                 ts.push('\t\t\t' + 'int num = ' + dbfunc_add + '(sql, parameters);');
@@ -2720,11 +2720,11 @@
                                 for (var i = 0; i < rs.length; i++) {
                                     var ri = rs[i];
                                     if (ri.PrimaryKey != "YES") {
-                                        sv.push(ri.FieldName + '=' + pmprefix + ri.FieldName);
+                                        sv.push(ri.ColumnName + '=' + pmprefix + ri.ColumnName);
                                     }
                                 }
                                 ts.push('\t\t\t\t\t\t' + sv.join(',') + ' ');
-                                ts.push('\t\t\t\t\t\t' + 'where ' + pkcolumn.FieldName + '=' + pmprefix + pkcolumn.FieldName + '";');
+                                ts.push('\t\t\t\t\t\t' + 'where ' + pkcolumn.ColumnName + '=' + pmprefix + pkcolumn.ColumnName + '";');
                                 ts.push('\t\t\t' + dbpm + '[] parameters = {');
                                 for (var i = 0; i < rs.length; i++) {
                                     var ri = rs[i], pm = ri.omi.pm;
@@ -2734,7 +2734,7 @@
                                         pm = "Int32";
                                     }
 
-                                    var newpm = 'new ' + dbpm + '("' + pmprefix + ri.FieldName + '", ' + dbtypeEnum + '.' + pm;
+                                    var newpm = 'new ' + dbpm + '("' + pmprefix + ri.ColumnName + '", ' + dbtypeEnum + '.' + pm;
 
                                     //Oracle Large Object 不指定长度
                                     var isoc = tdbname == "Oracle" && pm.slice(-3) == "lob";
@@ -2751,7 +2751,7 @@
                                 ts.push('\t\t\t' + '};');
                                 for (var p = 0; p < rs.length; p++) {
                                     var cp = rs[p];
-                                    ts.push('\t\t\t' + 'parameters[' + p + '].Value = model.' + cp.FieldName + ';');
+                                    ts.push('\t\t\t' + 'parameters[' + p + '].Value = model.' + cp.ColumnName + ';');
                                 }
                                 ts.push('');
                                 ts.push('\t\t\t' + 'int num = ' + dbfunc_update + '(sql, parameters);');
@@ -2763,13 +2763,13 @@
                                 ts.push('\t\t' + '/// <summary>');
                                 ts.push('\t\t' + '/// 删除一条');
                                 ts.push('\t\t' + '/// </summary>');
-                                ts.push('\t\t' + '/// <param name="' + pkcolumn.FieldName + '">删除标识</param>');
+                                ts.push('\t\t' + '/// <param name="' + pkcolumn.ColumnName + '">删除标识</param>');
                                 ts.push('\t\t' + '/// <returns>返回是否成功</returns>');
-                                ts.push('\t\t' + 'public bool Delete(' + pkcolumn.omi.lg + ' ' + pkcolumn.FieldName + ')');
+                                ts.push('\t\t' + 'public bool Delete(' + pkcolumn.omi.lg + ' ' + pkcolumn.ColumnName + ')');
                                 ts.push('\t\t' + '{');
-                                ts.push('\t\t\t' + 'var sql = "delete from ' + gn + ' where ' + pkcolumn.FieldName + '=' + pmprefix + pkcolumn.FieldName + '";');
+                                ts.push('\t\t\t' + 'var sql = "delete from ' + gn + ' where ' + pkcolumn.ColumnName + '=' + pmprefix + pkcolumn.ColumnName + '";');
                                 ts.push('\t\t\t' + dbpm + '[] parameters = {');
-                                var newpm = 'new ' + dbpm + '("' + pmprefix + pkcolumn.FieldName + '", ' + dbtypeEnum + '.' + pkcolumn.omi.pm;
+                                var newpm = 'new ' + dbpm + '("' + pmprefix + pkcolumn.ColumnName + '", ' + dbtypeEnum + '.' + pkcolumn.omi.pm;
                                 if (!isNaN(parseInt(pkcolumn.DataLength))) {
                                     newpm += ', ' + pkcolumn.DataLength + ')';
                                 } else {
@@ -2777,7 +2777,7 @@
                                 }
                                 ts.push('\t\t\t\t' + newpm);
                                 ts.push('\t\t\t' + '};');
-                                ts.push('\t\t\t' + 'parameters[0].Value = ' + pkcolumn.FieldName + ';');
+                                ts.push('\t\t\t' + 'parameters[0].Value = ' + pkcolumn.ColumnName + ';');
                                 ts.push('');
                                 ts.push('\t\t\t' + 'var num = ' + dbfunc_delete + '(sql, parameters);');
                                 ts.push('\t\t\t' + 'return num > 0;');
@@ -2900,7 +2900,7 @@
                                     //项注释
                                     if (pa.comment) {
                                         ts.push('\t' + '/**');
-                                        $.each((ri.FieldComment || "").split('\n'), function () {
+                                        $.each((ri.ColumnComment || "").split('\n'), function () {
                                             ts.push('\t' + ' * ' + this);
                                         });
                                         ts.push('\t' + ' */');
@@ -2926,7 +2926,7 @@
                                             lgtype += "?";
                                         }
                                     }
-                                    ts.push('\t' + 'private ' + lgtype + ' ' + ri.FieldName + ';');
+                                    ts.push('\t' + 'private ' + lgtype + ' ' + ri.ColumnName + ';');
                                 }
                                 ts.push('}');
 

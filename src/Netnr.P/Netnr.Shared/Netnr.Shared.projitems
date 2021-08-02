@@ -9,6 +9,7 @@
     <Import_RootNamespace>Netnr</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Public\SharedTimingVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\SQLiteHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\OracleHelper.cs" />
@@ -21,8 +22,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\DownTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedCompile\CompileTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitAidTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\MySQL.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DKControllerTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\IDataKitTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\SqlMappingCsharpVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DatabaseVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\SQLServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\Oracle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\PostgreSQL.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\SQLite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedFast\GlobalTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaForDrawingCommon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaForSkiaSharp.cs" />
@@ -35,8 +43,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitSQLServerTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DEIVM.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TableColumnVM.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TableNameVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\ColumnVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TableVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedPageVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedPaginationVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedResultVM.cs" />
@@ -49,8 +57,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedNpoi\NpoiTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedPinyin\PinyinTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedUserAgent\UserAgentTo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
 </Project>

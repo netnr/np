@@ -1,4 +1,4 @@
-﻿#if Full || AdoMySQL
+﻿#if Full || AdoFull || AdoMySQL
 
 using System;
 using System.Linq;
@@ -100,20 +100,21 @@ namespace Netnr.SharedAdo
         /// </summary>
         /// <param name="sql">SQL语句</param>
         /// <param name="parameters">带参</param>
+        /// <param name="action"></param>
         /// <returns>返回打印信息</returns>
-        public List<string> SqlPrintMySQL(string sql, DbParameter[] parameters = null)
+        public int SqlPrintMySQL(string sql, DbParameter[] parameters = null, Action<IReadOnlyList<MySqlError>> action = null)
         {
             return SafeConn(() =>
             {
                 var connection = (MySqlConnection)Connection;
 
                 var listPrint = new List<string>();
-                connection.InfoMessage += (s, e) => listPrint.AddRange(e.Errors.Select(x => x.Message));
+                connection.InfoMessage += (s, e) => action?.Invoke(e.Errors);
 
                 var cmd = GetCommand(sql, parameters);
-                cmd.ExecuteNonQuery();
+                var num = cmd.ExecuteNonQuery();
 
-                return listPrint;
+                return num;
             });
         }
     }

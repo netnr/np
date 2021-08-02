@@ -245,6 +245,20 @@
                 }
             }, false);
 
+            //粘贴
+            document.addEventListener('paste', function (event) {
+                if (event.clipboardData || event.originalEvent) {
+                    var clipboardData = (event.clipboardData || event.originalEvent.clipboardData);
+                    if (clipboardData.items) {
+                        var items = clipboardData.items, len = items.length;
+                        for (var i = 0; i < len; i++) {
+                            var blob = items[i].getAsFile();
+                            gs.add(blob);
+                        }
+                    }
+                }
+            });
+
             //选择文件
             document.querySelector('.nr-file').addEventListener('change', function () {
                 var files = this.files;

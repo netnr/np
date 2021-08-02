@@ -1,9 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Netnr.Chat.Domain;
-
-#nullable disable
 
 namespace Netnr.Chat.Data
 {

@@ -1,30 +1,47 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
-
-namespace Netnr.ResponseFramework.Domain
+﻿namespace Netnr.ResponseFramework.Domain
 {
+    /// <summary>
+    /// 系统按钮表
+    /// </summary>
     public partial class SysButton
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string SbId { get; set; }
-        [Column(TypeName = "varchar(50)")]
         public string SbPid { get; set; }
-        [Column(TypeName = "varchar(20)")]
+        /// <summary>
+        /// 按钮文本
+        /// </summary>
         public string SbBtnText { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 按钮ID
+        /// </summary>
         public string SbBtnId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 按钮类
+        /// </summary>
         public string SbBtnClass { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 按钮图标
+        /// </summary>
         public string SbBtnIcon { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? SbBtnOrder { get; set; }
+        /// <summary>
+        /// 状态，1启用
+        /// </summary>
         public int? SbStatus { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 描述
+        /// </summary>
         public string SbDescribe { get; set; }
+        /// <summary>
+        /// 分组
+        /// </summary>
         public int? SbBtnGroup { get; set; }
+        /// <summary>
+        /// 隐藏，1隐藏
+        /// </summary>
         public int? SbBtnHide { get; set; }
     }
 }

@@ -68,7 +68,7 @@ namespace Netnr.ResponseFramework.Web
                     })
                 });
 
-                c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr.ResponseFramework.Web.xml", true);
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
             //swagger枚举显示名称
             services.AddSwaggerGenNewtonsoftSupport();
@@ -90,7 +90,7 @@ namespace Netnr.ResponseFramework.Web
             }, 20);
 
             //定时任务
-            FluentScheduler.JobManager.Initialize(new Application.TaskService.Reg());
+            FluentScheduler.JobManager.Initialize(new Apps.TaskService.Reg());
 
             //配置上传文件大小限制（详细信息：FormOptions）
             services.Configure<FormOptions>(options =>
@@ -117,8 +117,7 @@ namespace Netnr.ResponseFramework.Web
             if (db.Database.EnsureCreated())
             {
                 //重置数据库
-                var jsonPath = Core.PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
-                var vm = ContextBase.ImportDataBase(jsonPath);
+                var vm = new Controllers.ServicesController().DatabaseReset();
                 Console.WriteLine(vm.ToJson(true));
             }
 

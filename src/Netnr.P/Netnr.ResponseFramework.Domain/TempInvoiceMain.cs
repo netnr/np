@@ -1,41 +1,68 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
 
 namespace Netnr.ResponseFramework.Domain
 {
+    /// <summary>
+    /// 单据主表
+    /// </summary>
     public partial class TempInvoiceMain
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string TimId { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 单据号
+        /// </summary>
         public string TimNo { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 单据日期
+        /// </summary>
         public DateTime? TimDate { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 门店
+        /// </summary>
         public string TimStore { get; set; }
+        /// <summary>
+        /// 采购类型
+        /// </summary>
         public int? TimType { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 供应商
+        /// </summary>
         public string TimSupplier { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 采购员
+        /// </summary>
         public string TimUser { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string TimRemark { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 制单人
+        /// </summary>
         public string TimOwnerId { get; set; }
-        [Column(TypeName = "varchar(20)")]
+        /// <summary>
+        /// 制单人
+        /// </summary>
         public string TimOwnerName { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? TimCreateTime { get; set; }
+        /// <summary>
+        /// 状态，1默认，2已审核，3未通过，4作废
+        /// </summary>
         public int? TimStatus { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

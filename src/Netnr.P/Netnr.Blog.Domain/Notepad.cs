@@ -1,31 +1,41 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), Name = "IDXNotepad_Uid")]
+    /// <summary>
+    /// 记事本
+    /// </summary>
     public partial class Notepad
     {
-        [Key]
         public int NoteId { get; set; }
+        /// <summary>
+        /// 所属用户ID
+        /// </summary>
         public int? Uid { get; set; }
-        [Column(TypeName = "varchar(100)")]
+        /// <summary>
+        /// 标题
+        /// </summary>
         public string NoteTitle { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容
+        /// </summary>
         public string NoteContent { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? NoteCreateTime { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? NoteUpdateTime { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

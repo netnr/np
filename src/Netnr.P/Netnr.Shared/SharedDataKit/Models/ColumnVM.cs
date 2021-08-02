@@ -5,7 +5,7 @@ namespace Netnr.SharedDataKit
     /// <summary>
     /// 表列信息
     /// </summary>
-    public partial class TableColumnVM
+    public partial class ColumnVM
     {
         /// <summary>
         /// 表名
@@ -16,13 +16,13 @@ namespace Netnr.SharedDataKit
         /// </summary>
         public string TableComment { get; set; }
         /// <summary>
-        /// 字段名
+        /// 列名
         /// </summary>
-        public string FieldName { get; set; }
+        public string ColumnName { get; set; }
         /// <summary>
         /// 数据类型及长度
         /// </summary>
-        public string DataTypeLength { get; set; }
+        public string ColumnType { get; set; }
         /// <summary>
         /// 数据类型
         /// </summary>
@@ -36,9 +36,9 @@ namespace Netnr.SharedDataKit
         /// </summary>
         public string DataScale { get; set; }
         /// <summary>
-        /// 字段排序
+        /// 排序
         /// </summary>
-        public int? FieldOrder { get; set; }
+        public int? ColumnOrder { get; set; }
         /// <summary>
         /// 主键（YES：是主键）
         /// </summary>
@@ -54,11 +54,11 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 默认值
         /// </summary>
-        public string DefaultValue { get; set; }
+        public string ColumnDefault { get; set; }
         /// <summary>
-        /// 字段注释
+        /// 列注释
         /// </summary>
-        public string FieldComment { get; set; }
+        public string ColumnComment { get; set; }
     }
 }
 

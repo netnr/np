@@ -41,19 +41,21 @@
 <script>
     function AutoHeight() {
         var ch = $(window).height() - $('#txt1').offset().top - 15;
-        $('#txt1').css('height', Math.max(200, ch));
-        $('#txt2').css('height', Math.max(200, ch));
+        $('#txt1').height(Math.max(200, ch));
+        $('#txt2').height(Math.max(200, ch));
     }
     AutoHeight();
 </script>
 
-<script src="/lib/pretty-data.js"></script>
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("xml2json.js,monaco-editor"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("fast-xml-parser.js,monaco-editor"))
 
 <script>
+
     var editor1, editor2;
 
     require(['vs/editor/editor.main'], function () {
+        //xml formatter
+        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
 
         var txt1 = document.getElementById('txt1');
         var tv1 = txt1.innerHTML;
@@ -71,53 +73,36 @@
             language: 'xml',
             scrollBeyondLastLine: false
         }));
-
-        //xml formatter
-        editor2.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
-            try {
-                editor2.setValue(pd.xml(editor2.getValue()));
-            } catch (e) {
-                bs.msg('<h4>XML 格式有误</h4>');
-            }
-        })
     });
 
     $(window).resize(AutoHeight);
 
     $("#btnToJson").click(function (e) {
-        var x2js = new X2JS({
-            attributePrefix: "@@"
-        });
         var xmlText = editor2.getValue();
         if (xmlText == "") {
             bs.msg('<h4>XML 不能为空</h4>');
             return false;
         }
-        var jsonObj = x2js.xml_str2json(xmlText);
-        if (jsonObj == null && $(xmlText).length) {
-            xmlText = '<root>' + xmlText + '</root>';
-            jsonObj = x2js.xml_str2json(xmlText)["root"];
-        }
-        if (jsonObj == null) {
-            bs.msg('<h4>转换错误</h4>');
-            return false;
-        }
 
-        editor1.setValue(JSON.stringify(jsonObj, null, 2));
+        try {
+            var jsonObj = new fastXmlParser.parse(xmlText);
+            editor1.setValue(JSON.stringify(jsonObj, null, 2));
+        } catch(err) {
+            bs.msg('<h4>转换错误</h4>');
+            console.log(err);
+        }
     });
 
     $("#btnToXml").click(function () {
-        var x2js = new X2JS({
-            attributePrefix: "@@"
-        });
         var jsonText = editor1.getValue();
         if (jsonText == "") {
             bs.msg('<h4>JSON 不能为空</h4>');
             return false;
         }
-        var jsonObj = JSON.parse(jsonText);
-        var xmlAsStr = x2js.json2xml_str(jsonObj);
 
-        editor2.setValue(pd.xml(xmlAsStr));
+        var jsonObj = JSON.parse(jsonText);
+        var xml = new fastXmlParser.j2xParser().parse(jsonObj);
+        editor2.setValue(xml);
+        editor2.trigger('a', 'editor.action.formatDocument')
     });
 </script>

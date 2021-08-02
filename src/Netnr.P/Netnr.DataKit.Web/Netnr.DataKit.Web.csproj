@@ -9,22 +9,22 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile>Netnr.DataKit.Web.xml</DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;Public;Fast;DataKit;Ado</DefineConstants>
+		<DefineConstants>TRACE;Public;Fast;DataKit;DKController;AdoFull</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>Netnr.DataKit.Web.xml</DocumentationFile>
-		<DefineConstants>TRACE;Public;Fast;DataKit;Ado</DefineConstants>
+		<DefineConstants>TRACE;Public;Fast;DataKit;DKController;AdoFull</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-preview.5.21301.17" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-preview.6.21355.2" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
-		<PackageReference Include="MySqlConnector" Version="1.3.10" />
-		<PackageReference Include="Npgsql" Version="6.0.0-preview4" />
+		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.1" />
+		<PackageReference Include="Npgsql" Version="6.0.0-preview5" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.1" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
 	</ItemGroup>

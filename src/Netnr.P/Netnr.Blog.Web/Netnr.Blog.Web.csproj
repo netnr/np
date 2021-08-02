@@ -7,26 +7,29 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile>Netnr.Blog.Web.xml</DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;Drawing;DataKit;App;UserAgent;Logging</DefineConstants>
+		<DefineConstants>TRACE;Drawing;DataKit;DKController;App;UserAgent;Logging</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;Drawing;DataKit;App;UserAgent;Logging</DefineConstants>
+		<DefineConstants>TRACE;Drawing;DataKit;DKController;App;UserAgent;Logging</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="Markdig" Version="0.25.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-preview.5.21301.17" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-preview.6.21355.2" />
 		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
 		<PackageReference Include="Qiniu.Shared" Version="7.2.15" />
+		<PackageReference Include="Qcloud.Shared.NetCore" Version="1.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.4" />
-		<PackageReference Include="SkiaSharp" Version="2.80.3-preview.93" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3-preview.93" />
-		<PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.5.21301.5" />
+		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.61" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.61" />
+		<PackageReference Include="SkiaSharp.QrCode" Version="0.4.1" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.6.21352.12" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
+		<PackageReference Include="FluentScheduler" Version="5.5.1" />
 		<PackageReference Include="DeviceDetector.NET" Version="4.2.0" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
 	</ItemGroup>

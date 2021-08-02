@@ -1,8 +1,9 @@
 ﻿#if Full || DataKit
 
+using System;
 using System.Data;
+using System.Data.Common;
 using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
 using Netnr.SharedAdo;
 
 namespace Netnr.SharedDataKit
@@ -13,9 +14,9 @@ namespace Netnr.SharedDataKit
     public class DataKitSQLServerTo : IDataKitTo
     {
         /// <summary>
-        /// 连接字符串
+        /// 连接
         /// </summary>
-        public string connectionString;
+        public DbConnection dbConnection;
 
         /// <summary>
         /// 数据库上下文
@@ -25,225 +26,110 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="conn">连接字符串</param>
-        public DataKitSQLServerTo(string conn)
+        /// <param name="dbConn">连接</param>
+        public DataKitSQLServerTo(DbConnection dbConn)
         {
-            db = new DbHelper(new SqlConnection(connectionString = conn));
+            db = new DbHelper(dbConnection = dbConn);
         }
 
         /// <summary>
-        /// 获取所有表信息的SQL脚本
+        /// 默认库名
         /// </summary>
-        public static string GetTableSQL()
-        {
-            return @"
-                    SELECT
-                        a.name AS TableName,
-                        b.value AS TableComment
-                    FROM
-                        sys.TABLES a
-                        left join sys.extended_properties b ON b.major_id = a.object_id AND b.minor_id = 0
-                    ORDER BY a.name
-                ";
-        }
-
-        /// <summary>
-        /// 获取所有列信息的SQL脚本
-        /// </summary>
-        /// <param name="sqlWhere">SQL条件</param>
         /// <returns></returns>
-        public static string GetColumnSQL(string sqlWhere)
+        public string DefaultDatabaseName()
         {
-            return $@"
-                        SELECT TableName = d.name,
-                                TableComment = ISNULL(f.value, ''),
-                                FieldName = a.name,
-                                DataTypeLength = b.name + '(' + CONVERT(VARCHAR(10), COLUMNPROPERTY(a.id, a.name, 'PRECISION')) + ')',
-                                DataType = b.name,
-                                [DataLength] = COLUMNPROPERTY(a.id, a.name, 'PRECISION'),
-                                DataScale = ISNULL(COLUMNPROPERTY(a.id, a.name, 'Scale'), 0),
-                                FieldOrder = a.colorder,
-                                PrimaryKey = CASE
-                                                WHEN EXISTS
-                                                        (
-                                                            SELECT 1
-                                                            FROM sysobjects
-                                                            WHERE xtype = 'PK'
-                                                                AND name IN
-                                                                    (
-                                                                        SELECT name
-                                                                        FROM sysindexes
-                                                                        WHERE indid IN
-                                                                                (
-                                                                                    SELECT indid FROM sysindexkeys WHERE id = a.id AND colid = a.colid
-                                                                                )
-                                                                    )
-                                                        ) THEN
-                                                    'YES'
-                                                ELSE
-                                                    ''
-                                            END,
-                                AutoAdd = CASE
-                                                WHEN i.name IS NULL THEN
-                                                    ''
-                                                ELSE
-                                                    'YES'
-                                            END,
-                                NotNull = CASE
-                                                WHEN a.isnullable = 1 THEN
-                                                    ''
-                                                ELSE
-                                                    'YES'
-                                            END,
-                                DefaultValue = e.text,
-                                FieldComment = ISNULL(g.[value], '')
-                        FROM syscolumns a
-                            LEFT JOIN systypes b
-                                ON a.xtype = b.xusertype
-                            INNER JOIN sysobjects d
-                                ON a.id = d.id
-                                    AND d.xtype = 'U'
-                                    AND d.name != 'dtproperties'
-                            LEFT JOIN syscomments e
-                                ON a.cdefault = e.id
-                            LEFT JOIN sys.extended_properties g
-                                ON a.id = g.major_id
-                                    AND a.colid = g.minor_id
-                            LEFT JOIN sys.extended_properties f
-                                ON d.id = f.major_id
-                                    AND f.minor_id = 0
-                            LEFT JOIN sys.identity_columns i
-                                ON i.[object_id] = OBJECT_ID(d.name)
-                                    AND i.name = a.name
-                        WHERE 1 = 1 {sqlWhere}
-                        ORDER BY d.name,
-                                    a.colorder;
-                        ";
+            return dbConnection.Database;
         }
 
         /// <summary>
-        /// 设置表注释的SQL脚本
+        /// 获取库
         /// </summary>
-        /// <param name="dataTableName">表名</param>
-        /// <param name="comment">注释内容</param>
         /// <returns></returns>
-        public static string SetTableCommentSQL(string dataTableName, string comment)
+        public List<DatabaseVM> GetDatabase()
         {
-            return $@"
-                        IF NOT EXISTS
-                        (
-                            SELECT A.name,
-                                   C.value
-                            FROM sys.tables A
-                                INNER JOIN sys.extended_properties C
-                                    ON C.major_id = A.object_id
-                                       AND minor_id = 0
-                            WHERE A.name = N'{dataTableName}'
-                        )
-                            EXEC sys.sp_addextendedproperty @name = N'MS_Description',
-                                                            @value = N'{comment}',
-                                                            @level0type = N'SCHEMA',
-                                                            @level0name = N'dbo',
-                                                            @level1type = N'TABLE',
-                                                            @level1name = N'{dataTableName}';
-
-                        EXEC sp_updateextendedproperty @name = N'MS_Description',
-                                                       @value = N'{comment}',
-                                                       @level0type = N'SCHEMA',
-                                                       @level0name = N'dbo',
-                                                       @level1type = N'TABLE',
-                                                       @level1name = N'{dataTableName}';";
-        }
-
-        /// <summary>
-        /// 设置列注释的SQL脚本
-        /// </summary>
-        /// <param name="dataTableName">表名</param>
-        /// <param name="dataColumnName">列名</param>
-        /// <param name="comment">注释内容</param>
-        /// <returns></returns>
-        public static string SetColumnCommentSQL(string dataTableName, string dataColumnName, string comment)
-        {
-            return $@"
-                       IF NOT EXISTS
-                        (
-                            SELECT C.value AS column_description
-                            FROM sys.tables A
-                                INNER JOIN sys.columns B
-                                    ON B.object_id = A.object_id
-                                INNER JOIN sys.extended_properties C
-                                    ON C.major_id = B.object_id
-                                        AND C.minor_id = B.column_id
-                            WHERE A.name = N'{dataTableName}'
-                                    AND B.name = N'{dataColumnName}'
-                        )
-                            EXEC sys.sp_addextendedproperty @name = N'MS_Description',
-                                                            @value = N'{comment}',
-                                                            @level0type = N'SCHEMA',
-                                                            @level0name = N'dbo',
-                                                            @level1type = N'TABLE',
-                                                            @level1name = N'{dataTableName}',
-                                                            @level2type = N'COLUMN',
-                                                            @level2name = N'{dataColumnName}';
-
-                        EXEC sp_updateextendedproperty @name = N'MS_Description',
-                                                        @value = N'{comment}',
-                                                        @level0type = N'SCHEMA',
-                                                        @level0name = N'dbo',
-                                                        @level1type = N'TABLE',
-                                                        @level1name = N'{dataTableName}',
-                                                        @level2type = N'COLUMN',
-                                                        @level2name = N'{dataColumnName}';";
-        }
-
-        /// <summary>
-        /// 获取所有列
-        /// </summary>
-        /// <param name="listTableName">表名</param>
-        /// <returns></returns>
-        public List<TableColumnVM> GetColumn(List<string> listTableName = null)
-        {
-            var whereSql = string.Empty;
-
-            if (listTableName?.Count > 0)
-            {
-                listTableName.ForEach(x => x = x.Replace("'", ""));
-
-                whereSql = "AND d.name in ('" + string.Join("','", listTableName) + "')";
-            }
-
-            var sql = GetColumnSQL(whereSql);
+            var sql = Configs.GetDatabaseSQLServer();
             var ds = db.SqlQuery(sql);
 
-            var list = ds.Tables[0].ToModel<TableColumnVM>();
-
+            var list = ds.Tables[0].ToModel<DatabaseVM>();
             return list;
         }
 
         /// <summary>
-        /// 获取所有表
+        /// 获取表
         /// </summary>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public List<TableNameVM> GetTable()
+        public List<TableVM> GetTable(string DatabaseName = null)
         {
-            var sql = GetTableSQL();
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var sql = Configs.GetTableSQLServer(DatabaseName);
             var ds = db.SqlQuery(sql);
 
-            var list = ds.Tables[0].ToModel<TableNameVM>();
+            var list = ds.Tables[0].ToModel<TableVM>();
+            return list;
+        }
 
+        /// <summary>
+        /// 表DDL
+        /// </summary>
+        /// <param name="filterTableName"></param>
+        /// <param name="DatabaseName"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> GetTableDDL(string filterTableName = null, string DatabaseName = null)
+        {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取列
+        /// </summary>
+        /// <param name="filterTableName"></param>
+        /// <param name="DatabaseName"></param>
+        /// <returns></returns>
+        public List<ColumnVM> GetColumn(string filterTableName = null, string DatabaseName = null)
+        {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var where = string.Empty;
+            if (!string.IsNullOrWhiteSpace(filterTableName))
+            {
+                where = $"AND t1.name IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
+            }
+
+            var sql = Configs.GetColumnSQLServer(DatabaseName, where);
+            var ds = db.SqlQuery(sql);
+
+            var list = ds.Tables[0].ToModel<ColumnVM>();
             return list;
         }
 
         /// <summary>
         /// 设置表注释
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="TableComment">表注释</param>
+        /// <param name="TableName"></param>
+        /// <param name="TableComment"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public bool SetTableComment(string TableName, string TableComment)
+        public bool SetTableComment(string TableName, string TableComment, string DatabaseName = null)
         {
-            TableComment ??= "";
-            var sql = SetTableCommentSQL(TableName.Replace("'", ""), TableComment.Replace("'", "''"));
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var sql = Configs.SetTableCommentSQLServer(DatabaseName, TableName, TableComment);
             _ = db.SqlExecute(sql);
             return true;
         }
@@ -251,32 +137,47 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 设置列注释
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="FieldName">列名</param>
-        /// <param name="FieldComment">列注释</param>
+        /// <param name="TableName"></param>
+        /// <param name="ColumnName"></param>
+        /// <param name="ColumnComment"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public bool SetColumnComment(string TableName, string FieldName, string FieldComment)
+        public bool SetColumnComment(string TableName, string ColumnName, string ColumnComment, string DatabaseName = null)
         {
-            FieldComment ??= "";
-            var sql = SetColumnCommentSQL(TableName.Replace("'", ""), FieldName.Replace("'", ""), FieldComment.Replace("'", "''"));
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var sql = Configs.SetColumnCommentSQLServer(DatabaseName, TableName, ColumnName, ColumnComment);
             _ = db.SqlExecute(sql);
             return true;
         }
 
         /// <summary>
-        /// 查询数据
+        /// 获取表数据
         /// </summary>
-        /// <param name="TableName">表名</param>
-        /// <param name="page">页码</param>
-        /// <param name="rows">页量</param>
-        /// <param name="sort">排序字段</param>
-        /// <param name="order">排序方式</param>
-        /// <param name="listFieldName">查询列，默认为 *</param>
-        /// <param name="whereSql">条件</param>
-        /// <param name="total">返回总条数</param>
+        /// <param name="TableName"></param>
+        /// <param name="page"></param>
+        /// <param name="rows"></param>
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        /// <param name="listFieldName"></param>
+        /// <param name="whereSql"></param>
+        /// <param name="DatabaseName"></param>
         /// <returns></returns>
-        public DataTable GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, out int total)
+        public Tuple<DataTable, int> GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string DatabaseName = null)
         {
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            if (string.IsNullOrWhiteSpace(listFieldName))
+            {
+                listFieldName = "*";
+            }
+
             if (string.IsNullOrWhiteSpace(whereSql))
             {
                 whereSql = "";
@@ -296,18 +197,19 @@ namespace Netnr.SharedDataKit
                                     {sort} {order}
                                 ) as NumId,{listFieldName}
                             from
-                                {TableName} {whereSql}
+                                [{DatabaseName}].dbo.[{TableName}] {whereSql}
                             ) as t
                         where
                             NumId between {((page - 1) * rows + 1)} and {(page * rows)}";
 
-            sql += $";select count(1) as total from {TableName} {whereSql}";
+            sql += $";select count(1) as total from [{DatabaseName}].dbo.[{TableName}] {whereSql}";
 
             var ds = db.SqlQuery(sql);
 
             var dt = ds.Tables[0];
-            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out total);
-            return dt;
+            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out int total);
+
+            return new Tuple<DataTable, int>(dt, total);
         }
 
         /// <summary>

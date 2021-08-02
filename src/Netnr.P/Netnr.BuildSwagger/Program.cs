@@ -10,8 +10,6 @@ namespace Netnr.BuildSwagger
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.BuildSwagger.dll "https://*:60"
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

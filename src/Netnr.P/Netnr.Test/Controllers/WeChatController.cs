@@ -475,10 +475,10 @@ namespace Netnr.Test.Controllers
             int ret = wxcpt.DecryptMsg(sReqMsgSig, sReqTimeStamp, sReqNonce, sReqData, ref sMsg);
             if (ret != 0)
             {
-                System.Console.WriteLine("ERR: Decrypt fail, ret: " + ret);
+                Console.WriteLine("ERR: Decrypt fail, ret: " + ret);
                 return;
             }
-            System.Console.WriteLine(sMsg);
+            Console.WriteLine(sMsg);
 
 
             /*
@@ -497,8 +497,8 @@ namespace Netnr.Test.Controllers
             string sRespData = "<xml><ToUserName><![CDATA[mycreate]]></ToUserName><FromUserName><![CDATA[wx582测试一下中文的情况，消息长度是按字节来算的396d3bd56c7]]></FromUserName><CreateTime>1348831860</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[this is a test]]></Content><MsgId>1234567890123456</MsgId></xml>";
             string sEncryptMsg = ""; //xml格式的密文
             ret = wxcpt.EncryptMsg(sRespData, sReqTimeStamp, sReqNonce, ref sEncryptMsg);
-            System.Console.WriteLine("sEncryptMsg");
-            System.Console.WriteLine(ret);
+            Console.WriteLine("sEncryptMsg");
+            Console.WriteLine(ret);
 
             /*测试：
              * 将sEncryptMsg解密看看是否是原文
@@ -511,8 +511,8 @@ namespace Netnr.Test.Controllers
             string nonce = root["Nonce"].InnerText;
             string stmp = "";
             ret = wxcpt.DecryptMsg(sig, timestamp, nonce, sEncryptMsg, ref stmp);
-            System.Console.WriteLine("stemp");
-            System.Console.WriteLine(stmp + ret);
+            Console.WriteLine("stemp");
+            Console.WriteLine(stmp + ret);
             return;
         }
     }

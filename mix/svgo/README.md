@@ -14,5 +14,5 @@ browserify index.js -o svgo.js
 ```
 <script src="svgo.js" ></script>
 
-svgo()
+//console.log(svgo)
 ```

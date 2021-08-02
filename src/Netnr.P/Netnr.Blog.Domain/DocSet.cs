@@ -1,32 +1,51 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), Name = "IDXDocSet_Uid")]
+    /// <summary>
+    /// 文档
+    /// </summary>
     public partial class DocSet
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 唯一编码
+        /// </summary>
         public string DsCode { get; set; }
+        /// <summary>
+        /// 所属用户
+        /// </summary>
         public int? Uid { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 主题
+        /// </summary>
         public string DsName { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string DsRemark { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? DsCreateTime { get; set; }
+        /// <summary>
+        /// 公开1
+        /// </summary>
         public int? DsOpen { get; set; }
+        /// <summary>
+        /// 状态1正常
+        /// </summary>
         public int? DsStatus { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 分享码
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

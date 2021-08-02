@@ -77,5 +77,36 @@ namespace Netnr.Core
             }
             return txt.Replace("'", "").Replace("\"", "");
         }
+
+        /// <summary>
+        /// 字节可视化
+        /// </summary>
+        /// <param name="size">字节大小</param>
+        /// <param name="keep">保留</param>
+        /// <returns></returns>
+        public static string FormatByteSize(double size, int keep = 2)
+        {
+            string[] suffixes = new[] { " B", " KB", " MB", " GB", " TB", " PB" };
+            const double unit = 1024;
+            int i = 0;
+            while (size > unit)
+            {
+                size /= unit;
+                i++;
+            }
+            return Math.Round(size, keep) + suffixes[i];
+        }
+
+        /// <summary>
+        /// 毫秒可视化
+        /// </summary>
+        /// <param name="ms">秒</param>
+        /// <param name="format">格式化</param>
+        /// <returns></returns>
+        public static string FormatMillisecondsSize(double ms, string format = @"hh\:mm\:ss\:fff")
+        {
+            TimeSpan time = TimeSpan.FromMilliseconds(ms);
+            return time.ToString(format);
+        }
     }
 }

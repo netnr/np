@@ -1,36 +1,60 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), nameof(UmType), nameof(UmCreateTime), Name = "IDXUserMessage_Uid_UmType_UmCreateTime")]
+    /// <summary>
+    /// 用户消息
+    /// </summary>
     public partial class UserMessage
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string UmId { get; set; }
+        /// <summary>
+        /// 接收用户
+        /// </summary>
         public int? Uid { get; set; }
+        /// <summary>
+        /// 触发用户ID
+        /// </summary>
         public int? UmTriggerUid { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 消息分类
+        /// </summary>
         public string UmType { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 消息目标ID
+        /// </summary>
         public string UmTargetId { get; set; }
+        /// <summary>
+        /// 消息定向索引
+        /// </summary>
         public int? UmTargetIndex { get; set; }
+        /// <summary>
+        /// 消息标记，1系统，2回复，3私信，4点赞，5收藏，6关注
+        /// </summary>
         public int? UmAction { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 消息内容
+        /// </summary>
         public string UmContent { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime? UmCreateTime { get; set; }
+        /// <summary>
+        /// 状态，1未读，2已读
+        /// </summary>
         public int? UmStatus { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }

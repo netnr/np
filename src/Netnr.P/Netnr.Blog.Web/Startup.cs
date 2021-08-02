@@ -132,7 +132,7 @@ namespace Netnr.Blog.Web
                     })
                 });
 
-                c.IncludeXmlComments(AppContext.BaseDirectory + $"Netnr.Blog.Web.xml", true);
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
             //swagger枚举显示名称
             services.AddSwaggerGenNewtonsoftSupport();
@@ -163,7 +163,7 @@ namespace Netnr.Blog.Web
             //定时任务
             if (!GlobalTo.GetValue<bool>("ReadOnly"))
             {
-                FluentScheduler.JobManager.Initialize(new Application.TaskService.TaskComponent.Reg());
+                FluentScheduler.JobManager.Initialize(new Apps.TaskService.Reg());
             }
 
             //配置上传文件大小限制（详细信息：FormOptions）
@@ -189,8 +189,8 @@ namespace Netnr.Blog.Web
             //数据库不存在则创建，创建后返回true
             if (db.Database.EnsureCreated())
             {
-                var jsonPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/data.json");
-                var vm = Data.ContextBase.ImportDataBase(jsonPath);
+                //导入数据库示例数据
+                var vm = new Controllers.ServicesController().DatabaseImport("db/backup_demo.zip");
                 Console.WriteLine(vm.ToJson(true));
             }
 

@@ -1,47 +1,102 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
-
-namespace Netnr.ResponseFramework.Domain
+﻿namespace Netnr.ResponseFramework.Domain
 {
+    /// <summary>
+    /// 示例表，请删除
+    /// </summary>
     public partial class TempExample
     {
-        [Key]
-        [Column(TypeName = "varchar(50)")]
         public string Id { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// （虚）表名
+        /// </summary>
         public string TableName { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 列键
+        /// </summary>
         public string ColField { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 默认列标题
+        /// </summary>
         public string DvTitle { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 列标题
+        /// </summary>
         public string ColTitle { get; set; }
+        /// <summary>
+        /// 列宽
+        /// </summary>
         public int? ColWidth { get; set; }
+        /// <summary>
+        /// 对齐方式 1左，2中，3右
+        /// </summary>
         public int? ColAlign { get; set; }
+        /// <summary>
+        /// 1隐藏
+        /// </summary>
         public int? ColHide { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? ColOrder { get; set; }
+        /// <summary>
+        /// 1冻结
+        /// </summary>
         public int? ColFrozen { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 格式化
+        /// </summary>
         public string ColFormat { get; set; }
+        /// <summary>
+        /// 1启用点击排序
+        /// </summary>
         public int? ColSort { get; set; }
+        /// <summary>
+        /// 1导出
+        /// </summary>
         public int? ColExport { get; set; }
+        /// <summary>
+        /// 1查询
+        /// </summary>
         public int? ColQuery { get; set; }
-        [Column(TypeName = "text")]
+        /// <summary>
+        /// 来源
+        /// </summary>
         public string FormUrl { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 输入类型
+        /// </summary>
         public string FormType { get; set; }
+        /// <summary>
+        /// 区域
+        /// </summary>
         public int? FormArea { get; set; }
+        /// <summary>
+        /// 跨列
+        /// </summary>
         public int? FormSpan { get; set; }
+        /// <summary>
+        /// 1隐藏
+        /// </summary>
         public int? FormHide { get; set; }
+        /// <summary>
+        /// 排序
+        /// </summary>
         public int? FormOrder { get; set; }
+        /// <summary>
+        /// 1必填
+        /// </summary>
         public int? FormRequired { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 输入框提示
+        /// </summary>
         public string FormPlaceholder { get; set; }
-        [Column(TypeName = "text")]
+        /// <summary>
+        /// 初始值
+        /// </summary>
         public string FormValue { get; set; }
-        [Column(TypeName = "text")]
+        /// <summary>
+        /// 显示文本
+        /// </summary>
         public string FormText { get; set; }
     }
 }

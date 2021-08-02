@@ -1,16 +1,21 @@
 ﻿# if Full || DbContext
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using System.Data;
+using System.IO;
+using Netnr.SharedFast;
 
 namespace Netnr.SharedDbContext
 {
     /// <summary>
     /// 数据库工厂
     /// </summary>
-    public static class FactoryTo
+    public class FactoryTo
     {
         /// <summary>
         /// 应用程序不为每个上下文实例创建新的ILoggerFactory实例非常重要。这样做会导致内存泄漏和性能下降
@@ -118,6 +123,90 @@ namespace Netnr.SharedDbContext
                     return conn = Core.CalcTo.AESEncrypt(conn, pwd);
             }
         }
+
+        /// <summary>
+        /// 获取连接字符串
+        /// </summary>
+        /// <param name="typeDB"></param>
+        /// <returns></returns>
+        public static string GetConn(SharedEnum.TypeDB? typeDB = null)
+        {
+            var tdb = typeDB ?? GlobalTo.TDB;
+            var conn = GlobalTo.Configuration.GetConnectionString(tdb.ToString());
+            if (tdb != SharedEnum.TypeDB.InMemory)
+            {
+                var pwd = GlobalTo.GetValue("ConnectionStrings:Password");
+                return ConnnectionEncryptOrDecrypt(conn, pwd, 2);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 获取数据库类型
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public static SharedEnum.TypeDB? GetTypeDB(DbContext db)
+        {
+            SharedEnum.TypeDB? tdb = null;
+
+            var pn = db.Database.ProviderName.ToLower();
+            if (pn.Contains("sqlite"))
+            {
+                tdb = SharedEnum.TypeDB.SQLite;
+            }
+            else if (pn.Contains("mysql"))
+            {
+                tdb = SharedEnum.TypeDB.MySQL;
+            }
+            else if (pn.Contains("oracle"))
+            {
+                tdb = SharedEnum.TypeDB.Oracle;
+            }
+            else if (pn.Contains("sqlserver"))
+            {
+                tdb = SharedEnum.TypeDB.SQLServer;
+            }
+            else if (pn.Contains("postgresql") || pn.Contains("pgsql"))
+            {
+                tdb = SharedEnum.TypeDB.PostgreSQL;
+            }
+            else if (pn.Contains("memory"))
+            {
+                tdb = SharedEnum.TypeDB.InMemory;
+            }
+
+            return tdb;
+        }
+
+        /// <summary>
+        /// SQL引用符号
+        /// </summary>
+        /// <param name="KeyWord">关键字</param>
+        /// <param name="tdb">数据库类型</param>
+        /// <returns></returns>
+        public static string SqlQuote(string KeyWord, SharedEnum.TypeDB? tdb = null)
+        {
+            return tdb switch
+            {
+                SharedEnum.TypeDB.SQLite or SharedEnum.TypeDB.SQLServer => $"[{KeyWord}]",
+                SharedEnum.TypeDB.MySQL => $"`{KeyWord}`",
+                SharedEnum.TypeDB.Oracle or SharedEnum.TypeDB.PostgreSQL => $"\"{KeyWord}\"",
+                _ => KeyWord,
+            };
+        }
+
+        /// <summary>
+        /// SQL引用符号
+        /// </summary>
+        /// <param name="KeyWord">关键字</param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public static string SqlQuote(string KeyWord, DbContext db)
+        {
+            return SqlQuote(KeyWord, GetTypeDB(db));
+        }
+
     }
 }
 

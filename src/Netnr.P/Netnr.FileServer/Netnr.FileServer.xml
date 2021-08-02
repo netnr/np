@@ -554,6 +554,42 @@
         <member name="M:Netnr.FileServer.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         </member>
+        <member name="T:Netnr.SharedTimingVM">
+            <summary>
+            计时
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.PartTime">
+            <summary>
+            片段耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.PartTimeFormat(System.String)">
+            <summary>
+            片段耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.TotalTime">
+            <summary>
+            总耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.TotalTimeFormat(System.String)">
+            <summary>
+            总耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.SharedApp.BuildTo">
             <summary>
             构建
@@ -817,15 +853,33 @@
             日志
             </summary>
         </member>
+        <member name="M:Netnr.SharedResultVM.LogEvent(System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
+            <summary>
+            日志事件
+            </summary>
+            <param name="le"></param>
+        </member>
         <member name="P:Netnr.SharedResultVM.UseTime">
             <summary>
             用时，毫秒
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.UseTimeFormat">
+            <summary>
+            用时，可视化
             </summary>
         </member>
         <member name="M:Netnr.SharedResultVM.PartTime">
             <summary>
             片段耗时，毫秒
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedResultVM.PartTimeFormat(System.String)">
+            <summary>
+            片段耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedResultVM.Set(Netnr.SharedEnum.RTag)">

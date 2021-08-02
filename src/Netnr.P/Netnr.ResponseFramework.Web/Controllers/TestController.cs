@@ -16,5 +16,10 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             db = cb;
         }
+
+        public IActionResult Index()
+        {
+            return Content("Test");
+        }
     }
 }

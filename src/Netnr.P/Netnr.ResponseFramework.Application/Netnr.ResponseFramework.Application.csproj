@@ -7,18 +7,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>Netnr.ResponseFramework.Application.xml</DocumentationFile>
     <NoWarn>1701;1702;1591</NoWarn>
-    <DefineConstants>TRACE;Npoi;DataKit</DefineConstants>
+    <DefineConstants>TRACE;Npoi</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;Npoi;DataKit</DefineConstants>
+    <DefineConstants>TRACE;Npoi</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NPOI" Version="2.5.3" />
-    <PackageReference Include="FluentScheduler" Version="5.5.1" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.10" />
+    <PackageReference Include="NPOI" Version="2.5.4" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.11" />
   </ItemGroup>
 
   <ItemGroup>

@@ -115,7 +115,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 vm.Set(ex);
             }
 

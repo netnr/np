@@ -12,6 +12,8 @@ using JiebaNet.Segmenter;
 using JiebaNet.Analyser;
 using JiebaNet.Segmenter.PosSeg;
 using System.Globalization;
+using SkiaSharp.QrCode;
+using SkiaSharp;
 
 namespace Netnr.Blog.Web.Controllers.api
 {
@@ -263,8 +265,8 @@ namespace Netnr.Blog.Web.Controllers.api
                 timezone = Math.Max(-12, timezone.Value);
 
                 var utc_datetime = DateTime.Now.ToUniversalTime();
+                var unixtime = utc_datetime.ToTimestamp(true);
                 var datetime = utc_datetime.AddHours(timezone.Value);
-                var unixtime = datetime.ToTimestamp(true);
                 var day_of_week = (int)datetime.DayOfWeek;
                 var day_of_year = datetime.DayOfYear;
 
@@ -712,6 +714,59 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
+        /// 生成二维码（带 logo）
+        /// </summary>
+        /// <param name="text">文本</param>
+        /// <param name="icon">带 logo 图标</param>
+        /// <param name="size">大小，默认 200 </param>
+        /// <returns></returns>
+        [HttpPost]
+        public FileResult QRCode([FromForm] string text, IFormFile icon, [FromForm] int size = 200)
+        {
+            size = Math.Max(30, size);
+            size = Math.Min(99999, size);
+
+            var qr = new QRCodeGenerator().CreateQrCode(text, ECCLevel.H);
+            var info = new SKImageInfo(size, size);
+            var surface = SKSurface.Create(info);
+
+            if (icon == null)
+            {
+                surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse("000000"));
+            }
+            else
+            {
+                var fms = new MemoryStream();
+                icon.CopyTo(fms);
+                var icond = new SkiaSharp.QrCode.Models.IconData
+                {
+                    Icon = SKBitmap.Decode(fms.ToArray()),
+                    IconSizePercent = 20,
+                };
+                surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse("000000"), icond);
+            }
+
+            using var data = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100);
+            using var ms = new MemoryStream();
+            data.SaveTo(ms);
+            var bytes = ms.ToArray();
+
+            return File(bytes, "image/png");
+        }
+
+        /// <summary>
+        /// 生成二维码
+        /// </summary>
+        /// <param name="text">文本</param>
+        /// <param name="size">大小，默认 200 </param>
+        /// <returns></returns>
+        [HttpGet]
+        public FileResult QRCode(string text, int size = 200)
+        {
+            return QRCode(text, null, size);
+        }
+
+        /// <summary>
         /// 代理
         /// </summary>
         /// <param name="url">地址</param>
@@ -862,6 +917,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 {
                     var cr = CmdTo.Execute(arguments, fileName);
                     vm.Data = cr.CrOutput?.Split(Environment.NewLine);
+                    
                     vm.Log.AddRange(cr.CrError?.Split(Environment.NewLine));
 
                     vm.Set(SharedEnum.RTag.success);
@@ -875,74 +931,5 @@ namespace Netnr.Blog.Web.Controllers.api
             });
         }
 
-        #region 任务
-
-        /// <summary>
-        /// 任务项
-        /// </summary>
-        public enum TaskItem
-        {
-            /// <summary>
-            /// 导出数据库
-            /// </summary>
-            ExportDataBase,
-            /// <summary>
-            /// 导出示例数据
-            /// </summary>
-            ExportSampleData,
-            /// <summary>
-            /// 代码片段同步到GitHub、Gitee
-            /// </summary>
-            GistSync,
-            /// <summary>
-            /// 处理操作记录
-            /// </summary>
-            HOR
-        }
-
-        /// <summary>
-        /// 手动执行任务（管理员）
-        /// </summary>
-        /// <param name="ti"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [ResponseCache(Duration = 60)]
-        [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM ExecTask(TaskItem? ti)
-        {
-            return SharedResultVM.Try(vm =>
-            {
-                if (!ti.HasValue)
-                {
-                    ti = (TaskItem)Enum.Parse(typeof(TaskItem), RouteData.Values["id"]?.ToString(), true);
-                }
-
-                switch (ti)
-                {
-                    default:
-                        vm.Set(SharedEnum.RTag.invalid);
-                        break;
-
-                    case TaskItem.ExportDataBase:
-                        vm = Data.ContextBase.ExportDataBase(Path.Combine(Path.GetTempPath(), "data.json"));
-                        break;
-
-                    case TaskItem.ExportSampleData:
-                        vm = Application.TaskService.ExportSampleData();
-                        break;
-
-                    case TaskItem.GistSync:
-                        vm = Application.TaskService.GistSync();
-                        break;
-
-                    case TaskItem.HOR:
-                        vm = Application.TaskService.HandleOperationRecord();
-                        break;
-                }
-
-                return vm;
-            });
-        }
-        #endregion
     }
 }

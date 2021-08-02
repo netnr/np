@@ -1,43 +1,81 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-#nullable disable
 
 namespace Netnr.Blog.Domain
 {
-    [Index(nameof(Uid), Name = "IDXUserWriting_Uid")]
+    /// <summary>
+    /// 用户写作
+    /// </summary>
     public partial class UserWriting
     {
-        [Key]
         public int UwId { get; set; }
         public int? Uid { get; set; }
+        /// <summary>
+        /// 所属分类
+        /// </summary>
         public int? UwCategory { get; set; }
-        [Column(TypeName = "varchar(200)")]
+        /// <summary>
+        /// 标题
+        /// </summary>
         public string UwTitle { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容
+        /// </summary>
         public string UwContent { get; set; }
-        [Column(TypeName = "longtext")]
+        /// <summary>
+        /// 内容Markdown
+        /// </summary>
         public string UwContentMd { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 初始发布时间
+        /// </summary>
         public DateTime? UwCreateTime { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 更新时间
+        /// </summary>
         public DateTime? UwUpdateTime { get; set; }
+        /// <summary>
+        /// 最后回复人
+        /// </summary>
         public int? UwLastUid { get; set; }
-        [Column(TypeName = "datetime")]
+        /// <summary>
+        /// 最后回复时间
+        /// </summary>
         public DateTime? UwLastDate { get; set; }
+        /// <summary>
+        /// 回复数量
+        /// </summary>
         public int? UwReplyNum { get; set; }
+        /// <summary>
+        /// 阅读量
+        /// </summary>
         public int? UwReadNum { get; set; }
+        /// <summary>
+        /// 1公开，2私有
+        /// </summary>
         public int? UwOpen { get; set; }
+        /// <summary>
+        /// 点赞数
+        /// </summary>
         public int? UwLaud { get; set; }
+        /// <summary>
+        /// 点赞数
+        /// </summary>
         public int? UwMark { get; set; }
+        /// <summary>
+        /// 状态，1正常，2block，-1只读
+        /// </summary>
         public int? UwStatus { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare2 { get; set; }
-        [Column(TypeName = "varchar(50)")]
+        /// <summary>
+        /// 备用
+        /// </summary>
         public string Spare3 { get; set; }
     }
 }
