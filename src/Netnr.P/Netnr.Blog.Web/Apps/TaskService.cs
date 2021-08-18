@@ -1,4 +1,3 @@
-using System;
 using FluentScheduler;
 using Netnr.Core;
 
@@ -25,8 +24,8 @@ namespace Netnr.Blog.Web.Apps
                 //处理操作记录，每 30 分钟一次
                 Schedule<HandleOperationRecordJob>().ToRunEvery(30).Minutes();
 
-                //数据库备份到GitHub，每天 16:16 一次
-                Schedule<DatabaseBackupToGitHubJob>().ToRunEvery(1).Days().At(16, 16);
+                //数据库备份到Git，每天 16:16 一次
+                Schedule<DatabaseBackupToGitJob>().ToRunEvery(1).Days().At(16, 16);
             }
         }
 
@@ -57,13 +56,13 @@ namespace Netnr.Blog.Web.Apps
         }
 
         /// <summary>
-        /// 数据库备份到GitHub
+        /// 数据库备份到Git
         /// </summary>
-        public class DatabaseBackupToGitHubJob : IJob
+        public class DatabaseBackupToGitJob : IJob
         {
             void IJob.Execute()
             {
-                var vm = new Controllers.ServicesController().DatabaseBackupToGitHub();
+                var vm = new Controllers.ServicesController().DatabaseBackupToGit();
                 ConsoleTo.Log(vm.ToJson(true));
                 Console.WriteLine(vm);
             }

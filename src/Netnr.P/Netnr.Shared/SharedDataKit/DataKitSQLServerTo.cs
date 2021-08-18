@@ -220,61 +220,55 @@ namespace Netnr.SharedDataKit
         {
             var sql = @"
                         SELECT
-                            'DeiName' col,
-                            SUBSTRING (@@VERSION, 1, CHARINDEX(')', @@VERSION, 1)) + ' ' + CAST (SERVERPROPERTY('Edition') AS VARCHAR) val
+                          'Name' col,
+                          SUBSTRING(@@VERSION, 1, CHARINDEX(' - ', @@VERSION, 1))
+                          + ' '
+                          + CONVERT(varchar(99), SERVERPROPERTY('Edition')) val
                         UNION ALL
                         SELECT
-                            'DeiVersion' col,
-                            SERVERPROPERTY('ProductVersion') val
+                          'Version' col,
+                          SERVERPROPERTY('ProductVersion') val
                         UNION ALL
                         SELECT
-                            'DeiDirData' col,
-                            SERVERPROPERTY('InstanceDefaultDataPath') val
+                          'DirData' col,
+                          SERVERPROPERTY('InstanceDefaultDataPath') val
                         UNION ALL
                         SELECT
-                            'DeiCharSet' col,
-                            SERVERPROPERTY('Collation') val
+                          'CharSet' col,
+                          SERVERPROPERTY('Collation') val
                         UNION ALL
                         SELECT
-                            'DeiDateTime' col,
-                            GETDATE() val
+                          'DateTime' col,
+                          GETDATE() val
                         UNION ALL
                         SELECT
-                            'DeiMaxConn' col,
-                            @@MAX_CONNECTIONS val
+                          'MaxConn' col,
+                          @@MAX_CONNECTIONS val
                         UNION ALL
                         SELECT
-                            'DeiCurrConn' col,
-                            (
-                            SELECT
-                                COUNT (dbid)
-                            FROM
-                                sys.sysprocesses
-                            ) val
+                          'CurrConn' col,
+                          (SELECT
+                            COUNT(dbid)
+                          FROM sys.sysprocesses)
+                          val
                         UNION ALL
                         SELECT
-                            'DeiIgnoreCase' col,
-                            (
-                            CASE
-                                WHEN 'a' = 'A' THEN 1
-                                ELSE 0
-                            END
-                            ) val
+                          'IgnoreCase' col,
+                          (CASE
+                            WHEN 'a' = 'A' THEN 1
+                            ELSE 0
+                          END) val
                         UNION ALL
                         SELECT
-                            'DeiSystem' col,
-                            REPLACE(
-                            SUBSTRING (
-                                @@VERSION,
-                                CHARINDEX(' on ', @@VERSION, 0) + 4,
-                                LEN(@@VERSION) - CHARINDEX(' on ', @@VERSION, 1)
-                            ),
-                            CHAR (10),
-                            ''
-                            ) val
+                          'System' col,
+                          REPLACE(RIGHT(@@VERSION, CHARINDEX(CHAR(10), REVERSE(@@VERSION), 2) - 2), CHAR(10), '') val;
 
-                    ;EXEC sp_configure 'remote query timeout'
-                    ;EXEC master.dbo.xp_instance_regread N'HKEY_LOCAL_MACHINE',N'SYSTEM\CurrentControlSet\Control\TimeZoneInformation',N'TimeZoneKeyName'";
+                        EXEC Sp_configure 'remote query timeout';
+
+                        EXEC master.dbo.Xp_instance_regread N'HKEY_LOCAL_MACHINE',
+                                                            N'SYSTEM\CurrentControlSet\Control\TimeZoneInformation',
+                                                            N'TimeZoneKeyName'
+            ";
 
             var mo = new DEIVM();
 
@@ -284,9 +278,9 @@ namespace Netnr.SharedDataKit
 
             if (int.TryParse(ds.Tables[1].Rows[0]["config_value"].ToString(), out int wt))
             {
-                mo.DeiTimeout = wt;
+                mo.TimeOut = wt;
             }
-            mo.DeiTimeZone = ds.Tables[2].Rows[0][1].ToString();
+            mo.TimeZone = ds.Tables[2].Rows[0][1].ToString();
 
             return mo;
         }

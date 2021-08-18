@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
 using Netnr.Blog.Domain;
 using Microsoft.AspNetCore.Authorization;
-using System.Collections.Generic;
 using Netnr.Core;
 using Netnr.Blog.Data;
 

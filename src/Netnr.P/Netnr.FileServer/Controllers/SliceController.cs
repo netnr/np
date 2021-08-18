@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.SharedFast;
-using System;
-using System.IO;
-using System.Linq;
 
 namespace Netnr.FileServer.Controllers
 {
@@ -33,6 +29,41 @@ namespace Netnr.FileServer.Controllers
             {
                 return Core.PathTo.Combine(GlobalTo.WebRootPath, path);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM Index()
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var mp4 = @"D:\IIS\FTP\zj.mp4";
+
+                var v1 = Core.CmdTo.Execute($"-i {mp4}", "ffmpeg", (process, cr) =>
+                 {
+                     //process.StartInfo.RedirectStandardError = true;
+
+                     process.OutputDataReceived += (s, e) =>
+                     {
+                         Console.WriteLine(e.Data);
+                     };
+
+                     process.ErrorDataReceived += (s, e) =>
+                     {
+                         Console.WriteLine(e.Data);
+                     };
+
+                     process.Start();
+
+                     process.BeginErrorReadLine();
+                     process.WaitForExit();
+                 });
+
+                return vm;
+            });
         }
 
         /// <summary>

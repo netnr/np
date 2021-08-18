@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Application.ViewModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Netnr.ResponseFramework.Web.Components
 {

@@ -33,6 +33,18 @@ ORDER BY
         {
             return $@"
 SELECT
+  '' AS TableName,
+  '' AS ColumnName,
+  '' AS ColumnType,
+  '' AS DataType,
+  0 AS DataLength,
+  0 AS DataScale,
+  0 AS ColumnOrder,
+  '' AS PrimaryKey,
+  '' AS [NotNull],
+  '' AS ColumnDefault
+UNION ALL
+SELECT
   m.name AS TableName,
   p.name AS ColumnName,
   p.type AS ColumnType,

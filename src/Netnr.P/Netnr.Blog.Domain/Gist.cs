@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Netnr.Blog.Domain
+﻿namespace Netnr.Blog.Domain
 {
     /// <summary>
     /// 代码片段

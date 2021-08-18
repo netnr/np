@@ -8,4 +8,4 @@ GitHub：https://github.com/lionsoul2014/ip2region
 Gitee：https://gitee.com/lionsoul/ip2region
 
 下载：
-wget https://cdn.jsdelivr.net/gh/lionsoul2014/ip2region/data/ip2region.db
+wget https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.db

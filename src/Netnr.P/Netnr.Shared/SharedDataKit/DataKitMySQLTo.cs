@@ -204,11 +204,11 @@ namespace Netnr.SharedDataKit
 
             var sql = $@"
                         SELECT {listFieldName}
-                        FROM {DatabaseName}.{TableName} {whereSql}
+                        FROM `{DatabaseName}`.`{TableName}` {whereSql}
                         ORDER BY {sort} {order}
                         LIMIT {(page - 1) * rows},{rows}";
 
-            sql += $";select count(1) as total from {DatabaseName}.{TableName} {whereSql}";
+            sql += $";select count(1) as total from `{DatabaseName}`.`{TableName}` {whereSql}";
 
             var ds = db.SqlQuery(sql);
 
@@ -226,47 +226,47 @@ namespace Netnr.SharedDataKit
         {
             var sql = @"
                         SELECT
-                            'DeiName' col,
+                            'Name' col,
                             @@version_comment val
                         UNION ALL
                         SELECT
-                            'DeiVersion' col,
+                            'Version' col,
                             @@version val
                         UNION ALL
                         SELECT
-                            'DeiCompile' col,
+                            'Compile' col,
                             @@version_compile_machine val
                         UNION ALL
                         SELECT
-                            'DeiDirInstall' col,
+                            'DirInstall' col,
                             @@basedir val
                         UNION ALL
                         SELECT
-                            'DeiDirData' col,
+                            'DirData' col,
                             @@datadir val
                         UNION ALL
                         SELECT
-                            'DeiDirTemp' col,
+                            'DirTemp' col,
                             @@tmpdir val
                         UNION ALL
                         SELECT
-                            'DeiEngine' col,
+                            'Engine' col,
                             @@default_storage_engine val
                         UNION ALL
                         SELECT
-                            'DeiCharSet' col,
+                            'CharSet' col,
                             @@collation_server val
                         UNION ALL
                         SELECT
-                            'DeiTimeZone' col,
+                            'TimeZone' col,
                             @@system_time_zone val
                         UNION ALL
                         SELECT
-                            'DeiMaxConn' col,
+                            'MaxConn' col,
                             @@max_connections val
                         UNION ALL
                         SELECT
-                            'DeiCurrConn' col,
+                            'CurrConn' col,
                             count(1) val
                         FROM
                             information_schema.PROCESSLIST
@@ -274,19 +274,19 @@ namespace Netnr.SharedDataKit
                             USER != 'event_scheduler'
                         UNION ALL
                         SELECT
-                            'DeiDateTime' col,
+                            'DateTime' col,
                             now() AS val
                         UNION ALL
                         SELECT
-                            'DeiTimeout' col,
+                            'TimeOut' col,
                             @@wait_timeout AS val
                         UNION ALL
                         SELECT
-                            'DeiIgnoreCase' col,
+                            'IgnoreCase' col,
                             'a' = 'A' AS val
                         UNION ALL
                         SELECT
-                            'DeiSystem' col,
+                            'System' col,
                             @@version_compile_os val
                         ";
 

@@ -1,11 +1,8 @@
 ﻿#if Full || DataKit
 
-using System;
-using System.IO;
-using System.Linq;
 using System.Data;
-using System.Data.SQLite;
 using MySqlConnector;
+using Microsoft.Data.Sqlite;
 using Oracle.ManagedDataAccess.Client;
 using Microsoft.Data.SqlClient;
 using Npgsql;
@@ -85,7 +82,7 @@ namespace Netnr.SharedDataKit
                     switch (tdb.Value)
                     {
                         case SharedEnum.TypeDB.SQLite:
-                            dkto = new DataKitSQLiteTo(new SQLiteConnection(conn));
+                            dkto = new DataKitSQLiteTo(new SqliteConnection(conn));
                             break;
                         case SharedEnum.TypeDB.MySQL:
                             dkto = new DataKitMySQLTo(new MySqlConnection(conn));

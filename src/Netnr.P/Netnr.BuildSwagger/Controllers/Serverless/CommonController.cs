@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using static Netnr.BuildSwagger.Models.Serverless;
 
 namespace Netnr.BuildSwagger.Controllers.Serverless

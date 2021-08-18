@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using Netnr.Core;
+﻿using Netnr.Core;
 using Netnr.DataX.Domain;
 
 namespace Netnr.DataX.Application
@@ -12,15 +9,10 @@ namespace Netnr.DataX.Application
     public partial class DXService
     {
         /// <summary>
-        /// 配置名
-        /// </summary>
-        public static string ConfigName = null;
-
-        /// <summary>
         /// 配置列表
         /// </summary>
         /// <returns></returns>
-        public static List<string> GetConfigList()
+        public static List<string> GetConfigLists()
         {
             var list = new List<string>();
 
@@ -62,82 +54,81 @@ namespace Netnr.DataX.Application
         /// 输入数据库
         /// </summary>
         /// <param name="co"></param>
-        /// <param name="dv">默认（1：Old；2：New）</param>
-        public static Tuple<SharedEnum.TypeDB, string> ConsoleReadDatabase(ConfigObj co, int dv = 2)
+        public static DbConnObj ConsoleReadDatabase(ConfigObj co, string tip = "请选择库：")
         {
-            var dv1 = $"{co.OdTypeDB} -> {co.OdConn}";
-            var dv2 = $"{co.NdTypeDB} -> {co.NdConn}";
-
-            var typeDB = dv == 2 ? co.NdTypeDB : co.OdTypeDB;
-            var conn = dv == 2 ? co.NdConn : co.OdConn;
+            var mo = new DbConnObj();
 
         Flag1:
-            Console.WriteLine("");
-            Console.WriteLine($"1. {dv1}");
-            Console.WriteLine($"2. {dv2}");
-            Console.WriteLine($"3. 输入数据库连接信息");
-            Console.Write($"请选择库（默认 {dv}. {typeDB} -> {conn}）：");
-            var ed = Console.ReadLine().Trim();
-            switch (ed)
+            Console.WriteLine($"\n0. 输入数据库连接信息");
+            for (int i = 0; i < co.DbConns.Count; i++)
             {
-                case "1":
+                var obj = co.DbConns[i];
+                Console.WriteLine($"{i + 1}. {obj.Remark} => {obj.TDB} => {obj.Conn}");
+            }
+            Console.Write(tip);
+
+            _ = int.TryParse(Console.ReadLine().Trim(), out int ed);
+
+            if (ed == 0)
+            {
+            Flag2:
+                Console.Write($"数据库连接信息（MySQL => Conn）：");
+                var tc = Console.ReadLine().Trim().Split("=>");
+                if (Enum.TryParse(tc[0], true, out SharedEnum.TypeDB tdb))
+                {
+                    mo.TDB = tdb;
+                    mo.Conn = tc[1];
+                    if (mo.Conn.Length < 10)
                     {
-                        typeDB = co.OdTypeDB;
-                        conn = co.OdConn;
+                        Log("连接字符串无效");
+                        goto Flag2;
                     }
-                    break;
-                case "2":
-                    {
-                        typeDB = co.NdTypeDB;
-                        conn = co.NdConn;
-                    }
-                    break;
-                case "3":
-                    {
-                    Flag2:
-                        Console.Write($"数据库连接信息（MySQL -> Conn）：");
-                        var tc = Console.ReadLine().Trim().Split("->");
-                        if (Enum.TryParse(tc[0], true, out SharedEnum.TypeDB tdb))
-                        {
-                            typeDB = tdb;
-                            conn = tc[1];
-                            if (conn.Length < 10)
-                            {
-                                Log("连接字符串无效");
-                                goto Flag2;
-                            }
-                        }
-                        else
-                        {
-                            Log("无效数据库类型");
-                            goto Flag2;
-                        }
-                    }
-                    break;
-                case "":
-                    break;
-                default:
-                    Log($"无效 {ed}");
-                    goto Flag1;
+                }
+                else
+                {
+                    Log("无效数据库类型");
+                    goto Flag2;
+                }
+            }
+            else if (ed > 0 && ed <= co.DbConns.Count)
+            {
+                mo = co.DbConns[ed - 1];
+            }
+            else
+            {
+                Log($"无效 {ed}");
+                goto Flag1;
             }
 
-            return new Tuple<SharedEnum.TypeDB, string>(typeDB, conn);
+            Log($"已选择 {mo.TDB} => {mo.Conn}");
+
+            return mo;
         }
 
         /// <summary>
         /// 输入文件（夹）
         /// </summary>
         /// <param name="tip">提示文字</param>
-        /// <param name="type">默认（1：文件；2：文件夹）</param>
-        public static string ConsoleReadPath(string tip, int type = 1)
+        /// <param name="type">默认（0：都可以；1：文件；2：文件夹）</param>
+        /// <param name="dv">默认文件（夹）</param>
+        public static string ConsoleReadPath(string tip, int type = 1, string dv = null)
         {
         Flag1:
-            Console.WriteLine("");
-            Console.Write($"{tip}");
-            var path = Console.ReadLine().Trim();
-            if ((type == 1 && !File.Exists(path)) || (type == 2 && !Directory.Exists(path)))
+            var dtip = "\n";
+            if (!string.IsNullOrWhiteSpace(dv))
             {
-                Log($"{path} 无效");
+                dtip = $"{tip.TrimEnd('：').TrimEnd(':')}（默认 {dv}）：";
+            }
+
+            Console.Write(dtip);
+            var path = Console.ReadLine().Trim();
+            if (!string.IsNullOrWhiteSpace(dv) && string.IsNullOrWhiteSpace(path))
+            {
+                path = dv;
+            }
+            else if ((type == 1 && !File.Exists(path)) || (type == 2 && !Directory.Exists(path)) || (type == 0 && !File.Exists(path) && !Directory.Exists(path)))
+            {
+                Log($"{path} 无效文件（夹）");
                 goto Flag1;
             }
 
@@ -150,7 +141,7 @@ namespace Netnr.DataX.Application
         /// <param name="tip">提示文字</param>
         /// <param name="items">项</param>
         /// <param name="dv">默认（从 1 开始）</param>
-        public static int ConsoleReadItem(string tip, List<string> items, int dv = 1)
+        public static int ConsoleReadItem(string tip, IList<string> items, int dv = 1)
         {
         Flag1:
             Console.WriteLine("");

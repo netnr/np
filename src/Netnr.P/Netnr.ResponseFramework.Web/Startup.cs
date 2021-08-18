@@ -1,12 +1,5 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System;
 using Netnr.ResponseFramework.Data;
 using Newtonsoft.Json.Converters;
 using Netnr.SharedFast;
@@ -31,7 +24,7 @@ namespace Netnr.ResponseFramework.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            IMvcBuilder builder = services.AddControllersWithViews(options =>
+            services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
                 options.Filters.Add(new Apps.FilterConfigs.ErrorActionFilter());
@@ -39,10 +32,6 @@ namespace Netnr.ResponseFramework.Web
                 //注册全局过滤器
                 options.Filters.Add(new Apps.FilterConfigs.GlobalActionAttribute());
             });
-
-#if DEBUG
-            builder.AddRazorRuntimeCompilation();
-#endif
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Netnr.Tool.Items
+﻿namespace Netnr.Tool.Items
 {
     public class AESEncryptOrDecrypt
     {

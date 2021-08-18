@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
 using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Apps
@@ -123,14 +121,18 @@ namespace Netnr.Blog.Web.Apps
 
                     using var db = Data.ContextBaseFactory.CreateDbContext();
                     var umo = db.UserInfo.Find(uinfo.UserId);
-                    if (umo.UserMailValid != 1 && umo.UserId != GlobalTo.GetValue<int>("Common:AdminId"))
-                    {
-                        vm.Log.Add("验证邮箱");
-                    }
 
-                    if (umo.UserCreateTime.Value.AddDays(3) > DateTime.Now)
+                    if (umo.UserId != GlobalTo.GetValue<int>("Common:AdminId"))
                     {
-                        vm.Log.Add("新注册用户需 3 天以后才能操作");
+                        if (umo.UserMailValid != 1)
+                        {
+                            vm.Log.Add("验证邮箱");
+                        }
+
+                        if (umo.UserCreateTime.Value.AddDays(3) > DateTime.Now)
+                        {
+                            vm.Log.Add("新注册用户需 3 天以后才能操作");
+                        }
                     }
                 }
             }

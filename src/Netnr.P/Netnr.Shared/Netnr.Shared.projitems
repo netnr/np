@@ -32,9 +32,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\PostgreSQL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\SQLite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedFast\GlobalTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaForDrawingCommon.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaForSkiaSharp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\CaptchaTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\ImageTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitMySQLTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitOracleTo.cs" />

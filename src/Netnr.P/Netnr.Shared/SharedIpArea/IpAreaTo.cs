@@ -24,7 +24,7 @@ namespace Netnr.SharedIpArea
             {
                 try
                 {
-                    HttpTo.DownloadSave(HttpTo.HWRequest("https://cdn.jsdelivr.net/gh/lionsoul2014/ip2region/data/ip2region.db"), DbPath);
+                    HttpTo.DownloadSave(HttpTo.HWRequest("https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.db"), DbPath);
                 }
                 catch (Exception ex)
                 {

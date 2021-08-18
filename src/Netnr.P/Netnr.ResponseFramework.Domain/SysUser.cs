@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Netnr.ResponseFramework.Domain
+﻿namespace Netnr.ResponseFramework.Domain
 {
     /// <summary>
     /// 系统用户表

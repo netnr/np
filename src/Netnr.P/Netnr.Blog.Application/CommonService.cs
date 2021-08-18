@@ -1,10 +1,8 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Netnr.Core;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
+using JiebaNet.Segmenter;
 
 namespace Netnr.Blog.Application
 {
@@ -131,8 +129,7 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(KeyWords))
             {
-                //按空格分割后搜索
-                KeyWords.Split(' ').ToList().ForEach(k =>
+                new JiebaSegmenter().Cut(KeyWords).ToList().ForEach(k =>
                 {
                     query = query.Where(x => x.UwTitle.Contains(k) || x.UwContentMd.Contains(k));
                 });

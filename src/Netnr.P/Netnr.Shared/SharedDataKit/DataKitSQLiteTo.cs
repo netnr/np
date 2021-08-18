@@ -1,11 +1,7 @@
 ﻿#if Full || DataKit
 
-using System;
-using System.IO;
-using System.Linq;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Generic;
 using Netnr.SharedAdo;
 
 namespace Netnr.SharedDataKit
@@ -49,7 +45,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public List<DatabaseVM> GetDatabase()
         {
-            System.Data.SQLite.SQLiteConnectionStringBuilder builder = new(dbConnection.ConnectionString);
+            Microsoft.Data.Sqlite.SqliteConnectionStringBuilder builder = new(dbConnection.ConnectionString);
             var fi = new FileInfo(builder.DataSource);
 
             var list = new List<DatabaseVM>
@@ -93,11 +89,6 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public Dictionary<string, string> GetTableDDL(string filterTableName = null, string DatabaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
-            {
-                DatabaseName = DefaultDatabaseName();
-            }
-
             return null;
         }
 
@@ -122,6 +113,7 @@ namespace Netnr.SharedDataKit
 
             var sql = Configs.GetColumnSQLite(DatabaseName, where);
             var ds = db.SqlQuery(sql);
+            ds.Tables[0].Rows.RemoveAt(0);
             var ds2 = ds.Tables[1].Select();
 
             var aakey = "AUTOINCREMENT";
@@ -229,15 +221,15 @@ namespace Netnr.SharedDataKit
         {
             var sql = @"
                         SELECT
-                          'DeiVersion' col,
+                          'Version' col,
                           sqlite_version() val
                         UNION ALL
                         SELECT
-                          'DeiDateTime' col,
+                          'DateTime' col,
                           datetime() val
                         UNION ALL
                         SELECT
-                          'DeiIgnoreCase' col,
+                          'IgnoreCase' col,
                           'a' = 'A' val
 
                         ;PRAGMA encoding
@@ -253,14 +245,14 @@ namespace Netnr.SharedDataKit
             var dt = ds.Tables[0];
             mo = DataKitTo.TableToDEI(dt);
 
-            mo.DeiCharSet = ds.Tables[1].Rows[0][0].ToString();
+            mo.CharSet = ds.Tables[1].Rows[0][0].ToString();
 
-            mo.DeiName = Path.GetFileName(connection.DataSource);
-            mo.DeiCompile = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();
-            mo.DeiDirInstall = Path.GetDirectoryName(connection.DataSource);
-            mo.DeiDirData = mo.DeiDirInstall;
-            mo.DeiTimeout = connection.ConnectionTimeout;
-            mo.DeiSystem = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
+            mo.Name = Path.GetFileName(connection.DataSource);
+            mo.Compile = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();
+            mo.DirInstall = Path.GetDirectoryName(connection.DataSource);
+            mo.DirData = mo.DirInstall;
+            mo.TimeOut = connection.ConnectionTimeout;
+            mo.System = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
 
             if (connection.State == ConnectionState.Open)
             {

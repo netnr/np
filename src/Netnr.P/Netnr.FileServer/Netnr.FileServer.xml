@@ -331,6 +331,12 @@
             <param name="path"></param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.FileServer.Controllers.SliceController.Index">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.FileServer.Controllers.SliceController.Upload(System.Int32,System.Int32,System.String,Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
             分片上传
@@ -534,7 +540,7 @@
             <param name="args"></param>
         </member>
         <member name="M:Netnr.FileServer.Program.CreateHostBuilder(System.String[])">
-            dotnet Netnr.FileServer.dll "https://*:55"
+            dotnet Netnr.FileServer.dll --urls "https://*:55"
         </member>
         <member name="T:Netnr.FileServer.Startup">
             <summary>

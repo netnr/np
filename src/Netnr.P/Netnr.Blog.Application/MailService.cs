@@ -1,5 +1,4 @@
-﻿using System;
-using MimeKit;
+﻿using MimeKit;
 using MailKit.Net.Smtp;
 using Netnr.SharedFast;
 

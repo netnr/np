@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
-using System.Collections.Generic;
 using Netnr.Chat.Application.ViewModel;
 using Netnr.Core;
 using Netnr.SharedFast;

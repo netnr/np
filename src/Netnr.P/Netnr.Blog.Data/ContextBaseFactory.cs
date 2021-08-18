@@ -16,9 +16,8 @@ namespace Netnr.Blog.Data
         /// <returns></returns>
         public static DbContextOptionsBuilder<ContextBase> CreateDbContextOptionsBuilder(DbContextOptionsBuilder builder = null)
         {
-            System.Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out GlobalTo.TDB);
-            var conn = GetConn().Replace("~", GlobalTo.ContentRootPath);
-            return CreateDbContextOptionsBuilder<ContextBase>(GlobalTo.TDB, conn, builder);
+            Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out GlobalTo.TDB);
+            return CreateDbContextOptionsBuilder<ContextBase>(GlobalTo.TDB, GetConn(), builder);
         }
 
         /// <summary>

@@ -1,10 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Text;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Core;
 using Netnr.SharedFast;
@@ -264,7 +259,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 timezone = Math.Min(12, timezone.Value);
                 timezone = Math.Max(-12, timezone.Value);
 
-                var utc_datetime = DateTime.Now.ToUniversalTime();
+                var utc_datetime = DateTime.UtcNow;
                 var unixtime = utc_datetime.ToTimestamp(true);
                 var datetime = utc_datetime.AddHours(timezone.Value);
                 var day_of_week = (int)datetime.DayOfWeek;

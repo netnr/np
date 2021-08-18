@@ -1,7 +1,4 @@
-using System;
 using System.Xml;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -142,7 +139,7 @@ namespace Netnr.Blog.Web.Apps
             }
         }
 
-        public static LoggingModel GetLog(Microsoft.AspNetCore.Http.HttpContext context)
+        public static LoggingModel GetLog(HttpContext context)
         {
             string reqPath = context.Request.Path.ToString();
             string reqQueryString = context.Request.QueryString.ToString();
@@ -178,7 +175,7 @@ namespace Netnr.Blog.Web.Apps
             return mo;
         }
 
-        public static void WriteLog(Microsoft.AspNetCore.Http.HttpContext context, Exception exception)
+        public static void WriteLog(HttpContext context, Exception exception)
         {
             var mo = GetLog(context);
 

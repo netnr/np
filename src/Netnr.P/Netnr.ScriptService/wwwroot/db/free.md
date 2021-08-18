@@ -1,5 +1,4 @@
 临时短信 Temporary SMS
-- <https://www.pdflibr.com>
 - <https://www.114sim.com>
 - <https://yunduanxin.net>
 - <https://www.shejiinn.com>
@@ -39,9 +38,10 @@ NodeJs
 
 无服务 Serverless
 - <https://vercel.com/home>
+- <https://www.netlify.com>
 
 域名本地解析
-- <http://127.0.0.1.xip.io>
+- <http://127.0.0.1.sslip.io>
 - <http://wifi.aliyun.com>
 - <http://114.taobao.com>
 - <http://safe.taobao.com>

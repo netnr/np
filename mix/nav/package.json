@@ -1,6 +1,6 @@
 {
   "name": "netnrnav",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "同步实现水平导航、垂直导航、侧滑导航，无限树形",
   "main": "src/netnrnav.js",
   "repository": {

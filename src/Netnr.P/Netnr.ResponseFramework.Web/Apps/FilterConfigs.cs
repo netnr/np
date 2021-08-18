@@ -1,7 +1,4 @@
-﻿using System;
-using System.Xml;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Xml;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

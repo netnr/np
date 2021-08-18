@@ -1,5 +1,4 @@
-﻿using System;
-using FluentScheduler;
+﻿using FluentScheduler;
 using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Web.Apps

@@ -993,15 +993,14 @@
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLite(System.Data.DataTable,System.String,System.Action{System.Data.SQLite.SQLiteDataAdapter,System.Data.DataTable},System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLite(System.Data.DataTable,System.String,System.Boolean)">
             <summary>
             表批量写入
             根据行数据 RowState 状态新增、修改
             </summary>
             <param name="dt">数据表</param>
             <param name="table">数据库表名</param>
-            <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
-            <param name="openTransaction">开启事务，默认开启</param>
+            <param name="openTransaction">开启事务</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.BulkCopyOracle(System.Data.DataTable,System.String,System.Action{Oracle.ManagedDataAccess.Client.OracleBulkCopy})">
@@ -1488,14 +1487,6 @@
             </summary>
             <param name="KeyWord">关键字</param>
             <param name="tdb">数据库类型</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDbContext.FactoryTo.SqlQuote(System.String,Microsoft.EntityFrameworkCore.DbContext)">
-            <summary>
-            SQL引用符号
-            </summary>
-            <param name="KeyWord">关键字</param>
-            <param name="db"></param>
             <returns></returns>
         </member>
     </members>

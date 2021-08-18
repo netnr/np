@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Gist.Controllers

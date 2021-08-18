@@ -1,8 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Drawing.Imaging;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
@@ -177,9 +173,7 @@ namespace Netnr.Blog.Web.Controllers
                             {
                                 source = source[(source.LastIndexOf(",") + 1)..];
                                 byte[] bytes = Convert.FromBase64String(source);
-                                using var ms = new MemoryStream(bytes);
-                                using var bmp = new System.Drawing.Bitmap(ms);
-                                bmp.Save(PathTo.Combine(ppath, upname), ImageFormat.Jpeg);
+                                System.IO.File.WriteAllBytes(PathTo.Combine(ppath, upname), bytes);
 
                                 var usermo = db.UserInfo.Find(uinfo.UserId);
                                 usermo.UserPhoto = npnew;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Netnr.Blog.Application.ViewModel
+﻿namespace Netnr.Blog.Application.ViewModel
 {
     /// <summary>
     /// 文档内容视图

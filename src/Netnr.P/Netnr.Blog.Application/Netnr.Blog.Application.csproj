@@ -1,20 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MailKit" Version="2.14.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MailKit" Version="2.14.0" />
+		<PackageReference Include="jieba.NET" Version="0.42.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Netnr.Blog.Data\Netnr.Blog.Data.csproj" />
-    <ProjectReference Include="..\Netnr.Login\Netnr.Login.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Netnr.Blog.Data\Netnr.Blog.Data.csproj" />
+		<ProjectReference Include="..\Netnr.Login\Netnr.Login.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using Netnr.Core;
 using Netnr.SharedAdo;
 using Netnr.SharedCompile;
 using Netnr.SharedDataKit;
-using System;
-using System.Threading.Tasks;
 
 namespace Netnr.Test.Controllers
 {
@@ -28,7 +27,7 @@ namespace Netnr.Test.Controllers
             if (conn.Contains("://"))
             {
                 var dbname = Math.Abs(conn.GetHashCode()).ToString() + ".db";
-                var fileName = PathTo.Combine(System.IO.Path.GetTempPath(), dbname);
+                var fileName = PathTo.Combine(Path.GetTempPath(), dbname);
                 if (!System.IO.File.Exists(fileName))
                 {
                     HttpTo.DownloadSave(HttpTo.HWRequest(conn.Split('=')[1]), fileName);
@@ -36,7 +35,7 @@ namespace Netnr.Test.Controllers
                 conn = @$"Data Source={fileName}";
             }
 
-            var db = new DbHelper(new System.Data.SQLite.SQLiteConnection(conn));
+            var db = new DbHelper(new SqliteConnection(conn));
             var ds = db.SqlQuery(sql);
 
             vm.Log.Add(conn);

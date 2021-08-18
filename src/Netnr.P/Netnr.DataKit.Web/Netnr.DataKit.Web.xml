@@ -162,15 +162,14 @@
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLite(System.Data.DataTable,System.String,System.Action{System.Data.SQLite.SQLiteDataAdapter,System.Data.DataTable},System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLite(System.Data.DataTable,System.String,System.Boolean)">
             <summary>
             表批量写入
             根据行数据 RowState 状态新增、修改
             </summary>
             <param name="dt">数据表</param>
             <param name="table">数据库表名</param>
-            <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
-            <param name="openTransaction">开启事务，默认开启</param>
+            <param name="openTransaction">开启事务</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.BulkCopyOracle(System.Data.DataTable,System.String,System.Action{Oracle.ManagedDataAccess.Client.OracleBulkCopy})">
@@ -309,13 +308,6 @@
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="KeyWord">关键字</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlCmdBuild(System.Nullable{Netnr.SharedEnum.TypeDB})">
-            <summary>
-            构建
-            </summary>
-            <param name="tdb"></param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlConn(Netnr.SharedEnum.TypeDB,System.String)">
@@ -1302,77 +1294,77 @@
             数据库环境信息
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiName">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Name">
             <summary>
             名称
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiVersion">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Version">
             <summary>
             版本号
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiCompile">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Compile">
             <summary>
             编译
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDirInstall">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DirInstall">
             <summary>
             安装目录
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDirData">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DirData">
             <summary>
             数据库目录
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDirTemp">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DirTemp">
             <summary>
             临时目录
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiEngine">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Engine">
             <summary>
             引擎
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiCharSet">
+        <member name="P:Netnr.SharedDataKit.DEIVM.CharSet">
             <summary>
             字符集
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiTimeZone">
+        <member name="P:Netnr.SharedDataKit.DEIVM.TimeZone">
             <summary>
             时区
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDateTime">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DateTime">
             <summary>
             当前时间
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiMaxConn">
+        <member name="P:Netnr.SharedDataKit.DEIVM.MaxConn">
             <summary>
             最大连接数
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiCurrConn">
+        <member name="P:Netnr.SharedDataKit.DEIVM.CurrConn">
             <summary>
             当前连接数
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiTimeout">
+        <member name="P:Netnr.SharedDataKit.DEIVM.TimeOut">
             <summary>
             连接超时（秒）
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiIgnoreCase">
+        <member name="P:Netnr.SharedDataKit.DEIVM.IgnoreCase">
             <summary>
             忽略大小写（不区分大小写）
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiSystem">
+        <member name="P:Netnr.SharedDataKit.DEIVM.System">
             <summary>
             操作系统
             </summary>

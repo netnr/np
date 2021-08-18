@@ -476,35 +476,39 @@ netnrmd.extend = {
     //表情
     emoji: {
         //按钮
-        button: { title: '表情', cmd: 'emoji', svg: "M512 1024A512 512 0 1 0 512 0a512 512 0 0 0 0 1024zM512 96a416 416 0 1 1 0 832 416 416 0 0 1 0-832zM256 320a64 64 0 1 1 128 0 64 64 0 0 1-128 0z m384 0a64 64 0 1 1 128 0 64 64 0 0 1-128 0z m64.128 307.264l82.304 49.408C730.496 769.728 628.544 832 512 832s-218.432-62.272-274.432-155.328l82.304-49.408C359.04 692.416 430.4 736 512 736s152.896-43.584 192.128-108.736z" },
+        button: { title: '表情', cmd: 'emoji', svg: '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>' },
         //动作
         action: function (that) {
             if (!that.emojipopup) {
-                //构建弹出内容
-                var htm = [], epath = "https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/emoji/wangwang/", emojis = ["微笑", "害羞", "吐舌头", "偷笑", "爱慕", "大笑", "跳舞", "飞吻", "安慰", "抱抱", "加油", "胜利", "强", "亲亲", "花痴", "露齿笑", "查找", "呼叫", "算账", "财迷", "好主意", "鬼脸", "天使", "再见", "流口水", "享受", "色情狂", "呆", "思考", "迷惑", "疑问", "没钱了", "无聊", "怀疑", "嘘", "小样", "摇头", "感冒", "尴尬", "傻笑", "不会吧", "无奈", "流汗", "凄凉", "困了", "晕", "忧伤", "委屈", "悲伤", "大哭", "痛哭", "I服了U", "对不起", "再见（舍不得）", "皱眉", "好累", "生病", "吐", "背", "惊讶", "惊愕", "闭嘴", "欠扁", "鄙视", "大怒", "生气", "财神", "学习雷锋", "恭喜发财", "小二", "老大", "邪恶", "单挑", "CS", "忍者", "炸弹", "惊声尖叫", "漂亮MM", "帅GG", "招财猫", "成绩", "鼓掌", "握手", "红唇", "玫瑰", "残花", "爱心", "心碎", "钱", "购物", "礼物", "收邮件", "电话", "举杯庆祝", "时钟", "等待", "很晚了（晚安）", "飞机（空运）", "支付宝"];
-                for (var i = 0; i < emojis.length; i++) {
-                    htm.push('<img class="netnrmd-emoji" title="' + emojis[i] + '" src="' + epath + i + '.gif" />');
-                }
-                //弹出
-                that.emojipopup = netnrmd.popup("表情", htm.join(''));
-                //选择表情
-                $(that.emojipopup).click(function (e) {
-                    e = e || window.event;
-                    var target = e.target || e.srcElement;
-                    if (target.nodeName == "IMG") {
-                        netnrmd.insertAfterText(that.obj.me, '![emoji](' + target.src + ' "' + target.title + '")\n');
-
-                        $(this).hide();
+                var epath = "https://cdn.jsdelivr.net/gh/netnr/cdn/libs/emoji/";
+                fetch(epath + 'api.json').then(x => x.json()).then(res => {
+                    //构建弹出内容
+                    var htm = [], emojis = res.filter(x => x.type == "wangwang")[0];
+                    for (var i = 0; i < emojis.list.length; i++) {
+                        var eurl = epath + emojis.type + '/' + i + emojis.ext;
+                        htm.push('<img class="netnrmd-emoji" title="' + emojis.list[i] + '" src="' + eurl + '" />');
                     }
-                })
+                    //弹出
+                    that.emojipopup = netnrmd.popup("表情", htm.join(''));
+                    //选择表情
+                    that.emojipopup.addEventListener('click', function (e) {
+                        var target = e.target;
+                        if (target.nodeName == "IMG") {
+                            netnrmd.insertAfterText(that.obj.me, '![emoji](' + target.src + ' "' + target.title + '")\n');
+
+                            this.style.display = 'none';
+                        }
+                    }, false)
+                });
+            } else {
+                that.emojipopup.style.display = '';
             }
-            $(that.emojipopup).show();
         }
     },
     //上传
     upload: {
         //按钮
-        button: { title: '上传', cmd: 'upload', svg: "M1024 640.192C1024 782.912 919.872 896 787.648 896h-512C123.904 896 0 761.6 0 597.504 0 451.968 94.656 331.52 226.432 302.976 284.16 195.456 391.808 128 512 128c152.32 0 282.112 108.416 323.392 261.12C941.888 413.44 1024 519.04 1024 640.192z m-341.312-139.84L512 314.24 341.312 500.48h341.376z m-213.376 0v256h85.376v-256H469.312z" },
+        button: { title: '上传', cmd: 'upload', svg: '<path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/><path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>' },
         //动作
         action: function (that) {
             if (!that.uploadpopup) {
@@ -516,10 +520,10 @@ netnrmd.extend = {
 
                 //保存创建的上传弹出
                 that.uploadpopup = netnrmd.popup("上传", htm.join(''));
-                var ptitle = $(that.uploadpopup).find('.np-header').find('span');
+                var ptitle = that.uploadpopup.querySelector('.np-header').querySelector('span');
 
                 //选择文件上传，该上传接口仅为演示使用，仅支持图片格式的附件
-                $(that.uploadpopup).find('input').change(function () {
+                that.uploadpopup.querySelector('input').addEventListener('change', function () {
                     var file = this.files[0];
                     if (file) {
                         if (file.size > 1024 * 1024 * 5) {
@@ -538,9 +542,9 @@ netnrmd.extend = {
                                 //上传百分比
                                 var per = ((event.loaded / event.total) * 100).toFixed(2);
                                 if (per < 100) {
-                                    ptitle.html(netnrmd.extend.upload.button.title + " （" + per + "%）");
+                                    ptitle.innerHTML = netnrmd.extend.upload.button.title + " （" + per + "%）";
                                 } else {
-                                    ptitle.html(netnrmd.extend.upload.button.title);
+                                    ptitle.innerHTML = netnrmd.extend.upload.button.title;
                                 }
                             }
                         };
@@ -556,7 +560,7 @@ netnrmd.extend = {
                                         let url = "https://www.netnr.eu.org" + res.data.path;
                                         //上传成功，插入链接
                                         netnrmd.insertAfterText(that.obj.me, '[' + file.name + '](' + url + ')');
-                                        $(that.uploadpopup).hide()
+                                        that.uploadpopup.style.display = "none";
                                     } else {
                                         alert('上传失败');
                                     }
@@ -566,9 +570,10 @@ netnrmd.extend = {
                             }
                         }
                     }
-                })
+                }, false)
             }
-            $(that.uploadpopup).show().find('input').val('');
+            that.uploadpopup.style.display = "";
+            that.uploadpopup.querySelector('input').value = '';
         }
     }
 }
@@ -583,7 +588,7 @@ require(['vs/editor/editor.main'], function () {
         viewbefore: function () {
             //工具栏隐藏项
             $.each(this.items, function (i) {
-                if (i < 14) {
+                if (i < 15) {
                     this.class = "hidden";
                 }
             })

@@ -1,11 +1,7 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Domain;
@@ -36,7 +32,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public FileResult Captcha()
         {
             string num = Core.RandomTo.NumCode(4);
-            byte[] bytes = CaptchaTo.CreateImg(num);
+            byte[] bytes = ImageTo.Captcha(num);
             HttpContext.Session.SetString("captcha", Core.CalcTo.MD5(num.ToLower()));
             return File(bytes, "image/jpeg");
         }

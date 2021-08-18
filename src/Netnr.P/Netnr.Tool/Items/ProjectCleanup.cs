@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Netnr.Tool.Items
+﻿namespace Netnr.Tool.Items
 {
     public class ProjectCleanup
     {

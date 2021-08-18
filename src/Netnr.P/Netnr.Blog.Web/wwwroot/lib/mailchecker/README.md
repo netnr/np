@@ -3,7 +3,6 @@
 ### GitHub 仓库
 https://github.com/FGRibreau/mailchecker
 
-### CDN 
-https://cdn.jsdelivr.net/gh/FGRibreau/mailchecker/list.txt
+wget https://raw.githubusercontent.com/FGRibreau/mailchecker/master/list.txt
 
 更新时间 2021-07-26

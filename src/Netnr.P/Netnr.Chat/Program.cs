@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Netnr.SharedFast;
 
 namespace Netnr.Chat
@@ -24,12 +22,6 @@ namespace Netnr.Chat
                     });
 
                     webBuilder.UseStartup<Startup>();
-
-                    //Ö¸¶¨¶Ë¿Ú
-                    if (args.Length > 0)
-                    {
-                        webBuilder.UseUrls(args[0]);
-                    }
                 });
     }
 }

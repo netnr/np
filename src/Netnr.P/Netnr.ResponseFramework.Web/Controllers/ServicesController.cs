@@ -1,13 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Netnr.ResponseFramework.Data;
 using Netnr.SharedUserAgent;
 using Netnr.SharedApp;
 using Netnr.SharedFast;
 using Netnr.Core;
-using System.IO;
-using System;
-using System.Linq;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {

@@ -45,7 +45,7 @@
 
         @if (!nonav.Contains(action))
         {
-            <!--导航-->
+            <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
                 <span></span>
@@ -75,7 +75,7 @@
                             <!--标题-->
                             @if (action != "index")
                             {
-                                <a class="nav-link bg-body" href='javascript:location.reload(false)' title="@Html.Raw(remark)">
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="@Html.Raw(remark)">
                                     <svg class="titleicon"><use xlink:href="#@icon"></use></svg> @title
                                 </a>
                             }

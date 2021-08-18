@@ -1,14 +1,10 @@
 ﻿#if Full || DataKit
 
-using System;
-using System.IO;
 using System.Data;
-using System.Linq;
 using System.Data.Common;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data.SQLite;
 using MySqlConnector;
+using Microsoft.Data.Sqlite;
 using Oracle.ManagedDataAccess.Client;
 using Microsoft.Data.SqlClient;
 using Npgsql;
@@ -42,25 +38,12 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static string SqlQuote(SharedEnum.TypeDB? tdb, string KeyWord)
         {
-            var cb = SqlCmdBuild(tdb);
-            return $"{cb.QuotePrefix}{KeyWord}{cb.QuoteSuffix}";
-        }
-
-        /// <summary>
-        /// 构建
-        /// </summary>
-        /// <param name="tdb"></param>
-        /// <returns></returns>
-        public static DbCommandBuilder SqlCmdBuild(SharedEnum.TypeDB? tdb)
-        {
             return tdb switch
             {
-                SharedEnum.TypeDB.SQLite => new SQLiteCommandBuilder(),
-                SharedEnum.TypeDB.MySQL => new MySqlCommandBuilder(),
-                SharedEnum.TypeDB.Oracle => new OracleCommandBuilder(),
-                SharedEnum.TypeDB.SQLServer => new SqlCommandBuilder(),
-                SharedEnum.TypeDB.PostgreSQL => new NpgsqlCommandBuilder(),
-                _ => null,
+                SharedEnum.TypeDB.SQLite or SharedEnum.TypeDB.SQLServer => $"[{KeyWord}]",
+                SharedEnum.TypeDB.MySQL => $"`{KeyWord}`",
+                SharedEnum.TypeDB.Oracle or SharedEnum.TypeDB.PostgreSQL => $"\"{KeyWord}\"",
+                _ => KeyWord,
             };
         }
 
@@ -74,7 +57,7 @@ namespace Netnr.SharedDataKit
         {
             return tdb switch
             {
-                SharedEnum.TypeDB.SQLite => new SQLiteConnection(conn),
+                SharedEnum.TypeDB.SQLite => new SqliteConnection(conn),
                 SharedEnum.TypeDB.MySQL => new MySqlConnection(conn),
                 SharedEnum.TypeDB.Oracle => new OracleConnection(conn),
                 SharedEnum.TypeDB.SQLServer => new SqlConnection(conn),
@@ -277,53 +260,6 @@ namespace Netnr.SharedDataKit
 
             switch (tdb)
             {
-                case SharedEnum.TypeDB.SQLite:
-                    {
-                        var cb = new SQLiteCommandBuilder();
-                        var dbConn = new SQLiteConnection(conn);
-                        //引用表名
-                        var quoteTable = $"{cb.QuotePrefix}{table}{cb.QuoteSuffix}";
-                        cb.DataAdapter = new SQLiteDataAdapter
-                        {
-                            SelectCommand = new SQLiteCommand($"select * from {quoteTable} where 0=1", dbConn)
-                        };
-
-                        //参数化
-                        var pars = cb.GetInsertCommand(true).Parameters;
-
-                        //空表
-                        if (dbConn.State != ConnectionState.Open)
-                        {
-                            dbConn.Open();
-                        }
-                        var dt = new DataTable();
-                        cb.DataAdapter.Fill(dt);
-                        dbConn.Close();
-
-                        foreach (DataColumn dc in dt.Columns)
-                        {
-                            var vm = new SqlMappingCsharpVM()
-                            {
-                                ColumnName = dc.ColumnName,
-                                DataTypeName = dc.DataType.FullName,
-                                MaxLength = dc.MaxLength,
-                                AllowDBNull = dc.AllowDBNull,
-                                Ordinal = dc.Ordinal
-                            };
-
-                            foreach (SQLiteParameter par in pars)
-                            {
-                                if (par.SourceColumn == dc.ColumnName)
-                                {
-                                    vm.DbType = par.DbType;
-                                    break;
-                                }
-                            }
-
-                            vms.Add(vm);
-                        }
-                    }
-                    break;
                 case SharedEnum.TypeDB.MySQL:
                     {
                         var cb = new MySqlCommandBuilder();

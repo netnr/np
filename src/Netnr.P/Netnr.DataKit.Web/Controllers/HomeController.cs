@@ -7,7 +7,7 @@ namespace Netnr.DataKit.Web.Controllers
         [ResponseCache(Duration = 5)]
         public IActionResult Index()
         {
-            return Redirect("/lib/ndk/ndk.html");
+            return Redirect("/lib/dk/dk.html");
         }
 
         /// <summary>

@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-
 namespace Netnr.DataKit.Web
 {
     public class Program
@@ -10,19 +7,13 @@ namespace Netnr.DataKit.Web
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.DataKit.Web.dll "https://*:54"
+        //dotnet Netnr.DataKit.Web.dll --urls "https://*:54"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-
-                    //ÉèÖÃ¶Ë¿Ú
-                    if (args.Length > 0)
-                    {
-                        webBuilder.UseUrls(args[0]);
-                    }
                 });
     }
 }

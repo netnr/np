@@ -1,148 +1,212 @@
 ﻿#if Full || Drawing
 
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using SkiaSharp;
 
 namespace Netnr.SharedDrawing
 {
     /// <summary>
-    /// 图片操作
+    /// 引用组件：SkiaSharp、SkiaSharp.NativeAssets.Linux
+    /// 跨平台
     /// </summary>
     public class ImageTo
     {
         /// <summary>
-        /// 生成缩略图
+        /// 生成图片验证码
         /// </summary>
-        /// <param name="oldImgPath">原图片地址</param>
-        /// <param name="newMinImgPath">缩略图地址</param>
-        /// <param name="newImgName">生成图片名称</param>
-        /// <param name="width">缩略图宽度</param>
-        /// <param name="height">缩略图高度</param>
-        /// <param name="model">生成缩略的模式: wh|width|height|cut </param>
-        public static void MinImg(string oldImgPath, string newMinImgPath, string newImgName, int width, int height, string model)
+        /// <param name="code">随机码</param>
+        public static byte[] Captcha(string code)
         {
-            Image ImgBox = Image.FromFile(oldImgPath);
+            var random = new Random();
 
-            int minWidth = width;      //缩略图的宽度
-            int minHeight = height;    //缩略图的高度
-
-            int x = 0;
-            int y = 0;
-
-            int oldWidth = ImgBox.Width;    //原始图片的宽度
-            int oldHeight = ImgBox.Height;  //原始图片的高度
-
-            switch (model.ToLower())
+            //为验证码插入空格
+            for (int i = 0; i < 2; i++)
             {
-                case "wh":      //指定高宽缩放,可能变形
-                    break;
-                case "width":       //指定宽度,高度按照比例缩放
-                    minHeight = ImgBox.Height * width / ImgBox.Width;
-                    break;
-                case "height":       //指定高度,宽度按照等比例缩放
-                    minWidth = ImgBox.Width * height / ImgBox.Height;
-                    break;
-                case "cut":
-                    if (ImgBox.Width / (double)ImgBox.Height > minWidth / (double)minHeight)
-                    {
-                        oldHeight = ImgBox.Height;
-                        oldWidth = ImgBox.Height * minWidth / minHeight;
-                        y = 0;
-                        x = (ImgBox.Width - oldWidth) / 2;
-                    }
-                    else
-                    {
-                        oldWidth = ImgBox.Width;
-                        oldHeight = oldWidth * height / minWidth;
-                        x = 0;
-                        y = (ImgBox.Height - oldHeight) / 2;
-                    }
-                    break;
-                default:
-                    break;
+                code = code.Insert(random.Next(code.Length - 1), " ");
             }
 
-            //新建一个bmp图片
-            Image bitmap = new Bitmap(minWidth, minHeight);
+            //验证码颜色集合  
+            SKColor[] colors = { SKColors.LightBlue, SKColors.LightCoral, SKColors.LightGreen, SKColors.LightPink, SKColors.LightSkyBlue, SKColors.LightSteelBlue, SKColors.LightSalmon };
 
-            //新建一个画板
-            Graphics graphic = Graphics.FromImage(bitmap);
+            //旋转角度
+            int randAngle = 40;
 
-            //设置高质量查值法
-            graphic.InterpolationMode = InterpolationMode.High;
+            using SKBitmap bitmap = new(code.Length * 22, 38);
+            using SKCanvas canvas = new(bitmap);
+            //背景设为白色
+            canvas.Clear(SKColors.White);
 
-            //设置高质量，低速度呈现平滑程度
-            graphic.SmoothingMode = SmoothingMode.HighQuality;
-
-            //清空画布并以透明背景色填充
-            graphic.Clear(Color.Transparent);
-
-            //在指定位置并且按指定大小绘制原图片的指定部分
-            graphic.DrawImage(ImgBox, new Rectangle(0, 0, minWidth, minHeight), new Rectangle(x, y, oldWidth, oldHeight), GraphicsUnit.Pixel);
-
-            try
+            //在随机位置画背景点
+            for (int i = 0; i < 200; i++)
             {
-                bitmap.Save(newMinImgPath + newImgName, ImgBox.RawFormat);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                ImgBox.Dispose();
-                bitmap.Dispose();
-                graphic.Dispose();
+                int x = random.Next(0, bitmap.Width);
+                int y = random.Next(0, bitmap.Height);
+
+                var paint = new SKPaint() { Color = colors[random.Next(colors.Length)] };
+                canvas.DrawRect(new SKRect(x, y, x + 2, y + 2), paint);
             }
 
+            //验证码绘制
+            for (int i = 0; i < code.Length; i++)
+            {
+                //角度
+                float angle = random.Next(-randAngle, randAngle);
+
+                //不同高度
+                int ii = random.Next(20) * (random.Next(1) % 2 == 0 ? -1 : 1) + 20;
+
+                SKPoint point = new(18, 20);
+
+                canvas.Translate(point);
+                canvas.RotateDegrees(angle);
+
+                var textPaint = new SKPaint()
+                {
+                    TextAlign = SKTextAlign.Center,
+                    Color = colors[random.Next(colors.Length)],
+                    TextSize = 28,
+                    IsAntialias = true,
+                    FakeBoldText = true
+                };
+
+                canvas.DrawText(code.Substring(i, 1), new SKPoint(0, ii), textPaint);
+                canvas.RotateDegrees(-angle);
+                canvas.Translate(0, -point.Y);
+            }
+
+            canvas.Translate(-4, 0);
+
+            using var image = SKImage.FromBitmap(bitmap);
+            using var ms = new MemoryStream();
+            image.Encode(SKEncodedImageFormat.Jpeg, 90).SaveTo(ms);
+
+            return ms.ToArray();
         }
 
         /// <summary>
-        /// 在图片上添加文字水印
+        /// 缩略图
         /// </summary>
-        /// <param name="path">要添加水印的图片路径</param>
-        /// <param name="syPath">生成的水印图片存放的位置</param>
-        /// <param name="syWord">水印文字</param>
-        public static void AddTxt(string path, string syPath, string syWord = "netnr.com")
+        /// <param name="bitmap"></param>
+        /// <param name="width">宽度，null 根据高度自适应</param>
+        /// <param name="height">高度，null 根据宽度自适应</param>
+        public static SKBitmap Resize(SKBitmap bitmap, int? width = null, int? height = null)
         {
-            Image image = Image.FromFile(path);
+            //缩略大小
+            double scale = 1;
+            if (height.HasValue)
+            {
+                scale = (double)height.Value / bitmap.Height;
+            }
+            if (width.HasValue)
+            {
+                scale = (double)width.Value / bitmap.Width;
+            }
+            if (!width.HasValue)
+            {
+                width = Convert.ToInt32(bitmap.Width * scale);
+            }
+            if (!height.HasValue)
+            {
+                height = Convert.ToInt32(bitmap.Height * scale);
+            }
 
-            //新建一个画板
-            Graphics graphic = Graphics.FromImage(image);
-            graphic.DrawImage(image, 0, 0, image.Width, image.Height);
-
-            //设置字体
-            Font f = new("Verdana", 60);
-
-            //设置字体颜色
-            Brush b = new SolidBrush(Color.Green);
-
-            graphic.DrawString(syWord, f, b, 35, 35);
-            graphic.Dispose();
-
-            //保存文字水印图片
-            image.Save(syPath);
-            image.Dispose();
-
+            //调整大小
+            var scaled = bitmap.Resize(new SKImageInfo(width.Value, height.Value), SKFilterQuality.High);
+            return scaled;
         }
 
         /// <summary>
-        /// 在图片上添加图片水印
+        /// 缩略图
         /// </summary>
-        /// <param name="path">原服务器上的图片路径</param>
-        /// <param name="syPicPath">水印图片的路径</param>
-        /// <param name="waterPicPath">生成的水印图片存放路径</param>
-        public static void AddImg(string path, string syPicPath, string waterPicPath)
+        /// <param name="imgPath"></param>
+        /// <param name="width">宽度，null 根据高度自适应</param>
+        /// <param name="height">高度，null 根据宽度自适应</param>
+        public static SKBitmap Resize(string imgPath, int? width = null, int? height = null)
         {
-            Image image = Image.FromFile(path);
-            Image waterImage = Image.FromFile(syPicPath);
-            Graphics graphic = Graphics.FromImage(image);
-            graphic.DrawImage(waterImage, new Rectangle(image.Width - waterImage.Width, image.Height - waterImage.Height, waterImage.Width, waterImage.Height), 0, 0, waterImage.Width, waterImage.Height, GraphicsUnit.Pixel);
-            graphic.Dispose();
+            SKBitmap bitmap = SKBitmap.Decode(imgPath);
+            return Resize(bitmap, width, height);
+        }
 
-            image.Save(waterPicPath);
-            image.Dispose();
+        /// <summary>
+        /// 缩略图
+        /// </summary>
+        /// <param name="imgPath">图片完整路径</param>
+        /// <param name="newPath">新图片存储路径</param>
+        /// <param name="width">宽度，null 根据高度自适应</param>
+        /// <param name="height">高度，null 根据宽度自适应</param>
+        /// <param name="quality">质量，1-100，默认 90</param>
+        public static void Resize(string imgPath, string newPath, int? width = null, int? height = null, int quality = 90)
+        {
+            Save(Resize(imgPath, width, height), newPath, quality);
+        }
+
+        /// <summary>
+        /// 水印
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="text">文字</param>
+        /// <param name="paint">绘画信息</param>
+        /// <param name="point">位置</param>
+        public static SKBitmap WatermarkForText(SKBitmap bitmap, string text, Action<SKPaint> paint = null, Action<SKPoint> point = null)
+        {
+            using SKCanvas canvas = new(bitmap);
+
+            var textPaint = new SKPaint()
+            {
+                IsAntialias = true,
+                FakeBoldText = true,
+                TextAlign = SKTextAlign.Right,
+                TextSize = 48,
+                Color = SKColors.Orange
+            };
+
+            paint?.Invoke(textPaint);
+
+            var skp = new SKPoint(bitmap.Width * .95f, bitmap.Height * .95f);
+
+            point?.Invoke(skp);
+
+            canvas.DrawText(text, skp, textPaint);
+
+            return bitmap;
+        }
+
+        /// <summary>
+        /// 水印
+        /// </summary>
+        /// <param name="imgPath"></param>
+        /// <param name="newPath"></param>
+        /// <param name="text"></param>
+        /// <param name="paint">绘画信息</param>
+        /// <param name="point">位置</param>
+        /// <returns></returns>
+        public static void WatermarkForText(string imgPath, string newPath, string text, Action<SKPaint> paint = null, Action<SKPoint> point = null)
+        {
+            SKBitmap bitmap = SKBitmap.Decode(imgPath);
+            Save(WatermarkForText(bitmap, text, paint, point), newPath, 100);
+        }
+
+        /// <summary>
+        /// 保存图
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="newPath">新图片存储路径</param>
+        /// <param name="quality">质量，1-100，默认 90</param>
+        public static void Save(SKBitmap bitmap, string newPath, int quality = 90)
+        {
+            using SKImage image = SKImage.FromBitmap(bitmap);
+
+            var ext = Path.GetExtension(newPath).TrimStart('.').ToLower();
+            if (ext == "jpg")
+            {
+                ext = "Jpeg";
+            }
+            Enum.TryParse(ext, true, out SKEncodedImageFormat eif);
+
+            var data = image.Encode(eif, quality);
+
+            //保存
+            using var stream = new FileStream(newPath, FileMode.Create, FileAccess.Write);
+            data.SaveTo(stream);
         }
     }
 }

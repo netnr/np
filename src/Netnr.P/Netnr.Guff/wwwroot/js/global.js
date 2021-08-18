@@ -7,6 +7,10 @@
     dc: {},
     //初始化
     init: function () {
+        if (guff.pn.indexOf("index") == 0) {
+            guff.pn = "";
+        }
+
         //个人登录加载
         guff.queryUserInfo().then(x => x.json()).then(res => {
             guff.setLogin(res.code == 200);

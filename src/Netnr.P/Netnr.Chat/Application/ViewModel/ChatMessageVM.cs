@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Netnr.Chat.Application.ViewModel
+﻿namespace Netnr.Chat.Application.ViewModel
 {
     /// <summary>
     /// 推送消息

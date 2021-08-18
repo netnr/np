@@ -76,6 +76,7 @@ namespace Netnr
         {
             get
             {
+                sw.Stop();
                 return sw.Elapsed.TotalMilliseconds;
             }
         }
@@ -88,6 +89,7 @@ namespace Netnr
         {
             get
             {
+                sw.Stop();
                 return TimeSpan.FromMilliseconds(sw.Elapsed.TotalMilliseconds).ToString(@"hh\:mm\:ss\:fff");
             }
         }

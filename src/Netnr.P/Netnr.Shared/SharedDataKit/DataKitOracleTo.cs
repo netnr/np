@@ -239,7 +239,7 @@ namespace Netnr.SharedDataKit
         {
             var sql = @"
                         SELECT
-                          'DeiName' col,
+                          'Name' col,
                           (
                             SELECT
                               PRODUCT
@@ -261,7 +261,7 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiVersion' col,
+                          'Version' col,
                           (
                             SELECT
                               VERSION
@@ -274,7 +274,7 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiCompile' col,
+                          'Compile' col,
                           (
                             SELECT
                               STATUS
@@ -296,7 +296,7 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiDirData' col,
+                          'DirData' col,
                           (
                             SELECT
                               file_name
@@ -309,7 +309,7 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiCharSet' col,
+                          'CharSet' col,
                           (
                             SELECT
                               VALUE
@@ -322,19 +322,19 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiTimeZone' col,
+                          'TimeZone' col,
                           SESSIONTIMEZONE val
                         FROM
                           dual
                         UNION ALL
                         SELECT
-                          'DeiDateTime' col,
+                          'DateTime' col,
                           TO_CHAR(SYSDATE, 'yyyy-mm-dd hh24:mi:ss') val
                         FROM
                           DUAL
                         UNION ALL
                         SELECT
-                          'DeiMaxConn',
+                          'MaxConn',
                           (
                             SELECT
                               TO_CHAR(VALUE) AS MaxConn
@@ -347,7 +347,7 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiCurrConn' col,
+                          'CurrConn' col,
                           (
                             SELECT
                               TO_CHAR(COUNT(1))
@@ -358,7 +358,7 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiIgnoreCase' col,
+                          'IgnoreCase' col,
                           (
                             CASE
                               WHEN 'a' = 'A' THEN '1'
@@ -369,7 +369,7 @@ namespace Netnr.SharedDataKit
                           dual
                         UNION ALL
                         SELECT
-                          'DeiSystem' col,
+                          'System' col,
                           (
                             SELECT
                               REPLACE(PRODUCT, ': ', '')

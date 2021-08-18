@@ -114,9 +114,9 @@
             处理操作记录
             </summary>
         </member>
-        <member name="T:Netnr.Blog.Web.Apps.TaskService.DatabaseBackupToGitHubJob">
+        <member name="T:Netnr.Blog.Web.Apps.TaskService.DatabaseBackupToGitJob">
             <summary>
-            数据库备份到GitHub
+            数据库备份到Git
             </summary>
         </member>
         <member name="M:Netnr.Blog.Web.Areas.Doc.Controllers.CodeController.Index(System.String)">
@@ -997,15 +997,26 @@
             <param name="zipName">文件名</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.DatabaseBackupToGitHub">
+        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.DatabaseBackupToGit">
             <summary>
-            数据库备份到GitHub
+            数据库备份到Git
             </summary>
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.ServicesController.PutGitHub(System.String,System.String,System.String,System.String,System.String)">
             <summary>
             推送到GitHub
+            </summary>
+            <param name="content">内容 base64</param>
+            <param name="path">路径</param>
+            <param name="message"></param>
+            <param name="token"></param>
+            <param name="or"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.PutGitee(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            推送到Gitee
             </summary>
             <param name="content">内容 base64</param>
             <param name="path">路径</param>
@@ -1301,7 +1312,7 @@
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Program.CreateHostBuilder(System.String[])">
-            dotnet Netnr.Blog.dll "https://*:50"
+            dotnet Netnr.Blog.Web.dll --urls "https://*:50"
         </member>
         <member name="T:Netnr.SharedApp.BuildTo">
             <summary>
@@ -1410,13 +1421,6 @@
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="KeyWord">关键字</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlCmdBuild(System.Nullable{Netnr.SharedEnum.TypeDB})">
-            <summary>
-            构建
-            </summary>
-            <param name="tdb"></param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlConn(Netnr.SharedEnum.TypeDB,System.String)">
@@ -2403,77 +2407,77 @@
             数据库环境信息
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiName">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Name">
             <summary>
             名称
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiVersion">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Version">
             <summary>
             版本号
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiCompile">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Compile">
             <summary>
             编译
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDirInstall">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DirInstall">
             <summary>
             安装目录
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDirData">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DirData">
             <summary>
             数据库目录
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDirTemp">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DirTemp">
             <summary>
             临时目录
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiEngine">
+        <member name="P:Netnr.SharedDataKit.DEIVM.Engine">
             <summary>
             引擎
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiCharSet">
+        <member name="P:Netnr.SharedDataKit.DEIVM.CharSet">
             <summary>
             字符集
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiTimeZone">
+        <member name="P:Netnr.SharedDataKit.DEIVM.TimeZone">
             <summary>
             时区
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiDateTime">
+        <member name="P:Netnr.SharedDataKit.DEIVM.DateTime">
             <summary>
             当前时间
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiMaxConn">
+        <member name="P:Netnr.SharedDataKit.DEIVM.MaxConn">
             <summary>
             最大连接数
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiCurrConn">
+        <member name="P:Netnr.SharedDataKit.DEIVM.CurrConn">
             <summary>
             当前连接数
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiTimeout">
+        <member name="P:Netnr.SharedDataKit.DEIVM.TimeOut">
             <summary>
             连接超时（秒）
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiIgnoreCase">
+        <member name="P:Netnr.SharedDataKit.DEIVM.IgnoreCase">
             <summary>
             忽略大小写（不区分大小写）
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.DEIVM.DeiSystem">
+        <member name="P:Netnr.SharedDataKit.DEIVM.System">
             <summary>
             操作系统
             </summary>
@@ -2608,72 +2612,71 @@
             表注释
             </summary>
         </member>
-        <member name="T:Netnr.SharedDrawing.CaptchaForDrawingCommon">
-            <summary>
-            引用组件：System.Drawing.Common
-            Windows首选，速度快，Linux需安装 libgdiplus 组件
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedDrawing.CaptchaForDrawingCommon.CreateImg(System.String)">
-            <summary>
-            生成图片验证码
-            </summary>
-            <param name="code">随机码</param>
-        </member>
-        <member name="T:Netnr.SharedDrawing.CaptchaForSkiaSharp">
+        <member name="T:Netnr.SharedDrawing.ImageTo">
             <summary>
             引用组件：SkiaSharp、SkiaSharp.NativeAssets.Linux
             跨平台
             </summary>
         </member>
-        <member name="M:Netnr.SharedDrawing.CaptchaForSkiaSharp.CreateImg(System.String)">
+        <member name="M:Netnr.SharedDrawing.ImageTo.Captcha(System.String)">
             <summary>
             生成图片验证码
             </summary>
             <param name="code">随机码</param>
         </member>
-        <member name="T:Netnr.SharedDrawing.CaptchaTo">
+        <member name="M:Netnr.SharedDrawing.ImageTo.Resize(SkiaSharp.SKBitmap,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
-            验证码
+            缩略图
             </summary>
+            <param name="bitmap"></param>
+            <param name="width">宽度，null 根据高度自适应</param>
+            <param name="height">高度，null 根据宽度自适应</param>
         </member>
-        <member name="M:Netnr.SharedDrawing.CaptchaTo.CreateImg(System.String)">
+        <member name="M:Netnr.SharedDrawing.ImageTo.Resize(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
-            生成图片验证码
+            缩略图
             </summary>
-            <param name="code">随机码</param>
+            <param name="imgPath"></param>
+            <param name="width">宽度，null 根据高度自适应</param>
+            <param name="height">高度，null 根据宽度自适应</param>
         </member>
-        <member name="T:Netnr.SharedDrawing.ImageTo">
+        <member name="M:Netnr.SharedDrawing.ImageTo.Resize(System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32)">
             <summary>
-            图片操作
+            缩略图
             </summary>
+            <param name="imgPath">图片完整路径</param>
+            <param name="newPath">新图片存储路径</param>
+            <param name="width">宽度，null 根据高度自适应</param>
+            <param name="height">高度，null 根据宽度自适应</param>
+            <param name="quality">质量，1-100，默认 90</param>
         </member>
-        <member name="M:Netnr.SharedDrawing.ImageTo.MinImg(System.String,System.String,System.String,System.Int32,System.Int32,System.String)">
+        <member name="M:Netnr.SharedDrawing.ImageTo.WatermarkForText(SkiaSharp.SKBitmap,System.String,System.Action{SkiaSharp.SKPaint},System.Action{SkiaSharp.SKPoint})">
             <summary>
-            生成缩略图
+            水印
             </summary>
-            <param name="oldImgPath">原图片地址</param>
-            <param name="newMinImgPath">缩略图地址</param>
-            <param name="newImgName">生成图片名称</param>
-            <param name="width">缩略图宽度</param>
-            <param name="height">缩略图高度</param>
-            <param name="model">生成缩略的模式: wh|width|height|cut </param>
+            <param name="bitmap"></param>
+            <param name="text">文字</param>
+            <param name="paint">绘画信息</param>
+            <param name="point">位置</param>
         </member>
-        <member name="M:Netnr.SharedDrawing.ImageTo.AddTxt(System.String,System.String,System.String)">
+        <member name="M:Netnr.SharedDrawing.ImageTo.WatermarkForText(System.String,System.String,System.String,System.Action{SkiaSharp.SKPaint},System.Action{SkiaSharp.SKPoint})">
             <summary>
-            在图片上添加文字水印
+            水印
             </summary>
-            <param name="path">要添加水印的图片路径</param>
-            <param name="syPath">生成的水印图片存放的位置</param>
-            <param name="syWord">水印文字</param>
+            <param name="imgPath"></param>
+            <param name="newPath"></param>
+            <param name="text"></param>
+            <param name="paint">绘画信息</param>
+            <param name="point">位置</param>
+            <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDrawing.ImageTo.AddImg(System.String,System.String,System.String)">
+        <member name="M:Netnr.SharedDrawing.ImageTo.Save(SkiaSharp.SKBitmap,System.String,System.Int32)">
             <summary>
-            在图片上添加图片水印
+            保存图
             </summary>
-            <param name="path">原服务器上的图片路径</param>
-            <param name="syPicPath">水印图片的路径</param>
-            <param name="waterPicPath">生成的水印图片存放路径</param>
+            <param name="bitmap"></param>
+            <param name="newPath">新图片存储路径</param>
+            <param name="quality">质量，1-100，默认 90</param>
         </member>
         <member name="T:Netnr.SharedLogging.LoggingModel">
             <summary>

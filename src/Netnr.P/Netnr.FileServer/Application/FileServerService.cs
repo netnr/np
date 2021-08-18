@@ -1,9 +1,5 @@
 using SQLite;
-using System;
 using Netnr.FileServer.Model;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
 using Netnr.Core;
 using Netnr.SharedFast;
 

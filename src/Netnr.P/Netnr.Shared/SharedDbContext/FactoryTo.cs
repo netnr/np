@@ -1,13 +1,8 @@
 ﻿# if Full || DbContext
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using System.Data;
-using System.IO;
 using Netnr.SharedFast;
 
 namespace Netnr.SharedDbContext
@@ -136,7 +131,14 @@ namespace Netnr.SharedDbContext
             if (tdb != SharedEnum.TypeDB.InMemory)
             {
                 var pwd = GlobalTo.GetValue("ConnectionStrings:Password");
-                return ConnnectionEncryptOrDecrypt(conn, pwd, 2);
+                conn = ConnnectionEncryptOrDecrypt(conn, pwd, 2);
+
+                if (tdb == SharedEnum.TypeDB.SQLite)
+                {
+                    conn = conn.Replace("~", GlobalTo.ContentRootPath);
+                }
+
+                return conn;
             }
             return null;
         }
@@ -195,18 +197,6 @@ namespace Netnr.SharedDbContext
                 _ => KeyWord,
             };
         }
-
-        /// <summary>
-        /// SQL引用符号
-        /// </summary>
-        /// <param name="KeyWord">关键字</param>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        public static string SqlQuote(string KeyWord, DbContext db)
-        {
-            return SqlQuote(KeyWord, GetTypeDB(db));
-        }
-
     }
 }
 

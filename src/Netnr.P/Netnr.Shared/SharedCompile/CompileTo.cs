@@ -4,13 +4,14 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Reflection;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.Loader;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace Netnr.SharedCompile
 {
@@ -53,6 +54,7 @@ namespace Netnr.SharedCompile
                 typeof(object),
                 typeof(Enumerable),
                 typeof(Console),
+                typeof(DataSet),
                 typeof(TypeConverter),
                 MethodBase.GetCurrentMethod().DeclaringType
             };

@@ -15,7 +15,7 @@
 
     <link href="https://code.bdstatic.com/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" async />
-    <link href="https://cdn.netnr.eu.org/libs/jquery-easyui/1.9.x/themes/metro/easyui.css" rel="stylesheet" />
+    <link href="https://cdn.netnr.eu.org/libs/jquery-easyui/1.9.x/themes/metro/easyui.css" rel="stylesheet" async />
 
     <style>
         html {
@@ -456,10 +456,10 @@
     <script src="https://code.bdstatic.com/npm/@babel/polyfill@7.12.1/dist/polyfill.min.js"></script>
     <script src="https://code.bdstatic.com/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
 
-    <script src="https://code.bdstatic.com/npm/jszip@3.6.0/dist/jszip.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/jszip@3.7.1/dist/jszip.min.js"></script>
     <script src="https://code.bdstatic.com/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 
-    <script src="https://code.bdstatic.com/npm/monaco-editor@0.23.0/min/vs/loader.js"></script>
+    <script src="https://code.bdstatic.com/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
 
     <script>
         var dk = {
@@ -690,7 +690,7 @@
                     dk.loadDEI(function () {
                         let arrv = [];
                         $.each(dk.dc.DEI.data, function (k, v) {
-                            arrv.push(k.substring(3) + "：" + v);
+                            arrv.push(k + "：" + v);
                         });
                         dk.msg('<textarea class="form-control" style="height:375px">' + arrv.join('\r\n') + '</textarea>')
                     })
@@ -867,7 +867,7 @@
 
                 //初始化编辑器
                 require.config({
-                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.23.0/min/vs" },
+                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.27.0/min/vs" },
                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                 });
                 //调试
@@ -2001,7 +2001,10 @@
                 if (tlen > 50) {
                     ms = 'modal-lg'
                 }
-                mmc.children().removeClass('modal-sm').removeClass('modal-lg').addClass(ms);
+                if (tlen > 50) {
+                    ms = 'modal-xl'
+                }
+                mmc.children().removeClass('modal-sm').removeClass('modal-lg').removeClass('modal-xl').addClass(ms);
                 mmc.find('.modal-body').html(msg);
                 mmc.modal();
                 return mmc;

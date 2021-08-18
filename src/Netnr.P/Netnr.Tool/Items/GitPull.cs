@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Netnr.Tool.Items
+﻿namespace Netnr.Tool.Items
 {
     public class GitPull
     {

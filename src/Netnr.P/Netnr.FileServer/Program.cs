@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-
 namespace Netnr.FileServer
 {
     /// <summary>
@@ -17,7 +14,7 @@ namespace Netnr.FileServer
             CreateHostBuilder(args).Build().Run();
         }
 
-        /// dotnet Netnr.FileServer.dll "https://*:55"
+        /// dotnet Netnr.FileServer.dll --urls "https://*:55"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

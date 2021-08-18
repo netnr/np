@@ -2,24 +2,28 @@
 
 <html lang="zh-cn">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
     <title>jCute JavaScript Library</title>
 
-    <link href="https://code.bdstatic.com/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" async>
-    <link href="https://code.bdstatic.com/npm/netnrmd@2.6.1/src/netnrmd.css" rel="stylesheet" async>
-    <script src="https://code.bdstatic.com/npm/netnrmd@2.6.1/src/netnrmd.bundle.min.js"></script>
+    <style>
+        .markdown-body {
+            zoom: 1.5;
+        }
+    </style>
+
+    <link href="https://code.bdstatic.com/npm/netnrmd@3.0.0/src/netnrmd.css" rel="stylesheet" async>
+    <script src="https://code.bdstatic.com/npm/netnrmd@3.0.0/src/netnrmd.bundle.js"></script>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12 my-4">
-                <h1><a href="/" id="tname"></a></h1>
-                <hr />
-                <div id="vc"></div>
-            </div>
-        </div>
-    </div>
+    <h1><a href="/" id="tname"></a></h1>
+    <hr />
+    <div class="markdown-body" id="vc"></div>
     <script src="src/jCute.all.js"></script>
     <script>
         var vurl = 'src/' + location.search.substring(1).replace('jcute', 'jCute');

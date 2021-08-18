@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Netnr.Core;
-using Netnr.SharedDataKit;
 
 namespace Netnr.DataX.Domain
 {
@@ -21,55 +17,37 @@ namespace Netnr.DataX.Domain
             DXPath = PathTo.Combine(AppContext.BaseDirectory, "ud");
 #endif
 
-            Init = FileTo.ReadText(PathTo.Combine(DXPath, "init.json")).ToJObject();
+            Config = FileTo.ReadText(PathTo.Combine(DXPath, "config.json")).ToJObject();
 
-            //已设置配置
-            if (!string.IsNullOrWhiteSpace(ConfigName))
+            var dcsFiles = Directory.GetFiles(DXHub, "*.cs");
+            foreach (var path in dcsFiles)
             {
-                ConfigFolder = ConfigName.Split('.')[0];
-                Config = FileTo.ReadText(PathTo.Combine(DXPath, ConfigName)).ToJObject();
-
-                var dcsPath = PathTo.Combine(DXPath, ConfigFolder);
-                if (Directory.Exists(dcsPath))
-                {
-                    var dcsFiles = Directory.GetFiles(PathTo.Combine(DXPath, ConfigFolder), "*.cs");
-                    foreach (var path in dcsFiles)
-                    {
-                        Compile.Add(Path.GetFileName(path), FileTo.ReadText(path));
-                    }
-                }
-
-                OdTypeDB = DataKitAidTo.GetTypeDB(Config["od-type"].ToString());
-                OdConn = Config["od-conn"].ToString();
-                if (OdTypeDB == SharedEnum.TypeDB.MySQL && !OdConn.Contains("AllowLoadLocalInfile"))
-                {
-                    OdConn = OdConn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
-                }
-
-                NdTypeDB = DataKitAidTo.GetTypeDB(Config["nd-type"].ToString());
-                NdConn = Config["nd-conn"].ToString();
-                if (NdTypeDB == SharedEnum.TypeDB.MySQL && !NdConn.Contains("AllowLoadLocalInfile"))
-                {
-                    NdConn = NdConn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
-                }
-
-                MappingFullMatchTable = Init["table-mapping-full-match"].Value<bool>();
-                MappingFullMatchColumn = Init["column-mapping-full-match"].Value<bool>();
-
-                MappingTableName = Init["table-mapping-name"].ToString();
-                MappingColumnName = Init["column-mapping-name"].ToString();
-
-                var mapTableJson = FileTo.ReadText(PathTo.Combine(DXPath, ConfigFolder, MappingTableName));
-                if (!string.IsNullOrWhiteSpace(mapTableJson))
-                {
-                    MappingTable = mapTableJson.ToJObject();
-                }
-                var mapColumnJson = FileTo.ReadText(PathTo.Combine(DXPath, ConfigFolder, MappingColumnName));
-                if (!string.IsNullOrWhiteSpace(mapColumnJson))
-                {
-                    MappingColumn = mapColumnJson.ToJObject();
-                }
+                Compile.Add(Path.GetFileName(path), FileTo.ReadText(path));
             }
+
+            var listConns = new List<DbConnObj>();
+            var dbconns = Config["db-conn"] as JArray;
+            for (int i = 0; i < dbconns.Count; i++)
+            {
+                var dbc = dbconns[i];
+                var obj = new DbConnObj()
+                {
+                    TDB = Enum.Parse<SharedEnum.TypeDB>(dbc["type"].ToString(), true),
+                    Conn = dbc["conn"].ToString(),
+                    Remark = dbc["remark"].ToString()
+                };
+
+                if (obj.TDB == SharedEnum.TypeDB.MySQL && !obj.Conn.Contains("AllowLoadLocalInfile"))
+                {
+                    obj.Conn = obj.Conn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
+                }
+
+                listConns.Add(obj);
+            }
+            DbConns = listConns;
+
+            MappingTableFullMatch = Config["mapping-table-full-match"].Value<bool>();
+            MappingColumnFullMatch = Config["mapping-column-full-match"].Value<bool>();
         }
 
         /// <summary>
@@ -89,11 +67,7 @@ namespace Netnr.DataX.Domain
         }
 
         /// <summary>
-        /// 配置
-        /// </summary>
-        public JObject Init { get; set; }
-        /// <summary>
-        /// 配置
+        /// 配置信息
         /// </summary>
         public JObject Config { get; set; }
         /// <summary>
@@ -101,59 +75,17 @@ namespace Netnr.DataX.Domain
         /// </summary>
         public Dictionary<string, string> Compile { get; set; } = new();
         /// <summary>
-        /// 配置名
-        /// </summary>
-        public string ConfigName
-        {
-            get
-            {
-                return Application.DXService.ConfigName;
-            }
-        }
-        /// <summary>
-        /// 配置文件夹
-        /// </summary>
-        public string ConfigFolder { get; set; }
-        /// <summary>
-        /// 原数据库类型
-        /// </summary>
-        public SharedEnum.TypeDB OdTypeDB { get; set; }
-        /// <summary>
-        /// 原数据库连接
-        /// </summary>
-        public string OdConn { get; set; }
-        /// <summary>
-        /// 新数据库类型
-        /// </summary>
-        public SharedEnum.TypeDB NdTypeDB { get; set; }
-        /// <summary>
-        /// 新数据库连接
-        /// </summary>
-        public string NdConn { get; set; }
-        /// <summary>
         /// 表映射完整匹配
         /// </summary>
-        public bool MappingFullMatchTable { get; set; }
+        public bool MappingTableFullMatch { get; set; }
         /// <summary>
         /// 列映射完整匹配
         /// </summary>
-        public bool MappingFullMatchColumn { get; set; }
+        public bool MappingColumnFullMatch { get; set; }
         /// <summary>
-        /// 表映射文件名
+        /// 连接信息
         /// </summary>
-        public string MappingTableName { get; set; }
-        /// <summary>
-        /// 列映射文件名
-        /// </summary>
-        public string MappingColumnName { get; set; }
-        /// <summary>
-        /// 表映射
-        /// </summary>
-        public JObject MappingTable { get; set; }
-        /// <summary>
-        /// 列映射
-        /// </summary>
-        public JObject MappingColumn { get; set; }
+        public List<DbConnObj> DbConns = new();
     }
 
 }

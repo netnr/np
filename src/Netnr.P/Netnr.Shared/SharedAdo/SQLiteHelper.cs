@@ -2,7 +2,7 @@
 
 using System;
 using System.Data;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 
 namespace Netnr.SharedAdo
 {
@@ -17,44 +17,95 @@ namespace Netnr.SharedAdo
         /// </summary>
         /// <param name="dt">数据表</param>
         /// <param name="table">数据库表名</param>
-        /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
-        /// <param name="openTransaction">开启事务，默认开启</param>
+        /// <param name="openTransaction">开启事务</param>
         /// <returns></returns>
-        public int BulkBatchSQLite(DataTable dt, string table, Action<SQLiteDataAdapter, DataTable> dataAdapter = null, bool openTransaction = true)
+        public int BulkBatchSQLite(DataTable dt, string table, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
                 dt.TableName = table;
 
-                var connection = (SQLiteConnection)Connection;
-                SQLiteTransaction transaction = openTransaction ? (SQLiteTransaction)(Transaction = connection.BeginTransaction()) : null;
+                var connection = (SqliteConnection)Connection;
+                SqliteTransaction transaction = openTransaction ? (SqliteTransaction)(Transaction = connection.BeginTransaction()) : null;
 
-                var cb = new SQLiteCommandBuilder();
+                var listCols = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
+                var sql = $"INSERT INTO [{table}]([{string.Join("],[", listCols)}]) VALUES (${string.Join(", $", listCols)})";
 
-                cb.DataAdapter = new SQLiteDataAdapter
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = sql;
+
+                var parameters = new List<SqliteParameter>();
+                listCols.ForEach(col =>
                 {
-                    SelectCommand = new SQLiteCommand($"select * from {cb.QuotePrefix}{table}{cb.QuoteSuffix} where 0=1", connection, transaction)
-                };
-                cb.ConflictOption = ConflictOption.OverwriteChanges;
+                    var parameter = cmd.CreateParameter();
+                    parameter.ParameterName = $"${col}";
+                    cmd.Parameters.Add(parameter);
 
-                var da = new SQLiteDataAdapter
+                    parameters.Add(parameter);
+                });
+
+                var nums = 0;
+                foreach (DataRow dr in dt.Rows)
                 {
-                    InsertCommand = cb.GetInsertCommand(true),
-                    UpdateCommand = cb.GetUpdateCommand(true)
-                };
-                da.InsertCommand.CommandTimeout = 300;
-                da.UpdateCommand.CommandTimeout = 300;
+                    for (int i = 0; i < listCols.Count; i++)
+                    {
+                        var cell = dr[listCols[i]];
+                        if (cell == DBNull.Value)
+                        {
+                            parameters[i].Value = DBNull.Value;
+                        }
+                        else
+                        {
+                            parameters[i].Value = cell;
+                        }
+                    }
 
-                //执行前修改
-                dataAdapter?.Invoke(da, dt);
-
-                var num = da.Update(dt);
+                    var num = cmd.ExecuteNonQuery();
+                    nums += num;
+                }
 
                 transaction?.Commit();
 
-                return num;
+                return nums;
             });
         }
+
+        //public int BulkBatchSQLite(DataTable dt, string table, Action<SQLiteDataAdapter, DataTable> dataAdapter = null, bool openTransaction = true)
+        //{
+        //    return SafeConn(() =>
+        //    {
+        //        dt.TableName = table;
+
+        //        var connection = (SQLiteConnection)Connection;
+        //        SQLiteTransaction transaction = openTransaction ? (SQLiteTransaction)(Transaction = connection.BeginTransaction()) : null;
+
+        //        var cb = new SQLiteCommandBuilder();
+
+        //        cb.DataAdapter = new SQLiteDataAdapter
+        //        {
+        //            SelectCommand = new SQLiteCommand($"select * from {cb.QuotePrefix}{table}{cb.QuoteSuffix} where 0=1", connection, transaction)
+        //        };
+        //        cb.ConflictOption = ConflictOption.OverwriteChanges;
+
+        //        var da = new SQLiteDataAdapter
+        //        {
+        //            InsertCommand = cb.GetInsertCommand(true),
+        //            UpdateCommand = cb.GetUpdateCommand(true)
+        //        };
+        //        da.InsertCommand.CommandTimeout = 300;
+        //        da.UpdateCommand.CommandTimeout = 300;
+
+        //        //执行前修改
+        //        dataAdapter?.Invoke(da, dt);
+
+        //        var num = da.Update(dt);
+
+        //        transaction?.Commit();
+
+        //        return num;
+        //    });
+        //}
+
     }
 }
 

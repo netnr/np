@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
-using System;
 using Netnr.ResponseFramework.Domain;
 
 namespace Netnr.ResponseFramework.Web.Controllers

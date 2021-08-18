@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Netnr.Chat.Domain
+﻿namespace Netnr.Chat.Domain
 {
     /// <summary>
     /// 通知信息

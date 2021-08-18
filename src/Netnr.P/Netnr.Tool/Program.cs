@@ -1,8 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.ComponentModel;
 using Netnr.Core;
 using Netnr.Tool.Items;
+using Microsoft.Data.Sqlite;
+using System.Data;
 
 namespace Netnr.Tool
 {

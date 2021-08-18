@@ -5,7 +5,7 @@
 - 优化 Proxy 代理接口
 - 新增 接口生成二维码
 - 升级 .NET6 Preview
-- 调整 项目数据库从 MySQL 迁移到 SQLServer (当前预览版查询数据有缓存问题，原因未知)
+- 调整 项目数据库从 MySQL 迁移到 SQLServer
 
 ### 2021-04
 - 新增 Blog 文章详情支持目录定位

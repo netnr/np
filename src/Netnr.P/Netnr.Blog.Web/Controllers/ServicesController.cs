@@ -1,10 +1,5 @@
-using System;
-using System.IO;
 using System.Net;
 using System.Text;
-using System.Linq;
-using System.Threading;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -222,15 +217,21 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 数据库备份到GitHub
+        /// 数据库备份到Git
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM DatabaseBackupToGitHub()
+        public SharedResultVM DatabaseBackupToGit()
         {
             return SharedResultVM.Try(vm =>
             {
+                if (GlobalTo.GetValue<bool>("ReadOnly"))
+                {
+                    vm.Set(SharedEnum.RTag.refuse);
+                    return vm;
+                }
+
                 var now = $"{DateTime.Now:yyyyMMdd_HHmmss}";
 
                 var db = ContextBaseFactory.CreateDbContext();
@@ -238,19 +239,48 @@ namespace Netnr.Blog.Web.Controllers
 
                 var createScript = db.Database.GenerateCreateScript();
 
+                //备份创建脚本
+                try
+                {
+                    var b1 = Convert.ToBase64String(Encoding.UTF8.GetBytes(createScript));
+                    var p1 = $"{database}/backup_{now}.sql";
+
+                    vm.Log.Add(PutGitee(b1, p1, now));
+                    vm.Log.Add(PutGitHub(b1, p1, now));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    vm.Log.Add(ex.Message);
+                }
+
+                Thread.Sleep(1000 * 1);
+
+                //备份数据
                 var zipPath = $"db/backup_{now}.zip";
                 if (DatabaseExport(zipPath).Code == 200)
                 {
-                    var b1 = Convert.ToBase64String(Encoding.UTF8.GetBytes(createScript));
-                    vm.Log.Add(PutGitHub(b1, $"{database}/backup_{now}.sql", now));
-
-                    Thread.Sleep(1000 * 2);
-
                     var ppath = PathTo.Combine(GlobalTo.ContentRootPath, zipPath);
-                    var b2 = Convert.ToBase64String(System.IO.File.ReadAllBytes(ppath));
-                    vm.Log.Add(PutGitHub(b2, $"{database}/backup_{now}.zip", now));
 
-                    System.IO.File.Delete(ppath);
+                    try
+                    {
+                        var b2 = Convert.ToBase64String(System.IO.File.ReadAllBytes(ppath));
+                        var p2 = $"{database}/backup_{now}.zip";
+
+                        vm.Log.Add(PutGitee(b2, p2, now));
+                        vm.Log.Add(PutGitHub(b2, p2, now));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        vm.Log.Add(ex.Message);
+
+                        System.IO.File.Delete(ppath);
+                    }
+                    finally
+                    {
+                        System.IO.File.Delete(ppath);
+                    }
                 }
 
                 return vm;
@@ -274,15 +304,49 @@ namespace Netnr.Blog.Web.Controllers
             }
             if (string.IsNullOrWhiteSpace(or))
             {
-                or = GlobalTo.GetValue("Work:BackupToGitHub:or");
+                or = GlobalTo.GetValue("Work:BackupToGit:or");
             }
 
-            var put = $"https://api.github.com/repos/${or}/contents/{path}";
+            var put = $"https://api.github.com/repos/{or}/contents/{path}";
 
             var hwr = HttpTo.HWRequest(put, "PUT", Encoding.UTF8.GetBytes(new { message, content }.ToJson()));
 
             hwr.Headers.Set("Accept", "application/vnd.github.v3+json");
             hwr.Headers.Set("Authorization", $"token {token}");
+            hwr.Headers.Set("Content-Type", "application/json");
+            hwr.UserAgent = "Netnr Agent";
+
+            var result = HttpTo.Url(hwr);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 推送到Gitee
+        /// </summary>
+        /// <param name="content">内容 base64</param>
+        /// <param name="path">路径</param>
+        /// <param name="message"></param>
+        /// <param name="token"></param>
+        /// <param name="or"></param>
+        /// <returns></returns>
+        private static string PutGitee(string content, string path, string message = "m", string token = null, string or = null)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                token = GlobalTo.GetValue("ApiKey:Gitee:GistToken");
+            }
+            if (string.IsNullOrWhiteSpace(or))
+            {
+                or = GlobalTo.GetValue("Work:BackupToGit:or");
+            }
+
+            var listor = or.Split('/');
+            var owner = listor.First();
+            var repo = listor.Last();
+            var uri = $"https://gitee.com/api/v5/repos/{owner}/{repo}/contents/{path}";
+
+            var hwr = HttpTo.HWRequest(uri, "POST", Encoding.UTF8.GetBytes(new { access_token = token, message, content }.ToJson()));
             hwr.Headers.Set("Content-Type", "application/json");
 
             var result = HttpTo.Url(hwr);

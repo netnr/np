@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Netnr.BuildSwagger.Models
+﻿namespace Netnr.BuildSwagger.Models
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名样式", Justification = "<挂起>")]
     public class Serverless

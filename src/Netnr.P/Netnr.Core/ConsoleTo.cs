@@ -107,7 +107,7 @@ namespace Netnr.Core
                 var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
                 if (!string.IsNullOrWhiteSpace(desc))
                 {
-                    Console.WriteLine($"    {i}、 {mi.Name} -> {desc}{Environment.NewLine}");
+                    Console.WriteLine($"  {i,3}. {mi.Name} -> {desc}{Environment.NewLine}");
                 }
             }
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.Login;
-using System;
 
 namespace Netnr.Test.Controllers
 {

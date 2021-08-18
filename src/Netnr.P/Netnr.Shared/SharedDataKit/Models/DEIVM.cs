@@ -12,63 +12,63 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 名称
         /// </summary>
-        public string DeiName { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// 版本号
         /// </summary>
-        public string DeiVersion { get; set; }
+        public string Version { get; set; }
         /// <summary>
         /// 编译
         /// </summary>
-        public string DeiCompile { get; set; }
+        public string Compile { get; set; }
         /// <summary>
         /// 安装目录
         /// </summary>
-        public string DeiDirInstall { get; set; }
+        public string DirInstall { get; set; }
         /// <summary>
         /// 数据库目录
         /// </summary>
-        public string DeiDirData { get; set; }
+        public string DirData { get; set; }
         /// <summary>
         /// 临时目录
         /// </summary>
-        public string DeiDirTemp { get; set; }
+        public string DirTemp { get; set; }
         /// <summary>
         /// 引擎
         /// </summary>
-        public string DeiEngine { get; set; }
+        public string Engine { get; set; }
         /// <summary>
         /// 字符集
         /// </summary>
-        public string DeiCharSet { get; set; }
+        public string CharSet { get; set; }
         /// <summary>
         /// 时区
         /// </summary>
-        public string DeiTimeZone { get; set; }
+        public string TimeZone { get; set; }
         /// <summary>
         /// 当前时间
         /// </summary>
-        public DateTime DeiDateTime { get; set; }
+        public DateTime DateTime { get; set; }
         /// <summary>
         /// 最大连接数
         /// </summary>
-        public int? DeiMaxConn { get; set; }
+        public int? MaxConn { get; set; }
         /// <summary>
         /// 当前连接数
         /// </summary>
-        public int? DeiCurrConn { get; set; }
+        public int? CurrConn { get; set; }
         /// <summary>
         /// 连接超时（秒）
         /// </summary>
-        public int? DeiTimeout { get; set; }
+        public int? TimeOut { get; set; }
         /// <summary>
         /// 忽略大小写（不区分大小写）
         /// </summary>
-        public int? DeiIgnoreCase { get; set; }
+        public int? IgnoreCase { get; set; }
         /// <summary>
         /// 操作系统
         /// </summary>
-        public string DeiSystem { get; set; }
+        public string System { get; set; }
     }
 }
 

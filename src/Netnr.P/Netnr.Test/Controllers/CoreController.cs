@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System;
 using Netnr.Core;
-using System.Collections.ObjectModel;
 
 namespace Netnr.Test.Controllers
 {

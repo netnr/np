@@ -13,13 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0-preview.6.21355.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
   </ItemGroup>
-
 
   <ItemGroup>
     <Content Update="Views\Shared\_Layout.cshtml">
@@ -27,7 +22,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
 
   <Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 

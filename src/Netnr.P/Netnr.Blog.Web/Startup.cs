@@ -1,13 +1,4 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Netnr.Core;
 using Netnr.Login;
@@ -37,7 +28,7 @@ namespace Netnr.Blog.Web
                 System.IO.Directory.CreateDirectory(jbPath);
                 try
                 {
-                    var dhost = "https://cdn.jsdelivr.net/gh/anderscui/jieba.NET@0.42.2/src/Segmenter/Resources/";
+                    var dhost = "https://raw.githubusercontent.com/anderscui/jieba.NET/master/src/Segmenter/Resources/";
                     "prob_trans.json,prob_emit.json,idf.txt,pos_prob_start.json,pos_prob_trans.json,pos_prob_emit.json,char_state_tab.json".Split(',').ToList().ForEach(file =>
                     {
                         var fullPath = PathTo.Combine(jbPath, file);
@@ -183,6 +174,7 @@ namespace Netnr.Blog.Web
             else
             {
                 // The default HSTS value is 30 days. https://aka.ms/aspnetcore-hsts
+                // dotnet dev-certs https --trust
                 app.UseHsts();
             }
 

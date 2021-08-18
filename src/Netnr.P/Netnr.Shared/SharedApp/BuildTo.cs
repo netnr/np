@@ -34,6 +34,10 @@ namespace Netnr.SharedApp
         public SharedResultVM Html<T>() where T : Controller
         {
             var vm = new SharedResultVM();
+            vm.LogEvent(le =>
+            {
+                Console.WriteLine(le.NewItems[0].ToString());
+            });
 
             try
             {

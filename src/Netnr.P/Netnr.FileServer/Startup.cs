@@ -1,13 +1,6 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
 using Netnr.SharedFast;
-using System;
 
 namespace Netnr.FileServer
 {
@@ -30,11 +23,7 @@ namespace Netnr.FileServer
         /// This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            IMvcBuilder builder = services.AddControllersWithViews();
-
-#if DEBUG
-            builder.AddRazorRuntimeCompilation();
-#endif
+            services.AddControllersWithViews();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -113,7 +102,7 @@ namespace Netnr.FileServer
                 {
                     FileProvider = new PhysicalFileProvider(prootdir),
                     //目录浏览链接
-                    RequestPath = new Microsoft.AspNetCore.Http.PathString(vrootdir),
+                    RequestPath = new PathString(vrootdir),
                     EnableDirectoryBrowsing = true,
                     EnableDefaultFiles = false
                 });

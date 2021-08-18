@@ -204,11 +204,11 @@ namespace Netnr.SharedDataKit
         {
             var sql = @"
                         SELECT
-                          'DeiName' col,
+                          'Name' col,
                           split_part(split_part(VERSION (), ',', 1),' on ',1)
                         UNION ALL
                         SELECT
-                          'DeiVersion' col,
+                          'Version' col,
                           (
                             SELECT
                               setting
@@ -219,11 +219,11 @@ namespace Netnr.SharedDataKit
                           ) val
                         UNION ALL
                         SELECT
-                          'DeiCompile' col,
+                          'Compile' col,
                           split_part(VERSION (), ',', 2) val
                         UNION ALL
                         SELECT
-                          'DeiDirInstall' col,
+                          'DirInstall' col,
                           (
                             SELECT
                               split_part(setting, 'main', 1)
@@ -234,7 +234,7 @@ namespace Netnr.SharedDataKit
                           ) val
                         UNION ALL
                         SELECT
-                          'DeiDirData' col,
+                          'DirData' col,
                           (
                             SELECT
                               setting
@@ -245,7 +245,7 @@ namespace Netnr.SharedDataKit
                           ) val
                         UNION ALL
                         SELECT
-                          'DeiCharSet' col,
+                          'CharSet' col,
                           (
                             SELECT
                               setting
@@ -256,7 +256,7 @@ namespace Netnr.SharedDataKit
                           ) val
                         UNION ALL
                         SELECT
-                          'DeiTimeZone' col,
+                          'TimeZone' col,
                           (
                             SELECT
                               setting
@@ -267,11 +267,11 @@ namespace Netnr.SharedDataKit
                           ) val
                         UNION ALL
                         SELECT
-                          'DeiDateTime' col,
+                          'DateTime' col,
                           to_char(now(), 'YYYY-MM-DD HH24:MI:SS.MS') val
                         UNION ALL
                         SELECT
-                          'DeiMaxConn' col,
+                          'MaxConn' col,
                           (
                             SELECT
                               setting
@@ -282,13 +282,13 @@ namespace Netnr.SharedDataKit
                           ) val
                         UNION ALL
                         SELECT
-                          'DeiCurrConn' col,
+                          'CurrConn' col,
                           CAST (COUNT (1) AS VARCHAR) val
                         FROM
                           pg_stat_activity
                         UNION ALL
                         SELECT
-                          'DeiTimeout' col,
+                          'TimeOut' col,
                           (
                             SELECT
                               setting
@@ -299,7 +299,7 @@ namespace Netnr.SharedDataKit
                           ) val
                         UNION ALL
                         SELECT
-                          'DeiIgnoreCase' col,
+                          'IgnoreCase' col,
                           CASE
                             'a' = 'A'
                             WHEN 't' THEN '1'
@@ -307,7 +307,7 @@ namespace Netnr.SharedDataKit
                           END val
                         UNION ALL
                         SELECT
-                          'DeiSystem' col,
+                          'System' col,
                           split_part(split_part(VERSION (), ',', 1), ' on ', 2) val
                         ";
 

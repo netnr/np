@@ -13,19 +13,24 @@
     <meta name="keywords" content="jCute,netnr" />
     <meta name="description" content="jCute JavaScript Library,netnr" />
 
-    <link href="https://code.bdstatic.com/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" async>
-    <link href="https://code.bdstatic.com/npm/netnrmd@2.6.1/src/netnrmd.css" rel="stylesheet" async>
+    <style>
+        .markdown-body {
+            max-width: 800px;
+            margin: auto;
+            zoom: 1.5;
+        }
+    </style>
+
+    <link href="https://code.bdstatic.com/npm/netnrmd@3.0.0/src/netnrmd.css" rel="stylesheet" async>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 my-4 markdown-body">
-                <h1>jCute</h1>
-                <p>JavaScript Library</p>
-                <h3><a href="view.html?jcute.all.js">jCute.all.js</a></h3>
-                <h1>Module</h1>
-                <hr>
-                <h3><a href="view.html?jcute.ajax.js">jCute.ajax.js</a></h3>
+    <div class="markdown-body">
+        <h1>jCute</h1>
+        <p>JavaScript Library</p>
+        <h3><a href="view.html?jcute.all.js">jCute.all.js</a></h3>
+        <h1>Module</h1>
+        <hr>
+        <h3><a href="view.html?jcute.ajax.js">jCute.ajax.js</a></h3>
 <pre><code class="language-js"><span class="hljs-comment">/**
  * ajax请求
  * @param {JQuery.AjaxSettings} settings 类似于jQuery传参
@@ -45,8 +50,8 @@
  */</span>
 jCute.ajax(settings)
 </code></pre>
-                <hr>
-                <h3><a href="view.html?jcute.convert.js">jCute.convert.js</a></h3>
+        <hr>
+        <h3><a href="view.html?jcute.convert.js">jCute.convert.js</a></h3>
 <pre><code class="language-js"><span class="hljs-comment">/**
  * Unicode编码
  * @param {string} str 字符串
@@ -71,8 +76,8 @@ jCute.toAscii(str)
  */</span>
 jCute.toAsciiUn(str)
 </code></pre>
-                <hr>
-                <h3><a href="view.html?jcute.cookie.js">jCute.cookie.js</a></h3>
+        <hr>
+        <h3><a href="view.html?jcute.cookie.js">jCute.cookie.js</a></h3>
 <pre><code class="language-js"><span class="hljs-comment">/**
  * Cookie获取、设置、删除
  * @param {string} key 键
@@ -81,8 +86,8 @@ jCute.toAsciiUn(str)
  */</span>
 jCute.cookie(key, value, time)
 </code></pre>
-                <hr>
-                <h3><a href="view.html?jcute.load.js">jCute.load.js</a></h3>
+        <hr>
+        <h3><a href="view.html?jcute.load.js">jCute.load.js</a></h3>
 <pre><code class="language-js"><span class="hljs-comment">/**
  * 载入js脚本，并回调
  * @param {string} src js脚本路径
@@ -96,8 +101,8 @@ jCute.getScript(src, success)
  */</span>
 jCute.getStyle(href)
 </code></pre>
-                <hr>
-                <h3><a href="view.html?jcute.support.js">jCute.support.js</a></h3>
+        <hr>
+        <h3><a href="view.html?jcute.support.js">jCute.support.js</a></h3>
 <pre><code class="language-js"><span class="hljs-comment">/** 
  * IE8- 
  */</span>
@@ -145,8 +150,8 @@ jCute.key(e)
  */</span>
 jCute.type(obj)
 </code></pre>
-                <hr>
-                <h3><a href="view.html?jcute.xml.js">jCute.xml.js</a></h3>
+        <hr>
+        <h3><a href="view.html?jcute.xml.js">jCute.xml.js</a></h3>
 <pre><code class="language-js"><span class="hljs-comment">/**
  * 解析字符串为xml
  * @param {string} data 字符串
@@ -159,9 +164,8 @@ jCute.parseXML(data)
  */</span>
 jCute.XMLSerializer(xmlDoc)
 </code></pre>
-            </div>
-        </div>
     </div>
+
     <script src="src/jCute.all.js"></script>
 </body>
 </html>

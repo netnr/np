@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
 using Netnr.ResponseFramework.Domain;
 using Netnr.ResponseFramework.Application.ViewModel;
 using Netnr.Core;

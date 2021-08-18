@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.FileServer.Application;
 using Netnr.FileServer.Model;
 using Netnr.Core;

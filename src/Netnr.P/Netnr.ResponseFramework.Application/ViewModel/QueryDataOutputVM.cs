@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 /// <summary>
 /// 输出信息

@@ -4,9 +4,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Data;
+using Microsoft.Data.Sqlite;
 using DeviceDetectorNET;
 using DeviceDetectorNET.Parser;
-using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Netnr.SharedAdo;
@@ -94,7 +94,7 @@ namespace Netnr.SharedLogging
         /// <returns></returns>
         public static string PathToConn(string path)
         {
-            return $"Data Source={path};Version=3;DateTimeFormat=Ticks;";
+            return $"Data Source={path}";
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Netnr.SharedLogging
         /// <param name="path"></param>
         public static void CreateDatabase(string path)
         {
-            SQLiteConnection.CreateFile(path);
+            File.WriteAllBytes(path, Array.Empty<byte>());
 
             var createTableSql = @"
                 CREATE TABLE ""LoggingModel"" (
@@ -168,7 +168,7 @@ namespace Netnr.SharedLogging
                 );
             ";
 
-            new DbHelper(new SQLiteConnection(PathToConn(path))).SqlExecute(createTableSql);
+            new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecute(createTableSql);
         }
 
         /// <summary>
@@ -381,7 +381,7 @@ namespace Netnr.SharedLogging
                 listSql.Add($"insert into {OptionsDbTableName} ({fields}) values ('{values}')");
             }
 
-            return new DbHelper(new SQLiteConnection(PathToConn(path))).SqlExecute(listSql);
+            return new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecute(listSql);
         }
 
         /// <summary>
@@ -509,7 +509,7 @@ namespace Netnr.SharedLogging
             }
 
             var mpath = PathToConn(listPath.FirstOrDefault());
-            db = new DbHelper(new SQLiteConnection(mpath));
+            db = new DbHelper(new SqliteConnection(mpath));
 
             var listSql = new List<string>() { "select * from " + OptionsDbTableName };
             listPreSql = new List<string>();

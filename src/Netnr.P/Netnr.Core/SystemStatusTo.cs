@@ -623,11 +623,11 @@ namespace Netnr.Core
             };
             while (--v3 > 0)
             {
-                listpb.Add("|");
+                listpb.Add("#");
             }
             while (listpb.Count < vt)
             {
-                listpb.Add("-");
+                listpb.Add("_");
             }
             var text = unit + desc;
             if (!string.IsNullOrEmpty(text))
