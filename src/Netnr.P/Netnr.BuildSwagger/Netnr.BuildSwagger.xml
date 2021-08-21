@@ -29,25 +29,6 @@
             <param name="content">内容</param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.BuildSwagger.Controllers.Serverless.BadgeController">
-            <summary>
-            Badge 徽章
-            </summary>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.BadgeController.nuget_v(System.String)">
-            <summary>
-            获取 NuGet 发布包的最新版本
-            </summary>
-            <param name="package">发布包名</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.BuildSwagger.Controllers.Serverless.BadgeController.npm_v(System.String)">
-            <summary>
-            获取 NPM 发布包的最新版本
-            </summary>
-            <param name="package">发布包名</param>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.BuildSwagger.Controllers.Serverless.CommonController">
             <summary>
             Common 常用

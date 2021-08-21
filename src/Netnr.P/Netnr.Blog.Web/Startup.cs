@@ -23,9 +23,9 @@ namespace Netnr.Blog.Web
 
             //结巴词典路径
             var jbPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
-            if (!System.IO.Directory.Exists(jbPath))
+            if (!Directory.Exists(jbPath))
             {
-                System.IO.Directory.CreateDirectory(jbPath);
+                Directory.CreateDirectory(jbPath);
                 try
                 {
                     var dhost = "https://raw.githubusercontent.com/anderscui/jieba.NET/master/src/Segmenter/Resources/";
@@ -71,6 +71,10 @@ namespace Netnr.Blog.Web
             #endregion
         }
 
+        //配置swagger
+        public string ns = Path.GetFileNameWithoutExtension(System.Reflection.MethodBase.GetCurrentMethod().Module.Name);
+        public string ver = "v1";
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -113,9 +117,9 @@ namespace Netnr.Blog.Web
             //配置swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = $"{GlobalTo.GetValue("Common:EnglishName")} API",
+                    Title = ns,
                     Description = string.Join(" &nbsp; ", new List<string>
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
@@ -189,7 +193,7 @@ namespace Netnr.Blog.Web
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = $"{GlobalTo.GetValue("Common:EnglishName")} API";
+                c.DocumentTitle = ns;
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
                 c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });

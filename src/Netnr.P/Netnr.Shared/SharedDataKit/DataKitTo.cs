@@ -85,6 +85,7 @@ namespace Netnr.SharedDataKit
                             dkto = new DataKitSQLiteTo(new SqliteConnection(conn));
                             break;
                         case SharedEnum.TypeDB.MySQL:
+                        case SharedEnum.TypeDB.MariaDB:
                             dkto = new DataKitMySQLTo(new MySqlConnection(conn));
                             break;
                         case SharedEnum.TypeDB.Oracle:

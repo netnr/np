@@ -181,7 +181,7 @@ var st = {
                         case "word":
                             {
                                 var netnrmd_body = that.gethtml();
-                                $.get("https://code.bdstatic.com/npm/netnrmd@2.6.3/src/netnrmd.css", null, function (netnrmd_style) {
+                                $.get("https://npm.elemecdn.com/netnrmd@2.6.3/src/netnrmd.css", null, function (netnrmd_style) {
                                     var html = `
                                                 <!DOCTYPE html>
                                                 <html>
@@ -201,7 +201,7 @@ var st = {
                                         netnrmd.down(html, 'swagger.html');
                                     }
                                     else if (bv == "word") {
-                                        require(['https://code.bdstatic.com/npm/html-docx-js@0.3.1/dist/html-docx.js'], function (module) {
+                                        require(['https://npm.elemecdn.com/html-docx-js@0.3.1/dist/html-docx.js'], function (module) {
                                             netnrmd.down(module.asBlob(html), "swagger.docx");
                                         });
                                     }
@@ -232,7 +232,7 @@ var st = {
                                     backvm = true;
                                 }
 
-                                require(['https://code.bdstatic.com/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'], function (module) {
+                                require(['https://npm.elemecdn.com/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'], function (module) {
                                     var ch = that.obj.view.clientHeight;
                                     that.obj.view.style.height = 'auto';
                                     module(that.obj.view, {

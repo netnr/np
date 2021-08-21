@@ -41,7 +41,7 @@ namespace Netnr.SharedDataKit
             return tdb switch
             {
                 SharedEnum.TypeDB.SQLite or SharedEnum.TypeDB.SQLServer => $"[{KeyWord}]",
-                SharedEnum.TypeDB.MySQL => $"`{KeyWord}`",
+                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => $"`{KeyWord}`",
                 SharedEnum.TypeDB.Oracle or SharedEnum.TypeDB.PostgreSQL => $"\"{KeyWord}\"",
                 _ => KeyWord,
             };
@@ -58,7 +58,7 @@ namespace Netnr.SharedDataKit
             return tdb switch
             {
                 SharedEnum.TypeDB.SQLite => new SqliteConnection(conn),
-                SharedEnum.TypeDB.MySQL => new MySqlConnection(conn),
+                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => new MySqlConnection(conn),
                 SharedEnum.TypeDB.Oracle => new OracleConnection(conn),
                 SharedEnum.TypeDB.SQLServer => new SqlConnection(conn),
                 SharedEnum.TypeDB.PostgreSQL => new NpgsqlConnection(conn),
@@ -224,6 +224,7 @@ namespace Netnr.SharedDataKit
                         db.BulkBatchSQLite(dt, dt.TableName);
                         break;
                     case SharedEnum.TypeDB.MySQL:
+                    case SharedEnum.TypeDB.MariaDB:
                         db.BulkCopyMySQL(dt, dt.TableName);
                         break;
                     case SharedEnum.TypeDB.Oracle:
@@ -261,6 +262,7 @@ namespace Netnr.SharedDataKit
             switch (tdb)
             {
                 case SharedEnum.TypeDB.MySQL:
+                case SharedEnum.TypeDB.MariaDB:
                     {
                         var cb = new MySqlCommandBuilder();
                         var dbConn = new MySqlConnection(conn);

@@ -3,6 +3,7 @@ using Netnr.Core;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
 using JiebaNet.Segmenter;
+using LinqKit;
 
 namespace Netnr.Blog.Application
 {
@@ -129,10 +130,13 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(KeyWords))
             {
-                new JiebaSegmenter().Cut(KeyWords).ToList().ForEach(k =>
-                {
-                    query = query.Where(x => x.UwTitle.Contains(k) || x.UwContentMd.Contains(k));
-                });
+                var kws = new JiebaSegmenter().Cut(KeyWords).ToList();
+                kws.Add(KeyWords);
+                kws = kws.Distinct().ToList();
+
+                var inner = PredicateBuilder.New<UserWriting>();
+                kws.ForEach(k => inner.Or(x => x.UwTitle.Contains(k) || x.UwContentMd.Contains(k)));
+                query = query.Where(inner);
             }
 
             pag.Total = query.Count();
@@ -750,7 +754,7 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query = query.Where(x => x.RunTheme.Contains(q) || x.RunRemark.Contains(q));
+                query = query.Where(x => x.RunRemark.Contains(q));
             }
 
             var pag = new SharedPaginationVM

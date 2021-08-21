@@ -39,25 +39,5 @@
         /// 备用
         /// </summary>
         public string Spare3 { get; set; }
-        /// <summary>
-        /// 主表ID
-        /// </summary>
-        public string Gid { get; set; }
-        /// <summary>
-        /// 送礼人
-        /// </summary>
-        public string GiverName { get; set; }
-        /// <summary>
-        /// 礼金
-        /// </summary>
-        public decimal? GiftCash { get; set; }
-        /// <summary>
-        /// 礼物
-        /// </summary>
-        public string GiftGoods { get; set; }
-        /// <summary>
-        /// 时间
-        /// </summary>
-        public DateTime? CreateTime { get; set; }
     }
 }

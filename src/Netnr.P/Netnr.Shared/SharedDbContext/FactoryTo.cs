@@ -1,8 +1,8 @@
 ﻿# if Full || DbContext
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Netnr.SharedFast;
 
 namespace Netnr.SharedDbContext
@@ -57,6 +57,7 @@ namespace Netnr.SharedDbContext
 #endif
                         break;
                     case SharedEnum.TypeDB.MySQL:
+                    case SharedEnum.TypeDB.MariaDB:
 #if DbContextMySQL
                         builder.UseMySql(connnectionString, ServerVersion.AutoDetect(connnectionString));
 #endif
@@ -138,6 +139,11 @@ namespace Netnr.SharedDbContext
                     conn = conn.Replace("~", GlobalTo.ContentRootPath);
                 }
 
+                if ((tdb == SharedEnum.TypeDB.MySQL || tdb == SharedEnum.TypeDB.MariaDB) && !conn.Contains("AllowLoadLocalInfile"))
+                {
+                    conn = conn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
+                }
+
                 return conn;
             }
             return null;
@@ -192,7 +198,7 @@ namespace Netnr.SharedDbContext
             return tdb switch
             {
                 SharedEnum.TypeDB.SQLite or SharedEnum.TypeDB.SQLServer => $"[{KeyWord}]",
-                SharedEnum.TypeDB.MySQL => $"`{KeyWord}`",
+                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => $"`{KeyWord}`",
                 SharedEnum.TypeDB.Oracle or SharedEnum.TypeDB.PostgreSQL => $"\"{KeyWord}\"",
                 _ => KeyWord,
             };

@@ -37,7 +37,7 @@ namespace Netnr.DataX.Domain
                     Remark = dbc["remark"].ToString()
                 };
 
-                if (obj.TDB == SharedEnum.TypeDB.MySQL && !obj.Conn.Contains("AllowLoadLocalInfile"))
+                if ((obj.TDB == SharedEnum.TypeDB.MySQL || obj.TDB == SharedEnum.TypeDB.MariaDB) && !obj.Conn.Contains("AllowLoadLocalInfile"))
                 {
                     obj.Conn = obj.Conn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
                 }

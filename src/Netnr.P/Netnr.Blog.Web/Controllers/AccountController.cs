@@ -686,9 +686,9 @@ namespace Netnr.Blog.Web.Controllers
                                         {
                                             var ppath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
-                                            if (!System.IO.Directory.Exists(ppath))
+                                            if (!Directory.Exists(ppath))
                                             {
-                                                System.IO.Directory.CreateDirectory(ppath);
+                                                Directory.CreateDirectory(ppath);
                                             }
 
                                             HttpTo.DownloadSave(HttpTo.HWRequest(avatar), PathTo.Combine(ppath, mo.UserPhoto));

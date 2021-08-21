@@ -17,17 +17,14 @@ MySQL
 - <https://remotemysql.com>
 - <https://www.db4free.net>
 
-SQLServer
-- <https://www.gearhost.com>
-
-PostgresqlSQL
+PostgreSQL
 - <https://www.elephantsql.com>
 
 数据库转换 Database conversion
 - <https://www.convert-in.com>
 - <https://fishcodelib.com/DBMigration.htm>
 
-Csharp
+.NET SQLServer
 - <https://somee.com>
 
 NodeJs

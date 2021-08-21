@@ -21,7 +21,7 @@
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-preview.7.21378.4" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.3" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
-		<PackageReference Include="Npgsql" Version="6.0.0-preview6" />
+		<PackageReference Include="Npgsql" Version="6.0.0-preview7" />
 	</ItemGroup>
 
 	<ItemGroup>

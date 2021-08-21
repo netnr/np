@@ -1753,6 +1753,11 @@
             MySQL
             </summary>
         </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.MariaDB">
+            <summary>
+            MariaDB
+            </summary>
+        </member>
         <member name="F:Netnr.SharedEnum.TypeDB.Oracle">
             <summary>
             Oracle

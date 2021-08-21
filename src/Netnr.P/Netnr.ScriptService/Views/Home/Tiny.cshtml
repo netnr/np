@@ -110,7 +110,7 @@
 
                         var htm = [];
                         htm.push('<tr>');
-                        htm.push('<td><img src="' + rst.base64 + '" style="max-height:20px;max-width:50px" /> <a href="javascript:void(0)" download="' + rst.origin.name + '" >' + rst.origin.name + '</a></td>');
+                        htm.push('<td><img src="' + rst.base64 + '" style="max-height:20px;max-width:50px" /> &nbsp; <a href="javascript:void(0)" download="' + rst.origin.name + '" >' + rst.origin.name + '</a> &nbsp; <a href="javascript:void(0)" target="_blank" >查看</a></td>');
                         htm.push('<td>-' + ratio + '（' + size1 + ' ➜ <span class="text-success">' + size2 + '</span>）</td>');
                         htm.push('</tr>');
                         var tr = $(htm.join(''));

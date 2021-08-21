@@ -53,13 +53,7 @@ public partial class MenuService
         var cdb = DXService.ConsoleReadDatabase(co);
 
         //查询项
-        var queryItems = new List<string>
-            {
-                "环境信息",
-                "库信息",
-                "表信息"
-            };
-        var qi = DXService.ConsoleReadItem("选择查询项：", queryItems, 1);
+        var qi = DXService.ConsoleReadItem("选择查询项：", "环境信息,库信息,表信息".Split(','), 1);
 
         DXService.Log("正在查询，请稍等...\n");
         switch (qi)
@@ -136,6 +130,7 @@ public partial class MenuService
             case SharedEnum.TypeDB.SQLite:
                 break;
             case SharedEnum.TypeDB.MySQL:
+            case SharedEnum.TypeDB.MariaDB:
                 {
                     var drs = db.SqlQuery("SHOW VARIABLES").Tables[0].Select();
 
@@ -330,11 +325,7 @@ public partial class MenuService
 
         var zipPath = DXService.ConsoleReadPath("导入源（zip）：", 1);
 
-        var clearTable = DXService.ConsoleReadItem("导入前删除表数据？", new List<string>()
-            {
-                "不清空表数据",
-                "清空表数据"
-            }, 1) == 2;
+        var clearTable = DXService.ConsoleReadItem("导入前删除表数据？", "不清空表数据,清空表数据".Split(','), 1) == 2;
 
         var vm = DataKitAidTo.DatabaseImport(cdb.TDB, cdb.Conn, zipPath, clearTable, cce =>
          {
@@ -745,6 +736,7 @@ public partial class MenuService
                 ndDB.BulkBatchSQLite(ndDt, cv.NdTableName);
                 break;
             case SharedEnum.TypeDB.MySQL:
+            case SharedEnum.TypeDB.MariaDB:
                 ndDB.BulkCopyMySQL(ndDt, cv.NdTableName);
                 break;
             case SharedEnum.TypeDB.Oracle:

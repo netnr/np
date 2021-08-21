@@ -15,27 +15,31 @@ namespace Netnr
             /// <summary>
             /// Memory
             /// </summary>
-            InMemory = 0,
+            InMemory,
             /// <summary>
             /// SQLite
             /// </summary>
-            SQLite = 1,
+            SQLite,
             /// <summary>
             /// MySQL
             /// </summary>
-            MySQL = 2,
+            MySQL,
+            /// <summary>
+            /// MariaDB
+            /// </summary>
+            MariaDB,
             /// <summary>
             /// Oracle
             /// </summary>
-            Oracle = 3,
+            Oracle,
             /// <summary>
             /// SQLServer
             /// </summary>
-            SQLServer = 4,
+            SQLServer,
             /// <summary>
             /// PostgreSQL
             /// </summary>
-            PostgreSQL = 5
+            PostgreSQL
         }
 
         /// <summary>

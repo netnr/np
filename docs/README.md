@@ -25,7 +25,7 @@ netnr@netnr.com
 
 **ResponseFramework**
 &nbsp; 框架
-&nbsp; https://rf2.netnr.com
+&nbsp; https://rf.netnr.com
 &nbsp; https://netnr-rf.herokuapp.com
 
 **Serverless**
@@ -58,10 +58,6 @@ netnr@netnr.com
 &nbsp; 数据库工具及代码构建
 &nbsp; https://ss.netnr.com/dk
 
-**CaptchaDemo**
-&nbsp; 验证码 Demo
-&nbsp; https://netnr-captcha.herokuapp.com
-
 **Static**
 &nbsp; 个站静态资源
 &nbsp; https://s1.netnr.eu.org
@@ -69,6 +65,7 @@ netnr@netnr.com
 **uuid**
 &nbsp; 一个基于Git托管去中心化的收藏夹，书签
 &nbsp; https://uuid.fun
+&nbsp; https://uuid.netnr.eu.org
 
 **NetnrMD**
 &nbsp; Markdown 编辑器
@@ -91,6 +88,7 @@ netnr@netnr.com
 **Guff**
 &nbsp; 尬服
 &nbsp; https://guff.ltd
+&nbsp; https://guff.netnr.eu.org
 
 **Chat**
 &nbsp; 聊天
@@ -111,7 +109,6 @@ netnr@netnr.com
 **mxGraph**
 &nbsp; mxGraph 镜像
 &nbsp; https://mxgraph.netnr.eu.org
-&nbsp; https://mxgraph.pages.dev
 
 **SiteBoot**
 &nbsp; 站点引导

@@ -15,30 +15,6 @@
         /// </summary>
         public string KeyValue { get; set; }
         /// <summary>
-        /// 键值
-        /// </summary>
-        public string KeyValue1 { get; set; }
-        /// <summary>
-        /// 键值
-        /// </summary>
-        public string KeyValue2 { get; set; }
-        /// <summary>
-        /// 键值
-        /// </summary>
-        public string KeyValue3 { get; set; }
-        /// <summary>
-        /// 键值
-        /// </summary>
-        public string KeyValue4 { get; set; }
-        /// <summary>
-        /// 键值
-        /// </summary>
-        public string KeyValue5 { get; set; }
-        /// <summary>
-        /// 分类
-        /// </summary>
-        public string KeyType { get; set; }
-        /// <summary>
         /// 备注
         /// </summary>
         public string KeyRemark { get; set; }

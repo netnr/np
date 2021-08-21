@@ -78,11 +78,10 @@
         },
 
         tip: function (msg) {
-            jz.alert("")
             if (msg != null) {
-                $('.nrtip').html(msg);
+                ss.loading();
             } else {
-                $('.nrtip').html($('.nrtip').attr('dv'));
+                ss.loading(0);
             }
         },
 
@@ -292,7 +291,7 @@
                 },
                 error: function(e){
                     console.log(e);
-                    pdm.tip("Loading ERROR");
+                    pdm.tip();
                 }
             }, 0);
         },

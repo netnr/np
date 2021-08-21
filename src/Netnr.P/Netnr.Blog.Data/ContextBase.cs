@@ -318,36 +318,17 @@ namespace Netnr.Blog.Data
 
                 entity.HasComment("礼薄明细");
 
-                entity.HasIndex(e => new { e.GrId, e.Gid }, "GiftRecordDetail_Gid");
+                entity.HasIndex(e => e.GrId, "GiftRecordDetail_Gid");
 
                 entity.Property(e => e.GrdId).HasMaxLength(50);
 
-                entity.Property(e => e.CreateTime)
-                    .HasColumnType("datetime")
-                    .HasComment("时间");
-
-                entity.Property(e => e.Gid)
-                    .HasMaxLength(50)
-                    .HasComment("主表ID");
-
-                entity.Property(e => e.GiftCash)
-                    .HasColumnType("money")
-                    .HasComment("礼金");
-
-                entity.Property(e => e.GiftGoods)
-                    .HasMaxLength(255)
-                    .HasComment("礼物");
-
-                entity.Property(e => e.GiverName)
-                    .HasMaxLength(50)
-                    .HasComment("送礼人");
-
                 entity.Property(e => e.GrId)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .HasComment("主表ID");
 
                 entity.Property(e => e.GrdCash)
-                    .HasColumnType("money")
+                    .HasColumnType("decimal(14, 2)")
                     .HasComment("礼金");
 
                 entity.Property(e => e.GrdCreateTime)
@@ -513,15 +494,15 @@ namespace Netnr.Blog.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.GrAudio)
-                    .HasMaxLength(4000)
+                    .HasMaxLength(1000)
                     .HasComment("音频，多个逗号分割");
 
                 entity.Property(e => e.GrContent)
-                    .HasMaxLength(4000)
+                    .HasMaxLength(1000)
                     .HasComment("内容");
 
                 entity.Property(e => e.GrContentMd)
-                    .HasMaxLength(4000)
+                    .HasMaxLength(1000)
                     .HasComment("内容Markdown");
 
                 entity.Property(e => e.GrCreateTime)
@@ -529,11 +510,11 @@ namespace Netnr.Blog.Data
                     .HasComment("初始发布时间");
 
                 entity.Property(e => e.GrFile)
-                    .HasMaxLength(4000)
+                    .HasMaxLength(1000)
                     .HasComment("文件，多个逗号分割");
 
                 entity.Property(e => e.GrImage)
-                    .HasMaxLength(4000)
+                    .HasMaxLength(1000)
                     .HasComment("图片，多个逗号分割");
 
                 entity.Property(e => e.GrLaud).HasComment("点赞数");
@@ -549,7 +530,7 @@ namespace Netnr.Blog.Data
                 entity.Property(e => e.GrReadNum).HasComment("阅读量");
 
                 entity.Property(e => e.GrRemark)
-                    .HasMaxLength(4000)
+                    .HasMaxLength(1000)
                     .HasComment("结束语");
 
                 entity.Property(e => e.GrReplyNum).HasComment("1公开，2私有");
@@ -573,7 +554,7 @@ namespace Netnr.Blog.Data
                     .HasComment("更新时间");
 
                 entity.Property(e => e.GrVideo)
-                    .HasMaxLength(4000)
+                    .HasMaxLength(1000)
                     .HasComment("视频，多个逗号分割");
 
                 entity.Property(e => e.Spare1)
@@ -648,21 +629,7 @@ namespace Netnr.Blog.Data
                     .HasMaxLength(50)
                     .HasComment("备注");
 
-                entity.Property(e => e.KeyType)
-                    .HasMaxLength(50)
-                    .HasComment("分类");
-
                 entity.Property(e => e.KeyValue).HasComment("键值");
-
-                entity.Property(e => e.KeyValue1).HasComment("键值");
-
-                entity.Property(e => e.KeyValue2).HasComment("键值");
-
-                entity.Property(e => e.KeyValue3).HasComment("键值");
-
-                entity.Property(e => e.KeyValue4).HasComment("键值");
-
-                entity.Property(e => e.KeyValue5).HasComment("键值");
 
                 entity.Property(e => e.Spare1)
                     .HasMaxLength(50)

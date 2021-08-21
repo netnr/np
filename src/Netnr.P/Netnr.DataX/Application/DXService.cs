@@ -73,7 +73,7 @@ namespace Netnr.DataX.Application
             {
             Flag2:
                 Console.Write($"数据库连接信息（MySQL => Conn）：");
-                var tc = Console.ReadLine().Trim().Split("=>");
+                var tc = Console.ReadLine().Trim().Split(" => ");
                 if (Enum.TryParse(tc[0], true, out SharedEnum.TypeDB tdb))
                 {
                     mo.TDB = tdb;
@@ -118,6 +118,10 @@ namespace Netnr.DataX.Application
             if (!string.IsNullOrWhiteSpace(dv))
             {
                 dtip = $"{tip.TrimEnd('：').TrimEnd(':')}（默认 {dv}）：";
+            }
+            else
+            {
+                dtip += tip;
             }
 
             Console.Write(dtip);

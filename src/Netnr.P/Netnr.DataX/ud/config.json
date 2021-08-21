@@ -1,12 +1,51 @@
 ﻿{
-    //表映射完整匹配（默认忽略符号、大小写）
-    "mapping-table-full-match": false,
-    //列映射完整匹配（默认忽略符号、大小写）
-    "mapping-column-full-match": false,
-    //连接信息
-    "db-conn": [{
-        "type": "SQLite",
-        "conn": "Data Source=D:\\tmp\\tmp.db",
-        "remark": "Local tmp"
-    }]
+  //表映射完整匹配（默认忽略符号、大小写）
+  "mapping-table-full-match": false,
+
+  //列映射完整匹配（默认忽略符号、大小写）
+  "mapping-column-full-match": false,
+
+  //连接信息
+  "db-conn": [
+    {
+      "type": "Oracle",
+      "conn": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.100.115)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=SMECQ",
+      "remark": "100.115 Oracle CQSME"
+    },
+    {
+      "type": "MySQL",
+      "conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME",
+      "remark": "100.115 MySQL CQSME"
+    },
+    {
+      "type": "MySQL",
+      "conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=tmp",
+      "remark": "100.115 MySQL tmp"
+    },
+    {
+      "type": "MySQL",
+      "conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=cqsme_platform_main",
+      "remark": "100.115 MySQL cqsme_platform_main"
+    },
+    {
+      "type": "MySQL",
+      "conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=diff-main",
+      "remark": "100.115 MySQL diff-main"
+    },
+    {
+      "type": "SQLServer",
+      "conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME",
+      "remark": "100.115 SQLServer CQSME"
+    },
+    {
+      "type": "PostgreSQL",
+      "conn": "Host=192.168.100.115;Username=postgres;Password=Abc123....;Database=tmpdb",
+      "remark": "100.115 PostgreSQL tmpdb"
+    },
+    {
+      "type": "SQLite",
+      "conn": "Data Source=D:\\tmp\\tmp.db",
+      "remark": "Local tmp"
+    }
+  ]
 }
