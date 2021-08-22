@@ -209,7 +209,7 @@ var st = {
                             }
                             break;
                         case "pdf":
-                            require(['https://cdn.netnr.eu.org/libs/html2pdf/0.9.3/html2pdf.bundle.min.js'], function (module) {
+                            require(['https://s1.netnr.com/libs/html2pdf/0.9.3/html2pdf.bundle.min.js'], function (module) {
                                 var ch = that.obj.view.clientHeight;
                                 that.obj.view.style.height = 'auto';
                                 var vm = that.obj.viewmodel;

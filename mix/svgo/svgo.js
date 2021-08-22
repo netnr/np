@@ -35105,7 +35105,8 @@ const stringifyArgs = ({
     if (
       disableSpaceAfterFlags &&
       (command === 'A' || command === 'a') &&
-      (i === 4 || i === 5)
+      // consider combined arcs
+      (i % 7 === 4 || i % 7 === 5)
     ) {
       result += numberString;
     } else if (i === 0 || numberString.startsWith('-')) {
@@ -35188,19 +35189,13 @@ exports.stringifyPathData = stringifyPathData;
 const stable = require('stable');
 const csstree = require('css-tree');
 const specificity = require('csso/lib/restructure/prepare/specificity');
-const { selectAll, is } = require('css-select');
-const svgoCssSelectAdapter = require('./svgo/css-select-adapter.js');
+const { visit, matches } = require('./xast.js');
 const { compareSpecificity } = require('./css-tools.js');
 const {
   attrsGroups,
   inheritableAttrs,
   presentationNonInheritableGroupAttrs,
 } = require('../plugins/_collections.js');
-
-const cssSelectOptions = {
-  xmlMode: true,
-  adapter: svgoCssSelectAdapter,
-};
 
 const parseRule = (ruleNode, dynamic) => {
   let selectors;
@@ -35261,7 +35256,7 @@ const parseStylesheet = (css, dynamic) => {
   return rules;
 };
 
-const computeOwnStyle = (node, stylesheet) => {
+const computeOwnStyle = (stylesheet, node) => {
   const computedStyle = {};
   const importantStyles = new Map();
 
@@ -35275,7 +35270,7 @@ const computeOwnStyle = (node, stylesheet) => {
 
   // collect matching rules
   for (const { selectors, declarations, dynamic } of stylesheet) {
-    if (is(node, selectors, cssSelectOptions)) {
+    if (matches(node, selectors)) {
       for (const { name, value, important } of declarations) {
         const computed = computedStyle[name];
         if (computed && computed.type === 'dynamic') {
@@ -35317,43 +35312,45 @@ const computeOwnStyle = (node, stylesheet) => {
   return computedStyle;
 };
 
-const computeStyle = (node) => {
-  // find root
-  let root = node;
-  while (root.parentNode) {
-    root = root.parentNode;
-  }
-  // find all styles
-  const styleNodes = selectAll('style', root, cssSelectOptions);
-  // parse all styles
+const collectStylesheet = (root) => {
   const stylesheet = [];
-  for (const styleNode of styleNodes) {
-    const dynamic =
-      styleNode.attributes.media != null &&
-      styleNode.attributes.media !== 'all';
-    if (
-      styleNode.attributes.type == null ||
-      styleNode.attributes.type === '' ||
-      styleNode.attributes.type === 'text/css'
-    ) {
-      const children = styleNode.children;
-      for (const child of children) {
-        if (child.type === 'text' || child.type === 'cdata') {
-          stylesheet.push(...parseStylesheet(child.value, dynamic));
+  // find and parse all styles
+  visit(root, {
+    element: {
+      enter: (node) => {
+        if (node.name === 'style') {
+          const dynamic =
+            node.attributes.media != null && node.attributes.media !== 'all';
+          if (
+            node.attributes.type == null ||
+            node.attributes.type === '' ||
+            node.attributes.type === 'text/css'
+          ) {
+            const children = node.children;
+            for (const child of children) {
+              if (child.type === 'text' || child.type === 'cdata') {
+                stylesheet.push(...parseStylesheet(child.value, dynamic));
+              }
+            }
+          }
         }
-      }
-    }
-  }
+      },
+    },
+  });
   // sort by selectors specificity
   stable.inplace(stylesheet, (a, b) =>
     compareSpecificity(a.specificity, b.specificity)
   );
+  return stylesheet;
+};
+exports.collectStylesheet = collectStylesheet;
 
+const computeStyle = (stylesheet, node) => {
   // collect inherited styles
-  const computedStyles = computeOwnStyle(node, stylesheet);
+  const computedStyles = computeOwnStyle(stylesheet, node);
   let parent = node;
   while (parent.parentNode && parent.parentNode.type !== 'root') {
-    const inheritedStyles = computeOwnStyle(parent.parentNode, stylesheet);
+    const inheritedStyles = computeOwnStyle(stylesheet, parent.parentNode);
     for (const [name, computed] of Object.entries(inheritedStyles)) {
       if (
         computedStyles[name] == null &&
@@ -35371,7 +35368,7 @@ const computeStyle = (node) => {
 };
 exports.computeStyle = computeStyle;
 
-},{"../plugins/_collections.js":229,"./css-tools.js":213,"./svgo/css-select-adapter.js":220,"css-select":14,"css-tree":39,"csso/lib/restructure/prepare/specificity":176,"stable":212}],216:[function(require,module,exports){
+},{"../plugins/_collections.js":229,"./css-tools.js":213,"./xast.js":227,"css-tree":39,"csso/lib/restructure/prepare/specificity":176,"stable":212}],216:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -35439,7 +35436,7 @@ const {
 } = require('./svgo/config.js');
 const svg2js = require('./svgo/svg2js.js');
 const js2svg = require('./svgo/js2svg.js');
-const invokePlugins = require('./svgo/plugins.js');
+const { invokePlugins } = require('./svgo/plugins.js');
 const JSAPI = require('./svgo/jsAPI.js');
 const { encodeSVGDatauri } = require('./svgo/tools.js');
 
@@ -35474,10 +35471,12 @@ const optimize = (input, config) => {
         "Invalid plugins list. Provided 'plugins' in config should be an array."
       );
     }
-    const resolvedPlugins = plugins.map((plugin) =>
-      resolvePluginConfig(plugin, config)
-    );
-    svgjs = invokePlugins(svgjs, info, resolvedPlugins);
+    const resolvedPlugins = plugins.map(resolvePluginConfig);
+    const globalOverrides = {};
+    if (config.floatPrecision != null) {
+      globalOverrides.floatPrecision = config.floatPrecision;
+    }
+    svgjs = invokePlugins(svgjs, info, resolvedPlugins, null, globalOverrides);
     svgjs = js2svg(svgjs, config.js2svg);
     if (svgjs.error) {
       throw Error(svgjs.error);
@@ -35571,12 +35570,30 @@ const defaultPlugins = pluginsOrder.filter((name) => pluginsMap[name].active);
 exports.defaultPlugins = defaultPlugins;
 
 const extendDefaultPlugins = (plugins) => {
+  console.warn(
+    '\n"extendDefaultPlugins" utility is deprecated.\n' +
+      'Use "preset-default" plugin with overrides instead.\n' +
+      'For example:\n' +
+      `{\n` +
+      `  name: 'preset-default',\n` +
+      `  params: {\n` +
+      `    overrides: {\n` +
+      `      // customize plugin options\n` +
+      `      convertShapeToPath: {\n` +
+      `        convertArcs: true\n` +
+      `      },\n` +
+      `      // disable plugins\n` +
+      `      convertPathData: false\n` +
+      `    }\n` +
+      `  }\n` +
+      `}\n`
+  );
   const extendedPlugins = pluginsOrder.map((name) => ({
     name,
     active: pluginsMap[name].active,
   }));
   for (const plugin of plugins) {
-    const resolvedPlugin = resolvePluginConfig(plugin, {});
+    const resolvedPlugin = resolvePluginConfig(plugin);
     const index = pluginsOrder.indexOf(resolvedPlugin.name);
     if (index === -1) {
       extendedPlugins.push(plugin);
@@ -35588,11 +35605,8 @@ const extendDefaultPlugins = (plugins) => {
 };
 exports.extendDefaultPlugins = extendDefaultPlugins;
 
-const resolvePluginConfig = (plugin, config) => {
+const resolvePluginConfig = (plugin) => {
   let configParams = {};
-  if ('floatPrecision' in config) {
-    configParams.floatPrecision = config.floatPrecision;
-  }
   if (typeof plugin === 'string') {
     // resolve builtin plugin specified as string
     const pluginConfig = pluginsMap[plugin];
@@ -36727,12 +36741,12 @@ JSAPI.prototype.addAttr = function (attr) {
 
   if (attr.name === 'class') {
     // newly added class attribute
-    this.class.hasClass();
+    this.class.addClassValueHandler();
   }
 
   if (attr.name === 'style') {
     // newly added style attribute
-    this.style.hasStyle();
+    this.style.addStyleValueHandler();
   }
 
   return this.attrs[attr.name];
@@ -36819,47 +36833,40 @@ const { visit } = require('../xast.js');
  *
  * @module plugins
  *
- * @param {Object} data input data
+ * @param {Object} ast input ast
  * @param {Object} info extra information
  * @param {Array} plugins plugins object from config
- * @return {Object} output data
+ * @return {Object} output ast
  */
-module.exports = function (data, info, plugins) {
-  // Try to group sequential elements of plugins array
-  // to optimize ast traversing
-  const groups = [];
-  let prev;
+const invokePlugins = (ast, info, plugins, overrides, globalOverrides) => {
   for (const plugin of plugins) {
-    if (prev && plugin.type == prev[0].type) {
-      prev.push(plugin);
-    } else {
-      prev = [plugin];
-      groups.push(prev);
+    const override = overrides == null ? null : overrides[plugin.name];
+    if (override === false) {
+      continue;
+    }
+    const params = { ...plugin.params, ...globalOverrides, ...override };
+
+    if (plugin.type === 'perItem') {
+      ast = perItem(ast, info, plugin, params);
+    }
+    if (plugin.type === 'perItemReverse') {
+      ast = perItem(ast, info, plugin, params, true);
+    }
+    if (plugin.type === 'full') {
+      if (plugin.active) {
+        ast = plugin.fn(ast, params, info);
+      }
+    }
+    if (plugin.type === 'visitor') {
+      if (plugin.active) {
+        const visitor = plugin.fn(ast, params, info);
+        visit(ast, visitor);
+      }
     }
   }
-  for (const group of groups) {
-    switch (group[0].type) {
-      case 'perItem':
-        data = perItem(data, info, group);
-        break;
-      case 'perItemReverse':
-        data = perItem(data, info, group, true);
-        break;
-      case 'full':
-        data = full(data, info, group);
-        break;
-      case 'visitor':
-        for (const plugin of group) {
-          if (plugin.active) {
-            const visitor = plugin.fn(data, plugin.params, info);
-            visit(data, visitor);
-          }
-        }
-        break;
-    }
-  }
-  return data;
+  return ast;
 };
+exports.invokePlugins = invokePlugins;
 
 /**
  * Direct or reverse per-item loop.
@@ -36870,56 +36877,44 @@ module.exports = function (data, info, plugins) {
  * @param {boolean} [reverse] reverse pass?
  * @return {Object} output data
  */
-function perItem(data, info, plugins, reverse) {
+function perItem(data, info, plugin, params, reverse) {
   function monkeys(items) {
     items.children = items.children.filter(function (item) {
       // reverse pass
       if (reverse && item.children) {
         monkeys(item);
       }
-
       // main filter
-      var filter = true;
-
-      for (var i = 0; filter && i < plugins.length; i++) {
-        var plugin = plugins[i];
-
-        if (plugin.active && plugin.fn(item, plugin.params, info) === false) {
-          filter = false;
-        }
+      let kept = true;
+      if (plugin.active) {
+        kept = plugin.fn(item, params, info) !== false;
       }
-
       // direct pass
       if (!reverse && item.children) {
         monkeys(item);
       }
-
-      return filter;
+      return kept;
     });
-
     return items;
   }
-
   return monkeys(data);
 }
 
-/**
- * "Full" plugins.
- *
- * @param {Object} data input data
- * @param {Object} info extra information
- * @param {Array} plugins plugins list to process
- * @return {Object} output data
- */
-function full(data, info, plugins) {
-  plugins.forEach(function (plugin) {
-    if (plugin.active) {
-      data = plugin.fn(data, plugin.params, info);
-    }
-  });
-
-  return data;
-}
+const createPreset = ({ name, plugins }) => {
+  return {
+    name,
+    type: 'full',
+    fn: (ast, params, info) => {
+      const { floatPrecision, overrides } = params;
+      const globalOverrides = {};
+      if (floatPrecision != null) {
+        globalOverrides.floatPrecision = floatPrecision;
+      }
+      return invokePlugins(ast, info, plugins, overrides, globalOverrides);
+    },
+  };
+};
+exports.createPreset = createPreset;
 
 },{"../xast.js":227}],225:[function(require,module,exports){
 'use strict';
@@ -37109,16 +37104,6 @@ exports.decodeSVGDatauri = function (str) {
 };
 
 /**
- * @param {any[]} a
- * @param {any[]} b
- */
-exports.intersectArrays = function (a, b) {
-  return a.filter(function (n) {
-    return b.indexOf(n) > -1;
-  });
-};
-
-/**
  * Convert a row of numbers to an optimized string view.
  *
  * @example
@@ -37279,34 +37264,33 @@ const traverse = (node, fn) => {
 };
 exports.traverse = traverse;
 
-const visit = (node, visitor) => {
+const visit = (node, visitor, parentNode = null) => {
   const callbacks = visitor[node.type];
   if (callbacks && callbacks.enter) {
-    callbacks.enter(node);
+    callbacks.enter(node, parentNode);
   }
   // visit root children
   if (node.type === 'root') {
     // copy children array to not loose cursor when children is spliced
     for (const child of node.children) {
-      visit(child, visitor);
+      visit(child, visitor, node);
     }
   }
   // visit element children if still attached to parent
   if (node.type === 'element') {
-    if (node.parentNode.children.includes(node)) {
+    if (parentNode.children.includes(node)) {
       for (const child of node.children) {
-        visit(child, visitor);
+        visit(child, visitor, node);
       }
     }
   }
   if (callbacks && callbacks.exit) {
-    callbacks.exit(node);
+    callbacks.exit(node, parentNode);
   }
 };
 exports.visit = visit;
 
-const detachNodeFromParent = (node) => {
-  const parentNode = node.parentNode;
+const detachNodeFromParent = (node, parentNode) => {
   // avoid splice to not break for loops
   parentNode.children = parentNode.children.filter((child) => child !== node);
 };
@@ -37636,6 +37620,11 @@ const applyMatrixToPathData = (pathData, matrix) => {
       const [x, y] = transformRelativePoint(matrix, args[5], args[6]);
       args[5] = x;
       args[6] = y;
+    }
+
+    if (command === 'z' || command === 'Z') {
+      cursor[0] = start[0];
+      cursor[1] = start[1];
     }
 
     pathItem.instruction = command;
@@ -40939,6 +40928,8 @@ function multiplyTransformMatrices(a, b) {
 
 const { closestByName } = require('../lib/xast.js');
 
+exports.name = 'addAttributesToSVGElement';
+
 exports.type = 'perItem';
 
 exports.active = false;
@@ -41022,6 +41013,8 @@ exports.fn = (node, params) => {
 },{"../lib/xast.js":227}],233:[function(require,module,exports){
 'use strict';
 
+exports.name = 'addClassesToSVGElement';
+
 exports.type = 'full';
 
 exports.active = false;
@@ -41079,61 +41072,60 @@ exports.fn = function (data, params) {
 },{}],234:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
-
+exports.name = 'cleanupAttrs';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description =
   'cleanups attributes from newlines, trailing and repeating spaces';
 
-exports.params = {
-  newlines: true,
-  trim: true,
-  spaces: true,
-};
-
-var regNewlinesNeedSpace = /(\S)\r?\n(\S)/g,
-  regNewlines = /\r?\n/g,
-  regSpaces = /\s{2,}/g;
+const regNewlinesNeedSpace = /(\S)\r?\n(\S)/g;
+const regNewlines = /\r?\n/g;
+const regSpaces = /\s{2,}/g;
 
 /**
  * Cleanup attributes values from newlines, trailing and repeating spaces.
  *
- * @param {Object} item current iteration item
- * @param {Object} params plugin params
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Kir Belevich
  */
-exports.fn = function (item, params) {
-  if (item.type === 'element') {
-    for (const name of Object.keys(item.attributes)) {
-      if (params.newlines) {
-        // new line which requires a space instead of themselve
-        item.attributes[name] = item.attributes[name].replace(
-          regNewlinesNeedSpace,
-          (match, p1, p2) => p1 + ' ' + p2
-        );
-
-        // simple new line
-        item.attributes[name] = item.attributes[name].replace(regNewlines, '');
-      }
-
-      if (params.trim) {
-        item.attributes[name] = item.attributes[name].trim();
-      }
-
-      if (params.spaces) {
-        item.attributes[name] = item.attributes[name].replace(regSpaces, ' ');
-      }
-    }
-  }
+exports.fn = (root, params) => {
+  const { newlines = true, trim = true, spaces = true } = params;
+  return {
+    element: {
+      enter: (node) => {
+        for (const name of Object.keys(node.attributes)) {
+          if (newlines) {
+            // new line which requires a space instead of themselve
+            node.attributes[name] = node.attributes[name].replace(
+              regNewlinesNeedSpace,
+              (match, p1, p2) => p1 + ' ' + p2
+            );
+            // simple new line
+            node.attributes[name] = node.attributes[name].replace(
+              regNewlines,
+              ''
+            );
+          }
+          if (trim) {
+            node.attributes[name] = node.attributes[name].trim();
+          }
+          if (spaces) {
+            node.attributes[name] = node.attributes[name].replace(
+              regSpaces,
+              ' '
+            );
+          }
+        }
+      },
+    },
+  };
 };
 
 },{}],235:[function(require,module,exports){
 'use strict';
 
 const { traverse } = require('../lib/xast.js');
+
+exports.name = 'cleanupEnableBackground';
 
 exports.type = 'full';
 
@@ -41210,6 +41202,8 @@ exports.fn = function (root) {
 
 const { traverse, traverseBreak } = require('../lib/xast.js');
 const { parseName } = require('../lib/svgo/tools.js');
+
+exports.name = 'cleanupIDs';
 
 exports.type = 'full';
 
@@ -41488,6 +41482,8 @@ function getIDstring(arr, params) {
 
 const { removeLeadingZero } = require('../lib/svgo/tools.js');
 
+exports.name = 'cleanupListOfValues';
+
 exports.type = 'perItem';
 
 exports.active = false;
@@ -41628,6 +41624,8 @@ exports.fn = function (item, params) {
 },{"../lib/svgo/tools.js":226}],238:[function(require,module,exports){
 'use strict';
 
+exports.name = 'cleanupNumericValues';
+
 exports.type = 'perItem';
 
 exports.active = true;
@@ -41723,6 +41721,8 @@ exports.fn = function (item, params) {
 'use strict';
 
 const { inheritableAttrs, elemsGroups } = require('./_collections');
+
+exports.name = 'collapseGroups';
 
 exports.type = 'perItemReverse';
 
@@ -41826,6 +41826,8 @@ exports.fn = function (item) {
 
 },{"./_collections":229}],240:[function(require,module,exports){
 'use strict';
+
+exports.name = 'convertColors';
 
 exports.type = 'perItem';
 
@@ -41957,10 +41959,9 @@ function rgb2hex(rgb) {
 },{"./_collections":229}],241:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
-
+exports.name = 'convertEllipseToCircle';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'converts non-eccentric <ellipse>s to <circle>s';
 
 /**
@@ -41968,39 +41969,42 @@ exports.description = 'converts non-eccentric <ellipse>s to <circle>s';
  *
  * @see https://www.w3.org/TR/SVG11/shapes.html
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Taylor Hunt
  */
-exports.fn = function (item) {
-  if (item.isElem('ellipse')) {
-    const rx = item.attributes.rx || 0;
-    const ry = item.attributes.ry || 0;
-
-    if (
-      rx === ry ||
-      rx === 'auto' ||
-      ry === 'auto' // SVG2
-    ) {
-      var radius = rx !== 'auto' ? rx : ry;
-      item.renameElem('circle');
-      delete item.attributes.rx;
-      delete item.attributes.ry;
-      item.attributes.r = radius;
-    }
-  }
+exports.fn = () => {
+  return {
+    element: {
+      enter: (node) => {
+        if (node.name === 'ellipse') {
+          const rx = node.attributes.rx || 0;
+          const ry = node.attributes.ry || 0;
+          if (
+            rx === ry ||
+            rx === 'auto' ||
+            ry === 'auto' // SVG2
+          ) {
+            node.name = 'circle';
+            const radius = rx === 'auto' ? ry : rx;
+            delete node.attributes.rx;
+            delete node.attributes.ry;
+            node.attributes.r = radius;
+          }
+        }
+      },
+    },
+  };
 };
 
 },{}],242:[function(require,module,exports){
 'use strict';
 
-const { computeStyle } = require('../lib/style.js');
+const { collectStylesheet, computeStyle } = require('../lib/style.js');
 const { pathElems } = require('./_collections.js');
 const { path2js, js2path } = require('./_path.js');
 const { applyTransforms } = require('./_applyTransforms.js');
 const { cleanupOutData } = require('../lib/svgo/tools');
 
+exports.name = 'convertPathData';
 exports.type = 'visitor';
 exports.active = true;
 exports.description =
@@ -42050,11 +42054,12 @@ let arcTolerance;
  * @author Kir Belevich
  */
 exports.fn = (root, params) => {
+  const stylesheet = collectStylesheet(root);
   return {
     element: {
       enter: (node) => {
         if (pathElems.includes(node.name) && node.attributes.d != null) {
-          const computedStyle = computeStyle(node);
+          const computedStyle = computeStyle(stylesheet, node);
           precision = params.floatPrecision;
           error =
             precision !== false
@@ -43000,17 +43005,12 @@ function data2Path(params, pathData) {
 'use strict';
 
 const { stringifyPathData } = require('../lib/path.js');
+const { detachNodeFromParent } = require('../lib/xast.js');
 
-exports.type = 'perItem';
-
+exports.name = 'convertShapeToPath';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'converts basic shapes to more compact path form';
-
-exports.params = {
-  convertArcs: false,
-  floatPrecision: null,
-};
 
 const regNumber = /[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?/g;
 
@@ -43021,130 +43021,143 @@ const regNumber = /[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?/g;
  *
  * @see https://www.w3.org/TR/SVG11/shapes.html
  *
- * @param {Object} item current iteration item
- * @param {Object} params plugin params
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Lev Solntsev
  */
-exports.fn = function (item, params) {
-  const precision = params ? params.floatPrecision : null;
-  const convertArcs = params && params.convertArcs;
+exports.fn = (root, params) => {
+  const { convertArcs = false, floatPrecision: precision = null } = params;
 
-  if (
-    item.isElem('rect') &&
-    item.attributes.width != null &&
-    item.attributes.height != null &&
-    item.attributes.rx == null &&
-    item.attributes.ry == null
-  ) {
-    const x = Number(item.attributes.x || '0');
-    const y = Number(item.attributes.y || '0');
-    const width = Number(item.attributes.width);
-    const height = Number(item.attributes.height);
-    // Values like '100%' compute to NaN, thus running after
-    // cleanupNumericValues when 'px' units has already been removed.
-    // TODO: Calculate sizes from % and non-px units if possible.
-    if (isNaN(x - y + width - height)) return;
-    const pathData = [
-      { command: 'M', args: [x, y] },
-      { command: 'H', args: [x + width] },
-      { command: 'V', args: [y + height] },
-      { command: 'H', args: [x] },
-      { command: 'z', args: [] },
-    ];
-    item.attributes.d = stringifyPathData({ pathData, precision });
-    item.renameElem('path');
-    delete item.attributes.x;
-    delete item.attributes.y;
-    delete item.attributes.width;
-    delete item.attributes.height;
-  }
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        // convert rect to path
+        if (
+          node.name === 'rect' &&
+          node.attributes.width != null &&
+          node.attributes.height != null &&
+          node.attributes.rx == null &&
+          node.attributes.ry == null
+        ) {
+          const x = Number(node.attributes.x || '0');
+          const y = Number(node.attributes.y || '0');
+          const width = Number(node.attributes.width);
+          const height = Number(node.attributes.height);
+          // Values like '100%' compute to NaN, thus running after
+          // cleanupNumericValues when 'px' units has already been removed.
+          // TODO: Calculate sizes from % and non-px units if possible.
+          if (Number.isNaN(x - y + width - height)) return;
+          const pathData = [
+            { command: 'M', args: [x, y] },
+            { command: 'H', args: [x + width] },
+            { command: 'V', args: [y + height] },
+            { command: 'H', args: [x] },
+            { command: 'z', args: [] },
+          ];
+          node.name = 'path';
+          node.attributes.d = stringifyPathData({ pathData, precision });
+          delete node.attributes.x;
+          delete node.attributes.y;
+          delete node.attributes.width;
+          delete node.attributes.height;
+        }
 
-  if (item.isElem('line')) {
-    const x1 = Number(item.attributes.x1 || '0');
-    const y1 = Number(item.attributes.y1 || '0');
-    const x2 = Number(item.attributes.x2 || '0');
-    const y2 = Number(item.attributes.y2 || '0');
-    if (isNaN(x1 - y1 + x2 - y2)) return;
-    const pathData = [
-      { command: 'M', args: [x1, y1] },
-      { command: 'L', args: [x2, y2] },
-    ];
-    item.attributes.d = stringifyPathData({ pathData, precision });
-    item.renameElem('path');
-    delete item.attributes.x1;
-    delete item.attributes.y1;
-    delete item.attributes.x2;
-    delete item.attributes.y2;
-  }
+        // convert line to path
+        if (node.name === 'line') {
+          const x1 = Number(node.attributes.x1 || '0');
+          const y1 = Number(node.attributes.y1 || '0');
+          const x2 = Number(node.attributes.x2 || '0');
+          const y2 = Number(node.attributes.y2 || '0');
+          if (Number.isNaN(x1 - y1 + x2 - y2)) return;
+          const pathData = [
+            { command: 'M', args: [x1, y1] },
+            { command: 'L', args: [x2, y2] },
+          ];
+          node.name = 'path';
+          node.attributes.d = stringifyPathData({ pathData, precision });
+          delete node.attributes.x1;
+          delete node.attributes.y1;
+          delete node.attributes.x2;
+          delete node.attributes.y2;
+        }
 
-  if (
-    (item.isElem('polyline') || item.isElem('polygon')) &&
-    item.attributes.points != null
-  ) {
-    const coords = (item.attributes.points.match(regNumber) || []).map(Number);
-    if (coords.length < 4) return false;
-    const pathData = [];
-    for (let i = 0; i < coords.length; i += 2) {
-      pathData.push({
-        command: i === 0 ? 'M' : 'L',
-        args: coords.slice(i, i + 2),
-      });
-    }
-    if (item.isElem('polygon')) {
-      pathData.push({ command: 'z', args: [] });
-    }
-    item.attributes.d = stringifyPathData({ pathData, precision });
-    item.renameElem('path');
-    delete item.attributes.points;
-  }
+        // convert polyline and polygon to path
+        if (
+          (node.name === 'polyline' || node.name === 'polygon') &&
+          node.attributes.points != null
+        ) {
+          const coords = (node.attributes.points.match(regNumber) || []).map(
+            Number
+          );
+          if (coords.length < 4) {
+            detachNodeFromParent(node, parentNode);
+            return;
+          }
+          const pathData = [];
+          for (let i = 0; i < coords.length; i += 2) {
+            pathData.push({
+              command: i === 0 ? 'M' : 'L',
+              args: coords.slice(i, i + 2),
+            });
+          }
+          if (node.name === 'polygon') {
+            pathData.push({ command: 'z', args: [] });
+          }
+          node.name = 'path';
+          node.attributes.d = stringifyPathData({ pathData, precision });
+          delete node.attributes.points;
+        }
 
-  if (item.isElem('circle') && convertArcs) {
-    const cx = Number(item.attributes.cx || '0');
-    const cy = Number(item.attributes.cy || '0');
-    const r = Number(item.attributes.r || '0');
-    if (isNaN(cx - cy + r)) {
-      return;
-    }
-    const pathData = [
-      { command: 'M', args: [cx, cy - r] },
-      { command: 'A', args: [r, r, 0, 1, 0, cx, cy + r] },
-      { command: 'A', args: [r, r, 0, 1, 0, cx, cy - r] },
-      { command: 'z', args: [] },
-    ];
-    item.attributes.d = stringifyPathData({ pathData, precision });
-    item.renameElem('path');
-    delete item.attributes.cx;
-    delete item.attributes.cy;
-    delete item.attributes.r;
-  }
+        //  optionally convert circle
+        if (node.name === 'circle' && convertArcs) {
+          const cx = Number(node.attributes.cx || '0');
+          const cy = Number(node.attributes.cy || '0');
+          const r = Number(node.attributes.r || '0');
+          if (Number.isNaN(cx - cy + r)) {
+            return;
+          }
+          const pathData = [
+            { command: 'M', args: [cx, cy - r] },
+            { command: 'A', args: [r, r, 0, 1, 0, cx, cy + r] },
+            { command: 'A', args: [r, r, 0, 1, 0, cx, cy - r] },
+            { command: 'z', args: [] },
+          ];
+          node.name = 'path';
+          node.attributes.d = stringifyPathData({ pathData, precision });
+          delete node.attributes.cx;
+          delete node.attributes.cy;
+          delete node.attributes.r;
+        }
 
-  if (item.isElem('ellipse') && convertArcs) {
-    const ecx = Number(item.attributes.cx || '0');
-    const ecy = Number(item.attributes.cy || '0');
-    const rx = Number(item.attributes.rx || '0');
-    const ry = Number(item.attributes.ry || '0');
-    if (isNaN(ecx - ecy + rx - ry)) {
-      return;
-    }
-    const pathData = [
-      { command: 'M', args: [ecx, ecy - ry] },
-      { command: 'A', args: [rx, ry, 0, 1, 0, ecx, ecy + ry] },
-      { command: 'A', args: [rx, ry, 0, 1, 0, ecx, ecy - ry] },
-      { command: 'z', args: [] },
-    ];
-    item.attributes.d = stringifyPathData({ pathData, precision });
-    item.renameElem('path');
-    delete item.attributes.cx;
-    delete item.attributes.cy;
-    delete item.attributes.rx;
-    delete item.attributes.ry;
-  }
+        // optionally covert ellipse
+        if (node.name === 'ellipse' && convertArcs) {
+          const ecx = Number(node.attributes.cx || '0');
+          const ecy = Number(node.attributes.cy || '0');
+          const rx = Number(node.attributes.rx || '0');
+          const ry = Number(node.attributes.ry || '0');
+          if (Number.isNaN(ecx - ecy + rx - ry)) {
+            return;
+          }
+          const pathData = [
+            { command: 'M', args: [ecx, ecy - ry] },
+            { command: 'A', args: [rx, ry, 0, 1, 0, ecx, ecy + ry] },
+            { command: 'A', args: [rx, ry, 0, 1, 0, ecx, ecy - ry] },
+            { command: 'z', args: [] },
+          ];
+          node.name = 'path';
+          node.attributes.d = stringifyPathData({ pathData, precision });
+          delete node.attributes.cx;
+          delete node.attributes.cy;
+          delete node.attributes.rx;
+          delete node.attributes.ry;
+        }
+      },
+    },
+  };
 };
 
-},{"../lib/path.js":214}],244:[function(require,module,exports){
+},{"../lib/path.js":214,"../lib/xast.js":227}],244:[function(require,module,exports){
 'use strict';
+
+exports.name = 'convertStyleToAttrs';
 
 exports.type = 'perItem';
 
@@ -43277,6 +43290,8 @@ function g() {
 
 },{"./_collections":229}],245:[function(require,module,exports){
 'use strict';
+
+exports.name = 'convertTransform';
 
 exports.type = 'perItem';
 
@@ -43658,6 +43673,8 @@ const csstree = require('css-tree');
 const { querySelectorAll, closestByName } = require('../lib/xast.js');
 const cssTools = require('../lib/css-tools');
 
+exports.name = 'inlineStyles';
+
 exports.type = 'full';
 
 exports.active = true;
@@ -43934,9 +43951,10 @@ exports.fn = function (root, opts) {
 'use strict';
 
 const { detachNodeFromParent } = require('../lib/xast.js');
-const { computeStyle } = require('../lib/style.js');
+const { collectStylesheet, computeStyle } = require('../lib/style.js');
 const { path2js, js2path, intersects } = require('./_path.js');
 
+exports.name = 'mergePaths';
 exports.type = 'visitor';
 exports.active = true;
 exports.description = 'merges multiple paths in one if possible';
@@ -43955,6 +43973,7 @@ exports.fn = (root, params) => {
     floatPrecision,
     noSpaceAfterFlags = false, // a20 60 45 0 1 30 20 → a20 60 45 0130 20
   } = params;
+  const stylesheet = collectStylesheet(root);
 
   return {
     element: {
@@ -43986,7 +44005,7 @@ exports.fn = (root, params) => {
           }
 
           // preserve paths with markers
-          const computedStyle = computeStyle(child);
+          const computedStyle = computeStyle(stylesheet, child);
           if (
             computedStyle['marker-start'] ||
             computedStyle['marker-mid'] ||
@@ -44020,7 +44039,7 @@ exports.fn = (root, params) => {
               floatPrecision,
               noSpaceAfterFlags,
             });
-            detachNodeFromParent(child);
+            detachNodeFromParent(child, node);
             continue;
           }
 
@@ -44037,6 +44056,7 @@ exports.fn = (root, params) => {
 const { closestByName, detachNodeFromParent } = require('../lib/xast.js');
 const JSAPI = require('../lib/svgo/jsAPI.js');
 
+exports.name = 'mergeStyles';
 exports.type = 'visitor';
 exports.active = true;
 exports.description = 'merge multiple style elements into one';
@@ -44051,7 +44071,7 @@ exports.fn = () => {
   let collectedStyles = '';
   let styleContentType = 'text';
 
-  const enterElement = (node) => {
+  const enterElement = (node, parentNode) => {
     // collect style elements
     if (node.name !== 'style') {
       return;
@@ -44085,7 +44105,7 @@ exports.fn = () => {
 
     // remove empty style elements
     if (css.trim().length === 0) {
-      detachNodeFromParent(node);
+      detachNodeFromParent(node, parentNode);
       return;
     }
 
@@ -44101,7 +44121,7 @@ exports.fn = () => {
     if (firstStyleElement == null) {
       firstStyleElement = node;
     } else {
-      detachNodeFromParent(node);
+      detachNodeFromParent(node, parentNode);
       firstStyleElement.children = [
         new JSAPI(
           { type: styleContentType, value: collectedStyles },
@@ -44123,6 +44143,8 @@ exports.fn = () => {
 
 const csso = require('csso');
 const { traverse } = require('../lib/xast.js');
+
+exports.name = 'minifyStyles';
 
 exports.type = 'full';
 
@@ -44276,6 +44298,8 @@ function collectUsageData(ast, options) {
 
 const { inheritableAttrs, pathElems } = require('./_collections');
 
+exports.name = 'moveElemsAttrsToGroup';
+
 exports.type = 'perItemReverse';
 
 exports.active = true;
@@ -44400,6 +44424,8 @@ function intersectInheritableAttrs(a, b) {
 
 const { pathElems, referencesProps } = require('./_collections.js');
 
+exports.name = 'moveGroupAttrsToElems';
+
 exports.type = 'perItem';
 
 exports.active = true;
@@ -44460,6 +44486,10 @@ exports.fn = function (item) {
 },{"./_collections.js":229}],252:[function(require,module,exports){
 'use strict';
 
+// builtin presets
+exports['preset-default'] = require('./preset-default.js');
+
+// builtin plugins
 exports.addAttributesToSVGElement = require('./addAttributesToSVGElement.js');
 exports.addClassesToSVGElement = require('./addClassesToSVGElement.js');
 exports.cleanupAttrs = require('./cleanupAttrs.js');
@@ -44511,8 +44541,10 @@ exports.reusePaths = require('./reusePaths.js');
 exports.sortAttrs = require('./sortAttrs.js');
 exports.sortDefsChildren = require('./sortDefsChildren.js');
 
-},{"./addAttributesToSVGElement.js":232,"./addClassesToSVGElement.js":233,"./cleanupAttrs.js":234,"./cleanupEnableBackground.js":235,"./cleanupIDs.js":236,"./cleanupListOfValues.js":237,"./cleanupNumericValues.js":238,"./collapseGroups.js":239,"./convertColors.js":240,"./convertEllipseToCircle.js":241,"./convertPathData.js":242,"./convertShapeToPath.js":243,"./convertStyleToAttrs.js":244,"./convertTransform.js":245,"./inlineStyles.js":246,"./mergePaths.js":247,"./mergeStyles.js":248,"./minifyStyles.js":249,"./moveElemsAttrsToGroup.js":250,"./moveGroupAttrsToElems.js":251,"./prefixIds.js":253,"./removeAttributesBySelector.js":254,"./removeAttrs.js":255,"./removeComments.js":256,"./removeDesc.js":257,"./removeDimensions.js":258,"./removeDoctype.js":259,"./removeEditorsNSData.js":260,"./removeElementsByAttr.js":261,"./removeEmptyAttrs.js":262,"./removeEmptyContainers.js":263,"./removeEmptyText.js":264,"./removeHiddenElems.js":265,"./removeMetadata.js":266,"./removeNonInheritableGroupAttrs.js":267,"./removeOffCanvasPaths.js":268,"./removeRasterImages.js":269,"./removeScriptElement.js":270,"./removeStyleElement.js":271,"./removeTitle.js":272,"./removeUnknownsAndDefaults.js":273,"./removeUnusedNS.js":274,"./removeUselessDefs.js":275,"./removeUselessStrokeAndFill.js":276,"./removeViewBox.js":277,"./removeXMLNS.js":278,"./removeXMLProcInst.js":279,"./reusePaths.js":280,"./sortAttrs.js":281,"./sortDefsChildren.js":282}],253:[function(require,module,exports){
+},{"./addAttributesToSVGElement.js":232,"./addClassesToSVGElement.js":233,"./cleanupAttrs.js":234,"./cleanupEnableBackground.js":235,"./cleanupIDs.js":236,"./cleanupListOfValues.js":237,"./cleanupNumericValues.js":238,"./collapseGroups.js":239,"./convertColors.js":240,"./convertEllipseToCircle.js":241,"./convertPathData.js":242,"./convertShapeToPath.js":243,"./convertStyleToAttrs.js":244,"./convertTransform.js":245,"./inlineStyles.js":246,"./mergePaths.js":247,"./mergeStyles.js":248,"./minifyStyles.js":249,"./moveElemsAttrsToGroup.js":250,"./moveGroupAttrsToElems.js":251,"./prefixIds.js":253,"./preset-default.js":254,"./removeAttributesBySelector.js":255,"./removeAttrs.js":256,"./removeComments.js":257,"./removeDesc.js":258,"./removeDimensions.js":259,"./removeDoctype.js":260,"./removeEditorsNSData.js":261,"./removeElementsByAttr.js":262,"./removeEmptyAttrs.js":263,"./removeEmptyContainers.js":264,"./removeEmptyText.js":265,"./removeHiddenElems.js":266,"./removeMetadata.js":267,"./removeNonInheritableGroupAttrs.js":268,"./removeOffCanvasPaths.js":269,"./removeRasterImages.js":270,"./removeScriptElement.js":271,"./removeStyleElement.js":272,"./removeTitle.js":273,"./removeUnknownsAndDefaults.js":274,"./removeUnusedNS.js":275,"./removeUselessDefs.js":276,"./removeUselessStrokeAndFill.js":277,"./removeViewBox.js":278,"./removeXMLNS.js":279,"./removeXMLProcInst.js":280,"./reusePaths.js":281,"./sortAttrs.js":282,"./sortDefsChildren.js":283}],253:[function(require,module,exports){
 'use strict';
+
+exports.name = 'prefixIds';
 
 exports.type = 'perItem';
 
@@ -44814,6 +44846,90 @@ exports.fn = function (node, opts, extra) {
 },{"./_collections.js":229,"css-tree":39}],254:[function(require,module,exports){
 'use strict';
 
+const { createPreset } = require('../lib/svgo/plugins.js');
+
+const removeDoctype = require('./removeDoctype.js');
+const removeXMLProcInst = require('./removeXMLProcInst.js');
+const removeComments = require('./removeComments.js');
+const removeMetadata = require('./removeMetadata.js');
+const removeEditorsNSData = require('./removeEditorsNSData.js');
+const cleanupAttrs = require('./cleanupAttrs.js');
+const mergeStyles = require('./mergeStyles.js');
+const inlineStyles = require('./inlineStyles.js');
+const minifyStyles = require('./minifyStyles.js');
+const cleanupIDs = require('./cleanupIDs.js');
+const removeUselessDefs = require('./removeUselessDefs.js');
+const cleanupNumericValues = require('./cleanupNumericValues.js');
+const convertColors = require('./convertColors.js');
+const removeUnknownsAndDefaults = require('./removeUnknownsAndDefaults.js');
+const removeNonInheritableGroupAttrs = require('./removeNonInheritableGroupAttrs.js');
+const removeUselessStrokeAndFill = require('./removeUselessStrokeAndFill.js');
+const removeViewBox = require('./removeViewBox.js');
+const cleanupEnableBackground = require('./cleanupEnableBackground.js');
+const removeHiddenElems = require('./removeHiddenElems.js');
+const removeEmptyText = require('./removeEmptyText.js');
+const convertShapeToPath = require('./convertShapeToPath.js');
+const convertEllipseToCircle = require('./convertEllipseToCircle.js');
+const moveElemsAttrsToGroup = require('./moveElemsAttrsToGroup.js');
+const moveGroupAttrsToElems = require('./moveGroupAttrsToElems.js');
+const collapseGroups = require('./collapseGroups.js');
+const convertPathData = require('./convertPathData.js');
+const convertTransform = require('./convertTransform.js');
+const removeEmptyAttrs = require('./removeEmptyAttrs.js');
+const removeEmptyContainers = require('./removeEmptyContainers.js');
+const mergePaths = require('./mergePaths.js');
+const removeUnusedNS = require('./removeUnusedNS.js');
+const sortDefsChildren = require('./sortDefsChildren.js');
+const removeTitle = require('./removeTitle.js');
+const removeDesc = require('./removeDesc.js');
+
+const presetDefault = createPreset({
+  name: 'presetDefault',
+  plugins: [
+    removeDoctype,
+    removeXMLProcInst,
+    removeComments,
+    removeMetadata,
+    removeEditorsNSData,
+    cleanupAttrs,
+    mergeStyles,
+    inlineStyles,
+    minifyStyles,
+    cleanupIDs,
+    removeUselessDefs,
+    cleanupNumericValues,
+    convertColors,
+    removeUnknownsAndDefaults,
+    removeNonInheritableGroupAttrs,
+    removeUselessStrokeAndFill,
+    removeViewBox,
+    cleanupEnableBackground,
+    removeHiddenElems,
+    removeEmptyText,
+    convertShapeToPath,
+    convertEllipseToCircle,
+    moveElemsAttrsToGroup,
+    moveGroupAttrsToElems,
+    collapseGroups,
+    convertPathData,
+    convertTransform,
+    removeEmptyAttrs,
+    removeEmptyContainers,
+    mergePaths,
+    removeUnusedNS,
+    sortDefsChildren,
+    removeTitle,
+    removeDesc,
+  ],
+});
+
+module.exports = presetDefault;
+
+},{"../lib/svgo/plugins.js":224,"./cleanupAttrs.js":234,"./cleanupEnableBackground.js":235,"./cleanupIDs.js":236,"./cleanupNumericValues.js":238,"./collapseGroups.js":239,"./convertColors.js":240,"./convertEllipseToCircle.js":241,"./convertPathData.js":242,"./convertShapeToPath.js":243,"./convertTransform.js":245,"./inlineStyles.js":246,"./mergePaths.js":247,"./mergeStyles.js":248,"./minifyStyles.js":249,"./moveElemsAttrsToGroup.js":250,"./moveGroupAttrsToElems.js":251,"./removeComments.js":257,"./removeDesc.js":258,"./removeDoctype.js":260,"./removeEditorsNSData.js":261,"./removeEmptyAttrs.js":263,"./removeEmptyContainers.js":264,"./removeEmptyText.js":265,"./removeHiddenElems.js":266,"./removeMetadata.js":267,"./removeNonInheritableGroupAttrs.js":268,"./removeTitle.js":273,"./removeUnknownsAndDefaults.js":274,"./removeUnusedNS.js":275,"./removeUselessDefs.js":276,"./removeUselessStrokeAndFill.js":277,"./removeViewBox.js":278,"./removeXMLProcInst.js":280,"./sortDefsChildren.js":283}],255:[function(require,module,exports){
+'use strict';
+
+exports.name = 'removeAttributesBySelector';
+
 exports.type = 'perItem';
 
 exports.active = false;
@@ -44887,10 +45003,12 @@ exports.fn = function (item, params) {
   });
 };
 
-},{}],255:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 'use strict';
 
 var DEFAULT_SEPARATOR = ':';
+
+exports.name = 'removeAttrs';
 
 exports.type = 'perItem';
 
@@ -45035,13 +45153,14 @@ exports.fn = function (item, params) {
   }
 };
 
-},{}],256:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeComments';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'removes comments';
 
 /**
@@ -45051,31 +45170,31 @@ exports.description = 'removes comments';
  * <!-- Generator: Adobe Illustrator 15.0.0, SVG Export
  * Plug-In . SVG Version: 6.00 Build 0)  -->
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Kir Belevich
  */
-exports.fn = function (item) {
-  if (item.type === 'comment' && item.value.charAt(0) !== '!') {
-    return false;
-  }
+exports.fn = () => {
+  return {
+    comment: {
+      enter: (node, parentNode) => {
+        if (node.value.charAt(0) !== '!') {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],257:[function(require,module,exports){
+},{"../lib/xast.js":227}],258:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeDesc';
+exports.type = 'visitor';
 exports.active = true;
-
-exports.params = {
-  removeAny: true,
-};
-
 exports.description = 'removes <desc>';
 
-var standardDescs = /^(Created with|Created using)/;
+const standardDescs = /^(Created with|Created using)/;
 
 /**
  * Removes <desc>.
@@ -45084,25 +45203,32 @@ var standardDescs = /^(Created with|Created using)/;
  *
  * https://developer.mozilla.org/en-US/docs/Web/SVG/Element/desc
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Daniel Wabyick
  */
-exports.fn = function (item, params) {
-  return (
-    !item.isElem('desc') ||
-    !(
-      params.removeAny ||
-      item.children.length === 0 ||
-      (item.children[0].type === 'text' &&
-        standardDescs.test(item.children[0].value))
-    )
-  );
+exports.fn = (root, params) => {
+  const { removeAny = true } = params;
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        if (node.name === 'desc') {
+          if (
+            removeAny ||
+            node.children.length === 0 ||
+            (node.children[0].type === 'text' &&
+              standardDescs.test(node.children[0].value))
+          ) {
+            detachNodeFromParent(node, parentNode);
+          }
+        }
+      },
+    },
+  };
 };
 
-},{}],258:[function(require,module,exports){
+},{"../lib/xast.js":227}],259:[function(require,module,exports){
 'use strict';
+
+exports.name = 'removeDimensions';
 
 exports.type = 'perItem';
 
@@ -45144,13 +45270,14 @@ exports.fn = function (item) {
   }
 };
 
-},{}],259:[function(require,module,exports){
+},{}],260:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeDoctype';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'removes doctype declaration';
 
 /**
@@ -45173,22 +45300,25 @@ exports.description = 'removes doctype declaration';
  *     <!-- an internal subset can be embedded here -->
  * ]>
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Kir Belevich
  */
-exports.fn = function (item) {
-  if (item.type === 'doctype') {
-    return false;
-  }
+exports.fn = () => {
+  return {
+    doctype: {
+      enter: (node, parentNode) => {
+        detachNodeFromParent(node, parentNode);
+      },
+    },
+  };
 };
 
-},{}],260:[function(require,module,exports){
+},{"../lib/xast.js":227}],261:[function(require,module,exports){
 'use strict';
 
 const { parseName } = require('../lib/svgo/tools.js');
 const { editorNamespaces } = require('./_collections');
+
+exports.name = 'removeEditorsNSData';
 
 exports.type = 'perItem';
 
@@ -45251,8 +45381,10 @@ exports.fn = function (item, params) {
   }
 };
 
-},{"../lib/svgo/tools.js":226,"./_collections":229}],261:[function(require,module,exports){
+},{"../lib/svgo/tools.js":226,"./_collections":229}],262:[function(require,module,exports){
 'use strict';
+
+exports.name = 'removeElementsByAttr';
 
 exports.type = 'perItem';
 
@@ -45330,10 +45462,12 @@ exports.fn = function (item, params) {
   }
 };
 
-},{}],262:[function(require,module,exports){
+},{}],263:[function(require,module,exports){
 'use strict';
 
 const { attrsGroups } = require('./_collections.js');
+
+exports.name = 'removeEmptyAttrs';
 
 exports.type = 'perItem';
 
@@ -45363,10 +45497,12 @@ exports.fn = function (item) {
   }
 };
 
-},{"./_collections.js":229}],263:[function(require,module,exports){
+},{"./_collections.js":229}],264:[function(require,module,exports){
 'use strict';
 
 const { elemsGroups } = require('./_collections');
+
+exports.name = 'removeEmptyContainers';
 
 exports.type = 'perItemReverse';
 
@@ -45408,20 +45544,15 @@ exports.fn = function (item) {
   return true;
 };
 
-},{"./_collections":229}],264:[function(require,module,exports){
+},{"./_collections":229}],265:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeEmptyText';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'removes empty <text> elements';
-
-exports.params = {
-  text: true,
-  tspan: true,
-  tref: true,
-};
 
 /**
  * Remove empty Text elements.
@@ -45438,36 +45569,35 @@ exports.params = {
  * Remove tref with empty xlink:href attribute:
  * <tref xlink:href=""/>
  *
- * @param {Object} item current iteration item
- * @param {Object} params plugin params
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Kir Belevich
  */
-exports.fn = function (item, params) {
-  if (item.type === 'element') {
-    // Remove empty text element
-    if (params.text && item.name === 'text' && item.children.length === 0) {
-      return false;
-    }
-
-    // Remove empty tspan element
-    if (params.tspan && item.name === 'tspan' && item.children.length === 0) {
-      return false;
-    }
-
-    // Remove tref with empty xlink:href attribute
-    if (
-      params.tref &&
-      item.name === 'tref' &&
-      item.attributes['xlink:href'] == null
-    ) {
-      return false;
-    }
-  }
+exports.fn = (root, params) => {
+  const { text = true, tspan = true, tref = true } = params;
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        // Remove empty text element
+        if (text && node.name === 'text' && node.children.length === 0) {
+          detachNodeFromParent(node, parentNode);
+        }
+        // Remove empty tspan element
+        if (tspan && node.name === 'tspan' && node.children.length === 0) {
+          detachNodeFromParent(node, parentNode);
+        }
+        // Remove tref with empty xlink:href attribute
+        if (
+          tref &&
+          node.name === 'tref' &&
+          node.attributes['xlink:href'] == null
+        ) {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],265:[function(require,module,exports){
+},{"../lib/xast.js":227}],266:[function(require,module,exports){
 'use strict';
 
 const {
@@ -45475,9 +45605,10 @@ const {
   closestByName,
   detachNodeFromParent,
 } = require('../lib/xast.js');
-const { computeStyle } = require('../lib/style.js');
+const { collectStylesheet, computeStyle } = require('../lib/style.js');
 const { parsePathData } = require('../lib/path.js');
 
+exports.name = 'removeHiddenElems';
 exports.type = 'visitor';
 exports.active = true;
 exports.description =
@@ -45519,12 +45650,14 @@ exports.fn = (root, params) => {
     polylineEmptyPoints = true,
     polygonEmptyPoints = true,
   } = params;
+  const stylesheet = collectStylesheet(root);
+
   return {
     element: {
-      enter: (node) => {
+      enter: (node, parentNode) => {
         // Removes hidden elements
         // https://www.w3schools.com/cssref/pr_class_visibility.asp
-        const computedStyle = computeStyle(node);
+        const computedStyle = computeStyle(stylesheet, node);
         if (
           isHidden &&
           computedStyle.visibility &&
@@ -45533,7 +45666,7 @@ exports.fn = (root, params) => {
           // keep if any descendant enables visibility
           querySelector(node, '[visibility=visible]') == null
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45550,7 +45683,7 @@ exports.fn = (root, params) => {
           // markers with display: none still rendered
           node.name !== 'marker'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45565,7 +45698,7 @@ exports.fn = (root, params) => {
           // transparent element inside clipPath still affect clipped elements
           closestByName(node, 'clipPath') == null
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45581,7 +45714,7 @@ exports.fn = (root, params) => {
           node.children.length === 0 &&
           node.attributes.r === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45597,7 +45730,7 @@ exports.fn = (root, params) => {
           node.children.length === 0 &&
           node.attributes.rx === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45613,7 +45746,7 @@ exports.fn = (root, params) => {
           node.children.length === 0 &&
           node.attributes.ry === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45629,7 +45762,7 @@ exports.fn = (root, params) => {
           node.children.length === 0 &&
           node.attributes.width === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45646,7 +45779,7 @@ exports.fn = (root, params) => {
           node.children.length === 0 &&
           node.attributes.height === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45661,7 +45794,7 @@ exports.fn = (root, params) => {
           node.name === 'pattern' &&
           node.attributes.width === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45676,7 +45809,7 @@ exports.fn = (root, params) => {
           node.name === 'pattern' &&
           node.attributes.height === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45691,7 +45824,7 @@ exports.fn = (root, params) => {
           node.name === 'image' &&
           node.attributes.width === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45706,7 +45839,7 @@ exports.fn = (root, params) => {
           node.name === 'image' &&
           node.attributes.height === '0'
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45717,12 +45850,12 @@ exports.fn = (root, params) => {
         // <path d=""/>
         if (pathEmptyD && node.name === 'path') {
           if (node.attributes.d == null) {
-            detachNodeFromParent(node);
+            detachNodeFromParent(node, parentNode);
             return;
           }
           const pathData = parsePathData(node.attributes.d);
           if (pathData.length === 0) {
-            detachNodeFromParent(node);
+            detachNodeFromParent(node, parentNode);
             return;
           }
           // keep single point paths for markers
@@ -45731,7 +45864,7 @@ exports.fn = (root, params) => {
             computedStyle['marker-start'] == null &&
             computedStyle['marker-end'] == null
           ) {
-            detachNodeFromParent(node);
+            detachNodeFromParent(node, parentNode);
             return;
           }
           return;
@@ -45747,7 +45880,7 @@ exports.fn = (root, params) => {
           node.name === 'polyline' &&
           node.attributes.points == null
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
 
@@ -45761,7 +45894,7 @@ exports.fn = (root, params) => {
           node.name === 'polygon' &&
           node.attributes.points == null
         ) {
-          detachNodeFromParent(node);
+          detachNodeFromParent(node, parentNode);
           return;
         }
       },
@@ -45769,13 +45902,14 @@ exports.fn = (root, params) => {
   };
 };
 
-},{"../lib/path.js":214,"../lib/style.js":215,"../lib/xast.js":227}],266:[function(require,module,exports){
+},{"../lib/path.js":214,"../lib/style.js":215,"../lib/xast.js":227}],267:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeMetadata';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'removes <metadata>';
 
 /**
@@ -45783,17 +45917,24 @@ exports.description = 'removes <metadata>';
  *
  * https://www.w3.org/TR/SVG11/metadata.html
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Kir Belevich
  */
-exports.fn = function (item) {
-  return !item.isElem('metadata');
+exports.fn = () => {
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        if (node.name === 'metadata') {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],267:[function(require,module,exports){
+},{"../lib/xast.js":227}],268:[function(require,module,exports){
 'use strict';
+
+exports.name = 'removeNonInheritableGroupAttrs';
 
 exports.type = 'perItem';
 
@@ -45830,8 +45971,10 @@ exports.fn = function (item) {
   }
 };
 
-},{"./_collections":229}],268:[function(require,module,exports){
+},{"./_collections":229}],269:[function(require,module,exports){
 'use strict';
+
+exports.name = 'removeOffCanvasPaths';
 
 exports.type = 'perItem';
 
@@ -45971,13 +46114,14 @@ function pathMovesWithinViewBox(path) {
   return false;
 }
 
-},{"../lib/svgo/jsAPI.js":223,"./_path.js":230}],269:[function(require,module,exports){
+},{"../lib/svgo/jsAPI.js":223,"./_path.js":230}],270:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeRasterImages';
+exports.type = 'visitor';
 exports.active = false;
-
 exports.description = 'removes raster images (disabled by default)';
 
 /**
@@ -45985,29 +46129,32 @@ exports.description = 'removes raster images (disabled by default)';
  *
  * @see https://bugs.webkit.org/show_bug.cgi?id=63548
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Kir Belevich
  */
-exports.fn = function (item) {
-  if (
-    item.type === 'element' &&
-    item.name === 'image' &&
-    item.attributes['xlink:href'] != null &&
-    /(\.|image\/)(jpg|png|gif)/.test(item.attributes['xlink:href'])
-  ) {
-    return false;
-  }
+exports.fn = () => {
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        if (
+          node.name === 'image' &&
+          node.attributes['xlink:href'] != null &&
+          /(\.|image\/)(jpg|png|gif)/.test(node.attributes['xlink:href'])
+        ) {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],270:[function(require,module,exports){
+},{"../lib/xast.js":227}],271:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeScriptElement';
+exports.type = 'visitor';
 exports.active = false;
-
 exports.description = 'removes <script> elements (disabled by default)';
 
 /**
@@ -46015,22 +46162,29 @@ exports.description = 'removes <script> elements (disabled by default)';
  *
  * https://www.w3.org/TR/SVG11/script.html
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
  *
  * @author Patrick Klingemann
  */
-exports.fn = function (item) {
-  return !item.isElem('script');
+exports.fn = () => {
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        if (node.name === 'script') {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],271:[function(require,module,exports){
+},{"../lib/xast.js":227}],272:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeStyleElement';
+exports.type = 'visitor';
 exports.active = false;
-
 exports.description = 'removes <style> element (disabled by default)';
 
 /**
@@ -46038,22 +46192,28 @@ exports.description = 'removes <style> element (disabled by default)';
  *
  * https://www.w3.org/TR/SVG11/styling.html#StyleElement
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Betsy Dupuis
  */
-exports.fn = function (item) {
-  return !item.isElem('style');
+exports.fn = () => {
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        if (node.name === 'style') {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],272:[function(require,module,exports){
+},{"../lib/xast.js":227}],273:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeTitle';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'removes <title>';
 
 /**
@@ -46061,19 +46221,26 @@ exports.description = 'removes <title>';
  *
  * https://developer.mozilla.org/en-US/docs/Web/SVG/Element/title
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Igor Kalashnikov
  */
-exports.fn = function (item) {
-  return !item.isElem('title');
+exports.fn = () => {
+  return {
+    element: {
+      enter: (node, parentNode) => {
+        if (node.name === 'title') {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],273:[function(require,module,exports){
+},{"../lib/xast.js":227}],274:[function(require,module,exports){
 'use strict';
 
 const { parseName } = require('../lib/svgo/tools.js');
+
+exports.name = 'removeUnknownsAndDefaults';
 
 exports.type = 'perItem';
 
@@ -46200,11 +46367,13 @@ exports.fn = function (item, params) {
   }
 };
 
-},{"../lib/svgo/tools.js":226,"./_collections":229}],274:[function(require,module,exports){
+},{"../lib/svgo/tools.js":226,"./_collections":229}],275:[function(require,module,exports){
 'use strict';
 
 const { traverse } = require('../lib/xast.js');
 const { parseName } = require('../lib/svgo/tools.js');
+
+exports.name = 'removeUnusedNS';
 
 exports.type = 'full';
 
@@ -46282,10 +46451,12 @@ exports.fn = function (root) {
   return root;
 };
 
-},{"../lib/svgo/tools.js":226,"../lib/xast.js":227}],275:[function(require,module,exports){
+},{"../lib/svgo/tools.js":226,"../lib/xast.js":227}],276:[function(require,module,exports){
 'use strict';
 
 const { elemsGroups } = require('./_collections');
+
+exports.name = 'removeUselessDefs';
 
 exports.type = 'perItem';
 
@@ -46332,8 +46503,10 @@ function getUsefulItems(item, usefulItems) {
   return usefulItems;
 }
 
-},{"./_collections":229}],276:[function(require,module,exports){
+},{"./_collections":229}],277:[function(require,module,exports){
 'use strict';
+
+exports.name = 'removeUselessStrokeAndFill';
 
 exports.type = 'perItem';
 
@@ -46426,10 +46599,12 @@ exports.fn = function (item, params) {
   }
 };
 
-},{"./_collections":229}],277:[function(require,module,exports){
+},{"./_collections":229}],278:[function(require,module,exports){
 'use strict';
 
 const { closestByName } = require('../lib/xast.js');
+
+exports.name = 'removeViewBox';
 
 exports.type = 'perItem';
 
@@ -46480,8 +46655,10 @@ exports.fn = function (item) {
   }
 };
 
-},{"../lib/xast.js":227}],278:[function(require,module,exports){
+},{"../lib/xast.js":227}],279:[function(require,module,exports){
 'use strict';
+
+exports.name = 'removeXMLNS';
 
 exports.type = 'perItem';
 
@@ -46509,13 +46686,14 @@ exports.fn = function (item) {
   }
 };
 
-},{}],279:[function(require,module,exports){
+},{}],280:[function(require,module,exports){
 'use strict';
 
-exports.type = 'perItem';
+const { detachNodeFromParent } = require('../lib/xast.js');
 
+exports.name = 'removeXMLProcInst';
+exports.type = 'visitor';
 exports.active = true;
-
 exports.description = 'removes XML processing instructions';
 
 /**
@@ -46524,23 +46702,27 @@ exports.description = 'removes XML processing instructions';
  * @example
  * <?xml version="1.0" encoding="utf-8"?>
  *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
  * @author Kir Belevich
  */
-exports.fn = function (item) {
-  if (item.type === 'instruction' && item.name === 'xml') {
-    return false;
-  }
-  return true;
+exports.fn = () => {
+  return {
+    instruction: {
+      enter: (node, parentNode) => {
+        if (node.name === 'xml') {
+          detachNodeFromParent(node, parentNode);
+        }
+      },
+    },
+  };
 };
 
-},{}],280:[function(require,module,exports){
+},{"../lib/xast.js":227}],281:[function(require,module,exports){
 'use strict';
 
 const { traverse } = require('../lib/xast.js');
 const JSAPI = require('../lib/svgo/jsAPI');
+
+exports.name = 'reusePaths';
 
 exports.type = 'full';
 
@@ -46630,10 +46812,12 @@ function convertToUse(item, href) {
   return item;
 }
 
-},{"../lib/svgo/jsAPI":223,"../lib/xast.js":227}],281:[function(require,module,exports){
+},{"../lib/svgo/jsAPI":223,"../lib/xast.js":227}],282:[function(require,module,exports){
 'use strict';
 
 const { parseName } = require('../lib/svgo/tools.js');
+
+exports.name = 'sortAttrs';
 
 exports.type = 'perItem';
 
@@ -46720,8 +46904,10 @@ exports.fn = function (item, params) {
   }
 };
 
-},{"../lib/svgo/tools.js":226}],282:[function(require,module,exports){
+},{"../lib/svgo/tools.js":226}],283:[function(require,module,exports){
 'use strict';
+
+exports.name = 'sortDefsChildren';
 
 exports.type = 'perItem';
 

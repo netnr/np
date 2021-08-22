@@ -772,5 +772,43 @@ namespace Netnr.Blog.Web.Controllers
 
             return vm;
         }
+
+        /// <summary>
+        /// 静态资源使用分析（已处理到 2021-07）
+        /// </summary>
+        /// <param name="rootPath">静态资源根目录</param>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM StaticResourceUsageAnalysis(string rootPath = @"D:\ROOM\static")
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                vm.LogEvent(le =>
+                {
+                    Console.WriteLine(le.NewItems[0]);
+                });
+
+                var db = ContextBaseFactory.CreateDbContext();
+                var uws = db.UserWriting.ToList();
+                var urs = db.UserReply.ToList();
+                var runs = db.Run.ToList();
+
+                var filesPath = Directory.GetFiles(rootPath, "*", SearchOption.AllDirectories).ToList();
+                foreach (var path in filesPath)
+                {
+                    if (!path.Contains(".git") && !path.Contains($@"{rootPath}\static\"))
+                    {
+                        var filename = Path.GetFileName(path);
+
+                        if (!uws.Any(x => x.UwContent.Contains(filename)) && !urs.Any(x => x.UrContent != null && x.UrContent.Contains(filename)) && !runs.Any(x => x.RunContent1.Contains(filename) || x.RunContent2.Contains(filename)))
+                        {
+                            vm.Log.Add(path);
+                        }
+                    }
+                }
+
+                return vm;
+            });
+        }
     }
 }

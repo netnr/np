@@ -1057,6 +1057,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Blog.Web.Controllers.ServicesController.StaticResourceUsageAnalysis(System.String)">
+            <summary>
+            静态资源使用分析（已处理到 2021-07）
+            </summary>
+            <param name="rootPath">静态资源根目录</param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Blog.Web.Controllers.StorageController">
             <summary>
             对象存储

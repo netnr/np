@@ -148,7 +148,7 @@ var mxg = {
 
         //重写帮助事件
         eui.actions.actions.help.funct = function () {
-            eui.editor.graph.openLink("https://mxgraph.netnr.eu.org");
+            eui.editor.graph.openLink(mxBaseServer);
         }
 
         //重写导出边框

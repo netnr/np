@@ -480,7 +480,7 @@ netnrmd.extend = {
         //动作
         action: function (that) {
             if (!that.emojipopup) {
-                var epath = "https://cdn.jsdelivr.net/gh/netnr/cdn/libs/emoji/";
+                var epath = "https://s1.netnr.com/emoji/";
                 fetch(epath + 'api.json').then(x => x.json()).then(res => {
                     //构建弹出内容
                     var htm = [], emojis = res.filter(x => x.type == "wangwang")[0];

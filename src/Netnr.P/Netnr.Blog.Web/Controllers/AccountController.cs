@@ -684,7 +684,9 @@ namespace Netnr.Blog.Web.Controllers
                                     {
                                         try
                                         {
-                                            var ppath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:AvatarPath"));
+                                            //物理根路径
+                                            var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath").Replace("~", GlobalTo.ContentRootPath);
+                                            var ppath = PathTo.Combine(prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
                                             if (!Directory.Exists(ppath))
                                             {

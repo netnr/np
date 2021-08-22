@@ -94,9 +94,9 @@ namespace Netnr.FileServer
             {
                 string vrootdir = GlobalTo.GetValue("StaticResource:RootDir");
                 string prootdir = Application.FileServerService.StaticVrPathAsPhysicalPath(vrootdir);
-                if (!System.IO.Directory.Exists(prootdir))
+                if (!Directory.Exists(prootdir))
                 {
-                    System.IO.Directory.CreateDirectory(prootdir);
+                    Directory.CreateDirectory(prootdir);
                 }
                 app.UseFileServer(new FileServerOptions()
                 {

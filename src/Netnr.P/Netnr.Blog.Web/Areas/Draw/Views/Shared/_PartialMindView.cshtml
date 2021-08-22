@@ -1,7 +1,7 @@
 @{
     ViewData["Title"] = "draw";
 
-    var mindBaseServer = "https://cdn.netnr.eu.org/libs/kityminder/20190212"; ;
+    var mindBaseServer = "https://s1.netnr.com/libs/kityminder/20190212"; ;
 }
 
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading"))
@@ -9,7 +9,7 @@
 <input type="hidden" id="vid" value='@ViewData["vid"]' />
 
 <link rel="stylesheet" href="https://npm.elemecdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://npm.elemecdn.com/codemirror@5.47.0/lib/codemirror.min.css" />
+<link rel="stylesheet" href="https://npm.elemecdn.com/codemirror@5.47.0/lib/codemirror.css" />
 <link rel="stylesheet" href="@mindBaseServer/components/hotbox/hotbox.css" />
 <link rel="stylesheet" href="https://npm.elemecdn.com/kityminder-core@1.4.50/dist/kityminder.core.css" />
 <link rel="stylesheet" href="@mindBaseServer/components/color-picker/dist/color-picker.css" />
@@ -102,16 +102,16 @@
 
 <script src="https://npm.elemecdn.com/angular@1.7.8/angular.min.js"></script>
 <script src="https://npm.elemecdn.com/angular-bootstrap@0.12.2/ui-bootstrap-tpls.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/lib/codemirror.min.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/xml/xml.min.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/javascript/javascript.min.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/css/css.min.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/htmlmixed/htmlmixed.min.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/markdown/markdown.min.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/addon/mode/overlay.min.js"></script>
-<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/gfm/gfm.min.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/lib/codemirror.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/xml/xml.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/javascript/javascript.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/css/css.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/htmlmixed/htmlmixed.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/markdown/markdown.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/addon/mode/overlay.js"></script>
+<script src="https://npm.elemecdn.com/codemirror@5.47.0/mode/gfm/gfm.js"></script>
 <script src="https://npm.elemecdn.com/angular-ui-codemirror@0.3.0/src/ui-codemirror.js"></script>
-<script src="https://npm.elemecdn.com/marked@0.7.0/lib/marked.min.js"></script>
+<script src="https://npm.elemecdn.com/marked@0.7.0/lib/marked.js"></script>
 <script src="https://npm.elemecdn.com/kity@2.0.4/dist/kity.min.js"></script>
 <script src="@mindBaseServer/components/hotbox/hotbox.js"></script>
 <script src="@mindBaseServer/components/json-diff/json-diff.js"></script>

@@ -216,13 +216,11 @@ namespace Netnr.Blog.Web
             //目录浏览&&公开访问
             if (GlobalTo.GetValue<bool>("ReadOnly"))
             {
-                string vrootdir = "/_";
-                string prootdir = GlobalTo.WebRootPath;
                 app.UseFileServer(new FileServerOptions()
                 {
-                    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(prootdir),
+                    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(GlobalTo.WebRootPath),
                     //目录浏览链接
-                    RequestPath = new PathString(vrootdir),
+                    RequestPath = new PathString("/_"),
                     EnableDirectoryBrowsing = true,
                     EnableDefaultFiles = false
                 });

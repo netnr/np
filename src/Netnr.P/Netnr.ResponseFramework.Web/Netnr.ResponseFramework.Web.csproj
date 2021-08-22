@@ -22,8 +22,8 @@
 		<PackageReference Include="DeviceDetector.NET" Version="4.3.0" />
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
-		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.120" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.120" />
+		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.127" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.127" />
 	</ItemGroup>
 
 	<ItemGroup>

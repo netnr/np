@@ -63,7 +63,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 ext = Path.GetExtension(file.FileName);
             }
 
-            if (string.IsNullOrWhiteSpace(ext) || !ext.Contains(".") || ext.EndsWith("exe"))
+            if (string.IsNullOrWhiteSpace(ext) || !ext.Contains('.') || ext.EndsWith("exe"))
             {
                 vm.Set(SharedEnum.RTag.refuse);
                 vm.Msg = "Invalid extension";
@@ -81,9 +81,11 @@ namespace Netnr.Blog.Web.Controllers.api
                 else
                 {
                     //虚拟路径
-                    var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), subdir, now.ToString("yyyy'/'MM'/'dd"));
+                    var vpath = PathTo.Combine(subdir, now.ToString("yyyy'/'MM'/'dd"));
+                    //物理根路径
+                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath").Replace("~", GlobalTo.ContentRootPath);
                     //物理路径
-                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                    var ppath = PathTo.Combine(prp, vpath);
                     //创建物理目录
                     if (!Directory.Exists(ppath))
                     {
@@ -912,7 +914,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 {
                     var cr = CmdTo.Execute(arguments, fileName);
                     vm.Data = cr.CrOutput?.Split(Environment.NewLine);
-                    
+
                     vm.Log.AddRange(cr.CrError?.Split(Environment.NewLine));
 
                     vm.Set(SharedEnum.RTag.success);

@@ -243,7 +243,7 @@ namespace Netnr.Blog.Web.Areas.Draw.Controllers
                 var msg = "fail";
                 var url = "";
 
-                var subdir = GlobalTo.GetValue("StaticResource:DrawPath")[GlobalTo.GetValue("StaticResource:RootDir").Length..];
+                var subdir = GlobalTo.GetValue("StaticResource:DrawPath");
                 var vm = new Web.Controllers.api.APIController().Upload(Request.Form.Files[0], subdir);
 
                 if (vm.Code == 200)
