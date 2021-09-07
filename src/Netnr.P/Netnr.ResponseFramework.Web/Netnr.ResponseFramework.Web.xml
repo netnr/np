@@ -791,22 +791,7 @@
             DataKit 辅助
             </summary>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.GetTypeDB(System.String)">
-            <summary>
-            类型转换
-            </summary>
-            <param name="typeDB"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlQuote(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
-            <summary>
-            SQL引用符号
-            </summary>
-            <param name="tdb">数据库类型</param>
-            <param name="KeyWord">关键字</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlConn(Netnr.SharedEnum.TypeDB,System.String)">
+        <member name="M:Netnr.SharedDataKit.DataKitAidTo.DbConn(Netnr.SharedEnum.TypeDB,System.String)">
             <summary>
             构建数据库连接
             </summary>
@@ -834,15 +819,6 @@
             <param name="zipPath">导入源 ZIP 压缩包</param>
             <param name="clearTable">导入前清空表，默认否</param>
             <param name="le">日志事件</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlMappingCsharp(Netnr.SharedEnum.TypeDB,System.String,System.String)">
-            <summary>
-            数据库表映射C#
-            </summary>
-            <param name="tdb"></param>
-            <param name="table"></param>
-            <param name="conn"></param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseMySQL">

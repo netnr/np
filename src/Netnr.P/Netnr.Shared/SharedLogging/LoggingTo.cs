@@ -1,18 +1,11 @@
 ﻿#if Full || Logging
 
-using System;
-using System.IO;
-using System.Linq;
 using System.Data;
+using System.Collections.Concurrent;
 using Microsoft.Data.Sqlite;
 using DeviceDetectorNET;
 using DeviceDetectorNET.Parser;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
 using Netnr.SharedAdo;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace Netnr.SharedLogging
 {
@@ -63,7 +56,6 @@ namespace Netnr.SharedLogging
         /// IP区域库文件
         /// 更新地址：
         /// https://github.com/lionsoul2014/ip2region
-        /// https://gitee.com/lionsoul/ip2region
         /// </summary>
         public static string OptionsDbIpFile = Path.Combine(OptionsDbRoot, "ip2region.db");
 

@@ -1,4 +1,8 @@
-﻿using Netnr.Core;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using Netnr.Core;
 using Netnr.DataX.Domain;
 
 namespace Netnr.DataX.Application
@@ -59,17 +63,21 @@ namespace Netnr.DataX.Application
             var mo = new DbConnObj();
 
         Flag1:
-            Console.WriteLine($"\n0. 输入数据库连接信息");
-            for (int i = 0; i < co.DbConns.Count; i++)
+            var cacheKey = "tmpDbConns";
+            var tmpDbConns = CacheTo.Get(cacheKey) as List<DbConnObj> ?? new List<DbConnObj>();
+            var allDbConns = co.DbConns.Concat(tmpDbConns).ToList();
+
+            Console.WriteLine($"\n{0,5}. 输入数据库连接信息");
+            for (int i = 0; i < allDbConns.Count; i++)
             {
-                var obj = co.DbConns[i];
-                Console.WriteLine($"{i + 1}. {obj.Remark} => {obj.TDB} => {obj.Conn}");
+                var obj = allDbConns[i];
+                Console.WriteLine($"{i + 1,5}. {obj.Remark} -> {obj.TDB} => {obj.Conn}");
             }
-            Console.Write(tip);
+            Console.Write($"\n{tip}");
 
-            _ = int.TryParse(Console.ReadLine().Trim(), out int ed);
+            var rdi = int.TryParse(Console.ReadLine().Trim(), out int ed);
 
-            if (ed == 0)
+            if (rdi && ed == 0)
             {
             Flag2:
                 Console.Write($"数据库连接信息（MySQL => Conn）：");
@@ -78,11 +86,17 @@ namespace Netnr.DataX.Application
                 {
                     mo.TDB = tdb;
                     mo.Conn = tc[1];
+                    mo.Remark = $"【临时】 {DateTime.Now:yyyy-MM-dd HH:mm:ss} {tdb}";
                     if (mo.Conn.Length < 10)
                     {
                         Log("连接字符串无效");
                         goto Flag2;
                     }
+
+                    mo.Conn = SharedAdo.DbHelper.SqlConnPreCheck(mo.TDB, mo.Conn);
+
+                    tmpDbConns.Add(mo);
+                    CacheTo.Set(cacheKey, tmpDbConns);
                 }
                 else
                 {
@@ -90,17 +104,17 @@ namespace Netnr.DataX.Application
                     goto Flag2;
                 }
             }
-            else if (ed > 0 && ed <= co.DbConns.Count)
+            else if (ed > 0 && ed <= allDbConns.Count)
             {
-                mo = co.DbConns[ed - 1];
+                mo = allDbConns[ed - 1];
             }
             else
             {
-                Log($"无效 {ed}");
+                Log($"无效选择，请重新选择");
                 goto Flag1;
             }
 
-            Log($"已选择 {mo.TDB} => {mo.Conn}");
+            Log($"\n已选择 {mo.TDB} => {mo.Conn}\n");
 
             return mo;
         }
@@ -151,14 +165,14 @@ namespace Netnr.DataX.Application
             Console.WriteLine("");
             for (int j = 0; j < items.Count; j++)
             {
-                Console.WriteLine($"{j + 1}. {items[j]}");
+                Console.WriteLine($"{j + 1,5}. {items[j]}");
             }
-            Console.Write($"{tip}（默认：{dv}. {items[dv - 1]}）：");
+            Console.Write($"\n{tip}（默认：{dv}. {items[dv - 1]}）：");
 
             var ii = Console.ReadLine().Trim();
             if (string.IsNullOrWhiteSpace(ii))
             {
-                Log($"已选择 {dv}. {items[dv - 1]}");
+                Log($"\n已选择 {dv}. {items[dv - 1]}\n");
                 return dv;
             }
             else
@@ -167,7 +181,7 @@ namespace Netnr.DataX.Application
 
                 if (i > 0 && i <= items.Count)
                 {
-                    Log($"已选择 {i}. {items[i - 1]}");
+                    Log($"\n已选择 {i}. {items[i - 1]}\n");
                     return i;
                 }
                 else
@@ -187,6 +201,16 @@ namespace Netnr.DataX.Application
         public static string NewFileName(string prefix, string ext)
         {
             return $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}{ext}";
+        }
+
+        /// <summary>
+        /// 显示标题信息
+        /// </summary>
+        /// <param name="mi"></param>
+        public static void ShowTitleInfo(System.Reflection.MethodBase mi)
+        {
+            var desc = mi.CustomAttributes.LastOrDefault()?.NamedArguments.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value.ToString();
+            Log($"\n{DateTime.Now:F} {desc}\n");
         }
     }
 }

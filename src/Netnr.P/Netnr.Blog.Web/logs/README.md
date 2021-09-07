@@ -5,7 +5,6 @@
 
 项目地址：  
 GitHub：https://github.com/lionsoul2014/ip2region
-Gitee：https://gitee.com/lionsoul/ip2region
 
 下载：
 wget https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.db

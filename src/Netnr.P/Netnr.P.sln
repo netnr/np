@@ -45,9 +45,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.ResponseFramework.App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.ResponseFramework.Web", "Netnr.ResponseFramework.Web\Netnr.ResponseFramework.Web.csproj", "{C8137A02-02D6-4765-8AEA-F9B352CD15D5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "59 Demo", "59 Demo", "{FD80CF2D-F394-4A89-87FF-0E6BF109AF21}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.DataKit.Web", "Netnr.DataKit.Web\Netnr.DataKit.Web.csproj", "{962F1F29-4DDC-48C6-8043-915240872570}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Netnr.Shared", "Netnr.Shared\Netnr.Shared.shproj", "{37A82AE4-A2F0-40C8-A084-237E256E543F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.DataX", "Netnr.DataX\Netnr.DataX.csproj", "{0D99D943-8DD0-4458-9910-27B300B0D569}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Blog.Web", "Netnr.Blog.Web\Netnr.Blog.Web.csproj", "{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.GraphDemo", "Netnr.GraphDemo\Netnr.GraphDemo.csproj", "{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}"
+EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "..\..\docs\", "{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_60778"
 		Debug.AspNetCompiler.PhysicalPath = "..\..\docs\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60778\"
@@ -66,21 +80,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "..\..\docs\", "{CCA
 		SlnRelativePath = "..\..\docs\"
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "59 Demo", "59 Demo", "{FD80CF2D-F394-4A89-87FF-0E6BF109AF21}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.DataKit.Web", "Netnr.DataKit.Web\Netnr.DataKit.Web.csproj", "{962F1F29-4DDC-48C6-8043-915240872570}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Netnr.Shared", "Netnr.Shared\Netnr.Shared.shproj", "{37A82AE4-A2F0-40C8-A084-237E256E543F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.BuildSwagger", "Netnr.BuildSwagger\Netnr.BuildSwagger.csproj", "{3770B6CC-FF8A-4059-B511-3673238E455D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.DataX", "Netnr.DataX\Netnr.DataX.csproj", "{0D99D943-8DD0-4458-9910-27B300B0D569}"
-EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mix", "..\..\mix\", "{58B01763-7D4F-4168-B6BE-DABE92007795}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_4920"
 		Debug.AspNetCompiler.PhysicalPath = "..\..\mix\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_4920\"
@@ -98,10 +100,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mix", "..\..\mix\", "{58B01
 		VWDPort = "4920"
 		SlnRelativePath = "..\..\mix\"
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Blog.Web", "Netnr.Blog.Web\Netnr.Blog.Web.csproj", "{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.GraphDemo", "Netnr.GraphDemo\Netnr.GraphDemo.csproj", "{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -180,9 +178,6 @@ Global
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -191,18 +186,10 @@ Global
 		{962F1F29-4DDC-48C6-8043-915240872570}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{962F1F29-4DDC-48C6-8043-915240872570}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{962F1F29-4DDC-48C6-8043-915240872570}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3770B6CC-FF8A-4059-B511-3673238E455D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3770B6CC-FF8A-4059-B511-3673238E455D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3770B6CC-FF8A-4059-B511-3673238E455D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3770B6CC-FF8A-4059-B511-3673238E455D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D99D943-8DD0-4458-9910-27B300B0D569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D99D943-8DD0-4458-9910-27B300B0D569}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D99D943-8DD0-4458-9910-27B300B0D569}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D99D943-8DD0-4458-9910-27B300B0D569}.Release|Any CPU.Build.0 = Release|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -211,6 +198,14 @@ Global
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,7 +227,6 @@ Global
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5} = {9C11B0FC-3722-48BC-8E3D-3416F980790F}
 		{962F1F29-4DDC-48C6-8043-915240872570} = {70A676C8-6AEA-46EB-BFC9-FC295EAEB351}
 		{37A82AE4-A2F0-40C8-A084-237E256E543F} = {CF271090-3211-4C57-A076-C8D5D696E479}
-		{3770B6CC-FF8A-4059-B511-3673238E455D} = {A01BEDFB-24F0-4B11-870E-0BB6016D2228}
 		{0D99D943-8DD0-4458-9910-27B300B0D569} = {70A676C8-6AEA-46EB-BFC9-FC295EAEB351}
 		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB} = {0668834E-BA3C-4AFA-B222-820234F53CD2}
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF} = {FD80CF2D-F394-4A89-87FF-0E6BF109AF21}

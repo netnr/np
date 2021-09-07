@@ -165,6 +165,9 @@
             Db帮助类
             </summary>
             <summary>
+            Db帮助类
+            </summary>
+            <summary>
             SQLite操作类
             </summary>
             <summary>
@@ -179,6 +182,37 @@
             <summary>
             SQLServer操作类
             </summary>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.GetTypeDB(System.String)">
+            <summary>
+            类型转换
+            </summary>
+            <param name="typeDB"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlQuote(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            SQL引用符号
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="KeyWord">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlConnPreCheck(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            SQL连接字符串预检
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="connectionString">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlConnEncryptOrDecrypt(System.String,System.String,System.Boolean)">
+            <summary>
+            SQL连接字符串加密/解密
+            </summary>
+            <param name="conn">连接字符串</param>
+            <param name="pwd">密码</param>
+            <param name="isDecrypt">是解密，加密 false</param>
         </member>
         <member name="P:Netnr.SharedAdo.DbHelper.Connection">
             <summary>
@@ -504,21 +538,6 @@
             <summary>
             DataKit 辅助
             </summary>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.GetTypeDB(System.String)">
-            <summary>
-            类型转换
-            </summary>
-            <param name="typeDB"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlQuote(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
-            <summary>
-            SQL引用符号
-            </summary>
-            <param name="tdb">数据库类型</param>
-            <param name="KeyWord">关键字</param>
-            <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlConn(Netnr.SharedEnum.TypeDB,System.String)">
             <summary>
@@ -2029,6 +2048,11 @@
             MySQL
             </summary>
         </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.MariaDB">
+            <summary>
+            MariaDB
+            </summary>
+        </member>
         <member name="F:Netnr.SharedEnum.TypeDB.Oracle">
             <summary>
             Oracle
@@ -2113,14 +2137,6 @@
             <param name="builder"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDbContext.FactoryTo.ConnnectionEncryptOrDecrypt(System.String,System.String,System.Int32)">
-            <summary>
-            连接字符串加密/解密
-            </summary>
-            <param name="conn">连接字符串</param>
-            <param name="pwd">密码</param>
-            <param name="ed">1加密 2解密</param>
-        </member>
         <member name="M:Netnr.SharedDbContext.FactoryTo.GetConn(System.Nullable{Netnr.SharedEnum.TypeDB})">
             <summary>
             获取连接字符串
@@ -2128,19 +2144,11 @@
             <param name="typeDB"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDbContext.FactoryTo.GetTypeDB(Microsoft.EntityFrameworkCore.DbContext)">
+        <member name="M:Netnr.SharedDbContext.FactoryTo.GetTypeDB1(Microsoft.EntityFrameworkCore.DbContext)">
             <summary>
             获取数据库类型
             </summary>
             <param name="db"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDbContext.FactoryTo.SqlQuote(System.String,System.Nullable{Netnr.SharedEnum.TypeDB})">
-            <summary>
-            SQL引用符号
-            </summary>
-            <param name="KeyWord">关键字</param>
-            <param name="tdb">数据库类型</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.SharedIpArea.IpAreaTo">
@@ -2347,7 +2355,6 @@
             IP区域库文件
             更新地址：
             https://github.com/lionsoul2014/ip2region
-            https://gitee.com/lionsoul/ip2region
             </summary>
         </member>
         <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbPart">

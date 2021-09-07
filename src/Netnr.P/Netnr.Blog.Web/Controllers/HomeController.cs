@@ -24,11 +24,19 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="k">搜索</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 2)]
         public IActionResult Index(string k, int page = 1)
         {
-            var vm = Application.CommonService.UserWritingQuery(k, page);
-            vm.Route = Request.Path;
+            var ckey = $"Writing-{page}";
+            if (!string.IsNullOrWhiteSpace(k) || CacheTo.Get(ckey) is not SharedPageVM vm)
+            {
+                vm = Application.CommonService.UserWritingQuery(k, page);
+                vm.Route = Request.Path;
+
+                if (string.IsNullOrWhiteSpace(k))
+                {
+                    CacheTo.Set(ckey, vm, 30, false);
+                }
+            }
 
             return View("_PartialViewWriting", vm);
         }

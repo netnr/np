@@ -16,7 +16,6 @@ netnr@netnr.com
 ### Site
 **Git** 源码托管
 &nbsp; [github.com/netnr](https://github.com/netnr) 
-&nbsp; [gitee.com/netnr](https://gitee.com/netnr)
 
 **Blog**
 &nbsp; 个站

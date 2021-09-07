@@ -8,6 +8,9 @@ namespace Netnr.Guff
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //±àÂë×¢²á
+            GlobalTo.EncodingReg();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

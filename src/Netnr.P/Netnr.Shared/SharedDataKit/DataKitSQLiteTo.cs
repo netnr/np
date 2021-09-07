@@ -89,7 +89,25 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public Dictionary<string, string> GetTableDDL(string filterTableName = null, string DatabaseName = null)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(DatabaseName))
+            {
+                DatabaseName = DefaultDatabaseName();
+            }
+
+            var listTable = string.IsNullOrWhiteSpace(filterTableName)
+                ? GetTable(DatabaseName).Select(x => x.TableName).ToList()
+                : filterTableName.Replace("'", "").Split(',').ToList();
+
+            var sql = Configs.GetTableDDLSQLite(DatabaseName, listTable);
+            var dt = db.SqlQuery(sql).Tables[0];
+
+            var dic = new Dictionary<string, string>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                dic.Add(dr[0].ToString(), dr[1].ToString());
+            }
+
+            return dic;
         }
 
         /// <summary>

@@ -44,7 +44,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                     var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
 
-                    vm = SharedDataKit.DataKitAidTo.DatabaseImport(GlobalTo.TDB, conn, fullPath, true);
+                    vm = SharedDataKit.DataKitAidTo.ImportDatabase(GlobalTo.TDB, conn, fullPath, true);
                 }
 
                 return vm;
@@ -71,7 +71,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                     var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
 
-                    vm = SharedDataKit.DataKitAidTo.DatabaseExport(GlobalTo.TDB, conn, fullPath);
+                    vm = SharedDataKit.DataKitAidTo.ExportDatabase(GlobalTo.TDB, conn, fullPath);
                 }
                 else
                 {

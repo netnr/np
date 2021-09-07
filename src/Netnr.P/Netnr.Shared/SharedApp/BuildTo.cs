@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Netnr.Core;
@@ -34,10 +35,6 @@ namespace Netnr.SharedApp
         public SharedResultVM Html<T>() where T : Controller
         {
             var vm = new SharedResultVM();
-            vm.LogEvent(le =>
-            {
-                Console.WriteLine(le.NewItems[0].ToString());
-            });
 
             try
             {
@@ -52,13 +49,18 @@ namespace Netnr.SharedApp
 
                 vm.Log.Add($"构建总数：{methods.Count}");
                 vm.Log.Add("开始构建：");
+
+                var cbs = new ConcurrentBag<string>();
                 //并行请求
                 Parallel.ForEach(methods, mh =>
                 {
-                    vm.Log.Add(mh.Name);
+                    Console.WriteLine(mh.Name);
+
+                    cbs.Add(mh.Name);
                     string html = HttpTo.Get(urlPrefix + mh.Name);
                     FileTo.WriteText(html, savePath + mh.Name.ToLower() + ".html", false);
                 });
+                vm.Log.AddRange(cbs);
 
                 vm.Set(SharedEnum.RTag.success);
             }

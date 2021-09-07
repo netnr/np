@@ -54,7 +54,7 @@ namespace Netnr.Core
             {
                 File.Delete(zipPath);
             }
-            ZipFile.CreateFromDirectory(fullPath, zipPath, CompressionLevel.Optimal, true);
+            ZipFile.CreateFromDirectory(fullPath, zipPath, CompressionLevel.Optimal, false);
 
             return zipPath;
         }

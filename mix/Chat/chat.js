@@ -526,8 +526,8 @@ netnrmd.extend = {
                 that.uploadpopup.querySelector('input').addEventListener('change', function () {
                     var file = this.files[0];
                     if (file) {
-                        if (file.size > 1024 * 1024 * 5) {
-                            alert('文件过大 （MAX 5 MB）')
+                        if (file.size > 1024 * 1024 * 10) {
+                            alert('文件过大 （MAX 10 MB）')
                             this.value = "";
                             return;
                         }
@@ -557,7 +557,7 @@ netnrmd.extend = {
                                     console.log(xhr.responseText)
                                     var res = JSON.parse(xhr.responseText);
                                     if (res.code == 200) {
-                                        let url = "https://www.netnr.eu.org" + res.data.path;
+                                        let url = res.data.server + res.data.path;
                                         //上传成功，插入链接
                                         netnrmd.insertAfterText(that.obj.me, '[' + file.name + '](' + url + ')');
                                         that.uploadpopup.style.display = "none";

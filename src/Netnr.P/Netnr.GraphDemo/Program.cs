@@ -1,22 +1,30 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
+//配置swagger
+var swaggerVersion = "v1";
+var swaggerTitle = "Netnr.GraphDemo";
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//配置swagger
-var ns = Path.GetFileNameWithoutExtension(System.Reflection.MethodBase.GetCurrentMethod().Module.Name);
-var ver = "v1";
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    //Action原样输出JSON
+    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+    //日期格式化
+    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+});
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc(swaggerVersion, new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = ns,
-        Version = ver
+        Title = swaggerTitle,
+        Version = swaggerVersion
     });
 
-    //注释
-    c.IncludeXmlComments($"{AppContext.BaseDirectory}{ns}.xml", true);
+    c.IncludeXmlComments(AppContext.BaseDirectory + swaggerTitle + ".xml", true);
 });
 
 var app = builder.Build();
@@ -26,22 +34,25 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
 
 //配置swagger
 app.UseSwagger().UseSwaggerUI(c =>
 {
-    c.DocumentTitle = ns;
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+    c.DocumentTitle = swaggerTitle;
+    c.SwaggerEndpoint($"{swaggerVersion}/swagger.json", c.DocumentTitle);
 });
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+//静态资源允许跨域
+app.UseStaticFiles(new StaticFileOptions()
+{
+    OnPrepareResponse = (x) =>
+    {
+        x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+        x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
+    },
+    ServeUnknownFileTypes = true
+});
 
 app.UseRouting();
 

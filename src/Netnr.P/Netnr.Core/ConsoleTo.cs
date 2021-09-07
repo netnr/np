@@ -101,20 +101,31 @@ namespace Netnr.Core
             cms = cms.Where(x => x.Module == mm).ToList();
 
             Console.WriteLine(Environment.NewLine);
+            var prevGroupName = string.Empty;
             for (int i = 0; i < cms.Count; i++)
             {
                 var mi = cms[i];
-                var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-                if (!string.IsNullOrWhiteSpace(desc))
+                var disps = mi.CustomAttributes.LastOrDefault()?.NamedArguments;
+                var dispName = disps.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value.ToString();
+                var dispGroupName = disps.FirstOrDefault(x => x.MemberName == "GroupName").TypedValue.Value.ToString();
+                var nl = string.Empty;
+                if (i > 0 && dispGroupName != prevGroupName)
                 {
-                    Console.WriteLine($"  {i,3}. {mi.Name} -> {desc}{Environment.NewLine}");
+                    nl = "\n";
                 }
+
+                if (!string.IsNullOrWhiteSpace(dispName))
+                {
+                    Console.WriteLine($"{nl}{i,5}. {mi.Name} -> {dispName}");
+                }
+
+                prevGroupName = dispGroupName;
             }
 
             bool isMenumNum;
             do
             {
-                Console.Write("请输入数字：");
+                Console.Write("\n请输入数字：");
                 isMenumNum = int.TryParse(Console.ReadLine(), out int num) && num >= 0 && num < cms.Count;
                 if (isMenumNum)
                 {

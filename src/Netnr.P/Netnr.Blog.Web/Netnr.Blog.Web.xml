@@ -725,6 +725,68 @@
             <param name="fileName">文件（可选，默认 cmd.exe 或 bash ）</param>
             <returns></returns>
         </member>
+        <member name="T:Netnr.Blog.Web.Controllers.api.DCController">
+            <summary>
+            Document conversion
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.SheetIndex">
+            <summary>
+            选择工作薄索引（与工作薄名称二选一，默认活动工作薄）
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.SheetName">
+            <summary>
+            选择工作薄名称（与工作薄索引二选一，默认活动工作薄）
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.CellRange">
+            <summary>
+            可指定范围，如 A2:H23
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.IsHorizontal">
+            <summary>
+            横向打印，默认否
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.HorizontalCentered">
+            <summary>
+            水平（左右）居中
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.VerticalCentered">
+            <summary>
+            垂直（上下）居中
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.PrintHeadings">
+            <summary>
+            打印头
+            </summary>
+        </member>
+        <member name="P:Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions.PrintGridlines">
+            <summary>
+            打印线
+            </summary>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DCController.DocTo(Microsoft.AspNetCore.Http.IFormFile,Netnr.Blog.Web.Controllers.api.DCController.DocFormat)">
+            <summary>
+            Doc 转
+            </summary>
+            <param name="file">docx docm dotm dotx doc dot htm html mht mhtml rtf txt</param>
+            <param name="format">输出格式</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Blog.Web.Controllers.api.DCController.ExcelTo(Microsoft.AspNetCore.Http.IFormFile,Netnr.Blog.Web.Controllers.api.DCController.ExcelFormat,Netnr.Blog.Web.Controllers.api.DCController.ExcelToOptions)">
+            <summary>
+            Excel 转
+            </summary>
+            <param name="file">xlsx xlsm xltx xltm xls xlt ods ots csv tsv htm html mht mhtml</param>
+            <param name="format">输出格式</param>
+            <param name="toOption">输出配置</param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Blog.Web.Controllers.api.DKController">
             <summary>
             Netnr.DataKit API
@@ -1415,22 +1477,7 @@
             DataKit 辅助
             </summary>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.GetTypeDB(System.String)">
-            <summary>
-            类型转换
-            </summary>
-            <param name="typeDB"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlQuote(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
-            <summary>
-            SQL引用符号
-            </summary>
-            <param name="tdb">数据库类型</param>
-            <param name="KeyWord">关键字</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlConn(Netnr.SharedEnum.TypeDB,System.String)">
+        <member name="M:Netnr.SharedDataKit.DataKitAidTo.DbConn(Netnr.SharedEnum.TypeDB,System.String)">
             <summary>
             构建数据库连接
             </summary>
@@ -1438,9 +1485,9 @@
             <param name="conn"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.DatabaseExport(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Collections.Generic.List{System.String},System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
+        <member name="M:Netnr.SharedDataKit.DataKitAidTo.ExportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Collections.Generic.List{System.String},System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
             <summary>
-            数据库导出
+            导出数据库
             </summary>
             <param name="tdb"></param>
             <param name="conn"></param>
@@ -1449,9 +1496,9 @@
             <param name="le">日志事件</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.DatabaseImport(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Boolean,System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
+        <member name="M:Netnr.SharedDataKit.DataKitAidTo.ImportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Boolean,System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
             <summary>
-            数据库导入
+            导入数据库
             </summary>
             <param name="tdb"></param>
             <param name="conn"></param>
@@ -1460,13 +1507,15 @@
             <param name="le">日志事件</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.SqlMappingCsharp(Netnr.SharedEnum.TypeDB,System.String,System.String)">
+        <member name="M:Netnr.SharedDataKit.DataKitAidTo.ExportDataTable(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Collections.Generic.List{System.String},System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
             <summary>
-            数据库表映射C#
+            导出表
             </summary>
             <param name="tdb"></param>
-            <param name="table"></param>
             <param name="conn"></param>
+            <param name="zipPath">导出源目录</param>
+            <param name="sqls">查询表</param>
+            <param name="le">日志事件</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseMySQL">
@@ -1645,6 +1694,14 @@
             获取表
             </summary>
             <param name="DatabaseName">数据库名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Configs.GetTableDDLSQLite(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            表DLL
+            </summary>
+            <param name="DatabaseName">数据库名</param>
+            <param name="TableNames">表名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.Configs.GetColumnSQLite(System.String,System.String)">
@@ -2860,7 +2917,6 @@
             IP区域库文件
             更新地址：
             https://github.com/lionsoul2014/ip2region
-            https://gitee.com/lionsoul/ip2region
             </summary>
         </member>
         <member name="F:Netnr.SharedLogging.LoggingTo.OptionsDbPart">

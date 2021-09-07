@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Netnr.Core;
 
 namespace Netnr.DataX.Domain
@@ -37,11 +40,8 @@ namespace Netnr.DataX.Domain
                     Remark = dbc["remark"].ToString()
                 };
 
-                if ((obj.TDB == SharedEnum.TypeDB.MySQL || obj.TDB == SharedEnum.TypeDB.MariaDB) && !obj.Conn.Contains("AllowLoadLocalInfile"))
-                {
-                    obj.Conn = obj.Conn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
-                }
-
+                obj.Conn = SharedAdo.DbHelper.SqlConnPreCheck(obj.TDB, obj.Conn);
+                
                 listConns.Add(obj);
             }
             DbConns = listConns;

@@ -210,7 +210,7 @@ namespace Netnr.Blog.Web.Controllers
 
                 var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
 
-                vm = SharedDataKit.DataKitAidTo.DatabaseExport(GlobalTo.TDB, conn, fullPath);
+                vm = SharedDataKit.DataKitAidTo.ExportDatabase(GlobalTo.TDB, conn, fullPath);
 
                 return vm;
             });
@@ -452,7 +452,7 @@ namespace Netnr.Blog.Web.Controllers
 
                 var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
 
-                vm = SharedDataKit.DataKitAidTo.DatabaseImport(GlobalTo.TDB, conn, fullPath, clearTable);
+                vm = SharedDataKit.DataKitAidTo.ImportDatabase(GlobalTo.TDB, conn, fullPath, clearTable);
 
                 return vm;
             });

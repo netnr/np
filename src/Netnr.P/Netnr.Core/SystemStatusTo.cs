@@ -89,6 +89,10 @@ namespace Netnr.Core
         /// </summary>
         public long SwapFree { get; set; }
         /// <summary>
+        /// GC 总占用内存
+        /// </summary>
+        public long GCTotalMemory { get; set; } = GC.GetTotalMemory(true);
+        /// <summary>
         /// 逻辑磁盘 B
         /// </summary>
         public object LogicalDisk { get; set; }
@@ -100,6 +104,7 @@ namespace Netnr.Core
         /// 操作系统
         /// </summary>
         public string OperatingSystem { get; set; }
+
 
         /// <summary>
         /// 构造
@@ -559,16 +564,17 @@ namespace Netnr.Core
             {
                 { 0, "" },
                 { 1, $" Framework: {FrameworkDescription}" },
-                { 2, $" Boot: {Math.Round(TickCount*1.0/1000/24/3600,2)} Days" },
-                { 3, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
-                { 4, $" OSVersion: {OSVersion.VersionString}" },
-                { 5, $" User: {UserName}" },
-                { 6, $" CPU: {ProcessorName} , {ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
-                { 7, $" RAM: {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
+                { 2, $" GC: {ParsingTo.FormatByteSize(GCTotalMemory)}" },
+                { 3, $" Boot: {Math.Round(TickCount*1.0/1000/24/3600,2)} Days" },
+                { 4, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
+                { 5, $" OSVersion: {OSVersion.VersionString}" },
+                { 6, $" User: {UserName}" },
+                { 7, $" CPU: {ProcessorName} , {ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
+                { 8, $" RAM: {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
             };
             if (SwapTotal > 0)
             {
-                dic.Add(8, $" Swap: {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
+                dic.Add(9, $" Swap: {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
             }
 
             var lgds = LogicalDisk as List<object>;
@@ -582,7 +588,7 @@ namespace Netnr.Core
                 var name = gt.GetProperty("Name").GetValue(lgdi).ToString();
                 listlgd.Add(ProgressBar(size - fs, size, true, name));
             }
-            dic.Add(9, $" Disk: {string.Join(" ", listlgd)}");
+            dic.Add(10, $" Disk: {string.Join(" ", listlgd)}");
 
             //排序
             var list = dic.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value).Values.ToList();
@@ -627,7 +633,7 @@ namespace Netnr.Core
             }
             while (listpb.Count < vt)
             {
-                listpb.Add("_");
+                listpb.Add(".");
             }
             var text = unit + desc;
             if (!string.IsNullOrEmpty(text))

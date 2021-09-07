@@ -9,13 +9,8 @@
   "db-conn": [
     {
       "type": "Oracle",
-      "conn": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.100.115)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=SMECQ",
-      "remark": "100.115 Oracle CQSME"
-    },
-    {
-      "type": "MySQL",
-      "conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME",
-      "remark": "100.115 MySQL CQSME"
+      "conn": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.100.115)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=ABC;Password=PWD",
+      "remark": "100.115 Oracle"
     },
     {
       "type": "MySQL",
@@ -24,18 +19,13 @@
     },
     {
       "type": "MySQL",
-      "conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=cqsme_platform_main",
-      "remark": "100.115 MySQL cqsme_platform_main"
-    },
-    {
-      "type": "MySQL",
       "conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=diff-main",
       "remark": "100.115 MySQL diff-main"
     },
     {
       "type": "SQLServer",
-      "conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=CQSME",
-      "remark": "100.115 SQLServer CQSME"
+      "conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=netnrf;TrustServerCertificate=True;",
+      "remark": "100.115 SQLServer netnrf"
     },
     {
       "type": "PostgreSQL",

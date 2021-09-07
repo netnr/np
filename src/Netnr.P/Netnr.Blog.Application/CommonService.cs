@@ -101,6 +101,8 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static SharedPageVM UserWritingQuery(string KeyWords, int page, string TagName = "")
         {
+            var vm = new SharedPageVM();
+
             KeyWords ??= "";
 
             var pag = new SharedPaginationVM
@@ -135,7 +137,7 @@ namespace Netnr.Blog.Application
                 kws = kws.Distinct().ToList();
 
                 var inner = PredicateBuilder.New<UserWriting>();
-                kws.ForEach(k => inner.Or(x => x.UwTitle.Contains(k) || x.UwContentMd.Contains(k)));
+                kws.ForEach(k => inner.Or(x => x.UwTitle.Contains(k)));
                 query = query.Where(inner);
             }
 
@@ -184,12 +186,9 @@ namespace Netnr.Blog.Application
                 }
             }
 
-            var vm = new SharedPageVM()
-            {
-                Rows = list,
-                Pag = pag,
-                QueryString = dicQs
-            };
+            vm.Rows = list;
+            vm.Pag = pag;
+            vm.QueryString = dicQs;
 
             if (!string.IsNullOrWhiteSpace(TagName))
             {
@@ -504,6 +503,11 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static int NewMessageQuery(int UserId)
         {
+            if (SharedFast.GlobalTo.GetValue<bool>("ReadOnly"))
+            {
+                return 0;
+            }
+
             var ck = $"mq_{UserId}";
             var num = CacheTo.Get(ck) as int?;
             if (num == null)
@@ -760,7 +764,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 4
+                PageSize = 24
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };

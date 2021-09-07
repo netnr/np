@@ -2,12 +2,12 @@
 using System.Data;
 using System.Reflection;
 using System.Data.Common;
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 using Netnr.Core;
 using Netnr.SharedAdo;
 using Netnr.DataX.Domain;
 using Netnr.SharedDataKit;
+using System.ComponentModel.DataAnnotations;
 
 namespace Netnr.DataX.Application;
 
@@ -16,44 +16,63 @@ namespace Netnr.DataX.Application;
 /// </summary>
 public partial class MenuService
 {
-    [Description("退出")]
+    [Display(Name = "退出", GroupName = "0")]
     public static void Exit()
     {
         Environment.Exit(0);
     }
 
-    [Description("系统状态")]
+    #region 11
+
+    [Display(Name = "系统状态", GroupName = "11")]
     public static void SystemStatus()
-    {
-        var cri = DXService.ConsoleReadItem("请选择：", "Json,View".Split(','), 2);
-
-        var ss = new SystemStatusTo();
-        if (cri == 2)
-        {
-            Console.WriteLine(ss.ToView());
-        }
-        else
-        {
-            Console.WriteLine(ss.ToJson());
-        }
-    }
-
-    [Description("查询信息")]
-    public static bool QueryInfo()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
+
+        var ss = new SystemStatusTo();
+        DXService.Log(ss.ToView());
+    }
+
+    [Display(Name = "打开 Hub 文件夹", GroupName = "11")]
+    public static void OpenHubFolder()
+    {
+        //输出头
+        var mi = MethodBase.GetCurrentMethod();
+        DXService.ShowTitleInfo(mi);
+
+        //配置
+        var co = new ConfigObj();
+        if (CmdTo.IsWindows)
+        {
+            CmdTo.Execute($"start {co.DXHub}");
+        }
+        else
+        {
+            DXService.Log("仅支持 Windows 系统");
+        }
+    }
+
+    #endregion
+
+    #region 44
+
+    [Display(Name = "数据库信息", GroupName = "44")]
+    public static bool DatabaseInfo()
+    {
+        //输出头
+        var mi = MethodBase.GetCurrentMethod();
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
 
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
         //查询项
         var qi = DXService.ConsoleReadItem("选择查询项：", "环境信息,库信息,表信息".Split(','), 1);
+
+        //选择库
+        var cdb = DXService.ConsoleReadDatabase(co);
 
         DXService.Log("正在查询，请稍等...\n");
         switch (qi)
@@ -76,10 +95,7 @@ public partial class MenuService
                     var vm = DataKitTo.GetDatabase(cdb.TDB, cdb.Conn);
                     if (vm.Code == 200)
                     {
-                        (vm.Data as List<DatabaseVM>).ForEach(item =>
-                        {
-                            DXService.Log($"{item.ToJson()}\n");
-                        });
+                        DXService.Log($"{vm.Data.ToJson(true)}");
                     }
                     else
                     {
@@ -92,10 +108,7 @@ public partial class MenuService
                     var vm = DataKitTo.GetTable(cdb.TDB, cdb.Conn);
                     if (vm.Code == 200)
                     {
-                        (vm.Data as List<TableVM>).ForEach(item =>
-                        {
-                            DXService.Log($"{item.ToJson()}\n");
-                        });
+                        DXService.Log($"{vm.Data.ToJson(true)}");
                     }
                     else
                     {
@@ -108,13 +121,12 @@ public partial class MenuService
         return true;
     }
 
-    [Description("数据库优化")]
+    [Display(Name = "数据库优化", GroupName = "44")]
     public static bool DatabaseBetter()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -123,7 +135,7 @@ public partial class MenuService
         var cdb = DXService.ConsoleReadDatabase(co);
 
         //新数据库
-        var db = new DbHelper(DataKitAidTo.SqlConn(cdb.TDB, cdb.Conn));
+        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
 
         switch (cdb.TDB)
         {
@@ -207,13 +219,12 @@ public partial class MenuService
         return true;
     }
 
-    [Description("执行 SQL")]
-    public static bool ExecuteSQL()
+    [Display(Name = "执行 SQL", GroupName = "44")]
+    public static bool Execute()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -227,7 +238,7 @@ public partial class MenuService
         //跑表
         var st = new SharedTimingVM();
 
-        var db = new DbHelper(DataKitAidTo.SqlConn(cdb.TDB, cdb.Conn));
+        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
         var num = db.SqlExecute(FileTo.ReadText(sqlPath));
 
         DXService.Log($"执行结束，受影响行数：{num}，耗时：{st.PartTimeFormat()}");
@@ -235,13 +246,104 @@ public partial class MenuService
         return true;
     }
 
-    [Description("生成表 DDL")]
-    public static bool TableDDL()
+    [Display(Name = "导入数据库", GroupName = "4411")]
+    public static bool ImportDatabase()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
+
+        //配置
+        var co = new ConfigObj();
+
+        //选择库
+        var cdb = DXService.ConsoleReadDatabase(co);
+
+        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
+
+        var zipPath = DXService.ConsoleReadPath("导入源（zip）：", 1);
+
+        var clearTable = DXService.ConsoleReadItem("导入前删除表数据？", "不清空表数据,清空表数据".Split(','), 1) == 2;
+
+        var vm = DataKitAidTo.ImportDatabase(cdb.TDB, cdb.Conn, zipPath, clearTable, cce =>
+        {
+            DXService.Log($"{cce.NewItems[0]}");
+        });
+
+        return vm.Code == 200;
+    }
+
+    [Display(Name = "导出数据库", GroupName = "4411")]
+    public static bool ExportDatabase()
+    {
+        //输出头
+        var mi = MethodBase.GetCurrentMethod();
+        DXService.ShowTitleInfo(mi);
+
+        //配置
+        var co = new ConfigObj();
+
+        //选择库
+        var cdb = DXService.ConsoleReadDatabase(co);
+
+        var tables = new List<string>();
+        //指定表
+        Console.Write("指定表（默认所有表，多个表逗号分隔）：");
+        var tns = Console.ReadLine().Trim();
+        if (!string.IsNullOrWhiteSpace(tns))
+        {
+            tables.AddRange(tns.Split(','));
+        }
+
+        var outPath = PathTo.Combine(co.DXHub, $"{cdb.TDB}_{mi.Name}_{DateTime.Now:yyyyMMdd_HHmmss}.zip");
+
+        var vm = DataKitAidTo.ExportDatabase(cdb.TDB, cdb.Conn, outPath, tables, cce =>
+        {
+            DXService.Log($"{cce.NewItems[0]}");
+        });
+
+        return vm.Code == 200;
+    }
+
+    [Display(Name = "导出表", GroupName = "4411")]
+    public static bool ExportDataTable()
+    {
+        //输出头
+        var mi = MethodBase.GetCurrentMethod();
+        DXService.ShowTitleInfo(mi);
+
+        //配置
+        var co = new ConfigObj();
+
+        //选择库
+        var cdb = DXService.ConsoleReadDatabase(co);
+
+        var sqls = new List<string>();
+        //指定表
+        Console.Write("查询表脚本（SELECT * FROM table1; SELECT * FROM table2）：");
+        var tns = Console.ReadLine().Trim();
+        if (!string.IsNullOrWhiteSpace(tns))
+        {
+            sqls.AddRange(tns.Split(';'));
+        }
+        sqls = sqls.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
+        var outPath = PathTo.Combine(co.DXHub, $"{cdb.TDB}_{mi.Name}_{DateTime.Now:yyyyMMdd_HHmmss}.zip");
+
+        var vm = DataKitAidTo.ExportDataTable(cdb.TDB, cdb.Conn, outPath, sqls, cce =>
+        {
+            DXService.Log($"{cce.NewItems[0]}");
+        });
+
+        return vm.Code == 200;
+    }
+
+    [Display(Name = "生成 DDL", GroupName = "44")]
+    public static bool BuildTableDDL()
+    {
+        //输出头
+        var mi = MethodBase.GetCurrentMethod();
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -274,74 +376,12 @@ public partial class MenuService
         return true;
     }
 
-    [Description("数据库导出")]
-    public static bool DatabaseExport()
+    [Display(Name = "生成 Drop Table SQL", GroupName = "44")]
+    public static bool BuildDropTable()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
-
-        //配置
-        var co = new ConfigObj();
-
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        var tables = new List<string>();
-        //指定表
-        Console.Write("指定表（默认所有表，多个表逗号分隔）：");
-        var tns = Console.ReadLine().Trim();
-        if (!string.IsNullOrWhiteSpace(tns))
-        {
-            tables.AddRange(tns.Split(','));
-        }
-
-        var outPath = PathTo.Combine(co.DXHub, $"{cdb.TDB}_{mi.Name}_{DateTime.Now:yyyyMMdd_HHmmss}.zip");
-
-        var vm = DataKitAidTo.DatabaseExport(cdb.TDB, cdb.Conn, outPath, tables, cce =>
-        {
-            DXService.Log($"{cce.NewItems[0]}");
-        });
-
-        return vm.Code == 200;
-    }
-
-    [Description("数据库导入")]
-    public static bool DatabaseImport()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
-
-        //配置
-        var co = new ConfigObj();
-
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        var db = new DbHelper(DataKitAidTo.SqlConn(cdb.TDB, cdb.Conn));
-
-        var zipPath = DXService.ConsoleReadPath("导入源（zip）：", 1);
-
-        var clearTable = DXService.ConsoleReadItem("导入前删除表数据？", "不清空表数据,清空表数据".Split(','), 1) == 2;
-
-        var vm = DataKitAidTo.DatabaseImport(cdb.TDB, cdb.Conn, zipPath, clearTable, cce =>
-         {
-             DXService.Log($"{cce.NewItems[0]}");
-         });
-
-        return vm.Code == 200;
-    }
-
-    [Description("生成 Drop Table SQL")]
-    public static bool DropTableSQL()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -358,7 +398,7 @@ public partial class MenuService
             foreach (var item in tables)
             {
                 var sql = "DROP TABLE";
-                listSql.Add($"{sql} {DataKitAidTo.SqlQuote(cdb.TDB, item.TableName)}");
+                listSql.Add($"{sql} {DbHelper.SqlQuote(cdb.TDB, item.TableName)}");
             }
             var sqls = string.Join(";\n", listSql);
 
@@ -373,13 +413,12 @@ public partial class MenuService
         return true;
     }
 
-    [Description("生成 Truncate Table SQL")]
-    public static bool TruncateTableSQL()
+    [Display(Name = "生成 Truncate Table SQL", GroupName = "44")]
+    public static bool BuildTruncateTable()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -396,7 +435,7 @@ public partial class MenuService
             foreach (var item in tables)
             {
                 var sql = cdb.TDB == SharedEnum.TypeDB.SQLite ? "DELETE FROM" : "TRUNCATE TABLE";
-                listSql.Add($"{sql} {DataKitAidTo.SqlQuote(cdb.TDB, item.TableName)}");
+                listSql.Add($"{sql} {DbHelper.SqlQuote(cdb.TDB, item.TableName)}");
             }
             var sqls = string.Join(";\n", listSql);
 
@@ -411,13 +450,12 @@ public partial class MenuService
         return true;
     }
 
-    [Description("生成表映射（原=>新）")]
-    public static bool MappingTable()
+    [Display(Name = "生成 表映射（原=>新）", GroupName = "4466")]
+    public static bool BuildMappingTable()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -483,13 +521,12 @@ public partial class MenuService
         return true;
     }
 
-    [Description("生成列映射（原=>新）")]
-    public static bool MappingColumn()
+    [Display(Name = "生成 列映射（原=>新）", GroupName = "4466")]
+    public static bool BuildMappingColumn()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -579,13 +616,12 @@ public partial class MenuService
         return true;
     }
 
-    [Description("表数据转换（原=>新）")]
+    [Display(Name = "表数据转换（原=>新）", GroupName = "4466")]
     public static bool Conversion()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         //配置
         var co = new ConfigObj();
@@ -629,7 +665,7 @@ public partial class MenuService
         }
 
         //原表数据查询
-        var odQuerySql = $"SELECT * FROM {DataKitAidTo.SqlQuote(odb.TDB, cv.OdTableName)}";
+        var odQuerySql = $"SELECT * FROM {DbHelper.SqlQuote(odb.TDB, cv.OdTableName)}";
         Console.Write($"原表数据查询 SQL（默认 {odQuerySql}）：");
         cv.OdQuerySql = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(cv.OdQuerySql))
@@ -644,7 +680,7 @@ public partial class MenuService
         }
 
         //新表清空数据脚本（为空时不清空）
-        var ndClearTableSql = DataKitAidTo.SqlQuote(ndb.TDB, cv.NdTableName);
+        var ndClearTableSql = DbHelper.SqlQuote(ndb.TDB, cv.NdTableName);
         ndClearTableSql = ndb.TDB == SharedEnum.TypeDB.SQLite ? $"DELETE FROM {ndClearTableSql}" : $"TRUNCATE TABLE {ndClearTableSql}";
         Console.Write($"新表清空数据脚本 SQL（如 {ndClearTableSql}）：");
         cv.NdClearTableSql = Console.ReadLine();
@@ -655,8 +691,8 @@ public partial class MenuService
         //跑表
         var st = new SharedTimingVM();
 
-        DbConnection odc = DataKitAidTo.SqlConn(odb.TDB, odb.Conn);
-        DbConnection ndc = DataKitAidTo.SqlConn(ndb.TDB, ndb.Conn);
+        DbConnection odc = DataKitAidTo.DbConn(odb.TDB, odb.Conn);
+        DbConnection ndc = DataKitAidTo.DbConn(ndb.TDB, ndb.Conn);
         //原数据库
         var odDB = new DbHelper(odc);
         //新数据库
@@ -670,7 +706,7 @@ public partial class MenuService
         DXService.Log($"原表数据共：{odDt.Rows.Count} 行，查询耗时：{st.PartTimeFormat()}");
 
         //构建新表空数据
-        var ndDt = ndDB.SqlEmptyTable($"{DataKitAidTo.SqlQuote(ndb.TDB, cv.NdTableName)}");
+        var ndDt = ndDB.SqlEmptyTable($"{DbHelper.SqlQuote(ndb.TDB, cv.NdTableName)}");
 
         //遍历原表数据 填充到 新表
         foreach (DataRow odDr in odDt.Rows)
@@ -756,13 +792,16 @@ public partial class MenuService
         return true;
     }
 
-    [Description("git pull（有 .git 文件夹）")]
+    #endregion
+
+    #region 66
+
+    [Display(Name = "git pull（有 .git 文件夹）", GroupName = "66")]
     public static void GitPull()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         try
         {
@@ -801,13 +840,12 @@ public partial class MenuService
         }
     }
 
-    [Description("AES 加密解密（数据库连接字符串）")]
+    [Display(Name = "AES 加密解密（数据库连接字符串）", GroupName = "66")]
     public static void AESEncryptDecrypt()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         var ed = DXService.ConsoleReadItem("请选择：", "Encrypt 加密,Decrypt 解密".Split(','), 1);
 
@@ -832,36 +870,35 @@ public partial class MenuService
         }
     }
 
-    [Description("文本编码转换（请先备份）")]
+    [Display(Name = "文本编码转换（请先备份）", GroupName = "66")]
     public static void TextEncodingConversion()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         TextEncodingConversionService.Run();
     }
 
-    [Description("项目清理（删除 bin、obj）")]
+    [Display(Name = "项目清理（删除 bin、obj）", GroupName = "66")]
     public static void ProjectCleanup()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         ProjectCleanupService.Run();
     }
 
-    [Description("项目安全拷贝（替换 appsettings.json 密钥）")]
+    [Display(Name = "项目安全拷贝（替换 appsettings.json 密钥）", GroupName = "66")]
     public static void ProjectSafeCopy()
     {
         //输出头
         var mi = MethodBase.GetCurrentMethod();
-        var desc = mi.CustomAttributes.FirstOrDefault()?.ConstructorArguments.FirstOrDefault().Value.ToString();
-        DXService.Log($"{DateTime.Now:F} {desc}");
+        DXService.ShowTitleInfo(mi);
 
         ProjectSafeCopyService.Run();
     }
+
+    #endregion
 }

@@ -9,16 +9,17 @@ namespace Netnr.FileServer
     /// </summary>
     public class Startup
     {
-        /// <summary>
-        /// 构造
-        /// </summary>
-        /// <param name="configuration">配置信息</param>
-        /// <param name="env">环境信息</param>
         public Startup(IConfiguration configuration, IHostEnvironment env)
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //编码注册
+            GlobalTo.EncodingReg();
         }
+
+        //配置swagger
+        public string ver = "v1";
 
         /// This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -36,9 +37,9 @@ namespace Netnr.FileServer
             //配置swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "FileServer API",
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
                     Description = string.Join(" &nbsp; ", new List<string>
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
@@ -47,7 +48,7 @@ namespace Netnr.FileServer
                         "管理员默认密码：<b>nr</b>"
                     })
                 });
-
+                //注释
                 c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
 
@@ -74,8 +75,8 @@ namespace Netnr.FileServer
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "FileServer API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileServer API");
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
                 c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
@@ -85,6 +86,7 @@ namespace Netnr.FileServer
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
                 },
                 ServeUnknownFileTypes = true
             });

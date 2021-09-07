@@ -117,20 +117,21 @@ let bs = {
         var dom = document.createElement("div");
         dom.className = "modal";
         dom.innerHTML = `
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Message</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ${content}
-      </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">确定</button>
-      </div>
-    </div>
-  </div>`;
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                ${content}
+              </div>
+              <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">确定</button>
+              </div>
+            </div>
+          </div>
+        `;
 
         document.body.appendChild(dom);
         bs.obj.alert = new bootstrap.Modal(dom);
@@ -580,13 +581,6 @@ var ss = {
         var a = document.createElement('a');
         a.innerHTML = html;
         return a.innerText;
-    },
-
-    /**
-     * 回到顶部
-     */
-    toTop: function () {
-        $('html,body').animate({ scrollTop: 0 }, 400)
     },
 
     /**

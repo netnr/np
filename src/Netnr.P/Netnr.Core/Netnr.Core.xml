@@ -892,6 +892,11 @@
             可用交换空间（Linux）B
             </summary>
         </member>
+        <member name="P:Netnr.Core.SystemStatusTo.GCTotalMemory">
+            <summary>
+            GC 总占用内存
+            </summary>
+        </member>
         <member name="P:Netnr.Core.SystemStatusTo.LogicalDisk">
             <summary>
             逻辑磁盘 B

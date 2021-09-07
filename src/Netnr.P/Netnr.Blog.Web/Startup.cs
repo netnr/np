@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Netnr.Core;
 using Netnr.Login;
 using Netnr.SharedFast;
-using Netnr.SharedLogging;
 using Newtonsoft.Json.Converters;
 
 namespace Netnr.Blog.Web
@@ -17,9 +16,6 @@ namespace Netnr.Blog.Web
 
             //编码注册
             GlobalTo.EncodingReg();
-
-            //设置日志
-            LoggingTo.OptionsDbRoot = GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath);
 
             //结巴词典路径
             var jbPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
@@ -72,7 +68,6 @@ namespace Netnr.Blog.Web
         }
 
         //配置swagger
-        public string ns = Path.GetFileNameWithoutExtension(System.Reflection.MethodBase.GetCurrentMethod().Module.Name);
         public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -119,14 +114,14 @@ namespace Netnr.Blog.Web
             {
                 c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = ns,
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
                     Description = string.Join(" &nbsp; ", new List<string>
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
                         "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
                     })
                 });
-
+                //注释
                 c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
             //swagger枚举显示名称
@@ -193,8 +188,8 @@ namespace Netnr.Blog.Web
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = ns;
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
                 c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
@@ -209,6 +204,7 @@ namespace Netnr.Blog.Web
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
                 },
                 ServeUnknownFileTypes = true
             });

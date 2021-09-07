@@ -19,10 +19,10 @@ namespace Netnr.ResponseFramework.Web.Apps
             /// </summary>
             public Reg()
             {
-                //每间隔一天在4:4 重置数据库
-                _ = Schedule<DatabaseResetJob>().ToRunEvery(1).Days().At(4, 4);
+                //每间隔2天在4:4 重置数据库
+                _ = Schedule<DatabaseResetJob>().ToRunEvery(2).Days().At(4, 4);
 
-                //每间隔两天在3:3 清理临时目录
+                //每间隔2天在3:3 清理临时目录
                 _ = Schedule<ClearTmpJob>().ToRunEvery(2).Days().At(3, 3);
             }
         }

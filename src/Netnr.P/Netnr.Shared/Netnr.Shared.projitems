@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedTimingVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelperExtend.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\SQLiteHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\OracleHelper.cs" />

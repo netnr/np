@@ -22,8 +22,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-preview.7.21378.6" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-preview.7.21378.4" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.5" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0-preview.7.21378.4" />
 		<PackageReference Include="NPOI" Version="2.5.4" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />

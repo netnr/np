@@ -20,8 +20,7 @@ if (console) {
     oi = fi();
     var vls = [
         { name: "源码", link: "https://github.com/netnr/np" },
-        { name: "GitHub", link: "https://github.com/netnr" },
-        { name: "码云", link: "https://gitee.com/netnr" }
+        { name: "GitHub", link: "https://github.com/netnr" }
     ];
     for (var i = 0; i < vls.length; i++) {
         var vi = vls[i];

@@ -12,7 +12,13 @@ namespace Netnr.Chat
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //±àÂë×¢²á
+            GlobalTo.EncodingReg();
         }
+
+        //ÅäÖÃswagger
+        public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,12 +43,10 @@ namespace Netnr.Chat
             //ÅäÖÃswagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc(ver, new OpenApiInfo
                 {
-                    Title = "Netnr API",
-                    Version = "v1"
+                    Title = GlobalTo.HostEnvironment.ApplicationName
                 });
-
                 //×¢ÊÍ
                 c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
@@ -112,8 +116,8 @@ namespace Netnr.Chat
             //ÅäÖÃswagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "Netnr Chat API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
             });
 
             app.UseStaticFiles();

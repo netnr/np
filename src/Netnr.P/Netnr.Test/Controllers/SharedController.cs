@@ -14,54 +14,6 @@ namespace Netnr.Test.Controllers
     public class SharedController : Controller
     {
         /// <summary>
-        /// 查询数据库
-        /// </summary>
-        /// <param name="conn">连接字符串</param>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public SharedResultVM To_Ado_SQLite(string conn = @"Data Source=https://s1.netnr.eu.org/2020/05/22/2037505934.db", string sql = "select sqlite_version();PRAGMA encoding;select datetime();")
-        {
-            var vm = new SharedResultVM();
-
-            if (conn.Contains("://"))
-            {
-                var dbname = Math.Abs(conn.GetHashCode()).ToString() + ".db";
-                var fileName = PathTo.Combine(Path.GetTempPath(), dbname);
-                if (!System.IO.File.Exists(fileName))
-                {
-                    HttpTo.DownloadSave(HttpTo.HWRequest(conn.Split('=')[1]), fileName);
-                }
-                conn = @$"Data Source={fileName}";
-            }
-
-            var db = new DbHelper(new SqliteConnection(conn));
-            var ds = db.SqlQuery(sql);
-
-            vm.Log.Add(conn);
-            vm.Data = ds;
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public SharedResultVM To_DataKit_Aid()
-        {
-            return SharedResultVM.Try(vm =>
-            {
-                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.100.115)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=SMECQ;";
-                vm.Data = DataKitAidTo.SqlMappingCsharp(SharedEnum.TypeDB.Oracle, "PLTF_ACTIVITY", conn);
-                vm.Set(SharedEnum.RTag.success);
-
-                return vm;
-            });
-        }
-
-        /// <summary>
         /// User-Agent
         /// </summary>
         /// <param name="ua">User-Agent</param>

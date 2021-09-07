@@ -1,11 +1,8 @@
 ﻿#if Full || Ado || AdoFull
 
-using System;
-using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Generic;
 
 namespace Netnr.SharedAdo
 {
@@ -225,36 +222,6 @@ namespace Netnr.SharedAdo
                     Connection.Close();
                 }
             }
-        }
-    }
-
-    /// <summary>
-    /// 扩展
-    /// </summary>
-    public static class DbHelperExtend
-    {
-        /// <summary>
-        /// 查询返回数据集
-        /// </summary>
-        /// <param name="dbCommand"></param>
-        /// <returns></returns>
-        public static DataSet ExecuteDataSet(this DbCommand dbCommand)
-        {
-            var ds = new DataSet();
-
-            var reader = dbCommand.ExecuteReader();
-
-            do
-            {
-                var table = new DataTable
-                {
-                    TableName = "table" + (ds.Tables.Count + 1).ToString()
-                };
-                table.Load(reader);
-                ds.Tables.Add(table);
-            } while (!reader.IsClosed);
-
-            return ds;
         }
     }
 }

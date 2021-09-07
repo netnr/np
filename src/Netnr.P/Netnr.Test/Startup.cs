@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using Netnr.SharedFast;
 
 namespace Netnr.Test
@@ -8,7 +9,13 @@ namespace Netnr.Test
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //±àÂë×¢²á
+            GlobalTo.EncodingReg();
         }
+
+        //ÅäÖÃswagger
+        public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -26,11 +33,12 @@ namespace Netnr.Test
             //ÅäÖÃswagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc(ver, new OpenApiInfo
                 {
-                    Title = $"Netnr Test"
+                    Title = GlobalTo.HostEnvironment.ApplicationName
                 });
-                c.IncludeXmlComments(System.AppContext.BaseDirectory + $"Netnr.Test.xml", true);
+                //×¢ÊÍ
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
             //swaggerÃ¶¾ÙÏÔÊ¾Ãû³Æ
             services.AddSwaggerGenNewtonsoftSupport();
@@ -43,16 +51,12 @@ namespace Netnr.Test
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
 
             //ÅäÖÃswagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = $"Netnr Test";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
             });
 
             app.UseStaticFiles();

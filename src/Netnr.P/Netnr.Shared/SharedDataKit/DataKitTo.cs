@@ -79,6 +79,8 @@ namespace Netnr.SharedDataKit
                         }
                     }
 
+                    conn = SharedAdo.DbHelper.SqlConnPreCheck(tdb, conn);
+
                     switch (tdb.Value)
                     {
                         case SharedEnum.TypeDB.SQLite:

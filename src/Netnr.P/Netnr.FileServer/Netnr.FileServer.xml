@@ -547,13 +547,6 @@
             
             </summary>
         </member>
-        <member name="M:Netnr.FileServer.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment)">
-            <summary>
-            构造
-            </summary>
-            <param name="configuration">配置信息</param>
-            <param name="env">环境信息</param>
-        </member>
         <member name="M:Netnr.FileServer.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             This method gets called by the runtime. Use this method to add services to the container.
         </member>
@@ -937,6 +930,11 @@
         <member name="F:Netnr.SharedEnum.TypeDB.MySQL">
             <summary>
             MySQL
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.MariaDB">
+            <summary>
+            MariaDB
             </summary>
         </member>
         <member name="F:Netnr.SharedEnum.TypeDB.Oracle">

@@ -13,10 +13,12 @@ namespace Netnr.ResponseFramework.Web
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //编码注册
+            GlobalTo.EncodingReg();
         }
 
         //配置swagger
-        public string ns = Path.GetFileNameWithoutExtension(System.Reflection.MethodBase.GetCurrentMethod().Module.Name);
         public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -54,14 +56,14 @@ namespace Netnr.ResponseFramework.Web
             {
                 c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = ns,
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
                     Description = string.Join(" &nbsp; ", new string[]
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
                         "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
                     })
                 });
-
+                //注释
                 c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
             //swagger枚举显示名称
@@ -121,8 +123,8 @@ namespace Netnr.ResponseFramework.Web
             //配置swagger（生产环境不需要，把该代码移至 是开发环境 条件里面）
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = ns;
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
                 c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
@@ -137,6 +139,7 @@ namespace Netnr.ResponseFramework.Web
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
                 }
             });
 

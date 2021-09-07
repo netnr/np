@@ -18,14 +18,14 @@ namespace Netnr.Blog.Web.Apps
             /// </summary>
             public Reg()
             {
-                //Gist同步任务，每 2 小时一次
-                Schedule<GistSyncJob>().ToRunEvery(2).Hours();
+                //Gist 同步任务
+                Schedule<GistSyncJob>().ToRunEvery(6).Hours();
 
-                //处理操作记录，每 30 分钟一次
-                Schedule<HandleOperationRecordJob>().ToRunEvery(30).Minutes();
+                //处理操作记录
+                Schedule<HandleOperationRecordJob>().ToRunEvery(2).Hours();
 
-                //数据库备份到Git，每天 16:16 一次
-                Schedule<DatabaseBackupToGitJob>().ToRunEvery(1).Days().At(16, 16);
+                //数据库备份到 Git
+                Schedule<DatabaseBackupToGitJob>().ToRunEvery(4).Days().At(16, 16);
             }
         }
 

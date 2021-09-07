@@ -1,7 +1,6 @@
 ﻿
 <!--
 https://github.com/netnr
-https://gitee.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
 -->
@@ -29,7 +28,7 @@ https://netnr.eu.org
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
         <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=Fvvn7s9TPSb5hh48-nQwuh1-D6eIgfW6KErxCYjF_QA"></script>
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -64,7 +63,6 @@ https://netnr.eu.org
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
                                 <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
                             </ul>
                         </li>
@@ -97,7 +95,8 @@ https://netnr.eu.org
     </div>
 </div>
 
-<script src='https://npm.elemecdn.com/ag-grid-enterprise@25.3.0/dist/ag-grid-enterprise.min.js'></script>
+<script src='https://npm.elemecdn.com/ag-grid-enterprise@26.0.1/dist/ag-grid-enterprise.min.js'></script>
+<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>
 
 
 <script>
@@ -105,8 +104,6 @@ https://netnr.eu.org
         grid: null,
         gbox: document.querySelector('.grid'),
         init: function () {
-            ss.agg.lk();
-
             $('#txtToken').on('input', function () {
                 ss.ls.token = this.value;
                 ss.lsSave();

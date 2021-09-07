@@ -85,42 +85,6 @@ namespace Netnr.SharedDbContext
         }
 
         /// <summary>
-        /// 连接字符串加密/解密
-        /// </summary>
-        /// <param name="conn">连接字符串</param>
-        /// <param name="pwd">密码</param>
-        /// <param name="ed">1加密 2解密</param>
-        public static string ConnnectionEncryptOrDecrypt(string conn, string pwd, int ed = 1)
-        {
-            switch (ed)
-            {
-                //解密
-                case 2:
-                    {
-                        var ckey = "CONNED" + conn.GetHashCode();
-                        if (Core.CacheTo.Get(ckey) is not string cval)
-                        {
-                            var clow = conn.ToLower();
-                            var pts = new List<string> { "database", "server", "filename", "source", "user" };
-                            if (!pts.Any(x => clow.Contains(x)))
-                            {
-                                cval = Core.CalcTo.AESDecrypt(conn, pwd);
-                            }
-                            else
-                            {
-                                cval = conn;
-                            }
-                            Core.CacheTo.Set(ckey, cval);
-                        }
-                        return cval;
-                    }
-                //加密
-                default:
-                    return conn = Core.CalcTo.AESEncrypt(conn, pwd);
-            }
-        }
-
-        /// <summary>
         /// 获取连接字符串
         /// </summary>
         /// <param name="typeDB"></param>
@@ -132,76 +96,18 @@ namespace Netnr.SharedDbContext
             if (tdb != SharedEnum.TypeDB.InMemory)
             {
                 var pwd = GlobalTo.GetValue("ConnectionStrings:Password");
-                conn = ConnnectionEncryptOrDecrypt(conn, pwd, 2);
+                conn = SharedAdo.DbHelper.SqlConnEncryptOrDecrypt(conn, pwd);
 
                 if (tdb == SharedEnum.TypeDB.SQLite)
                 {
                     conn = conn.Replace("~", GlobalTo.ContentRootPath);
                 }
 
-                if ((tdb == SharedEnum.TypeDB.MySQL || tdb == SharedEnum.TypeDB.MariaDB) && !conn.Contains("AllowLoadLocalInfile"))
-                {
-                    conn = conn.TrimEnd(';') + ";AllowLoadLocalInfile=true";
-                }
+                conn = SharedAdo.DbHelper.SqlConnPreCheck(tdb, conn);
 
                 return conn;
             }
             return null;
-        }
-
-        /// <summary>
-        /// 获取数据库类型
-        /// </summary>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        public static SharedEnum.TypeDB? GetTypeDB(DbContext db)
-        {
-            SharedEnum.TypeDB? tdb = null;
-
-            var pn = db.Database.ProviderName.ToLower();
-            if (pn.Contains("sqlite"))
-            {
-                tdb = SharedEnum.TypeDB.SQLite;
-            }
-            else if (pn.Contains("mysql"))
-            {
-                tdb = SharedEnum.TypeDB.MySQL;
-            }
-            else if (pn.Contains("oracle"))
-            {
-                tdb = SharedEnum.TypeDB.Oracle;
-            }
-            else if (pn.Contains("sqlserver"))
-            {
-                tdb = SharedEnum.TypeDB.SQLServer;
-            }
-            else if (pn.Contains("postgresql") || pn.Contains("pgsql"))
-            {
-                tdb = SharedEnum.TypeDB.PostgreSQL;
-            }
-            else if (pn.Contains("memory"))
-            {
-                tdb = SharedEnum.TypeDB.InMemory;
-            }
-
-            return tdb;
-        }
-
-        /// <summary>
-        /// SQL引用符号
-        /// </summary>
-        /// <param name="KeyWord">关键字</param>
-        /// <param name="tdb">数据库类型</param>
-        /// <returns></returns>
-        public static string SqlQuote(string KeyWord, SharedEnum.TypeDB? tdb = null)
-        {
-            return tdb switch
-            {
-                SharedEnum.TypeDB.SQLite or SharedEnum.TypeDB.SQLServer => $"[{KeyWord}]",
-                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => $"`{KeyWord}`",
-                SharedEnum.TypeDB.Oracle or SharedEnum.TypeDB.PostgreSQL => $"\"{KeyWord}\"",
-                _ => KeyWord,
-            };
         }
     }
 }

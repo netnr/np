@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net461;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>netstandard2;netstandard2.1</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Description>开发常用的核心类库；文档：https://netnr.eu.org</Description>
 		<Copyright>netnr</Copyright>

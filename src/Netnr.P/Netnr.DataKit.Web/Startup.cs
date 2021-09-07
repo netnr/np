@@ -5,10 +5,17 @@ namespace Netnr.DataKit.Web
 {
     public class Startup
     {
-        public Startup(IHostEnvironment env)
+        public Startup(IConfiguration configuration, IHostEnvironment env)
         {
+            GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //编码注册
+            GlobalTo.EncodingReg();
         }
+
+        //配置swagger
+        public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -31,9 +38,9 @@ namespace Netnr.DataKit.Web
             //配置swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "Netnr.DataKit API",
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
                     Description = string.Join(" &nbsp; ", new List<string>
                     {
                         "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
@@ -56,8 +63,8 @@ namespace Netnr.DataKit.Web
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "Netnr.DataKit API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
                 c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
