@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "操作日志";
 }
 
@@ -6,5 +6,14 @@
 {
     TableName = "SysLog"
 })
+
+@if (!GlobalTo.GetValue<bool>("logs:enable"))
+{
+    <script>
+        setTimeout(function () {
+            art('系统已关闭日志记录')
+        }, 1000 * 2);
+    </script>
+}
 
 <partial name="_BaseViewPartial" />

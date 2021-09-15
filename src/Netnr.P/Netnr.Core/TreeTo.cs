@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Netnr.Core
 {
@@ -21,7 +21,7 @@ namespace Netnr.Core
         /// <returns></returns>
         public static string ListToTree<T>(List<T> list, string pidField, string idField, List<string> startPid, string childrenNodeName = "children")
         {
-            StringBuilder sbTree = new StringBuilder();
+            StringBuilder sbTree = new();
 
             var rdt = list.Where(x => startPid.Contains(x.GetType().GetProperty(pidField).GetValue(x, null).ToString())).ToList();
 
@@ -46,7 +46,7 @@ namespace Netnr.Core
 
                 var pis = dr.GetType().GetProperties();
 
-                var pi = pis.Where(x => x.Name == idField).FirstOrDefault();
+                var pi = pis.FirstOrDefault(x => x.Name == idField);
                 startPid.Clear();
                 var id = pi.GetValue(dr, null).ToString();
                 startPid.Add(id);
@@ -98,7 +98,7 @@ namespace Netnr.Core
 
                 var pis = dr.GetType().GetProperties();
 
-                var pi = pis.Where(x => x.Name == idField).FirstOrDefault();
+                var pi = pis.FirstOrDefault(x => x.Name == idField);
                 startPid.Clear();
                 var id = pi.GetValue(dr, null).ToString();
                 startPid.Add(id);

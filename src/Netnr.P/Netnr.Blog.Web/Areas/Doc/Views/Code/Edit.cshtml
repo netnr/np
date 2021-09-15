@@ -1,6 +1,6 @@
 @model Netnr.Blog.Domain.DocSetDetail
 @{
-    ViewData["Title"] = "NetnrDoc";
+    ViewData["Title"] = GlobalTo.GetValue("Common:EnglishName") + " Doc";
 }
 
 <style>
@@ -29,7 +29,7 @@
                     <span class="input-group-text bg-white">目录</span>
                 </div>
                 <input type="hidden" name="DsdPid" value="@Model.DsdPid" />
-                <input type="text" id="txtDsdPid" class="form-control dropdown-toggle" data-toggle="dropdown">
+                <input type="text" id="txtDsdPid" class="form-control dropdown-toggle" data-toggle="dropdown" autocomplete="off">
                 <div class="dropdown-menu dmbox" id="dmbox"></div>
             </div>
         </div>
@@ -42,10 +42,10 @@
             </div>
         </div>
         <div class="col-sm-12 mt-3" id="btnbox">
-            <button class="btn mr-3 mb-3 btn-success" id="btnSave"><i class="fa fa-save"></i>&nbsp;保存</button>
+            <button class="btn mr-3 mb-3 btn-warning" id="btnSave"><i class="fa fa-save"></i>&nbsp;保存</button>
             <button class="btn mr-3 mb-3 btn-light" data-md="api">插入API接口模版</button>
             <button class="btn mr-3 mb-3 btn-light" data-md="dic">插入数据字典模版</button>
-            <a href="/doc/code/@Model.DsCode@(string.IsNullOrWhiteSpace(Model.DsdId)?"":"/"+Model.DsdId)" class="btn mb-3 btn-outline-dark">返回</a>
+            <a href="/doc/code/@Model.DsCode@(string.IsNullOrWhiteSpace(Model.DsdId)?"":"/"+Model.DsdId)" class="btn mb-3 btn-secondary">返回</a>
         </div>
         <div class="col-sm-12">
             <div id="editor" name="DsdContentMd" data-value="@Model.DsdContentMd"></div>
@@ -53,6 +53,6 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("netnrmd.css,netnrmd.js,monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor"))
 
 <script src="/areas/doc/js/code/edit.js" asp-append-version="true"></script>

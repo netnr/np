@@ -1,0 +1,18 @@
+@{
+    var md = FileTo.ReadText(PathTo.Combine(GlobalTo.WebRootPath, "db/free.md"));
+    var html = Markdig.Markdown.ToHtml(md);
+}
+
+<style>
+    ul {
+        padding: 0 20px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            @Html.Raw(html)
+        </div>
+    </div>
+</div>

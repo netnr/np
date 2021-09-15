@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "NetnrDoc";
+    ViewData["Title"] = GlobalTo.GetValue("Common:EnglishName") + " Doc";
     var code = ViewContext.RouteData.Values["id"]?.ToString();
 }
 <style>
@@ -65,7 +65,7 @@
                     <div class="form-group my-4">
                         <label>上级目录</label>
                         <input type="hidden" name="DsdPid" id="DsdPid" />
-                        <input id="txtDsdPid" class="form-control dropdown-toggle" data-toggle="dropdown">
+                        <input id="txtDsdPid" class="form-control dropdown-toggle" data-toggle="dropdown" autocomplete="off">
                         <div class="dropdown-menu dmbox" id="dmbox"></div>
                     </div>
                     <div class="form-group">

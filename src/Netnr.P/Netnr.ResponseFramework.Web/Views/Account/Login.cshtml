@@ -8,7 +8,7 @@
     <div class="col-sm-6 leftcard">
         <div class="row">
             <div class="col-lg-7 col-lg-offset-4 col-md-8 col-md-offset-3">
-                <h1>RF响应式管理系统</h1>
+                <h1>NRF响应式管理系统</h1>
                 <p>.NET Core的响应式框架，基于Ace Admin框架菜单导航，Bootstrap布局，fontAwesome图标，内嵌Iframe用EasyUI做数据绑定，动态配置列表，动态配置表单</p>
                 <img class="leftimg" src="/images/chart.svg">
             </div>
@@ -48,7 +48,7 @@
                     </div>
                     <button class="btn btn-danger btn-lg submit" type="submit">登录</button>
 
-                    <a href="/dk/resetdatabaseforjson" class="btn btn-warning btn-lg pull-right" target="_blank">重置数据库</a>
+                    <a href="/Services/DatabaseReset" class="btn btn-warning btn-lg pull-right" target="_blank">重置数据库</a>
                 </form>
                 <p class="small">点击登录即表示您同意我们的<a href="javascript:void(0)">条款</a>！</p>
                 <p class="small">没有账号? <a href="javascript:void(0)">点击注册</a></p>
@@ -57,8 +57,11 @@
     </div>
     <div class="col-sm-12 footer text-muted">
         <div>
-            <a class="text-muted" target="_blank" href="//dot.net">Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</a>
-            &nbsp; &nbsp; &copy; <a class="text-muted" target="_blank" href="https://github.com/netnr/netnrf">netnrf</a> @DateTime.Now.Year
+            @{
+                var os = Netnr.Core.SystemStatusTo.GetOSPlatform();
+            }
+            <a class="text-muted text-nowrap mr-3" href="//dot.net">Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription ❤️ @os</a>
+            &nbsp; &nbsp; &copy; <a class="text-muted" target="_blank" href="https://github.com/netnr/np">NRF</a> @DateTime.Now.Year
         </div>
     </div>
 </div>

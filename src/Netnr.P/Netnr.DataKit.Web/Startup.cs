@@ -1,48 +1,54 @@
-using System;
-using System.Linq;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Netnr.SharedFast;
+using Newtonsoft.Json.Converters;
 
 namespace Netnr.DataKit.Web
 {
     public class Startup
     {
-        public Startup(IHostEnvironment env)
+        public Startup(IConfiguration configuration, IHostEnvironment env)
         {
+            GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //ç¼–ç æ³¨å†Œ
+            GlobalTo.EncodingReg();
         }
+
+        //é…ç½®swagger
+        public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews()/*.AddRazorRuntimeCompilation()*/;
-            //¿ª·¢Ê±£º°²×°¸Ã°ü¿ÉÒÔ¶¯Ì¬ÐÞ¸ÄÊÓÍ¼ cshtml Ò³Ãæ£¬ÎÞÐèÖØÐÂÔËÐÐÏîÄ¿
-            //·¢²¼Ê±£º½¨ÒéÉ¾³ý¸Ã°ü£¬»áÉú³ÉÒ»¶Ñ¡°À¬»ø¡±
-            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+            services.AddControllersWithViews();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
-                //ActionÔ­ÑùÊä³öJSON
+                //ActionåŽŸæ ·è¾“å‡ºJSON
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                //ÈÕÆÚ¸ñÊ½»¯
+                //æ—¥æœŸæ ¼å¼åŒ–
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
-            });
 
-            //ÅäÖÃswagger
+                //swaggeræžšä¸¾æ˜¾ç¤ºåç§°
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
+            });
+            //swaggeræžšä¸¾æ˜¾ç¤ºåç§°
+            services.AddSwaggerGenNewtonsoftSupport();
+
+            //é…ç½®swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "Netnr.DataKit API",
-                    Version = "v1"
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
+                    Description = string.Join(" &nbsp; ", new List<string>
+                    {
+                        "<b>Source</b>ï¼š<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>Blog</b>ï¼š<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
+                    })
                 });
 
-                "DataKit.Web,DataKit".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
         }
 
@@ -54,11 +60,12 @@ namespace Netnr.DataKit.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            //ÅäÖÃswagger
+            //é…ç½®swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "Netnr.DataKit API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             app.UseStaticFiles();

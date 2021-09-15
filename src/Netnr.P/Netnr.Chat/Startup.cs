@@ -1,18 +1,8 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.Chat
 {
@@ -22,7 +12,13 @@ namespace Netnr.Chat
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //编码注册
+            GlobalTo.EncodingReg();
         }
+
+        //配置swagger
+        public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -34,10 +30,7 @@ namespace Netnr.Chat
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddControllersWithViews()/*.AddRazorRuntimeCompilation()*/;
-            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
-            //发布时：建议删除该包，会生成一堆“垃圾”
-            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+            services.AddControllersWithViews();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -50,43 +43,19 @@ namespace Netnr.Chat
             //配置swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc(ver, new OpenApiInfo
                 {
-                    Title = "Netnr API",
-                    Version = "v1"
+                    Title = GlobalTo.HostEnvironment.ApplicationName
                 });
-
-                //JwtBearer
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "请输入 /account/token 接口返回的 Token，前置Bearer。示例：Bearer x.y.z",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Scheme = "bearer",
-                    Type = SecuritySchemeType.Http
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new List<string>()
-                    }
-                });
-
                 //注释
-                "Chat,Fast".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
+
+            //授权访问信息
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
+            //session
+            services.AddSession();
 
             //配置上传文件大小限制（详细信息：FormOptions）
             services.Configure<FormOptions>(options =>
@@ -97,38 +66,15 @@ namespace Netnr.Chat
             //数据库连接池
             services.AddDbContextPool<Data.ContextBase>(options =>
             {
-                Data.ContextBase.DCOB(options);
-            }, 99);
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(GlobalTo.GetValue("TokenManagement:Secret"))),
-                    ValidIssuer = GlobalTo.GetValue("TokenManagement:Issuer"),
-                    ValidAudience = GlobalTo.GetValue("TokenManagement:Audience"),
-                    ClockSkew = TimeSpan.FromSeconds(GlobalTo.GetValue<int>("TokenManagement:AccessExpiration")),
-                    ValidateIssuer = true,
-                    ValidateAudience = true
-                };
-            });
+                Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
+            }, 20);
 
             services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Data.ContextBase db, IMemoryCache memoryCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Data.ContextBase db)
         {
-            //缓存
-            Core.CacheTo.memoryCache = memoryCache;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -139,7 +85,7 @@ namespace Netnr.Chat
             {
 
             }
-            if (db.NChatUser.Count() == 0)
+            if (!db.NChatUser.Any())
             {
                 db.NChatUser.AddRange(new List<Domain.NChatUser>()
                 {
@@ -147,7 +93,7 @@ namespace Netnr.Chat
                     {
                         CuUserId="5098247860344549548",
                         CuCreateTime=DateTime.Now,
-                        CuPassword=Core.CalcTo.MD5("netnr"),
+                        CuPassword=CalcTo.MD5("netnr"),
                         CuStatus=1,
                         CuUserName="netnr",
                         CuUserNickname="netnr",
@@ -157,7 +103,7 @@ namespace Netnr.Chat
                     {
                         CuUserId="5757526144712703761",
                         CuCreateTime=DateTime.Now,
-                        CuPassword=Core.CalcTo.MD5("123"),
+                        CuPassword=CalcTo.MD5("123"),
                         CuStatus=1,
                         CuUserName="123",
                         CuUserNickname="123",
@@ -170,8 +116,8 @@ namespace Netnr.Chat
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "Netnr Chat API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
             });
 
             app.UseStaticFiles();
@@ -182,7 +128,8 @@ namespace Netnr.Chat
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCookiePolicy();
+            //session
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

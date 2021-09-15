@@ -27,7 +27,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -50,7 +50,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -73,7 +73,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -96,7 +96,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -118,7 +118,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -141,7 +141,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -164,7 +164,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -187,7 +187,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -210,7 +210,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -279,7 +279,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -302,7 +302,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -325,7 +325,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -348,7 +348,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -371,7 +371,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -394,7 +394,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 
@@ -439,7 +439,7 @@ namespace Netnr.WeChat
                 .Append('"' + "end_date" + '"' + ":").Append(end_date.ToString("yyyy-MM-dd"))
                 .Append("}");
 
-            var result = Core.HttpTo.Post(url, builder.ToString());
+            var result = NetnrCore.HttpTo.Post(url, builder.ToString());
             return result;
         }
 

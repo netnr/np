@@ -2,7 +2,7 @@
     ViewData["Title"] = "记事本";
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12 mb-3">
             <div class="input-group input-group-sm">
@@ -63,6 +63,7 @@
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("netnrmd.css,netnrmd.js,monaco-editor,easyui")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor,easyui"))
+<partial name="_PartialQuote" model="@("z.css,z.js")" />
 
 <script src="/js/note/index.js" asp-append-version="true"></script>

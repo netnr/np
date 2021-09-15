@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
-using System;
-using System.Collections.Generic;
 using Netnr.ResponseFramework.Domain;
 
 namespace Netnr.ResponseFramework.Web.Controllers
@@ -100,7 +97,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                                 a.SmStatus,
                                 a.SmGroup,
                                 //查询是否有子集
-                                state = (from b in db.SysMenu where b.SmPid == a.SmId select b.SmId).Count() > 0 ? "closed" : "open"
+                                state = (from b in db.SysMenu where b.SmPid == a.SmId select b.SmId).Any() ? "closed" : "open"
                             };
                 var list = query.ToList();
                 return Content(list.ToJson());
@@ -251,9 +248,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="moMain"></param>
         /// <param name="rows"></param>
         /// <returns></returns>
-        public ActionResultVM SaveInvoiceForm(TempInvoiceMain moMain, string rows)
+        public SharedResultVM SaveInvoiceForm(TempInvoiceMain moMain, string rows)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             //明细反序列化为对象
             var listDetail = rows.ToEntitys<TempInvoiceDetail>();
@@ -335,92 +332,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public IActionResult RichText()
         {
             return View();
-        }
-
-        #endregion
-
-        #region Bulk Test，请手动修改 private 为 public 后测试
-
-        /// <summary>
-        /// 批量新增
-        /// </summary>
-        /// <returns></returns>
-        private ActionResultVM BulkInsert()
-        {
-            var vm = new ActionResultVM();
-
-            var list = new List<SysLog>();
-            for (int i = 0; i < 50_000; i++)
-            {
-                var mo = new SysLog()
-                {
-                    LogId = Guid.NewGuid().ToString(),
-                    LogAction = "/",
-                    LogBrowserName = "Chrome",
-                    LogArea = "重庆",
-                    LogContent = "测试信息",
-                    LogCreateTime = vm.StartTime,
-                    LogGroup = 1,
-                    LogIp = "0.0.0.0",
-                    LogSystemName = "Win10",
-                    LogUrl = Request.Path,
-                    SuName = "netnr",
-                    SuNickname = "netnr",
-                    LogRemark = "无"
-                };
-                list.Add(mo);
-            }
-
-            db.SysLog.BulkInsert(list);
-
-            db.BulkSaveChanges();
-
-            vm.Set(ARTag.success);
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 批量修改
-        /// </summary>
-        /// <returns></returns>
-        private ActionResultVM BulkUpdate()
-        {
-            var vm = new ActionResultVM();
-
-            var list = db.SysLog.OrderBy(x => x.LogCreateTime).Take(50_000).ToList();
-
-            foreach (var item in list)
-            {
-                item.LogRemark = Guid.NewGuid().ToString();
-            }
-
-            db.SysLog.BulkUpdate(list);
-
-            db.BulkSaveChanges();
-
-            vm.Set(ARTag.success);
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 批量删除
-        /// </summary>
-        /// <returns></returns>
-        private ActionResultVM BulkDelete()
-        {
-            var vm = new ActionResultVM();
-
-            var list = db.SysLog.OrderBy(x => x.LogCreateTime).Take(50_000).ToList();
-
-            db.SysLog.BulkDelete(list);
-
-            db.BulkSaveChanges();
-
-            vm.Set(ARTag.success);
-
-            return vm;
         }
 
         #endregion

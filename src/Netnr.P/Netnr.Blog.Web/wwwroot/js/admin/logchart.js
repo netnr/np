@@ -55,13 +55,13 @@ function loadTop(type, field, group) {
         })
 
         switch (field) {
-            case "LogUrl":
+            case "LogAction":
                 {
                     arr.push('<ul>');
 
                     $.each(data, function () {
                         arr.push('<li>');
-                        var url = location.origin + this.field;
+                        var url = location.origin + "/" + this.field;
                         arr.push('<a target="_blank" href="' + url + '">' + url + '</a>');
                         arr.push(' &nbsp; ' + this.total);
                         arr.push(' &nbsp; ' + this.p);
@@ -141,7 +141,7 @@ function init() {
     var st = $('#setime').val(), sg = $('#segroup').val();
 
     loadPVUV(st, sg);
-    loadTop(st, 'LogUrl', sg);
+    loadTop(st, 'LogAction', sg);
     loadTop(st, 'LogReferer', sg);
     loadTop(st, 'LogSystemName', sg);
     loadTop(st, 'LogBrowserName', sg);

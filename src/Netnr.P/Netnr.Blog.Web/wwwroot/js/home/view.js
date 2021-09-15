@@ -13,8 +13,3 @@ if (sk != "") {
         nt.innerHTML = newval.join('');
     });
 }
-
-//Emoji表情
-$('span.uw-emoji').each(function (i) {
-    this.innerHTML = '<img src="https://code.bdstatic.com/npm/netnr-cdn@0.0.1/libs/emoji/wangwang/' + Math.floor(Math.random() * 98) + '.gif" alt="emoji" />';
-});

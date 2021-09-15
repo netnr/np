@@ -1,0 +1,203 @@
+﻿/*公共包*/
+.jzart {
+    position: absolute;
+    color: #333;
+    display: block;
+    min-width: 10px;
+    max-width: 100%;
+    font-size: 14px;
+    line-height: 150%;
+    border-radius: .3rem;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid white;
+    font-family: Microsoft YaHei;
+    box-shadow: 0 2px 5px 1px rgba(0,0,0,.175);
+}
+
+
+    .jzart a, .jzart input {
+        outline: none;
+        resize: none;
+    }
+
+    /*头部*/
+    .jzart .jzart-header {
+        height: 50px;
+        padding: 0 15px;
+        min-width: 150px;
+        line-height: 50px;
+        white-space: nowrap;
+        border-bottom: 1px solid #dedede;
+    }
+
+        .jzart .jzart-header .jzart-header-title {
+            color: #212529;
+            font-size: 18px;
+            overflow: hidden;
+            font-weight: 600;
+            margin-right: 50px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .jzart .jzart-header .jzart-header-cloase {
+            border: none;
+            float: right;
+            color: #b4b4b4;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 50px;
+            text-decoration: none;
+            vertical-align: middle;
+        }
+
+            .jzart .jzart-header .jzart-header-cloase:hover {
+                color: #333;
+                text-decoration: none;
+            }
+
+    /*内容*/
+    .jzart .jzart-body {
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 15px 20px;
+        word-break: break-all;
+        word-wrap: break-word;
+        box-sizing: border-box;
+    }
+
+    /*内容提醒*/
+    .jzart .jzart-bodycare {
+        color: #4d5256;
+        padding: 15px 0;
+        font-size: 18px;
+        line-height: 1.5;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /*弹窗*/
+    .jzart .jzart-iframe {
+        width: 100%;
+        border: none;
+        height: 300px;
+        box-sizing: border-box;
+    }
+
+    /*底部按钮包*/
+    .jzart .jzart-footer {
+        padding: 20px;
+        min-width: 200px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    /*按钮*/
+    .jzart .art-btn {
+        margin: 0 8px;
+        font-size: 18px;
+        cursor: pointer;
+        text-align: center;
+        white-space: nowrap;
+        padding: 0.6em 0.9em;
+        border-radius: .25rem;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    /*确定按钮*/
+    .jzart .art-ok {
+        color: #fff;
+        border-color: #007bff;
+        background-color: #007bff;
+    }
+
+        .jzart .art-ok:hover, .jzart .art-ok:active {
+            text-decoration: none;
+            border-color: #0062cc;
+            background-color: #0069d9;
+        }
+
+    /*取消按钮*/
+    .jzart .art-cancel {
+        color: #333;
+        background-color: #fff;
+        border: 1px solid #c3b9b9;
+    }
+
+        .jzart .art-cancel:hover, .jzart .art-cancel:active {
+            color: #333;
+            text-decoration: none;
+            background-color: #f5f5f5;
+        }
+
+    /*  小提示 三角符号*/
+    .jzart .tip-em {
+        position: absolute;
+        width: 0;
+        height: 0;
+        font-size: 0;
+        line-height: 0;
+        border-width: 15px;
+        border-style: dashed;
+        border-color: transparent;
+    }
+
+    /* 上 */
+    .jzart .em-top {
+        left: 15px;
+        bottom: -13px;
+        border-left-style: solid;
+        border-left-color: #17a2b8;
+    }
+    /* 右 */
+    .jzart .em-right {
+        top: 15px;
+        left: -13px;
+        border-top-style: solid;
+        border-top-color: #17a2b8;
+    }
+    /* 左 */
+    .jzart .em-left {
+        top: 15px;
+        right: -13px;
+        border-top-style: solid;
+        border-top-color: #17a2b8;
+    }
+    /* 下 */
+    .jzart .em-bottom {
+        top: -13px;
+        left: 15px;
+        border-left-style: solid;
+        border-left-color: #17a2b8;
+    }
+
+/* msg */
+.jzart-msg {
+    color: #fff;
+    font-size: 1.5rem;
+    text-align: center;
+    background-color: #17a2b8;
+}
+
+/*  遮罩层 */
+.jzart-mask {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.01;
+    position: fixed;
+    background-color: #333;
+    filter: alpha(opacity=1);
+}
+
+/* 动画 */
+.jzart-fade {
+    transition: opacity .15s linear;
+}
+
+    .jzart-fade:not(.jzart-show) {
+        opacity: 0
+    }

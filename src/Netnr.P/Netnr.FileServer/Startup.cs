@@ -1,11 +1,6 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Linq;
+using Microsoft.Extensions.FileProviders;
+using Netnr.SharedFast;
 
 namespace Netnr.FileServer
 {
@@ -14,52 +9,50 @@ namespace Netnr.FileServer
     /// </summary>
     public class Startup
     {
-        /// <summary>
-        /// ππ‘Ï
-        /// </summary>
-        /// <param name="configuration">≈‰÷√–≈œ¢</param>
-        /// <param name="env">ª∑æ≥–≈œ¢</param>
         public Startup(IConfiguration configuration, IHostEnvironment env)
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //ÁºñÁ†ÅÊ≥®ÂÜå
+            GlobalTo.EncodingReg();
         }
+
+        //ÈÖçÁΩÆswagger
+        public string ver = "v1";
 
         /// This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews()/*.AddRazorRuntimeCompilation()*/;
-            //ø™∑¢ ±£∫∞≤◊∞∏√∞¸ø…“‘∂ØÃ¨–ﬁ∏ƒ ”Õº cshtml “≥√Ê£¨Œﬁ–Ë÷ÿ–¬‘À––œÓƒø
-            //∑¢≤º ±£∫Ω®“È…æ≥˝∏√∞¸£¨ª·…˙≥…“ª∂—°∞¿¨ª¯°±
-            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+            services.AddControllersWithViews();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
-                //Action‘≠—˘ ‰≥ˆJSON
+                //ActionÂéüÊ†∑ËæìÂá∫JSON
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                //»’∆⁄∏Ò ΩªØ
+                //Êó•ÊúüÊ†ºÂºèÂåñ
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
             });
 
-            //≈‰÷√swagger
+            //ÈÖçÁΩÆswagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "FileServer API",
-                    Version = "v1"
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
+                    Description = string.Join(" &nbsp; ", new List<string>
+                    {
+                        "<b>Source</b>Ôºö<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>Blog</b>Ôºö<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>",
+                        $"Êñá‰ª∂‰∏ä‰º†Â§ßÂ∞èÈôêÂà∂Ôºö<b>{GlobalTo.GetValue<int>("StaticResource:MaxSize")}</b> MB",
+                        "ÁÆ°ÁêÜÂëòÈªòËÆ§ÂØÜÁ†ÅÔºö<b>nr</b>"
+                    })
                 });
-
-                "FileServer,Fast".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                //Ê≥®Èáä
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
 
-            //¬∑”…–°–¥
-            services.AddRouting(options => options.LowercaseUrls = true);
-
-            //≈‰÷√…œ¥´Œƒº˛¥Û–°œﬁ÷∆£®œÍœ∏–≈œ¢£∫FormOptions£©
+            //ÈÖçÁΩÆ‰∏ä‰º†Êñá‰ª∂Â§ßÂ∞èÈôêÂà∂ÔºàËØ¶ÁªÜ‰ø°ÊÅØÔºöFormOptionsÔºâ
             services.Configure<FormOptions>(options =>
             {
                 options.MultipartBodyLengthLimit = GlobalTo.GetValue<int>("StaticResource:MaxSize") * 1024 * 1024;
@@ -67,31 +60,55 @@ namespace Netnr.FileServer
         }
 
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMemoryCache memoryCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //ª∫¥Ê
-            Core.CacheTo.memoryCache = memoryCache;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            //≈‰÷√swagger
+            //ÂàùÂßãÂåñÂ∫ì
+            using var db = new SQLite.SQLiteConnection(Application.FileServerService.SQLiteConn);
+            db.CreateTable<Model.SysApp>();
+            db.CreateTable<Model.FileRecord>();
+
+            //ÈÖçÁΩÆswagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "FileServer API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileServer API");
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
-            //æ≤Ã¨◊ ‘¥‘ –ÌøÁ”Ú
+            //ÈùôÊÄÅËµÑÊ∫êÂÖÅËÆ∏Ë∑®Âüü
             app.UseStaticFiles(new StaticFileOptions()
             {
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                }
+                    x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
+                },
+                ServeUnknownFileTypes = true
             });
+
+            //ÁõÆÂΩïÊµèËßà&&ÂÖ¨ÂºÄËÆøÈóÆ
+            if (GlobalTo.GetValue<bool>("Safe:EnableDirectoryBrowsing") && GlobalTo.GetValue<bool>("Safe:PublicAccess"))
+            {
+                string vrootdir = GlobalTo.GetValue("StaticResource:RootDir");
+                string prootdir = Application.FileServerService.StaticVrPathAsPhysicalPath(vrootdir);
+                if (!Directory.Exists(prootdir))
+                {
+                    Directory.CreateDirectory(prootdir);
+                }
+                app.UseFileServer(new FileServerOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(prootdir),
+                    //ÁõÆÂΩïÊµèËßàÈìæÊé•
+                    RequestPath = new PathString(vrootdir),
+                    EnableDirectoryBrowsing = true,
+                    EnableDefaultFiles = false
+                });
+            }
 
             app.UseRouting();
 

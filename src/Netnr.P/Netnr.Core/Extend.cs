@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Netnr
 {
@@ -18,15 +19,16 @@ namespace Netnr
         /// object 转 JSON 字符串
         /// </summary>
         /// <param name="obj"></param>
+        /// <param name="isSpace">缩进输出</param>
         /// <param name="DateTimeFormat">时间格式化</param>
         /// <returns></returns>
-        public static string ToJson(this object obj, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
+        public static string ToJson(this object obj, bool isSpace = false, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
         {
-            Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new Newtonsoft.Json.Converters.IsoDateTimeConverter
+            Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new()
             {
                 DateTimeFormat = DateTimeFormat
             };
-            return JsonConvert.SerializeObject(obj, dtFmt);
+            return JsonConvert.SerializeObject(obj, isSpace ? Formatting.Indented : Formatting.None, dtFmt);
         }
 
         /// <summary>
@@ -47,6 +49,18 @@ namespace Netnr
         public static JArray ToJArray(this string json)
         {
             return JArray.Parse(json);
+        }
+
+        /// <summary>
+        /// JSON字符串 转 类型
+        /// </summary>
+        /// <param name="json">JSON字符串</param>
+        /// <param name="type">类型</param>
+        /// <returns></returns>
+        public static object ToType(this string json, Type type)
+        {
+            var mo = JsonConvert.DeserializeObject(json, type);
+            return mo;
         }
 
         /// <summary>
@@ -95,7 +109,7 @@ namespace Netnr
         /// <returns></returns>
         public static string OfJson(this string s)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for (int i = 0; i < s.Length; i++)
             {
                 char c = s.ToCharArray()[i];
@@ -166,11 +180,12 @@ namespace Netnr
             foreach (DataRow dr in table.Rows)
             {
                 var model = new T();
+                var pis = model.GetType().GetProperties();
                 foreach (DataColumn dc in dr.Table.Columns)
                 {
                     object drValue = dr[dc.ColumnName];
 
-                    var pi = model.GetType().GetProperties().Where(x => x.Name.ToLower() == dc.ColumnName.ToLower()).FirstOrDefault();
+                    var pi = pis.FirstOrDefault(x => x.Name.ToLower() == dc.ColumnName.ToLower());
 
                     Type type = pi.PropertyType;
                     if (pi.PropertyType.FullName.Contains("System.Nullable"))
@@ -178,7 +193,7 @@ namespace Netnr
                         type = Type.GetType("System." + pi.PropertyType.FullName.Split(',')[0].Split('.')[2]);
                     }
 
-                    if (pi != null && pi.CanWrite && (drValue != null && !Convert.IsDBNull(drValue)))
+                    if (pi != null && pi.CanWrite && (drValue != null && drValue is not DBNull))
                     {
                         try
                         {
@@ -252,6 +267,30 @@ namespace Netnr
             var t = datetime.ToUniversalTime().Ticks - 621355968000000000;
             var tc = t / (isms ? 10000 : 10000000);
             return tc;
+        }
+
+        /// <summary>
+        /// 将Datetime转换成从UTC开始计算的总天数
+        /// </summary>
+        /// <param name="datetime"></param>
+        /// <returns></returns>
+        public static int ToUtcTotalDays(this DateTime datetime)
+        {
+            var d = datetime.ToTimestamp() * 1.0 / 3600 / 24;
+            return (int)Math.Ceiling(d);
+        }
+
+        /// <summary>
+        /// 拓展批量添加
+        /// </summary>
+        /// <param name="oc"></param>
+        /// <param name="list"></param>
+        public static void AddRange(this ObservableCollection<object> oc, IEnumerable<object> list)
+        {
+            foreach (var item in list)
+            {
+                oc.Add(item);
+            }
         }
     }
 }

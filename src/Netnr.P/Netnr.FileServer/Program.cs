@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-
 namespace Netnr.FileServer
 {
     /// <summary>
@@ -17,7 +14,7 @@ namespace Netnr.FileServer
             CreateHostBuilder(args).Build().Run();
         }
 
-        /// dotnet Netnr.FileServer.dll "http://*:55"
+        /// dotnet Netnr.FileServer.dll --urls "https://*:55"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
@@ -26,7 +23,7 @@ namespace Netnr.FileServer
                     //配置Kestrel接收文件
                     webBuilder.ConfigureKestrel((context, options) =>
                     {
-                        options.Limits.MaxRequestBodySize = GlobalTo.GetValue<int>("StaticResource:MaxSize") * 1024 * 1024;
+                        options.Limits.MaxRequestBodySize = SharedFast.GlobalTo.GetValue<int>("StaticResource:MaxSize") * 1024 * 1024;
                     });
 
                     webBuilder.UseStartup<Startup>();

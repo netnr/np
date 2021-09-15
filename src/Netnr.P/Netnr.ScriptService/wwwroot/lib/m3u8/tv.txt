@@ -1,0 +1,107 @@
+#EXTM3U
+#EXTINF:-1 ,CCTV-1综合
+http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8
+#EXTINF:-1 ,CCTV-2财经
+http://ivi.bupt.edu.cn/hls/cctv2hd.m3u8
+#EXTINF:-1 ,CCTV-3综艺
+http://ivi.bupt.edu.cn/hls/cctv3hd.m3u8
+#EXTINF:-1 ,CCTV-4中文国际
+http://ivi.bupt.edu.cn/hls/cctv4hd.m3u8
+#EXTINF:-1 ,CCTV-6电影
+http://ivi.bupt.edu.cn/hls/cctv6hd.m3u8
+#EXTINF:-1 ,CCTV-7军事农业
+http://ivi.bupt.edu.cn/hls/cctv7hd.m3u8
+#EXTINF:-1 ,CCTV-8电视剧
+http://ivi.bupt.edu.cn/hls/cctv8hd.m3u8
+#EXTINF:-1 ,CCTV-9纪录
+http://ivi.bupt.edu.cn/hls/cctv9hd.m3u8
+#EXTINF:-1 ,CCTV-10科教
+http://ivi.bupt.edu.cn/hls/cctv10hd.m3u8
+#EXTINF:-1 ,CCTV-11戏曲
+http://ivi.bupt.edu.cn/hls/cctv11hd.m3u8
+#EXTINF:-1 ,CCTV-12社会与法
+http://ivi.bupt.edu.cn/hls/cctv12hd.m3u8
+#EXTINF:-1 ,CCTV-14少儿
+http://ivi.bupt.edu.cn/hls/cctv14hd.m3u8
+#EXTINF:-1 ,湖南卫视高清
+http://ivi.bupt.edu.cn/hls/hunanhd.m3u8
+#EXTINF:-1 ,江苏卫视高清
+http://ivi.bupt.edu.cn/hls/jshd.m3u8
+#EXTINF:-1 ,东方卫视高清
+http://ivi.bupt.edu.cn/hls/dfhd.m3u8
+#EXTINF:-1 ,安徽卫视高清
+http://ivi.bupt.edu.cn/hls/ahhd.m3u8
+#EXTINF:-1 ,安徽卫视
+http://ivi.bupt.edu.cn/hls/ahtv.m3u8
+#EXTINF:-1 ,黑龙江卫视高清
+http://ivi.bupt.edu.cn/hls/hljhd.m3u8
+#EXTINF:-1 ,辽宁卫视高清
+http://ivi.bupt.edu.cn/hls/lnhd.m3u8
+#EXTINF:-1 ,深圳卫视高清
+http://ivi.bupt.edu.cn/hls/szhd.m3u8
+#EXTINF:-1 ,广东卫视高清
+http://ivi.bupt.edu.cn/hls/gdhd.m3u8
+#EXTINF:-1 ,广东卫视
+http://ivi.bupt.edu.cn/hls/gdtv.m3u8
+#EXTINF:-1 ,天津卫视高清
+http://ivi.bupt.edu.cn/hls/tjhd.m3u8
+#EXTINF:-1 ,湖北卫视高清
+http://ivi.bupt.edu.cn/hls/hbhd.m3u8
+#EXTINF:-1 ,湖北卫视
+http://ivi.bupt.edu.cn/hls/hbtv.m3u8
+#EXTINF:-1 ,山东卫视高清
+http://ivi.bupt.edu.cn/hls/sdhd.m3u8
+#EXTINF:-1 ,重庆卫视高清
+http://ivi.bupt.edu.cn/hls/cqhd.m3u8
+#EXTINF:-1 ,深圳卫视
+http://ivi.bupt.edu.cn/hls/sztv.m3u8
+#EXTINF:-1 ,河南卫视
+http://ivi.bupt.edu.cn/hls/hntv.m3u8
+#EXTINF:-1 ,陕西卫视
+http://ivi.bupt.edu.cn/hls/sxtv.m3u8
+#EXTINF:-1 ,吉林卫视
+http://ivi.bupt.edu.cn/hls/jltv.m3u8
+#EXTINF:-1 ,广西卫视
+http://ivi.bupt.edu.cn/hls/gxtv.m3u8
+#EXTINF:-1 ,河北卫视
+http://ivi.bupt.edu.cn/hls/hebtv.m3u8
+#EXTINF:-1 ,西藏卫视
+http://ivi.bupt.edu.cn/hls/xztv.m3u8
+#EXTINF:-1 ,内蒙古卫视
+http://ivi.bupt.edu.cn/hls/nmtv.m3u8
+#EXTINF:-1 ,青海卫视
+http://ivi.bupt.edu.cn/hls/qhtv.m3u8
+#EXTINF:-1 ,四川卫视
+http://ivi.bupt.edu.cn/hls/sctv.m3u8
+#EXTINF:-1 ,江苏卫视
+http://ivi.bupt.edu.cn/hls/jstv.m3u8
+#EXTINF:-1 ,天津卫视
+http://ivi.bupt.edu.cn/hls/tjtv.m3u8
+#EXTINF:-1 ,山西卫视
+http://ivi.bupt.edu.cn/hls/sxrtv.m3u8
+#EXTINF:-1 ,辽宁卫视
+http://ivi.bupt.edu.cn/hls/lntv.m3u8
+#EXTINF:-1 ,厦门卫视
+http://ivi.bupt.edu.cn/hls/xmtv.m3u8
+#EXTINF:-1 ,新疆卫视
+http://ivi.bupt.edu.cn/hls/xjtv.m3u8
+#EXTINF:-1 ,东方卫视
+http://ivi.bupt.edu.cn/hls/dftv.m3u8
+#EXTINF:-1 ,黑龙江卫视
+http://ivi.bupt.edu.cn/hls/hljtv.m3u8
+#EXTINF:-1 ,湖南卫视
+http://ivi.bupt.edu.cn/hls/hunantv.m3u8
+#EXTINF:-1 ,云南卫视
+http://ivi.bupt.edu.cn/hls/yntv.m3u8
+#EXTINF:-1 ,江西卫视
+http://ivi.bupt.edu.cn/hls/jxtv.m3u8
+#EXTINF:-1 ,福建东南卫视
+http://ivi.bupt.edu.cn/hls/dntv.m3u8
+#EXTINF:-1 ,贵州卫视
+http://ivi.bupt.edu.cn/hls/gztv.m3u8
+#EXTINF:-1 ,甘肃卫视
+http://ivi.bupt.edu.cn/hls/gstv.m3u8
+#EXTINF:-1 ,点掌财经
+http://cclive2.aniu.tv/live/anzb.m3u8
+#EXTINF:-1 ,北京卫视
+http://ivi.bupt.edu.cn/hls/btv1.m3u8

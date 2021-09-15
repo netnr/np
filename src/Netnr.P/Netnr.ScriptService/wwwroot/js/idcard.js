@@ -51,7 +51,7 @@ $('#btnSearch').click(function () {
         }
 
         if (carr[bianhao] == undefined || mn[m] == undefined || parseInt(d, 10) < 1 || parseInt(d, 10) > mn[m]) {
-            jz.msg('身份证信息有误');
+            bs.msg('身份证信息有误');
         } else if (ee == 0) {
             $('#code').html(card);
             $('#diqu').html(carr[bianhao]);
@@ -72,6 +72,6 @@ $('#btnSearch').click(function () {
             $('#info').hide();
         }
     } else {
-        jz.msg('请输入15或18位正确的身份证号码');
+        bs.msg('请输入15或18位正确的身份证号码');
     }
 });

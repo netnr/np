@@ -1,3 +1,60 @@
-﻿@{
-    ViewBag.Title = "Demo";
-}
+﻿<style>
+    /*路径*/
+    .nfm .pathBox a {
+        max-width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /*表头*/
+    .nfm .tableHeader > div:hover {
+        cursor: pointer;
+        background-color: #f8f9fa;
+    }
+
+    /*表主体*/
+    .nfm .tableBody {
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
+        .nfm .tableBody::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+            background-color: #F5F5F5;
+        }
+
+        .nfm .tableBody::-webkit-scrollbar-track {
+            border-radius: 4px;
+        }
+
+        .nfm .tableBody::-webkit-scrollbar-thumb {
+            border-radius: 6px;
+            background-color: #28a745;
+        }
+
+        /*表主体 图标*/
+        .nfm .tableBody .list-fileIcon {
+            height: 16px;
+            vertical-align: text-top;
+        }
+
+        /*表主体 数据行*/
+        .nfm .tableBody .row {
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+        }
+
+            .nfm .tableBody .row:hover {
+                border-top-color: #ddd;
+                border-bottom-color: #ddd;
+                background-color: #f8f9fa;
+            }
+</style>
+
+<div class="container-fluid mt-2 nfm"></div>
+
+<link href="/lib/webuploader/css/webuploader.css" rel="stylesheet" asp-append-version="true" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("webuploader.js"))
+<script src="https://npm.elemecdn.com/cos-js-sdk-v5@1.1.9/dist/cos-js-sdk-v5.min.js"></script>
+<script src="/lib/nfm/nfm.js" asp-append-version="true"></script>

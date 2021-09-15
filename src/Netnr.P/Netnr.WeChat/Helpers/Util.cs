@@ -27,7 +27,7 @@ namespace Netnr.WeChat.Helpers
             var arrString = string.Join("", arr);
             var sha1 = SHA1.Create();
             var sha1Arr = sha1.ComputeHash(Encoding.UTF8.GetBytes(arrString));
-            StringBuilder enText = new StringBuilder();
+            StringBuilder enText = new();
             foreach (var b in sha1Arr)
             {
                 enText.AppendFormat("{0:x2}", b);
@@ -60,7 +60,7 @@ namespace Netnr.WeChat.Helpers
         public static string MD5(string encypStr, string charset = "UTF-8")
         {
             string retStr;
-            MD5CryptoServiceProvider m5 = new MD5CryptoServiceProvider();
+            MD5CryptoServiceProvider m5 = new();
 
             //创建md5对象
             byte[] inputBye;
@@ -186,7 +186,7 @@ namespace Netnr.WeChat.Helpers
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             using (Stream responseStream = response.GetResponseStream())
             {
-                using (StreamReader myStreamReader = new StreamReader(responseStream, Encoding.GetEncoding(encoding)))
+                using (StreamReader myStreamReader = new(responseStream, Encoding.GetEncoding(encoding)))
                 {
                     string retString = myStreamReader.ReadToEnd();
                     return retString;
@@ -201,7 +201,7 @@ namespace Netnr.WeChat.Helpers
         /// <param name="stream"></param>
         public static void Download(string url, Stream stream)
         {
-            WebClient wc = new WebClient();
+            WebClient wc = new();
             var data = wc.DownloadData(url);
             foreach (var b in data)
             {

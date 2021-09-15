@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+﻿using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web
 {
@@ -10,8 +9,7 @@ namespace Netnr.Blog.Web
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.Web.dll "http://*:50"
-
+        /// dotnet Netnr.Blog.Web.dll --urls "https://*:50"
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -23,11 +21,6 @@ namespace Netnr.Blog.Web
                     });
 
                     webBuilder.UseStartup<Startup>();
-
-                    if (args.Length > 0)
-                    {
-                        webBuilder.UseUrls(args[0]);
-                    }
                 });
     }
 }

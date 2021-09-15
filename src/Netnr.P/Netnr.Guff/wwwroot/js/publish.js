@@ -31,18 +31,19 @@ var gp = {
             if (v != "") {
                 var bi = document.createElement('div'), ics = [];
                 bi.className = "rounded";
-                switch (type) {
-                    case "Image":
+                switch (type.toLowerCase()) {
+                    case "image":
                         ics.push('<img data-src="' + v + '" src="' + v + '" onerror="this.remove()" title="图片 ' + v + '" />');
                         break;
-                    case "Audio":
+                    case "audio":
                         ics.push('<i data-src="' + v + '" class="fa fa-fw fa-lg fa-play-circle" title="音频 ' + v + '"></i>');
                         break;
-                    case "Video":
+                    case "video":
                         ics.push('<i data-src="' + v + '" class="fa fa-fw fa-lg fa-youtube-play" title="视频 ' + v + '"></i>');
                         break;
                 }
                 ics.push('<span class="fa fa-remove" title="删除"></span>')
+                console.log(ics)
                 bi.innerHTML = ics.join('');
                 $(bi).find('span').click(function () {
                     jz.confirm('确定删除？', {
@@ -109,8 +110,9 @@ $.each(gp.types, function () {
     $('#btnUp' + t).change(function () {
         var file = this.files[0];
         if (file) {
+
             if (true) {
-                jz.alert('抱歉，暂不支持上传<br/>请用链接的方式吧');
+                jz.alert("当前不支持上传资源<br/>请用外链的方式引用资源")
                 return false;
             }
 
@@ -130,7 +132,6 @@ $.each(gp.types, function () {
                 //上传
                 var fd = new FormData();
                 fd.append('file', file);
-                fd.append('name', file.name);
 
                 var xhr = new XMLHttpRequest();
                 xhr.upload.onprogress = function (event) {
@@ -143,17 +144,18 @@ $.each(gp.types, function () {
                     }
                 };
 
-                xhr.open("post", "https://gs.zme.ink/big/upload.php", true);
+                xhr.open("POST", "https://www.netnr.eu.org/api/v1/Upload", true);
                 xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
                 xhr.send(fd);
-                xhr.onreadystatechange = function (e) {
+                xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4) {
                         $('#loading' + t).addClass('d-none');
 
                         if (xhr.status == 200) {
                             var jv = JSON.parse(xhr.responseText);
-                            if (jv.code == 2) {
-                                gp.addFile(t, 'https://gs.zme.ink' + jv.url);
+                            console.log(jv);
+                            if (jv.code == 200) {
+                                gp.addFile(t, 'https://www.netnr.eu.org' + jv.data.path);
                             } else {
                                 jz.alert('上传失败');
                             }
@@ -208,7 +210,13 @@ $('#btnSave').click(function () {
     var uri = guff.host + 'api/v1/guff/' + (gp.id ? 'update' : 'add');
     $('input[name="GrId"]').val(gp.id || '');
 
-    guff.fetch(uri, $('#pform').serialize(), "post").then(x => x.json()).then(res => {
+    var fd = new FormData();
+    $('#pform').serializeArray().forEach(item => {
+        console.log(item);
+        fd.append(item.name, item.value);
+    })
+
+    guff.fetch(uri, fd, "post").then(x => x.json()).then(res => {
         $('#btnSave')[0].disabled = false;
         if (res.code == 200) {
             location.href = guff.loginLink().replace('login', 'detail#id=' + res.data);

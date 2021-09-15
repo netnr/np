@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>Netnrs Chat</title>
+
+    <meta name="keywords" content="chat,在线聊天,netnr" />
+    <meta name="description" content="chat,在线聊天,netnr" />
+
+    <script src="https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js"></script>
+
+    <link href="https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="https://npm.elemecdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    <link href="chat.css?v1" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="container" id="wrap">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="chat-head">
+                    <img src="favicon.ico" />
+                    <a href="#">Netnrs Chat</a>
+                    <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-default btn-sm" id="uid">user</button>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" id="funcmenu">
+                            <li><a href="#menu-info">个人信息</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#menu-wide">切换小/宽屏</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#menu-logoff">注销</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs" id="grouptypenav">
+                    <li class="active"><a href="#groupchat" data-toggle="tab">聊天</a></li>
+                    <li><a href="#groupnotice" data-toggle="tab">公告</a></li>
+                    <li><a href="#groupfile" data-toggle="tab">文件</a></li>
+                    <li><a href="#groupconfig" data-toggle="tab">设置</a></li>
+                </ul>
+                <div class="tab-content" id="grouptypebox">
+                    <div role="tabpanel" class="tab-pane fade active in" id="groupchat">
+                        <div class="row chatbox">
+                            <!--left-->
+                            <div class="col-sm-9 col-xs-12">
+                                <!--msg box-->
+                                <div class="chat-msgbox" id="msgbox"></div>
+                                <!--send msg box-->
+                                <div class="chat-sendbox">
+                                    <div>
+                                        <div id="editor">Loading ...</div>
+                                    </div>
+                                    <!--send button-->
+                                    <div class="btn-group dropup btn-send">
+                                        <button type="button" class="btn btn-primary btn-xs" id="btnPush">发送消息</button>
+                                        <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-right" id="funcfastsendkey">
+                                            <li><a href="#send-ctrlenter"><i class="fa fa-check-square-o"></i>按Ctrl+Enter键发送消息</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--right-->
+                            <div class="col-sm-3 hidden-xs">
+                                <!--apply-->
+                                <div class="chat-apply" id="chatapply">
+                                    <a href="#app-phone">
+                                        <i class="fa fa-phone-square fa-2x"></i><br />电话
+                                    </a>
+                                    <a href="#app-video" class="text-danger">
+                                        <i class="fa fa-video-camera fa-2x"></i><br />视频
+                                    </a>
+                                    <a href="#app-file">
+                                        <i class="fa fa-folder-open fa-2x"></i><br />文件
+                                    </a>
+                                </div>
+                                <!--user list-->
+                                <div class="chat-userlist">
+                                    <div class="chat-userctrl">
+                                        群成员 <span id="groupmembercount">1</span>/500
+                                        <a href="#" class="pull-right" title="搜索"><i class="fa fa-search"></i></a>
+                                    </div>
+                                    <div class="list-group" id="users">
+                                        <a href="#" class="list-group-item">loading...</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade groupnotice" id="groupnotice">
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                基于 Xiaomi-mimc webjs版本实现的群聊，更多功能完善中
+                                <div class="text-right">2018-06-13</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade groupfile" id="groupfile">
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                暂无文件
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="groupconfig">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModalAccount" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">用户名/Account</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="username" value="" placeholder="请输入用户名 回车" autocomplete="off" />
+                </div>
+                <div class="modal-footer">
+                    <span class="pull-left text-danger" id="mamsg"></span>
+                    <button type="button" class="btn btn-primary" id="btnOk">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModalEmoji">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body emojibox" id="myModalEmojiBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://s1.netnr.com/libs/mimc-webjs-sdk/1.0.3/mimc-min_1_0_3.js"></script>
+
+    <link href="https://npm.elemecdn.com/netnrmd@3.0.0/src/netnrmd.css" rel="stylesheet" />
+    <script src="https://npm.elemecdn.com/netnrmd@3.0.0/src/netnrmd.bundle.js"></script>
+
+    <script src="https://npm.elemecdn.com/monaco-editor@0.27.0/min/vs/loader.js"></script>
+    <script>
+        require.config({
+            paths: {
+                vs: 'https://npm.elemecdn.com/monaco-editor@0.27.0/min/vs'
+            },
+            'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+        });
+    </script>
+    <script src="chat.js?v2"></script>
+
+</body>
+</html>

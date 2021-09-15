@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>TRACE;Public;AdoFull;DataKit</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>TRACE;Public;AdoFull;DataKit</DefineConstants>
+	</PropertyGroup>
+
+	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
+
+	<ItemGroup>
+		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.2" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-preview.7.21378.4" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.3" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0-preview1.21237.2" />
+		<PackageReference Include="Npgsql" Version="6.0.0-preview7" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="ud\hub\README.md">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="ud\config.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

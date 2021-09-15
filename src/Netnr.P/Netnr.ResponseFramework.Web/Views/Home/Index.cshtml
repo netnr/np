@@ -2,19 +2,20 @@
 @{
     Layout = null;
 }
-
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html style="overflow:hidden; padding:0;">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>netnrf响应式框架</title>
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon"))
+    <title>NRF响应式框架</title>
 </head>
 
 <body class="no-skin">
-    <partial name="_QuotePartial" model="@("loading,bootstrap.css,fa.css,ace.css,z.css")" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading,bootstrap3.css,fa.css,ace.css"))
+    <partial name="_QuotePartial" model="@("z.css")" />
 
     <!--顶部-->
     <div id="navbar" class="navbar navbar-default navbar-fixed-top">
@@ -29,7 +30,7 @@
             <!--Logo-->
             <div class="navbar-header pull-left hidden-xs">
                 <a href="javascript:void(0);" class="navbar-brand">
-                    RF框架<sub class="small">（定时重置数据库）</sub>
+                    NRF响应式框架<sub class="small">（定时重置数据库）</sub>
                 </a>
             </div>
             <!--右侧-->
@@ -226,7 +227,8 @@
         </div>
     </div>
 
-    @await Html.PartialAsync("_QuotePartial", "jquery.js,bootstrap.js,ace.js,z.js,init.js")
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("jquery.js,bootstrap3.js,ace.js,z.js,init.js"))
+    <partial name="_QuotePartial" model="@("z.js,init.js")" />
 
 </body>
 </html>

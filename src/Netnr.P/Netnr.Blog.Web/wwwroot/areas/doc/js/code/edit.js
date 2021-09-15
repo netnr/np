@@ -1,13 +1,13 @@
 //初始化MarkDown
 require(['vs/editor/editor.main'], function () {
     window.nmd = new netnrmd('#editor', {
-        storekey: "md_autosave_" + location.pathname.replace("/", "").toLowerCase()
+        autosave: false
     });
 
-    nmd.setmd(nmd.obj.mebox.attr('data-value'));
+    nmd.setmd(nmd.obj.mebox.getAttribute('data-value'));
 
     $(window).on('load resize', function () {
-        var vh = $(window).height() - nmd.obj.container.offset().top - 15;
+        var vh = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 15;
         nmd.height(Math.max(100, vh));
     })
 
@@ -25,7 +25,7 @@ function loadMenuTree() {
         success: function (data) {
             if (data.code == 200) {
                 data = data.data;
-            } else if (data.code == 94) {
+            } else if (data.code == 410) {
                 data = [];
             } else {
                 jz.msg('fail');
@@ -162,7 +162,7 @@ $('#btnbox').click(function (e) {
 function InsertTemplateMd(md) {
     var docstop = $(document).scrollTop();
     $.ajax({
-        url: "/areas/doc/template/" + md + ".md?v2",
+        url: "/areas/doc/template/" + md + ".md?v3",
         success: function (data) {
             netnrmd.insertAfterText(nmd.obj.me, data);
         },

@@ -1,0 +1,308 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>图片审查 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 图片审查" />
+    <meta name="description" content="Script Services 绘画、变态、中立、色情、性感" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="绘画、变态、中立、色情、性感">
+                                    <svg class="titleicon"><use xlink:href="#nsfw"></use></svg> &#x56FE;&#x7247;&#x5BA1;&#x67E5;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <style>
+    .sbox {
+        position: relative;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+        .sbox .sbox-screen {
+            height: 371px;
+            line-height: 371px;
+        }
+
+            .sbox .sbox-screen img {
+                max-width: 98%;
+                max-height: 98%;
+                vertical-align: middle;
+            }
+
+        .sbox .sbox-scanner {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            z-index: 9999;
+            background-color: rgba(0,0,0,.8);
+            -moz-animation: scan 1s infinite;
+            -webkit-animation: scan 1s infinite;
+            animation: scan 1s infinite;
+            -webkit-animation-direction: alternate-reverse;
+            box-shadow: 0px 0px 30px rgba(255,204,102,.5);
+        }
+
+    @-webkit-keyframes scan {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        100% {
+            transform: translateY(364px);
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3 input-group">
+                <input id="txtFile" type="file" class="form-control" accept="image/*">
+            </div>
+            <div class="mb-3 rounded sbox">
+                <div class="sbox-scanner d-none"></div>
+                <div class="sbox-screen">
+                    <img src="https://www.netnr.eu.org/api/v1/SVGPIG/400*200" id="imgview" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row nrResultType">
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-success" value="Drawing（绘画）" title="无害的艺术，或艺术绘画">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-info" value="Neutral（中立）" title="一般，无害的内容">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-warning" value="Sexy（性感）" title="不合时宜的挑衅内容">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-danger" value="Porn（色情）" title="不雅的内容和行为，通常涉及生殖器">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-dark" value="Hentai（变态）" title="色情艺术，不适合大多数工作环境">
+                </div>
+            </div>
+            <textarea class="form-control" rows="15" id="txtResult"></textarea>
+        </div>
+    </div>
+    <div class="row mt-3 nrChart">
+    </div>
+</div>
+
+<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.9.0/dist/tf.min.js'></script>
+<script src='https://npm.elemecdn.com/nsfwjs@2.4.1/dist/nsfwjs.min.js'></script>
+<script src='https://npm.elemecdn.com/highcharts@9.2.2/highcharts.js'></script>
+
+
+<script>
+    var pg = {
+        isgif: false,
+        model: null,
+        rtorder: [],
+        init: function () {
+            $('.nrResultType').find('input').each(function () {
+                pg.rtorder.push({
+                    key: this.value.split('（')[0],
+                    name: this.value
+                });
+            });
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                var isImg = false;
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    pg.isgif = file.type == "image/gif";
+                    if (file.type.indexOf("image") != -1) {
+                        isImg = true;
+                        pg.iv.onload = function () {
+                            pg.scan();
+                        }
+                        pg.iv.src = URL.createObjectURL(file);
+                        break;
+                    }
+                }
+                if (!isImg) {
+                    bs.alert('<h4>不是图片哦</h4>');
+                    pg.iv.src = `${ss.apiServer}/v1/SVGPIG/400*200`;
+                }
+            }, "#txtFile");
+
+            pg.modelPath();
+        },
+        iv: document.getElementById('imgview'),
+
+        modelPath: function () {
+            if (!pg.modelVersion) {
+                var bhtm = document.body.innerHTML;
+                pg.modelVersion = bhtm.substr(bhtm.indexOf("/nsfwjs"), 20).substring(8).split('/')[0];
+            }
+            return `https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@${pg.modelVersion}/example/nsfw_demo/public/quant_nsfw_mobilenet/`
+        },
+
+        scan: function () {
+            $('.sbox-scanner').removeClass('d-none');
+            $('#txtResult').val("正在加载引擎...")
+            if (pg.model) {
+                pg.classify();
+            } else {
+                nsfwjs.load(pg.modelPath()).then(function (model) {
+                    pg.model = model;
+                    pg.classify();
+                })
+            }
+        },
+
+        classify: function () {
+            $('#txtResult').val("正在识别...")
+
+            var mf = pg.isgif ? "classifyGif" : "classify";
+            pg.model[mf](pg.iv).then(function (predictions) {
+                console.log(predictions);
+
+                if (pg.isgif) {
+                    var oarr = [];
+                    predictions.forEach(parr => {
+                        var ro = {};
+                        parr.forEach(p => {
+                            ro[p.className] = p.probability.toFixed(20);
+                        });
+                        oarr.push(ro);
+                    });
+                    $('#txtResult').val(JSON.stringify(oarr, null, 4))
+                    pg.chart(oarr);
+                } else {
+                    var ro = {};
+                    predictions.forEach(p => {
+                        ro[p.className] = p.probability.toFixed(20);
+                    });
+                    $('#txtResult').val(JSON.stringify(ro, null, 4))
+                    pg.chart([ro]);
+                }
+
+                $('.sbox-scanner').addClass('d-none');
+            })
+        },
+
+        chart: function (results) {
+            var nrc = $('.nrChart').empty()
+            for (var i = 0; i < results.length; i++) {
+                var ro = results[i], data = [];
+                for (var j = 0; j < pg.rtorder.length; j++) {
+                    var o = pg.rtorder[j];
+                    data.push({
+                        name: o.name,
+                        y: ro[o.key] * 1
+                    });
+                }
+
+                var colsize = results.length > 1 ? "col-md-6 col-xl-4" : "col-md-12";
+
+                $('<div style="height:360px;" class="' + colsize + ' px-3 mb-3"></div>').appendTo(nrc).highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: '识别结果占比' + (results.length > 1 ? '（' + (i + 1) + ' 帧）' : '')
+                    },
+                    colors: ['#28a745', '#17a2b8', '#ffc107', '#dc3545', '#343a40'],
+                    tooltip: {
+                        headerFormat: '{series.name}<br>',
+                        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: '识别结果占比',
+                        data: data
+                    }]
+                });
+            }
+
+        }
+    }
+
+    pg.init();
+</script>
+        </div>
+</body>
+</html>

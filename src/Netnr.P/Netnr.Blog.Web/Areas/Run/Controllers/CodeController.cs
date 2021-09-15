@@ -1,11 +1,18 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Run.Controllers
+namespace Netnr.Blog.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class CodeController : Controller
     {
+        public ContextBase db;
+
+        public CodeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// Run一条
         /// </summary>
@@ -23,8 +30,7 @@ namespace Netnr.Web.Areas.Run.Controllers
             if (!string.IsNullOrWhiteSpace(id) && id.ToLower().Contains(".json"))
             {
                 id = id.Replace(".json", "");
-                using var db = new Blog.Data.ContextBase();
-                var mo = db.Run.Where(x => x.RunCode == id && x.RunOpen == 1 && x.RunStatus == 1).FirstOrDefault();
+                var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.RunOpen == 1 && x.RunStatus == 1);
                 if (mo != null)
                 {
                     return Content(new
@@ -45,9 +51,7 @@ namespace Netnr.Web.Areas.Run.Controllers
             {
                 case "edit":
                     {
-                        using var db = new Blog.Data.ContextBase();
-                        var mo = db.Run.Where(x => x.RunCode == id).FirstOrDefault();
-                        //有记录且为当前用户
+                        var mo = db.Run.FirstOrDefault(x => x.RunCode == id);
                         if (mo != null)
                         {
                             return View("_PartialMonacoEditor", mo);
@@ -58,9 +62,9 @@ namespace Netnr.Web.Areas.Run.Controllers
                     {
                         if (User.Identity.IsAuthenticated)
                         {
-                            using var db = new Blog.Data.ContextBase();
-                            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
-                            var mo = db.Run.Where(x => x.RunCode == id && x.Uid == uinfo.UserId).FirstOrDefault();
+                            var uinfo = Apps.LoginService.Get(HttpContext);
+
+                            var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.Uid == uinfo.UserId);
                             db.Run.Remove(mo);
                             int num = db.SaveChanges();
                             if (num > 0)
@@ -79,12 +83,9 @@ namespace Netnr.Web.Areas.Run.Controllers
                     }
             }
 
-            using (var db = new Blog.Data.ContextBase())
-            {
-                var mo = db.Run.Where(x => x.RunCode == id && x.RunStatus == 1 && x.RunOpen == 1).FirstOrDefault();
-                ViewData["pure"] = pure;
-                return View(mo);
-            }
+            var moout = db.Run.FirstOrDefault(x => x.RunCode == id && x.RunStatus == 1 && x.RunOpen == 1);
+            ViewData["pure"] = pure;
+            return View(moout);
         }
     }
 }

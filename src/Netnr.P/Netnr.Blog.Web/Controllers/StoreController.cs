@@ -1,19 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Qcloud.Shared.Api;
 using Qcloud.Shared.Common;
-using Netnr.Blog.Web.Filters;
 using Netease.Cloud.NOS;
 using Qiniu.Util;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 存储
     /// </summary>
+    [Apps.FilterConfigs.IsAdmin]
     public class StoreController : Controller
     {
         /// <summary>
@@ -22,7 +20,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            return Redirect("/store/qnkodo");
+            return View();
         }
 
         #region QQ对象存储
@@ -31,7 +29,6 @@ namespace Netnr.Blog.Web.Controllers
         /// QQ对象存储
         /// </summary>
         /// <returns></returns>
-        [FilterConfigs.LocalAuth]
         public IActionResult QQCos()
         {
             return View();
@@ -42,7 +39,7 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         public class AccessCOS
         {
-            public static int APPID => Convert.ToInt32(GlobalTo.GetValue("ApiKey:AccessCOS:APPID"));
+            public static int APPID => GlobalTo.GetValue<int>("ApiKey:AccessCOS:APPID");
             public static string SecretId => GlobalTo.GetValue("ApiKey:AccessCOS:SecretId");
             public static string SecretKey => GlobalTo.GetValue("ApiKey:AccessCOS:SecretKey");
         }
@@ -59,7 +56,7 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public string QQSign(string bucket, string path = "")
         {
-            Dictionary<string, string> dic = new Dictionary<string, string>
+            Dictionary<string, string> dic = new()
             {
                 { "Signature", QQSignature(bucket) },
                 { "SignatureOnce", QQSignatureOnce(bucket, path) }
@@ -167,7 +164,7 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                             }
                         }
-                        eachflag: if (result == "1")
+                    eachflag: if (result == "1")
                         {
                             result = "1";
                         }
@@ -270,7 +267,7 @@ namespace Netnr.Blog.Web.Controllers
                         }
                     }
                     break;
-                #endregion
+                    #endregion
             }
 
 
@@ -295,7 +292,6 @@ namespace Netnr.Blog.Web.Controllers
         /// NOS 对象存储
         /// </summary>
         /// <returns></returns>
-        [FilterConfigs.LocalAuth]
         public IActionResult NENos()
         {
             return View();
@@ -322,11 +318,21 @@ namespace Netnr.Blog.Web.Controllers
 
             switch (cmd)
             {
+                case "ak":
+                    {
+                        result = new
+                        {
+                            AccessKey = AccessNOS.AccessKeyId,
+                            SecretKey = AccessNOS.AccessKeySecret
+                        }.ToJson();
+                    }
+                    break;
+
                 #region 列举文件
                 case "list":
                     var listObjectsRequest = new ListObjectsRequest(bucket)
                     {
-                        MaxKeys = 1000,                        
+                        MaxKeys = 1000,
                         Prefix = Request.Form["keywords"].ToString()
                     };
                     try
@@ -336,7 +342,7 @@ namespace Netnr.Blog.Web.Controllers
                     }
                     catch (Exception ex)
                     {
-                        FilterConfigs.WriteLog(HttpContext, ex);
+                        Apps.FilterConfigs.WriteLog(HttpContext, ex);
                         result = "[]";
                     }
                     break;
@@ -391,16 +397,9 @@ namespace Netnr.Blog.Web.Controllers
         /// Qiniu对象存储
         /// </summary>
         /// <returns></returns>
-        [FilterConfigs.LocalAuth]
         public IActionResult QNKodo()
         {
             ViewData["DateUnix"] = DateTime.Now.AddHours(1).ToTimestamp();
-
-            if (FilterConfigs.HelpFuncTo.LocalIsAuth(Request.Cookies["sk"] ?? ""))
-            {
-                ViewData["LocalIsAuth"] = 1;
-            }
-
             return View();
         }
 
@@ -419,7 +418,7 @@ namespace Netnr.Blog.Web.Controllers
         public IActionResult QNToken(string type)
         {
             var mac = new Mac(AccessQN.AK, AccessQN.SK);
-            Auth auth = new Auth(mac);
+            Auth auth = new(mac);
 
             string result = string.Empty;
             switch (type)
@@ -519,13 +518,13 @@ namespace Netnr.Blog.Web.Controllers
 
         #endregion
 
-        #region Upyun云存储
+        #region UCloud 对象存储
 
         /// <summary>
-        /// Upyun云存储
+        /// UCloud 对象存储
         /// </summary>
         /// <returns></returns>
-        public IActionResult UPUss()
+        public IActionResult Ufile()
         {
             return View();
         }

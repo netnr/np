@@ -1,14 +1,9 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.OpenApi.Models;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Netnr.ResponseFramework.Data;
+using Newtonsoft.Json.Converters;
+using Netnr.SharedFast;
 
 namespace Netnr.ResponseFramework.Web
 {
@@ -18,7 +13,13 @@ namespace Netnr.ResponseFramework.Web
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //编码注册
+            GlobalTo.EncodingReg();
         }
+
+        //配置swagger
+        public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -33,14 +34,11 @@ namespace Netnr.ResponseFramework.Web
             services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
-                options.Filters.Add(new Filters.FilterConfigs.ErrorActionFilter());
+                options.Filters.Add(new Apps.FilterConfigs.ErrorActionFilter());
 
                 //注册全局过滤器
-                options.Filters.Add(new Filters.FilterConfigs.GlobalActionAttribute());
-            })/*.AddRazorRuntimeCompilation()*/;
-            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
-            //发布时：建议删除该包，会生成一堆“垃圾”
-            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+                options.Filters.Add(new Apps.FilterConfigs.GlobalActionAttribute());
+            });
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -48,24 +46,28 @@ namespace Netnr.ResponseFramework.Web
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 //日期格式化
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+
+                //swagger枚举显示名称
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
             //配置swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "RF API"
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
+                    Description = string.Join(" &nbsp; ", new string[]
+                    {
+                        "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
+                    })
                 });
-
-                "ResponseFramework.Web,ResponseFramework.Application,Fast".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                //注释
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
-
-            //路由小写
-            services.AddRouting(options => options.LowercaseUrls = true);
+            //swagger枚举显示名称
+            services.AddSwaggerGenNewtonsoftSupport();
 
             //授权访问信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -78,13 +80,13 @@ namespace Netnr.ResponseFramework.Web
             services.AddSession();
 
             //数据库连接池
-            services.AddDbContextPool<Data.ContextBase>(options =>
+            services.AddDbContextPool<ContextBase>(options =>
             {
-                Data.ContextBase.DCOB(options);
-            }, 99);
+                ContextBaseFactory.CreateDbContextOptionsBuilder(options);
+            }, 20);
 
             //定时任务
-            FluentScheduler.JobManager.Initialize(new Application.TaskService.Reg());
+            FluentScheduler.JobManager.Initialize(new Apps.TaskService.Reg());
 
             //配置上传文件大小限制（详细信息：FormOptions）
             services.Configure<FormOptions>(options =>
@@ -94,33 +96,40 @@ namespace Netnr.ResponseFramework.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Data.ContextBase db, IMemoryCache memoryCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ContextBase db)
         {
-            //缓存
-            Core.CacheTo.memoryCache = memoryCache;
-
             //是开发环境
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // The default HSTS value is 30 days. https://aka.ms/aspnetcore-hsts
+                app.UseHsts();
+            }
+
+            var createScript = db.Database.GenerateCreateScript();
+            Console.WriteLine(createScript);
 
             //数据库不存在则创建，创建后返回true
             if (db.Database.EnsureCreated())
             {
-                //调用重置数据库（实际开发中，你可能不需要，或只初始化一些表数据）
-                new Controllers.DKController(db).ResetDataBaseForJson();
+                //重置数据库
+                var vm = new Controllers.ServicesController().DatabaseReset();
+                Console.WriteLine(vm.ToJson(true));
             }
 
             //配置swagger（生产环境不需要，把该代码移至 是开发环境 条件里面）
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "RF API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             //默认起始页index.html
-            DefaultFilesOptions options = new DefaultFilesOptions();
+            DefaultFilesOptions options = new();
             options.DefaultFileNames.Add("index.html");
             app.UseDefaultFiles(options);
 
@@ -130,6 +139,7 @@ namespace Netnr.ResponseFramework.Web
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
                 }
             });
 

@@ -1,77 +1,133 @@
-﻿            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
 
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>天气预报 NET牛人</title>
-    <meta name="keywords" content="netnr,NET牛人,天气预报" />
-    <meta name="description" content="netnr,NET牛人,天气预报" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>天气预报 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 天气预报" />
+    <meta name="description" content="Script Services 天气预报" />
 
 </head>
 <body>
-                <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
-            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
 
+                <div class="container-fluid">
 
-    <link href="/css/global.css?v=jX4aC16PbVBajgFqmZiFWZXgNe9blHpS4ZMZF70KRFw" rel="stylesheet" />
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
 
-        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
-            <span class="fa fa-align-justify fa-2x"></span>
-        </button>
-        <div class="netnrnav horizontal">
-            <div class="netnrnav-wrapper">
-                <ul>
-                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
-                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                    <li>
-                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                        <ul>
-                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
-                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
-                            <li class="divider"></li>
-                            <li><a href="https://ss.netnr.com/message"><i class="fa fa-fw fa-commenting-o"></i> 留言</a></li>
-                            <li><a target="_blank" href="https://ss.netnr.com/contact"><i class="fa fa-fw fa-envelope-open-o"></i> 联系 <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li class="divider"></li>
-                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
 
-    <script src="/js/global.js?v=xYnLPncCGdwopIu-ETpzRKLPUDYBvYBsPkGjtl0yEB8"></script>
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="天气预报">
+                                    <svg class="titleicon"><use xlink:href="#weather"></use></svg> &#x5929;&#x6C14;&#x9884;&#x62A5;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
 
-        <h4 class="text-center mt-3 mb-4">
-            <img src="/icon/weather.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
-            &#x5929;&#x6C14;&#x9884;&#x62A5;
-        </h4>
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <style>
+    #divweather h4 {
+        font-weight: 400;
+        text-indent: 5px;
+        margin: 30px 0 30px 10px;
+    }
 
-    <div class="min300">
-        <link href="/css/weather.css?v=EuTEd2V0hUlmp__IJpw6r7J2IM0DT05wHSKhwJ_ULOw" rel="stylesheet" />
+    #divweather em {
+        color: #0066ff;
+        margin-right: 30px;
+        font-style: normal;
+    }
 
-<div class="container">
+    #divweather > div {
+        margin: 20px 0;
+        line-height: 1.8;
+    }
+
+        #divweather > div strong {
+            color: #009a61;
+            margin-left: 20px;
+        }
+
+        #divweather > div span {
+            margin-right: 20px;
+        }
+
+    #divWeatherCode {
+        left: 0;
+        right: 0;
+        top: 45px;
+        z-index: 8;
+        display: none;
+        font-size: 1.1em;
+        overflow-y: auto;
+        position: absolute;
+        border-radius: 5px;
+        border: 2px solid #ddd;
+        padding: 20px 20px 10px;
+        background-color: white;
+    }
+
+        #divWeatherCode a {
+            float: left;
+            white-space: nowrap;
+            margin: 0 15px 5px 0;
+        }
+</style>
+
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <!--搜索-->
-            <div class="input-group" style="position:relative">
+            <div class="input-group position-relative">
                 <input id="txtSearch" type="text" class="form-control" placeholder="输入城市名 ， 例如：重庆 或 CQ" autocomplete="off">
                 <div id="divWeatherCode"></div>
             </div>
@@ -81,9 +137,119 @@
 </div>
 
 <script src="/js/weathercode.js?v=y7-jJWQii7AlqQoBRPkmraN4ALgpW3FLj3eG-zScFKg"></script>
-<script src="/js/weather.js?v=Bq5uTvmz6_r5rmAymiEooFWmHcZZvUxevp3Hjci3tXM"></script>
-    </div>
 
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+<script>
+    //请求天气预报信息
+    QueryWeather(101040100);
+    function QueryWeather(cityCode) {
+        ss.loading();
+        ss.ajax({
+            url: "http://wthrcdn.etouch.cn/weather_mini?citykey=" + cityCode,
+            dataType: "json",
+            success: function (data) {
+                data = ss.datalocation(data);
+                if (data.desc == "OK") {
+                    var jsons = data.data.forecast,
+                        htm = '<div class="col-sm-12"><em>' + data.data.city + '</em>实时温度：<b>' + data.data.wendu + '℃</b></div>';
+                    for (var i in jsons) {
+                        var lx = jsons[i].type,
+                            fx = jsons[i].fengxiang,
+                            fl = jsons[i].fengli,
+                            gw = jsons[i].high,
+                            dw = jsons[i].low,
+                            rq = jsons[i].date;
+                        i == 0 && (rq = '今日天气');
+
+                        htm += '<div class="col-md-4 col-sm-6">'
+                            + '<b>' + rq + '</b>'
+                            + '<strong>' + lx + '</strong><br/>'
+                            + '<span>' + fl + '</span>'
+                            + '<span>' + dw + '</span>'
+                            + '<span>' + gw + '</span>'
+                            + '</div>';
+                    }
+                    htm += '<div class="col-md-4 col-sm-6">' + data.data.ganmao + '</div>';
+                    $("#divweather").html(htm);
+                } else {
+                    bs.alert("<h4>查询失败</h4>")
+                }
+            },
+            error: function () {
+                ss.loading(0);
+                bs.msg("<h4>网络错误</h4>")
+            },
+            complete: function () {
+                ss.loading(0);
+            }
+        });
+    }
+
+    //城市联动查询
+    $('#txtSearch').on('input', function () {
+        AutoLoadWeatherCode(this.value);
+    }).focus(function () {
+        $('#divWeatherCode').show();
+        AutoLoadWeatherCode(this.value);
+    });
+    function AutoLoadWeatherCode(value) {
+        var htmls = [];
+        if (value == "") {
+            $(WeatherCode).each(function () {
+                htmls.push('<div class="card mb-3">');
+                htmls.push('<div class="card-body">');
+                htmls.push('<h5 class="card-title">' + this.city + '</h4>');
+                $(this.citys).each(function () {
+                    htmls.push('<a href="javascript:void(0)" data-code="' + this.code + '" >' + this.name + '</a>');
+                });
+                htmls.push('</div></div>');
+            });
+        } else {
+            $(WeatherCode).each(function () {
+                var children = [];
+                $(this.citys).each(function () {
+                    if (this.name.indexOf(value) >= 0 || this.py.indexOf(value.toUpperCase()) >= 0) {
+                        children.push('<a href="javascript:void(0)" data-code="' + this.code + '" >' + this.name + '</a>');
+                    }
+                });
+                if (children.length) {
+                    htmls.push('<div class="card mb-3">');
+                    htmls.push('<div class="card-body">');
+                    htmls.push('<h5 class="card-title">' + this.city + '</h4>');
+                    htmls.push(children.join(''));
+                    htmls.push('</div></div>');
+                }
+            });
+        }
+        if (htmls.length) {
+            $('#divWeatherCode').html(htmls.join(''));
+        } else {
+            $('#divWeatherCode').html('( ⊙ o ⊙ ) ， 没有相关城市信息');
+        }
+    }
+    //点击城市发起查询
+    $('#divWeatherCode').click(function (e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        if (target.nodeName == "A") {
+            var code = target.getAttribute('data-code');
+            QueryWeather(code, target.innerHTML);
+            $('#divWeatherCode').hide();
+        }
+    }).css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 60 + "px");
+    //自适应高度
+    $(window).resize(function () {
+        $('#divWeatherCode').css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 60 + "px");
+    });
+
+    //点击空白关闭城市浮动层
+    $(document).click(function (e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        if (!$('#divWeatherCode')[0].contains(target) && target.id != "txtSearch") {
+            $('#divWeatherCode').hide();
+        }
+    });
+</script>
+        </div>
 </body>
 </html>

@@ -1,14 +1,16 @@
-﻿@{ var listTags = CommonService.TagsQuery().Take(20).ToList();}
+@{ var listTags = CommonService.TagsQuery().Take(25).ToList();}
 
 <div class="navtag">
     <ul class="nav nav-pills">
         <li class="nav-link">
-            <a href="/">全部</a>
+            <a href="/">#</a>
         </li>
         @foreach (var mo in listTags)
-        {
+        {   
             <li class="nav-link">
-                <a href="/home/type/@System.Web.HttpUtility.UrlEncode(mo.TagName)">@mo.TagName</a>
+                <a href="/home/type/@System.Web.HttpUtility.UrlEncode(mo.TagName)">                    
+                    @mo.TagName
+                </a>
             </li>
         }
     </ul>

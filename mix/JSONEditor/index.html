@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="utf-8" />
+    <meta name="referrer" content="never">
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>JSON编辑器 NET牛人</title>
+
+    <meta name="keywords" content="JSON编辑器 NET牛人" />
+    <meta name="description" content="JSON编辑器 JSON格式化工具 JSON在线工具" />
+
+    <style>
+        html, body, div, ul, li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            box-sizing: border-box;
+            font-size: 17px !important;
+        }
+
+            .jsoneditor-popover, .jsoneditor-schema-error, div.jsoneditor td, div.jsoneditor textarea, div.jsoneditor th, div.jsoneditor-field, div.jsoneditor-value, pre.jsoneditor-preview {
+                font-size: 17px !important;
+            }
+
+        .jvbox {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 10px solid transparent;
+        }
+
+            .jvbox .td1 {
+                width: 48%;
+            }
+
+            .jvbox .td2 {
+                padding-top: 50px;
+                vertical-align: top;
+            }
+
+            .jvbox .td3 {
+                width: 48%;
+            }
+
+            .jvbox tr > td {
+                position: relative;
+                vertical-align: top;
+                height: 100%;
+            }
+
+            .jvbox .td2 ul li {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+
+                .jvbox .td2 ul li button {
+                    outline: none;
+                    margin: 5px 0;
+                    cursor: pointer;
+                    padding: 5px 12px;
+                    border-radius: 3px;
+                    border: 1px solid #ddd;
+                    background-color: #ffffff;
+                }
+
+                    .jvbox .td2 ul li button:hover {
+                        border-color: #3883fa;
+                    }
+
+                    .jvbox .td2 ul li button svg {
+                        vertical-align: middle;
+                    }
+
+            .jvbox .json-editor > div {
+                position: absolute;
+            }
+
+        .jsoneditor-poweredBy {
+            display: none
+        }
+    </style>
+
+</head>
+<body>
+    <table class="jvbox" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="td1 code-editor"></td>
+            <td class="td2">
+                <ul>
+                    <li>
+                        <button id="toTree" type="button" title="视图化">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                            </svg>
+                        </button>
+                        <button id="toCode" type="button" title="代码化">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                            </svg>
+                        </button>
+                    </li>
+                    <li>
+                        <button id="toSave" type="button" title="保存">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+                            </svg>
+                        </button>
+                    </li>
+                    <li>
+                        <button id="toEscape1" type="button" title="转义双引号">
+                            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M693.925415 895.873969L397.564062 81.652185a15.753846 15.753846 0 0 0-20.180677-9.405047l-44.425847 16.163447a15.753846 15.753846 0 0 0-9.405046 20.19643l296.3456 814.206031a15.753846 15.753846 0 0 0 20.196431 9.405046l44.410092-16.163446a15.753846 15.753846 0 0 0 9.4208-20.180677z"></path></svg>
+                        </button>
+                        <button id="toEscape2" type="button" title="清理转义">
+                            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M512 981.312A469.632 469.632 0 0 1 42.688 512 469.632 469.632 0 0 1 512 42.688 469.632 469.632 0 0 1 981.312 512 469.632 469.632 0 0 1 512 981.312zM512 136.832a375.168 375.168 0 1 0 0 750.272A375.168 375.168 0 0 0 512 136.832z" p-id="7815"></path><path d="M810.24 857.344a45.184 45.184 0 0 1-32.96-14.144l-596.48-596.48c-18.816-18.816-18.816-48.64 0-65.92 18.816-18.816 48.64-18.816 65.92 0l596.48 596.48c18.816 18.816 18.816 48.64 0 65.92a42.752 42.752 0 0 1-32.96 14.08z"></path></svg>
+                        </button>
+                    </li>
+                </ul>
+            </td>
+            <td class="td3 json-editor"></td>
+        </tr>
+    </table>
+
+    <link href="https://npm.elemecdn.com/jsoneditor@9.5.3/dist/jsoneditor.min.css" rel="stylesheet">
+    <script src="https://npm.elemecdn.com/jsoneditor@9.5.3/dist/jsoneditor.min.js"></script>
+
+    <script>
+        //示例JSON
+        var exampleJson = { array: [1, 2, 3], boolean: !0, color: "#82b92c", null: null, number: 123, object: { a: "b", c: "d", e: "f" }, string: "Hello World" };
+
+        //初始化编辑器
+        var codeEditor = new JSONEditor(document.querySelector(".code-editor"), {
+            mode: 'code',
+            onError: function (err) {
+                alert(err.toString());
+            },
+            onChangeText: function (value) {
+                tempSaveJson(value)
+            }
+        });
+        var jsonEditor = new JSONEditor(document.querySelector(".json-editor"), {
+            mode: 'tree',
+            modes: ['code', 'form', 'text', 'tree', 'view'],
+            onError: function (err) {
+                alert(err.toString());
+            }
+        });
+
+        var je = localStorage.getItem("JE");
+        if (je && je != "") {
+            codeEditor.setText(je);
+        } else {
+            codeEditor.set(exampleJson);
+            jsonEditor.set(exampleJson);
+        }
+
+        function tempSaveJson(json) {
+            localStorage.setItem("JE", json);
+        }
+
+        //视图化
+        document.getElementById("toTree").onclick = function () {
+            try {
+                var code = codeEditor.get();
+                if (code == "") {
+                    alert("请输入JSON数据后再转换！");
+                } else {
+                    jsonEditor.set(code);
+                }
+            } catch (e) {
+                alert("JSON数据有误！");
+            }
+        }
+
+        //代码化
+        document.getElementById("toCode").onclick = function () {
+            try {
+                var code = jsonEditor.get();
+                codeEditor.set(code);
+                tempSaveJson(code);
+            } catch (e) {
+                alert("JSON数据有误！");
+            }
+        }
+
+        //保存
+        document.getElementById("toSave").onclick = function () {
+            try {
+                var code = codeEditor.getText();
+                var aTag = document.createElement('a');
+                var blob = new Blob([code]);
+                aTag.download = "code.json";
+                aTag.href = URL.createObjectURL(blob);
+                document.body.appendChild(aTag);
+                aTag.click();
+                URL.revokeObjectURL(blob);
+            } catch (e) {
+                alert("你的浏览器不支持！");
+            }
+        }
+
+        //添加转义
+        document.getElementById("toEscape1").onclick = function () {
+            var code = codeEditor.getText();
+            if (code == "") {
+                alert("请输入JSON数据后再转换！");
+            } else {
+                try {
+                    var cv = JSON.stringify({ a: JSON.stringify(JSON.parse(code)) });
+                    codeEditor.setText(cv.substring(6, cv.length - 2));
+                } catch (e) {
+                    console.log(e);
+                    codeEditor.setText(code.replace(/\"/g, '\\"'));
+                }
+            }
+        }
+
+        //去除转义
+        document.getElementById("toEscape2").onclick = function () {
+            var code = codeEditor.getText();
+            if (code == "") {
+                alert("请输入JSON数据后再转换！");
+            } else {
+                try {
+                    var cv = JSON.parse('{"a":"' + code + '"}').a;
+                    codeEditor.setText(cv);
+                } catch (e) {
+                    console.log(e);
+                    codeEditor.setText(code.replace(/\\"/g, '"'));
+                }
+            }
+        }
+
+        //拖拽
+        "dragleave dragenter dragover drop".split(' ').forEach(en => {
+            document.addEventListener(en, function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }, false)
+        });
+        document.addEventListener('drop', function (e) {
+            var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
+            if (files && files.length) {
+                var file = files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    codeEditor.setText(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+        }, false)
+    </script>
+</body>
+</html>

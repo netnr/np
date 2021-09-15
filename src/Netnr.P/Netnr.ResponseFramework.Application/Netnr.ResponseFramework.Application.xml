@@ -50,32 +50,6 @@
             <param name="list"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.CommonService.GetLoginUserInfo(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            获取登录用户信息
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.CommonService.LoginUserRoleInfo(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            获取登录用户角色信息
-            </summary>
-            <param name="context"></param>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.CommonService.TokenMake(Netnr.ResponseFramework.Application.ViewModel.LoginUserVM)">
-            <summary>
-            生成Token
-            </summary>
-            <param name="mo">授权用户信息</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.CommonService.TokenValid(System.String)">
-            <summary>
-            验证Token
-            </summary>
-            <param name="token"></param>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey">
             <summary>
             全局缓存KEY
@@ -84,6 +58,11 @@
         <member name="F:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey.SysMenu">
             <summary>
             菜单缓存KEY
+            </summary>
+        </member>
+        <member name="F:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey.SysRole">
+            <summary>
+            角色缓存KEY
             </summary>
         </member>
         <member name="F:Netnr.ResponseFramework.Application.CommonService.GlobalCacheKey.SysButton">
@@ -119,38 +98,20 @@
             <param name="cache"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysRoleEntity(System.Linq.Expressions.Expression{System.Func{Netnr.ResponseFramework.Domain.SysRole,System.Boolean}})">
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QuerySysRoleEntity(System.Func{Netnr.ResponseFramework.Domain.SysRole,System.Boolean},System.Boolean)">
             <summary>
             查询角色信息
             </summary>
             <param name="predicate"></param>
+            <param name="cache"></param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.ResponseFramework.Application.DataMirrorService">
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.QueryMenuIsAuth(System.String,System.String)">
             <summary>
-            - 数据库数据存储为JSON（备份数据）
-            - 根据JSON反序列化导入（重置数据）
-            
-            说明：从执行SQL脚本重置 改为 EF清理表插入数据的模式，更好维护，而且兼容了内存数据库
+            查询配置的菜单是否有权限访问（仅针对配置的菜单）
             </summary>
-        </member>
-        <member name="F:Netnr.ResponseFramework.Application.DataMirrorService.fullJsonData">
-            <summary>
-            JSON存储路径
-            </summary>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.DataMirrorService.SaveAsJson(System.Boolean)">
-            <summary>
-            保存为JSON文件
-            </summary>
-            <param name="CoverJson">写入JSON文件，默认 false</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.DataMirrorService.AddForJson(System.Boolean)">
-            <summary>
-            根据JSON写入数据
-            </summary>
-            <param name="isClear">是否清理表，默认清理</param>
+            <param name="roleId">角色ID</param>
+            <param name="url">链接</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.ResponseFramework.Application.ExportService">
@@ -196,23 +157,30 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status01(System.String)">
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs01(System.String)">
             <summary>
-            状态格式化
+            字典格式化
             </summary>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status02(System.String)">
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs02(System.String)">
             <summary>
-            状态格式化
+            字典格式化
             </summary>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Status03(System.String)">
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs03(System.String)">
             <summary>
-            状态格式化
+            字典格式化
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.ResponseFramework.Application.ExportService.CellMapping.Kvs04(System.String)">
+            <summary>
+            字典格式化
             </summary>
             <param name="value"></param>
             <returns></returns>
@@ -296,37 +264,6 @@
             <param name="st"></param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.ResponseFramework.Application.TaskService">
-            <summary>
-            任务
-            </summary>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.TaskService.ClearTemp">
-            <summary>
-            清理临时文件
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.ResponseFramework.Application.TaskService.Reg">
-            <summary>
-            任务注册
-            </summary>
-        </member>
-        <member name="M:Netnr.ResponseFramework.Application.TaskService.Reg.#ctor">
-            <summary>
-            构造
-            </summary>
-        </member>
-        <member name="T:Netnr.ResponseFramework.Application.TaskService.ResetDataBaseJob">
-            <summary>
-            重置数据库
-            </summary>
-        </member>
-        <member name="T:Netnr.ResponseFramework.Application.TaskService.ClearTempJob">
-            <summary>
-            清理临时目录
-            </summary>
-        </member>
         <member name="T:Netnr.ResponseFramework.Application.ViewModel.InvokeFormVM">
             <summary>
             表单组件参数项
@@ -395,6 +332,245 @@
         <member name="P:Netnr.ResponseFramework.Application.ViewModel.LoginUserVM.RoleId">
             <summary>
             角色ID
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedNpoi.NpoiTo">
+            <summary>
+            NPOI操作Excel
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedNpoi.NpoiTo.DataTableToExcel(System.Data.DataTable,System.String,System.Boolean)">
+            <summary>
+            DataTable生成Excel
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="fullPathName">物理路径 + 文件名称 + 格式</param>
+            <param name="isAutoSizeColumn">是否自适应列宽，默认否，开启自适应列宽需要成倍的时间</param>
+            <returns>返回生成状态</returns>
+        </member>
+        <member name="M:Netnr.SharedNpoi.NpoiTo.DataTableToExcel(System.Collections.Generic.Dictionary{System.String,System.Data.DataTable},System.String,System.Boolean)">
+            <summary>
+            导出多个工作簿
+            </summary>
+            <param name="dicSheet">工作簿名：数据表</param>
+            <param name="fullPathName">物理路径 + 文件名称 + 格式</param>
+            <param name="isAutoSizeColumn">是否自适应列宽，默认否，开启自适应列宽需要成倍的时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedNpoi.NpoiTo.ExcelToDataTable(NPOI.SS.UserModel.IWorkbook,System.Int32,System.String,System.Int32)">
+            <summary>
+            读取Excel为DataTable
+            </summary>
+            <param name="workbook"></param>
+            <param name="iSheetIndex">工作薄索引</param>
+            <param name="extName">文件格式后缀</param>
+            <param name="skipRow">跳过指定行开始读取，默认0</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedNpoi.NpoiTo.ExcelToDataTable(System.String,System.Int32,System.Int32)">
+            <summary>
+            读取Excel为DataTable
+            </summary>
+            <param name="fullPathName">Excel文件目录地址</param>
+            <param name="iSheetIndex">Excel sheet index</param>
+            <param name="skipRow">跳过指定行开始读取，默认0</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedNpoi.NpoiTo.ExcelToDataTable(System.IO.Stream,System.Int32,System.String,System.Int32)">
+            <summary>
+            读取Excel为DataTable
+            </summary>
+            <param name="s">流</param>
+            <param name="iSheetIndex">工作薄索引</param>
+            <param name="extName">文件格式后缀</param>
+            <param name="skipRow">跳过指定行开始读取，默认0</param>
+            <returns></returns>
+        </member>
+        <member name="T:QueryDataInputVM">
+            <summary>
+            输入参数
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.HandleType">
+            <summary>
+            处理类型，可选：query、export
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Uri">
+            <summary>
+            请求标识
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.TableName">
+            <summary>
+            表名
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Wheres">
+            <summary>
+            查询条件
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pagination">
+            <summary>
+            是否启用分页 1分页
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Page">
+            <summary>
+            页码 默认 1
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Rows">
+            <summary>
+            页量 默认 30
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Sort">
+            <summary>
+            排序列名
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Order">
+            <summary>
+            排序方式 默认 asc
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.SortOrderJoin">
+            <summary>
+            排序拼接
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.ColumnsExists">
+            <summary>
+            是否查询列信息 1不查询
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pe1">
+            <summary>
+            拓展参数 
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pe2">
+            <summary>
+            拓展参数 
+            </summary>
+        </member>
+        <member name="P:QueryDataInputVM.Pe3">
+            <summary>
+            拓展参数 
+            </summary>
+        </member>
+        <member name="T:QueryDataOutputVM">
+            <summary>
+            输出信息
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Total">
+            <summary>
+            总条数
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Table">
+            <summary>
+            数据，data转换表，忽略序列化
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Columns">
+            <summary>
+            列标题
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Or1">
+            <summary>
+            拓展信息 
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Or2">
+            <summary>
+            拓展信息
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.Or3">
+            <summary>
+            拓展信息 
+            </summary>
+        </member>
+        <member name="P:QueryDataOutputVM.QuerySql">
+            <summary>
+            查询SQL
+            </summary>
+        </member>
+        <member name="T:TreeNodeVM">
+            <summary>
+            Tree JSON 节点
+            推荐所有的JSON输出用此实体，保证一致性，即页面接收的JSON全是这种格式，方便维护。
+            如果不够用，自己灵活追加。
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Pid">
+            <summary>
+            父ID
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Text">
+            <summary>
+            内容
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Ext1">
+            <summary>
+            拓展
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Ext2">
+            <summary>
+            拓展
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Ext3">
+            <summary>
+            拓展
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Spare1">
+            <summary>
+            备用
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Spare2">
+            <summary>
+            备用
+            </summary>
+        </member>
+        <member name="P:TreeNodeVM.Spare3">
+            <summary>
+            备用
+            </summary>
+        </member>
+        <member name="T:ValueTextVM">
+            <summary>
+            键值对，下拉列表等
+            </summary>
+        </member>
+        <member name="P:ValueTextVM.Value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="P:ValueTextVM.Text">
+            <summary>
+            文本
             </summary>
         </member>
     </members>

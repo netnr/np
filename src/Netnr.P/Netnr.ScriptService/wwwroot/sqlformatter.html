@@ -1,85 +1,109 @@
-﻿            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
 
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>SQL格式化 NET牛人</title>
-    <meta name="keywords" content="netnr,NET牛人,SQL格式化" />
-    <meta name="description" content="netnr,NET牛人,美化SQL语句" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>SQL 格式化 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 SQL 格式化" />
+    <meta name="description" content="Script Services 美化 SQL 语句" />
 
 </head>
 <body>
-                <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
-            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
 
+                <div class="container-fluid">
 
-    <link href="/css/global.css?v=jX4aC16PbVBajgFqmZiFWZXgNe9blHpS4ZMZF70KRFw" rel="stylesheet" />
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
 
-        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
-            <span class="fa fa-align-justify fa-2x"></span>
-        </button>
-        <div class="netnrnav horizontal">
-            <div class="netnrnav-wrapper">
-                <ul>
-                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
-                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                    <li>
-                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                        <ul>
-                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
-                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
-                            <li class="divider"></li>
-                            <li><a href="https://ss.netnr.com/message"><i class="fa fa-fw fa-commenting-o"></i> 留言</a></li>
-                            <li><a target="_blank" href="https://ss.netnr.com/contact"><i class="fa fa-fw fa-envelope-open-o"></i> 联系 <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li class="divider"></li>
-                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
 
-    <script src="/js/global.js?v=xYnLPncCGdwopIu-ETpzRKLPUDYBvYBsPkGjtl0yEB8"></script>
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="美化 SQL 语句">
+                                    <svg class="titleicon"><use xlink:href="#sql"></use></svg> SQL &#x683C;&#x5F0F;&#x5316;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
 
-        <h4 class="text-center mt-3 mb-4">
-            <img src="/icon/sqlformatter.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
-            SQL&#x683C;&#x5F0F;&#x5316;
-        </h4>
-
-    <div class="min300">
-        <div class="container">
-    <div class="row">
-        <div class="col-lg-3 col-md-6">
-            <div class="input-group">
-                <button class="btn btn-warning" id="btnSqlFormatter">格式化</button>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="selanguage">
-                        <option value="sql">SQL</option>
-                        <option value="n1ql">N1QL</option>
-                        <option value="db2">DB2</option>
-                    </select>
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
                 </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-auto">
+            <div class="input-group mb-3">
+                <button class="btn btn-info" id="btnSqlFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
+                <select class="form-select nrSqlConfigLanguage">
+                    <optgroup label="语言类型">
+                        <option value="sql">SQL</option>
+                        <!-- dialects -->
+                        <option value="redshift">AWS Redshift</option>
+                        <option value="db2">DB2</option>
+                        <option value="mariadb">MariaDB</option>
+                        <option value="mysql">MySQL</option>
+                        <option value="n1ql">N1QL</option>
+                        <option value="plsql">PL/SQL</option>
+                        <option value="postgresql">PostgreSQL</option>
+                        <option value="spark">Spark</option>
+                        <option value="tsql">Transact-SQL</option>
+                    </optgroup>
+                </select>
+                <select class="form-select nrSqlConfigUpperCase">
+                    <optgroup label="关键字">
+                        <option value="1">大写</option>
+                        <option value="0">不处理</option>
+                    </optgroup>
+                </select>
+                <a target="_blank" class="btn btn-warning" href="https://sqlformat.darold.net/">pgFormatter</a>
             </div>
         </div>
-        <div class="col-md-12 mt-2">
+        <div class="col-md-12">
             <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
@@ -95,19 +119,86 @@
     AutoHeight();
 </script>
 
-            <script src="https://code.bdstatic.com/npm/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs/loader.js"></script>
-            <script>
-                require.config({
-                    paths: { vs: "https://code.bdstatic.com/npm/monaco-editor@0.19.3/min/vs" },
-                    'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
-                });
-            </script>
+<script src='https://npm.elemecdn.com/sql-formatter@4.0.2/dist/sql-formatter.min.js'></script>
+<script src='https://npm.elemecdn.com/monaco-editor@0.27.0/min/vs/loader.js'></script>
+
+<script>
+    function htmlDecode(html) {
+        var a = document.createElement('a');
+        a.innerHTML = html;
+        return a.innerText;
+    }
+
+    require.config({
+        paths: {
+            vs: 'https://npm.elemecdn.com/monaco-editor@0.27.0/min/vs'
+        },
+        'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+    });
+</script>
+                        
 
 
-<script src="/js/sqlformatter.js?v=s6U9fnEE5DlldWNE1_Jr6qU_99pqe_1m53htcDiDiHI"></script>
-    </div>
+<script>
+    var editor, dv = ss.lsStr('txt') || 'SELECT * FROM table1 表名',
+        scLanguage = ss.lsStr('sql-config-language') || 'sql',
+        scUpperCase = ss.lsStr('sql-config-uppercase') || "1";
 
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+    $('.nrSqlConfigLanguage').change(function () {
+        ss.ls["sql-config-language"] = this.value;
+        ss.lsSave();
+    }).val(scLanguage);
+
+    $('.nrSqlConfigUpperCase').change(function () {
+        ss.ls["sql-config-uppercase"] = this.value;
+        ss.lsSave();
+    }).val(scUpperCase);
+
+    require(['vs/editor/editor.main'], function () {
+        var te = $("#editor");
+
+        editor = monaco.editor.create(te[0], ss.meConfig({
+            value: dv,
+            language: 'sql'
+        }));
+
+        editor.onDidChangeModelContent(function (e) {
+            clearTimeout(window.defer1);
+            window.defer1 = setTimeout(function () {
+                ss.ls.txt = editor.getValue();
+                ss.lsSave();
+            }, 1000 * 1)
+        });
+
+        //快捷键
+        editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
+            $('#btnSqlFormatter')[0].click();
+        })
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+            $('#btnSqlFormatter')[0].click();
+        })
+    });
+
+    $(window).resize(AutoHeight);
+
+    $('#btnSqlFormatter').click(function () {
+        var sf = sqlFormatter.format(editor.getValue(), {
+            language: $('.nrSqlConfigLanguage').val(),
+            uppercase: $('.nrSqlConfigUpperCase').val() == "1"
+        });
+        editor.setValue(sf);
+    })
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            editor.setValue(e.target.result);
+        };
+        reader.readAsText(file);
+    });
+</script>
+        </div>
 </body>
 </html>

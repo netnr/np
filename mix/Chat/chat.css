@@ -1,0 +1,203 @@
+﻿::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: #eee;
+    margin: -2px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #aaa;
+    min-height: 150px;
+    min-width: 150px;
+    border-radius: 10px;
+}
+
+    ::-webkit-scrollbar-thumb:vertical:hover {
+        background: #555555
+    }
+
+    ::-webkit-scrollbar-thumb:horizontal:hover {
+        background: #555555
+    }
+
+html, body {
+    overflow: hidden;
+}
+
+.nav-tabs li a {
+    padding: 5px 10px;
+}
+
+/*头部*/
+.chat-head {
+    padding: 5px 0;
+}
+
+    .chat-head > a {
+        font-size: 1.4em;
+        vertical-align: middle;
+    }
+
+    .chat-head img {
+        height: 25px;
+        margin-right: 5px;
+    }
+
+/*消息容器*/
+.chat-msgbox {
+    border: 1px solid #ddd;
+    border-top: none;
+    overflow-y: auto;
+    height: 300px;
+    padding: 15px;
+}
+
+    .chat-msgbox .mb-item {
+        clear: both;
+        padding: 10px;
+    }
+
+        .chat-msgbox .mb-item .mb-photo {
+            width: 32px;
+            height: 32px;
+            margin-top: 10px;
+            margin-right: 15px;
+            vertical-align: top;
+        }
+
+        .chat-msgbox .mb-item .mb-title {
+            color: #999;
+        }
+
+            .chat-msgbox .mb-item .mb-title small {
+                margin-left: 15px;
+            }
+
+        .chat-msgbox .mb-item .mb-msg {
+            float: left;
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #efefef;
+            margin: -15px 0 15px 48px;
+        }
+
+            .chat-msgbox .mb-item .mb-msg p, .chat-msgbox .mb-item .mb-msg pre, .netnrmd-body p, .netnrmd-body pre {
+                margin-bottom: 0;
+            }
+
+            .chat-msgbox .mb-item .mb-msg img {
+                max-width: 100%;
+            }
+
+    .chat-msgbox .mb-right .mb-photo {
+        float: right;
+        margin-right: 0;
+        margin-left: 15px;
+    }
+
+    .chat-msgbox .mb-right .mb-title {
+        text-align: right;
+    }
+
+        .chat-msgbox .mb-right .mb-title a {
+            float: right;
+            margin-left: 15px;
+        }
+
+    .chat-msgbox .mb-right .mb-msg {
+        float: right;
+        margin: 3px 0 15px 0;
+    }
+
+    .chat-msgbox .forme {
+        color: white;
+        background-color: #17a2b8;
+    }
+
+/*发送容器*/
+.chat-sendbox {
+    position: relative;
+    height: 150px;
+}
+
+    .chat-sendbox .btn-send {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        z-index: 9;
+    }
+
+.msgrecord i, .fastsendkey i {
+    margin-right: 5px;
+}
+
+
+/*应用*/
+.chat-apply {
+    border: 1px solid #ddd;
+    text-align: center;
+    border-top: none;
+    height: 70px;
+}
+
+    .chat-apply a {
+        float: left;
+        margin: 10px 15px;
+        text-decoration: none;
+    }
+
+/*人员列表*/
+.chat-userlist {
+    border: 1px solid #ddd;
+    border-top: none;
+}
+
+    .chat-userlist .chat-userctrl {
+        padding: 5px 10px 5px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .chat-userlist .list-group {
+        height: 320px;
+        overflow-y: auto;
+        margin-bottom: 0;
+    }
+
+    .chat-userlist .list-group-item {
+        border: none;
+        padding: 5px 10px 5px 15px;
+        border-top: 1px solid #ddd;
+    }
+
+        .chat-userlist .list-group-item:first-child {
+            border-top: none;
+        }
+
+        .chat-userlist .list-group-item i {
+            margin-right: 5px;
+            text-align: center;
+            width: 20px;
+        }
+
+/*弹出表情*/
+.emojibox img {
+    padding: 3px;
+    cursor: pointer;
+    margin: 2px 1px 0px 2px;
+    border: 1px solid transparent;
+}
+
+    .emojibox img:hover {
+        border-color: #007bff;
+    }
+
+
+
+/*公告 、文件*/
+.groupnotice .list-group-item, .groupfile .list-group-item {
+    margin-top: 20px;
+}

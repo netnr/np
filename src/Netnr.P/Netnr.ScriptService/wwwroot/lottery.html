@@ -1,78 +1,86 @@
-﻿            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
 
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>彩票查询 NET牛人</title>
-    <meta name="keywords" content="netnr,NET牛人,彩票查询" />
-    <meta name="description" content="netnr,NET牛人,彩票查询" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>彩票查询 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 彩票查询" />
+    <meta name="description" content="Script Services 彩票查询" />
 
 </head>
 <body>
-                <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
-            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
 
+                <div class="container-fluid">
 
-    <link href="/css/global.css?v=jX4aC16PbVBajgFqmZiFWZXgNe9blHpS4ZMZF70KRFw" rel="stylesheet" />
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
 
-        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
-            <span class="fa fa-align-justify fa-2x"></span>
-        </button>
-        <div class="netnrnav horizontal">
-            <div class="netnrnav-wrapper">
-                <ul>
-                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
-                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                    <li>
-                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                        <ul>
-                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
-                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
-                            <li class="divider"></li>
-                            <li><a href="https://ss.netnr.com/message"><i class="fa fa-fw fa-commenting-o"></i> 留言</a></li>
-                            <li><a target="_blank" href="https://ss.netnr.com/contact"><i class="fa fa-fw fa-envelope-open-o"></i> 联系 <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li class="divider"></li>
-                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
 
-    <script src="/js/global.js?v=xYnLPncCGdwopIu-ETpzRKLPUDYBvYBsPkGjtl0yEB8"></script>
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="彩票查询">
+                                    <svg class="titleicon"><use xlink:href="#lottery"></use></svg> &#x5F69;&#x7968;&#x67E5;&#x8BE2;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
 
-        <h4 class="text-center mt-3 mb-4">
-            <img src="/icon/lottery.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
-            &#x5F69;&#x7968;&#x67E5;&#x8BE2;
-        </h4>
-
-    <div class="min300">
-        <style>
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <style>
     #divlottery span {
-        width: 25px;
-        height: 25px;
-        font-size: 14px;
-        line-height: 25px;
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
         text-align: center;
-        border-radius: 12px;
+        border-radius: 50%;
         display: inline-block;
         margin: 5px 10px 5px 0;
     }
@@ -88,33 +96,75 @@
     }
 </style>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <form>
-                <div class="input-group">
-                    <span class="input-group-append">
-                        <button class="btn btn-warning" type="button" id="btnSearch">彩票类型</button>
-                    </span>
-                    <select class="custom-select" id="seLotteryType" name="code">
-                        <option value="001">双色球</option>
-                        <option value="110">七星彩</option>
-                        <option value="003">七乐彩</option>
-                        <option value="002">福彩3d</option>
-                        <option value="113">大乐透</option>
-                        <option value="108">排列3</option>
-                        <option value="109">排列5</option>
-                    </select>
-                </div>
-            </form>
+        <div class="col-md-auto">
+            <div class="input-group">
+                <span class="input-group-text">彩票类型</span>
+                <select class="form-select" id="seLotteryType" name="code">
+                    <option value="001">双色球</option>
+                    <option value="110">七星彩</option>
+                    <option value="003">七乐彩</option>
+                    <option value="002">福彩3d</option>
+                    <option value="113">大乐透</option>
+                    <option value="108">排列3</option>
+                    <option value="109">排列5</option>
+                </select>
+            </div>
         </div>
     </div>
     <div id="divlottery" class="row mt-3"></div>
 </div>
 
-<script src="/js/lottery.js?v=mOQuoJcfZPyg0oRf-ehR-ev6GgDM7GWdp4VBt3ZFXGI"></script>
-    </div>
+<script>
+    QueryLottery();
+    $("#seLotteryType").change(QueryLottery);
 
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+    function QueryLottery() {
+        ss.loading();
+
+        ss.ajax({
+            url: "http://cp.zgzcw.com/lottery/hisnumber.action?lotteryId=" + $("#seLotteryType").val() + "&issueLen=24",
+            dataType: "json",
+            success: function (data) {
+                data = ss.datalocation(data);
+                if (data.length) {
+                    var htm = [];
+                    $(data).each(function () {
+                        var codes = (this.lotteryNumber || this.tryoutNumber).split('+'),
+                            code1 = codes[0].split(','), spans1 = spans2 = '';
+                        for (var k = 0; k < code1.length; k++) {
+                            spans1 += '<span class="sp1">' + code1[k] + '</span>';
+                        }
+
+                        if (codes[1] != undefined) {
+                            var code2 = codes[1].split(',');
+                            for (var u = 0; u < code2.length; u++) {
+                                spans2 += '<span class="sp2">' + code2[u] + '</span>';
+                            }
+                        }
+
+                        htm.push(
+                            '<div class="col-xl-3 col-md-4 col-sm-6 mb-3"><div class="card card-secondary"><div class="p-2">'
+                            + '<div class="et"><label class="h5 me-2">' + this.lotteryExpect + '</label><small>' + (new Date(this.ernieDate)).toISOString().substr(0, 10) + '</small></div>'
+                            + spans1 + spans2
+                            + '</div></div></div>'
+                        );
+                    });
+                    $("#divlottery").html(htm.join(''));
+                }
+            },
+            error: function () {
+                ss.loading(0);
+                bs.msg("<h4>网络错误</h4>");
+            },
+            complete: function () {
+                ss.loading(0);
+            }
+        })
+    }
+
+</script>
+        </div>
 </body>
 </html>

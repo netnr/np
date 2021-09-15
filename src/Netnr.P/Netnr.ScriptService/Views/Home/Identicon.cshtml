@@ -1,0 +1,111 @@
+﻿<style>
+    .nr-view-1, .nr-view-2 {
+        display: inline-block;
+        border: 1px solid #ddd;
+        max-width: 100%;
+    }
+
+        .nr-view-1 svg, .nr-view-2 svg {
+            max-width: 100%;
+        }
+
+    .border-transparent {
+        border-color: transparent;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-auto">
+            <div class="input-group mb-3">
+                <span class="input-group-text">大小</span>
+                <input type="number" class="form-control nr-size" value="320" min="2" max="99999" step="2" title="大小" placeholder="大小" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="input-group mb-3">
+                <span class="input-group-text">标识</span>
+                <input type="text" class="form-control nr-value" placeholder="身份（昵称、标识等）" autofocus autocomplete="off">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 d-none">
+            <div class="nr-view-1">
+            </div>
+            <div class="my-3">
+                <a href="https://github.com/stewartlord/identicon.js" class="text-muted" target="_blank">GitHub-style</a>
+                <a href="javascript:void(0)" class="nr-down mx-3" data-type="svg1">下载 SVG</a>
+                <a href="javascript:void(0)" class="nr-down" data-type="image1">下载 JPG</a>
+            </div>
+        </div>
+        <div class="col-md-6 d-none">
+            <div class="nr-view-2">
+            </div>
+            <div class="my-3">
+                <a href="https://github.com/dmester/jdenticon" class="text-muted" target="_blank">jdenticon</a>
+                <a href="javascript:void(0)" class="nr-down mx-3" data-type="svg2">下载 SVG</a>
+                <a href="javascript:void(0)" class="nr-down" data-type="image2">下载 JPG</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jdenticon.js,identicon.js,html2canvas.js"))
+
+<script>
+
+    var ii = {
+        init: function () {
+            $('.nr-size').on('input', function () {
+                ii.build();
+            });
+            $('.nr-value').on('input', function () {
+                ii.build();
+            });
+
+            $('.nr-down').click(function () {
+                var type = this.getAttribute('data-type');
+                switch (type) {
+                    case "svg1":
+                        ss.dowload($('.nr-view-1').html(), "identicon.svg");
+                        break;
+                    case "image1":
+                        $('.nr-view-1').addClass('border-transparent');
+                        html2canvas($('.nr-view-1')[0]).then(function (canvas) {
+                            ss.dowload(canvas, "identicon.jpg");
+                            $('.nr-view-1').removeClass('border-transparent')
+                        })
+                        break;
+                    case "svg2":
+                        ss.dowload($('.nr-view-2').html(), "identicon.svg");
+                        break;
+                    case "image2":
+                        $('.nr-view-2').addClass('border-transparent');
+                        html2canvas($('.nr-view-2')[0]).then(function (canvas) {
+                            ss.dowload(canvas, "identicon.jpg");
+                            $('.nr-view-2').removeClass('border-transparent');
+                        })
+                        break;
+                }
+            });
+        },
+
+        build: function () {
+            window.clearTimeout(ii.defer);
+
+            ii.defer = setTimeout(function () {
+                var value = $('.nr-value').val();
+                var size = $('.nr-size').val() || 320;
+
+                var svgicon = iisvg({ value, size });
+                $('.nr-view-1').empty().append(svgicon).parent().removeClass('d-none');
+
+                var o2 = jdenticon.toSvg(value, size);
+                $('.nr-view-2').html(o2).parent().removeClass('d-none');
+            }, 500)
+        }
+    }
+
+    ii.init();
+</script>

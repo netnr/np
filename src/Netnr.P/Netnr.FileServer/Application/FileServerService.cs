@@ -1,13 +1,12 @@
 using SQLite;
-using System;
 using Netnr.FileServer.Model;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.FileServer.Application
 {
     /// <summary>
-    /// 数据库操作
+    /// 数据库操作及辅助方法
     /// </summary>
     public class FileServerService
     {
@@ -19,25 +18,25 @@ namespace Netnr.FileServer.Application
         /// <summary>
         /// 创建App
         /// </summary>
+        /// <param name="owner">用户，唯一，文件夹名</param>
         /// <returns></returns>
-        public static ActionResultVM CreateApp()
+        public static SharedResultVM CreateApp(string owner)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<SysKey>();
 
-                var mo = new SysKey()
+                var mo = new SysApp()
                 {
-                    SkAppId = Core.UniqueTo.LongId().ToString(),
-                    SkAppKey = Core.UniqueTo.LongId().ToString() + Core.UniqueTo.LongId().ToString(),
-                    SkCreateTime = DateTime.Now,
-                    SkName = "默认",
-                    SkToken = Core.CalcTo.MD5(Core.UniqueTo.LongId().ToString()),
-                    SkTokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired")),
-                    SkRemark = "系统自动生成"
+                    AppId = UniqueTo.LongId().ToString(),
+                    AppKey = UniqueTo.LongId().ToString() + UniqueTo.LongId().ToString(),
+                    CreateTime = DateTime.Now,
+                    Owner = owner,
+                    Token = NewToken(),
+                    TokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired")),
+                    Remark = "通过接口创建"
                 };
 
                 int num = db.Insert(mo);
@@ -54,32 +53,55 @@ namespace Netnr.FileServer.Application
         }
 
         /// <summary>
-        /// 获取Token
+        /// 获取App列表
         /// </summary>
-        /// <param name="AppId">分配的应用ID</param>
-        /// <param name="AppKey">分配的应用密钥</param>
+        /// <param name="pageNumber">页码，默认1</param>
+        /// <param name="pageSize">页量，默认20</param>
         /// <returns></returns>
-        public static ActionResultVM GetToken(string AppId, string AppKey)
+        public static SharedResultVM GetAppList(int pageNumber = 1, int pageSize = 20)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<SysKey>();
-                var sk = db.Table<SysKey>().FirstOrDefault(x => x.SkAppId == AppId && x.SkAppKey == AppKey);
-                if (sk != null)
-                {
-                    sk.SkToken = Core.CalcTo.MD5(Core.UniqueTo.LongId().ToString());
-                    sk.SkTokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired"));
+                var sk = db.Table<SysApp>().OrderByDescending(x => x.CreateTime).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-                    int num = db.Update(sk);
-                    vm.Data = sk;
-                    vm.Set(num > 0);
+                vm.Data = sk;
+
+                vm.Set(SharedEnum.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 获取App信息
+        /// </summary>
+        /// <param name="AppId">分配的应用ID</param>
+        /// <param name="AppKey">分配的应用密钥</param>
+        /// <returns></returns>
+        public static SharedResultVM GetAppInfo(string AppId, string AppKey)
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = new SQLiteConnection(SQLiteConn);
+                var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
+
+                if (sk == null)
+                {
+                    vm.Set(SharedEnum.RTag.invalid);
                 }
                 else
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Data = sk;
+                    vm.Set(SharedEnum.RTag.success);
                 }
             }
             catch (Exception ex)
@@ -91,23 +113,135 @@ namespace Netnr.FileServer.Application
         }
 
         /// <summary>
-        /// 获取App列表
+        /// 获取Token
         /// </summary>
-        /// <param name="pageNumber">页码，默认1</param>
-        /// <param name="pageSize">页量，默认20</param>
+        /// <param name="AppId">分配的应用ID</param>
+        /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
-        public static ActionResultVM GetAppList(int pageNumber = 1, int pageSize = 20)
+        public static SharedResultVM GetToken(string AppId, string AppKey)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<SysKey>();
-                var sk = db.Table<SysKey>().OrderByDescending(x => x.SkCreateTime).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
+                if (sk != null)
+                {
+                    sk.Token = NewToken();
+                    sk.TokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired"));
 
-                vm.Data = sk;
-                vm.Set(ARTag.success);
+                    int num = db.Update(sk);
+                    vm.Data = new
+                    {
+                        sk.Token,
+                        sk.TokenExpireTime
+                    };
+                    vm.Set(num > 0);
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 创建FixToken
+        /// </summary>
+        /// <param name="AppId">分配的应用ID</param>
+        /// <param name="AppKey">分配的应用密钥</param>
+        /// <param name="Name">名称</param>
+        /// <param name="AuthMethod">授权接口</param>
+        /// <returns></returns>
+        public static SharedResultVM CreateFixToken(string AppId, string AppKey, string Name, string AuthMethod)
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = new SQLiteConnection(SQLiteConn);
+                var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
+                if (sk != null)
+                {
+                    var listmo = new List<FixTokenJson>();
+                    if (!string.IsNullOrWhiteSpace(sk.FixToken))
+                    {
+                        listmo = sk.FixToken.ToEntitys<FixTokenJson>();
+                    }
+
+                    var fixToken = NewToken(true);
+                    listmo.Add(new FixTokenJson()
+                    {
+                        Name = Name,
+                        Token = fixToken,
+                        AuthMethod = AuthMethod,
+                        CreateTime = DateTime.Now
+                    });
+                    sk.FixToken = listmo.ToJson();
+
+                    int num = db.Update(sk);
+                    vm.Data = new
+                    {
+                        Token = fixToken,
+                        AuthMethod
+                    };
+                    vm.Set(num > 0);
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 删除FixToken
+        /// </summary>
+        /// <param name="AppId">分配的应用ID</param>
+        /// <param name="AppKey">分配的应用密钥</param>
+        /// <param name="FixToken">固定Token</param>
+        /// <returns></returns>
+        public static SharedResultVM DelFixToken(string AppId, string AppKey, string FixToken)
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = new SQLiteConnection(SQLiteConn);
+                var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
+                if (sk != null)
+                {
+                    var listmo = sk.FixToken.ToEntitys<FixTokenJson>();
+                    if (listmo.Any(x => x.Token == FixToken))
+                    {
+                        listmo.Remove(listmo.FirstOrDefault(x => x.Token.Contains(FixToken)));
+                        sk.FixToken = listmo.ToJson();
+                        int num = db.Update(sk);
+                        vm.Set(num > 0);
+                    }
+                    else
+                    {
+                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Msg = "FixToken 无效";
+                    }
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                }
             }
             catch (Exception ex)
             {
@@ -121,24 +255,111 @@ namespace Netnr.FileServer.Application
         /// 验证Token
         /// </summary>
         /// <param name="token"></param>
+        /// <param name="MethodName">方法名</param>
         /// <returns></returns>
-        public static ActionResultVM ValidToken(string token)
+        public static SharedResultVM ValidToken(string token, string MethodName)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(token))
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
                     using var db = new SQLiteConnection(SQLiteConn);
-                    db.CreateTable<SysKey>();
-                    var sk = db.Table<SysKey>().FirstOrDefault(x => x.SkToken == token);
 
-                    vm.Set(sk?.SkTokenExpireTime > DateTime.Now);
+                    //FixToken
+                    if (token.StartsWith(GlobalTo.GetValue("Safe:FixTokenPrefix")))
+                    {
+                        var sk = db.Table<SysApp>().FirstOrDefault(x => x.FixToken.Contains(token));
+
+                        if (sk != null)
+                        {
+                            var mo = sk.FixToken.ToEntitys<FixTokenJson>().FirstOrDefault(x => x.Token == token);
+                            if (mo.AuthMethod.Split(',').Contains(MethodName))
+                            {
+                                vm.Set(SharedEnum.RTag.success);
+
+                                mo.Owner = sk.Owner;
+                                vm.Data = mo;
+                            }
+                            else
+                            {
+                                vm.Set(SharedEnum.RTag.unauthorized);
+                                vm.Msg = "FixToken 无权访问该接口";
+                            }
+                        }
+                        else
+                        {
+                            vm.Set(SharedEnum.RTag.unauthorized);
+                            vm.Msg = "token 无效或已过期";
+                        }
+                    }
+                    else
+                    {
+                        var sk = db.Table<SysApp>().FirstOrDefault(x => x.Token == token);
+
+                        if (sk?.TokenExpireTime > DateTime.Now)
+                        {
+                            vm.Set(SharedEnum.RTag.success);
+
+                            vm.Data = new FixTokenJson()
+                            {
+                                Owner = sk.Owner
+                            };
+                        }
+                        else
+                        {
+                            vm.Set(SharedEnum.RTag.unauthorized);
+                            vm.Msg = "token 无效或已过期";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 验证FixToken
+        /// </summary>
+        /// <param name="fixToken"></param>
+        /// <returns></returns>
+        public static SharedResultVM ValidFixToken(string fixToken)
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(fixToken))
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                }
+                else
+                {
+                    using var db = new SQLiteConnection(SQLiteConn);
+                    var sk = db.Table<SysApp>().FirstOrDefault(x => x.FixToken.Contains(fixToken));
+
+                    if (sk != null)
+                    {
+                        vm.Set(SharedEnum.RTag.success);
+
+                        var mo = sk.FixToken.ToEntitys<FixTokenJson>().FirstOrDefault(x => x.Token == fixToken);
+                        mo.Owner = sk.Owner;
+                        vm.Data = mo;
+                    }
+                    else
+                    {
+                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Msg = "token 无效或已过期";
+                    }
                 }
             }
             catch (Exception ex)
@@ -152,15 +373,37 @@ namespace Netnr.FileServer.Application
         /// <summary>
         /// 新增
         /// </summary>
-        /// <param name="list"></param>
-        public static ActionResultVM InsertFile(List<FileRecord> list)
+        /// <param name="model"></param>
+        public static SharedResultVM InsertFile(FileRecord model)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                db.CreateTable<FileRecord>();
+                int num = db.Insert(model);
+
+                vm.Set(num > 0);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="list"></param>
+        public static SharedResultVM InsertFile(List<FileRecord> list)
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = new SQLiteConnection(SQLiteConn);
                 int num = db.InsertAll(list);
 
                 vm.Set(num > 0);
@@ -176,32 +419,28 @@ namespace Netnr.FileServer.Application
         /// <summary>
         /// 查询
         /// </summary>
-        /// <param name="path">路径，传ID时需传 isid=true</param>
-        /// <param name="isid">是ID</param>
-        public static ActionResultVM QueryFile(string path, bool isid = false)
+        /// <param name="owner">所属</param>
+        /// <param name="IdOrPath">文件ID或路径</param>
+        public static SharedResultVM QueryFile(string owner, string IdOrPath)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                FileRecord fr = null;
 
-                if (isid)
-                {
-                    fr = db.Table<FileRecord>().FirstOrDefault(x => x.FrId == path);
-                }
-                else
-                {
-                    fr = db.Table<FileRecord>().FirstOrDefault(x => x.FrPath == path);
-                }
+                var fr = db.Table<FileRecord>().FirstOrDefault(x => x.Id == IdOrPath || x.Path == IdOrPath);
                 if (fr == null)
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
+                }
+                else if (fr.OwnerUser != owner)
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                     vm.Data = fr;
                 }
             }
@@ -214,34 +453,53 @@ namespace Netnr.FileServer.Application
         }
 
         /// <summary>
-        /// 删除
+        /// 更新
         /// </summary>
-        /// <param name="path">路径，传ID时需传 isid=true</param>
-        /// <param name="isid">是ID</param>
-        public static ActionResultVM DeleteFile(string path, bool isid = false)
+        /// <param name="model">实体</param>
+        public static SharedResultVM UpdateFile(FileRecord model)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 using var db = new SQLiteConnection(SQLiteConn);
-                FileRecord fr = null;
 
-                if (isid)
-                {
-                    fr = db.Table<FileRecord>().FirstOrDefault(x => x.FrId == path);
-                }
-                else
-                {
-                    fr = db.Table<FileRecord>().FirstOrDefault(x => x.FrPath == path);
-                }
+                int num = db.Update(model);
+                vm.Set(num > 0);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="owner">所属</param>
+        /// <param name="IdOrPath">文件ID或路径</param>
+        public static SharedResultVM DeleteFile(string owner, string IdOrPath)
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                using var db = new SQLiteConnection(SQLiteConn);
+
+                var fr = db.Table<FileRecord>().FirstOrDefault(x => x.Id == IdOrPath || x.Path == IdOrPath);
                 if (fr == null)
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
+                }
+                else if (fr.OwnerUser != owner)
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
-                    var fp = GlobalTo.WebRootPath + fr.FrPath;
+                    var fp = PathTo.Combine(GlobalTo.WebRootPath, fr.Path);
                     if (System.IO.File.Exists(fp))
                     {
                         System.IO.File.Delete(fp);
@@ -259,5 +517,26 @@ namespace Netnr.FileServer.Application
 
             return vm;
         }
+
+        /// <summary>
+        /// 创建 Token
+        /// </summary>
+        /// <param name="IsFixToken">是固定Token，默认否</param>
+        /// <returns></returns>
+        public static string NewToken(bool IsFixToken = false)
+        {
+            return (IsFixToken ? GlobalTo.GetValue("Safe:FixTokenPrefix") : "") + (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
+        }
+
+        /// <summary>
+        /// 静态资源虚拟路径转为物理路径
+        /// </summary>
+        /// <param name="VrDir">虚拟路径</param>
+        /// <returns></returns>
+        public static string StaticVrPathAsPhysicalPath(string VrDir)
+        {
+            return PathTo.Combine(GlobalTo.GetValue<bool>("Safe:PublicAccess") ? GlobalTo.WebRootPath : GlobalTo.ContentRootPath, VrDir);
+        }
+
     }
 }

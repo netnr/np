@@ -1,4 +1,4 @@
-﻿<partial name="_PartialQuote" model="@("the")" />
+﻿@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -7,11 +7,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
 
-    <title>@ViewData["Title"] NET牛人</title>
-
-    <partial name="_PartialQuote" model="@("seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js")" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon,blog-seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js"))
 
     <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
 
@@ -22,8 +20,10 @@
         string ca = (vrv["controller"].ToString() + "/" + vrv["action"].ToString()).ToLower();
 
         var canav = "account/login,account/register,home/auth,admin/write,admin/reply,admin/log,admin/logchart,mix/terms".Split(',');
-        var cafooter = "account/login,account/register,home/auth,home/valid,home/write,store/nenos,store/qqcos,store/qnkodo,services/keyvalues,user/write,user/message,user/verify,user/setting,admin/index,admin/write,admin/reply,admin/log,admin/logchart,mix/terms,mix/faq,note/index".Split(',');
+        var cafooter = "account/login,account/register,home/auth,home/completeinfo,home/write,store/nenos,store/qqcos,store/qnkodo,services/keyvalues,user/write,user/message,user/verify,user/setting,admin/index,admin/write,admin/reply,admin/log,admin/logchart,mix/terms,mix/faq,note/index".Split(',');
     }
+    
+    <partial name="_PartialQuote" model="@("MirrorReadOnly")" />
 
     @if (!canav.Contains(ca))
     {
@@ -37,11 +37,6 @@
     @if (!cafooter.Contains(ca))
     {
         <partial name="_PartialFooter" />
-    }
-
-    @if (!canav.Contains(ca))
-    {
-        <a href="javascript:void(0);" onclick="$('html,body').animate({scrollTop:0}, 400)" class="totop" title="返回顶部">ˆ</a>
     }
 
     <partial name="_PartialQuote" model="@("fun.js")" />

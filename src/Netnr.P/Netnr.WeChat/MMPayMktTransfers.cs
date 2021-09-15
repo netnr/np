@@ -70,7 +70,7 @@ namespace Netnr.WeChat
             var sign = PayUtil.Sign(stringADict, partnerKey);//生成签名字符串
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             var url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack";
-            X509Certificate2 cer = new X509Certificate2(cert, certPassword);
+            X509Certificate2 cer = new(cert, certPassword);
             Encoding encoding = Encoding.UTF8;
             HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create(url);
             webrequest.ClientCertificates.Add(cer);
@@ -85,7 +85,7 @@ namespace Netnr.WeChat
             }
             using (HttpWebResponse response = (HttpWebResponse)webrequest.GetResponse())
             {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream(), encoding))
+                using (StreamReader reader = new(response.GetResponseStream(), encoding))
                 {
                     var resXml = reader.ReadToEnd().ToString();
                     return resXml;
@@ -134,7 +134,7 @@ namespace Netnr.WeChat
                 var sign = PayUtil.Sign(stringADict, partnerKey);//生成签名字符串
                 var postdata = PayUtil.GeneralPostdata(stringADict, sign);
                 var url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
-                X509Certificate2 cer = new X509Certificate2(cert, certPassword);
+                X509Certificate2 cer = new(cert, certPassword);
                 Encoding encoding = Encoding.UTF8;
                 HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create(url);
                 webrequest.ClientCertificates.Add(cer);
@@ -149,7 +149,7 @@ namespace Netnr.WeChat
                 }
                 using (HttpWebResponse response = (HttpWebResponse)webrequest.GetResponse())
                 {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), encoding))
+                    using (StreamReader reader = new(response.GetResponseStream(), encoding))
                     {
                         var resXml = reader.ReadToEnd().ToString();
                         return resXml;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Netnr.Web.Areas.Run.Controllers
+namespace Netnr.Blog.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class DiscoverController : Controller
@@ -13,9 +13,9 @@ namespace Netnr.Web.Areas.Run.Controllers
         /// <returns></returns>
         public IActionResult Index(string q, int page = 1)
         {
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var ps = Blog.Application.CommonService.RunQuery(q, 0, uinfo.UserId, page);
+            var ps = Application.CommonService.RunQuery(q, 0, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["q"] = q;
             return View("_PartialRunList", ps);

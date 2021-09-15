@@ -1,6 +1,6 @@
 ﻿var editor = null;
 require(['vs/editor/editor.main'], function () {
-    var modesIds = monaco.languages.getLanguages().map(function (lang) { return lang.id }).sort();
+    var modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
 
     var te = $("#editor"), selang = $('#selanguage'), languagehtm = [];
     for (var i = 0; i < modesIds.length; i++) {
@@ -15,15 +15,15 @@ require(['vs/editor/editor.main'], function () {
     editor = monaco.editor.create(te[0], {
         value: $('#hidContent').val(),
         language: selang.val(),
-        automaticLayout: true,
-        scrollWidth: 5,
-        scrollbar: {
-            verticalScrollbarSize: 6,
-            horizontalScrollbarSize: 6
-        },
         theme: $('#setheme').attr('data-value'),
+        fontSize: 18,
+        automaticLayout: true,
+        scrollbar: {
+            verticalScrollbarSize: 13,
+            horizontalScrollbarSize: 13
+        },
         minimap: {
-            enabled: false
+            enabled: true
         }
     });
 
@@ -39,10 +39,16 @@ require(['vs/editor/editor.main'], function () {
     $('#setheme').change(function () {
         monaco.editor.setTheme(this.value);
     });
+
+    //快捷键
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function () {
+        $('.nrSaveGist')[0].click();
+    })
 });
 
 //保存
-function SaveGist(type, that) {
+$('.nrSaveGist').click(function () {
+    var that = this;
     var gc = editor.getValue(), arrv = gc.split('\n'), row = arrv.length, msg = [];
     var post = {
         GistCode: $('#hidCode').val(),
@@ -84,10 +90,8 @@ function SaveGist(type, that) {
         success: function (data) {
             if (data.code == 200) {
                 location.href = "/gist/code/" + data.data;
-            } else if (data.code == 403) {
-                alert("It's not belongs to you");
             } else {
-                alert('fail');
+                alert(data.msg);
             }
         },
         error: function (ex) {
@@ -101,7 +105,7 @@ function SaveGist(type, that) {
             that.disabled = false;
         }
     })
-}
+})
 
 $('#sfs').click(function () {
     var ed = $('#editor');

@@ -21,7 +21,7 @@ namespace Netnr.WeChat
         public static string Token(string appid, string secrect)
         {
             var url = string.Format("https://api.weixin.qq.com/cgi-bin/token?grant_type={0}&appid={1}&secret={2}", "client_credential", appid, secrect);
-            var result = Core.HttpTo.Get(url);
+            var result = NetnrCore.HttpTo.Get(url);
             return result;
         }
 
@@ -34,7 +34,7 @@ namespace Netnr.WeChat
         public static string GetCallbackIP(string access_token)
         {
             var url = string.Format("https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token={0}", access_token);
-            var result = Core.HttpTo.Get(url);
+            var result = NetnrCore.HttpTo.Get(url);
             return result;
         }
 
@@ -74,7 +74,7 @@ namespace Netnr.WeChat
                 .Append('"' + "long_url" + '"' + ":").Append(long_url)
                 .Append("}");
 
-            var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/shorturl?access_token={0}", access_token), builder.ToString());
+            var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/shorturl?access_token={0}", access_token), builder.ToString());
             return result;
         }
 
@@ -103,7 +103,7 @@ namespace Netnr.WeChat
             public static string UploadArtcles(string access_token, List<WeChatArtcle> articles)
             {
                 var url = string.Format("https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token={0}", access_token);
-                var result = Core.HttpTo.Post(url, articles.ToJson());
+                var result = NetnrCore.HttpTo.Post(url, NetnrCore.ToJson(articles));
                 return result;
             }
 
@@ -126,7 +126,7 @@ namespace Netnr.WeChat
                     .Append('"' + "title" + '"' + ":").Append(title)
                     .Append('"' + "description" + '"' + ":").Append(description)
                     .Append("}");
-                var result = Core.HttpTo.Post(url, builder.ToString());
+                var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                 return result;
             }
 
@@ -166,7 +166,7 @@ namespace Netnr.WeChat
             public static void Get(string savePath, string access_token, string media_id)
             {
                 var url = string.Format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token={0}&media_id={1}", access_token, media_id);
-                FileStream fs = new FileStream(savePath, FileMode.Create);
+                FileStream fs = new(savePath, FileMode.Create);
                 Util.Download(url, fs);
                 fs.Close();
                 fs.Dispose();
@@ -192,7 +192,7 @@ namespace Netnr.WeChat
                     .Append('"' + "password" + '"' + ":").Append(pswmd5)
                     .Append("}");
 
-                var result = Core.HttpTo.Post(url, builder.ToString());
+                var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                 return result;
             }
         }
@@ -222,7 +222,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string Create(string token, string content)
             {
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/menu/create?access_token={0}", token), content);
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/menu/create?access_token={0}", token), content);
                 return result;
             }
 
@@ -233,7 +233,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string Get(string token)
             {
-                var result = Core.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/menu/get?access_token={0}", token));
+                var result = NetnrCore.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/menu/get?access_token={0}", token));
                 return result;
             }
 
@@ -244,7 +244,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string Delete(string token)
             {
-                var result = Core.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token={0}", token));
+                var result = NetnrCore.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token={0}", token));
                 return result;
             }
         }
@@ -273,7 +273,7 @@ namespace Netnr.WeChat
                     .Append('"' + "industry_id1" + '"' + ":").Append(industry_id1).Append(",")
                     .Append('"' + "industry_id2" + '"' + ":").Append(industry_id2)
                     .Append("}");
-                var result = Core.HttpTo.Post(url, builder.ToString());
+                var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                 return result;
             }
             /// <summary>
@@ -292,7 +292,7 @@ namespace Netnr.WeChat
                     .Append("{")
                     .Append('"' + "template_id_short" + '"' + ":").Append(template_id_short)
                     .Append("}");
-                var result = Core.HttpTo.Post(url, builder.ToString());
+                var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                 return result;
             }
         }
@@ -312,7 +312,7 @@ namespace Netnr.WeChat
             public static string GetTicket(string access_token, string type)
             {
                 var url = string.Format("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type={1}", access_token, type);
-                var result = Core.HttpTo.Get(url);
+                var result = NetnrCore.HttpTo.Get(url);
                 return result;
             }
 
@@ -359,7 +359,7 @@ namespace Netnr.WeChat
                     .Append("}")
                     .Append("}");
 
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/create?access_token={0}", access_token), builder.ToString());
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/create?access_token={0}", access_token), builder.ToString());
                 return result;
             }
 
@@ -370,7 +370,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string Get(string access_token)
             {
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/get?access_token={0}", access_token), "");
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/get?access_token={0}", access_token), "");
                 return result;
             }
 
@@ -384,7 +384,7 @@ namespace Netnr.WeChat
             {
                 var builder = new StringBuilder();
                 builder.Append("{").Append('"' + "openid" + '"' + ":").Append(openid).Append("}");
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/getid?access_token={0}", access_token), builder.ToString());
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/getid?access_token={0}", access_token), builder.ToString());
                 return result;
             }
 
@@ -406,7 +406,7 @@ namespace Netnr.WeChat
                     .Append("}")
                     .Append("}");
 
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/update?access_token={0}", access_token), builder.ToString());
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/update?access_token={0}", access_token), builder.ToString());
                 return result;
             }
 
@@ -430,7 +430,7 @@ namespace Netnr.WeChat
                         .Append('"' + "to_groupid" + '"' + ":").Append(to_groupid)
                         .Append("}");
 
-                    var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/members/update?access_token={0}", access_token), builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/groups/members/update?access_token={0}", access_token), builder.ToString());
                     return result;
                 }
             }
@@ -473,7 +473,7 @@ namespace Netnr.WeChat
                     }
                     builder.Append("}");
 
-                    Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
+                    NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
                 }
 
                 /// <summary>
@@ -504,7 +504,7 @@ namespace Netnr.WeChat
                     }
                     builder.Append("}");
 
-                    Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
+                    NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
                 }
 
                 /// <summary>
@@ -535,7 +535,7 @@ namespace Netnr.WeChat
                     }
                     builder.Append("}");
 
-                    Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
+                    NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
                 }
 
                 /// <summary>
@@ -572,7 +572,7 @@ namespace Netnr.WeChat
                     }
                     builder.Append("}");
 
-                    Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
+                    NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
                 }
 
                 /// <summary>
@@ -611,7 +611,7 @@ namespace Netnr.WeChat
                     }
                     builder.Append("}");
 
-                    Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
+                    NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
                 }
 
                 /// <summary>
@@ -650,7 +650,7 @@ namespace Netnr.WeChat
                     }
                     builder.Append("}");
 
-                    Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
+                    NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
                 }
 
                 /// <summary>
@@ -692,7 +692,7 @@ namespace Netnr.WeChat
                     }
                     builder.Append("}");
 
-                    Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
+                    NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", access_token), builder.ToString());
                 }
             }
 
@@ -763,7 +763,7 @@ namespace Netnr.WeChat
                             break;
                     }
                     builder.Append("}");
-                    var result = Core.HttpTo.Post(url, builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                     return result;
                 }
 
@@ -831,7 +831,7 @@ namespace Netnr.WeChat
                             break;
                     }
                     builder.Append("}");
-                    var result = Core.HttpTo.Post(url, builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                     return result;
                 }
 
@@ -849,7 +849,7 @@ namespace Netnr.WeChat
                     builder.Append("{")
                            .Append('"' + "msg_id" + '"' + ":").Append(msg_id)
                            .Append("}");
-                    var result = Core.HttpTo.Post(url, builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                     return result;
                 }
 
@@ -908,7 +908,7 @@ namespace Netnr.WeChat
                             break;
                     }
                     builder.Append("}");
-                    var result = Core.HttpTo.Post(url, builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                     return result;
                 }
 
@@ -934,7 +934,7 @@ namespace Netnr.WeChat
                     builder.Append("{")
                            .Append('"' + "msg_id" + '"' + ":").Append(msg_id)
                            .Append("}");
-                    var result = Core.HttpTo.Post(url, builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                     return result;
                 }
             }
@@ -956,7 +956,7 @@ namespace Netnr.WeChat
                 public static string Send(string access_token, object content)
                 {
                     var url = string.Format("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={0}", access_token);
-                    var result = Core.HttpTo.Post(url, content.ToJson());
+                    var result = NetnrCore.HttpTo.Post(url, NetnrCore.ToJson(content));
                     return result;
                 }
             }
@@ -977,7 +977,7 @@ namespace Netnr.WeChat
             /// <returns>UnionID机制的返回值中将包含“unionid”</returns>
             public static string info(string access_token, string openId)
             {
-                var result = Core.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}&lang=zh_CN", access_token, openId));
+                var result = NetnrCore.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}&lang=zh_CN", access_token, openId));
                 return result;
             }
 
@@ -989,7 +989,7 @@ namespace Netnr.WeChat
             /// <returns></returns>
             public static string Get(string access_token, string nextOpenId)
             {
-                var result = Core.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/user/get?access_token={0}&next_openid={1}", access_token, nextOpenId));
+                var result = NetnrCore.HttpTo.Get(string.Format("https://api.weixin.qq.com/cgi-bin/user/get?access_token={0}&next_openid={1}", access_token, nextOpenId));
 
                 return result;
             }
@@ -1014,7 +1014,7 @@ namespace Netnr.WeChat
                         .Append('"' + "remark" + '"' + ":").Append(remark)
                         .Append("}");
 
-                    var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token={0}", access_token), builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token={0}", access_token), builder.ToString());
                     return result;
                 }
             }
@@ -1037,7 +1037,7 @@ namespace Netnr.WeChat
             public static string GetKFList(string access_token)
             {
                 var url = string.Format("https://api.weixin.qq.com/cgi-bin/customservice/getkflist?access_token={0}", access_token);
-                var result = Core.HttpTo.Get(url);
+                var result = NetnrCore.HttpTo.Get(url);
                 return result;
             }
 
@@ -1054,7 +1054,7 @@ namespace Netnr.WeChat
             public static string GetOnlineKFList(string access_token)
             {
                 var url = string.Format("https://api.weixin.qq.com/cgi-bin/customservice/getonlinekflist?access_token={0}", access_token);
-                var result = Core.HttpTo.Get(url);
+                var result = NetnrCore.HttpTo.Get(url);
                 return result;
             }
 
@@ -1114,7 +1114,7 @@ namespace Netnr.WeChat
                     .Append('"' + "pageindex" + '"' + ":").Append(pageindex)
                     .Append("}");
 
-                var result = Core.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/customservice/getrecord?access_token={0}", access_token), builder.ToString());
+                var result = NetnrCore.HttpTo.Post(string.Format("https://api.weixin.qq.com/cgi-bin/customservice/getrecord?access_token={0}", access_token), builder.ToString());
                 return result;
             }
 
@@ -1172,7 +1172,7 @@ namespace Netnr.WeChat
                         .Append('"' + "password" + '"' + ":").Append(pswmd5)
                         .Append("}");
 
-                    var result = Core.HttpTo.Post(url, builder.ToString());
+                    var result = NetnrCore.HttpTo.Post(url, builder.ToString());
                     return result;
                 }
 
@@ -1194,7 +1194,7 @@ namespace Netnr.WeChat
                     fsRead.Read(heByte, 0, heByte.Length);
                     string myStr = Encoding.UTF8.GetString(heByte);
 
-                    var result = Core.HttpTo.Post(url, myStr);
+                    var result = NetnrCore.HttpTo.Post(url, myStr);
                     return result;
                 }
 
@@ -1207,7 +1207,7 @@ namespace Netnr.WeChat
                 public static string Del(string access_token, string kf_account)
                 {
                     var url = string.Format("https://api.weixin.qq.com/customservice/kfaccount/del?access_token={0}&kf_account={1}", access_token, kf_account);
-                    var result = Core.HttpTo.Get(url);
+                    var result = NetnrCore.HttpTo.Get(url);
                     return result;
                 }
 

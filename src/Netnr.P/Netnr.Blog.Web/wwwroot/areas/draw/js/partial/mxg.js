@@ -4,13 +4,12 @@
  * 
  */
 
-//编辑ID
-var vid = document.getElementById("vid").value;
-//编辑器对象
-var eui;
+//容器ID、编辑器对象、服务源
+var vid = document.getElementById("vid").value, eui,
+    mxBaseServer = document.getElementById("mxBaseServer").value;
+
 //初始化容器样式
 document.body.className += " geEditor";
-
 
 // Parses URL parameters. Supported parameters are:
 // - lang=xy: Specifies the language of the user interface.
@@ -52,13 +51,13 @@ window.MAX_AREA = 15000 * 15000;
 window.EXPORT_URL = '/draw/code/export';
 window.SAVE_URL = '/draw/code/save/' + (vid || "");
 window.OPEN_URL = '/draw/code/open/' + (vid || "");
-window.RESOURCES_PATH = 'https://mxgraph.netnr.com/javascript/examples/grapheditor/www/resources';
+window.RESOURCES_PATH = `${mxBaseServer}/examples/grapheditor/www/resources`;
 window.RESOURCE_BASE = '/areas/draw/resources/grapheditor_zh';
-window.STENCIL_PATH = 'https://mxgraph.netnr.com/javascript/examples/grapheditor/www/stencils';
-window.IMAGE_PATH = 'https://mxgraph.netnr.com/javascript/examples/grapheditor/www/images';
-window.STYLE_PATH = 'https://mxgraph.netnr.com/javascript/examples/grapheditor/www/styles';
-window.CSS_PATH = 'https://mxgraph.netnr.com/javascript/examples/grapheditor/www/styles';
-window.OPEN_FORM = 'https://mxgraph.netnr.com/javascript/examples/grapheditor/www/open.html';
+window.STENCIL_PATH = `${mxBaseServer}/examples/grapheditor/www/stencils`;
+window.IMAGE_PATH = `${mxBaseServer}/examples/grapheditor/www/images`;
+window.STYLE_PATH = `${mxBaseServer}/examples/grapheditor/www/styles`;
+window.CSS_PATH = `${mxBaseServer}/examples/grapheditor/www/styles`;
+window.OPEN_FORM = `${mxBaseServer}/examples/grapheditor/www/open.html`;
 
 // Sets the base path, the UI language via URL param and configures the
 // supported languages to avoid 404s. The loading of all core language
@@ -67,7 +66,7 @@ window.OPEN_FORM = 'https://mxgraph.netnr.com/javascript/examples/grapheditor/ww
 // files (the special bundle and the default bundle) is disabled to
 // save a GET request. This requires that all resources be present in
 // each properties file since only one file is loaded.
-window.mxBasePath = 'https://mxgraph.netnr.com/javascript/src';
+window.mxBasePath = `${mxBaseServer}/src`;
 window.mxLanguage = urlParams['lang'];
 window.mxLanguages = ['zh'];
 
@@ -109,7 +108,6 @@ var mxg = {
                             var req = new mxXmlRequest(SAVE_URL, 'filename=' + encodeURIComponent(name) +
                                 '&xml=' + encodeURIComponent(xml) + '&DrType=draw');
                             req.send(function (mx) {
-                                mxg.RequestActive = null;
                                 var data = JSON.parse(mx.request.responseText);
                                 if (data.code == 200 && data.data) {
                                     localStorage.removeItem(mxg.dc.lstmpkey);
@@ -120,6 +118,7 @@ var mxg = {
                                 if (data.code == 200) {
                                     window.onbeforeunload = null;
                                 }
+                                mxg.RequestActive = null;
                             }, function () {
                                 mxg.RequestActive = null;
                             });
@@ -149,7 +148,7 @@ var mxg = {
 
         //重写帮助事件
         eui.actions.actions.help.funct = function () {
-            eui.editor.graph.openLink("https://mxgraph.netnr.com");
+            eui.editor.graph.openLink(mxBaseServer);
         }
 
         //重写导出边框

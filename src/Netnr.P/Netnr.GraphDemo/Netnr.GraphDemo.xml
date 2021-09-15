@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Netnr.GraphDemo</name>
+    </assembly>
+    <members>
+        <member name="M:Netnr.GraphDemo.Controllers.HomeController.TestCaptcha">
+            <summary>
+            测试验证码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.HomeController.TestResize">
+            <summary>
+            测试缩略图
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.MagickNETController.Captcha(System.String)">
+            <summary>
+            验证码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.MagickNETController.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SixLaborsImageSharpDrawingController.Captcha(System.String)">
+            <summary>
+            验证码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SixLaborsImageSharpDrawingController.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SkiaSharpController.Captcha(System.String)">
+            <summary>
+            验证码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SkiaSharpController.Resize">
+            <summary>
+            缩略图
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SkiaSharpController.Watermark(System.String)">
+            <summary>
+            水印
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SkiaSharpController.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SkiaSharpController.ResizeBin(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32)">
+            <summary>
+            缩略图
+            </summary>
+            <param name="imgPath"></param>
+            <param name="width">宽度，null 根据高度自适应</param>
+            <param name="height">高度，null 根据宽度自适应</param>
+            <param name="quality">质量，1-100，默认 90</param>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SkiaSharpController.WatermarkForTextBin(System.String,System.String,System.Action{SkiaSharp.SKPaint},System.Action{SkiaSharp.SKPoint})">
+            <summary>
+            水印
+            </summary>
+            <param name="imgPath"></param>
+            <param name="text">文字</param>
+            <param name="paint">绘画信息</param>
+            <param name="point">位置</param>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SystemDrawingCommonController.Captcha(System.String)">
+            <summary>
+            验证码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SystemDrawingCommonController.Resize">
+            <summary>
+            缩略图
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SystemDrawingCommonController.Watermark(System.String)">
+            <summary>
+            水印
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SystemDrawingCommonController.CreateImg(System.String)">
+            <summary>
+            生成图片验证码
+            </summary>
+            <param name="code">随机码</param>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SystemDrawingCommonController.ResizeBin(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            生成缩略图
+            </summary>
+            <param name="imgPath">原图片地址</param>
+            <param name="width">缩略图宽度</param>
+            <param name="height">缩略图高度</param>
+            <param name="model">生成缩略的模式: wh|width|height|cut </param>
+        </member>
+        <member name="M:Netnr.GraphDemo.Controllers.SystemDrawingCommonController.WatermarkForTextBin(System.String,System.String)">
+            <summary>
+            水印（文字）
+            </summary>
+            <param name="imgPath"></param>
+            <param name="text"></param>
+        </member>
+    </members>
+</doc>

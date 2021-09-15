@@ -1,0 +1,331 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>生成随机密码 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 生成随机密码" />
+    <meta name="description" content="Script Services 生成随机密码" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="生成随机密码">
+                                    <svg class="titleicon"><use xlink:href="#key"></use></svg> &#x751F;&#x6210;&#x968F;&#x673A;&#x5BC6;&#x7801;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+
+    <div class="row gx-3 gy-3 align-items-center">
+
+        <div class="col-sm-auto">
+            <div class="input-group">
+                <span class="input-group-text">长度</span>
+                <input class="form-control nrLen" title="长度" type="number" value="16" min="1" max="99" step="1" />
+            </div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="chkUpper" value="A" checked>
+                <label class="form-check-label" for="chkUpper">ABC</label>
+            </div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="chkLower" value="a" checked>
+                <label class="form-check-label" for="chkLower">abc</label>
+            </div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="chkNumber" value="0" checked>
+                <label class="form-check-label" for="chkNumber">123</label>
+            </div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="chkSymbol" value="!">
+                <label class="form-check-label" for="chkSymbol">!@#</label>
+            </div>
+        </div>
+
+        <div class="col-sm-auto">
+            <div class="input-group">
+                <span class="input-group-text">排除</span>
+                <input class="form-control nrExclude" title="排除" value="0oOiI1l" placeholder="排除字符，如：0oOiIlL1" />
+            </div>
+        </div>
+        <div class="col-sm-auto">
+            <button class="btn btn-danger nrReset">重置</button>
+            <button class="btn btn-warning nrGk">刷新</button>
+        </div>
+        <div class="col-md-12 mb-3">
+            <textarea class="form-control fs-3 nrRcv" rows="9"></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    /**
+     * 2020-06-13
+     * netnr
+     */
+    var rc = {
+        type: {
+            lower: 'abcdefghijklmnopqrstuvwxyz',
+            upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            number: '0123456789',
+            special: '~!@#$%^&()_+-={}[];\',.'
+        },
+
+        /**
+         * 生成
+         * https://github.com/jonschlinkert/randomatic
+         * @param {any} pattern 源
+         * @param {any} length 长度
+         * @param {any} options 选项
+         */
+        randomize: function (pattern, length, options) {
+            var type = this.type;
+            if (!type.all) {
+                type.all = type.lower + type.upper + type.number + type.special;
+            }
+
+            var custom = false;
+            if (arguments.length === 1) {
+                if (typeof pattern === 'string') {
+                    length = pattern.length;
+
+                } else if (typeof pattern === "number") {
+                    options = {};
+                    length = pattern;
+                    pattern = '*';
+                }
+            }
+
+            if (typeof length === 'object' && length.hasOwnProperty('chars')) {
+                options = length;
+                pattern = options.chars;
+                length = pattern.length;
+                custom = true;
+            }
+
+            var opts = options || {};
+            var mask = '';
+            var res = '';
+
+            // 包含的字符串
+            if (pattern.indexOf('?') !== -1) mask += opts.chars;
+            if (pattern.indexOf('a') !== -1) mask += type.lower;
+            if (pattern.indexOf('A') !== -1) mask += type.upper;
+            if (pattern.indexOf('0') !== -1) mask += type.number;
+            if (pattern.indexOf('!') !== -1) mask += type.special;
+            if (pattern.indexOf('*') !== -1) mask += type.all;
+            if (custom) mask += pattern;
+
+            // 排除字符串
+            if (opts.exclude) {
+                var exclude = typeof opts.exclude === 'string' ? opts.exclude : opts.exclude.join('');
+                exclude = exclude.replace(new RegExp('[\\]]+', 'g'), '');
+                mask = mask.replace(new RegExp('[' + exclude + ']+', 'g'), '');
+
+                if (opts.exclude.indexOf(']') !== -1) mask = mask.replace(new RegExp('[\\]]+', 'g'), '');
+            }
+
+            while (length--) {
+                res += mask.charAt(parseInt(Math.random() * mask.length, 10));
+            }
+            return res;
+        },
+
+        /**
+         * 测试
+         */
+        test: function () {
+            var tj = `
+                // 自定义字符串
+
+                // 将从中包含的字母生成20个字符的随机字符串jonschlinkert
+                rc.randomize('?', 20, {chars: 'jonschlinkert'})
+
+                // 将根据中包含的字母生成13个字符的随机字符串jonschlinkert
+                rc.randomize('?', {chars: 'jonschlinkert'})
+
+                // ---
+
+                // 指定一个字符串或字符数组可以从用于生成随机字符串的可能字符中排除
+
+                // 将使用所有可能的字符（排除0oOiIlL1）生成一个20个字符的随机字符串
+                rc.randomize('*', 20, { exclude: '0oOiIlL1' })
+
+                // ---
+
+                // （对空格敏感）随机生成的4位大写字母，例如ZAKH，UJSL...等
+                rc.randomize('A', 4)
+
+                // 相当于 randomize('A', 4)
+                rc.randomize('AAAA')
+
+                // 相同于 randomize('AA00')、randomize('A0A0')、randomize('A0', 4)
+                rc.randomize('AAA0')
+
+                // 生成两位数，随机，小写字母（abcdefghijklmnopqrstuvwxyz）
+                rc.randomize('aa')
+
+                // 生成三位数的随机大写字母（ABCDEFGHIJKLMNOPQRSTUVWXYZ）
+                rc.randomize('AAA')
+
+                // 生成六位数的随机数（0123456789）
+                rc.randomize('0', 6)
+
+                // 生成一位随机有效的非字母字符（\`〜！@＃$％^＆（）_ +-= { } []
+                rc.randomize('!', 5)
+
+                // 生成9位数的随机字符（以上任意一项）
+                rc.randomize('A!a0', 9)
+         `;
+            var tjs = tj.split('\n');
+            for (var i = 0; i < tjs.length; i++) {
+                var ti = tjs[i].trim(), tw = ti;
+                if (ti.indexOf('//') == 0) {
+                    tw = tw.substr(2).trim();
+                }
+                console.log(tw);
+                if (ti.indexOf('//') != 0 && ti != "") {
+                    console.warn('RESULT：' + eval('(' + ti + ')'));
+                }
+            }
+
+            return 'Complete';
+        }
+    };
+
+
+    /**
+     * 页面js
+     */
+    try {
+        var cg = ss.lsObj('config');
+        $.each('.nrLen .nrExclude #chkUpper #chkLower #chkNumber #chkSymbol'.split(' '), function () {
+            if (this.substr(1) in cg) {
+                var jn = $('' + this);
+                if (this.indexOf('chk') >= 0) {
+                    jn[0].checked = cg[this.substr(1)] != "";
+                } else {
+                    jn.val(cg[this.substr(1)])
+                }
+            }
+        });
+    } catch (e) { }
+
+    $('.nrGk').click(function () {
+        var mm = '', len = $('.nrLen').val(), te = $('.nrExclude').val().trim();
+        $('input[type="checkbox"]:checked').each(function () {
+            mm += this.value;
+        })
+        if (mm != '' && len > 0) {
+            var rcv = [];
+            while (rcv.length < 9) {
+                rcv.push(rc.randomize(mm, len, { exclude: te == "" ? null : te }))
+            }
+            $('.nrRcv').val(rcv.join('\r\n'));
+
+            var obj = {};
+            $.each('.nrLen .nrExclude #chkUpper #chkLower #chkNumber #chkSymbol'.split(' '), function () {
+                var jn = $('' + this), val = jn.val();
+                if (this.indexOf('chk') >= 0) {
+                    val = jn[0].checked ? val : "";
+                }
+                obj[this.substr(1)] = val;
+            });
+            ss.ls.config = obj;
+            ss.lsSave();
+        }
+    })
+    $('.nrLen').on('input', function () {
+        $('.nrGk')[0].click();
+    })
+    $('.nrExclude').on('input', function () {
+        $('.nrGk')[0].click();
+    })
+    $('input[type="checkbox"]').click(function () {
+        $('.nrGk')[0].click();
+    })
+    $('.nrGk')[0].click();
+
+    $('.nrReset').click(function () {
+        $.each('.nrLen .nrExclude #chkUpper #chkLower #chkNumber #chkSymbol'.split(' '), function () {
+            var jn = $('' + this);
+            if (jn[0].type == "checkbox") {
+                jn[0].checked = jn[0].defaultChecked;
+            } else {
+                jn.val(jn[0].defaultValue);
+            }
+        });
+        $('.nrGk')[0].click();
+    });
+</script>
+        </div>
+</body>
+</html>

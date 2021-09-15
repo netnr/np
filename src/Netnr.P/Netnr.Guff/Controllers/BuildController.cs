@@ -1,52 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.Guff.Controllers
 {
     public class BuildController : Controller
     {
         /// <summary>
-        /// 生成静态文件
+        /// 构建静态文件
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index()
+        public SharedResultVM Index()
         {
-            var startNow = DateTime.Now;
+            //设置是构建访问
+            var cacheKey = GlobalTo.GetValue("Common:BuildHtmlKey");
+            CacheTo.Set(cacheKey, true);
 
-            var url = Request.Scheme + "://" + Request.Host.ToString() + "/home/";
-            var path = GlobalTo.WebRootPath + "/";
-            var pageTotal = 0;
+            var vm = new SharedApp.BuildTo(HttpContext).Html<HomeController>();
 
-            var listOut = new List<string>();
-            var cacheKey = "GlobalKey-HtmlPath";
-            Core.CacheTo.Set(cacheKey, "yes");
+            CacheTo.Remove(cacheKey);
 
-            //反射action
-            var type = typeof(HomeController);
-            var methods = type.GetMethods();
-            //并行请求
-            Parallel.ForEach(methods, mh =>
-            {
-                if (mh.DeclaringType == type)
-                {
-                    string html = Core.HttpTo.Get(url + mh.Name);
-                    Core.FileTo.WriteText(html, path + mh.Name.ToLower() + ".html", false);
-                    pageTotal++;
-                }
-
-            });
-
-            Core.CacheTo.Remove(cacheKey);
-
-            listOut.Add("Starting time：" + startNow.ToString("yyyy-MM-dd HH:mm:ss"));
-
-            listOut.Add("Time：" + (DateTime.Now - startNow).TotalMilliseconds + " ms");
-            listOut.Add("Count：" + pageTotal);
-            listOut.Add("Successful");
-
-            return Content(string.Join(Environment.NewLine, listOut));
+            return vm;
         }
     }
 }

@@ -1,169 +1,276 @@
-﻿<style>
-    textarea {
-        width: 100%;
-        padding: 5px;
-        height: 400px;
-        font-size: 15px;
-        line-height: 1.5;
-        border: 1px solid #ddd;
-    }
-
-    .tab-pane {
-        border: 1px solid #ddd;
-        border-top: none;
-    }
-</style>
-
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <textarea id="txtCode1" style="height:100px">一二12ab</textarea>
+        <div class="col-md-6 mb-3">
+            <textarea class="form-control" id="txtCode1" rows="6" autofocus>一二 12 ab &lt;&gt; </textarea>
         </div>
-        <div class="col-md-12" id="codetoolbox">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="tab1" data-toggle="tab" href="#pane1">
-                        加密/解密
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="tab2" data-toggle="tab" href="#pane2">
-                        散列/哈希
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="tab3" data-toggle="tab" href="#pane3">
-                        编码转换
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="tab4" data-toggle="tab" href="#pane4">
-                        其它
-                    </a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane fade show active" id="pane1">
-                    <div class="card-body px-2 py-2">
-                        <div class="input-group mb-2">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">密钥：</span>
-                            </div>
-                            <input type="text" class="form-control" id="txtKey1" placeholder="请输入密钥">
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">AES</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">DES</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">RC4</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">Rabbit</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success">TripleDES</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                    </div>
+        <div class="col-md-6 mb-3">
+            <textarea class="form-control" rows="6" id="txtCode2"></textarea>
+        </div>
+    </div>
+
+    <div class="row" title="散列/哈希">
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group mb-2">
+                <button class="btn btn-success">MD5</button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-success">SHA1</button>
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item">224</button></li>
+                    <li><button class="dropdown-item">256</button></li>
+                    <li><button class="dropdown-item">384</button></li>
+                    <li><button class="dropdown-item">512</button></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group mb-2">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success">HmacSHA1</button>
+                    <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item">224</button></li>
+                        <li><button class="dropdown-item">256</button></li>
+                        <li><button class="dropdown-item">384</button></li>
+                        <li><button class="dropdown-item">512</button></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item">HmacMD5</button></li>
+                    </ul>
                 </div>
-                <div class="tab-pane fade" id="pane2">
-                    <div class="card-body px-2 py-2">
-                        <div class="btn-group">
-                            <button class="btn btn-primary">MD5</button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary">SHA1</button>
-                            <button type="button" class="btn btn-light">224</button>
-                            <button type="button" class="btn btn-light">256</button>
-                            <button type="button" class="btn btn-light">384</button>
-                            <button type="button" class="btn btn-light">512</button>
-                        </div>
-                        <div class="card mt-3">
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">密钥：</span>
-                                </div>
-                                <input type="text" class="form-control" id="txtKey2" placeholder="HmacSHA、HmacMD5密钥">
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary">HmacSHA1</button>
-                                <button type="button" class="btn btn-light">224</button>
-                                <button type="button" class="btn btn-light">256</button>
-                                <button type="button" class="btn btn-light">384</button>
-                                <button type="button" class="btn btn-light">512</button>
-                                <button type="button" class="btn btn-light">HmacMD5</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="pane3">
-                    <div class="card-body px-2 py-2">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">encodeURI</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">encodeURIComponent</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">Base64</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">Unicode</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info">ASCII</button>
-                            <button type="button" class="btn btn-light"><i class="fa fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="pane4">
-                    <div class="card-body px-2 py-2">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-danger">GUID</button>
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <span class="input-group-text">密钥</span>
+                    <input type="text" class="form-control" id="txtKey2" placeholder="HmacSHA、HmacMD5密钥">
                 </div>
             </div>
         </div>
-        <div class="col-md-12 mt-2">
-            <textarea id="txtCode2"></textarea>
+    </div>
+
+    <div class="row" title="加密/解密">
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group mb-2">
+                <div class="input-group">
+                    <span class="input-group-text">密钥</span>
+                    <input type="text" class="form-control" id="txtKey1" placeholder="请输入密钥">
+                </div>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-warning">AES</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-warning">DES</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-warning">RC4</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-warning">Rabbit</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-warning">TripleDES</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" title="编码转换">
+        <div class="col-md-12">
+            <hr />
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-info">Base64</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-info">encodeURI</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-info">encodeURIComponent</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-info">Unicode</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-info">ASCII</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-info">HtmlEncode</button>
+                <button type="button" class="btn btn-outline-secondary"><i class="fa fa-rotate-left"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" title="其他">
+        <div class="col-md-12 mb-3">
+            <hr />
+            <div class="btn-group mb-2">
+                <button type="button" class="btn btn-dark">UUID</button>
+            </div>
         </div>
     </div>
 </div>
 
-<script src="https://lib.baomitu.com/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("crypto.js,uuid4.js"))
 
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/aes.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/tripledes.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/rc4.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/rabbit.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/tripledes.min.js"></script>
+<script>
+    var t1 = $('#txtCode1'), t2 = $('#txtCode2'), k1 = $('#txtKey1'), k2 = $('#txtKey2');
 
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/md5.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/sha1.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/sha224.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/sha256.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/sha384.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/sha512.min.js"></script>
+    //按钮点击事件
+    $(document.body).click(function (e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        if (target.nodeName == "BUTTON" || target.nodeName == "I") {
+            var html = target.innerHTML;
+            if (html == "" || html.indexOf("fa-rotate-left") >= 0) {
+                html = "<I>"; target = target.nodeName == "I" ? $(target).parent() : $(target);
+            } else {
+                target = $(target);
+            }
 
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/hmac-sha1.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/hmac-sha224.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/hmac-sha256.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/hmac-sha384.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/hmac-sha512.min.js"></script>
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/hmac-md5.min.js"></script>
+            switch (html) {
+                //反向
+                case "<I>":
+                    var prevhtml = target.prev().html();
+                    switch (prevhtml) {
+                        case "AES":
+                        case "DES":
+                        case "RC4":
+                        case "Rabbit":
+                        case "TripleDES":
+                            try {
+                                t1.val(CryptoJS[prevhtml].decrypt(t2.val(), k1.val()).toString(CryptoJS.enc.Utf8));
+                            } catch (e) {
+                                t1.val('');
+                            }
+                            break;
+                        case "encodeURI":
+                            t1.val(decodeURI(t2.val()));
+                            break;
+                        case "encodeURIComponent":
+                            t1.val(decodeURIComponent(t2.val()));
+                            break;
+                        case "Base64":
+                            try {
+                                t1.val(CryptoJS.enc.Base64.parse(t2.val()).toString(CryptoJS.enc.Utf8));
+                            } catch (e) {
+                                t1.val('')
+                            }
+                            break;
+                        case "Unicode":
+                            try { t1.val(UnConvertUnicode(t2.val())); } catch (e) { t1.val('') }
+                            break;
+                        case "ASCII":
+                            try { t1.val(UnConvertAscii(t2.val())); } catch (e) { t1.val('') }
+                            break;
+                        case "HtmlEncode":
+                            t1.val(ss.htmlDecode(t2.val()));
+                            break;
+                    }
+                    break;
 
-<script async defer src="https://lib.baomitu.com/crypto-js/3.1.9/enc-base64.min.js"></script>
+                case "AES":
+                case "DES":
+                case "RC4":
+                case "Rabbit":
+                case "TripleDES":
+                    try { t2.val(CryptoJS[html].encrypt(t1.val(), k1.val())); } catch (e) { t2.val(''); }
+                    break;
 
-<script src="/js/code.js" asp-append-version="true"></script>
+                case "MD5":
+                    var s1 = t1.val(), s2 = CryptoJS.MD5(t1.val()).toString(), s3 = s2.substr(8, 16);
+                    t2.val("源字符串：" + s1 + "\n16位小写：" + s3 + "\n16位大写：" + s3.toUpperCase() + "\n32位小写：" + s2 + "\n32位大写：" + s2.toUpperCase());
+                    break;
+                case "SHA1":
+                case "HmacSHA1":
+                case "224":
+                case "256":
+                case "384":
+                case "512":
+                case "HmacMD5":
+                    var cmdN = html;
+                    if (target.parent().children().first().html() == "SHA1") {
+                        cmdN.length == 3 && (cmdN = "SHA" + cmdN);
+                        try { t2.val(CryptoJS[cmdN](t1.val())); } catch (e) { t2.val(''); }
+                    } else {
+                        cmdN.length == 3 && (cmdN = "HmacSHA" + cmdN);
+                        try { t2.val(CryptoJS[cmdN](t1.val(), k2.val())); } catch (e) { t2.val(''); }
+                    }
+                    break;
+
+                case "encodeURI":
+                    t2.val(encodeURI(t1.val()));
+                    break;
+                case "encodeURIComponent":
+                    t2.val(encodeURIComponent(t1.val()));
+                    break;
+                case "Base64":
+                    try { t2.val(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(t1.val()))); } catch (e) { t2.val('') }
+                    break;
+                case "Unicode":
+                    t2.val(ConvertUnicode(t1.val()));
+                    break;
+                case "ASCII":
+                    t2.val(ConvertAscii(t1.val()));
+                    break;
+                case "HtmlEncode":
+                    t2.val(ss.htmlEncode(t1.val()));
+                    break;
+
+                case "UUID":
+                    {
+                        var arr = [];
+                        for (var i = 0; i < 6; i++) {
+                            arr.push(uuidv4());
+                        }
+                        t2.val(arr.join('\r\n'));
+                    }
+                    break;
+            }
+        }
+    });
+
+    //转码 To Unicode
+    function ConvertUnicode(s) {
+        var val = "", i = 0, c, len = s.length;
+        for (; i < len; i++) {
+            c = s.charCodeAt(i).toString(16);
+            while (c.length < 4) { c = '0' + c; } val += '\\u' + c
+        } return val
+    };
+
+    //转码 Unicode To STR-CN
+    function UnConvertUnicode(s) {
+        return unescape(s.replace(/\\u/g, "%u"))
+    };
+
+    //转码 To ASCII
+    function ConvertAscii(s) {
+        var val = "", i = 0, len = s.length;
+        for (; i < len; i++) { val += "&#" + s[i].charCodeAt() + ";"; }
+        return val
+    };
+
+    //转码 ASCII To STR-CN
+    function UnConvertAscii(s) {
+        var val = "", strs = s.match(/&#(\d+);/g);
+        if (strs != null) {
+            for (var i = 0, len = strs.length; i < len; i++) {
+                val += String.fromCharCode(strs[i].replace(/[&#;]/g, ''));
+            }
+        } return val
+    };
+</script>

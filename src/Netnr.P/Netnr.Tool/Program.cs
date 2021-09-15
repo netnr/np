@@ -1,7 +1,9 @@
-﻿using Netnr.Tool.Items;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
+using System.ComponentModel;
+using Netnr.Core;
+using Netnr.Tool.Items;
+using Microsoft.Data.Sqlite;
+using System.Data;
 
 namespace Netnr.Tool
 {
@@ -9,68 +11,70 @@ namespace Netnr.Tool
     {
         static void Main()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.Title = MethodBase.GetCurrentMethod().DeclaringType.Namespace + "  v0.0.1";
+            Console.CancelKeyPress += (s, e) => Environment.Exit(0);
 
-            Console.WriteLine(Environment.NewLine);
-
-            Menu();
+            ConsoleTo.InvokeMenu(typeof(MenuItems));
         }
 
-        public static void Menu()
+        /// <summary>
+        /// 菜单项
+        /// </summary>
+        public class MenuItems
         {
-            var dic = new Dictionary<int, string>()
+            [Description("退出")]
+            public static void Mi_Exit()
             {
-                { 1,"Git Pull （拉取指定目录下的所有项目，检测 .git 文件夹是否存在）"},
-                { 2,"OSInfoTo （获取系统信息）"},
-                { 3,"Clear Project （清理项目 bin 、obj 目录）"}
-            };
-            foreach (var key in dic.Keys)
-            {
-                Console.WriteLine($"  {key}） " + dic[key]);
+                Environment.Exit(0);
             }
-            Console.WriteLine(Environment.NewLine);
-            bool isnum = false;
-            do
-            {
-                Console.Write("请选择功能，输入序号：");
-                if (int.TryParse(Console.ReadLine(), out int num))
-                {
-                    isnum = true;
-                }
-                if (isnum)
-                {
-                    if (dic.ContainsKey(num))
-                    {
-                        Switch(num);
-                    }
-                    else
-                    {
-                        isnum = false;
-                        Console.WriteLine("输入序号有误");
-                    }
-                }
-            } while (!isnum);
-        }
 
-        public static void Switch(int num)
-        {
-            switch (num)
+            [Description("Git Pull （有 .git 文件夹）")]
+            public static void Mi_GitPull()
             {
-                case 1:
-                    GitPull.Run();
-                    break;
-                case 2:
-                    Console.WriteLine(new OSInfoTo().ToJson());
-                    break;
-                case 3:
-                    ClearProject.Run();
-                    break;
-                default:
-                    Console.WriteLine("Invalid");
-                    break;
+                GitPull.Run();
             }
-            Console.ReadKey();
-        }
 
+            [Description("系统状态 （Json 或 View）")]
+            public static void Mi_SystemStatus()
+            {
+                Console.Write($"请选择 [1/J]Json 或 [2/V]View（默认 1）：");
+                var format = Console.ReadLine()?.ToLower();
+                var ss = new SystemStatusTo();
+                Console.WriteLine(Environment.NewLine);
+                if (format == "2" || format == "v")
+                {
+                    Console.WriteLine(ss.ToView());
+                }
+                else
+                {
+                    Console.WriteLine(ss.ToJson());
+                }
+            }
+
+            [Description("项目清理 （bin 、obj）")]
+            public static void Mi_ProjectCleanup()
+            {
+                ProjectCleanup.Run();
+            }
+
+            [Description("项目安全拷贝 （替换密钥）")]
+            public static void Mi_ProjectSafeCopy()
+            {
+                ProjectSafeCopy.Run();
+            }
+
+            [Description("AES 加密解密 （数据库连接字符串）")]
+            public static void Mi_AESEncryptOrDecrypt()
+            {
+                AESEncryptOrDecrypt.Run();
+            }
+
+            [Description("文本编码转换 （请先备份）")]
+            public static void Mi_TextEncodingConversion()
+            {
+                TextEncodingConversion.Run();
+            }
+        }
     }
 }

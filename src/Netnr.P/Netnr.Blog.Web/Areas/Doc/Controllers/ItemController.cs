@@ -1,19 +1,25 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Areas.Doc.Controllers
 {
     [Area("Doc")]
     public class ItemController : Controller
     {
+        public ContextBase db;
+
+        public ItemController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 新增项目
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [Filters.FilterConfigs.IsValidMail]
+        [Apps.FilterConfigs.IsCompleteInfo]
         public IActionResult Add()
         {
             return View("_PartialItemForm");
@@ -28,9 +34,8 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         {
             string code = RouteData.Values["id"]?.ToString();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            using var db = new Data.ContextBase();
             var mo = db.DocSet.Find(code);
             if (mo.Uid == uinfo.UserId)
             {
@@ -48,43 +53,44 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveDocSet(Domain.DocSet mo)
+        public SharedResultVM SaveDocSet(Domain.DocSet mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            using (var db = new Data.ContextBase())
+            if (string.IsNullOrWhiteSpace(mo.DsCode))
             {
-                if (string.IsNullOrWhiteSpace(mo.DsCode))
-                {
-                    mo.DsCode = Core.UniqueTo.LongId().ToString();
-                    mo.Uid = uinfo.UserId;
-                    mo.DsStatus = 1;
-                    mo.DsCreateTime = DateTime.Now;
+                mo.DsCode = Core.UniqueTo.LongId().ToString();
+                mo.Uid = uinfo.UserId;
+                mo.DsStatus = 1;
+                mo.DsCreateTime = DateTime.Now;
 
-                    db.DocSet.Add(mo);
+                db.DocSet.Add(mo);
+
+                var num = db.SaveChanges();
+                vm.Set(num > 0);
+            }
+            else
+            {
+                var currmo = db.DocSet.Find(mo.DsCode);
+                if (currmo.Uid != uinfo.UserId)
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
-                    var currmo = db.DocSet.Find(mo.DsCode);
-                    if (currmo.Uid != uinfo.UserId)
-                    {
-                        vm.Set(ARTag.unauthorized);
-                    }
-
                     currmo.DsName = mo.DsName;
                     currmo.DsRemark = mo.DsRemark;
                     currmo.DsOpen = mo.DsOpen;
                     currmo.Spare1 = mo.Spare1;
 
                     db.DocSet.Update(currmo);
+
+                    var num = db.SaveChanges();
+                    vm.Set(num > 0);
                 }
-                var num = db.SaveChanges();
-
-                vm.Set(num > 0);
             }
-
             return vm;
         }
 
@@ -97,21 +103,19 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         {
             string code = RouteData.Values["id"]?.ToString();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            using (var db = new Data.ContextBase())
+            var mo = db.DocSet.Find(code);
+            if (mo.Uid == uinfo.UserId)
             {
-                var mo = db.DocSet.Find(code);
-                if (mo.Uid == uinfo.UserId)
-                {
-                    db.DocSet.Remove(mo);
-                    var moDetail = db.DocSetDetail.Where(x => x.DsCode == code).ToList();
-                    db.DocSetDetail.RemoveRange(moDetail);
-                    db.SaveChanges();
+                db.DocSet.Remove(mo);
+                var moDetail = db.DocSetDetail.Where(x => x.DsCode == code).ToList();
+                db.DocSetDetail.RemoveRange(moDetail);
+                db.SaveChanges();
 
-                    return Redirect("/doc/user/" + uinfo.UserId);
-                }
+                return Redirect("/doc/user/" + uinfo.UserId);
             }
+
             return Content("Bad");
         }
     }

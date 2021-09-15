@@ -1,0 +1,226 @@
+<style>
+    .sbox {
+        position: relative;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+        .sbox .sbox-screen {
+            height: 371px;
+            line-height: 371px;
+        }
+
+            .sbox .sbox-screen img {
+                max-width: 98%;
+                max-height: 98%;
+                vertical-align: middle;
+            }
+
+        .sbox .sbox-scanner {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            z-index: 9999;
+            background-color: rgba(0,0,0,.8);
+            -moz-animation: scan 1s infinite;
+            -webkit-animation: scan 1s infinite;
+            animation: scan 1s infinite;
+            -webkit-animation-direction: alternate-reverse;
+            box-shadow: 0px 0px 30px rgba(255,204,102,.5);
+        }
+
+    @@-webkit-keyframes scan {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        100% {
+            transform: translateY(364px);
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3 input-group">
+                <input id="txtFile" type="file" class="form-control" accept="image/*">
+            </div>
+            <div class="mb-3 rounded sbox">
+                <div class="sbox-scanner d-none"></div>
+                <div class="sbox-screen">
+                    <img src="https://www.netnr.eu.org/api/v1/SVGPIG/400*200" id="imgview" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row nrResultType">
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-success" value="Drawing（绘画）" title="无害的艺术，或艺术绘画">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-info" value="Neutral（中立）" title="一般，无害的内容">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-warning" value="Sexy（性感）" title="不合时宜的挑衅内容">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-danger" value="Porn（色情）" title="不雅的内容和行为，通常涉及生殖器">
+                </div>
+                <div class="col-md mb-3">
+                    <input class="form-control text-white bg-dark" value="Hentai（变态）" title="色情艺术，不适合大多数工作环境">
+                </div>
+            </div>
+            <textarea class="form-control" rows="15" id="txtResult"></textarea>
+        </div>
+    </div>
+    <div class="row mt-3 nrChart">
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("nsfwjs,highcharts.js"))
+
+<script>
+    var pg = {
+        isgif: false,
+        model: null,
+        rtorder: [],
+        init: function () {
+            $('.nrResultType').find('input').each(function () {
+                pg.rtorder.push({
+                    key: this.value.split('（')[0],
+                    name: this.value
+                });
+            });
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                var isImg = false;
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    pg.isgif = file.type == "image/gif";
+                    if (file.type.indexOf("image") != -1) {
+                        isImg = true;
+                        pg.iv.onload = function () {
+                            pg.scan();
+                        }
+                        pg.iv.src = URL.createObjectURL(file);
+                        break;
+                    }
+                }
+                if (!isImg) {
+                    bs.alert('<h4>不是图片哦</h4>');
+                    pg.iv.src = `${ss.apiServer}/v1/SVGPIG/400*200`;
+                }
+            }, "#txtFile");
+
+            pg.modelPath();
+        },
+        iv: document.getElementById('imgview'),
+
+        modelPath: function () {
+            if (!pg.modelVersion) {
+                var bhtm = document.body.innerHTML;
+                pg.modelVersion = bhtm.substr(bhtm.indexOf("/nsfwjs"), 20).substring(8).split('/')[0];
+            }
+            return `https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@@${pg.modelVersion}/example/nsfw_demo/public/quant_nsfw_mobilenet/`
+        },
+
+        scan: function () {
+            $('.sbox-scanner').removeClass('d-none');
+            $('#txtResult').val("正在加载引擎...")
+            if (pg.model) {
+                pg.classify();
+            } else {
+                nsfwjs.load(pg.modelPath()).then(function (model) {
+                    pg.model = model;
+                    pg.classify();
+                })
+            }
+        },
+
+        classify: function () {
+            $('#txtResult').val("正在识别...")
+
+            var mf = pg.isgif ? "classifyGif" : "classify";
+            pg.model[mf](pg.iv).then(function (predictions) {
+                console.log(predictions);
+
+                if (pg.isgif) {
+                    var oarr = [];
+                    predictions.forEach(parr => {
+                        var ro = {};
+                        parr.forEach(p => {
+                            ro[p.className] = p.probability.toFixed(20);
+                        });
+                        oarr.push(ro);
+                    });
+                    $('#txtResult').val(JSON.stringify(oarr, null, 4))
+                    pg.chart(oarr);
+                } else {
+                    var ro = {};
+                    predictions.forEach(p => {
+                        ro[p.className] = p.probability.toFixed(20);
+                    });
+                    $('#txtResult').val(JSON.stringify(ro, null, 4))
+                    pg.chart([ro]);
+                }
+
+                $('.sbox-scanner').addClass('d-none');
+            })
+        },
+
+        chart: function (results) {
+            var nrc = $('.nrChart').empty()
+            for (var i = 0; i < results.length; i++) {
+                var ro = results[i], data = [];
+                for (var j = 0; j < pg.rtorder.length; j++) {
+                    var o = pg.rtorder[j];
+                    data.push({
+                        name: o.name,
+                        y: ro[o.key] * 1
+                    });
+                }
+
+                var colsize = results.length > 1 ? "col-md-6 col-xl-4" : "col-md-12";
+
+                $('<div style="height:360px;" class="' + colsize + ' px-3 mb-3"></div>').appendTo(nrc).highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: '识别结果占比' + (results.length > 1 ? '（' + (i + 1) + ' 帧）' : '')
+                    },
+                    colors: ['#28a745', '#17a2b8', '#ffc107', '#dc3545', '#343a40'],
+                    tooltip: {
+                        headerFormat: '{series.name}<br>',
+                        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: '识别结果占比',
+                        data: data
+                    }]
+                });
+            }
+
+        }
+    }
+
+    pg.init();
+</script>

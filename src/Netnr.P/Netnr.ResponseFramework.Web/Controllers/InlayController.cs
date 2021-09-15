@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using Newtonsoft.Json.Linq;
@@ -47,9 +45,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="tablename">虚拟表名</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveConfigTable(string rows, string tablename)
+        public SharedResultVM SaveConfigTable(string rows, string tablename)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             JArray ja = JArray.Parse(rows);
 
@@ -60,7 +58,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 string id = jt["Id"].ToString();
 
-                var mo = listRow.Where(x => x.Id == id).FirstOrDefault();
+                var mo = listRow.FirstOrDefault(x => x.Id == id);
 
                 mo.ColTitle = jt["ColTitle"].ToStringOrEmpty();
                 mo.ColAlign = string.IsNullOrWhiteSpace(jt["ColAlign"].ToStringOrEmpty()) ? 1 : Convert.ToInt32(jt["ColAlign"].ToStringOrEmpty());
@@ -72,8 +70,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             db.SysTableConfig.UpdateRange(listRow);
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;
@@ -90,9 +88,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="tablename">虚拟表名</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResultVM SaveConfigForm(string rows, string tablename)
+        public SharedResultVM SaveConfigForm(string rows, string tablename)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             JArray ja = JArray.Parse(rows);
 
@@ -102,7 +100,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             foreach (JToken jt in ja)
             {
                 string field = jt["field"].ToStringOrEmpty();
-                var mo = listRow.Where(x => x.ColField == field).FirstOrDefault();
+                var mo = listRow.FirstOrDefault(x => x.ColField == field);
 
                 mo.ColTitle = jt["title"].ToStringOrEmpty();
                 mo.FormSpan = string.IsNullOrWhiteSpace(jt["span"].ToStringOrEmpty()) ? 1 : Convert.ToInt32(jt["span"].ToStringOrEmpty());
@@ -111,8 +109,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             db.SysTableConfig.UpdateRange(listRow);
-            int num = db.SaveChanges();
 
+            int num = db.SaveChanges();
             vm.Set(num > 0);
 
             return vm;

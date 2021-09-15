@@ -1,5 +1,4 @@
 ﻿using SQLite;
-using System;
 
 namespace Netnr.FileServer.Model
 {
@@ -11,49 +10,54 @@ namespace Netnr.FileServer.Model
         /// <summary>
         /// ID
         /// </summary>
-        [PrimaryKey]
-        public string FrId { get; set; }
+        [PrimaryKey, MaxLength(50)]
+        public string Id { get; set; }
 
         /// <summary>
         /// 所属用户
         /// </summary>
-        [Indexed]
-        public string FrOwnerUser { get; set; }
+        [Indexed, MaxLength(50)]
+        public string OwnerUser { get; set; }
 
         /// <summary>
         /// 分类
         /// </summary>
-        public string FrType { get; set; }
+        [MaxLength(100)]
+        public string Type { get; set; }
 
         /// <summary>
         /// 文件名
         /// </summary>
-        public string FrName { get; set; }
+        [MaxLength(500)]
+        public string Name { get; set; }
 
         /// <summary>
         /// 文件路径
         /// </summary>
-        public string FrPath { get; set; }
+        [MaxLength(200)]
+        public string Path { get; set; }
 
         /// <summary>
         /// 文件Hash，SHA1
         /// </summary>
-        public string FrHash { get; set; }
+        [MaxLength(100)]
+        public string Hash { get; set; }
 
         /// <summary>
         /// 文件大小，单位B
         /// </summary>
-        public string FrSize { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime? FrCreateTime { get; set; } = DateTime.Now;
+        public DateTime? CreateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string FrRemark { get; set; }
+        [MaxLength(200)]
+        public string Remark { get; set; }
 
     }
 }

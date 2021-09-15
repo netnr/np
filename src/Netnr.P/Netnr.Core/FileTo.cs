@@ -1,10 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Netnr.Core
 {
     /// <summary>
-    /// 文件读写
+    /// 文件
     /// </summary>
     public class FileTo
     {
@@ -31,6 +34,8 @@ namespace Netnr.Core
             //流写入
             using var sw = new StreamWriter(fs, e);
             sw.WriteLine(content);
+            sw.Flush();
+            sw.Close();
         }
 
         /// <summary>
@@ -65,6 +70,59 @@ namespace Netnr.Core
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 拷贝目录
+        /// </summary>
+        /// <param name="source">源目录</param>
+        /// <param name="target">新目录</param>
+        /// <param name="ignoreFolder">忽略文件夹</param>
+        public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, List<string> ignoreFolder = null)
+        {
+            if (source.FullName.Equals(target.FullName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (ignoreFolder != null && ignoreFolder.Any(x => target.FullName.EndsWith(x)))
+            {
+                return;
+            }
+
+            if (Directory.Exists(target.FullName) == false)
+            {
+                Directory.CreateDirectory(target.FullName);
+            }
+
+            foreach (FileInfo fi in source.GetFiles())
+            {
+                fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
+            }
+
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            {
+                if (ignoreFolder != null && ignoreFolder.Any(x => x == diSourceSubDir.Name))
+                {
+                    continue;
+                }
+                DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyDirectory(diSourceSubDir, nextTargetSubDir, ignoreFolder);
+            }
+        }
+
+        /// <summary>
+        /// 拷贝目录
+        /// </summary>
+        /// <param name="sourceDirectory">源目录</param>
+        /// <param name="targetDirectory">新目录</param>
+        /// <param name="ignoreFolder">忽略文件夹</param>
+        public static void CopyDirectory(string sourceDirectory, string targetDirectory, List<string> ignoreFolder = null)
+        {
+            DirectoryInfo diSource = new(sourceDirectory);
+            DirectoryInfo diTarget = new(targetDirectory);
+
+            CopyDirectory(diSource, diTarget, ignoreFolder);
         }
     }
 }

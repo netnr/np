@@ -17,7 +17,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var vm = Application.CommonService.GetLoginUserInfo(HttpContext);
+            var vm = Apps.LoginService.GetLoginUserInfo(HttpContext);
             return View(vm);
         }
 
@@ -35,7 +35,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult UpdateBrowser()
+        public IActionResult UB()
         {
             return View();
         }
@@ -47,6 +47,23 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public IActionResult Guide()
         {
             return View();
+        }
+
+        /// <summary>
+        /// Swagger自定义样式
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public IActionResult SwaggerCustomStyle()
+        {
+            var txt = @".opblock-options{display:none}.download-contents{width:auto !important}";
+
+            return new ContentResult()
+            {
+                Content = txt,
+                StatusCode = 200,
+                ContentType = "text/css"
+            };
         }
     }
 }

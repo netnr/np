@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <script src='fast-xml-parser.min.js'></script>
+</head>
+
+<body>
+    <script>
+        console.log(fastXmlParser);
+        console.log(new fastXmlParser.parse('<a>1</a><b>a</b>')); // XML => JSON
+        console.log(new fastXmlParser.j2xParser().parse({ a: 1, b: "a" })); // JSON => XML
+    </script>
+</body>
+
+</html>

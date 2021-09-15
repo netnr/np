@@ -216,7 +216,11 @@ z.button('auth', function () {
     if (rowData) {
         authMenus = rowData.SrMenus ? rowData.SrMenus.split(',') : [];
         authButtons = rowData.SrButtons ? $.parseJSON(rowData.SrButtons) : {};
-        $('#myModalAuth').modal();
+
+        var ma = $('#myModalAuth');
+        ma.find('.modal-title').find('span').html("权限控制 <small>（角色：" + rowData.SrName + "）</small>");
+        ma.modal();
+
         if (cbnav.data) {
             cbnav.bind();
             cbtn.bind();

@@ -1,13 +1,19 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Gist.Controllers
+namespace Netnr.Blog.Web.Areas.Gist.Controllers
 {
     [Area("Gist")]
     public class HomeController : Controller
     {
+        public ContextBase db;
+
+        public HomeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// Gist首页
         /// </summary>
@@ -23,13 +29,13 @@ namespace Netnr.Web.Areas.Gist.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveGist(Blog.Domain.Gist mo)
+        public SharedResultVM SaveGist(Domain.Gist mo)
         {
-            var vm = new ActionResultVM();
-
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
-            using (var db = new Blog.Data.ContextBase())
+            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
+                var uinfo = Apps.LoginService.Get(HttpContext);
+
                 //add
                 if (string.IsNullOrWhiteSpace(mo.GistCode))
                 {
@@ -44,39 +50,32 @@ namespace Netnr.Web.Areas.Gist.Controllers
                     db.SaveChanges();
 
                     vm.Data = mo.GistCode;
-                    vm.Set(ARTag.success);
+                    vm.Set(SharedEnum.RTag.success);
                 }
                 else
                 {
-                    var oldmo = db.Gist.Where(x => x.GistCode == mo.GistCode).FirstOrDefault();
-                    if (oldmo != null)
+                    var oldmo = db.Gist.FirstOrDefault(x => x.GistCode == mo.GistCode);
+                    if (oldmo?.Uid == uinfo.UserId)
                     {
-                        if (oldmo.Uid == uinfo.UserId)
-                        {
-                            oldmo.GistRemark = mo.GistRemark;
-                            oldmo.GistFilename = mo.GistFilename;
-                            oldmo.GistLanguage = mo.GistLanguage;
-                            oldmo.GistTheme = mo.GistTheme;
-                            oldmo.GistContent = mo.GistContent;
-                            oldmo.GistContentPreview = mo.GistContentPreview;
-                            oldmo.GistRow = mo.GistRow;
-                            oldmo.GistOpen = mo.GistOpen;
-                            oldmo.GistUpdateTime = DateTime.Now;
+                        oldmo.GistRemark = mo.GistRemark;
+                        oldmo.GistFilename = mo.GistFilename;
+                        oldmo.GistLanguage = mo.GistLanguage;
+                        oldmo.GistTheme = mo.GistTheme;
+                        oldmo.GistContent = mo.GistContent;
+                        oldmo.GistContentPreview = mo.GistContentPreview;
+                        oldmo.GistRow = mo.GistRow;
+                        oldmo.GistOpen = mo.GistOpen;
+                        oldmo.GistUpdateTime = DateTime.Now;
 
-                            db.Gist.Update(oldmo);
-                            db.SaveChanges();
+                        db.Gist.Update(oldmo);
+                        db.SaveChanges();
 
-                            vm.Data = mo.GistCode;
-                            vm.Set(ARTag.success);
-                        }
-                        else
-                        {
-                            vm.Set(ARTag.refuse);
-                        }
+                        vm.Data = mo.GistCode;
+                        vm.Set(SharedEnum.RTag.success);
                     }
                     else
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.fail);
                     }
                 }
             }

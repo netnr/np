@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Netnr.SharedFast;
 
 namespace Netnr.Chat
 {
@@ -10,7 +9,7 @@ namespace Netnr.Chat
             CreateHostBuilder(args).Build().Run();
         }
 
-        //dotnet Netnr.Web.dll "http://*:58"
+        //dotnet Netnr.Chat.dll "https://*:58"
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
@@ -23,12 +22,6 @@ namespace Netnr.Chat
                     });
 
                     webBuilder.UseStartup<Startup>();
-
-                    //Ö¸¶¨¶Ë¿Ú
-                    if (args.Length > 0)
-                    {
-                        webBuilder.UseUrls(args[0]);
-                    }
                 });
     }
 }

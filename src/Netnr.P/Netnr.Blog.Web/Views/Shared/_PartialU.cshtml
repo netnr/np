@@ -2,25 +2,27 @@
 @{
     ViewData["Title"] = Model.Nickname;
 
-    var uinfo = new UserAuthService(ViewContext.HttpContext).Get();
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
 
     var isme = uinfo.UserId == Model.UserId;
 }
 
 <input type="hidden" id="hid_isme" value='@(isme?1:0)' />
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
             <div class="row duib">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     @{
-                        var server = GlobalTo.GetValue("StaticResource:Server").TrimEnd('/') + '/';
-                        string path = GlobalTo.GetValue("StaticResource:AvatarPath").TrimEnd('/').TrimStart('/') + "/";
-                        string lgphoto = server + path + Model.UserPhoto?.Replace(".", "_lg.");
+                        var lgphoto = "/favicon.svg";
+                        if (!string.IsNullOrWhiteSpace(Model.UserPhoto))
+                        {
+                            lgphoto = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), Model.UserPhoto);
+                        }
 
                         Model.UserSay = string.IsNullOrEmpty(Model.UserSay) ? "这个人很懒，什么也没有留下。^_^ " : Model.UserSay;
                     }
-                    <img class="rounded-circle mw-100" id="userp" src="@lgphoto" onerror="this.src = '/favicon.png'; this.onerror = null;" />
+                    <img class="rounded-circle mw-100" id="userp" src="@lgphoto" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
                 </div>
                 <div class="col-md-4">
                     <h2>@Model.Nickname</h2>
@@ -42,7 +44,7 @@
                         }
                     </p>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div class="card border-info">
                         <div class="card-header">
                             <button class='btn btn-light btn-min float-right @(isme?"":"d-none")' id="btnsayedit">
@@ -112,4 +114,4 @@
 </div>
 
 <script src="/js/u/index.js" asp-append-version="true"></script>
-<partial name="_PartialQuote" model="@("md5.js")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("md5.js"))

@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "富文本";
 }
 
@@ -44,6 +44,6 @@
     </div>
 </div>
 
-<partial name="_QuotePartial" model="@("ckeditor.js")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ckeditor.js"))
 
 <partial name="_BaseViewPartial" />

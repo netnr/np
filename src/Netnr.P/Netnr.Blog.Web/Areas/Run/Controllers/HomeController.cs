@@ -1,13 +1,19 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Run.Controllers
+namespace Netnr.Blog.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class HomeController : Controller
     {
+        public ContextBase db;
+
+        public HomeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// Run首页
         /// </summary>
@@ -18,28 +24,18 @@ namespace Netnr.Web.Areas.Run.Controllers
         }
 
         /// <summary>
-        /// Run预览
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Preview()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 保存
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveRun(Blog.Domain.Run mo)
+        public SharedResultVM SaveRun(Domain.Run mo)
         {
-            var vm = new ActionResultVM();
-
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
-
-            using (var db = new Blog.Data.ContextBase())
+            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
+                var uinfo = Apps.LoginService.Get(HttpContext);
+
                 //add
                 if (string.IsNullOrWhiteSpace(mo.RunCode))
                 {
@@ -58,32 +54,24 @@ namespace Netnr.Web.Areas.Run.Controllers
                 }
                 else
                 {
-                    var oldmo = db.Run.Where(x => x.RunCode == mo.RunCode).FirstOrDefault();
-
-                    if (oldmo != null)
+                    var oldmo = db.Run.FirstOrDefault(x => x.RunCode == mo.RunCode);
+                    if (oldmo?.Uid == uinfo.UserId)
                     {
-                        if (oldmo.Uid == uinfo.UserId)
-                        {
-                            oldmo.RunContent1 = mo.RunContent1;
-                            oldmo.RunContent2 = mo.RunContent2;
-                            oldmo.RunContent3 = mo.RunContent3;
-                            oldmo.RunRemark = mo.RunRemark;
-                            oldmo.RunTheme = mo.RunTheme;
+                        oldmo.RunContent1 = mo.RunContent1;
+                        oldmo.RunContent2 = mo.RunContent2;
+                        oldmo.RunContent3 = mo.RunContent3;
+                        oldmo.RunRemark = mo.RunRemark;
+                        oldmo.RunTheme = mo.RunTheme;
 
-                            db.Run.Update(oldmo);
-                            int num = db.SaveChanges();
+                        db.Run.Update(oldmo);
+                        int num = db.SaveChanges();
 
-                            vm.Data = mo.RunCode;
-                            vm.Set(num > 0);
-                        }
-                        else
-                        {
-                            vm.Set(ARTag.refuse);
-                        }
+                        vm.Data = mo.RunCode;
+                        vm.Set(num > 0);
                     }
                     else
                     {
-                        vm.Set(ARTag.invalid);
+                        vm.Set(SharedEnum.RTag.fail);
                     }
                 }
             }

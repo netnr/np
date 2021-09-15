@@ -1,62 +1,67 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net40;netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Description>开发常用的核心类库；使用文档看GitHub（Gitee）项目说明。</Description>
-    <Copyright>netnr</Copyright>
-    <PackageIconUrl></PackageIconUrl>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageTags>netnr</PackageTags>
-    <PackageReleaseNotes>调整 `FileTo` 类 读取/写入方法传参，原来是分开传文件路径和文件名，现一起传完整物理路径
-删除 `CmdTo` 类 Linux上执行Shell的一些方法，仅保留基础方法</PackageReleaseNotes>
-    <Authors>netnr</Authors>
-    <Version>1.3.0</Version>
-    <DocumentationFile>Netnr.Core.xml</DocumentationFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <LangVersion>8.0</LangVersion>
-    <PackageIcon>favicon.png</PackageIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2;netstandard2.1</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<Description>开发常用的核心类库；文档：https://netnr.eu.org</Description>
+		<Copyright>netnr</Copyright>
+		<PackageIconUrl></PackageIconUrl>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/netnr/np</RepositoryUrl>
+		<PackageLicenseUrl></PackageLicenseUrl>
+		<PackageTags>netnr</PackageTags>
+		<PackageReleaseNotes>
+		</PackageReleaseNotes>
+		<Authors>netnr</Authors>
+		<Version>1.4.2</Version>
+		<DocumentationFile>Netnr.Core.xml</DocumentationFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>favicon.png</PackageIcon>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
+		<DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+	  <PlatformTarget>AnyCPU</PlatformTarget>
+	  <NoWarn>1701;1702</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions">
-      <Version>3.1.4</Version>
-    </PackageReference>
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
+	  <PlatformTarget>AnyCPU</PlatformTarget>
+	  <NoWarn>1701;1702</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions">
-      <Version>3.1.4</Version>
-    </PackageReference>
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+	  <PlatformTarget>AnyCPU</PlatformTarget>
+	  <NoWarn>1701;1702</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-    <Reference Include="System.Web" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+	  <PlatformTarget>AnyCPU</PlatformTarget>
+	  <NoWarn>1701;1702</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="favicon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="System.Runtime.Caching">
+			<Version>6.0.0-preview.7.21377.19</Version>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+		<PackageReference Include="System.IO.Compression" Version="4.3.0" />
+		<PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Netnr.Core.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="favicon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

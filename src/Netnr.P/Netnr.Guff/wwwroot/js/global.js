@@ -7,6 +7,10 @@
     dc: {},
     //初始化
     init: function () {
+        if (guff.pn.indexOf("index") == 0) {
+            guff.pn = "";
+        }
+
         //个人登录加载
         guff.queryUserInfo().then(x => x.json()).then(res => {
             guff.setLogin(res.code == 200);
@@ -128,7 +132,6 @@
         };
         if (ops.method.toLowerCase() == "post") {
             ops.body = data;
-            ops.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
         return fetch(url, ops)
     },
@@ -203,6 +206,7 @@
             lbox = document.createElement("div");
             lbox.style.cssText = "position:fixed;top:0;left:0;bottom:0;right:0;background-color:#e0e0e0;z-index:9999;text-align:center;padding-top:48vh;"
             lbox.innerHTML = '<span class="rounded bg-light p-3">请先 <a href="' + guff.loginLink() + '">登录 / 注册</a></span>';
+            document.documentElement.style.overflow = "hidden";
             document.body.appendChild(lbox);
         }
     },
@@ -349,14 +353,18 @@
         if (item.GrAudio) {
             var urls = item.GrAudio.split(',') || [];
             $.each(urls, function () {
-                htm.push('<div class="mb-3"><audio class="w-100" src="' + u.replace(/"/g, "") + '" controls /></div>');
+                htm.push('<div class="mb-3"><audio class="w-100" src="' + this.replace(/"/g, "") + '" controls /></div>');
             })
         }
 
         if (item.GrVideo) {
             var urls = item.GrVideo.split(',') || [];
             $.each(urls, function () {
-                htm.push('<div class="mb-3"><video class="w-100" src="' + u.replace(/"/g, "") + '" controls /></div>');
+                if (this.toLowerCase().indexOf("https://streamja.com/") == 0) {
+                    htm.push('<div class="mb-3"><iframe class="w-100 border-0" style="height:500px" allowfullscreen src="' + this.replace(/"/g, "") + '"></iframe></div>');
+                } else {
+                    htm.push('<div class="mb-3"><video class="w-100" src="' + this.replace(/"/g, "") + '" controls /></div>');
+                }
             })
         }
 
@@ -846,8 +854,13 @@
 
             guff.dc["requestaction"] = "saveReply";
 
+            var fd = new FormData();
+            $('#rwform').serializeArray().forEach(item => {
+                fd.append(item.name, item.value);
+            });
+
             var uri = guff.host + "api/v1/guff/replyadd";
-            guff.fetch(uri, $('#rwform').serialize(), "post").then(x => x.json()).then(res => {
+            guff.fetch(uri, fd, "post").then(x => x.json()).then(res => {
                 guff.dc["requestaction"] = null;
                 console.log(res);
                 if (res.code == 200) {

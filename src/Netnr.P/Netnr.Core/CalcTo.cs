@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Security.Cryptography;
 
@@ -10,223 +11,292 @@ namespace Netnr.Core
     public class CalcTo
     {
         /// <summary>
-        /// 异或算法
+        /// 编码
         /// </summary>
-        /// <param name="s">字符串</param>
-        /// <param name="key">异或因子 2-253</param>
-        /// <returns>返回异或后的字符串</returns>
-        public static string XorKey(string s, int key)
-        {
-            int n = key > 253 ? 253 : key < 2 ? 2 : key;
-            byte k = byte.Parse(n.ToString());
+        public static Encoding encoding = Encoding.UTF8;
 
-            byte[] bytes = Encoding.Unicode.GetBytes(s);
-            for (int i = 0; i < bytes.Length; i++)
+        /// <summary>
+        /// AES 构建
+        /// </summary>
+        /// <param name="key">密钥，默认空</param>
+        /// <param name="iv">固定16位，默认空</param>
+        /// <returns></returns>
+        public static Aes AESBuild(string key = "", string iv = "")
+        {
+            var aesAlg = Aes.Create();
+
+            byte[] bKey = new byte[32];
+            Array.Copy(encoding.GetBytes(key.PadRight(bKey.Length)), bKey, bKey.Length);
+            byte[] bIV = new byte[16];
+            Array.Copy(encoding.GetBytes(iv.PadRight(bIV.Length)), bIV, bIV.Length);
+
+            aesAlg.Key = bKey;
+            aesAlg.IV = bIV;
+
+            return aesAlg;
+        }
+
+        /// <summary>
+        /// AES 加密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="aesAlg">AES构建对象</param>
+        /// <returns></returns>
+        public static string AESEncrypt(string txt, Aes aesAlg)
+        {
+            ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+            using MemoryStream msEncrypt = new();
+            using CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write);
+            using (StreamWriter swEncrypt = new(csEncrypt))
             {
-                bytes[i] = (byte)(bytes[i] ^ k ^ (k + 7));
+                swEncrypt.Write(txt);
             }
-            return Encoding.Unicode.GetString(bytes);
+            var result = Convert.ToBase64String(msEncrypt.ToArray());
+            aesAlg.Dispose();
+
+            return result;
+        }
+
+        /// <summary>
+        /// AES 加密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="key">密钥</param>
+        /// <param name="iv">iv 16位 默认空</param>
+        /// <returns></returns>
+        public static string AESEncrypt(string txt, string key, string iv = "")
+        {
+            return AESEncrypt(txt, AESBuild(key, iv));
+        }
+
+        /// <summary>
+        /// AES 解密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="aesAlg">AES构建对象</param>
+        /// <returns></returns>
+        public static string AESDecrypt(string txt, Aes aesAlg)
+        {
+            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+            using MemoryStream msDecrypt = new(Convert.FromBase64String(txt));
+            using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
+            using StreamReader srDecrypt = new(csDecrypt);
+
+            var result = srDecrypt.ReadToEnd();
+            aesAlg.Dispose();
+
+            return result;
+        }
+
+        /// <summary>
+        /// AES 解密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="key">密钥</param>
+        /// <param name="iv">iv 16位 默认空</param>
+        /// <returns></returns>
+        public static string AESDecrypt(string txt, string key, string iv = "")
+        {
+            return AESDecrypt(txt, AESBuild(key, iv));
+        }
+
+        /// <summary>
+        /// AES 构建
+        /// </summary>
+        /// <param name="key">密钥，默认空</param>
+        /// <param name="iv">固定8位，默认空</param>
+        /// <returns></returns>
+        public static DES DESBuild(string key = "", string iv = "")
+        {
+            DES DESalg = DES.Create();
+
+            byte[] bKey = new byte[8];
+            Array.Copy(encoding.GetBytes(key.PadRight(bKey.Length)), bKey, bKey.Length);
+            byte[] bIV = new byte[8];
+            Array.Copy(encoding.GetBytes(iv.PadRight(bIV.Length)), bIV, bIV.Length);
+
+            DESalg.Key = bKey;
+            DESalg.IV = bIV;
+
+            return DESalg;
+        }
+
+        /// <summary>
+        /// DES 加密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="DESalg">DES 对象</param>
+        /// <returns></returns>
+        public static string DESEncrypt(string txt, DES DESalg)
+        {
+            var input = encoding.GetBytes(txt);
+
+            using ICryptoTransform ct = DESalg.CreateEncryptor(DESalg.Key, DESalg.IV);
+            var result = Convert.ToBase64String(ct.TransformFinalBlock(input, 0, input.Length));
+            DESalg.Dispose();
+
+            return result;
+        }
+
+        /// <summary>
+        /// DES 加密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="key">密钥</param>
+        /// <param name="iv">固定8位，默认空</param>
+        /// <returns></returns>
+        public static string DESEncrypt(string txt, string key, string iv = "")
+        {
+            return DESEncrypt(txt, DESBuild(key, iv));
+        }
+
+        /// <summary>
+        /// DES 解密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="DESalg">DES 对象</param>
+        /// <returns></returns>
+        public static string DESDecrypt(string txt, DES DESalg)
+        {
+            var input = Convert.FromBase64String(txt);
+
+            using ICryptoTransform ct = DESalg.CreateDecryptor(DESalg.Key, DESalg.IV);
+            var result = encoding.GetString(ct.TransformFinalBlock(input, 0, input.Length));
+            DESalg.Dispose();
+
+            return result;
+        }
+
+        /// <summary>
+        /// DES 解密
+        /// </summary>
+        /// <param name="txt">字符串</param>
+        /// <param name="key">密钥</param>
+        /// <param name="iv">默认为空</param>
+        /// <returns></returns>
+        public static string DESDecrypt(string txt, string key, string iv = "")
+        {
+            return DESDecrypt(txt, DESBuild(key, iv));
+        }
+
+        /// <summary>
+        /// SHA 加密
+        /// </summary>
+        /// <param name="ha"></param>
+        /// <param name="txt"></param>
+        /// <returns></returns>
+        private static string GetHashString(HashAlgorithm ha, string txt)
+        {
+            return BitConverter.ToString(ha.ComputeHash(encoding.GetBytes(txt))).Replace("-", "");
         }
 
         /// <summary>
         /// MD5加密 小写
         /// </summary>
-        /// <param name="s">需加密的字符串</param>
+        /// <param name="txt">需加密的字符串</param>
         /// <param name="len">长度 默认32 可选16</param>
         /// <returns></returns>
-        public static string MD5(string s, int len = 32)
+        public static string MD5(string txt, int len = 32)
         {
-            string result;
-            using MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
-            byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(s));
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < data.Length; i++)
-            {
-                sb.Append(data[i].ToString("x2"));
-            }
-            result = sb.ToString();
-
-            //result = System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(s, "MD5").ToLower();
+            var result = GetHashString(System.Security.Cryptography.MD5.Create(), txt).ToLower();
             return len == 32 ? result : result.Substring(8, 16);
         }
-
-        #region DES 加解密
-
-        /// <summary> 
-        /// DES 加密 
-        /// </summary> 
-        /// <param name="Text">内容</param> 
-        /// <param name="sKey">密钥</param> 
-        /// <returns></returns> 
-        public static string EnDES(string Text, string sKey)
-        {
-            DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-            byte[] inputByteArray;
-            inputByteArray = Encoding.Default.GetBytes(Text);
-            des.Key = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
-            des.IV = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
-            System.IO.MemoryStream ms = new System.IO.MemoryStream();
-            using CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write);
-            cs.Write(inputByteArray, 0, inputByteArray.Length);
-            cs.FlushFinalBlock();
-            StringBuilder ret = new StringBuilder();
-            foreach (byte b in ms.ToArray())
-            {
-                ret.AppendFormat("{0:X2}", b);
-            }
-            return ret.ToString();
-        }
-
-        /// <summary> 
-        /// DES 解密 
-        /// </summary> 
-        /// <param name="Text">内容</param> 
-        /// <param name="sKey">密钥</param> 
-        /// <returns></returns> 
-        public static string DeDES(string Text, string sKey)
-        {
-            DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-            int len;
-            len = Text.Length / 2;
-            byte[] inputByteArray = new byte[len];
-            int x, i;
-            for (x = 0; x < len; x++)
-            {
-                i = Convert.ToInt32(Text.Substring(x * 2, 2), 16);
-                inputByteArray[x] = (byte)i;
-            }
-            des.Key = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
-            des.IV = Encoding.ASCII.GetBytes(MD5(sKey).Substring(0, 8));
-            System.IO.MemoryStream ms = new System.IO.MemoryStream();
-            using CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write);
-            cs.Write(inputByteArray, 0, inputByteArray.Length);
-            cs.FlushFinalBlock();
-            return Encoding.Default.GetString(ms.ToArray());
-        }
-
-        #endregion
-
-        #region SHA1 加密
 
         /// <summary>
         /// 20字节,160位
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <returns></returns>
-        public static string SHA128(string str)
+        public static string SHA_1(string txt)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(str);
-            using SHA1CryptoServiceProvider SHA1 = new SHA1CryptoServiceProvider();
-            byte[] byteArr = SHA1.ComputeHash(buffer);
-            return BitConverter.ToString(byteArr);
+            return GetHashString(SHA1.Create(), txt);
         }
 
         /// <summary>
         /// 32字节,256位
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <returns></returns>
-        public static string SHA256(string str)
+        public static string SHA_256(string txt)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(str);
-            using SHA256CryptoServiceProvider SHA256 = new SHA256CryptoServiceProvider();
-            byte[] byteArr = SHA256.ComputeHash(buffer);
-            return BitConverter.ToString(byteArr);
+            return GetHashString(SHA256.Create(), txt);
         }
 
         /// <summary>
         /// 48字节,384位
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <returns></returns>
-        public static string SHA384(string str)
+        public static string SHA_384(string txt)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(str);
-            using SHA384CryptoServiceProvider SHA384 = new SHA384CryptoServiceProvider();
-            byte[] byteArr = SHA384.ComputeHash(buffer);
-            return BitConverter.ToString(byteArr);
+            return GetHashString(SHA384.Create(), txt);
         }
 
         /// <summary>
         /// 64字节,512位
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <returns></returns>
-        public static string SHA512(string str)
+        public static string SHA_512(string txt)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(str);
-            using SHA512CryptoServiceProvider SHA512 = new SHA512CryptoServiceProvider();
-            byte[] byteArr = SHA512.ComputeHash(buffer);
-            return BitConverter.ToString(byteArr);
+            return GetHashString(SHA512.Create(), txt);
         }
-        #endregion
 
         /// <summary>
         /// HMAC_SHA1 加密
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <param name="key">密钥</param>
         /// <returns></returns>
-        public static string HMAC_SHA1(string str, string key)
+        public static string HMAC_SHA1(string txt, string key)
         {
-            using HMACSHA1 hmacsha1 = new HMACSHA1
-            {
-                Key = Encoding.UTF8.GetBytes(key)
-            };
-            byte[] dataBuffer = Encoding.UTF8.GetBytes(str);
-            byte[] hashBytes = hmacsha1.ComputeHash(dataBuffer);
-            return Convert.ToBase64String(hashBytes);
+            return GetHashString(new HMACSHA1(encoding.GetBytes(key)), txt);
         }
 
         /// <summary>
         /// HMAC_SHA256 加密
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <param name="key">密钥</param>
         /// <returns></returns>
-        public static string HMAC_SHA256(string str, string key)
+        public static string HMAC_SHA256(string txt, string key)
         {
-            using HMACSHA256 hmacsha256 = new HMACSHA256
-            {
-                Key = Encoding.UTF8.GetBytes(key)
-            };
-            byte[] dataBuffer = Encoding.UTF8.GetBytes(str);
-            byte[] hashBytes = hmacsha256.ComputeHash(dataBuffer);
-            return Convert.ToBase64String(hashBytes);
+            return GetHashString(new HMACSHA256(encoding.GetBytes(key)), txt);
         }
 
         /// <summary>
         /// HMACSHA384 加密
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <param name="key">密钥</param>
         /// <returns></returns>
-        public static string HMACSHA384(string str, string key)
+        public static string HMAC_SHA384(string txt, string key)
         {
-            using HMACSHA384 hmacsha384 = new HMACSHA384
-            {
-                Key = Encoding.UTF8.GetBytes(key)
-            };
-            byte[] dataBuffer = Encoding.UTF8.GetBytes(str);
-            byte[] hashBytes = hmacsha384.ComputeHash(dataBuffer);
-            return Convert.ToBase64String(hashBytes);
+            return GetHashString(new HMACSHA384(encoding.GetBytes(key)), txt);
         }
 
         /// <summary>
         /// HMACSHA512 加密
         /// </summary>
-        /// <param name="str">内容</param>
+        /// <param name="txt">内容</param>
         /// <param name="key">密钥</param>
         /// <returns></returns>
-        public static string HMACSHA512(string str, string key)
+        public static string HMAC_SHA512(string txt, string key)
         {
-            using HMACSHA512 hmacsha512 = new HMACSHA512
-            {
-                Key = Encoding.UTF8.GetBytes(key)
-            };
-            byte[] dataBuffer = Encoding.UTF8.GetBytes(str);
-            byte[] hashBytes = hmacsha512.ComputeHash(dataBuffer);
-            return Convert.ToBase64String(hashBytes);
+            return GetHashString(new HMACSHA512(encoding.GetBytes(key)), txt);
+        }
+
+        /// <summary>
+        /// HMACMD5 加密
+        /// </summary>
+        /// <param name="txt">内容</param>
+        /// <param name="key">密钥</param>
+        /// <returns></returns>
+        public static string HMAC_MD5(string txt, string key)
+        {
+            return GetHashString(new HMACMD5(encoding.GetBytes(key)), txt);
         }
     }
 }

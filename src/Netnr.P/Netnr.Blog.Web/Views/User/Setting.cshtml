@@ -2,10 +2,10 @@
 @{
     ViewData["Title"] = "个人设置";
 
-    var loginpath = GlobalTo.GetValue("StaticResource:Server") + GlobalTo.GetValue("StaticResource:LoginPath");
+    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin(Model);
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <div class="mb-2">
@@ -13,13 +13,12 @@
                 <span class="h4">个人信息</span>
             </div>
             <table class="table">
-                <colgroup><col style="width:30%" /></colgroup>
                 <tr>
                     <td>
                         账号
                         <i class="fa fa-fw text-muted fa-question-circle-o" data-toggle="tooltip" title="登录账号，个性网址，唯一"></i>
                     </td>
-                    <td class="text-muted">https://www.netnr.com/u/<b class="text-primary">@Model.UserName</b></td>
+                    <td class="text-muted">@GlobalTo.GetValue("Common:Domain")/u/<b class="text-primary">@Model.UserName</b></td>
                 </tr>
                 <tr>
                     <td>昵称</td>
@@ -57,8 +56,8 @@
                 </tr>
             </table>
 
-            <div class="modal fade" role="dialog" id="ModalUserInfo">
-                <div class="modal-dialog" role="document">
+            <div class="modal" id="ModalUserInfo">
+                <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">修改个人信息</h5>
@@ -105,85 +104,22 @@
 
             <h4 class="mt-5">授权关联</h4>
             <table class="table">
-                <colgroup><col style="width:30%" /></colgroup>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/qq.svg")" />QQ</td>
-                    <td>
-                        @if (Model.OpenId1?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/qq">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/qq">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/weibo.svg")" />微博</td>
-                    <td>
-                        @if (Model.OpenId2?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/weibo">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/weibo">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/github.svg")" />GitHub</td>
-                    <td>
-                        @if (Model.OpenId3?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/github">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/github">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/taobao.svg")" />淘宝</td>
-                    <td>
-                        @if (Model.OpenId4?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/taobao">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/taobao">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/microsoft.svg")" />Microsoft</td>
-                    <td>
-                        @if (Model.OpenId5?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/microsoft">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/microsoft">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td class="siteIcon"><img class="mr-2" src="@(loginpath+"/dingtalk.svg")" />钉钉</td>
-                    <td>
-                        @if (Model.OpenId6?.Length > 1)
-                        {
-                            <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/dingtalk">解除</a>
-                        }
-                        else
-                        {
-                            <a href="/user/oauth/dingtalk">立即绑定账号</a>
-                        }
-                    </td>
-                </tr>
+                @foreach (var login in listQuickLogin)
+                {
+                    <tr>
+                        <td class="siteIcon"><img class="mr-2" src="@login.Icon" />@login.Name</td>
+                        <td>
+                            @if (login.Bind)
+                            {
+                                <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/@login.Key">解除</a>
+                            }
+                            else
+                            {
+                                <a href="/user/oauth/@login.Key">立即绑定账号</a>
+                            }
+                        </td>
+                    </tr>
+                }
             </table>
 
             <h4 class="mt-5">更改密码</h4>

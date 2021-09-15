@@ -1,18 +1,18 @@
-﻿@model ActionResultVM
+@model SharedResultVM
 @{
     ViewData["Title"] = "登录";
 
-    var loginpath = GlobalTo.GetValue("StaticResource:Server") + GlobalTo.GetValue("StaticResource:LoginPath");
+    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin();
 }
 
 <link href="/css/account/login.css" rel="stylesheet" asp-append-version="true" />
 
 <div class="vbox">
     <div class="mt-4 text-center d-none d-md-block">
-        <a href="/"><img src="/favicon.svg" alt="netnr" /></a>
+        <a href="/"><img src="/favicon.svg" alt="@GlobalTo.GetValue("Common:EnglishName")" /></a>
     </div>
     <div class="my-4 text-center">
-        <h4>Sign in to Netnr</h4>
+        <h4>Sign in to @GlobalTo.GetValue("Common:EnglishName")</h4>
     </div>
     @if (!string.IsNullOrWhiteSpace(Model?.Msg))
     {
@@ -39,31 +39,22 @@
                 </div>
                 <button type="submit" class="btn btn-block btn-success">Sign in</button>
             </form>
-            <div class="otherlogin">
-                <a href="/account/auth/qq">
-                    <img src="@(loginpath+"/qq.svg")" title="QQ" />
-                </a>
-                <a href="/account/auth/weibo">
-                    <img src="@(loginpath+"/weibo.svg")" title="微博" />
-                </a>
-                <a href="/account/auth/github">
-                    <img src="@(loginpath+"/github.svg")" title="GitHub" />
-                </a>
-                <a href="/account/auth/taobao">
-                    <img src="@(loginpath+"/taobao.svg")" title="淘宝/天猫" />
-                </a>
-                <a href="/account/auth/microsoft">
-                    <img src="@(loginpath+"/microsoft.svg")" title="微软" />
-                </a>
-                <a href="/account/auth/dingtalk">
-                    <img src="@(loginpath+"/dingtalk.svg")" title="钉钉" />
-                </a>
-            </div>
+            @if (GlobalTo.GetValue<bool>("OAuthLogin:enable"))
+            {
+                <div class="otherlogin">
+                    @foreach (var login in listQuickLogin)
+                    {
+                        <a href="/account/auth/@login.Key">
+                            <img src="@login.Icon" title="@login.Name" />
+                        </a>
+                    }
+                </div>
+            }
         </div>
     </div>
     <div class="mt-5 text-center pt-5">
         <a class="mx-2" href="/mix/terms">条款</a>
-        <a class="mx-2" href="https://ss.netnr.com/contact">联系</a>
+        <a class="mx-2" href="https://zme.ink">联系</a>
         |
         <a class="mx-2" href="/">首页</a>
         <a class="mx-2" href="/account/register">注册</a>

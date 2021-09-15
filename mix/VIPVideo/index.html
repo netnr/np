@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <meta name="keywords" content="VIP视频解析" />
+    <meta name="description" content="VIP视频解析" />
+
+    <title>VIP视频解析</title>
+
+    <link href="https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" async>
+
+    <style>
+        body {
+            overflow: hidden;
+            background-color: #22272e;
+        }
+
+        select, input {
+            color: #999 !important;
+            background-color: #333 !important;
+        }
+
+        iframe {
+            width: 100%;
+            height: 80vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row my-3">
+            <div class="col-auto">
+                <button class="btn btn-secondary" id="btnPlay">播放</button>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" id="seVtype">
+                </select>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" placeholder="请粘贴VIP视频链接，回车" autocomplete="off" autofocus id="txtVipUri" />
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-secondary" href="vip.crx">插件下载</a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <iframe id="inetnr" src="about:blank" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <script>
+
+        //线路
+        var vipSource = [
+            "https://www.1717yun.com/jx/ty.php?url=",
+            "https://vip.bljiex.com/?v=",
+            "https://okjx.cc/?url="
+        ];
+
+        //初始化
+        function init() {
+            //绑定线路
+            var htm = [], i = 0, len = vipSource.length;
+            for (; i < len;) {
+                htm.push('<option value="' + vipSource[i++] + '">线路 ' + i + '</option>');
+            }
+            document.getElementById('seVtype').innerHTML = htm.join('');
+            //带参播放
+            var pars = location.search.toLowerCase().substring(1).split('&');
+            for (var i = 0; i < pars.length; i++) {
+                var pi = pars[i];
+                if (pi.indexOf('url=') >= 0) {
+                    document.getElementById('txtVipUri').value = decodeURIComponent(pi.substring(4));
+                    document.getElementById('btnPlay').click();
+                    break;
+                }
+            }
+        }
+
+        //切换源
+        document.getElementById("seVtype").onchange = function () {
+            document.getElementById('btnPlay').click();
+        }
+        document.getElementById('txtVipUri').onkeydown = function (e) {
+            if (e.keyCode == 13) {
+                document.getElementById('btnPlay').click();
+            }
+        }
+
+        //播放
+        document.getElementById('btnPlay').onclick = function () {
+            var uri = document.getElementById("txtVipUri").value;
+            if (uri.length > 10) {
+                document.getElementById('inetnr').src = document.getElementById('seVtype').value + document.getElementById('txtVipUri').value;
+            }
+        }
+
+        //自适应
+        window.onload = window.onresize = function () {
+            var iv = document.getElementById('inetnr');
+            var vh = document.documentElement.clientHeight - iv.getBoundingClientRect().top;
+            iv.style.height = vh + "px";
+        }
+
+        setTimeout(function () {
+            init();
+        }, 10)
+    </script>
+
+</body>
+</html>

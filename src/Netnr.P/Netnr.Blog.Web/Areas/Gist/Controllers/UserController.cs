@@ -1,11 +1,18 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Gist.Controllers
+namespace Netnr.Blog.Web.Areas.Gist.Controllers
 {
     [Area("Gist")]
     public class UserController : Controller
     {
+        public ContextBase db;
+
+        public UserController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 用户
         /// </summary>
@@ -23,19 +30,16 @@ namespace Netnr.Web.Areas.Gist.Controllers
 
             int uid = Convert.ToInt32(id);
 
-            using (var db = new Blog.Data.ContextBase())
+            var mu = db.UserInfo.Find(uid);
+            if (mu == null)
             {
-                var mu = db.UserInfo.Find(uid);
-                if (mu == null)
-                {
-                    return Content("Account is empty");
-                }
-                ViewData["Nickname"] = mu.Nickname;
+                return Content("Account is empty");
             }
+            ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var ps = Blog.Application.CommonService.GistQuery(q, lang, uid, uinfo.UserId, page);
+            var ps = Application.CommonService.GistQuery(q, lang, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             ViewData["q"] = q;

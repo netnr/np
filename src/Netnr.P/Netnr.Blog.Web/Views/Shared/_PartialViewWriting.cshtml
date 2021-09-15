@@ -1,8 +1,8 @@
-@model PageVM
+@model SharedPageVM
 
 <link href="/css/home/view.css" rel="stylesheet" asp-append-version="true" />
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
 
         @if (Model.Other != null)
@@ -29,12 +29,29 @@
         }
         else
         {
-            <!--标签-->
-            <div class="col-sm-12">
-                <partial name="_PartialViewTag" />
+            <div class="col-md-3 tagcount d-none d-sm-block">
+                <div class="list-group">
+                    <a href="javascript:void(0);" class="list-group-item"><i class="fa fa-tags fa-fw"></i> Tags</a>
+                    @{
+                        var dicTagBy = CommonService.UserWritingByTagCountQuery();
+                        var tags = CommonService.TagsQuery();
+                    }
+                    @foreach (var mo in dicTagBy.Keys)
+                    {
+                        var iconpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:TagPath"), tags.FirstOrDefault(x => x.TagName == mo).TagIcon);
+
+                        <a href="/home/type/@mo" class="list-group-item">
+                            <img src="@iconpath" onerror="this.remove()" />@mo
+                            <span class="badge badge-light float-right">@dicTagBy[mo]</span>
+                        </a>
+                    }
+                </div>
             </div>
 
             <div class="col-md-9">
+
+                <!--标签-->
+                <partial name="_PartialViewTag" />
 
                 <!--搜索-->
                 <form method="get">
@@ -70,18 +87,6 @@
 
             </div>
 
-            <div class="col-md-3 tagcount d-none d-sm-block">
-                <div class="list-group">
-                    <a href="javascript:void(0);" class="list-group-item"><i class="fa fa-tags fa-fw"></i> 分类</a>
-                    @{ var dicTagBy = CommonService.UserWritingByTagCountQuery();}
-                    @foreach (var mo in dicTagBy.Keys)
-                    {
-                        <a href="/home/type/@mo" class="list-group-item">
-                            @mo <span class="badge badge-light float-right">@dicTagBy[mo]</span>
-                        </a>
-                    }
-                </div>
-            </div>
         }
     </div>
 </div>

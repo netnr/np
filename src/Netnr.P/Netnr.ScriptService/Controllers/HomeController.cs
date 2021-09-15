@@ -145,19 +145,19 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 糗事百科
+        /// 特殊符号
         /// </summary>
         /// <returns></returns>
-        public IActionResult Qiushibaike()
+        public IActionResult Symbol()
         {
             return View();
         }
 
         /// <summary>
-        /// 符号
+        /// Emoji
         /// </summary>
         /// <returns></returns>
-        public IActionResult Symbol()
+        public IActionResult Emoji()
         {
             return View();
         }
@@ -199,24 +199,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 汉字转拼音
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Pinyin()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// JC滚动条
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult JScroll()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 网络测速
         /// </summary>
         /// <returns></returns>
@@ -244,33 +226,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 本地主机
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Localhost()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 临时短信
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult TempSMS()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 临时邮箱
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult TempMail()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// Ping云服务
         /// </summary>
         /// <returns></returns>
@@ -289,19 +244,10 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 免费数据库
+        /// 免费
         /// </summary>
         /// <returns></returns>
-        public IActionResult FreeDB()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 免费托管
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult FreeHosting()
+        public IActionResult Free()
         {
             return View();
         }
@@ -329,6 +275,191 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult BMI()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// ZeroTier Web Manager
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult ZeroTier()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 生成密钥
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult RandomCode()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 随机匹配
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult RandomMatch()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 垃圾分类
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult GC()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// PS
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult PS()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 概述
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Overview()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 查看Office文档
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult OfficeView()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// OCR 识别图片内容
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult OCR()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// NSFW 图片审查
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult NSFW()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 自然语言处理
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult NLP()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// JS、CSS
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult JsCss()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 格式化
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Formatter()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 图片压缩
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Tiny()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 印
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Seal()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 存储
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Storage()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 文本转图片
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult TexToImage()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// PowerDesigner
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult PDM()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Swagger
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult SwaggerTo()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// SVG优化
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Svgo()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 身份图标
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Identicon()
+        {
+            return View();
+        }
+
+        public IActionResult GitStorage()
         {
             return View();
         }

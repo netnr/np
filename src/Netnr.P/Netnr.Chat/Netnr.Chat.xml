@@ -4,152 +4,6 @@
         <name>Netnr.Chat</name>
     </assembly>
     <members>
-        <member name="T:Netnr.Chat.Application.ChatContextService">
-            <summary>
-            Chat上下文
-            </summary>
-        </member>
-        <member name="F:Netnr.Chat.Application.ChatContextService.OnlineUser1">
-            <summary>
-            系统用户，用户ID 对应 用户信息
-            </summary>
-        </member>
-        <member name="F:Netnr.Chat.Application.ChatContextService.OnlineUser2">
-            <summary>
-            在线用户，用户ID 对应 用户信息
-            </summary>
-        </member>
-        <member name="F:Netnr.Chat.Application.ChatContextService.OnlineGroup1">
-            <summary>
-            在线组，组ID 对应 组信息
-            </summary>
-        </member>
-        <member name="F:Netnr.Chat.Application.ChatContextService.UserMessage1">
-            <summary>
-            用户消息记录，接收用户ID 对应 发送消息
-            </summary>
-        </member>
-        <member name="F:Netnr.Chat.Application.ChatContextService.GroupMessage1">
-            <summary>
-            组消息记录，接收组ID 对应 发送消息
-            </summary>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.HandleMessageToUser(Netnr.Chat.Application.ViewModel.ChatMessageVM,Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.SignalR.IHubClients)">
-            <summary>
-            处理用户消息发送
-            </summary>
-            <param name="cm">发送消息</param>
-            <param name="hc">上下文</param>
-            <param name="Clients">连接客户端对象</param>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.HandleUserMessageReceipt(Netnr.Chat.Application.ViewModel.ChatMessageVM,Microsoft.AspNetCore.Http.HttpContext,Netnr.Chat.Data.ContextBase)">
-            <summary>
-            处理用户消息回执
-            </summary>
-            <param name="cm">发送消息</param>
-            <param name="hc">上下文</param>
-            <param name="db">数据库</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.HandleMessageToGroup(Netnr.Chat.Application.ViewModel.ChatMessageVM,Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.SignalR.IHubClients)">
-            <summary>
-            处理组消息发送
-            </summary>
-            <param name="cm">发送消息</param>
-            <param name="hc">上下文</param>
-            <param name="Clients">连接客户端对象</param>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.HandelGroupNew(Netnr.Chat.Application.ViewModel.ChatGroupVM,Microsoft.AspNetCore.SignalR.IGroupManager,Netnr.Chat.Data.ContextBase)">
-            <summary>
-            处理新建组
-            </summary>
-            <param name="cg">组信息</param>
-            <param name="Groups"></param>
-            <param name="db"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.GetChatUserInfo(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            获取登录用户信息
-            </summary>
-            <param name="hc">上下文</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.GetChatUserInfo(Microsoft.AspNetCore.SignalR.HubCallerContext)">
-            <summary>
-            获取登录用户信息
-            </summary>
-            <param name="cc">连接对象</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.UserOnline(Netnr.Chat.Application.ViewModel.ChatUserVM)">
-            <summary>
-            用户上线
-            </summary>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.UserOffline(Netnr.Chat.Application.ViewModel.ChatUserVM)">
-            <summary>
-            用户下线
-            </summary>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.NewMessageId">
-            <summary>
-            新消息ID
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.SaveAsUserMessage(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
-            <summary>
-            推送消息转存储消息
-            </summary>
-            <param name="cm"></param>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.SaveAsGroupMessage(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
-            <summary>
-            推送消息转存储消息
-            </summary>
-            <param name="cm"></param>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.AddMessage(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToUser})">
-            <summary>
-            新增用户消息
-            </summary>
-            <param name="cms"></param>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.AddMessage(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToGroup})">
-            <summary>
-            新增组消息
-            </summary>
-            <param name="cms"></param>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.FindUsers(System.Collections.Generic.List{System.String})">
-            <summary>
-            根据用户ID找到用户信息
-            </summary>
-            <param name="UserId">用户ID</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.FindOnlineUser(System.String)">
-            <summary>
-            根据用户ID找到在线用户信息
-            </summary>
-            <param name="UserId">用户ID</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.FindGroup(System.String)">
-            <summary>
-            根据组ID找到组信息
-            </summary>
-            <param name="GroupId">组ID</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Application.ChatContextService.FindGroup(System.Collections.Generic.List{System.String})">
-            <summary>
-            根据组ID找到组信息
-            </summary>
-            <param name="GroupId">组ID</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.Chat.Application.ChatHubService.OnConnectedAsync">
             <summary>
             连接
@@ -158,9 +12,74 @@
         </member>
         <member name="M:Netnr.Chat.Application.ChatHubService.OnDisconnectedAsync(System.Exception)">
             <summary>
-            断开（非调试模式）
+            断开
             </summary>
             <param name="exception"></param>
+            <returns></returns>
+        </member>
+        <member name="F:Netnr.Chat.Application.ChatHubService.OnlineUser9">
+            <summary>
+            系统用户，用户ID 对应 用户信息
+            </summary>
+        </member>
+        <member name="F:Netnr.Chat.Application.ChatHubService.OnlineUser1">
+            <summary>
+            在线用户，用户ID 对应 用户信息
+            </summary>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.GetUserAuthInfo(Microsoft.AspNetCore.Http.HttpContext,System.String)">
+            <summary>
+            获取授权用户信息（无连接信息）
+            </summary>
+            <param name="hc">上下文</param>
+            <param name="token">授权码</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.GetUserConnInfo(Microsoft.AspNetCore.SignalR.HubCallerContext,System.Boolean)">
+            <summary>
+            获取用户连接信息
+            </summary>
+            <param name="cc">连接对象</param>
+            <param name="isOnline">上线、下线</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.NewMessageId">
+            <summary>
+            新消息ID
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.WriteMessageForUser(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
+            <summary>
+            推送消息转存储消息
+            </summary>
+            <param name="cm"></param>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.WriteMessageForUserReverse(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToUser})">
+            <summary>
+            推送消息转存储消息（反转）
+            </summary>
+            <param name="listCmo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.WriteMessageForGroup(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
+            <summary>
+            推送消息转存储消息
+            </summary>
+            <param name="cm"></param>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.WriteMessageForGroupReverse(System.Collections.Generic.List{Netnr.Chat.Domain.NChatMessageToGroup})">
+            <summary>
+            推送消息转存储消息（反转）
+            </summary>
+            <param name="listCmo"></param>
+        </member>
+        <member name="M:Netnr.Chat.Application.ChatHubService.FindUsers(System.Collections.Generic.List{System.String},System.Boolean)">
+            <summary>
+            根据用户ID找到用户信息
+            </summary>
+            <param name="UserId">用户ID</param>
+            <param name="onlyOnline">仅在线，默认 在线和离线</param>
             <returns></returns>
         </member>
         <member name="T:Netnr.Chat.Application.ViewModel.ChatConnectionVM">
@@ -173,19 +92,14 @@
             连接ID
             </summary>
         </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatConnectionVM.UserAgent">
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatConnectionVM.UserSign">
             <summary>
-            用户代理
-            </summary>
-        </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatConnectionVM.ConnSign">
-            <summary>
-            连接标识
+            用户标识
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatConnectionVM.UserDevice">
             <summary>
-            设备，1：PC，2：Mobile
+            用户设备，1：PC，2：Mobile
             </summary>
         </member>
         <member name="F:Netnr.Chat.Application.ViewModel.MessageType.Text">
@@ -233,34 +147,14 @@
             删除组
             </summary>
         </member>
-        <member name="T:Netnr.Chat.Application.ViewModel.ChatGroupVM">
-            <summary>
-            通讯组
-            </summary>
-        </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatGroupVM.GroupId">
-            <summary>
-            组ID
-            </summary>
-        </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatGroupVM.GroupName">
-            <summary>
-            组名
-            </summary>
-        </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatGroupVM.GroupClassify">
-            <summary>
-            组归类
-            </summary>
-        </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatGroupVM.GroupUser">
-            <summary>
-            组用户
-            </summary>
-        </member>
         <member name="T:Netnr.Chat.Application.ViewModel.ChatLoginVM">
             <summary>
             登录授权
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatLoginVM.GuestId">
+            <summary>
+            来宾ID（来宾用户再次获取Token需要）
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatLoginVM.UserName">
@@ -293,19 +187,24 @@
             发送者用户ID
             </summary>
         </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmFromConn">
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmFromDevice">
             <summary>
-            发送者连接信息
+            发送者用户设备，1：PC，2：Mobile
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmFromSign">
+            <summary>
+            发送者用户标识
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmId">
             <summary>
-            消息ID
+            消息ID，内置
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmTime">
             <summary>
-            时间
+            时间，内置
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmContent">
@@ -315,12 +214,12 @@
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmWhich">
             <summary>
-            推送哪种
+            推送哪种，内置（User、Group）
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmType">
             <summary>
-            消息类型
+            消息类型（用户定义，MessageType 枚举）
             </summary>
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmToIds">
@@ -330,38 +229,80 @@
         </member>
         <member name="P:Netnr.Chat.Application.ViewModel.ChatMessageVM.CmStatus">
             <summary>
-            消息状态（-1：撤回，1：待推送，2：已推送，3：已接收，4：已读）
+            消息状态，内置（-1：撤回，1：待推送，2：已推送，3：已接收，4：已读）
             </summary>
         </member>
-        <member name="T:Netnr.Chat.Application.ViewModel.ChatUserVM">
+        <member name="T:Netnr.Chat.Application.ViewModel.ChatUserBaseVM">
             <summary>
-            通讯用户
+            用户信息
             </summary>
         </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserVM.UserId">
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserBaseVM.UserId">
             <summary>
             用户ID
             </summary>
         </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserVM.UserName">
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserBaseVM.UserName">
             <summary>
             用户名
             </summary>
         </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserVM.UserPhoto">
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserBaseVM.UserPhoto">
             <summary>
             头像
             </summary>
         </member>
-        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserVM.Conns">
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserBaseVM.UserDevice">
+            <summary>
+            设备
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserBaseVM.UserSign">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserBaseVM.ExpireDate">
+            <summary>
+            到期时间（秒）
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Application.ViewModel.ChatUserConnVM">
+            <summary>
+            用户信息+连接信息
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserConnVM.Conns">
             <summary>
             连接信息
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Application.ViewModel.ChatUserTokenVM">
+            <summary>
+            用户信息+授权Token
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Application.ViewModel.ChatUserTokenVM.AccessToken">
+            <summary>
+            授权
+            </summary>
+        </member>
+        <member name="M:Netnr.Chat.Application.ViewModel.ChatUserTokenVM.BuildToken">
+            <summary>
+            构建token
             </summary>
         </member>
         <member name="T:Netnr.Chat.Controllers.AccountController">
             <summary>
             账号
             </summary>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.AccountController.UserAuthInfo(System.String)">
+            <summary>
+            获取用户授权信息
+            </summary>
+            <param name="access_token">授权Token</param>
+            <returns></returns>
         </member>
         <member name="M:Netnr.Chat.Controllers.AccountController.Token(Netnr.Chat.Application.ViewModel.ChatLoginVM)">
             <summary>
@@ -370,65 +311,1205 @@
             <param name="chatLogin">登录信息</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Chat.Controllers.AccountController.RefreshToken(System.String)">
+            <summary>
+            刷新token
+            </summary>
+            <param name="access_token">授权Token</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.AccountController.SetAuth(Netnr.Chat.Application.ViewModel.ChatUserTokenVM,System.DateTimeOffset)">
+            <summary>
+            写入授权
+            </summary>
+            <param name="mo"></param>
+            <param name="ed">过期时间</param>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.AdminController.GetOnlineAllUser(System.String)">
+            <summary>
+            获取所有在线用户
+            </summary>
+            <param name="key">密码</param>
+            <returns></returns>
+        </member>
         <member name="T:Netnr.Chat.Controllers.ChatController">
             <summary>
             接口
             </summary>
         </member>
-        <member name="M:Netnr.Chat.Controllers.ChatController.GetOnlineAllUser">
+        <member name="M:Netnr.Chat.Controllers.ChatController.PushMessageToUsers(System.String,System.String,System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String})">
             <summary>
-            获取所有在线用户
+            推送消息到用户（好友才能推送）
             </summary>
+            <param name="access_token">授权码</param>
+            <param name="CmFromId">发送用户ID</param>
+            <param name="CmFromDevice">发送者用户设备</param>
+            <param name="CmFromSign">发送者用户标识</param>
+            <param name="CmContent">发送内容</param>
+            <param name="CmType">消息类型 MessageType 枚举</param>
+            <param name="CmToIds">接收用户ID</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Chat.Controllers.ChatController.PushMessageToUsers(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
-            <summary>
-            推送消息到用户
-            </summary>
-            <param name="cm">推送消息</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Chat.Controllers.ChatController.UserMessageReceipt(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
+        <member name="M:Netnr.Chat.Controllers.ChatController.UserMessageReceipt(System.String,System.String,System.String,System.Int32)">
             <summary>
             用户消息回执
             </summary>
-            <param name="cm">推送消息</param>
+            <param name="access_token">授权码</param>
+            <param name="CmId">消息ID</param>
+            <param name="UserId">接收用户ID</param>
+            <param name="CmStatus">消息状态</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Chat.Controllers.ChatController.PushMessageToGroups(Netnr.Chat.Application.ViewModel.ChatMessageVM)">
+        <member name="M:Netnr.Chat.Controllers.ChatController.PushMessageToGroups(System.String,System.String,System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String})">
             <summary>
-            推送消息到组
+            推送消息到群组
             </summary>
-            <param name="cm">推送消息</param>
+            <param name="access_token">授权码</param>
+            <param name="CmFromId">发送用户ID</param>
+            <param name="CmFromDevice">发送者用户设备</param>
+            <param name="CmFromSign">发送者用户标识</param>
+            <param name="CmContent">发送内容</param>
+            <param name="CmType">消息类型 MessageType 枚举</param>
+            <param name="CmToIds">接收群组ID</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Chat.Controllers.ChatController.GroupNew(Netnr.Chat.Application.ViewModel.ChatGroupVM)">
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetUserUnreadMessageCount(System.String,System.String)">
             <summary>
-            新建组
+            获取用户未读消息数量
             </summary>
-            <param name="cg">组信息</param>
+            <param name="access_token">授权码</param>
+            <param name="UserId">用户ID</param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Chat.Data.ContextBase">
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetGroupUnreadMessageCount(System.String,System.String)">
+            <summary>
+            获取群组未读消息数量
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetHistoryUserMessage(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            获取用户历史消息
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="UserId">用户ID</param>
+            <param name="page">页码</param>
+            <param name="size">页量</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetHistoryGroupMessage(System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            获取群组历史消息
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="GroupId">群组ID</param>
+            <param name="UserId">用户ID</param>
+            <param name="page">页码</param>
+            <param name="size">页量</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetGroupMember(System.String,System.String,System.String)">
+            <summary>
+            获取群组成员
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="GroupId">群组ID</param>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetGroupInfo(System.String,System.String,System.String)">
+            <summary>
+            获取群组信息
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="GroupId">群组ID</param>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GetUserInfo(System.String,System.String)">
+            <summary>
+            获取用户信息
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GroupNew(System.String,System.String,System.Collections.Generic.List{System.String},System.String)">
+            <summary>
+            新建群组
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="GroupName">群组名称</param>
+            <param name="GroupUser">群组成员，默认第一个用户为管理员</param>
+            <param name="GroupClassify">群组分类</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GroupAddMember(System.String,System.String,System.String)">
+            <summary>
+            加入群组
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="GroupId">群组ID</param>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GroupDeleteMember(System.String,System.String,System.String)">
+            <summary>
+            离开群组
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="GroupId">群组ID</param>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Controllers.ChatController.GroupDelete(System.String,System.String,System.String)">
+            <summary>
+            删除群组
+            </summary>
+            <param name="access_token">授权码</param>
+            <param name="GroupId">群组ID</param>
+            <param name="UserId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Chat.Data.ContextBaseFactory">
             <summary>
             ContextBase 连接
             </summary>
         </member>
-        <member name="F:Netnr.Chat.Data.ContextBase.TDB">
+        <member name="M:Netnr.Chat.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <summary>
-            数据库
+            创建 DbContextOptionsBuilder
+            </summary>
+            <param name="builder"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Chat.Data.ContextBaseFactory.CreateDbContext">
+            <summary>
+            创建 新的数据库上下文
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatBuddy">
+            <summary>
+            用户好友
             </summary>
         </member>
-        <member name="F:Netnr.Chat.Data.ContextBase._loggerFactory">
+        <member name="P:Netnr.Chat.Domain.NChatBuddy.CuUserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatBuddy.CbUserId">
+            <summary>
+            好友ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatBuddy.CcId">
+            <summary>
+            归类ID（1：默认组，其它为引用）
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatBuddy.CbCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatClassify">
+            <summary>
+            用户、组归类
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatClassify.CuUserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatClassify.CcName">
+            <summary>
+            归类名称
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatClassify.CcType">
+            <summary>
+            归类类型（1：用户好友，2：用户组）
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatClassify.CcOrder">
+            <summary>
+            归类排序
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatFile">
+            <summary>
+            文件
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CuUserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CfFileName">
+            <summary>
+            文件名
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CfFullPath">
+            <summary>
+            文件全路径
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CfType">
+            <summary>
+            文件类型
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CfExt">
+            <summary>
+            文件扩展名
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CfSize">
+            <summary>
+            文件大小
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CfCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatFile.CfStatus">
+            <summary>
+            状态（1：正常，2：限制）
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatGroup">
+            <summary>
+            用户组
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroup.CgName">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroup.CgOwnerId">
+            <summary>
+            所属用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroup.CcId">
+            <summary>
+            归类ID（1：默认组，其它为引用）
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroup.CgCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroup.CgStatus">
+            <summary>
+            状态（1：正常）
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatGroupMember">
+            <summary>
+            组成员
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroupMember.CgId">
+            <summary>
+            组ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroupMember.CuUserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroupMember.CuMark">
+            <summary>
+            标记
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroupMember.CgmCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatGroupMember.CgmStatus">
+            <summary>
+            状态（1：正常，2：禁言）
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatMessageGroupPull">
+            <summary>
+            用户消息组接收记录
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageGroupPull.CuUserId">
+            <summary>
+            接收用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageGroupPull.CgGroupId">
+            <summary>
+            组ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageGroupPull.CmgId">
+            <summary>
+            组消息ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageGroupPull.GpUpdateTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatMessageToGroup">
+            <summary>
+            群组消息
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgPushUserId">
+            <summary>
+            发送用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgPushUserDevice">
+            <summary>
+            发送用户设备
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgPushUserSign">
+            <summary>
+            发送用户标识
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgPullGroupId">
+            <summary>
+            接收群组ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgContent">
+            <summary>
+            发送消息内容
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgPushWhich">
+            <summary>
+            发送哪种
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgPushType">
+            <summary>
+            类型 枚举MessageType
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToGroup.CmgCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatMessageToUser">
+            <summary>
+            用户消息
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuPushUserId">
+            <summary>
+            发送用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuPushUserDevice">
+            <summary>
+            发送用户设备
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuPushUserSign">
+            <summary>
+            发送用户标识
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuPullUserId">
+            <summary>
+            接收用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuContent">
+            <summary>
+            发送消息内容
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuPushWhich">
+            <summary>
+            发送哪种
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuPushType">
+            <summary>
+            消息类型 枚举MessageType
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatMessageToUser.CmuStatus">
+            <summary>
+            消息状态（-1：撤回，1：待推送，2：已推送，3：已接收，4：已读）
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatNotice">
+            <summary>
+            通知信息
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CuUserId">
+            <summary>
+            接收用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnFromId">
+            <summary>
+            发送用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnNotice1">
+            <summary>
+            发送通知
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnNotice2">
+            <summary>
+            发送通知
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnType">
+            <summary>
+            类型 枚举MessageType
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnResult">
+            <summary>
+            接收用户处理结果（1：通过，2：拒绝）
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnReason">
+            <summary>
+            接收用户处理事由
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatNotice.CnStatus">
+            <summary>
+            状态（1：正常，2：删除）
+            </summary>
+        </member>
+        <member name="T:Netnr.Chat.Domain.NChatUser">
+            <summary>
+            用户表
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatUser.CuUserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatUser.CuUserName">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatUser.CuUserNickname">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatUser.CuPassword">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatUser.CuUserPhoto">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatUser.CuCreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Netnr.Chat.Domain.NChatUser.CuStatus">
+            <summary>
+            状态（1：正常，2：限制登录）
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedTimingVM">
+            <summary>
+            计时
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.PartTime">
+            <summary>
+            片段耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.PartTimeFormat(System.String)">
+            <summary>
+            片段耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.TotalTime">
+            <summary>
+            总耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.TotalTimeFormat(System.String)">
+            <summary>
+            总耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedAdo.DbHelper">
+            <summary>
+            Db帮助类
+            </summary>
+            <summary>
+            Db帮助类
+            </summary>
+            <summary>
+            SQLite操作类
+            </summary>
+            <summary>
+            Oracle操作类
+            </summary>
+            <summary>
+            MySQL操作类
+            </summary>
+            <summary>
+            PostgreSQL操作类
+            </summary>
+            <summary>
+            SQLServer操作类
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.GetTypeDB(System.String)">
+            <summary>
+            类型转换
+            </summary>
+            <param name="typeDB"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlQuote(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            SQL引用符号
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="KeyWord">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlConnPreCheck(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+            <summary>
+            SQL连接字符串预检
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="connectionString">连接字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlConnEncryptOrDecrypt(System.String,System.String,System.Boolean)">
+            <summary>
+            SQL连接字符串加密/解密
+            </summary>
+            <param name="conn">连接字符串</param>
+            <param name="pwd">密码</param>
+            <param name="isDecrypt">是解密，加密 false</param>
+        </member>
+        <member name="P:Netnr.SharedAdo.DbHelper.Connection">
+            <summary>
+            连接对象
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedAdo.DbHelper.Transaction">
+            <summary>
+            事务
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.#ctor(System.Data.Common.DbConnection)">
+            <summary>
+            构造
+            </summary>
+            <param name="dbConnection">连接对象</param>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlQuery(System.String,System.Data.Common.DbParameter[],System.Func{System.Data.Common.DbCommand,System.Data.Common.DbCommand})">
+            <summary>
+            查询
+            </summary>
+            <param name="sql">SQL语句，支持多条</param>
+            <param name="parameters">带参</param>
+            <param name="func">回调</param>
+            <returns>返回数据集</returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlScalar(System.String,System.Data.Common.DbParameter[])">
+            <summary>
+            执行
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parameters">带参</param>
+            <returns>返回受影响行数</returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecute(System.String,System.Data.Common.DbParameter[])">
+            <summary>
+            执行
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parameters">带参</param>
+            <returns>返回受影响行数</returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecute(System.Collections.Generic.List{System.String},System.Int32)">
+            <summary>
+            执行（批量、事务）
+            </summary>
+            <param name="listSql">SQL语句</param>
+            <param name="sqlBatchSize">脚本分批大小，单位：字节（byte），默认：1024 * 100 = 100KB</param>
+            <returns>返回受影响行数</returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlEmptyTable(System.String,System.Data.Common.DbCommandBuilder)">
+            <summary>
+            返回空表格
+            </summary>
+            <param name="table">数据库表名</param>
+            <param name="cb">构建对象，取引用符号</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.GetCommand(System.String,System.Data.Common.DbParameter[],System.Int32,System.Data.CommandType)">
+            <summary>
+            拿到 DbCommand
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parameters">带参</param>
+            <param name="timeout">超时，默认 300 秒</param>
+            <param name="commandType">类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SafeConn(System.Action)">
+            <summary>
+            连接包装
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SafeConn``1(System.Func{``0})">
+            <summary>
+            连接包装
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLite(System.Data.DataTable,System.String,System.Boolean)">
+            <summary>
+            表批量写入
+            根据行数据 RowState 状态新增、修改
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="openTransaction">开启事务</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkCopyOracle(System.Data.DataTable,System.String,System.Action{Oracle.ManagedDataAccess.Client.OracleBulkCopy})">
+            <summary>
+            表批量写入
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="bulkCopy">设置表复制对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchOracle(System.Data.DataTable,System.String,System.Action{Oracle.ManagedDataAccess.Client.OracleDataAdapter,System.Data.DataTable},System.Boolean)">
+            <summary>
+            表批量写入
+            根据行数据 RowState 状态新增、修改
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
+            <param name="openTransaction">开启事务，默认开启</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlPrintOracle(System.String,System.Data.Common.DbParameter[])">
+            <summary>
+            执行SQL语句，返回打印信息
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parameters">带参</param>
+            <returns>返回打印信息</returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkCopyMySQL(System.Data.DataTable,System.String,System.Action{MySqlConnector.MySqlBulkCopy},System.Boolean)">
+            <summary>
+            表批量写入
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="bulkCopy">设置表复制对象</param>
+            <param name="openTransaction">开启事务，默认不开启</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchMySQL(System.Data.DataTable,System.String,System.Action{MySqlConnector.MySqlDataAdapter,System.Data.DataTable},System.Boolean)">
+            <summary>
+            表批量写入
+            根据行数据 RowState 状态新增、修改
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
+            <param name="openTransaction">开启事务，默认开启</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlPrintMySQL(System.String,System.Data.Common.DbParameter[],System.Action{System.Collections.Generic.IReadOnlyList{MySqlConnector.MySqlError}})">
+            <summary>
+            执行SQL语句，返回打印信息
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parameters">带参</param>
+            <param name="action"></param>
+            <returns>返回打印信息</returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkCopyPostgreSQL(System.Data.DataTable,System.String)">
+            <summary>
+            表批量写入
+            https://www.npgsql.org/doc/copy.html
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchPostgreSQL(System.Data.DataTable,System.String,System.Action{Npgsql.NpgsqlDataAdapter,System.Data.DataTable},System.Boolean)">
+            <summary>
+            表批量写入
+            根据行数据 RowState 状态新增、修改
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
+            <param name="openTransaction">开启事务，默认开启</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkCopySQLServer(System.Data.DataTable,System.String,System.Action{Microsoft.Data.SqlClient.SqlBulkCopy})">
+            <summary>
+            表批量写入
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="bulkCopy">设置表复制对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLServer(System.Data.DataTable,System.String,System.Action{Microsoft.Data.SqlClient.SqlDataAdapter,System.Data.DataTable},System.Boolean)">
+            <summary>
+            表批量写入
+            根据行数据 RowState 状态新增、修改
+            </summary>
+            <param name="dt">数据表</param>
+            <param name="table">数据库表名</param>
+            <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
+            <param name="openTransaction">开启事务，默认开启</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlPrintSQLServer(System.String,System.Data.Common.DbParameter[])">
+            <summary>
+            执行SQL语句，返回打印信息
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parameters">带参</param>
+            <returns>返回打印信息</returns>
+        </member>
+        <member name="T:Netnr.SharedAdo.DbHelperExtend">
+            <summary>
+            扩展
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand)">
+            <summary>
+            查询返回数据集
+            </summary>
+            <param name="dbCommand"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedFast.GlobalTo">
+            <summary>
+            全局
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedFast.GlobalTo.TDB">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.GetConn">
+            <summary>
+            根据数据库类型获取连接字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Netnr.SharedFast.GlobalTo.Configuration">
+            <summary>
+            全局配置
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedFast.GlobalTo.HostEnvironment">
+            <summary>
+            托管环境信息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedFast.GlobalTo.ContentRootPath">
+            <summary>
+            内部访问（项目根路径）
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedFast.GlobalTo.WebRootPath">
+            <summary>
+            web外部访问（wwwroot）
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.GetValue(System.String)">
+            <summary>
+            获取AppsettingsJson的值
+            </summary>
+            <param name="key">键路径，如：ConnectionStrings:SQLServer</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.GetValue``1(System.String)">
+            <summary>
+            获取AppsettingsJson的值
+            </summary>
+            <typeparam name="T">类型</typeparam>
+            <param name="key">键路径</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.ConvertValue``1(System.String)">
+            <summary>
+            值类型转换
+            </summary>
+            <typeparam name="T">类型</typeparam>
+            <param name="value">值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.ConvertValue(System.Type,System.String)">
+            <summary>
+            值类型转换
+            </summary>
+            <param name="type">类型</param>
+            <param name="value">值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedFast.GlobalTo.EncodingReg">
+            <summary>
+            编码注册
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedPageVM">
+            <summary>
+            分页视图
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Rows">
+            <summary>
+            数据行
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Temp">
+            <summary>
+            临时数据
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Other">
+            <summary>
+            其它数据
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.Pag">
+            <summary>
+            分页信息
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedPageVM.Route">
+            <summary>
+            路由 /home/index
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.QueryString">
+            <summary>
+            url 传参 k=1
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPageVM.PageKeyName">
+            <summary>
+            分页 参数名 默认 page
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedPageVM.Page(System.Int32)">
+            <summary>
+            生成页的地址
+            </summary>
+            <param name="pageIndex">页码</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedPaginationVM">
+            <summary>
+            分页参数
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.PageNumber">
+            <summary>
+            页码
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.PageSize">
+            <summary>
+            页量
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.Total">
+            <summary>
+            总数量
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedPaginationVM.PageTotal">
+            <summary>
+            总页数
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedResultVM">
+            <summary>
+            通用请求方法返回对象
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedResultVM.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Code">
+            <summary>
+            错误码，200 表示成功，-1 表示异常，其它自定义建议从 1 开始累加
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Msg">
+            <summary>
+            消息
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Data">
+            <summary>
+            主体数据
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.Log">
+            <summary>
+            日志
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedResultVM.LogEvent(System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
+            <summary>
+            日志事件
+            </summary>
+            <param name="le"></param>
+        </member>
+        <member name="P:Netnr.SharedResultVM.UseTime">
+            <summary>
+            用时，毫秒
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedResultVM.UseTimeFormat">
+            <summary>
+            用时，可视化
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedResultVM.PartTime">
+            <summary>
+            片段耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedResultVM.PartTimeFormat(System.String)">
+            <summary>
+            片段耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Set(Netnr.SharedEnum.RTag)">
+            <summary>
+            设置快捷标签，赋值code、msg
+            </summary>
+            <param name="tag">快捷标签枚举</param>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Set(System.Boolean)">
+            <summary>
+            设置快捷标签，赋值code、msg
+            </summary>
+            <param name="isyes"></param>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Set(System.Exception,System.Boolean)">
+            <summary>
+            设置快捷标签，赋值code、msg
+            </summary>
+            <param name="ex"></param>
+            <param name="showException">显示异常信息，默认true</param>
+        </member>
+        <member name="M:Netnr.SharedResultVM.Try(System.Func{Netnr.SharedResultVM,Netnr.SharedResultVM})">
+            <summary>
+            通用的异常处理
+            </summary>
+            <param name="func"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedEnum">
+            <summary>
+            共享枚举
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedEnum.TypeDB">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.InMemory">
+            <summary>
+            Memory
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.SQLite">
+            <summary>
+            SQLite
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.MySQL">
+            <summary>
+            MySQL
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.MariaDB">
+            <summary>
+            MariaDB
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.Oracle">
+            <summary>
+            Oracle
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.SQLServer">
+            <summary>
+            SQLServer
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.TypeDB.PostgreSQL">
+            <summary>
+            PostgreSQL
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedEnum.RTag">
+            <summary>
+            返回结果常用类型
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.success">
+            <summary>
+            成功
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.fail">
+            <summary>
+            失败
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.error">
+            <summary>
+            错误
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.unauthorized">
+            <summary>
+            未授权
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.refuse">
+            <summary>
+            拒绝
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.exist">
+            <summary>
+            存在
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.invalid">
+            <summary>
+            无效
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.lack">
+            <summary>
+            缺省
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedEnum.RTag.exception">
+            <summary>
+            异常
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedDbContext.FactoryTo">
+            <summary>
+            数据库工厂
+            </summary>
+        </member>
+        <member name="F:Netnr.SharedDbContext.FactoryTo.logFactory">
             <summary>
             应用程序不为每个上下文实例创建新的ILoggerFactory实例非常重要。这样做会导致内存泄漏和性能下降
             </summary>
         </member>
-        <member name="M:Netnr.Chat.Data.ContextBase.DCOB(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+        <member name="M:Netnr.SharedDbContext.FactoryTo.CreateDbContextOptionsBuilder``1(Netnr.SharedEnum.TypeDB,System.String,Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <summary>
-            得到一个 DbContextOptionsBuilder 对象
+            创建 DbContextOptionsBuilder
             </summary>
-            <param name="optionsBuilder">初始化该对象</param>
+            <param name="tdb">数据库类型</param>
+            <param name="connnectionString">连接字符串</param>
+            <param name="builder"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDbContext.FactoryTo.GetConn(System.Nullable{Netnr.SharedEnum.TypeDB})">
+            <summary>
+            获取连接字符串
+            </summary>
+            <param name="typeDB"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDbContext.FactoryTo.GetTypeDB1(Microsoft.EntityFrameworkCore.DbContext)">
+            <summary>
+            获取数据库类型
+            </summary>
+            <param name="db"></param>
             <returns></returns>
         </member>
     </members>

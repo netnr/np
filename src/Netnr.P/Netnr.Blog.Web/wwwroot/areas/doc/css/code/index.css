@@ -44,3 +44,17 @@
     .ndtv .ndvmenu a i {
         cursor: pointer;
     }
+
+/*打印*/
+.print .ndtree, .print .ndvmenu {
+    display: none;
+}
+
+.print .ndview {
+    position: initial !important;
+    left: 0;
+}
+
+.print #dtview {
+    max-width: none !important;
+}

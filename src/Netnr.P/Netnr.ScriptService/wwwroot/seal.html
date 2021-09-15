@@ -1,0 +1,337 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>印 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 印" />
+    <meta name="description" content="Script Services 添加水印、印章" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="添加水印、印章">
+                                    <svg class="titleicon"><use xlink:href="#seal"></use></svg> &#x5370;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <input id="txtFile" type="file" class="form-control" multiple accept="image/*">
+        </div>
+    </div>
+
+    <div class="nrCogs">
+        <div class="row d-none">
+            <div class="col-auto mb-2">
+                <select class="form-select nrCogType bg-light" data-ov="text" onchange="seal.changeCogType(this)">
+                    <optgroup label="水印类型">
+                        <option value="text" selected>文本</option>
+                        <option value="image">图片</option>
+                    </optgroup>
+                    <optgroup label="命令">
+                        <option value="add" class="text-success">新增</option>
+                        <option value="del" class="text-danger">删除</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="col-auto mb-2 nrCogText">
+                <input class="form-control nrCogContent" placeholder="水印文字" value="Watermark 水印" oninput="seal.very()" />
+            </div>
+            <div class="col-auto mb-2 nrCogText">
+                <input class="form-control nrCogFontSize" oninput="seal.very()" placeholder="水印大小字体样式" value="36px Josefin Slab" />
+            </div>
+            <div class="col-auto mb-2 nrCogText">
+                <input class="nrCogColor" style="width:50px;height:38px;" type="color" oninput="seal.very()" placeholder="字体颜色" value="#000000" />
+            </div>
+
+            <div class="col-auto mb-2 d-none nrCogImage">
+                <input type="file" class="form-control nrCogLogo" placeholder="选择图片" accept="image/*" onchange="seal.changeCogLogo(this)">
+            </div>
+            <div class="col-auto mb-2 d-none nrCogImage">
+                <input class="form-control nrCogLogoWidth" oninput="seal.very()" placeholder="图宽" type="number" min="0" max="99999" step="5" />
+            </div>
+            <div class="col-auto mb-2 d-none nrCogImage">
+                <input class="form-control nrCogLogoHeight" oninput="seal.very()" placeholder="图高" type="number" min="0" max="99999" step="5" />
+            </div>
+
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogX" oninput="seal.very()" placeholder="X轴" type="number" min="0" max="99999" step="5" value="20" />
+            </div>
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogY" oninput="seal.very()" placeholder="Y轴" type="number" min="0" max="99999" step="5" value="20" />
+            </div>
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogAlpha" oninput="seal.very()" placeholder="透明度" type="number" value="0.4" min="0" max="1" step="0.1" />
+            </div>
+            <div class="col-auto mb-2">
+                <input class="form-control nrCogAngle" oninput="seal.very()" placeholder="角度" type="number" value="0" min="0" max="360" step="5" />
+            </div>
+        </div>
+    </div>
+    <div class="row nrView">
+    </div>
+</div>
+
+<script src='https://npm.elemecdn.com/watermarkjs@2.1.1/dist/watermark.min.js'></script>
+
+
+<script>
+
+    var seal = {
+        imgs: [],
+        init: function () {
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                for (var j = 0; j < files.length; j++) {
+                    var file = files[j]
+                    if (file.type.indexOf("image") == 0) {
+                        seal.imgs.push({
+                            fileOrigin: file,
+                            fileOutput: null
+                        })
+                    }
+                }
+                seal.draw();
+                seal.showImgs();
+            }, "#txtFile");
+
+            seal.cogAdd();
+
+            $('input,textarea').each(function () {
+                if (this.placeholder != "") {
+                    this.title = this.placeholder;
+                }
+            });
+
+            $(window).dblclick(function () {
+                seal.draw();
+            });
+        },
+        cogAdd: function (cog) {
+            var nrc = $('.nrCogs'), newCog = nrc.children().first().clone().removeClass('d-none');
+            newCog.find('.nrCogImage').addClass('d-none');
+            newCog.find('.nrCogText').removeClass('d-none');
+            if (cog) {
+                cog.after(newCog);
+            } else {
+                nrc.append(newCog);
+            }
+        },
+        changeCogType: function (that) {
+            var cog = $(that).parent().parent(), ov = that.getAttribute('data-ov');;
+            switch (that.value) {
+                case "add":
+                    seal.cogAdd(cog);
+                    that.value = ov;
+                    seal.very();
+                    break;
+                case "del":
+                    if (cog.parent().children().length == 2) {
+                        seal.cogAdd();
+                    }
+                    cog.remove();
+                    seal.very();
+                    break;
+                case "text":
+                    cog.find('.nrCogText').removeClass('d-none');
+                    cog.find('.nrCogImage').addClass('d-none');
+                    that.setAttribute('data-ov', that.value);
+                    break;
+                case "image":
+                    cog.find('.nrCogText').addClass('d-none');
+                    cog.find('.nrCogImage').removeClass('d-none');
+                    that.setAttribute('data-ov', that.value);
+                    break;
+            }
+        },
+        changeCogLogo: function (that) {
+            var file = that.files[0];
+            if (file) {
+                if (file.type.indexOf("image") == 0) {
+                    var img = new Image();
+                    img.onload = function () {
+                        var cwh = $(that).parent().parent();
+                        cwh.find('.nrCogLogoWidth').val(this.width);
+                        cwh.find('.nrCogLogoHeight').val(this.height);
+
+                        seal.very();
+                    }
+                    img.src = URL.createObjectURL(file);
+                } else {
+                    that.value = "";
+                }
+            }
+        },
+        very: function () {
+            clearTimeout(seal.si1);
+            seal.si1 = setTimeout(function () {
+                seal.draw();
+            }, 50)
+        },
+        getCogs: function () {
+            var arr = [];
+            $('.nrCogs').children().each(function (i, cog) {
+                if (i) {
+                    cog = $(cog);
+                    var obj = {
+                        type: cog.find('.nrCogType').val(),
+                        content: cog.find('.nrCogContent').val(),
+                        fontSize: cog.find('.nrCogFontSize').val(),
+                        color: cog.find('.nrCogColor').val(),
+                        logo: cog.find('.nrCogLogo')[0].files[0],
+                        logoWidth: cog.find('.nrCogLogoWidth').val() * 1,
+                        logoHeight: cog.find('.nrCogLogoHeight').val() * 1,
+                        x: cog.find('.nrCogX').val() * 1,
+                        y: cog.find('.nrCogY').val() * 1,
+                        alpha: cog.find('.nrCogAlpha').val() * 1,
+                        angle: cog.find('.nrCogAngle').val() * 1
+                    }
+                    arr.push(obj)
+                }
+            })
+            return arr;
+        },
+        draw: function () {
+            var cogs = seal.getCogs();
+            for (var i = 0; i < seal.imgs.length; i++) {
+                var fi = seal.imgs[i];
+                seal.drawDeep(cogs, fi.fileOrigin, null, i, 0);
+            }
+        },
+        drawDeep: function (cogs, fileOrigin, fileOutput, i, deep, fn) {
+            deep = deep || 0;
+            if (deep < cogs.length) {
+                var cog = cogs[deep++];
+
+                switch (cog.type) {
+                    case 'text':
+                        watermark([fileOutput || fileOrigin]).image(function (target) {
+                            var context = target.getContext('2d');
+                            context.globalAlpha = cog.alpha;
+                            context.fillStyle = cog.color;
+                            context.font = cog.fontSize;
+                            metrics = context.measureText(cog.content);
+                            context.rotate(-1 * cog.angle * Math.PI / 180)
+                            context.fillText(cog.content, cog.x, cog.y + metrics.actualBoundingBoxAscent);
+                            return target;
+                        }).then(function (outimg) {
+                            fileOutput = seal.base64ToFile(outimg.src, fileOrigin.name, fileOrigin.type);
+                            seal.drawDeep(cogs, fileOrigin, fileOutput, i, deep, fn)
+                        });
+                        break;
+                    case 'image':
+                        watermark([fileOutput || fileOrigin, cog.logo || '/favicon.ico']).image(function (target, logo) {
+                            var context = target.getContext('2d')
+                            context.globalAlpha = cog.alpha;
+                            context.rotate(-1 * cog.angle * Math.PI / 180);
+                            context.drawImage(logo, cog.x, cog.y, cog.logoWidth, cog.logoHeight)
+                            return target
+                        }).then(function (outimg) {
+                            fileOutput = seal.base64ToFile(outimg.src, fileOrigin.name, fileOrigin.type);
+                            seal.drawDeep(cogs, fileOrigin, fileOutput, i, deep, fn)
+                        });
+                        break;
+                }
+            } else {
+                seal.imgs[i].fileOutput = fileOutput;
+                seal.showImgs(i);
+                typeof fn == "function" && fn(fileOutput, fileOrigin);
+            }
+        },
+        showImgs: function (si) {
+            if (si == null) {
+                $('.nrView').empty();
+                seal.imgs.forEach(fi => {
+                    var img = new Image();
+                    img.className = "mw-100 border";
+                    img.style.maxHeight = "300px";
+                    if (fi.fileOutput) {
+                        img.src = URL.createObjectURL(fi.fileOutput);
+                    }
+                    var col = $('<div class="col-auto mb-3 text-center nrOutput"></div>').append(img);
+                    $('.nrView').append(col);
+                })
+            } else {
+                $('.nrView').children().eq(si).find('img').attr('src', URL.createObjectURL(seal.imgs[si].fileOutput));
+            }
+        },
+        base64ToFile: function (b64, name, type) {
+            var arr = b64.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            var blob = new Blob([u8arr], { type: mime });
+            var file = new File([blob], name, { type: type });
+            return file;
+        }
+    }
+
+    seal.init();
+</script>
+        </div>
+</body>
+</html>

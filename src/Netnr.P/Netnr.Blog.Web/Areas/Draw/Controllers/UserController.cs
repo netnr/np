@@ -1,11 +1,18 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
 
-namespace Netnr.Web.Areas.Draw.Controllers
+namespace Netnr.Blog.Web.Areas.Draw.Controllers
 {
     [Area("Draw")]
     public class UserController : Controller
     {
+        public ContextBase db;
+
+        public UserController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 用户
         /// </summary>
@@ -22,19 +29,16 @@ namespace Netnr.Web.Areas.Draw.Controllers
 
             int uid = Convert.ToInt32(id);
 
-            using (var db = new Blog.Data.ContextBase())
+            var mu = db.UserInfo.Find(uid);
+            if (mu == null)
             {
-                var mu = db.UserInfo.Find(uid);
-                if (mu == null)
-                {
-                    return Content("Account is empty");
-                }
-                ViewData["Nickname"] = mu.Nickname;
+                return Content("Account is empty");
             }
+            ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var ps = Blog.Application.CommonService.DrawQuery(q, uid, uinfo.UserId, page);
+            var ps = Application.CommonService.DrawQuery(q, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["q"] = q;
             return View("_PartialDrawList", ps);

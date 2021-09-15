@@ -1,126 +1,131 @@
-﻿            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
 
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>UserAgent NET牛人</title>
-    <meta name="keywords" content="netnr,NET牛人,UserAgent" />
-    <meta name="description" content="netnr,NET牛人,客户端信息" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>UserAgent 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 UserAgent" />
+    <meta name="description" content="Script Services 客户端信息" />
 
 </head>
 <body>
-                <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
-            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
 
+                <div class="container-fluid">
 
-    <link href="/css/global.css?v=jX4aC16PbVBajgFqmZiFWZXgNe9blHpS4ZMZF70KRFw" rel="stylesheet" />
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
 
-        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
-            <span class="fa fa-align-justify fa-2x"></span>
-        </button>
-        <div class="netnrnav horizontal">
-            <div class="netnrnav-wrapper">
-                <ul>
-                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
-                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                    <li>
-                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                        <ul>
-                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
-                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
-                            <li class="divider"></li>
-                            <li><a href="https://ss.netnr.com/message"><i class="fa fa-fw fa-commenting-o"></i> 留言</a></li>
-                            <li><a target="_blank" href="https://ss.netnr.com/contact"><i class="fa fa-fw fa-envelope-open-o"></i> 联系 <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li class="divider"></li>
-                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
 
-    <script src="/js/global.js?v=xYnLPncCGdwopIu-ETpzRKLPUDYBvYBsPkGjtl0yEB8"></script>
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="客户端信息">
+                                    <svg class="titleicon"><use xlink:href="#info"></use></svg> UserAgent
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
 
-        <h4 class="text-center mt-3 mb-4">
-            <img src="/icon/info.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
-            UserAgent
-        </h4>
-
-    <div class="min300">
-        <div class="container">
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <input class="form-control mb-3" id="txtua" placeholder="请粘贴 User-Agent 信息" />
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>浏览器</th>
-                        <th>内核</th>
-                        <th>系统</th>
-                        <th>设备</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <p>
-                开源项目：<a href="https://github.com/fex-team/ua-device">https://github.com/fex-team/ua-device</a>
-            </p>
+            <input class="form-control fs-5 mb-3 nr-ua" placeholder="请粘贴 User-Agent 信息" />
         </div>
     </div>
+    <div class="row nr-result"></div>
 </div>
 
-<script src="/js/ua-device/useragent-base.js?v=NFO6440jzrNiAhgkvwfZxYfkTwb0RLY5XkIpYTA-GYM"></script>
-<script src="/js/ua-device/ua-device.js?v=GLRQsDtvdfFPYL7AVMAjBG9PD80UZlfk92u49LHql6Y"></script>
+<script src='https://s1.netnr.com/libs/device-detector/2.2.9/dd.min.js'></script>
+
 
 <script>
     var pg = {
         ua: navigator.userAgent,
         init: function () {
-            $('#txtua').on('input', function () {
+            document.querySelector('.nr-ua').addEventListener('input', function () {
                 if (this.value == "") {
                     pg.parse(pg.ua);
                 } else {
                     pg.parse(this.value);
                 }
-            }).val(pg.ua);
+            }, false);
 
+            document.querySelector('.nr-ua').value = pg.ua;
             pg.parse(pg.ua);
         },
         parse: function (ua) {
-            var uaobj = uaDevice(ua),
-                ub = uaobj.browser,
-                ue = uaobj.engine || {},
-                uo = uaobj.os,
-                ud = uaobj.device,
-                ubv = ub.version || {},
-                uev = ue.version || {},
-                uov = uo.version || {};
-            $('table').find('tbody').html('<tr><td>' + ub.name + '</br>' + ubv.original + '</td><td>' + ue.name + '</br>' + uev.original + '</td><td>' + uo.name + '</br>' + uov.original + '</td><td>' + ud.type + '</br>' + (ud.model || "") + '</td></tr>');
+            var uaobj = dd(ua);
+            if (uaobj.bot) {
+                document.querySelector('.nr-result').innerHTML = `<div class="col-md-12"><pre class="bg-dark rounded text-white fs-5 m-0 p-3">${JSON.stringify(uaobj.bot, null, 2)}</pre></div>`;
+            } else {
+                var uc = uaobj.client,
+                    uo = uaobj.os,
+                    ud = uaobj.device,
+                    ci = `${uc.name} ${uc.version}`,
+                    ei = `${uc.engine} ${uc.engineVersion}`,
+                    oi = `${uo.name} ${uo.version} ${uo.platform}`,
+                    di = `${ud.brand} ${ud.model}`;
+
+                document.querySelector('.nr-result').innerHTML = `
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">浏览器：${ci}</div></div>
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">内核：${ei}</div></div>
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">系统：${oi}</div></div>
+                <div class="col-md-auto"><div class="border rounded fs-5 p-3 mb-3">设备：${di}</div></div>
+                `;
+            }
         }
     }
 
     pg.init();
 </script>
-    </div>
-
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+        </div>
 </body>
 </html>

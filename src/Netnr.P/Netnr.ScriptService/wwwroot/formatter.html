@@ -1,0 +1,230 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>代码格式化 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 代码格式化" />
+    <meta name="description" content="Script Services Js、Css、Html、TypeScript、Yaml" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="Js、Css、Html、TypeScript、Yaml">
+                                    <svg class="titleicon"><use xlink:href="#formatter"></use></svg> &#x4EE3;&#x7801;&#x683C;&#x5F0F;&#x5316;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-auto mb-3">
+            <div class="input-group">
+                <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
+                <select class="form-select" id="seLang">
+                    <option value="javascript">JS</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="html">HTML</option>
+                    <option value="html-vue">VUE</option>
+                    <option value="html-angular">Angular</option>
+                    <option value="css">CSS</option>
+                    <option value="less">LESS</option>
+                    <option value="scss">SCSS</option>
+                    <option value="json">JSON</option>
+                    <option value="json-json5">JSON5</option>
+                    <option value="markdown">Markdown</option>
+                    <option value="yaml">YAML</option>
+                    <option value="graphql">GraphQL</option>
+                </select>
+                <span class="input-group-text">间隔</span>
+                <input type="number" class="form-control nr-tab-width" value="4" min="1" max="9" step="1" />
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div id="editor" class="border overflow-hidden position-relative">
+                <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src='https://npm.elemecdn.com/prettier@2.3.2/standalone.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-angular.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-babel.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-flow.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-glimmer.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-graphql.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-html.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-markdown.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-postcss.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-typescript.js'></script>
+<script src='https://npm.elemecdn.com/prettier@2.3.2/parser-yaml.js'></script>
+<script src='https://npm.elemecdn.com/monaco-editor@0.27.0/min/vs/loader.js'></script>
+
+<script>
+    function htmlDecode(html) {
+        var a = document.createElement('a');
+        a.innerHTML = html;
+        return a.innerText;
+    }
+
+    require.config({
+        paths: {
+            vs: 'https://npm.elemecdn.com/monaco-editor@0.27.0/min/vs'
+        },
+        'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+    });
+</script>
+                        
+
+
+<script>
+
+    require(['vs/editor/editor.main'], function () {
+
+        var defaultContent = ss.lsStr("vscode-content") || '',
+            defaultLang = ss.lsStr("vscode-lang") || 'javascript',
+            formatterLang = ss.lsStr("formatter-lang") || 'javascript';
+
+        window.ee = monaco.editor.create(document.getElementById("editor"), ss.meConfig({
+            value: defaultContent,
+            language: defaultLang
+        }));
+
+        ee.onDidChangeModelContent(function (e) {
+            clearTimeout(window.defer1);
+            window.defer1 = setTimeout(function () {
+                var txt = ee.getValue();
+                ss.ls["vscode-content"] = txt;
+                ss.lsSave();
+            }, 1000 * 1)
+        });
+
+        //快捷键
+        ee.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
+            $('#btnFormatter')[0].click();
+        })
+        ee.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+            $('#btnFormatter')[0].click();
+        })
+
+        //切换语言
+        $('#seLang').change(function () {
+            var lang = this.value.split('-')[0];
+
+            var oldModel = ee.getModel();
+            var newModel = monaco.editor.createModel(ee.getValue(), lang);
+            ee.setModel(newModel);
+            if (oldModel) {
+                oldModel.dispose();
+            }
+
+            ss.ls["formatter-lang"] = this.value;
+            ss.ls["vscode-lang"] = lang;
+            ss.lsSave();
+        }).val(formatterLang);
+
+        //格式化
+        $('#btnFormatter').click(function () {
+            var vlang = $('#seLang').val(), fmlang = vlang.split('-').pop();
+            var code = ee.getValue();
+            if (code != "") {
+                try {
+                    var ops = {
+                        parser: fmlang,
+                        tabWidth: $('.nr-tab-width').val() * 1,
+                        plugins: prettierPlugins
+                    };
+
+                    if (vlang.includes("html")) {
+                        ops.requirePragma = true;
+                        ops.htmlWhitespaceSensitivity = "ignore";
+                    }
+                    ee.setValue(prettier.format(code, ops))
+                } catch (e) {
+                    console.log(e);
+                    bs.msg("<h4>ERROR</h4>");
+                }
+            }
+        });
+        $('.nr-tab-width').on('input', function () {
+            $('#btnFormatter')[0].click();
+        });
+
+        $(window).on('load resize', function () {
+            var ch = $(window).height() - $('#editor').offset().top - 15;
+            $('#editor').css('height', Math.max(200, ch));
+        });
+
+        //接收文件
+        ss.receiveFiles(function (files) {
+            var file = files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                ee.setValue(e.target.result);
+            };
+            reader.readAsText(file);
+        });
+    });
+</script>
+        </div>
+</body>
+</html>

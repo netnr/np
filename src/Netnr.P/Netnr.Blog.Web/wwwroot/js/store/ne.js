@@ -36,8 +36,8 @@
         VAFT: $('input[name="__RequestVerificationToken"]').val(),
         domain: function () { return 'http://nos.netnr.top/' },
         domainOrigin: function () { return 'https://' + pObject.bucket + '.nos-eastchina1.126.net/' },
-        AccessKey: '982d0be641b64a49b3b9e5cd20a6c6e4',
-        SecretKey: '66a1c251f8de4ce1a082ce42aa00e148'
+        AccessKey: 'Give key',
+        SecretKey: 'Give key'
     },
     token: function (filename) {
         var tp = new Date();
@@ -217,5 +217,22 @@ $('#divBucket').click(function (e) {
                 }
             });
         }
+    }
+});
+
+//赋予秘钥
+$.ajax({
+    url: "/Store/NEAPI/ak",
+    type: 'post',
+    data: {
+        __RequestVerificationToken: pObject.keys.VAFT
+    },
+    dataType: 'json',
+    success: function (data) {
+        pObject.keys.AccessKey = data.AccessKey;
+        pObject.keys.SecretKey = data.SecretKey;
+    },
+    error: function () {
+        jz.msg("获取 AK 失败");
     }
 });

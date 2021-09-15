@@ -1,22 +1,4 @@
-﻿/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-    background-color: #F5F5F5;
-}
-
-/*定义滚动条轨道 内阴影+圆角*/
-::-webkit-scrollbar-track {
-    border-radius: 4px;
-}
-
-/*定义滑块 内阴影+圆角*/
-::-webkit-scrollbar-thumb {
-    border-radius: 6px;
-    background-color: #28a745;
-}
-
-.ged {
+﻿.ged {
     position: relative;
 }
 
@@ -52,7 +34,7 @@
 }
 
 .gn-header .card-body {
-    height: 480px;
+    height: 520px;
     padding: 5px 0 0;
     border-bottom: 1px solid #ddd;
 }
@@ -78,27 +60,14 @@
         text-align: center;
     }
 
-.cp-header {
-    background-color: #fafbfc;
-    border-bottom: 1px solid #ddd;
-}
-
-.cp-viewcode .card-header, .gc-viewcode .card-header {
-    padding: 5px 10px;
-}
-
-    .gc-viewcode .card-header .btn {
-        padding: 0 5px;
-    }
-
 .gn-viewcode {
     cursor: pointer;
     overflow: hidden;
-    border: 1px solid #ddd;
+    border: 1px solid #e1e4e8 !important;
 }
 
     .gn-viewcode:hover {
-        border-color: #0366d6;
+        border-color: orange !important;
     }
 
         .gn-viewcode:hover::after {
@@ -114,8 +83,12 @@
 
 /*lineNumber*/
 .vcln {
-    margin-bottom: 0 !important;
-    overflow-x: auto !important;
+    margin: 0;
+    font-size: 18px;
+    overflow: hidden;
+    line-height: 24px;
+    padding: 0 0 0 75px;
+    font-family: Consolas, "Courier New", monospace;
 }
 
     .vcln span {
@@ -124,12 +97,10 @@
 
     .vcln > span::before {
         min-width: 60px;
-        font-size: 12px;
         user-select: none;
         -ms-user-select: none;
         -moz-user-select: none;
         -webkit-user-select: none;
-        line-height: 19px;
         text-align: right;
         margin-left: -60px;
         white-space: nowrap;
@@ -139,11 +110,6 @@
         content: attr(data-linen);
     }
 
-pre.card-body {
-    padding: 3px 0;
-    line-height: 19px;
-}
-
 .gn-viewcode {
     cursor: pointer;
     overflow: hidden;
@@ -151,7 +117,7 @@ pre.card-body {
 }
 
     .gn-viewcode:hover {
-        border-color: #0366d6;
+        border-color: orange;
     }
 
         .gn-viewcode:hover::after {
@@ -162,7 +128,7 @@ pre.card-body {
             font-size: 12px;
             content: "Double click to view";
             padding: 2px 8px;
-            background-color: #0366d6;
+            background-color: orange;
         }
 
 /*search*/
@@ -170,30 +136,3 @@ pre.card-body {
     color: white;
     background: #3f4347;
 }
-
-/*返回顶部*/
-.totop {
-    position: fixed;
-    z-index: 2;
-    right: 15px;
-    bottom: 80px;
-    height: 35px;
-    font-size: 3em;
-    padding: 0 8px;
-    font-weight: 600;
-    border-radius: 6px;
-    text-align: center;
-    border: 1px solid #ddd;
-    line-height: 1.42857143;
-    color: #009a61 !important;
-    text-decoration: none !important;
-    background-color: rgba(217, 217, 217, .5);
-    opacity: .4;
-    filter: alpha(opacity=40);
-    font-family: 'Microsoft YaHei';
-}
-
-    .totop:hover {
-        color: white !important;
-        background-color: #009a61;
-    }

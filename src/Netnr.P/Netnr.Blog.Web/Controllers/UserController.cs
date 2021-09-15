@@ -1,10 +1,10 @@
+using System.Drawing.Imaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
+using Netnr.Blog.Data;
+using Netnr.Core;
+using Netnr.Login;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -13,6 +13,13 @@ namespace Netnr.Blog.Web.Controllers
     /// </summary>
     public class UserController : Controller
     {
+        public ContextBase db;
+
+        public UserController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         #region 消息
 
         /// <summary>
@@ -21,17 +28,15 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [Authorize]
-        [ResponseCache(Duration = 5)]
         public IActionResult Message(int page = 1)
         {
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var vm = Application.CommonService.MessageQuery(uid, Application.EnumService.MessageType.UserWriting, null, page);
+            var vm = Application.CommonService.MessageQuery(uinfo.UserId, Application.EnumService.MessageType.UserWriting, null, page);
             vm.Route = Request.Path;
 
             if (page == 1)
             {
-                using var db = new Data.ContextBase();
                 var listum = db.UserMessage.Where(x => x.UmType == Application.EnumService.MessageType.UserWriting.ToString() && x.UmAction == 2 && x.UmStatus == 1).ToList();
                 if (listum.Count > 0)
                 {
@@ -51,22 +56,21 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize]
         public IActionResult DelMessage()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var id = RouteData.Values["id"]?.ToString();
             if (!string.IsNullOrWhiteSpace(id))
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-                using var db = new Data.ContextBase();
                 var um = db.UserMessage.Find(id);
                 if (um == null)
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                 }
                 else if (um?.Uid != uinfo.UserId)
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
@@ -99,7 +103,6 @@ namespace Netnr.Blog.Web.Controllers
         {
             if (int.TryParse(RouteData.Values["id"]?.ToString(), out int uid))
             {
-                using var db = new Data.ContextBase();
                 var usermo = db.UserInfo.Find(uid);
                 if (usermo != null)
                 {
@@ -116,21 +119,19 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM UpdateUserSay(Domain.UserInfo mo)
+        public SharedResultVM UpdateUserSay(Domain.UserInfo mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
-            using (var db = new Data.ContextBase())
-            {
-                var currmo = db.UserInfo.Find(uinfo.UserId);
-                currmo.UserSay = mo.UserSay;
-                db.UserInfo.Update(currmo);
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-                int num = db.SaveChanges();
+            var currmo = db.UserInfo.Find(uinfo.UserId);
+            currmo.UserSay = mo.UserSay;
+            db.UserInfo.Update(currmo);
 
-                vm.Set(num > 0);
-            }
+            int num = db.SaveChanges();
+
+            vm.Set(num > 0);
 
             return vm;
         }
@@ -142,81 +143,72 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="source"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM UpdateUserPhoto(string type, string source)
+        public SharedResultVM UpdateUserPhoto(string type, string source)
         {
-            var vm = new ActionResultVM();
-
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var vm = new SharedResultVM();
 
             try
             {
-                var rootdir = GlobalTo.WebRootPath + "/" + (GlobalTo.GetValue("StaticResource:RootDir").TrimStart('/').TrimEnd('/') + "/");
-                var path = GlobalTo.GetValue("StaticResource:AvatarPath").TrimEnd('/').TrimStart('/') + '/';
-                var fullpath = rootdir + path;
-
-                if (!Directory.Exists(fullpath))
+                vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                if (vm.Code == 200)
                 {
-                    Directory.CreateDirectory(fullpath);
-                }
+                    var uinfo = Apps.LoginService.Get(HttpContext);
 
-                if (string.IsNullOrWhiteSpace(uinfo.UserPhoto))
-                {
-                    uinfo.UserPhoto = Core.UniqueTo.LongId() + ".jpg";
-                }
-                var upname = uinfo.UserPhoto.Split('?')[0];
-                var npnew = upname + "?" + DateTime.Now.ToTimestamp();
+                    //物理根路径
+                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath").Replace("~", GlobalTo.ContentRootPath);
+                    var ppath = PathTo.Combine(prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
-                switch (type)
-                {
-                    case "file":
-                        {
-                            source = source.Substring(source.LastIndexOf(",") + 1);
-                            byte[] bytes = Convert.FromBase64String(source);
-                            using var ms = new MemoryStream(bytes);
-                            using var bmp = new System.Drawing.Bitmap(ms);
-                            var hp = fullpath + upname.Replace(".", "_lg.");
-                            bmp.Save(hp, ImageFormat.Jpeg);
-                            Fast.ImageTo.MinImg(hp, fullpath, upname, 40, 40, "wh");
+                    if (!Directory.Exists(ppath))
+                    {
+                        Directory.CreateDirectory(ppath);
+                    }
 
-                            using (var db = new Data.ContextBase())
+                    if (string.IsNullOrWhiteSpace(uinfo.UserPhoto))
+                    {
+                        uinfo.UserPhoto = UniqueTo.LongId() + ".jpg";
+                    }
+                    var upname = uinfo.UserPhoto.Split('?')[0];
+                    var npnew = upname + "?" + DateTime.Now.ToTimestamp();
+
+                    switch (type)
+                    {
+                        case "file":
                             {
+                                source = source[(source.LastIndexOf(",") + 1)..];
+                                byte[] bytes = Convert.FromBase64String(source);
+                                System.IO.File.WriteAllBytes(PathTo.Combine(ppath, upname), bytes);
+
                                 var usermo = db.UserInfo.Find(uinfo.UserId);
                                 usermo.UserPhoto = npnew;
                                 db.UserInfo.Update(usermo);
                                 int num = db.SaveChanges();
                                 if (num > 0)
                                 {
-                                    using var ac = new AccountController();
+                                    using var ac = new AccountController(db);
                                     ac.SetAuth(HttpContext, usermo);
                                 }
+
+                                vm.Set(SharedEnum.RTag.success);
                             }
-
-                            vm.Set(ARTag.success);
-                        }
-                        break;
-                    case "link":
-                        {
-                            using var wc = new System.Net.WebClient();
-                            var hp = fullpath + upname.Replace(".", "_lg.");
-                            wc.DownloadFile(source, hp);
-                            Fast.ImageTo.MinImg(hp, fullpath, upname, 40, 40, "wh");
-
-                            using (var db = new Data.ContextBase())
+                            break;
+                        case "link":
                             {
+                                HttpTo.DownloadSave(HttpTo.HWRequest(source), PathTo.Combine(ppath, upname));
+
                                 var usermo = db.UserInfo.Find(uinfo.UserId);
                                 usermo.UserPhoto = npnew;
                                 db.UserInfo.Update(usermo);
                                 int num = db.SaveChanges();
                                 if (num > 0)
                                 {
-                                    using var ac = new AccountController();
+                                    using var ac = new AccountController(db);
                                     ac.SetAuth(HttpContext, usermo);
                                 }
-                            }
 
-                            vm.Set(ARTag.success);
-                        }
-                        break;
+                                vm.Set(SharedEnum.RTag.success);
+                            }
+                            break;
+                    }
                 }
             }
             catch (Exception ex)
@@ -238,13 +230,11 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize]
         public IActionResult Setting()
         {
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            using (var db = new Data.ContextBase())
-            {
-                var mo = db.UserInfo.Find(uinfo.UserId);
-                return View(mo);
-            };
+            var mo = db.UserInfo.Find(uinfo.UserId);
+
+            return View(mo);
         }
 
         /// <summary>
@@ -253,85 +243,83 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM SaveUserInfo(Domain.UserInfo mo)
+        public SharedResultVM SaveUserInfo(Domain.UserInfo mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (string.IsNullOrWhiteSpace(mo.Nickname))
             {
-                vm.Set(ARTag.refuse);
+                vm.Set(SharedEnum.RTag.refuse);
                 vm.Msg = "昵称不能为空";
 
                 return vm;
             }
 
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
-            {
-                var usermo = db.UserInfo.Find(uid);
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-                //变更账号
-                if (!string.IsNullOrWhiteSpace(mo.UserName) && usermo.UserNameChange != 1 && usermo.UserName != mo.UserName)
+            var usermo = db.UserInfo.Find(uinfo.UserId);
+
+            //变更账号
+            if (!string.IsNullOrWhiteSpace(mo.UserName) && usermo.UserNameChange != 1 && usermo.UserName != mo.UserName)
+            {
+                //账号重复
+                if (db.UserInfo.Any(x => x.UserName == mo.UserName))
                 {
-                    //账号重复
-                    if (db.UserInfo.Any(x => x.UserName == mo.UserName))
+                    vm.Set(SharedEnum.RTag.exist);
+                    vm.Msg = "账号已经存在";
+
+                    return vm;
+                }
+                else
+                {
+                    usermo.UserName = mo.UserName;
+                    usermo.UserNameChange = 1;
+                }
+            }
+
+            //变更邮箱
+            if (mo.UserMail != usermo.UserMail)
+            {
+                usermo.UserMailValid = 0;
+
+                //邮箱正则验证
+                if (!string.IsNullOrWhiteSpace(mo.UserMail))
+                {
+                    if (!ParsingTo.IsMail(mo.UserMail))
                     {
-                        vm.Set(ARTag.exist);
-                        vm.Msg = "账号已经存在";
+                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Msg = "邮箱格式有误";
 
                         return vm;
                     }
                     else
                     {
-                        usermo.UserName = mo.UserName;
-                        usermo.UserNameChange = 1;
-                    }
-                }
-
-                //变更邮箱
-                if (mo.UserMail != usermo.UserMail)
-                {
-                    usermo.UserMailValid = 0;
-
-                    //邮箱正则验证
-                    if (!string.IsNullOrWhiteSpace(mo.UserMail))
-                    {
-                        if (!Fast.ParsingTo.IsMail(mo.UserMail))
+                        if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
                         {
-                            vm.Set(ARTag.invalid);
-                            vm.Msg = "邮箱格式有误";
+                            vm.Set(SharedEnum.RTag.exist);
+                            vm.Msg = "邮箱已经存在";
 
                             return vm;
                         }
-                        else
-                        {
-                            if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
-                            {
-                                vm.Set(ARTag.exist);
-                                vm.Msg = "邮箱已经存在";
-
-                                return vm;
-                            }
-                        }
                     }
                 }
+            }
 
-                usermo.UserMail = mo.UserMail;
-                usermo.Nickname = mo.Nickname;
-                usermo.UserPhone = mo.UserPhone;
-                usermo.UserUrl = mo.UserUrl;
+            usermo.UserMail = mo.UserMail;
+            usermo.Nickname = mo.Nickname;
+            usermo.UserPhone = mo.UserPhone;
+            usermo.UserUrl = mo.UserUrl;
 
-                db.UserInfo.Update(usermo);
-                var num = db.SaveChanges();
+            db.UserInfo.Update(usermo);
+            var num = db.SaveChanges();
 
-                //更新授权信息
-                using (var ac = new AccountController())
-                {
-                    ac.SetAuth(HttpContext, usermo, true);
-                }
+            //更新授权信息
+            using (var ac = new AccountController(db))
+            {
+                ac.SetAuth(HttpContext, usermo, true);
+            }
 
-                vm.Set(num > 0);
-            };
+            vm.Set(num > 0);
 
             return vm;
         }
@@ -344,7 +332,7 @@ namespace Netnr.Blog.Web.Controllers
         public IActionResult OAuth()
         {
             var authType = RouteData.Values["id"]?.ToString();
-            var url = Application.UserAuthService.ThirdLogin.LoginLink(authType, "bind");
+            var url = Application.ThirdLoginService.LoginLink(authType, "bind");
             return Redirect(url);
         }
 
@@ -355,30 +343,29 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize]
         public IActionResult RidOAuth()
         {
-            if (Enum.TryParse(RouteData.Values["id"]?.ToString().ToLower(), out AccountController.ValidateloginType vtype))
+            if (Enum.TryParse(RouteData.Values["id"]?.ToString().ToLower(), true, out LoginBase.LoginType vtype))
             {
-                int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-                using var db = new Data.ContextBase();
-                var mo = db.UserInfo.Find(uid);
+                var uinfo = Apps.LoginService.Get(HttpContext);
+                var mo = db.UserInfo.Find(uinfo.UserId);
 
                 switch (vtype)
                 {
-                    case AccountController.ValidateloginType.qq:
+                    case LoginBase.LoginType.QQ:
                         mo.OpenId1 = "";
                         break;
-                    case AccountController.ValidateloginType.weibo:
+                    case LoginBase.LoginType.WeiBo:
                         mo.OpenId2 = "";
                         break;
-                    case AccountController.ValidateloginType.github:
+                    case LoginBase.LoginType.GitHub:
                         mo.OpenId3 = "";
                         break;
-                    case AccountController.ValidateloginType.taobao:
+                    case LoginBase.LoginType.TaoBao:
                         mo.OpenId4 = "";
                         break;
-                    case AccountController.ValidateloginType.microsoft:
+                    case LoginBase.LoginType.MicroSoft:
                         mo.OpenId5 = "";
                         break;
-                    case AccountController.ValidateloginType.dingtalk:
+                    case LoginBase.LoginType.DingTalk:
                         mo.OpenId6 = "";
                         break;
                 }
@@ -396,27 +383,25 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="newpwd"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM UpdatePassword(string oldpwd, string newpwd)
+        public SharedResultVM UpdatePassword(string oldpwd, string newpwd)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
+            var uinfo = Apps.LoginService.Get(HttpContext);
+
+            var userinfo = db.UserInfo.Find(uinfo.UserId);
+            if (userinfo.UserPwd == CalcTo.MD5(oldpwd))
             {
-                var userinfo = db.UserInfo.Find(uid);
-                if (userinfo.UserPwd == Core.CalcTo.MD5(oldpwd))
-                {
-                    userinfo.UserPwd = Core.CalcTo.MD5(newpwd);
-                    db.UserInfo.Update(userinfo);
-                    var num = db.SaveChanges();
+                userinfo.UserPwd = CalcTo.MD5(newpwd);
+                db.UserInfo.Update(userinfo);
+                var num = db.SaveChanges();
 
-                    vm.Set(num > 0);
-                }
-                else
-                {
-                    vm.Set(ARTag.unauthorized);
-                }
-            };
+                vm.Set(num > 0);
+            }
+            else
+            {
+                vm.Set(SharedEnum.RTag.unauthorized);
+            }
 
             return vm;
         }
@@ -442,7 +427,7 @@ namespace Netnr.Blog.Web.Controllers
                     action = 2;
                 }
 
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
                 var vm = Application.CommonService.UserConnWritingQuery(uinfo.UserId, Application.EnumService.ConnectionType.UserWriting, action, page ?? 1);
                 vm.Route = Request.Path;
                 vm.Other = id;
@@ -467,17 +452,16 @@ namespace Netnr.Blog.Web.Controllers
         {
             string result = string.Empty;
 
-            var pag = new PaginationVM
+            var pag = new SharedPaginationVM
             {
                 PageNumber = page,
                 PageSize = rows
             };
 
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            using var db = new Data.ContextBase();
             var query = from a in db.UserWriting
-                        where a.Uid == uid
+                        where a.Uid == uinfo.UserId
                         select new
                         {
                             a.UwId,
@@ -498,7 +482,7 @@ namespace Netnr.Blog.Web.Controllers
                 query = query.Where(x => x.UwTitle.Contains(pe1));
             }
 
-            query = Fast.QueryableTo.OrderBy(query, sort, order);
+            query = QueryableTo.OrderBy(query, sort, order);
 
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
@@ -518,23 +502,21 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM WriteOne(int id)
+        public SharedResultVM WriteOne(int id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
+            var uinfo = Apps.LoginService.Get(HttpContext);
+
+            var mo = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == id);
+            var listTags = db.UserWritingTags.Where(x => x.UwId == id).ToList();
+
+            vm.Data = new
             {
-                var mo = db.UserWriting.Where(x => x.Uid == uid && x.UwId == id).FirstOrDefault();
-                var listTags = db.UserWritingTags.Where(x => x.UwId == id).ToList();
-
-                vm.Data = new
-                {
-                    item = mo,
-                    tags = listTags
-                };
-                vm.Set(ARTag.success);
-            }
+                item = mo,
+                tags = listTags
+            };
+            vm.Set(SharedEnum.RTag.success);
 
             return vm;
         }
@@ -547,23 +529,24 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="TagIds"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM WriteEditSave(Domain.UserWriting mo, int UwId, string TagIds)
+        public SharedResultVM WriteEditSave(Domain.UserWriting mo, int UwId, string TagIds)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var lisTagId = new List<int>();
-            TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-
-            var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
-
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
+            try
             {
-                var oldmo = db.UserWriting.Where(x => x.Uid == uid && x.UwId == UwId).FirstOrDefault();
+                var lisTagId = new List<int>();
+                TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
+
+                var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
+
+                var uinfo = Apps.LoginService.Get(HttpContext);
+
+                var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == UwId);
 
                 if (oldmo.UwStatus == -1)
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else if (oldmo != null)
                 {
@@ -597,6 +580,11 @@ namespace Netnr.Blog.Web.Controllers
                     vm.Set(num > 0);
                 }
             }
+            catch (Exception ex)
+            {
+                ConsoleTo.Log(ex);
+                vm.Set(ex);
+            }
 
             return vm;
         }
@@ -607,28 +595,26 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public ActionResultVM WriteDel(int id)
+        public SharedResultVM WriteDel(int id)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            int uid = new Application.UserAuthService(HttpContext).Get().UserId;
-            using (var db = new Data.ContextBase())
+            var uinfo = Apps.LoginService.Get(HttpContext);
+
+            var mo1 = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == id);
+            if (mo1.UwStatus == -1)
             {
-                var mo1 = db.UserWriting.Where(x => x.Uid == uid && x.UwId == id).FirstOrDefault();
-                if (mo1.UwStatus == -1)
-                {
-                    vm.Set(ARTag.unauthorized);
-                }
-                else
-                {
-                    db.UserWriting.Remove(mo1);
-                    var mo2 = db.UserWritingTags.Where(x => x.UwId == id).ToList();
-                    db.UserWritingTags.RemoveRange(mo2);
-                    var mo3 = db.UserReply.Where(x => x.UrTargetId == id.ToString()).ToList();
-                    db.UserReply.RemoveRange(mo3);
+                vm.Set(SharedEnum.RTag.unauthorized);
+            }
+            else
+            {
+                db.UserWriting.Remove(mo1);
+                var mo2 = db.UserWritingTags.Where(x => x.UwId == id).ToList();
+                db.UserWritingTags.RemoveRange(mo2);
+                var mo3 = db.UserReply.Where(x => x.UrTargetId == id.ToString()).ToList();
+                db.UserReply.RemoveRange(mo3);
 
-                    vm.Set(db.SaveChanges() > 0);
-                }
+                vm.Set(db.SaveChanges() > 0);
             }
 
             return vm;
@@ -644,13 +630,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         public IActionResult Verify()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var id = RouteData.Values["id"]?.ToString().ToUpper();
 
             if (!string.IsNullOrWhiteSpace(id))
             {
-                var uinfo = new Application.UserAuthService(HttpContext).Get();
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
                 switch (id.ToLower())
                 {
@@ -659,7 +645,6 @@ namespace Netnr.Blog.Web.Controllers
                         {
                             if (User.Identity.IsAuthenticated)
                             {
-                                using var db = new Data.ContextBase();
                                 var usermo = db.UserInfo.Find(uinfo.UserId);
                                 if (usermo.UserMailValid == 1)
                                 {
@@ -671,15 +656,15 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
-                                    var cacheKey = "Global_VerifyMail_" + usermo.UserMail;
-                                    var issend = Core.CacheTo.Get(cacheKey) as bool?;
+                                    var cacheKey = "Global_VerifyMail_" + usermo.UserId;
+                                    var issend = CacheTo.Get(cacheKey) as bool?;
                                     if (issend == true)
                                     {
-                                        vm.Msg = "1分钟内只能发送一次验证信息";
+                                        vm.Msg = "5分钟内只能发送一次验证信息";
                                     }
                                     else
                                     {
-                                        var tml = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/lib/mailchecker/list.txt");
+                                        var tml = FileTo.ReadText(GlobalTo.WebRootPath + "/lib/mailchecker/list.txt");
                                         if (tml.Contains(usermo.UserMail.Split('@').LastOrDefault()))
                                         {
                                             vm.Msg = "该邮箱已被屏蔽";
@@ -695,19 +680,19 @@ namespace Netnr.Blog.Web.Controllers
                                                 mail = ToMail,
                                                 ts = DateTime.Now.ToTimestamp()
                                             }.ToJson();
-                                            var vcode = Core.CalcTo.EnDES(vjson, GlobalTo.GetValue("VerifyCode:Key")).ToLower();
+                                            var vcode = CalcTo.AESEncrypt(vjson, GlobalTo.GetValue("VerifyCode:Key")).ToLower();
 
                                             var VerifyLink = string.Format(GlobalTo.GetValue("VerifyCode:Url"), vcode);
 
-                                            var txt = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/template/sendmailverify.html");
+                                            var txt = FileTo.ReadText(GlobalTo.WebRootPath + "/template/sendmailverify.html");
                                             txt = txt.Replace("@ToMail@", ToMail).Replace("@VerifyLink@", VerifyLink);
 
-                                            vm = Application.MailService.Send(ToMail, "[Netnr] 验证你的邮箱", txt);
+                                            vm = Application.MailService.Send(ToMail, $"[{GlobalTo.GetValue("Common:EnglishName")}] 验证你的邮箱", txt);
 
                                             if (vm.Code == 200)
                                             {
                                                 vm.Msg = "已发送成功";
-                                                Core.CacheTo.Set(cacheKey, true, 60, false);
+                                                CacheTo.Set(cacheKey, true, 300, false);
                                             }
                                         }
                                     }
@@ -724,7 +709,7 @@ namespace Netnr.Blog.Web.Controllers
                     default:
                         try
                         {
-                            var vjson = Core.CalcTo.DeDES(id, GlobalTo.GetValue("VerifyCode:Key")).ToJObject();
+                            var vjson = CalcTo.AESDecrypt(id, GlobalTo.GetValue("VerifyCode:Key")).ToJObject();
                             if (DateTime.Now.ToTimestamp() - Convert.ToInt32(vjson["ts"]) < 60 * 5)
                             {
                                 var mail = vjson["mail"].ToString();
@@ -734,7 +719,6 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
-                                    using var db = new Data.ContextBase();
                                     var usermo = db.UserInfo.FirstOrDefault(x => x.UserMail == mail);
                                     if (usermo != null)
                                     {

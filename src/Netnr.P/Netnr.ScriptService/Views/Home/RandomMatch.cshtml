@@ -1,0 +1,150 @@
+<div class="container-fluid">
+
+    <div class="row gx-3 gy-3 align-items-center">
+
+        <div class="col-sm-auto">
+            <div class="input-group">
+                <span class="input-group-text">随机范围</span>
+                <input class="form-control nrRange1" title="开始值" type="number" value="1" min="-999999" max="999999" step="1" />
+                <span class="input-group-text">~</span>
+                <input class="form-control nrRange2" title="结束值" type="number" value="10" min="-999999" max="999999" step="1" />
+            </div>
+        </div>
+
+        <div class="col-sm-auto">
+            <div class="input-group">
+                <span class="input-group-text">随机个数</span>
+                <input class="form-control nrGetNum" title="生成的随机个数" type="number" value="10" min="1" max="999999" step="1" />
+            </div>
+        </div>
+
+        <div class="col-sm-auto">
+            <div class="input-group">
+                <span class="input-group-text">允许重复</span>
+                <select class="form-select nrRepeat">
+                    <option value="1" selected>唯一</option>
+                    <option value="2">重复</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-auto">
+            <div class="input-group">
+                <span class="input-group-text">自动换行</span>
+                <input class="form-control nrNewLine" title="自动换行可实现分组" type="number" value="5" min="1" max="999999" step="1" />
+            </div>
+        </div>
+
+        <div class="col-sm-auto">
+            <button class="btn btn-danger nrReset">重置</button>
+            <button class="btn btn-warning nrRm">刷新</button>
+        </div>
+
+        <div class="col-md-12 mb-3">
+            <textarea class="form-control fs-3 nrRv" rows="9"></textarea>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    var rm = {
+        random: function (r1, r2, num, isUnique, newLine) {
+            var vm = { err: [], data: [] };
+            try {
+                r1 = parseInt(r1);
+                r2 = parseInt(r2);
+                num = parseInt(num);
+                isUnique = parseInt(isUnique);
+                newLine = parseInt(newLine) || 0;
+
+                if (isNaN(r1) || isNaN(r2) || isNaN(num)) {
+                    vm.err.push("请输入有效的数字");
+                }
+                if (r1 > r2) {
+                    vm.err.push("随机范围有误");
+                }
+                if (r2 - r1 < (num - 1) && isUnique == 1) {
+                    vm.err.push("随机个数须小于等于范围数量");
+                }
+
+                if (!vm.err.length) {
+                    var rr = r2 - r1, rv = [];
+
+                    while (rv.length < num) {
+                        var ri = Math.floor(Math.random() * (rr + 1));
+                        ri = r1 + ri;
+                        if (isUnique == 1 && rv.indexOf(ri) >= 0) {
+                            continue;
+                        } else {
+                            rv.push(ri);
+                        }
+                    }
+
+                    var ni = 0, ci = 1;
+                    while (ni++ < rv.length) {
+                        if (ni == rv.length) {
+                            continue;
+                        }
+                        if (ci++ == newLine) {
+                            ci = 1;
+                            rv.splice(ni++, 0, "\r\n");
+                        } else {
+                            rv.splice(ni++, 0, "\t");
+                        }
+                    }
+                    vm.data = rv;
+
+                    var obj = {};
+                    $.each('.nrRange1 .nrRange2 .nrGetNum .nrRepeat .nrNewLine'.split(' '), function () {
+                        var jn = $('' + this), val = jn.val();
+                        obj[this.substr(1)] = val;
+                    });
+                    ss.ls.config = obj;
+                    ss.lsSave();
+                }
+            } catch (e) {
+                console.log(e);
+                vm.err.push("操作太骚，报错了")
+            }
+            return vm;
+        }
+    };
+
+    try {
+        var cg = ss.lsObj('config');
+        $.each('.nrRange1 .nrRange2 .nrGetNum .nrRepeat .nrNewLine'.split(' '), function () {
+            if (this.substr(1) in cg) {
+                var jn = $('' + this);
+                jn.val(cg[this.substr(1)])
+            }
+        });
+    } catch (e) { }
+
+    $('.nrRm').click(function () {
+        var vm = rm.random($('.nrRange1').val(), $('.nrRange2').val(), $('.nrGetNum').val(), $('.nrRepeat').val(), $('.nrNewLine').val());
+        console.log(vm);
+        if (vm.err.length) {
+            $('.nrRv').val(vm.err.join('\r\n'));
+        } else {
+            $('.nrRv').val(vm.data.join(''));
+        }
+    })[0].click();
+
+    $('.nrRange1,.nrRange2,.nrGetNum,.nrRepeat,.nrNewLine').on('input', function () {
+        $('.nrRm')[0].click();
+    })
+
+    $('.nrReset').click(function () {
+        $.each('.nrRange1 .nrRange2 .nrGetNum .nrRepeat .nrNewLine'.split(' '), function () {
+            var jn = $('' + this);
+            if (jn[0].type == "select-one") {
+                jn[0].selectedIndex = 0;
+            } else {
+                jn.val(jn[0].defaultValue);
+            }
+        });
+        $('.nrRm')[0].click();
+    });
+</script>

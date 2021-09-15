@@ -1,14 +1,9 @@
-using Netnr.Login;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Linq;
+using Netnr.Core;
+using Netnr.Login;
+using Netnr.SharedFast;
+using Newtonsoft.Json.Converters;
 
 namespace Netnr.Blog.Web
 {
@@ -19,69 +14,61 @@ namespace Netnr.Blog.Web
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
 
-            //设置日志
-            Logging.LoggingTo.DbRoot = GlobalTo.GetValue("logs:path").Replace("~", GlobalTo.ContentRootPath);
-            Logging.LoggingTo.CacheWriteCount = GlobalTo.GetValue<int>("logs:CacheWriteCount");
-            Logging.LoggingTo.CacheWriteSecond = GlobalTo.GetValue<int>("logs:CacheWriteSecond");
+            //编码注册
+            GlobalTo.EncodingReg();
+
+            //结巴词典路径
+            var jbPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
+            if (!Directory.Exists(jbPath))
+            {
+                Directory.CreateDirectory(jbPath);
+                try
+                {
+                    var dhost = "https://raw.githubusercontent.com/anderscui/jieba.NET/master/src/Segmenter/Resources/";
+                    "prob_trans.json,prob_emit.json,idf.txt,pos_prob_start.json,pos_prob_trans.json,pos_prob_emit.json,char_state_tab.json".Split(',').ToList().ForEach(file =>
+                    {
+                        var fullPath = PathTo.Combine(jbPath, file);
+                        HttpTo.DownloadSave(HttpTo.HWRequest(dhost + file), fullPath);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+            JiebaNet.Segmenter.ConfigManager.ConfigFileBaseDir = jbPath;
 
             #region 第三方登录
-            QQConfig.APPID = GlobalTo.GetValue("OAuthLogin:QQ:APPID");
-            QQConfig.APPKey = GlobalTo.GetValue("OAuthLogin:QQ:APPKey");
-            QQConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:QQ:Redirect_Uri");
-
-            WeiboConfig.AppKey = GlobalTo.GetValue("OAuthLogin:Weibo:AppKey");
-            WeiboConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:Weibo:AppSecret");
-            WeiboConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:Weibo:Redirect_Uri");
-
-            GitHubConfig.ClientID = GlobalTo.GetValue("OAuthLogin:GitHub:ClientID");
-            GitHubConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:GitHub:ClientSecret");
-            GitHubConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:GitHub:Redirect_Uri");
-            GitHubConfig.ApplicationName = GlobalTo.GetValue("OAuthLogin:GitHub:ApplicationName");
-
-            TaoBaoConfig.AppKey = GlobalTo.GetValue("OAuthLogin:TaoBao:AppKey");
-            TaoBaoConfig.AppSecret = GlobalTo.GetValue("OAuthLogin:TaoBao:AppSecret");
-            TaoBaoConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:TaoBao:Redirect_Uri");
-
-            MicroSoftConfig.ClientID = GlobalTo.GetValue("OAuthLogin:MicroSoft:ClientID");
-            MicroSoftConfig.ClientSecret = GlobalTo.GetValue("OAuthLogin:MicroSoft:ClientSecret");
-            MicroSoftConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:MicroSoft:Redirect_Uri");
-
-            DingTalkConfig.appId = GlobalTo.GetValue("OAuthLogin:DingTalk:AppId");
-            DingTalkConfig.appSecret = GlobalTo.GetValue("OAuthLogin:DingTalk:AppSecret");
-            DingTalkConfig.Redirect_Uri = GlobalTo.GetValue("OAuthLogin:DingTalk:Redirect_Uri");
-            #endregion
-
-            //无创建，有忽略
-            using var db = new Data.ContextBase();
-            if (db.Database.EnsureCreated())
+            new List<Type>
             {
-                var jodb = Core.FileTo.ReadText(GlobalTo.WebRootPath + "/scripts/example/data.json").ToJObject();
-
-                db.UserInfo.AddRange(jodb["UserInfo"].ToString().ToEntitys<Domain.UserInfo>());
-
-                db.Tags.AddRange(jodb["Tags"].ToString().ToEntitys<Domain.Tags>());
-
-                db.UserWriting.AddRange(jodb["UserWriting"].ToString().ToEntitys<Domain.UserWriting>());
-
-                db.UserWritingTags.AddRange(jodb["UserWritingTags"].ToString().ToEntitys<Domain.UserWritingTags>());
-
-                db.UserReply.AddRange(jodb["UserReply"].ToString().ToEntitys<Domain.UserReply>());
-
-                db.Run.AddRange(jodb["Run"].ToString().ToEntitys<Domain.Run>());
-
-                db.KeyValues.AddRange(jodb["KeyValues"].ToString().ToEntitys<Domain.KeyValues>());
-
-                db.Gist.AddRange(jodb["Gist"].ToString().ToEntitys<Domain.Gist>());
-
-                db.Draw.AddRange(jodb["Draw"].ToString().ToEntitys<Domain.Draw>());
-
-                db.DocSet.AddRange(jodb["DocSet"].ToString().ToEntitys<Domain.DocSet>());
-
-                db.DocSetDetail.AddRange(jodb["DocSetDetail"].ToString().ToEntitys<Domain.DocSetDetail>());
-
-                db.SaveChanges();
-            }
+                typeof(QQConfig),
+                typeof(WeChatConfig),
+                typeof(WeiboConfig),
+                typeof(GitHubConfig),
+                typeof(GiteeConfig),
+                typeof(TaoBaoConfig),
+                typeof(MicroSoftConfig),
+                typeof(DingTalkConfig),
+                typeof(GoogleConfig),
+                typeof(AliPayConfig),
+                typeof(StackOverflowConfig)
+            }.ForEach(lc =>
+            {
+                var fields = lc.GetFields();
+                foreach (var field in fields)
+                {
+                    if (!field.Name.StartsWith("API_"))
+                    {
+                        var cv = GlobalTo.GetValue($"OAuthLogin:{lc.Name.Replace("Config", "")}:{field.Name}");
+                        field.SetValue(lc, cv);
+                    }
+                }
+            });
+            #endregion
         }
+
+        //配置swagger
+        public string ver = "v1";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -90,23 +77,26 @@ namespace Netnr.Blog.Web
             {
                 //cookie存储需用户同意，欧盟新标准，暂且关闭，否则用户没同意无法写入
                 options.CheckConsentNeeded = context => false;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+
+                if (!GlobalTo.GetValue<bool>("ReadOnly"))
+                {
+                    //允许其他站点携带授权Cookie访问，会出现伪造
+                    //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                }
             });
 
             services.AddControllersWithViews(options =>
             {
                 //注册全局错误过滤器
-                options.Filters.Add(new Filters.FilterConfigs.ErrorActionFilter());
+                options.Filters.Add(new Apps.FilterConfigs.ErrorActionFilter());
 
                 //注册全局过滤器
-                options.Filters.Add(new Filters.FilterConfigs.GlobalFilter());
+                options.Filters.Add(new Apps.FilterConfigs.GlobalFilter());
 
                 //注册全局授权访问时登录标记是否有效
-                options.Filters.Add(new Filters.FilterConfigs.LoginSignValid());
-            })/*.AddRazorRuntimeCompilation()*/;
-            //开发时：安装该包可以动态修改视图 cshtml 页面，无需重新运行项目
-            //发布时：建议删除该包，会生成一堆“垃圾”
-            //Install-Package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+                options.Filters.Add(new Apps.FilterConfigs.LoginSignValid());
+            });
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -114,31 +104,39 @@ namespace Netnr.Blog.Web
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 //日期格式化
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+
+                //swagger枚举显示名称
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
             //配置swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc(ver, new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "Netnr API",
-                    Version = "v1"
+                    Title = GlobalTo.HostEnvironment.ApplicationName,
+                    Description = string.Join(" &nbsp; ", new List<string>
+                    {
+                        "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
+                    })
                 });
-
-                "Blog.Web,Blog.Application,Fast".Split(',').ToList().ForEach(x =>
-                {
-                    c.IncludeXmlComments(System.AppContext.BaseDirectory + "Netnr." + x + ".xml", true);
-                });
+                //注释
+                c.IncludeXmlComments(AppContext.BaseDirectory + GetType().Namespace + ".xml", true);
             });
-
-            //路由小写
-            services.AddRouting(options => options.LowercaseUrls = true);
+            //swagger枚举显示名称
+            services.AddSwaggerGenNewtonsoftSupport();
 
             //授权访问信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
-                //允许其他站点携带授权Cookie访问，会出现伪造
-                options.Cookie.SameSite = SameSiteMode.None;
+                if (!GlobalTo.GetValue<bool>("ReadOnly"))
+                {
+                    //允许其他站点携带授权Cookie访问，会出现伪造
+                    //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
+                    options.Cookie.SameSite = SameSiteMode.None;
+                }
+
                 options.Cookie.Name = "netnr_auth";
                 options.LoginPath = "/account/login";
             });
@@ -146,8 +144,17 @@ namespace Netnr.Blog.Web
             //session
             services.AddSession();
 
+            //数据库连接池
+            services.AddDbContextPool<Data.ContextBase>(options =>
+            {
+                Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
+            }, 20);
+
             //定时任务
-            FluentScheduler.JobManager.Initialize(new Application.TaskService.TaskComponent.Reg());
+            if (!GlobalTo.GetValue<bool>("ReadOnly"))
+            {
+                FluentScheduler.JobManager.Initialize(new Apps.TaskService.Reg());
+            }
 
             //配置上传文件大小限制（详细信息：FormOptions）
             services.Configure<FormOptions>(options =>
@@ -157,25 +164,37 @@ namespace Netnr.Blog.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMemoryCache memoryCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Data.ContextBase db)
         {
-            //缓存
-            Core.CacheTo.memoryCache = memoryCache;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                // The default HSTS value is 30 days. https://aka.ms/aspnetcore-hsts
+                // dotnet dev-certs https --trust
+                app.UseHsts();
+            }
+
+            //数据库不存在则创建，创建后返回true
+            if (db.Database.EnsureCreated())
+            {
+                //导入数据库示例数据
+                var vm = new Controllers.ServicesController().DatabaseImport("db/backup_demo.zip");
+                Console.WriteLine(vm.ToJson(true));
             }
 
             //配置swagger
             app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.DocumentTitle = "Netnr API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", c.DocumentTitle);
+                c.DocumentTitle = GlobalTo.HostEnvironment.ApplicationName;
+                c.SwaggerEndpoint($"{ver}/swagger.json", c.DocumentTitle);
+                c.InjectStylesheet("/Home/SwaggerCustomStyle");
             });
 
             //默认起始页index.html
-            DefaultFilesOptions options = new DefaultFilesOptions();
+            DefaultFilesOptions options = new();
             options.DefaultFileNames.Add("index.html");
             app.UseDefaultFiles(options);
 
@@ -185,8 +204,23 @@ namespace Netnr.Blog.Web
                 OnPrepareResponse = (x) =>
                 {
                     x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                }
+                    x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
+                },
+                ServeUnknownFileTypes = true
             });
+
+            //目录浏览&&公开访问
+            if (GlobalTo.GetValue<bool>("ReadOnly"))
+            {
+                app.UseFileServer(new FileServerOptions()
+                {
+                    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(GlobalTo.WebRootPath),
+                    //目录浏览链接
+                    RequestPath = new PathString("/_"),
+                    EnableDirectoryBrowsing = true,
+                    EnableDefaultFiles = false
+                });
+            }
 
             app.UseRouting();
 

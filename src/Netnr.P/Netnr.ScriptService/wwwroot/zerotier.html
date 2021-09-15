@@ -1,0 +1,258 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>ZeroTier 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 ZeroTier" />
+    <meta name="description" content="Script Services ZeroTier 管理" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="ZeroTier 管理">
+                                    <svg class="titleicon"><use xlink:href="#p2p"></use></svg> ZeroTier
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">Token</span>
+                <input class="form-control" id="txtToken" placeholder="请粘贴 API token" maxlength="32" />
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">NetworkId</span>
+                <input class="form-control" id="txtNetworkId" placeholder="请粘贴 NetworkId" maxlength="16" />
+                <a class="btn btn-warning" target="_blank" href="https://my.zerotier.com">ZeroTier</a>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="grid ag-theme-alpine"></div>
+        </div>
+    </div>
+</div>
+
+<script src='https://npm.elemecdn.com/ag-grid-enterprise@26.0.1/dist/ag-grid-enterprise.min.js'></script>
+<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>
+
+
+<script>
+    var zt = {
+        grid: null,
+        gbox: document.querySelector('.grid'),
+        init: function () {
+            $('#txtToken').on('input', function () {
+                ss.ls.token = this.value;
+                ss.lsSave();
+                zt.getNetworkMember();
+            }).val(ss.ls.token || "")
+
+            $('#txtNetworkId').on('input', function () {
+                if (this.value.length == 16 || this.value == "") {
+                    ss.ls.networkId = this.value;
+                    ss.lsSave();
+                }
+                zt.getNetworkMember();
+            }).val(ss.ls.networkId || "")
+
+            zt.getNetworkMember();
+
+            $(window).resize(function () {
+                zt.resize();
+            })
+        },
+
+        /** 获取您至少具有读取权限的网络的所有成员 */
+        getNetworkMember: function () {
+            if (ss.ls.token && ss.ls.networkId && ss.ls.networkId.length == 16) {
+                ss.loading();
+
+                ss.ajax({
+                    headers: {
+                        Authorization: "bearer " + ss.ls.token
+                    },
+                    url: "https://my.zerotier.com/api/network/" + ss.ls.networkId + "/member",
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        zt.view(data);
+                    },
+                    error: function () {
+                        bs.msg("<h4>载入失败</h4>");
+                    },
+                    complete: function () {
+                        ss.loading(0);
+                    }
+                }, 0)
+            }
+        },
+
+        view: function (data) {
+            var gridOptions = {
+                columnDefs: [
+                    {
+                        field: "online", headerName: "在线状态", width: 150,
+                        cellRenderer: function (item) {
+                            if (item.value) {
+                                return '🔵'
+                            } else {
+                                return '🔴'
+                            }
+                        }
+                    },
+                    {
+                        field: "nodeId", headerName: "节点ID", width: 150
+                    },
+                    {
+                        field: "name", headerName: "名称",
+                        cellRenderer: function (item) {
+                            var val = item.value;
+                            if (item.data.description != "") {
+                                val += "（" + item.data.description + "）";
+                            }
+                            return val;
+                        }
+                    },
+                    {
+                        field: "managedIp", headerName: "托管IP",
+                        cellRenderer: function (item) {
+                            return item.data.config.ipAssignments.join('<br/>');
+                        }
+                    },
+                    {
+                        field: "noAutoAssignIps", headerName: "自动分配IP", width: 150,
+                        cellRenderer: function (item) {
+                            if (!item.data.config.noAutoAssignIps) {
+                                return '🔵'
+                            } else {
+                                return '🔴'
+                            }
+                        }
+                    },
+                    {
+                        field: "physicalAddress", headerName: "公网IP"
+                    },
+                    {
+                        field: "creationTime", headerName: "创建时间",
+                        cellRenderer: function (item) {
+                            return new Date(item.data.config.creationTime + 8 * 3600 * 1000).toISOString().replace("T", " ").substr(0, 19);
+                        }
+                    },
+                    {
+                        field: "lastOnline", headerName: "最后在线时间",
+                        cellRenderer: function (item) {
+                            if (item.value != 0) {
+                                return new Date(item.value + 8 * 3600 * 1000).toISOString().replace("T", " ").substr(0, 19);
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        field: "authorized", headerName: "授权", width: 100,
+                        cellRenderer: function (item) {
+                            if (item.data.config.authorized) {
+                                return '🔵'
+                            } else {
+                                return '🔴'
+                            }
+                        }
+                    },
+                    {
+                        field: "clientVersion", title: "客户端版本"
+                    }
+                ],
+                animateRows: true,
+                rowSelection: 'multiple',
+                groupSelectsChildren: true,
+                rowData: data,
+                enableRangeSelection: true,
+                defaultColDef: ss.agg.defaultColDef,
+                localeText: ss.agg.localeText,
+                components: {
+
+                },
+                onGridReady: function () {
+                    //表格创建完成后执行的事件
+                    //gridOptions.api.sizeColumnsToFit();//调整表格大小自适应
+                }
+            };
+
+            zt.grid = new agGrid.Grid(zt.gbox, gridOptions);
+
+            zt.resize();
+        },
+
+        resize: function () {
+            var h = $(window).height() - $(zt.gbox).offset().top - 15;
+            zt.gbox.style.height = h + "px";
+        }
+    }
+
+    zt.init();
+</script>
+        </div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-@model PageVM
+@model SharedPageVM
 @{
     var uw = Model.Temp as UserWriting;
     var tt = JArray.Parse(uw.Spare1);
@@ -10,7 +10,7 @@
 
 <link href="/css/home/view.css" rel="stylesheet" asp-append-version="true" />
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <!--标签-->
@@ -91,8 +91,11 @@
 
         <!--内容-->
         <div class="col-md-12 my-3">
+            <!--目录-->
+            <div class="toc"></div>
+
             <div class="uwo-content markdown-body">
-                @(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(uw.UwContent))
+                @Html.Raw(uw.UwContent)
             </div>
         </div>
 
@@ -110,7 +113,7 @@
                         @foreach (var item in listRp)
                         {
                             lv += 1;
-                            var gra = "https://www.gravatar.com/avatar/" + Netnr.Core.CalcTo.MD5(item.UrAnonymousMail ?? "") + "?r=pg";
+                            var gra = "https://sdn.geekzu.org/avatar/" + Netnr.Core.CalcTo.MD5(item.UrAnonymousMail ?? "") + "?r=pg";
 
                             <li class="media uwo-reply-item py-3" id="no_@lv">
                                 @if (item.Uid == 0)
@@ -122,8 +125,7 @@
                                     var avatarpath = "/favicon.svg";
                                     if (!string.IsNullOrWhiteSpace(item.Spare2))
                                     {
-                                        avatarpath = GlobalTo.GetValue("StaticResource:Server") + GlobalTo.GetValue("StaticResource:AvatarPath");
-                                        avatarpath += "/" + item.Spare2;
+                                        avatarpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), item.Spare2);
                                     }
 
                                     <img class="imgup" src="@avatarpath" alt="头像" onerror="this.src = '/favicon.svg'; this.onerror = null;">
@@ -153,7 +155,7 @@
                                     <div class="mt-2">
                                         @if (item.UrStatus == 1)
                                         {
-                                            <div class="markdown-body display-section">@(new Microsoft.AspNetCore.Html.HtmlContentBuilder().AppendHtml(item.UrContent))</div>
+                                            <div class="markdown-body display-section">@Html.Raw(item.UrContent)</div>
                                         }
                                         else
                                         {
@@ -170,14 +172,16 @@
         </div>
     </div>
 
-    <div class="row mt-5">
-        <!--回复帖子-->
-        <div class="col-md-12">
-            <h5>回复</h5>
-        </div>
-        @if (!ViewContext.HttpContext.User.Identity.IsAuthenticated)
-        {
-            <div class="col-sm-4 mb-3">
+    @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && !GlobalTo.GetValue<bool>("ReadOnly"))
+    {
+        <div class="row mt-5">
+            <!--回复帖子-->
+            <div class="col-md-12">
+                <h5>回复</h5>
+            </div>
+
+            <!--匿名回复已关闭-->
+            <div class="col-sm-4 mb-3 d-none">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <div class="input-group-text">昵称</div>
@@ -185,7 +189,7 @@
                     <input class="form-control" aria-label="昵称" id="WrAnonymousName" placeholder="请输入昵称" maxlength="20">
                 </div>
             </div>
-            <div class="col-sm-4 mb-3">
+            <div class="col-sm-4 mb-3 d-none">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <div class="input-group-text">邮箱</div>
@@ -193,7 +197,7 @@
                     <input class="form-control" aria-label="邮箱" id="WrAnonymousMail" placeholder="根据邮箱从 Gravatar 获取头像" maxlength="50">
                 </div>
             </div>
-            <div class="col-sm-4 mb-3">
+            <div class="col-sm-4 mb-3 d-none">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <div class="input-group-text">链接</div>
@@ -201,16 +205,17 @@
                     <input class="form-control" aria-label="链接" id="WrAnonymousLink" placeholder="请输入链接，以 http 开头" maxlength="50">
                 </div>
             </div>
-        }
-        <div class="col-md-12">
-            <div>
-                <div id="replyeditor"></div>
+
+            <div class="col-md-12">
+                <div>
+                    <div id="replyeditor"></div>
+                </div>
+                <button id="btnReply" class="btn btn-warning mt-3">提交</button>
             </div>
-            <button id="btnReply" class="btn btn-warning mt-3">提交</button>
         </div>
-    </div>
+    }
+
 </div>
 
-<partial name="_PartialQuote" model="@("netnrmd.css,netnrmd.js,monaco-editor")" />
-
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,tocbot.js,monaco-editor"))
 <script src="/js/home/list.js" async defer asp-append-version="true"></script>

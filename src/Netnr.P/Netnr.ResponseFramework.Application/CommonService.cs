@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Netnr.ResponseFramework.Data;
+﻿using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Domain;
-using Netnr.ResponseFramework.Application.ViewModel;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Application
 {
@@ -83,7 +79,7 @@ namespace Netnr.ResponseFramework.Application
             //排序
             if (!string.IsNullOrWhiteSpace(ivm.Sort))
             {
-                query = Fast.QueryableTo.OrderBy(query, ivm.Sort, ivm.Order);
+                query = QueryableTo.OrderBy(query, ivm.Sort, ivm.Order);
             }
 
             //分页
@@ -91,6 +87,9 @@ namespace Netnr.ResponseFramework.Application
             {
                 query = query.Skip((Math.Max(ivm.Page, 1) - 1) * ivm.Rows).Take(ivm.Rows);
             }
+
+            //查询SQL
+            ovm.QuerySql = query.ToQueryString();
 
             //数据
             var data = query.ToList();
@@ -124,11 +123,11 @@ namespace Netnr.ResponseFramework.Application
                 foreach (var item in whereItems)
                 {
                     //关系符
-                    var relation = item["relation"].ToStringOrEmpty();
+                    var relation = item["relation"].ToString();
                     string rel = DicSqlRelation[relation];
 
                     //字段
-                    var field = item["field"].ToStringOrEmpty();
+                    var field = item["field"].ToString();
                     //值
                     var value = item["value"];
 
@@ -144,16 +143,15 @@ namespace Netnr.ResponseFramework.Application
                         case "LessThanOrEqual":
                         case "GreaterThanOrEqual":
                             {
-                                string val = vqm + value.ToStringOrEmpty() + vqm;
-                                string iwhere = string.Format(rel, field, val);
-                                query = DynamicQueryableExtensions.Where(query, iwhere);
+                                string val = vqm + value.ToString() + vqm;
+                                query = query.Where(string.Format(rel, field, val));
                             }
                             break;
                         case "Contains":
                         case "StartsWith":
                         case "EndsWith":
                             {
-                                query = DynamicQueryableExtensions.Where(query, field + "." + relation + "(@0)", value.ToStringOrEmpty());
+                                query = query.Where(field + "." + relation + "(@0)", value.ToString());
                             }
                             break;
                         case "BetweenAnd":
@@ -162,8 +160,7 @@ namespace Netnr.ResponseFramework.Application
                                 var v1 = vqm + value[0].ToString() + vqm;
                                 var v2 = vqm + value[1].ToString() + vqm;
 
-                                var iwhere = string.Format(rel, field, v1, v2);
-                                query = DynamicQueryableExtensions.Where(query, iwhere);
+                                query = query.Where(string.Format(rel, field, v1, v2));
                             }
                             break;
                     }
@@ -188,11 +185,11 @@ namespace Netnr.ResponseFramework.Application
                 foreach (var item in whereItems)
                 {
                     //关系符
-                    var relation = item["relation"].ToStringOrEmpty();
+                    var relation = item["relation"].ToString();
                     string rel = DicSqlRelation[relation];
 
                     //字段
-                    var field = item["field"].ToStringOrEmpty();
+                    var field = item["field"].ToString();
                     //值
                     var value = item["value"].ToString().ToLower();
 
@@ -241,103 +238,6 @@ namespace Netnr.ResponseFramework.Application
 
         #endregion
 
-        #region 获取登录用户信息
-
-        /// <summary>
-        /// 获取登录用户信息
-        /// </summary>
-        /// <returns></returns>
-        public static LoginUserVM GetLoginUserInfo(HttpContext context)
-        {
-            var user = context.User;
-
-            if (user.Identity.IsAuthenticated)
-            {
-                return new LoginUserVM
-                {
-                    UserId = context.User.FindFirst(ClaimTypes.PrimarySid)?.Value,
-                    UserName = context.User.FindFirst(ClaimTypes.Name)?.Value,
-                    Nickname = context.User.FindFirst(ClaimTypes.GivenName)?.Value,
-                    RoleId = context.User.FindFirst(ClaimTypes.Role)?.Value
-                };
-            }
-            else
-            {
-                var token = context.Request.Headers["Authorization"].ToString();
-                var mo = TokenValid(token);
-                if (mo == null)
-                {
-                    mo = new LoginUserVM();
-                }
-                return mo;
-            }
-        }
-
-        /// <summary>
-        /// 获取登录用户角色信息
-        /// </summary>
-        /// <param name="context"></param>
-        public static SysRole LoginUserRoleInfo(HttpContext context)
-        {
-            var lui = GetLoginUserInfo(context);
-            if (!string.IsNullOrWhiteSpace(lui.RoleId))
-            {
-                return QuerySysRoleEntity(x => x.SrId == lui.RoleId);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 生成Token
-        /// </summary>
-        /// <param name="mo">授权用户信息</param>
-        /// <returns></returns>
-        public static string TokenMake(LoginUserVM mo)
-        {
-            var key = GlobalTo.GetValue("VerifyCode:Key");
-
-            var token = Core.CalcTo.EnDES(new
-            {
-                mo,
-                expired = DateTime.Now.AddDays(10).ToTimestamp()
-            }.ToJson(), key);
-
-            return token;
-        }
-
-        /// <summary>
-        /// 验证Token
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static LoginUserVM TokenValid(string token)
-        {
-            LoginUserVM mo = null;
-
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    var key = GlobalTo.GetValue("VerifyCode:Key");
-
-                    var jo = Core.CalcTo.DeDES(token, key).ToJObject();
-
-                    if (DateTime.Now.ToTimestamp() < long.Parse(jo["expired"].ToString()))
-                    {
-                        mo = jo["mo"].ToString().ToEntity<LoginUserVM>();
-                    }
-                }
-            }
-            catch (Exception)
-            {
-
-            }
-
-            return mo;
-        }
-
-        #endregion
-
         #region 全局缓存
 
         /// <summary>
@@ -351,6 +251,11 @@ namespace Netnr.ResponseFramework.Application
             public const string SysMenu = "GlobalSysMenu";
 
             /// <summary>
+            /// 角色缓存KEY
+            /// </summary>
+            public const string SysRole = "GlobalSysRole";
+
+            /// <summary>
             /// 按钮缓存KEY
             /// </summary>
             public const string SysButton = "GlobalSysButton";
@@ -361,13 +266,14 @@ namespace Netnr.ResponseFramework.Application
         /// </summary>
         public static void GlobalCacheRmove()
         {
-            Core.CacheTo.Remove(GlobalCacheKey.SysMenu);
-            Core.CacheTo.Remove(GlobalCacheKey.SysButton);
+            CacheTo.Remove(GlobalCacheKey.SysMenu);
+            CacheTo.Remove(GlobalCacheKey.SysRole);
+            CacheTo.Remove(GlobalCacheKey.SysButton);
         }
 
         #endregion
 
-        #region 查询系统表
+        #region 查询
 
         /// <summary>
         /// 查询配置信息
@@ -376,7 +282,7 @@ namespace Netnr.ResponseFramework.Application
         /// <returns></returns>
         public static List<SysTableConfig> QuerySysTableConfigList(Expression<Func<SysTableConfig, bool>> predicate)
         {
-            using var db = new ContextBase(ContextBase.DCOB().Options);
+            using var db = ContextBaseFactory.CreateDbContext();
             var list = db.SysTableConfig.Where(predicate).OrderBy(x => x.ColOrder).ToList();
             return list;
         }
@@ -389,11 +295,11 @@ namespace Netnr.ResponseFramework.Application
         /// <returns></returns>
         public static List<SysMenu> QuerySysMenuList(Func<SysMenu, bool> predicate, bool cache = true)
         {
-            if (!cache || !(Core.CacheTo.Get(GlobalCacheKey.SysMenu) is List<SysMenu> list))
+            if (!cache || CacheTo.Get(GlobalCacheKey.SysMenu) is not List<SysMenu> list)
             {
-                using var db = new ContextBase(ContextBase.DCOB().Options);
+                using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysMenu.OrderBy(x => x.SmOrder).ToList();
-                Core.CacheTo.Set(GlobalCacheKey.SysMenu, list, 300, false);
+                CacheTo.Set(GlobalCacheKey.SysMenu, list, 300, false);
             }
             list = list.Where(predicate).ToList();
             return list;
@@ -407,11 +313,11 @@ namespace Netnr.ResponseFramework.Application
         /// <returns></returns>
         public static List<SysButton> QuerySysButtonList(Func<SysButton, bool> predicate, bool cache = true)
         {
-            if (!cache || !(Core.CacheTo.Get(GlobalCacheKey.SysButton) is List<SysButton> list))
+            if (!cache || CacheTo.Get(GlobalCacheKey.SysButton) is not List<SysButton> list)
             {
-                using var db = new ContextBase(ContextBase.DCOB().Options);
+                using var db = ContextBaseFactory.CreateDbContext();
                 list = db.SysButton.OrderBy(x => x.SbBtnOrder).ToList();
-                Core.CacheTo.Set(GlobalCacheKey.SysButton, list, 300, false);
+                CacheTo.Set(GlobalCacheKey.SysButton, list, 300, false);
             }
             list = list.Where(predicate).ToList();
             return list;
@@ -421,15 +327,45 @@ namespace Netnr.ResponseFramework.Application
         /// 查询角色信息
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="cache"></param>
         /// <returns></returns>
-        public static SysRole QuerySysRoleEntity(Expression<Func<SysRole, bool>> predicate)
+        public static SysRole QuerySysRoleEntity(Func<SysRole, bool> predicate, bool cache = true)
         {
-            using var db = new ContextBase(ContextBase.DCOB().Options);
-            var mo = db.SysRole.Where(predicate).FirstOrDefault();
+            if (!cache || CacheTo.Get(GlobalCacheKey.SysRole) is not List<SysRole> list)
+            {
+                using var db = ContextBaseFactory.CreateDbContext();
+                list = db.SysRole.ToList();
+                CacheTo.Set(GlobalCacheKey.SysRole, list, 300, false);
+            }
+            var mo = list.FirstOrDefault(predicate);
             return mo;
         }
 
-        #endregion
+        /// <summary>
+        /// 查询配置的菜单是否有权限访问（仅针对配置的菜单）
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <param name="url">链接</param>
+        /// <returns></returns>
+        public static bool QueryMenuIsAuth(string roleId, string url)
+        {
+            var ia = false;
 
+            //是配置的菜单
+            var menuMo = QuerySysMenuList(x => x.SmUrl?.ToLower() == url.ToLower()).FirstOrDefault();
+            if (menuMo != null)
+            {
+                //检测该角色是否勾选菜单
+                ia = QuerySysRoleEntity(x => x.SrId == roleId)?.SrMenus.Contains(menuMo.SmId) ?? false;
+            }
+            else
+            {
+                ia = true;
+            }
+
+            return ia;
+        }
+
+        #endregion
     }
 }

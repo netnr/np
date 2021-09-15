@@ -6,7 +6,7 @@ $('#btnGetGp').click(function () {
         jz.alert("请输入邮箱");
         return;
     }
-    var gp = "https://www.gravatar.com/avatar/" + md5($('#txtUserMail').val());
+    var gp = "https://sdn.geekzu.org/avatar/" + md5($('#txtUserMail').val());
     var img = new Image();
     img.onload = function () {
         $('#imgPreviewPhoto').attr('src', this.src);
@@ -60,7 +60,7 @@ $('#btnSaveUserPhoto').click(function () {
             if (data.code == 200) {
                 location.reload(false);
             } else {
-                jz.alert(data.msg);
+                jz.alert(data.msg + '<br/>' + data.log.join(''));
             }
         },
         error: function (ex) {

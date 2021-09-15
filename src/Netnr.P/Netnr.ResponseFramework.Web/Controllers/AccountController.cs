@@ -1,14 +1,11 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Domain;
+using Netnr.SharedDrawing;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -35,7 +32,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public FileResult Captcha()
         {
             string num = Core.RandomTo.NumCode(4);
-            byte[] bytes = Fast.ImageTo.CreateImg(num);
+            byte[] bytes = ImageTo.Captcha(num);
             HttpContext.Session.SetString("captcha", Core.CalcTo.MD5(num.ToLower()));
             return File(bytes, "image/jpeg");
         }
@@ -58,9 +55,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="remember">1记住登录状态</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResultVM> LoginValidation(SysUser mo, string captcha, int remember)
+        public async Task<SharedResultVM> LoginValidation(SysUser mo, string captcha, int remember)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             var outMo = new SysUser();
 
@@ -72,34 +69,35 @@ namespace Netnr.ResponseFramework.Web.Controllers
             else
             {
                 var capt = HttpContext.Session.GetString("captcha");
+                HttpContext.Session.Remove("captcha");
 
                 if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != Core.CalcTo.MD5(captcha.ToLower()))
                 {
-                    vm.Set(ARTag.fail);
+                    vm.Set(SharedEnum.RTag.fail);
                     vm.Msg = "验证码错误或已过期";
                     return vm;
                 }
 
                 if (string.IsNullOrWhiteSpace(mo.SuName) || string.IsNullOrWhiteSpace(mo.SuPwd))
                 {
-                    vm.Set(ARTag.lack);
+                    vm.Set(SharedEnum.RTag.lack);
                     vm.Msg = "用户名或密码不能为空";
                     return vm;
                 }
 
-                outMo = db.SysUser.Where(x => x.SuName == mo.SuName && x.SuPwd == Core.CalcTo.MD5(mo.SuPwd, 32)).FirstOrDefault();
+                outMo = db.SysUser.FirstOrDefault(x => x.SuName == mo.SuName && x.SuPwd == Core.CalcTo.MD5(mo.SuPwd, 32));
             }
 
             if (outMo == null || string.IsNullOrWhiteSpace(outMo.SuId))
             {
-                vm.Set(ARTag.unauthorized);
+                vm.Set(SharedEnum.RTag.unauthorized);
                 vm.Msg = "用户名或密码错误";
                 return vm;
             }
 
             if (outMo.SuStatus != 1)
             {
-                vm.Set(ARTag.refuse);
+                vm.Set(SharedEnum.RTag.refuse);
                 vm.Msg = "用户已被禁止登录";
                 return vm;
             }
@@ -126,7 +124,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 //写入
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authParam);
 
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
                 vm.Data = "/";
 
                 return vm;
@@ -181,9 +179,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public ActionResultVM UpdateNewPassword(string oldpwd, string newpwd1, string newpwd2)
+        public SharedResultVM UpdateNewPassword(string oldpwd, string newpwd1, string newpwd2)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             if (string.IsNullOrWhiteSpace(oldpwd) || string.IsNullOrWhiteSpace(newpwd1))
             {
@@ -199,7 +197,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             else
             {
-                var userinfo = Application.CommonService.GetLoginUserInfo(HttpContext);
+                var userinfo = Apps.LoginService.GetLoginUserInfo(HttpContext);
 
                 var mo = db.SysUser.Find(userinfo.UserId);
                 if (mo != null && mo.SuPwd == Core.CalcTo.MD5(oldpwd))

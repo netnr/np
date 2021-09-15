@@ -1,92 +1,245 @@
-﻿            <!--
-            https://github.com/netnr
-            https://gitee.com/netnr
-            https://www.netnr.com
-            https://zme.ink
-            -->
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
 
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <title>网络测速 NET牛人</title>
-    <meta name="keywords" content="netnr,NET牛人,网络测速" />
-    <meta name="description" content="netnr,NET牛人,资源下载速率" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>网络测速 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 网络测速" />
+    <meta name="description" content="Script Services 资源下载速率" />
 
 </head>
 <body>
-                <div id="LoadingMask" style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-color: white; z-index: 9999; background-image:url('/images/loading.svg');background-repeat:no-repeat;background-position:48% 45%"></div>
-            <link href="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://code.bdstatic.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script src="https://code.bdstatic.com/npm/jquery@3.5.0/dist/jquery.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.bdstatic.com/npm/jzjs@2.0.2/2.0.2/jz.min.js"></script>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
 
+                <div class="container-fluid">
 
-    <link href="/css/global.css?v=jX4aC16PbVBajgFqmZiFWZXgNe9blHpS4ZMZF70KRFw" rel="stylesheet" />
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
 
-        <button type="button" class="MenuToggle show-in-mobile btn btn-primary ml-3 mt-3">
-            <span class="fa fa-align-justify fa-2x"></span>
-        </button>
-        <div class="netnrnav horizontal">
-            <div class="netnrnav-wrapper">
-                <ul>
-                    <li><a href="https://www.netnr.com" class="siteIcon"><img src="/favicon.svg" /> 首页</a></li>
-                    <li><a href="https://www.netnr.com/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-                    <li><a href="https://www.netnr.com/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-                    <li><a href="https://www.netnr.com/doc" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-                    <li><a href="https://www.netnr.com/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-                    <li><a href="/" title="Script Services"><span class="fa fa-fw fa-wrench"></span> 服务</a></li>
-                    <li>
-                        <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                        <ul>
-                            <li><a href="https://www.netnr.com/mix/about"><i class="fa fa-fw fa-info"></i> 关于</a></li>
-                            <li><a href="https://www.netnr.com/lab"><i class="fa fa-fw fa-flask"></i> 实验室</a></li>
-                            <li class="divider"></li>
-                            <li><a href="https://ss.netnr.com/message"><i class="fa fa-fw fa-commenting-o"></i> 留言</a></li>
-                            <li><a target="_blank" href="https://ss.netnr.com/contact"><i class="fa fa-fw fa-envelope-open-o"></i> 联系 <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li class="divider"></li>
-                            <li><a target="_blank" title="码云" href="https://gitee.com/netnr"><i class="fa fa-fw fa-git"></i> Gitee <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                            <li><a target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
 
-    <script src="/js/global.js?v=xYnLPncCGdwopIu-ETpzRKLPUDYBvYBsPkGjtl0yEB8"></script>
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="资源下载速率">
+                                    <svg class="titleicon"><use xlink:href="#speed"></use></svg> &#x7F51;&#x7EDC;&#x6D4B;&#x901F;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
 
-        <h4 class="text-center mt-3 mb-4">
-            <img src="/icon/speed.svg" class="titleicon" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
-            &#x7F51;&#x7EDC;&#x6D4B;&#x901F;
-        </h4>
-
-    <div class="min300">
-        <div class="container">
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="input-group mb-4">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">请选择节点</span>
-                </div>
-                <div class="input-group-prepend">
-                    <select class="custom-select" style="width:150px;" id="seSpeedServer"></select>
-                </div>
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
-                </div>
-            </div>
+        <div class="col-auto">
+            <button class="btn btn-warning" id="btnRunSpeedTest">开始测速</button>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="seSpeedServer">
+                <optgroup label="请选择节点"></optgroup>
+            </select>
+        </div>
+        <div class="col-md-12 my-3">
             <div id="divresult"></div>
         </div>
     </div>
 </div>
 
-<script src="/js/speedtest.js?v=2iub0yKve5tyDm5c2ZuUjmAPtkkfv73FHeK3QRCZzSk"></script>
-    </div>
+<script>
+    var sp = {
+        //测试时长
+        time: 1000 * 12,
+        //开始时间
+        start: null,
+        //下载大小
+        downsize: 0,
+        //源索引
+        urindex: -1,
+        //源标识
+        urid: 0,
+        //连接数.
+        conn: 0,
+        //允许连接数
+        maxconn: 10,
+        //结果
+        result: [],
+        //数据项
+        data: [],
+        //压缩率（根据开发环境的测试结果计算所得）
+        cr: function () {
+            var ss = $('#seSpeedServer').val(), cr = 1;
+            $.each(sp.ss, function () {
+                var sp = this;
+                if (sp.link == ss) {
+                    cr = sp.cr;
+                }
+            })
+            return cr;
+        },
+        //测速节点
+        ss: [
+            {
+                name: "百度 CDN",
+                cr: 1331 / 10578,
+                link: "https://npm.elemecdn.com/sql.js@1.2.2/dist/sql-asm-debug.js"
+            },
+            {
+                name: "七牛 CDN",
+                cr: 1126 / 10578,
+                link: "https://cdn.staticfile.org/sql.js/1.2.2/dist/sql-asm-debug.js"
+            },
+            {
+                name: "字节跳动 CDN",
+                cr: 1126 / 10578,
+                link: "https://s1.pstatp.com/cdn/expire-1-M/sql.js/1.2.2/dist/sql-asm-debug.js"
+            }
+        ],
+        //绑定节点
+        bindSpeedServer: function () {
+            var htm = [];
+            $.each(sp.ss, function () {
+                var si = this;
+                htm.push('<option value="' + si.link + '">' + si.name + '</option>');
+            })
+            $('#seSpeedServer').find("optgroup").html(htm.join(''));
+        },
+        //获取请求的源
+        geturi: function () {
+            return $('#seSpeedServer').val() + "?" + Math.random();
+        },
+        addconn: function () {
+            var si1 = setInterval(function () {
+                if (sp.conn < sp.maxconn) {
+                    sp.conn++;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', sp.geturi());
+                    var urid = sp.urid++;
+                    xhr.onprogress = function (event) {
+                        sp.result[urid] = event.loaded;
+                    };
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4) {
+                            sp.conn--;
+                        }
+                    }
+                    window.setTimeout(function () {
+                        xhr.abort()
+                    }, sp.time);
+                    xhr.send();
+                }
+            }, 50);
 
-    <a href="javascript:totop();" class="totop" title="返回顶部">ˆ</a>
+            //统计
+            var si2 = setInterval(function () {
+                var now = new Date().valueOf(), ds = 0;
+                for (var j = 0; j < sp.result.length; j++) {
+                    var ri = sp.result[j] * 1;
+                    ds += (ri || 0);
+                }
+                sp.downsize = ds;
+                var size = sp.downsize / 1024 / 1024 * sp.cr();
+                var time = (now - sp.start) / 1000;
+                var speed = (size / time).toFixed(2);
+                sp.data.push(speed);
+
+                //回调
+                sp.progress && sp.progress(speed);
+
+                //结束
+                if (now - sp.start > sp.time) {
+                    window.clearInterval(si1);
+                    window.clearInterval(si2);
+                    //完成
+                    sp.complete && sp.complete();
+                }
+            }, 900)
+        },
+        run: function () {
+            sp.downsize = 0;
+            sp.urindex = -1;
+            sp.urid = 0;
+            sp.conn = 0;
+            sp.result = [];
+            sp.start = new Date().valueOf();
+            $('#divresult').html('');
+            $('#seSpeedServer')[0].disabled = true;
+
+            sp.addconn();
+        }
+    }
+    sp.bindSpeedServer();
+
+    $('#btnRunSpeedTest').click(function () {
+        if (sp.start && new Date().valueOf() - sp.start <= sp.time) {
+            bs.msg('正在测速中');
+            return false;
+        }
+
+        var sps = [];
+        //过程
+        sp.progress = function (speed) {
+            $('#divresult').append('<div>' + speed + ' MiB/s</div>');
+            sps.push(speed);
+        };
+        //完成
+        sp.complete = function () {
+            var sum = 0;
+            $.each(sps, function () {
+                sum += this * 1;
+            });
+            var avg = (sum / sps.length).toFixed(2);
+            $('<h2>平均：' + avg + ' MiB/s</h2>').insertBefore($('#divresult').children().first())
+
+            $('#seSpeedServer')[0].disabled = false;
+        };
+        sp.run();
+    });
+</script>
+        </div>
 </body>
 </html>

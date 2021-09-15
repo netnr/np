@@ -1,7 +1,6 @@
-﻿@model string
+@model string
 @{
     var tagJarray = Model.ToJArray();
-    var tagpath = GlobalTo.GetValue("StaticResource:Server") + GlobalTo.GetValue("StaticResource:TagPath");
 }
 @foreach (var tags in tagJarray)
 {
@@ -10,7 +9,9 @@
     <a class="tag" href="/home/type/@System.Web.HttpUtility.UrlEncode(TagName)">
         @if (!string.IsNullOrWhiteSpace(TagIcon))
         {
-            <img src="@tagpath/@System.Web.HttpUtility.UrlEncode(TagIcon)" alt="@TagName" onerror="this.remove()" />
+            var iconpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:TagPath"), System.Web.HttpUtility.UrlEncode(TagIcon));
+
+            <img src="@iconpath" alt="@TagName" onerror="this.remove()" />
         }
         @TagName
     </a>

@@ -1,39 +1,115 @@
-﻿<style>
-    .difftxt {
-        width: auto;
-        padding: 2px;
-        margin-left: 108px;
-        height: 30px !important;
-    }
-</style>
-
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-5">
-            <label class="btn btn-primary btn-sm float-left">
-                <input type="file" class="d-none" id="fileOrigin" />选择原始文件
-            </label>
-            <textarea class="form-control difftxt" id="txtOrigin" placeholder="或 粘贴内容"></textarea>
+        <div class="col-md-auto">
+            <select class="form-select nr-diff-inline">
+                <optgroup label="对比模式">
+                    <option value="0">左右</option>
+                    <option value="1">内联</option>
+                </optgroup>
+            </select>
         </div>
-        <div class="col-md-5">
-            <label class="btn btn-info btn-sm float-left">
-                <input type="file" class="d-none" id="fileVary" />选择变动文件
-            </label>
-            <textarea class="form-control difftxt" id="txtVary" placeholder="或 粘贴内容"></textarea>
+        <div class="col-md">
+            <div class="input-group">
+                <input id="txtFile" type="file" class="form-control">
+                <button class="btn btn-secondary nr-diff-next">Next</button>
+            </div>
         </div>
-        <div class="col-md-2">
-            <label>
-                <input type="checkbox" id="chkDiffMode" /> 内联对比
-            </label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div id="editor" class="border"></div>
+        <div class="col-md-12 mt-3">
+            <div id="editor" class="border overflow-hidden position-relative">
+                <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
+            </div>
         </div>
     </div>
 </div>
 
-<partial name="_PartialQuote" model="@("monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
 
-<script src="/js/diff.js" asp-append-version="true"></script>
+<script>
+    var de = {
+        editor: document.getElementById("editor"),
+        isHideMenu: location.hash == "#hide-menu",
+        init: function () {
+
+            if (de.isHideMenu) {
+                $('.mobile-offcanvas').hide();
+            }
+
+            de.resize();
+            $(window).on('resize', de.resize);
+
+            require(['vs/editor/editor.main'], function () {
+                de.originalModel = monaco.editor.createModel("just some text\n\nHello World\n\nSome more text", "text/plain");
+                de.modifiedModel = monaco.editor.createModel("just some Text\n\nHello World\n\nSome more changes", "text/plain");
+
+                de.diffEditor = monaco.editor.createDiffEditor(de.editor, ss.meConfig({
+                    originalEditable: true
+                }));
+
+                de.diffEditor.setModel({
+                    original: de.originalModel,
+                    modified: de.modifiedModel
+                });
+
+                de.den = monaco.editor.createDiffNavigator(de.diffEditor, {
+                    followsCaret: true,
+                    ignoreCharChanges: true
+                });
+
+                $('.nr-diff-inline').change(function () {
+                    de.diffEditor.updateOptions({
+                        renderSideBySide: this.value != 1
+                    });
+                });
+
+                $('.nr-diff-next').click(function () {
+                    de.den.next();
+                });
+
+                de.receiveMessage();
+            });
+        },
+        receiveMessage: function () {
+            window.addEventListener("message", function (event) {
+                try {
+                    var jsonData = JSON.parse(event.data);
+                    if (jsonData.origin != null && jsonData.vary != null) {
+                        de.diffEditor.getOriginalEditor().setValue(jsonData.origin);
+                        de.diffEditor.getModifiedEditor().setValue(jsonData.vary);
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }, false);
+        },
+        resize: function () {
+            var ch = $(window).height() - $('#editor').offset().top - (de.isHideMenu ? 5 : 20);
+            $('#editor').height(Math.max(100, ch));
+        }
+    }
+
+    de.init();
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        bs.alert(`<div class="text-center"><button type="button" class="btn btn-danger me-3" data-cmd="left">左边 Left</button><button type="button" class="btn btn-info" data-cmd="right">右边 Right</button></div>`);
+        bs.obj.alert._dialog.querySelector('.modal-footer').remove();
+        bs.obj.alert._dialog.onclick = function (e) {
+            var target = e.target, cmd = target.getAttribute("data-cmd");
+            if (["left", "right"].includes(cmd)) {
+                var file = files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    if (cmd == "left") {
+                        de.diffEditor.getOriginalEditor().setValue(e.target.result);
+                    } else {
+                        de.diffEditor.getModifiedEditor().setValue(e.target.result);
+                    }
+                    $("#txtFile").val('');
+                };
+                reader.readAsText(file);
+
+                bs.obj.alert.hide();
+            }
+        }
+    }, "#txtFile");
+</script>

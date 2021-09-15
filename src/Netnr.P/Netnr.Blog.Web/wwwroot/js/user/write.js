@@ -76,10 +76,12 @@ $('#btnEdit').click(function () {
                     nmd.setmd(data.UwContentMd);
                     nmd.render();
 
-                    TagsClear();
+                    var tagids = [];
                     $(tags).each(function () {
-                        TagsAdd(this.TagId, this.TagName)
+                        tagids.push(this.TagId);
                     });
+                    $('#tags').val(tagids.join(','));
+                    $('#tags').selectPageRefresh()
 
                     $('#ModalWrite').modal();
                 } else {
@@ -137,6 +139,6 @@ $('#ModalWrite').on('shown.bs.modal', function () {
 })
 
 function mdautoheight() {
-    var vh = $(window).height() - nmd.obj.container.offset().top - 30;
+    var vh = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 30;
     nmd.height(Math.max(100, vh));
 }

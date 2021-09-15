@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Netnr.SharedFast;
 
 namespace Netnr.ScriptService
 {
@@ -13,20 +8,26 @@ namespace Netnr.ScriptService
         {
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
+
+            //编码注册
+            GlobalTo.EncodingReg();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+            {
+                //Action原样输出JSON
+                options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                //日期格式化
+                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMemoryCache memoryCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //缓存
-            Core.CacheTo.memoryCache = memoryCache;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

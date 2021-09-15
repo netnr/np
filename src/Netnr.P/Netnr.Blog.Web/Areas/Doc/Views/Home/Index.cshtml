@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "NetnrDoc";
+@{
+    ViewData["Title"] = GlobalTo.GetValue("Common:EnglishName") + " Doc";
 }
 
 <link href="/areas/doc/css/home/index.css" rel="stylesheet" asp-append-version="true" />
@@ -14,21 +14,21 @@
     <div class="carousel-inner text-white">
         <div class="carousel-item bg-success active">
             <h1><i class="fa fa-book fa-2x"></i></h1>
-            <h1 class="my-4">NetnrDoc</h1>
-            <h4>一个在线API文档、技术文档工具</h4>
+            <h1 class="my-4">@GlobalTo.GetValue("Common:EnglishName") Doc</h1>
+            <h4>一个在线 API 文档、技术文档工具</h4>
             <div class="mt-5">
-                <a href="/doc/code/5036967707833574483" class="btn btn-light mx-4">API文档</a>
-                <a href="/doc/code/4840050256984581805" class="btn btn-light mx-4">数据字典</a>
+                <a href="/doc/code/5036967707833574483/" class="btn btn-light mx-4">API 文档</a>
+                <a href="/doc/code/4840050256984581805/" class="btn btn-light mx-4">数据字典</a>
             </div>
         </div>
         <div class="carousel-item bg-info">
             <h1><i class="fa fa-plug fa-2x"></i></h1>
-            <h1 class="my-4">API文档</h1>
+            <h1 class="my-4">API 文档</h1>
             <h4>
-                APP、web前端与服务器常用API来进行交互
+                App、Web 前端与服务器常用 API 来进行交互
             </h4>
             <h4>
-                用NetnrDoc可以非常方便快速地编写出美观的API文档
+                用 @GlobalTo.GetValue("Common:EnglishName") Doc 可以非常方便快速地编写出美观的 API 文档
             </h4>
         </div>
         <div class="carousel-item bg-dark">
@@ -38,14 +38,14 @@
                 好的数据字典可以很方便地向别人描述你的数据库结构
             </h4>
             <h4>
-                用NetnrDoc可以编辑出美观的数字字典
+                用 @GlobalTo.GetValue("Common:EnglishName") Doc 可以编辑出美观的数字字典
             </h4>
         </div>
         <div class="carousel-item bg-secondary">
             <h1><i class="fa fa-file-text fa-2x"></i></h1>
             <h1 class="my-4">说明文档</h1>
             <h4>
-                你完全可以使用 NetnrDoc来编写一些工具的说明书
+                你完全可以使用 @GlobalTo.GetValue("Common:EnglishName") Doc 来编写一些工具的说明书
             </h4>
             <h4>
                 也可以编写一些技术规范说明文档以供团队查阅

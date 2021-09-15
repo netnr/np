@@ -67,7 +67,7 @@ namespace Netnr.WeChat
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             xml = postdata;
             var url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-            var result = Core.HttpTo.Post(url, postdata);
+            var result = NetnrCore.HttpTo.Post(url, postdata);
             returnMsg = result;
             return result;
         }
@@ -104,7 +104,7 @@ namespace Netnr.WeChat
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             var url = "https://api.mch.weixin.qq.com/pay/orderquery";
 
-            var result = Core.HttpTo.Post(url, postdata);
+            var result = NetnrCore.HttpTo.Post(url, postdata);
             return result;
         }
 
@@ -137,7 +137,7 @@ namespace Netnr.WeChat
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             var url = "https://api.mch.weixin.qq.com/pay/closeorder";
 
-            var result = Core.HttpTo.Post(url, postdata);
+            var result = NetnrCore.HttpTo.Post(url, postdata);
             return result;
         }
 
@@ -180,7 +180,7 @@ namespace Netnr.WeChat
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             var url = "https://api.mch.weixin.qq.com/pay/refundquery";
 
-            var result = Core.HttpTo.Post(url, postdata);
+            var result = NetnrCore.HttpTo.Post(url, postdata);
             return result;
         }
 
@@ -224,7 +224,7 @@ namespace Netnr.WeChat
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             var url = "https://api.mch.weixin.qq.com/pay/refundquery";
 
-            var result = Core.HttpTo.Post(url, postdata);
+            var result = NetnrCore.HttpTo.Post(url, postdata);
             return result;
         }
         
@@ -286,7 +286,7 @@ namespace Netnr.WeChat
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             var url = "https://api.mch.weixin.qq.com/pay/refundquery";
 
-            var result = Core.HttpTo.Post(url, postdata);
+            var result = NetnrCore.HttpTo.Post(url, postdata);
             return result;
         }
 
@@ -341,7 +341,7 @@ namespace Netnr.WeChat
             var postdata = PayUtil.GeneralPostdata(stringADict, sign);
             var url = "https://api.mch.weixin.qq.com/pay/micropay";
 
-            var result = Core.HttpTo.Post(url, postdata);
+            var result = NetnrCore.HttpTo.Post(url, postdata);
             return result;
         }
     }

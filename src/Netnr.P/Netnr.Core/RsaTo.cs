@@ -18,7 +18,7 @@ namespace Netnr.Core
         /// <param name="xmlPublicKey"></param>
         public void RSAKey(out string xmlKeys, out string xmlPublicKey)
         {
-            using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            using RSACryptoServiceProvider rsa = new();
             xmlKeys = rsa.ToXmlString(true);
             xmlPublicKey = rsa.ToXmlString(false);
         }
@@ -36,7 +36,7 @@ namespace Netnr.Core
             byte[] PlainTextBArray;
             byte[] CypherTextBArray;
             string Result;
-            using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            using RSACryptoServiceProvider rsa = new();
             rsa.FromXmlString(xmlPublicKey);
             PlainTextBArray = (new UnicodeEncoding()).GetBytes(m_strEncryptString);
             CypherTextBArray = rsa.Encrypt(PlainTextBArray, false);
@@ -54,7 +54,7 @@ namespace Netnr.Core
         {
             byte[] CypherTextBArray;
             string Result;
-            using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            using RSACryptoServiceProvider rsa = new();
             rsa.FromXmlString(xmlPublicKey);
             CypherTextBArray = rsa.Encrypt(EncryptString, false);
             Result = Convert.ToBase64String(CypherTextBArray);
@@ -75,7 +75,7 @@ namespace Netnr.Core
             byte[] PlainTextBArray;
             byte[] DypherTextBArray;
             string Result;
-            using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            using RSACryptoServiceProvider rsa = new();
             rsa.FromXmlString(xmlPrivateKey);
             PlainTextBArray = Convert.FromBase64String(m_strDecryptString);
             DypherTextBArray = rsa.Decrypt(PlainTextBArray, false);
@@ -93,7 +93,7 @@ namespace Netnr.Core
         {
             byte[] DypherTextBArray;
             string Result;
-            using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            using RSACryptoServiceProvider rsa = new();
             rsa.FromXmlString(xmlPrivateKey);
             DypherTextBArray = rsa.Decrypt(DecryptString, false);
             Result = (new UnicodeEncoding()).GetString(DypherTextBArray);
@@ -188,10 +188,10 @@ namespace Netnr.Core
         /// <returns></returns>
         public bool SignatureFormatter(string p_strKeyPrivate, byte[] HashbyteSignature, ref byte[] EncryptedSignatureData)
         {
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPrivate);
-            RSAPKCS1SignatureFormatter RSAFormatter = new RSAPKCS1SignatureFormatter(RSA);
+            RSAPKCS1SignatureFormatter RSAFormatter = new(RSA);
             //设置签名的算法为MD5 
             RSAFormatter.SetHashAlgorithm("MD5");
             //执行签名 
@@ -211,10 +211,10 @@ namespace Netnr.Core
         {
             byte[] EncryptedSignatureData;
 
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPrivate);
-            RSAPKCS1SignatureFormatter RSAFormatter = new RSAPKCS1SignatureFormatter(RSA);
+            RSAPKCS1SignatureFormatter RSAFormatter = new(RSA);
             //设置签名的算法为MD5 
             RSAFormatter.SetHashAlgorithm("MD5");
             //执行签名 
@@ -237,10 +237,10 @@ namespace Netnr.Core
             byte[] HashbyteSignature;
 
             HashbyteSignature = Convert.FromBase64String(m_strHashbyteSignature);
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPrivate);
-            RSAPKCS1SignatureFormatter RSAFormatter = new RSAPKCS1SignatureFormatter(RSA);
+            RSAPKCS1SignatureFormatter RSAFormatter = new(RSA);
             //设置签名的算法为MD5 
             RSAFormatter.SetHashAlgorithm("MD5");
             //执行签名 
@@ -262,10 +262,10 @@ namespace Netnr.Core
             byte[] EncryptedSignatureData;
 
             HashbyteSignature = Convert.FromBase64String(m_strHashbyteSignature);
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPrivate);
-            RSAPKCS1SignatureFormatter RSAFormatter = new RSAPKCS1SignatureFormatter(RSA);
+            RSAPKCS1SignatureFormatter RSAFormatter = new(RSA);
             //设置签名的算法为MD5 
             RSAFormatter.SetHashAlgorithm("MD5");
             //执行签名 
@@ -287,10 +287,10 @@ namespace Netnr.Core
         /// <returns></returns>
         public bool SignatureDeformatter(string p_strKeyPublic, byte[] HashbyteDeformatter, byte[] DeformatterData)
         {
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPublic);
-            RSAPKCS1SignatureDeformatter RSADeformatter = new RSAPKCS1SignatureDeformatter(RSA);
+            RSAPKCS1SignatureDeformatter RSADeformatter = new(RSA);
             //指定解密的时候HASH算法为MD5 
             RSADeformatter.SetHashAlgorithm("MD5");
 
@@ -317,10 +317,10 @@ namespace Netnr.Core
 
             HashbyteDeformatter = Convert.FromBase64String(p_strHashbyteDeformatter);
 
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPublic);
-            RSAPKCS1SignatureDeformatter RSADeformatter = new RSAPKCS1SignatureDeformatter(RSA);
+            RSAPKCS1SignatureDeformatter RSADeformatter = new(RSA);
             //指定解密的时候HASH算法为MD5 
             RSADeformatter.SetHashAlgorithm("MD5");
 
@@ -345,10 +345,10 @@ namespace Netnr.Core
         {
             byte[] DeformatterData;
 
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPublic);
-            RSAPKCS1SignatureDeformatter RSADeformatter = new RSAPKCS1SignatureDeformatter(RSA);
+            RSAPKCS1SignatureDeformatter RSADeformatter = new(RSA);
             //指定解密的时候HASH算法为MD5 
             RSADeformatter.SetHashAlgorithm("MD5");
 
@@ -377,10 +377,10 @@ namespace Netnr.Core
             byte[] HashbyteDeformatter;
 
             HashbyteDeformatter = Convert.FromBase64String(p_strHashbyteDeformatter);
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider RSA = new();
 
             RSA.FromXmlString(p_strKeyPublic);
-            RSAPKCS1SignatureDeformatter RSADeformatter = new RSAPKCS1SignatureDeformatter(RSA);
+            RSAPKCS1SignatureDeformatter RSADeformatter = new(RSA);
             //指定解密的时候HASH算法为MD5 
             RSADeformatter.SetHashAlgorithm("MD5");
 

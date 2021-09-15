@@ -14,7 +14,7 @@ namespace Netnr.Blog.Web.Areas.Doc.Controllers
         [ResponseCache(Duration = 10)]
         public IActionResult Index(string q, int page = 1)
         {
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             var ps = Application.CommonService.DocQuery(q, 0, uinfo.UserId, page);
             ps.Route = Request.Path;

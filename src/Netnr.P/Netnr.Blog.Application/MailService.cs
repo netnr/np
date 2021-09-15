@@ -1,6 +1,6 @@
-﻿using System;
-using MimeKit;
+﻿using MimeKit;
 using MailKit.Net.Smtp;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Application
 {
@@ -16,15 +16,15 @@ namespace Netnr.Blog.Application
         /// <param name="Title">标题</param>
         /// <param name="Content">内容</param>
         /// <returns></returns>
-        public static ActionResultVM Send(string ToMail, string Title, string Content)
+        public static SharedResultVM Send(string ToMail, string Title, string Content)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
                 var message = new MimeMessage();
-                message.From.Add(new MailboxAddress(GlobalTo.GetValue("MailKit:FromAddress")));
-                message.To.Add(new MailboxAddress(ToMail));
+                message.From.Add(MailboxAddress.Parse(GlobalTo.GetValue("MailKit:FromAddress")));
+                message.To.Add(MailboxAddress.Parse(ToMail));
                 message.Subject = Title;
                 message.Body = new BodyBuilder()
                 {
@@ -40,7 +40,7 @@ namespace Netnr.Blog.Application
                 client.Send(message);
                 client.Disconnect(true);
 
-                vm.Set(ARTag.success);
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {

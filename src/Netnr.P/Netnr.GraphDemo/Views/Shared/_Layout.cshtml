@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Netnr.GraphDemo</title>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            table tr td {
+                border: 2px solid orange;
+                text-align: center;
+                padding: 5px;
+            }
+
+        img {
+            max-width: 100%;
+            max-height: 500px;
+            border: 1px solid #ddd;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>
+        @ViewData["Title"]
+        &nbsp; <small><a href="/">首页</a></small>
+    </h1>
+    <div class="nr-graph"></div>
+    @RenderBody()
+
+    <hr />
+
+    <h3>说明</h3>
+    <p><a href="https://github.com/mono/SkiaSharp">SkiaSharp</a> 快，跨平台优势，推荐指数 ⭐⭐⭐⭐⭐</p>
+    <p>System.Drawing.Common 快，<a href="https://docs.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/6.0/system-drawing-common-windows-only">.NET6-Preview7 以后仅支持 Windows 不支持 Linux</a> ，以前版本 Linux 需依赖 libgdiplus 组件，推荐指数 ⭐⭐</p>
+    <p><a href="https://github.com/SixLabors/ImageSharp.Drawing">SixLabors.ImageSharp.Drawing</a> 一般，跨平台 ⭐⭐⭐</p>
+    <p><a href="https://github.com/dlemstra/Magick.NET">Magick.NET</a> 慢，推荐指数 ⭐</p>
+    <p><a href="https://github.com/dotnet/Microsoft.Maui.Graphics">Microsoft.Maui.Graphics</a> MAUI 抽象集成，推荐指数 ⭐⭐</p>
+    <p><a href="https://www.netnr.com/gist/code/5147403514661268175">Install-Libgdiplus</a></p>
+
+    <script src="/graph.js"></script>
+</body>
+</html>

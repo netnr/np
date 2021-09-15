@@ -1,57 +1,69 @@
 @{
-    var mj = Netnr.Extend.ToJObject(System.IO.File.ReadAllText(GlobalTo.WebRootPath + "/js/data/favorite.json"));
-    var isHtmlPath = Netnr.Core.CacheTo.Get("GlobalKey-HtmlPath") as string;
+    var isbh = CacheTo.Get(GlobalTo.GetValue("Common:BuildHtmlKey")) as bool? ?? false;
 }
-<div class="container my-4">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <select class="custom-select" style="width:150px;" id="seGroup">
-                        <option value="">全部</option>
-                        @foreach (var gi in mj["links"])
-                        {
-                            <option value="@gi["group"].ToString()">@gi["group"].ToString()</option>
-                        }
-                    </select>
-                </div>
-                <input type="text" class="form-control" placeholder="搜索" id="txtSearch">
-                <div class="input-group-prepend">
-                    <button class="btn btn-success" id="btnSearch" title="双击空白处 重置搜索条件">搜索</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    @if (string.IsNullOrWhiteSpace(isHtmlPath))
-    {
-        <div class="row">
-            <div class="col-md-12 mt-3">
-                <a href="/build" target="_blank">生成静态HTML</a>
 
+<div class="container-fluid">
+    <div class="row">
+
+        @if (!isbh)
+        {
+            <div class="col-md-12 mb-3">
+                <a href="/build" target="_blank">构建静态HTML</a>
                 <a href="/index.html" class="mx-3" target="_blank">访问静态HTML</a>
             </div>
+        }
+
+        <div class="col-auto">
+            <select class="form-select nr-group" id="seGroup">
+                <option value="">全部</option>
+                @foreach (var gi in NavService.Nav)
+                {
+                    <option value="@gi["group"].ToString()">@gi["group"].ToString()</option>
+                }
+            </select>
         </div>
-    }
-    <div class="menubox" id="favoritebox">
-        @foreach (var gi in mj["links"])
+
+        <div class="col">
+            <input type="text" class="form-control nr-search" placeholder="双击空白处 重置搜索条件" autocomplete="off">
+        </div>
+    </div>
+
+    <div class="navbox">
+        @foreach (var gi in NavService.Nav)
         {
-            <div class="row">
+            <div class="row my-3">
                 <div class="col-md-12 h5 mt-3"><i class="fa fa-fw text-muted fa-reorder"></i>@gi["group"].ToString()</div>
                 @foreach (var item in gi["items"])
                 {
+                    if (item["display"]?.ToString() == "0")
+                    {
+                        continue;
+                    }
+
                     var href = item["url"].ToString();
-                    if (string.IsNullOrWhiteSpace(isHtmlPath) && !href.Contains("//"))
+                    if (!isbh && !href.Contains("//"))
                     {
                         href = "/home" + href;
                     }
+                    var target = item["target"]?.ToString();
+                    if (target != null)
+                    {
+                        target = "target='" + target + "'";
+                    }
+                    else if (href.Contains("//"))
+                    {
+                        target = "target='_blank'";
+                    }
+                    var title = Html.Raw(item["title"].ToString());
+                    var remark = Html.Raw(item["remark"]?.ToString() ?? title.ToString());
 
-                    <div class="col-xl-3 col-md-4 col-sm-6 mb-2">
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-2">
                         <div class="card">
                             <div class="card-body">
-                                <a href="@href" target="_blank">
-                                    <img src="/favicon.svg" data-icon="@item["icon"]?.ToString()" />
-                                    <h5>@item["title"]?.ToString()</h5>
-                                    <small>@(item["remark"]?.ToString() ?? item["title"]?.ToString())</small>
+                                <a class="text-decoration-none" href="@href" @Html.Raw(target)>
+                                    <svg><use xlink:href="#@item["icon"].ToString()"></use></svg>
+                                    <b class="ov">@title</b>
+                                    <small class="mt-1">@remark</small>
                                 </a>
                             </div>
                         </div>
@@ -60,12 +72,80 @@
             </div>
         }
     </div>
-
-    <div class="row">
-        <div class="col-md-12 mt-3 small text-muted">
-            Source：<a target="_blank" href="https://github.com/netnr/np">https://github.com/netnr/np</a>
-        </div>
-    </div>
 </div>
 
-<script src="/js/index.js" asp-append-version="true"></script>
+<script>
+    function search() {
+        var group = $('.nr-group').val(), keywords = $('.nr-search').val();
+
+        keywords = keywords.trim().toLowerCase();
+        var fb = $('.navbox');
+        fb.find('a').each(function () {
+            var col = $(this).parent().parent().parent();
+            if (keywords != "") {
+                if ($(this).text().toLowerCase().indexOf(keywords) >= 0 || this.href.toLowerCase().indexOf(keywords) >= 0) {
+                    col.removeClass('d-none');
+                } else {
+                    col.addClass('d-none');
+                }
+            } else {
+                col.removeClass('d-none');
+            }
+        });
+        fb.children().each(function () {
+            var cols = $(this).children();
+            if (group != "") {
+                if (cols.first().text().trim() == group) {
+                    $(this).removeClass('d-none');
+                } else {
+                    $(this).addClass('d-none');
+                }
+            } else {
+                $(this).removeClass('d-none');
+                if (cols.filter('.d-none').length + 1 >= cols.length) {
+                    cols.first().addClass('d-none');
+                } else {
+                    cols.first().removeClass('d-none');
+                }
+            }
+        });
+    }
+
+    function savels() {
+        ss.ls["ss-search"] = $('.nr-search').val();
+        ss.ls["ss-group"] = $('.nr-group').val();
+        ss.lsSave();
+    }
+
+    var lssearch = ss.lsStr("ss-search") || "",
+        lsgroup = ss.lsStr("ss-group") || "";
+
+    $('.nr-group').change(function () {
+        savels();
+        search();
+    }).find('option').each(function () {
+        if (this.value == lsgroup) {
+            $('.nr-group').val(this.value);
+            return false;
+        }
+    });
+
+    $('.nr-search').on('input', function () {
+        savels();
+        search();
+    }).val(lssearch);
+
+    $(document).dblclick(function () {
+        $('.nr-search').val('');
+        $('.nr-group').val('');
+        search();
+    });
+
+    $('.navbox').find('a').each(function () {
+        //兼容本地生成的静态页面
+        var na = this;
+        if (na.href.indexOf("//localhost") >= 0 && na.href.indexOf("/home/") == -1) {
+            na.href += ".html";
+        }
+    });
+</script>

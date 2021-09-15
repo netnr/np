@@ -1,13 +1,9 @@
 using Netnr.ResponseFramework.Domain;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Linq;
+using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Application
 {
@@ -65,10 +61,10 @@ namespace Netnr.ResponseFramework.Application
             }
 
             //剔除没在表配置的列
-            List<string> removeColNotExists = new List<string>();
+            List<string> removeColNotExists = new();
             foreach (DataColumn dc in dt.Columns)
             {
-                if (listColumns.Where(x => x.ColField == dc.ColumnName).Count() == 0)
+                if (!listColumns.Where(x => x.ColField == dc.ColumnName).Any())
                 {
                     removeColNotExists.Add(dc.ColumnName);
                 }
@@ -89,7 +85,7 @@ namespace Netnr.ResponseFramework.Application
                     }
                     catch (Exception)
                     {
-                        dt.Columns[col.ColField].ColumnName = col.ColTitle + "-" + Core.RandomTo.NumCode();
+                        dt.Columns[col.ColField].ColumnName = col.ColTitle + "-" + RandomTo.NumCode();
                     }
                 }
             }
@@ -126,7 +122,7 @@ namespace Netnr.ResponseFramework.Application
 
                                 //状态
                                 case "srstatus":
-                                    result = CellMapping.Status01(value);
+                                    result = CellMapping.Kvs01(value);
                                     break;
                             }
                         }
@@ -149,7 +145,7 @@ namespace Netnr.ResponseFramework.Application
 
                                 //状态
                                 case "sustatus":
-                                    result = CellMapping.Status01(value);
+                                    result = CellMapping.Kvs01(value);
                                     break;
                             }
                         }
@@ -164,6 +160,11 @@ namespace Netnr.ResponseFramework.Application
                                 case "logcreatetime":
                                     result = CellMapping.DateTimeFormat(value, "yyyy-MM-dd HH:mm:ss");
                                     break;
+
+                                //级别
+                                case "loglevel":
+                                    result = CellMapping.Kvs04(value);
+                                    break;
                             }
                         }
                         break;
@@ -175,7 +176,7 @@ namespace Netnr.ResponseFramework.Application
                             {
                                 //状态
                                 case "sdstatus":
-                                    result = CellMapping.Status03(value);
+                                    result = CellMapping.Kvs03(value);
                                     break;
                             }
                         }
@@ -228,35 +229,46 @@ namespace Netnr.ResponseFramework.Application
             }
 
             /// <summary>
-            /// 状态格式化
+            /// 字典格式化
             /// </summary>
             /// <param name="value"></param>
             /// <returns></returns>
-            public static string Status01(string value)
+            public static string Kvs01(string value)
             {
                 var kv = "1:✔,0:✘";
                 return KeyValueMap(kv, value);
             }
 
             /// <summary>
-            /// 状态格式化
+            /// 字典格式化
             /// </summary>
             /// <param name="value"></param>
             /// <returns></returns>
-            public static string Status02(string value)
+            public static string Kvs02(string value)
             {
                 var kv = "1:✘,0:✔";
                 return KeyValueMap(kv, value);
             }
 
             /// <summary>
-            /// 状态格式化
+            /// 字典格式化
             /// </summary>
             /// <param name="value"></param>
             /// <returns></returns>
-            public static string Status03(string value)
+            public static string Kvs03(string value)
             {
                 var kv = "-1:删除,1:正常,2:停用";
+                return KeyValueMap(kv, value);
+            }
+
+            /// <summary>
+            /// 字典格式化
+            /// </summary>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            public static string Kvs04(string value)
+            {
+                var kv = "F:Fatal,E:Error,W:Warn,I:Info,D:Debug,A:All";
                 return KeyValueMap(kv, value);
             }
 
@@ -285,7 +297,7 @@ namespace Netnr.ResponseFramework.Application
         public static bool ExcelDraw(string fullPath, QueryDataInputVM ivm)
         {
             //需要绘制的记录
-            var needDraw = "DatabaseTableDesign,syslog".ToLower().Split(',');
+            var needDraw = "sysuser,sysrole,syslog".ToLower().Split(',');
             if (!needDraw.Contains(ivm.TableName?.ToLower()))
             {
                 return true;
@@ -295,7 +307,7 @@ namespace Netnr.ResponseFramework.Application
 
             IWorkbook workbook = null;
 
-            using (FileStream file = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (FileStream file = new(fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
                 if (strExtName.Equals(".xls"))
                 {
@@ -311,15 +323,16 @@ namespace Netnr.ResponseFramework.Application
 
             switch (ivm.TableName?.ToLower())
             {
-                //数据库表设计
-                case "databasetabledesign":
+                case "sysuser":
+                case "sysrole":
+                case "syslog":
                     {
                         //冻结首行首列
                         sheet.CreateFreezePane(0, 1);
 
                         var rows = sheet.GetRowEnumerator();
 
-                        var styleH = CreateCellStyle(workbook, StyleType.headLeft);
+                        var styleH = CreateCellStyle(workbook, StyleType.blankGray);
 
                         while (rows.MoveNext())
                         {
@@ -333,25 +346,17 @@ namespace Netnr.ResponseFramework.Application
                                 row = (HSSFRow)rows.Current;
                             }
 
-                            var cc = row.GetCell(1);
-                            if (string.IsNullOrWhiteSpace(cc.StringCellValue))
+                            foreach (var cell in row.Cells)
                             {
-                                foreach (var cell in row.Cells)
-                                {
-                                    cell.CellStyle = styleH;
-                                }
-
-                                //合并
-                                sheet.AddMergedRegion(new CellRangeAddress(row.RowNum, row.RowNum, 0, row.Cells.Count - 1));
+                                cell.CellStyle = styleH;
                             }
+                            break;
                         }
                     }
                     break;
-                default:
-                    break;
             }
 
-            using (FileStream file = new FileStream(fullPath, FileMode.OpenOrCreate))
+            using (FileStream file = new(fullPath, FileMode.OpenOrCreate))
             {
                 workbook.Write(file);
                 workbook.Close();

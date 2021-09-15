@@ -1,39 +1,127 @@
 # Netnr
 周华，男，1992.7 生，2012 参工，大专，single 🤣  
 netnr@netnr.com  
-.NET Core、SQL、JavaScript、Linux
+.NET、SQL、JavaScript
 
 ---
 
-### 站点
-- [zme.ink](https://zme.ink)
-    - [cors.zme.ink](https://cors.zme.ink "跨域请求代理")
-    - [api.zme.ink](https://api.zme.ink "API")
-    - [v.zme.ink](https://v.zme.ink "VIP视频")
-    - [ub.zme.ink](http://ub.zme.ink "浏览器升级提示")
-- [guff.ltd](https://guff.ltd)
-- [uuid.fun](https://uuid.fun "书签")
-- [netnr.top](https://netnr.top)
-- [gitee.com/netnr](https://gitee.com/netnr)
-- [github.com/netnr](https://github.com/netnr)
-- [www.netnr.com](https://www.netnr.com)
-    - [脚本服务](https://ss.netnr.com)
-    - [netnrf响应式框架](https://rf.netnr.com ".NET Core 后台框架")
-    - [JSON编辑器](https://json.netnr.com)
-    - [NetnrMD编辑器](https://md.netnr.com "Markdown编辑器")
-    - [KMS](https://kms.netnr.com "Windows激活服务")
-    - [jz弹窗](https://jz.netnr.com "一个轻量、简单的弹窗插件")
-    - [Emoji表情](https://emoji.netnr.com)
-    - [jCute脚本](https://jcute.netnr.com)
-    - [响应式导航栏](https://nav.netnr.com)
-    - [聊天室](https://chat.netnr.com)
-    - [API文档](https://ad.netnr.com "帮助文档")
-    - [FontAwesome图标](https://fa.netnr.com "Font Awesome 镜像")
-    - [Squoosh图片压缩](https://tiny.netnr.com)
-    - [字典](https://zidian.netnr.com "字、词、成语")
-
----
-
-### 捐赠
+### Sponsors
 <img src="static/donate/alipay.jpg" alt="支付宝" title="支付宝" width="300" />
 <img src="static/donate/wechat.jpg" alt="微信" title="微信" width="300" />
+
+[Sponsor list](SPONSORS.md)
+
+---
+
+### Site
+**Git** 源码托管
+&nbsp; [github.com/netnr](https://github.com/netnr) 
+
+**Blog**
+&nbsp; 个站
+&nbsp; https://www.netnr.com
+&nbsp; https://www.netnr.eu.org
+
+**ResponseFramework**
+&nbsp; 框架
+&nbsp; https://rf.netnr.com
+&nbsp; https://netnr-rf.herokuapp.com
+
+**Serverless**
+&nbsp; 基于 Serverless 的服务
+&nbsp; https://api.netnr.eu.org
+
+**CORS**
+&nbsp; 基于 Cloudflare Workers 的服务提供跨域请求
+&nbsp; https://cors.eu.org
+
+**Proxy**
+&nbsp; HTTP请求代理
+&nbsp; https://netnr-proxy.herokuapp.com
+
+**KMS**
+&nbsp; KMS激活服务，slmgr命令激活Windows系统、Office
+&nbsp; https://kms.netnr.eu.org
+
+**ScriptService**
+&nbsp; 脚本服务
+&nbsp; https://ss.js.org
+&nbsp; https://ss.netnr.com
+&nbsp; https://ss.netnr.eu.org
+
+**FileServer**
+&nbsp; 上传文件服务器
+&nbsp; https://netnr-fs.herokuapp.com
+
+**DataKit**
+&nbsp; 数据库工具及代码构建
+&nbsp; https://ss.netnr.com/dk
+
+**Static**
+&nbsp; 个站静态资源
+&nbsp; https://s1.netnr.eu.org
+
+**uuid**
+&nbsp; 一个基于Git托管去中心化的收藏夹，书签
+&nbsp; https://uuid.fun
+&nbsp; https://uuid.netnr.eu.org
+
+**NetnrMD**
+&nbsp; Markdown 编辑器
+&nbsp; https://md.js.org
+&nbsp; https://md.netnr.eu.org
+
+**JSONEditor**
+&nbsp; JSON 编辑器
+&nbsp; https://je.js.org
+&nbsp; https://json.netnr.eu.org
+
+**Jz**
+&nbsp; 一个轻量、简单的弹窗插件
+&nbsp; https://jz.netnr.eu.org
+
+**jCute**
+&nbsp; JavaScript Library
+&nbsp; https://jcute.netnr.eu.org
+
+**Guff**
+&nbsp; 尬服
+&nbsp; https://guff.ltd
+&nbsp; https://guff.netnr.eu.org
+
+**Chat**
+&nbsp; 聊天
+&nbsp; https://chat.netnr.eu.org
+
+**zidian**
+&nbsp; 字典
+&nbsp; https://zidian.netnr.eu.org
+
+**nav**
+&nbsp; 同步实现水平导航、垂直导航、侧滑导航，无限树形
+&nbsp; https://nav.netnr.eu.org
+
+**FontAwesome**
+&nbsp; Font Awesome 4 镜像
+&nbsp; https://fa.netnr.eu.org
+
+**mxGraph**
+&nbsp; mxGraph 镜像
+&nbsp; https://mxgraph.netnr.eu.org
+
+**SiteBoot**
+&nbsp; 站点引导
+&nbsp; https://netnr.top
+&nbsp; https://boot.netnr.eu.org
+
+**UpgradeBrowser**
+&nbsp; 升级浏览器提示
+&nbsp; https://ub.netnr.eu.org
+
+**VIPVideo**
+&nbsp; VIP视频解析
+&nbsp; https://v.netnr.eu.org
+
+**Status**
+&nbsp; Netnr Status
+&nbsp; https://status.netnr.eu.org

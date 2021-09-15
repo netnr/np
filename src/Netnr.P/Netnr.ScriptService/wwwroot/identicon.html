@@ -1,0 +1,193 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>身份图标 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 身份图标" />
+    <meta name="description" content="Script Services 生成哈希头像" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="生成哈希头像">
+                                    <svg class="titleicon"><use xlink:href="#pixel"></use></svg> &#x8EAB;&#x4EFD;&#x56FE;&#x6807;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <style>
+    .nr-view-1, .nr-view-2 {
+        display: inline-block;
+        border: 1px solid #ddd;
+        max-width: 100%;
+    }
+
+        .nr-view-1 svg, .nr-view-2 svg {
+            max-width: 100%;
+        }
+
+    .border-transparent {
+        border-color: transparent;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-auto">
+            <div class="input-group mb-3">
+                <span class="input-group-text">大小</span>
+                <input type="number" class="form-control nr-size" value="320" min="2" max="99999" step="2" title="大小" placeholder="大小" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="input-group mb-3">
+                <span class="input-group-text">标识</span>
+                <input type="text" class="form-control nr-value" placeholder="身份（昵称、标识等）" autofocus autocomplete="off">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 d-none">
+            <div class="nr-view-1">
+            </div>
+            <div class="my-3">
+                <a href="https://github.com/stewartlord/identicon.js" class="text-muted" target="_blank">GitHub-style</a>
+                <a href="javascript:void(0)" class="nr-down mx-3" data-type="svg1">下载 SVG</a>
+                <a href="javascript:void(0)" class="nr-down" data-type="image1">下载 JPG</a>
+            </div>
+        </div>
+        <div class="col-md-6 d-none">
+            <div class="nr-view-2">
+            </div>
+            <div class="my-3">
+                <a href="https://github.com/dmester/jdenticon" class="text-muted" target="_blank">jdenticon</a>
+                <a href="javascript:void(0)" class="nr-down mx-3" data-type="svg2">下载 SVG</a>
+                <a href="javascript:void(0)" class="nr-down" data-type="image2">下载 JPG</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src='https://npm.elemecdn.com/jdenticon@3.1.1/dist/jdenticon.min.js'></script>
+<script src='https://s1.netnr.com/libs/identicon/2.3.3/identicon.js'></script>
+<script src='https://npm.elemecdn.com/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'></script>
+
+
+<script>
+
+    var ii = {
+        init: function () {
+            $('.nr-size').on('input', function () {
+                ii.build();
+            });
+            $('.nr-value').on('input', function () {
+                ii.build();
+            });
+
+            $('.nr-down').click(function () {
+                var type = this.getAttribute('data-type');
+                switch (type) {
+                    case "svg1":
+                        ss.dowload($('.nr-view-1').html(), "identicon.svg");
+                        break;
+                    case "image1":
+                        $('.nr-view-1').addClass('border-transparent');
+                        html2canvas($('.nr-view-1')[0]).then(function (canvas) {
+                            ss.dowload(canvas, "identicon.jpg");
+                            $('.nr-view-1').removeClass('border-transparent')
+                        })
+                        break;
+                    case "svg2":
+                        ss.dowload($('.nr-view-2').html(), "identicon.svg");
+                        break;
+                    case "image2":
+                        $('.nr-view-2').addClass('border-transparent');
+                        html2canvas($('.nr-view-2')[0]).then(function (canvas) {
+                            ss.dowload(canvas, "identicon.jpg");
+                            $('.nr-view-2').removeClass('border-transparent');
+                        })
+                        break;
+                }
+            });
+        },
+
+        build: function () {
+            window.clearTimeout(ii.defer);
+
+            ii.defer = setTimeout(function () {
+                var value = $('.nr-value').val();
+                var size = $('.nr-size').val() || 320;
+
+                var svgicon = iisvg({ value, size });
+                $('.nr-view-1').empty().append(svgicon).parent().removeClass('d-none');
+
+                var o2 = jdenticon.toSvg(value, size);
+                $('.nr-view-2').html(o2).parent().removeClass('d-none');
+            }, 500)
+        }
+    }
+
+    ii.init();
+</script>
+        </div>
+</body>
+</html>

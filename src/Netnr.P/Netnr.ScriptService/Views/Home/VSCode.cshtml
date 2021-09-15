@@ -1,26 +1,22 @@
-﻿<div class="container-fluid">
+<div class="container-fluid d-none nr-vscode-box">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-auto">
             <div class="input-group">
-                <div class="input-group-append">
-                    <select class="custom-select" id="setheme">
-                        <optgroup label="Theme">
-                            <option value="vs">Visual Studio</option>
-                            <option value="vs-dark">Visual Studio Dark</option>
-                            <option value="hc-black">High Contrast Dark</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <select class="custom-select" id="selanguage">
-                        <optgroup label="Language"></optgroup>
-                    </select>
-                </div>
+                <select class="form-select" id="selanguage">
+                    <optgroup label="Language"></optgroup>
+                </select>
+                <select class="form-select" id="setheme">
+                    <optgroup label="Theme">
+                        <option value="vs">vs</option>
+                        <option value="vs-dark">vs-dark</option>
+                        <option value="hc-black">hc-black</option>
+                    </optgroup>
+                </select>
                 <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
             </div>
         </div>
     </div>
-    <div class="row mt-2">
+    <div class="row mt-3">
         <div class="col-md-12">
             <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
@@ -29,14 +25,101 @@
     </div>
 </div>
 
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
+
 <script>
-    function AutoHeight() {
-        var ch = $(window).height() - $('#editor').offset().top - 15;
-        $('#editor').css('height', Math.max(200, ch));
-    }
-    AutoHeight();
+    var editor,
+        defaultLang = ss.lsStr("vscode-lang") || 'javascript',
+        defaultContent = ss.lsStr("vscode-content") || 'console.log("Hello world!");',
+        defaultTheme = ss.lsStr("vscode-theme") || 'vs';
+
+    require(['vs/editor/editor.main'], function () {
+        //xml formatter
+        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
+
+        var modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
+        var te = $("#editor"), selang = $('#selanguage'), languagehtm = [];
+
+        for (var i = 0; i < modesIds.length; i++) {
+            var mo = modesIds[i];
+            languagehtm.push('<option>' + mo + '</option>');
+        }
+        selang.children()[0].innerHTML = languagehtm.join('');
+
+        editor = monaco.editor.create(te[0], ss.meConfig({
+            value: defaultContent,
+            language: defaultLang,
+            theme: defaultTheme
+        }));
+
+        document.querySelector('.nr-vscode-box').classList.remove("d-none");
+
+        selang.change(function () {
+            var oldModel = editor.getModel();
+            var newModel = monaco.editor.createModel(editor.getValue(), this.value);
+            editor.setModel(newModel);
+            if (oldModel) {
+                oldModel.dispose();
+            }
+            ss.ls["vscode-lang"] = this.value;
+            ss.lsSave();
+
+            if (this.value == "javascript") {
+                $('#btnRun').removeClass('d-none');
+            } else {
+                $('#btnRun').addClass('d-none');
+            }
+        }).val(defaultLang);
+        if (defaultLang == "javascript") {
+            $('#btnRun').removeClass('d-none');
+        } else {
+            $('#btnRun').addClass('d-none');
+        }
+
+        $('#setheme').change(function () {
+            monaco.editor.setTheme(this.value);
+            ss.ls["vscode-theme"] = this.value;
+            ss.lsSave();
+        }).val(defaultTheme);
+
+        editor.onDidChangeModelContent(function (e) {
+            clearTimeout(window.defer1);
+            window.defer1 = setTimeout(function () {
+                ss.ls["vscode-content"] = editor.getValue();
+                ss.lsSave();
+            }, 1000 * 1)
+        });
+
+        editor.addCommand(monaco.KeyCode.PauseBreak, function () {
+            $('#btnRun')[0].click();
+        })
+
+        $(window).on("load resize", function () {
+            var ch = $(window).height() - $('#editor').offset().top - 20;
+            $('#editor').css('height', Math.max(200, ch));
+        });
+    });
+
+    $('#btnRun').click(function () {
+        switch (editor.getModel()._languageIdentifier.language) {
+            case "javascript":
+                try {
+                    window.ee = new Function(editor.getValue());
+                    ee();
+                } catch (e) {
+                    console.error(e);
+                }
+                break;
+        }
+    });
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            editor.setValue(e.target.result);
+        };
+        reader.readAsText(file);
+    });
 </script>
-
-<partial name="_PartialQuote" model="@("monaco-editor")" />
-
-<script src="/js/vscode.js" asp-append-version="true"></script>

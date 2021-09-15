@@ -1,35 +1,24 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-sm-12">
-            <div class="input-group">
-                <button class="btn btn-warning" id="btnFormatterNginxConf">格式化</button>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="seindent">
-                        <optgroup label="缩进">
-                            <option value="    ">4格</option>
-                            <option value="  ">2格</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="senewline">
-                        <optgroup label="格式化选项">
-                            <option value="1">大括号在行尾</option>
-                            <option value="2">大括号在行首（新的一行）</option>
-                        </optgroup>
-                    </select>
-                </div>
-            </div>
+        <div class="col-auto">
+            <button class="btn btn-warning" id="btnFormatterNginxConf" title="Shift+Alt+F 快捷格式化">格式化</button>
+        </div>
+        <div class="col-auto">
+            <select class="form-select nr-theme">
+                <optgroup label="Theme">
+                    <option value="vs">vs</option>
+                    <option value="vs-dark">vs-dark</option>
+                </optgroup>
+            </select>
         </div>
         <div class="col-md-12 mt-3">
-            <div id="ebox" class="border position-relative">
-                <textarea class="form-control"></textarea>
+            <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
         </div>
     </div>
 </div>
 
-<partial name="_PartialCodeMirrorQuote" model="@("nginx")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("nginxbeautifier,monaco-editor"))
 
 <script src="/js/nginx.js" asp-append-version="true"></script>

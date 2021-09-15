@@ -1,10 +1,17 @@
-﻿@{
+@{
     ViewData["Title"] = "桌面";
 }
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 mt5">
+            <p>
+                API：<a href="/swagger" target="_blank">Swagger接口</a> &nbsp;
+                GitHub：<a href="https://github.com/netnr/np" target="_blank">github.com/netnr/np</a> &nbsp;
+                Contact：<a href="https://zme.ink" target="_blank">zme.ink</a>
+            </p>
+        </div>
+        <div class="col-md-12 mt5">
             <div id="chart1" style="height:300px"></div>
         </div>
         <div class="col-md-12 mt5 mb15">
@@ -20,6 +27,6 @@
 </div>
 
 <!--Highcharts-->
-<script src="https://code.bdstatic.com/npm/highcharts@8.0.4/highcharts.js"></script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("highcharts.js"))
 
 <partial name="_BaseViewPartial" />

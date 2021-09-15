@@ -1,18 +1,33 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-3 col-md-6">
-            <div class="input-group">
-                <button class="btn btn-warning" id="btnSqlFormatter">格式化</button>
-                <div class="input-group-prepend">
-                    <select class="custom-select" id="selanguage">
+        <div class="col-md-auto">
+            <div class="input-group mb-3">
+                <button class="btn btn-info" id="btnSqlFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
+                <select class="form-select nrSqlConfigLanguage">
+                    <optgroup label="语言类型">
                         <option value="sql">SQL</option>
-                        <option value="n1ql">N1QL</option>
+                        <!-- dialects -->
+                        <option value="redshift">AWS Redshift</option>
                         <option value="db2">DB2</option>
-                    </select>
-                </div>
+                        <option value="mariadb">MariaDB</option>
+                        <option value="mysql">MySQL</option>
+                        <option value="n1ql">N1QL</option>
+                        <option value="plsql">PL/SQL</option>
+                        <option value="postgresql">PostgreSQL</option>
+                        <option value="spark">Spark</option>
+                        <option value="tsql">Transact-SQL</option>
+                    </optgroup>
+                </select>
+                <select class="form-select nrSqlConfigUpperCase">
+                    <optgroup label="关键字">
+                        <option value="1">大写</option>
+                        <option value="0">不处理</option>
+                    </optgroup>
+                </select>
+                <a target="_blank" class="btn btn-warning" href="https://sqlformat.darold.net/">pgFormatter</a>
             </div>
         </div>
-        <div class="col-md-12 mt-2">
+        <div class="col-md-12">
             <div id="editor" class="border overflow-hidden position-relative">
                 <i class="fa fa-arrows-alt fa-fw me-full-btn" title="Switch the full screen"></i>
             </div>
@@ -28,6 +43,65 @@
     AutoHeight();
 </script>
 
-<partial name="_PartialQuote" model="@("sql-formatter.js,monaco-editor")" />
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("sql-formatter.js,monaco-editor"))
 
-<script src="/js/sqlformatter.js" asp-append-version="true"></script>
+<script>
+    var editor, dv = ss.lsStr('txt') || 'SELECT * FROM table1 表名',
+        scLanguage = ss.lsStr('sql-config-language') || 'sql',
+        scUpperCase = ss.lsStr('sql-config-uppercase') || "1";
+
+    $('.nrSqlConfigLanguage').change(function () {
+        ss.ls["sql-config-language"] = this.value;
+        ss.lsSave();
+    }).val(scLanguage);
+
+    $('.nrSqlConfigUpperCase').change(function () {
+        ss.ls["sql-config-uppercase"] = this.value;
+        ss.lsSave();
+    }).val(scUpperCase);
+
+    require(['vs/editor/editor.main'], function () {
+        var te = $("#editor");
+
+        editor = monaco.editor.create(te[0], ss.meConfig({
+            value: dv,
+            language: 'sql'
+        }));
+
+        editor.onDidChangeModelContent(function (e) {
+            clearTimeout(window.defer1);
+            window.defer1 = setTimeout(function () {
+                ss.ls.txt = editor.getValue();
+                ss.lsSave();
+            }, 1000 * 1)
+        });
+
+        //快捷键
+        editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
+            $('#btnSqlFormatter')[0].click();
+        })
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+            $('#btnSqlFormatter')[0].click();
+        })
+    });
+
+    $(window).resize(AutoHeight);
+
+    $('#btnSqlFormatter').click(function () {
+        var sf = sqlFormatter.format(editor.getValue(), {
+            language: $('.nrSqlConfigLanguage').val(),
+            uppercase: $('.nrSqlConfigUpperCase').val() == "1"
+        });
+        editor.setValue(sf);
+    })
+
+    //接收文件
+    ss.receiveFiles(function (files) {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            editor.setValue(e.target.result);
+        };
+        reader.readAsText(file);
+    });
+</script>

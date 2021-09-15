@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Netnr.Blog.Application.ViewModel
+﻿namespace Netnr.Blog.Application.ViewModel
 {
     /// <summary>
     /// 文档内容视图
@@ -36,6 +33,10 @@ namespace Netnr.Blog.Application.ViewModel
         /// 更新时间
         /// </summary>
         public DateTime? DsdUpdateTime { get; set; }
+        /// <summary>
+        /// 文档页排序
+        /// </summary>
+        public int? DsdOrder { get; set; }
         /// <summary>
         /// 显示编号
         /// </summary>

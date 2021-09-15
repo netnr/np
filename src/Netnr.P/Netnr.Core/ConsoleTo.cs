@@ -1,6 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Threading;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Netnr.Core
 {
@@ -10,14 +13,25 @@ namespace Netnr.Core
     public class ConsoleTo
     {
         /// <summary>
+        /// 缓存
+        /// </summary>
+        public static ConcurrentQueue<string> CurrentCacheLog { get; set; } = new ConcurrentQueue<string>();
+
+        /// <summary>
+        /// 写入标记
+        /// </summary>
+        static readonly object WriteMark = new();
+
+        /// <summary>
         /// 写入错误信息
         /// </summary>
         /// <param name="ex"></param>
-        /// <param name="isFull">是否全部信息，默认false</param>
-        public static void Log(Exception ex, bool isFull = false)
+        public static void Log(Exception ex)
         {
-            var msg = ExceptionGet(ex, isFull);
-            Log(msg);
+            var sb = new StringBuilder();
+            sb.AppendLine($"====日志记录时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine(ex.ToJson());
+            Log(sb);
         }
 
         /// <summary>
@@ -30,66 +44,96 @@ namespace Netnr.Core
 
             try
             {
-                switch (msg.GetType().Name)
+                txt = msg.GetType().Name switch
                 {
-                    case "Enum":
-                    case "Byte":
-                    case "Char":
-                    case "String":
-                    case "Boolean":
-                    case "UInt16":
-                    case "Int16":
-                    case "Int32":
-                    case "Int64":
-                    case "Single":
-                    case "Double":
-                    case "Decimal":
-                        txt = msg.ToString();
-                        break;
-                    default:
-                        txt = msg.ToJson();
-                        break;
-                }
+                    "Enum" or "Byte" or "Char" or "String" or "StringBuilder" or "Boolean" or "UInt16" or "Int16" or "Int32" or "Int64" or "Single" or "Double" or "Decimal" => msg.ToString(),
+                    _ => msg.ToJson(),
+                };
             }
             catch (Exception)
             {
                 txt = msg.ToString();
             }
 
-            var now = DateTime.Now;
-            var filename = $"console_{now:yyyyMMdd}.log";
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.ToString("yyyyMM"), filename);
-            FileTo.WriteText(txt, path);
+            CurrentCacheLog.Enqueue(txt);
+
+            if (Monitor.TryEnter(WriteMark))
+            {
+                SaveLog();
+                Monitor.Exit(WriteMark);
+            }
         }
 
         /// <summary>
-        /// 获取异常信息
+        /// 保存日志
         /// </summary>
-        /// <param name="ex"></param>
-        /// <param name="isFull">是否包含堆栈所有信息，默认 false</param>
-        /// <returns></returns>
-        private static string ExceptionGet(Exception ex, bool isFull = false)
+        private static void SaveLog()
         {
-            var en = Environment.NewLine;
-            var st = ex.StackTrace;
-            if (!isFull)
+        wmark:
+            var sblog = new StringBuilder();
+            while (CurrentCacheLog.TryDequeue(out string log))
             {
-                st = st.Replace(en, "^").Split('^')[0];
+                sblog.AppendLine(log);
+            }
+            if (sblog != null)
+            {
+                var now = DateTime.Now;
+                var filename = $"console_{now:yyyyMMdd}.log";
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.Year.ToString(), filename);
+
+                FileTo.WriteText(sblog.ToString(), path);
             }
 
-            string msg = string.Join(en, new List<string>()
+            if (!CurrentCacheLog.IsEmpty)
             {
-                $"====日志记录时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}",
-                $"消息内容：{ex.Message}",
-                $"引发异常的方法：{st}{en}"
-            });
+                goto wmark;
+            }
+        }
 
-            if (ex.InnerException != null)
+        /// <summary>
+        /// 调用菜单
+        /// </summary>
+        /// <param name="ctype"></param>
+        public static void InvokeMenu(Type ctype)
+        {
+            var cms = ctype.GetMethods().ToList();
+            var mm = cms.First().Module;
+            cms = cms.Where(x => x.Module == mm).ToList();
+
+            Console.WriteLine(Environment.NewLine);
+            var prevGroupName = string.Empty;
+            for (int i = 0; i < cms.Count; i++)
             {
-                msg += ExceptionGet(ex.InnerException, isFull);
+                var mi = cms[i];
+                var disps = mi.CustomAttributes.LastOrDefault()?.NamedArguments;
+                var dispName = disps.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value.ToString();
+                var dispGroupName = disps.FirstOrDefault(x => x.MemberName == "GroupName").TypedValue.Value.ToString();
+                var nl = string.Empty;
+                if (i > 0 && dispGroupName != prevGroupName)
+                {
+                    nl = "\n";
+                }
+
+                if (!string.IsNullOrWhiteSpace(dispName))
+                {
+                    Console.WriteLine($"{nl}{i,5}. {mi.Name} -> {dispName}");
+                }
+
+                prevGroupName = dispGroupName;
             }
 
-            return msg;
+            bool isMenumNum;
+            do
+            {
+                Console.Write("\n请输入数字：");
+                isMenumNum = int.TryParse(Console.ReadLine(), out int num) && num >= 0 && num < cms.Count;
+                if (isMenumNum)
+                {
+                    cms[num].Invoke(ctype, null);
+
+                    InvokeMenu(ctype);
+                }
+            } while (!isMenumNum);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Core;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -20,14 +21,32 @@ namespace Netnr.Blog.Web.Controllers
         /// 服务器状态
         /// </summary>
         /// <returns></returns>
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 10)]
-        public ActionResultVM AboutServerStatus()
+        public SharedResultVM AboutServerStatus()
         {
-            var vm = new ActionResultVM
+            var vm = new SharedResultVM();
+
+            try
             {
-                Data = new Fast.OSInfoTo()
-            };
+                var ckss = "Global_SystemStatus";
+                if (CacheTo.Get(ckss) is not SystemStatusTo ss)
+                {
+                    ss = new SystemStatusTo();
+                    CacheTo.Set(ckss, ss, 10, false);
+                }
+
+                vm.Log.Add(ss);
+                vm.Data = ss.ToView();
+                vm.Set(SharedEnum.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+                ConsoleTo.Log(ex);
+            }
+
             return vm;
         }
 

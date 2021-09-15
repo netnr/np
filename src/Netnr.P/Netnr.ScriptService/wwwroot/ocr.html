@@ -1,0 +1,223 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>OCR 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 OCR" />
+    <meta name="description" content="Script Services 识别图片内容" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="识别图片内容">
+                                    <svg class="titleicon"><use xlink:href="#ocr"></use></svg> OCR
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md mb-3">
+            <div class="input-group">
+                <input id="txtFile" type="file" class="form-control" accept="image/*">
+            </div>
+        </div>
+        <div class="col-md mb-3">
+            <button class="btn btn-info" title="逆时针旋转 5°" id="btnRotateLeft"><i class="fa fa-rotate-left"></i></button>
+            <button class="btn btn-info" title="顺时针旋转 5°" id="btnRotateRight"><i class="fa fa-rotate-right"></i></button>
+            <button class="btn btn-info" title="重置" id="btnReset"><i class="fa fa-refresh"></i></button>
+            <button class="btn btn-warning" id="btnOcr">识别</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="img-container">
+                <img id="imgview">
+            </div>
+        </div>
+        <div class="col-md-12 mb-3">
+            <textarea class="form-control fs-3 d-none" rows="9" id="txtResult" placeholder="这里显示识别结果"></textarea>
+        </div>
+    </div>
+</div>
+
+<link href='https://npm.elemecdn.com/cropperjs@1.5.12/dist/cropper.css' rel='stylesheet' />
+<script src='https://npm.elemecdn.com/cropperjs@1.5.12/dist/cropper.min.js'></script>
+
+
+<script>
+    var pg = {
+        init: function () {
+
+            $('#btnRotateLeft').click(function () {
+                if (pg.cp) {
+                    pg.cp.rotate(-5)
+                }
+            });
+
+            $('#btnRotateRight').click(function () {
+                if (pg.cp) {
+                    pg.cp.rotate(5)
+                }
+            });
+
+            $('#btnReset').click(function () {
+                if (pg.cp) {
+                    pg.cp.reset()
+                }
+            });
+
+            $('#btnOcr').click(function () {
+                pg.scan();
+            });
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                var isImg = false;
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i].type.indexOf("image") != -1) {
+                        isImg = true;
+                        pg.iv.src = URL.createObjectURL(files[i]);
+                        pg.crop();
+                        break;
+                    }
+                }
+                if (!isImg) {
+                    bs.alert('<h4>不是图片哦</h4>');
+                }
+            }, "#txtFile");
+        },
+
+        iv: document.getElementById('imgview'),
+
+        crop: function () {
+            if (pg.cp) {
+                pg.cp.destroy();
+            }
+            pg.cp = new Cropper(pg.iv, { aspectRatio: NaN });
+        },
+
+        //将base64转换为blob
+        dataURLtoBlob: function (dataurl) {
+            var arr = dataurl.split(','),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        },
+        //将blob转换为file
+        blobToFile: function (theBlob, fileName) {
+            theBlob.lastModifiedDate = new Date();
+            theBlob.name = fileName;
+            return theBlob;
+        },
+
+        //扫码识别
+        scan: function () {
+            if (pg.cp) {
+
+                ss.loading(1);
+
+                var base64Data = pg.cp.getCroppedCanvas().toDataURL('image/jpeg');
+                var blob = pg.dataURLtoBlob(base64Data);
+                var file = pg.blobToFile(blob, "ocr.jpg");
+
+                //上传
+                var formData = new FormData();
+                formData.append("file", file);
+
+                fetch(`${ss.apiServer}/api/v1/OCR`, {
+                    method: 'POST',
+                    body: formData
+                }).then(x => x.json()).then(res => {
+                    ss.loading(0);
+
+                    console.log(res);
+                    if (res.code == 200 && res.data.words_result) {
+                        var wrs = [];
+                        $.each(res.data.words_result, function () {
+                            wrs.push(this.words);
+                        });
+                        $('#txtResult').removeClass('d-none').val(wrs.join('\r\n'));
+                        document.documentElement.scrollTo(0, document.body.scrollHeight)
+                    } else {
+                        bs.alert('<h4>接口异常</h4>');
+                    }
+                }).catch(err => {
+                    ss.loading(0);
+
+                    console.log(err);
+                    bs.alert('<h4>上传出错</h4>');
+                })
+            }
+        }
+    }
+
+    pg.init();
+</script>
+        </div>
+</body>
+</html>

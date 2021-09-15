@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Netnr.Logging;
-using Netnr.Blog.Web.Filters;
+using Netnr.Blog.Data;
+using Newtonsoft.Json.Linq;
+using Netnr.SharedLogging;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -12,9 +10,16 @@ namespace Netnr.Blog.Web.Controllers
     /// 后台管理
     /// </summary>
     [Authorize]
-    [FilterConfigs.IsAdmin]
+    [Apps.FilterConfigs.IsAdmin]
     public class AdminController : Controller
     {
+        public ContextBase db;
+
+        public AdminController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 后台管理
         /// </summary>
@@ -44,37 +49,34 @@ namespace Netnr.Blog.Web.Controllers
         {
             var ovm = new QueryDataOutputVM();
 
-            using (var db = new Data.ContextBase())
+            var query = from a in db.UserWriting
+                        join b in db.UserInfo on a.Uid equals b.UserId
+                        select new
+                        {
+                            a.UwId,
+                            a.UwTitle,
+                            a.UwCreateTime,
+                            a.UwUpdateTime,
+                            a.UwReadNum,
+                            a.UwReplyNum,
+                            a.UwOpen,
+                            a.UwStatus,
+                            a.UwLaud,
+                            a.UwMark,
+                            a.UwCategory,
+
+                            b.UserId,
+                            b.Nickname,
+                            b.UserName,
+                            b.UserMail
+                        };
+
+            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
             {
-                var query = from a in db.UserWriting
-                            join b in db.UserInfo on a.Uid equals b.UserId
-                            select new
-                            {
-                                a.UwId,
-                                a.UwTitle,
-                                a.UwCreateTime,
-                                a.UwUpdateTime,
-                                a.UwReadNum,
-                                a.UwReplyNum,
-                                a.UwOpen,
-                                a.UwStatus,
-                                a.UwLaud,
-                                a.UwMark,
-                                a.UwCategory,
-
-                                b.UserId,
-                                b.Nickname,
-                                b.UserName,
-                                b.UserMail
-                            };
-
-                if (!string.IsNullOrWhiteSpace(ivm.Pe1))
-                {
-                    query = query.Where(x => x.UwTitle.Contains(ivm.Pe1));
-                }
-
-                Application.CommonService.QueryJoin(query, ivm, ref ovm);
+                query = query.Where(x => x.UwTitle.Contains(ivm.Pe1));
             }
+
+            Application.CommonService.QueryJoin(query, ivm, ref ovm);
 
             return ovm;
         }
@@ -83,32 +85,29 @@ namespace Netnr.Blog.Web.Controllers
         /// 保存一篇文章（管理）
         /// </summary>
         /// <param name="mo"></param>
-        /// <returns></returns>
-        public ActionResultVM WriteAdminSave(Domain.UserWriting mo)
+        /// <returns></returns>        
+        public SharedResultVM WriteAdminSave(Domain.UserWriting mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            using (var db = new Data.ContextBase())
+            var oldmo = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
+
+            if (oldmo != null)
             {
-                var oldmo = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
+                oldmo.UwStatus = mo.UwStatus;
+                oldmo.UwReplyNum = mo.UwReplyNum;
+                oldmo.UwReadNum = mo.UwReadNum;
+                oldmo.UwLaud = mo.UwLaud;
+                oldmo.UwMark = mo.UwMark;
+                oldmo.UwOpen = mo.UwOpen;
 
-                if (oldmo != null)
-                {
-                    oldmo.UwStatus = mo.UwStatus;
-                    oldmo.UwReplyNum = mo.UwReplyNum;
-                    oldmo.UwReadNum = mo.UwReadNum;
-                    oldmo.UwLaud = mo.UwLaud;
-                    oldmo.UwMark = mo.UwMark;
-                    oldmo.UwOpen = mo.UwOpen;
+                db.UserWriting.Update(oldmo);
 
-                    db.UserWriting.Update(oldmo);
+                int num = db.SaveChanges();
 
-                    int num = db.SaveChanges();
-
-                    vm.Set(num > 0);
-                }
+                vm.Set(num > 0);
             }
 
             return vm;
@@ -136,42 +135,39 @@ namespace Netnr.Blog.Web.Controllers
         {
             var ovm = new QueryDataOutputVM();
 
-            using (var db = new Data.ContextBase())
+            var query = from a in db.UserReply
+                        join b1 in db.UserInfo on a.Uid equals b1.UserId into bg
+                        from b in bg.DefaultIfEmpty()
+                        select new
+                        {
+                            a.UrId,
+                            a.Uid,
+                            a.UrAnonymousName,
+                            a.UrAnonymousLink,
+                            a.UrAnonymousMail,
+                            a.UrTargetType,
+                            a.UrTargetId,
+                            a.UrContent,
+                            a.UrContentMd,
+                            a.UrCreateTime,
+                            a.UrStatus,
+                            a.UrTargetPid,
+                            a.Spare1,
+                            a.Spare2,
+                            a.Spare3,
+
+                            UserId = b == null ? 0 : b.UserId,
+                            Nickname = b == null ? null : b.Nickname,
+                            UserName = b == null ? null : b.UserName,
+                            UserMail = b == null ? null : b.UserMail
+                        };
+
+            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
             {
-                var query = from a in db.UserReply
-                            join b1 in db.UserInfo on a.Uid equals b1.UserId into bg
-                            from b in bg.DefaultIfEmpty()
-                            select new
-                            {
-                                a.UrId,
-                                a.Uid,
-                                a.UrAnonymousName,
-                                a.UrAnonymousLink,
-                                a.UrAnonymousMail,
-                                a.UrTargetType,
-                                a.UrTargetId,
-                                a.UrContent,
-                                a.UrContentMd,
-                                a.UrCreateTime,
-                                a.UrStatus,
-                                a.UrTargetPid,
-                                a.Spare1,
-                                a.Spare2,
-                                a.Spare3,
-
-                                b.UserId,
-                                b.Nickname,
-                                b.UserName,
-                                b.UserMail
-                            };
-
-                if (!string.IsNullOrWhiteSpace(ivm.Pe1))
-                {
-                    query = query.Where(x => x.UrContent.Contains(ivm.Pe1));
-                }
-
-                Application.CommonService.QueryJoin(query, ivm, ref ovm);
+                query = query.Where(x => x.UrContent.Contains(ivm.Pe1));
             }
+
+            Application.CommonService.QueryJoin(query, ivm, ref ovm);
 
             return ovm;
         }
@@ -181,30 +177,27 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        public ActionResultVM ReplyAdminSave(Domain.UserReply mo)
+        public SharedResultVM ReplyAdminSave(Domain.UserReply mo)
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
-            var uinfo = new Application.UserAuthService(HttpContext).Get();
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
-            using (var db = new Data.ContextBase())
+            var oldmo = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
+
+            if (oldmo != null)
             {
-                var oldmo = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
+                oldmo.UrAnonymousName = mo.UrAnonymousName;
+                oldmo.UrAnonymousMail = mo.UrAnonymousMail;
+                oldmo.UrAnonymousLink = mo.UrAnonymousLink;
 
-                if (oldmo != null)
-                {
-                    oldmo.UrAnonymousName = mo.UrAnonymousName;
-                    oldmo.UrAnonymousMail = mo.UrAnonymousMail;
-                    oldmo.UrAnonymousLink = mo.UrAnonymousLink;
+                oldmo.UrStatus = mo.UrStatus;
 
-                    oldmo.UrStatus = mo.UrStatus;
+                db.UserReply.Update(oldmo);
 
-                    db.UserReply.Update(oldmo);
+                int num = db.SaveChanges();
 
-                    int num = db.SaveChanges();
-
-                    vm.Set(num > 0);
-                }
+                vm.Set(num > 0);
             }
 
             return vm;
@@ -228,12 +221,36 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="page">页码</param>
         /// <param name="rows">行数</param>
+        /// <param name="wheres">条件</param>
         /// <returns></returns>
         [ResponseCache(Duration = 10)]
-        public string QueryLog(int page, int rows)
+        public string QueryLog(int page, int rows, string wheres)
         {
             var now = DateTime.Now;
-            var vm = LoggingTo.Query(now.AddYears(-5), now, page, rows);
+            List<List<string>> listWhere = new();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(wheres))
+                {
+                    var jws = JArray.Parse(wheres);
+                    foreach (var wi in jws)
+                    {
+                        var w1 = wi[0]?.ToString();
+                        var w2 = wi[1]?.ToString();
+                        var w3 = wi[2]?.ToString();
+                        if (!string.IsNullOrWhiteSpace(w2) && !string.IsNullOrWhiteSpace(w3))
+                        {
+                            listWhere.Add(new List<string> { w1, w2, w3 });
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                listWhere = null;
+            }
+
+            var vm = LoggingTo.Query(now.AddYears(-5), now, page, rows, listWhere);
 
             return new
             {
@@ -261,16 +278,16 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public LoggingResultVM QueryLogStatsPVUV(int? type, string LogGroup)
         {
-            Dictionary<string, string> dicWhere = null;
+            var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
             {
-                dicWhere = new Dictionary<string, string>
+                listWhere = new List<List<string>>
                 {
-                    { "LogGroup", LogGroup }
+                    new List<string> { "LogGroup", "=", LogGroup }
                 };
             }
 
-            var vm = LoggingTo.StatsPVUV(type ?? 0, dicWhere);
+            var vm = LoggingTo.StatsPVUV(type ?? 0, listWhere);
             return vm;
         }
 
@@ -284,17 +301,170 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public LoggingResultVM QueryLogReportTop(int? type, string field, string LogGroup)
         {
-            Dictionary<string, string> dicWhere = null;
+            var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
             {
-                dicWhere = new Dictionary<string, string>
+                listWhere = new List<List<string>>
                 {
-                    { "LogGroup", LogGroup }
+                    new List<string> { "LogGroup", "=", LogGroup }
                 };
             }
 
-            var vm = LoggingTo.StatsTop(type ?? 0, field, dicWhere);
+            var vm = LoggingTo.StatsTop(type ?? 0, field, listWhere);
             return vm;
+        }
+
+        #endregion
+
+        #region 百科字典
+
+        /// <summary>
+        /// 字典
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult KeyValues()
+        {
+            string cmd = RouteData.Values["id"]?.ToString();
+            if (cmd != null)
+            {
+                string result = string.Empty;
+                var rt = new List<object>
+                {
+                    0,
+                    "fail"
+                };
+
+                try
+                {
+                    switch (cmd)
+                    {
+                        case "grab":
+                            {
+                                string key = Request.Form["Key"].ToString();
+                                string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToEncode()}&bk_length=600";
+                                string apirt = Core.HttpTo.Get(api);
+                                if (apirt.Length > 100)
+                                {
+                                    var kvMo = db.KeyValues.FirstOrDefault(x => x.KeyName == key);
+                                    if (kvMo == null)
+                                    {
+                                        kvMo = new Domain.KeyValues
+                                        {
+                                            KeyId = Guid.NewGuid().ToString(),
+                                            KeyName = key.ToLower(),
+                                            KeyValue = apirt
+                                        };
+                                        db.KeyValues.Add(kvMo);
+                                    }
+                                    else
+                                    {
+                                        kvMo.KeyValue = apirt;
+                                        db.KeyValues.Update(kvMo);
+                                    }
+
+                                    rt[0] = db.SaveChanges();
+                                    rt[1] = kvMo;
+                                }
+                                else
+                                {
+                                    rt[0] = 0;
+                                    rt[1] = apirt;
+                                }
+                            }
+                            break;
+                        case "synonym":
+                            {
+                                var keys = Request.Form["keys"].ToString().Split(',').ToList();
+
+                                string mainKey = keys.First().ToLower();
+                                keys.RemoveAt(0);
+
+                                var listkvs = new List<Domain.KeyValueSynonym>();
+                                foreach (var key in keys)
+                                {
+                                    var kvs = new Domain.KeyValueSynonym
+                                    {
+                                        KsId = Guid.NewGuid().ToString(),
+                                        KeyName = mainKey,
+                                        KsName = key.ToLower()
+                                    };
+                                    listkvs.Add(kvs);
+                                }
+
+                                var mo = db.KeyValueSynonym.FirstOrDefault(x => x.KeyName == mainKey);
+                                if (mo != null)
+                                {
+                                    db.KeyValueSynonym.Remove(mo);
+                                }
+                                db.KeyValueSynonym.AddRange(listkvs);
+                                int oldrow = db.SaveChanges();
+                                rt[0] = 1;
+                                rt[1] = " 受影响 " + oldrow + " 行";
+                            }
+                            break;
+                        case "addtag":
+                            {
+                                var tags = Request.Form["tags"].ToString().ToLower().Split(',').ToList();
+
+                                if (tags.Count > 0)
+                                {
+                                    var mt = db.Tags.Where(x => tags.Contains(x.TagName)).ToList();
+                                    if (mt.Count == 0)
+                                    {
+                                        var listMo = new List<Domain.Tags>();
+                                        var tagHs = new HashSet<string>();
+                                        foreach (var tag in tags)
+                                        {
+                                            if (tagHs.Add(tag))
+                                            {
+                                                var mo = new Domain.Tags
+                                                {
+                                                    TagName = tag,
+                                                    TagCode = tag,
+                                                    TagStatus = 1,
+                                                    TagHot = 0,
+                                                    TagIcon = tag + ".svg"
+                                                };
+                                                listMo.Add(mo);
+                                            }
+                                        }
+                                        tagHs.Clear();
+
+                                        //新增&刷新缓存
+                                        db.Tags.AddRange(listMo);
+                                        rt[0] = db.SaveChanges();
+
+                                        Application.CommonService.TagsQuery(false);
+
+                                        rt[1] = "操作成功（已刷新缓存）";
+                                    }
+                                    else
+                                    {
+                                        rt[0] = 0;
+                                        rt[1] = "标签已存在：" + mt.ToJson();
+                                    }
+                                }
+                                else
+                                {
+                                    Application.CommonService.TagsQuery(false);
+
+                                    rt[0] = 0;
+                                    rt[1] = "新增标签不能为空（已刷新缓存）";
+                                }
+                            }
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt[1] = ex.Message;
+                    rt.Add(ex.StackTrace);
+                }
+
+                result = rt.ToJson();
+                return Content(result);
+            }
+            return View();
         }
 
         #endregion

@@ -1,0 +1,197 @@
+﻿
+<!--
+https://github.com/netnr
+https://www.netnr.com
+https://netnr.eu.org
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+
+    <title>Office 文档查看 脚本服务</title>
+
+    <meta name="keywords" content="netnr NET牛人 Office 文档查看" />
+    <meta name="description" content="Script Services Word、Excel、PPT" />
+
+</head>
+<body>
+<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
+            <!-- 导航 -->
+            <button class="bsnav-menu-toggle d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <!-- mask -->
+            <span class="bsnav-mask"></span>
+            <nav class="mobile-offcanvas navbar navbar-expand-lg navbar-orange">
+
+                <div class="container-fluid">
+
+                    <div class="bsnav-header">
+                        <button class="btn-close float-end"></button>
+                    </div>
+
+                    <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+
+                    <!-- left -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/gist/discover" title="代码片段">Gist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/run/discover" title="在线运行代码">Run</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/doc" title="文档管理">Doc</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.netnr.com/draw/discover" title="绘制">Draw</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/" title="ss.js.org">SS</a></li>
+                        <li class="nav-item">
+                            <!--标题-->
+                                <a class="nav-link bg-light" href='javascript:location.reload(false)' title="Word、Excel、PPT">
+                                    <svg class="titleicon"><use xlink:href="#office"></use></svg> Office &#x6587;&#x6863;&#x67E5;&#x770B;
+                                </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-h"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" target="_blank" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- right -->
+                    <ul class="navbar-nav ms-auto">
+                    </ul>
+                </div>
+            </nav>
+        <div class="min300 mt-3">
+            <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">粘贴公网链接</span>
+                <input id="txtUrl" type="text" class="form-control" placeholder="请粘贴公网文档链接地址">
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">上传Office文档</span>
+                <input id="txtFile" type="file" class="form-control">
+                <span class="input-group-text d-none nr-update-progress"></span>
+            </div>
+        </div>
+        <div class="col-md-12 mb-3 d-none d-md-block">
+            <label>全屏完整链接：</label>
+            <a target="_blank" id="auri" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
+        </div>
+        <div class="col-md-12">
+            <iframe src="about:blank" class="d-none" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ov = {
+        api: "https://view.officeapps.live.com/op/embed.aspx?src=",
+        init: function () {
+
+            //接收文件
+            ss.receiveFiles(function (files) {
+                ov.upload(files[0]);
+            }, "#txtFile");
+
+            $('#txtUrl').on('input', function () {
+                ov.view(this.value);
+            });
+
+            $(window).on('load resize', function () {
+                ov.size();
+            });
+        },
+        view: function (url) {
+            if (url && url != "") {
+                url = decodeURIComponent(url);
+                $('#auri').attr('href', ov.api + url);
+                $('#auri').html(ov.api + url);
+                $('iframe').removeClass("d-none").attr('src', ov.api + url);
+            } else {
+                $('#auri').attr('href', 'javascript:void(0);');
+                $('#auri').html(ov.api);
+                $('iframe').addClass("d-none").attr('src', 'about:blank');
+            }
+            ov.size();
+        },
+        size: function () {
+            var h = $(window).height() - $('iframe').offset().top - 15;
+            $('iframe').height(Math.max(200, h)).width('100%');
+        },
+        upload: function (file) {
+            var err = [];
+            if (file.size > 1024 * 1024 * 20) {
+                err.push('文档大小限制 20MB')
+            }
+            if (file.type.indexOf('application') == -1 || ".doc docx .xls xlsx .ppt pptx".indexOf(file.name.slice(-4).toLowerCase()) == -1) {
+                err.push('请选择 Office文档')
+            }
+            if (err.length) {
+                bs.alert(err.join('<br/>'));
+                $("#txtFile").val('')
+            } else {
+                //上传
+                var formData = new FormData();
+                formData.append("file", file);
+
+                ss.loading(1);
+                $.ajax({
+                    url: "https://www.netnr.eu.org/api/v1/Upload",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    xhr: function () {
+                        xhr = $.ajaxSettings.xhr();
+                        xhr.upload.addEventListener('progress', function (e) {
+                            var rate = ((e.loaded / e.total) * 100).toFixed();
+                            if (rate < 100) {
+                                $('.nr-update-progress').removeClass('d-none').html('已上传 ' + rate + ' %');
+                            } else {
+                                $('.nr-update-progress').addClass('d-none');
+                            }
+                        })
+                        return xhr;
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.code == 200) {
+                            ov.view("https://www.netnr.eu.org" + data.data.path);
+                        } else {
+                            bs.msg("<h4>" + data.msg + "</h4>");
+                        }
+                    },
+                    error: function () {
+                        bs.msg("<h4>上传出错</h4>");
+                    },
+                    complete: function () {
+                        $('#txtFile').val('');
+                        ss.loading(0);
+                    }
+                });
+            }
+        }
+    }
+
+    ov.init();
+</script>
+        </div>
+</body>
+</html>

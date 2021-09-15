@@ -1,11 +1,5 @@
-﻿@model string
+@model string
 @{
-    var cacheKey = "GlobalKey-HtmlPath";
-
-    //是html路径
-    var ishp = CacheTo.Get(cacheKey) as string == "yes";
-    var hp = ishp ? "" : "/home";
-
     switch (Model)
     {
         case null:
@@ -37,7 +31,7 @@
         </div>
         <div class="col-md-3">
             <div>
-                <a href="@(hp+"/publish")" class="btn btn-lg btn-block btn-warning fa-lg py-4">
+                <a href="@Netnr.Guff.Application.BuildService.AutoLink("/publish")" class="btn btn-lg btn-block btn-warning fa-lg py-4">
                     <i class="fa fa-fw fa-edit"></i>发帖
                 </a>
             </div>

@@ -1,6 +1,5 @@
-using System;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -23,24 +22,33 @@ namespace Netnr.ResponseFramework.Web.Controllers
         }
 
         /// <summary>
-        /// 查询服务器信息
+        /// 服务器状态
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 10)]
-        public ActionResultVM QueryServerInfo()
+        public SharedResultVM ServerStatus()
         {
-            var vm = new ActionResultVM();
+            var vm = new SharedResultVM();
 
             try
             {
-                vm.Data = new Fast.OSInfoTo();
-                vm.Set(ARTag.success);
+                var ckss = "Global_SystemStatus";
+                if (CacheTo.Get(ckss) is not SystemStatusTo ss)
+                {
+                    ss = new SystemStatusTo();
+                    CacheTo.Set(ckss, ss, 10, false);
+                }
+
+                vm.Log.Add(ss);
+                vm.Data = ss.ToView();
+                vm.Set(SharedEnum.RTag.success);
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -51,12 +59,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         #region 退出
 
         /// <summary>
-        /// 关闭应用
+        /// 退出应用
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public void Close()
+        public void Exit()
         {
+            //Environment.Exit(0);
             //Process.GetCurrentProcess().Kill();
         }
 

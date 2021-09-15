@@ -1,25 +1,56 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Blog.Data;
+using Netnr.SharedFast;
 
-namespace Netnr.Web.Areas.Draw.Controllers
+namespace Netnr.Blog.Web.Areas.Draw.Controllers
 {
     [Area("Draw")]
     public class CodeController : Controller
     {
+        public ContextBase db;
+
+        public CodeController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 首页
         /// </summary>
+        /// <param name="code">分享码</param>
         /// <param name="filename"></param>
         /// <param name="xml"></param>
         /// <param name="mof"></param>
         /// <returns></returns>
-        public IActionResult Index(string filename, string xml, Blog.Domain.Draw mof)
+        public IActionResult Index(string code, string filename, string xml, Domain.Draw mof)
         {
             var id = RouteData.Values["id"]?.ToString();
             var sid = RouteData.Values["sid"]?.ToString();
 
-            var uinfo = new Blog.Application.UserAuthService(HttpContext).Get();
+            var kid = string.Empty;
+            if (id?.Length == 20)
+            {
+                kid = id;
+            }
+            else if (sid?.Length == 20)
+            {
+                kid = sid;
+            }
+            if (!string.IsNullOrEmpty(kid))
+            {
+                var sck = "SharedCode_" + kid;
+                //有分享码
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    Response.Cookies.Append(sck, code);
+                }
+                else
+                {
+                    code = Request.Cookies[sck]?.ToString();
+                }
+            }
+
+            var uinfo = Apps.LoginService.Get(HttpContext);
 
             if (!string.IsNullOrWhiteSpace(filename))
             {
@@ -30,24 +61,25 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 xml = xml.ToDecode();
             }
 
-
-            //新增
+            //新增、编辑
             if (id == "open")
             {
                 //编辑
                 if (!string.IsNullOrWhiteSpace(sid))
                 {
-                    var vm = new ActionResultVM();
-                    using var db = new Blog.Data.ContextBase();
+                    var vm = new SharedResultVM();
                     var mo = db.Draw.Find(sid);
-                    if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId)
+
+                    //分享码
+                    var isShare = !string.IsNullOrWhiteSpace(mo?.Spare1) && mo?.Spare1 == code;
+                    if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId || isShare)
                     {
-                        vm.Set(ARTag.success);
+                        vm.Set(SharedEnum.RTag.success);
                         vm.Data = mo;
                     }
                     else
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                     }
                     return Content(vm.ToJson());
                 }
@@ -61,7 +93,6 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 {
                     if (!string.IsNullOrWhiteSpace(sid))
                     {
-                        using var db = new Blog.Data.ContextBase();
                         var mo = db.Draw.Find(sid);
                         if (mo.Uid == uinfo.UserId)
                         {
@@ -75,10 +106,9 @@ namespace Netnr.Web.Areas.Draw.Controllers
             //保存标题等信息
             else if (id == "saveform")
             {
-                var vm = new ActionResultVM();
-                if (User.Identity.IsAuthenticated)
+                var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                if (vm.Code == 200)
                 {
-                    using var db = new Blog.Data.ContextBase();
                     int num = 0;
                     if (string.IsNullOrWhiteSpace(mof.DrId))
                     {
@@ -86,6 +116,7 @@ namespace Netnr.Web.Areas.Draw.Controllers
                         mof.DrCreateTime = DateTime.Now;
                         mof.Uid = uinfo.UserId;
                         mof.DrOrder = 100;
+                        mof.DrStatus = 1;
 
                         db.Draw.Add(mof);
                         num = db.SaveChanges();
@@ -93,21 +124,22 @@ namespace Netnr.Web.Areas.Draw.Controllers
                     else
                     {
                         var newmo = db.Draw.Find(mof.DrId);
-                        if (newmo.Uid == uinfo.UserId)
+                        if (newmo.Uid != uinfo.UserId)
+                        {
+                            vm.Set(SharedEnum.RTag.unauthorized);
+                        }
+                        else
                         {
                             newmo.DrRemark = mof.DrRemark;
                             newmo.DrName = mof.DrName;
                             newmo.DrOpen = mof.DrOpen;
+                            newmo.Spare1 = mof.Spare1;
 
                             db.Draw.Update(newmo);
                             num = db.SaveChanges();
                         }
                     }
                     vm.Set(num > 0);
-                }
-                else
-                {
-                    vm.Set(ARTag.unauthorized);
                 }
 
                 if (vm.Code == 200)
@@ -116,21 +148,19 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 }
                 else
                 {
-                    return Content(vm.ToJson());
+                    return Content(vm.Msg);
                 }
             }
             //保存内容
             else if (id == "save")
             {
-                var vm = new ActionResultVM();
-
-                if (User.Identity.IsAuthenticated)
+                var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                if (vm.Code == 200)
                 {
-                    using var db = new Blog.Data.ContextBase();
                     //新增
                     if (string.IsNullOrWhiteSpace(sid))
                     {
-                        var mo = new Blog.Domain.Draw
+                        var mo = new Domain.Draw
                         {
                             DrName = filename,
                             DrContent = xml,
@@ -165,14 +195,9 @@ namespace Netnr.Web.Areas.Draw.Controllers
                         }
                         else
                         {
-                            vm.Set(ARTag.unauthorized);
+                            vm.Set(SharedEnum.RTag.unauthorized);
                         }
                     }
-                }
-                else
-                {
-                    vm.Code = 1;
-                    vm.Msg = "未登录";
                 }
 
                 return Content(vm.ToJson());
@@ -180,11 +205,10 @@ namespace Netnr.Web.Areas.Draw.Controllers
             //删除
             else if (id == "del")
             {
-                var vm = new ActionResultVM();
+                var vm = new SharedResultVM();
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    using var db = new Blog.Data.ContextBase();
                     var mo = db.Draw.Find(sid);
                     if (mo.Uid == uinfo.UserId)
                     {
@@ -195,12 +219,12 @@ namespace Netnr.Web.Areas.Draw.Controllers
                     }
                     else
                     {
-                        vm.Set(ARTag.unauthorized);
+                        vm.Set(SharedEnum.RTag.unauthorized);
                     }
                 }
                 else
                 {
-                    vm.Set(ARTag.unauthorized);
+                    vm.Set(SharedEnum.RTag.unauthorized);
                 }
 
                 if (vm.Code == 200)
@@ -219,11 +243,12 @@ namespace Netnr.Web.Areas.Draw.Controllers
                 var msg = "fail";
                 var url = "";
 
-                var vm = new Blog.Web.Controllers.APIController().API98(Request.Form.Files[0], GlobalTo.GetValue("StaticResource:DrawPath"));
+                var subdir = GlobalTo.GetValue("StaticResource:DrawPath");
+                var vm = new Web.Controllers.api.APIController().Upload(Request.Form.Files[0], subdir);
 
                 if (vm.Code == 200)
                 {
-                    var jd = ((JObject)vm.Data);
+                    var jd = vm.Data.ToJson().ToJObject();
                     url = jd["server"].ToString() + jd["path"].ToString();
                     errno = 0;
                     msg = "ok";
