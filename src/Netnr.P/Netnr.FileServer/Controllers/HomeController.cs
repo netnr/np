@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.Core;
+﻿using Netnr.Core;
 
 namespace Netnr.FileServer.Controllers
 {

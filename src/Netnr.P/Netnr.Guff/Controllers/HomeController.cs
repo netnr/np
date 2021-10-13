@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Netnr.Guff.Controllers
+﻿namespace Netnr.Guff.Controllers
 {
     public class HomeController : Controller
     {

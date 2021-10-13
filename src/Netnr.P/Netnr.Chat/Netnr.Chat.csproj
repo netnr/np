@@ -7,11 +7,11 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile>Netnr.Chat.xml</DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -25,21 +25,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-preview.7.21378.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0-preview.7.21378.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-preview.7.21378.4">
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-rc.2.21480.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0-rc.2.21480.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-rc.2.21480.5">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.0-preview.7.21378.4">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.0-rc.2.21480.5">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-preview.7.21378.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0-preview.7.21378.4" />
-		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.2" />
-		<PackageReference Include="Npgsql" Version="6.0.0-preview7" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-rc.2.21480.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0-rc.2.21480.5" />
+		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.4" />
+		<PackageReference Include="Npgsql" Version="6.0.0-rc.1" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.3" />
 	</ItemGroup>
 

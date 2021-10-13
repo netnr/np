@@ -1,6 +1,5 @@
 ﻿using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Domain;
 

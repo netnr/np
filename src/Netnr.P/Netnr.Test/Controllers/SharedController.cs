@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DocumentFormat.OpenXml.Packaging;
 using Microsoft.Data.Sqlite;
 using Netnr.Core;
 using Netnr.SharedAdo;
 using Netnr.SharedCompile;
 using Netnr.SharedDataKit;
+using System.Text.Json;
 
 namespace Netnr.Test.Controllers
 {
@@ -78,6 +79,5 @@ public class DynamicCompile
                 return vm;
             });
         }
-
     }
 }

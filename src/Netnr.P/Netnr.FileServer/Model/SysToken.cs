@@ -22,6 +22,6 @@ namespace Netnr.FileServer.Model
         /// <summary>
         /// Token过期时间
         /// </summary>
-        public DateTime? TokenExpireTime { get; set; }
+        public DateTime TokenExpireTime { get; set; }
     }
 }

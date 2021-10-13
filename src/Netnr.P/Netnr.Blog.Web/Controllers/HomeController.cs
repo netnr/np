@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Netnr.Core;

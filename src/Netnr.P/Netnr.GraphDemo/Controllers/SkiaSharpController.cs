@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Netnr.GraphDemo.Controllers;
 

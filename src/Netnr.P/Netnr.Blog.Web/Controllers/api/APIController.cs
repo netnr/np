@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
 using Netnr.Core;
 using Netnr.SharedFast;
 using JiebaNet.Segmenter;

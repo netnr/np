@@ -1,6 +1,4 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Mvc;
-using Netnr.Blog.Data;
+﻿using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Areas.Gist.Controllers
 {

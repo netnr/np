@@ -1,6 +1,5 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.AspNetCore.Mvc;
-using Netnr.SharedLogging;
+﻿using Netnr.SharedLogging;
+using System.Collections.Concurrent;
 
 namespace Netnr.Test.Controllers
 {

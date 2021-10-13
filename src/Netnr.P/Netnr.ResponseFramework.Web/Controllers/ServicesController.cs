@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Netnr.SharedUserAgent;
 using Netnr.SharedApp;
 using Netnr.SharedFast;

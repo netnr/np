@@ -38,19 +38,19 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 排序
         /// </summary>
-        public int? ColumnOrder { get; set; }
+        public int ColumnOrder { get; set; }
         /// <summary>
-        /// 主键（YES：是主键）
+        /// 主键（大于等于1）
         /// </summary>
-        public string PrimaryKey { get; set; }
+        public int PrimaryKey { get; set; }
         /// <summary>
-        /// 自增（YES：是自增）
+        /// 自增（1：是）
         /// </summary>
-        public string AutoAdd { get; set; }
+        public int AutoIncr { get; set; }
         /// <summary>
-        /// 为空（YES：不为空）
+        /// 可为空（1：空；0：非空）
         /// </summary>
-        public string NotNull { get; set; }
+        public int IsNullable { get; set; }
         /// <summary>
         /// 默认值
         /// </summary>

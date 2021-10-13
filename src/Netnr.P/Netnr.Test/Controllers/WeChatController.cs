@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Xml;
+﻿using System.Xml;
 using Netnr.WeChat;
 using Netnr.WeChat.Entities;
 

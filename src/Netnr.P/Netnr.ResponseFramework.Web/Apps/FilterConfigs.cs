@@ -1,8 +1,6 @@
 ﻿using System.Xml;
 using System.Collections.Concurrent;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Diagnostics;
 using Netnr.SharedUserAgent;
 using Netnr.SharedIpArea;
 using Netnr.SharedFast;

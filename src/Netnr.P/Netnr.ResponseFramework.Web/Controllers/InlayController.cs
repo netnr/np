@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Netnr.ResponseFramework.Data;
 using Newtonsoft.Json.Linq;
 

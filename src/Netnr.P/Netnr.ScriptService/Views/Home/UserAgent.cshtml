@@ -7,7 +7,7 @@
     <div class="row nr-result"></div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("device-detector.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("device-detector-js.js"))
 
 <script>
     var pg = {
@@ -25,7 +25,7 @@
             pg.parse(pg.ua);
         },
         parse: function (ua) {
-            var uaobj = dd(ua);
+            var uaobj = new DeviceDetector().parse(ua);
             if (uaobj.bot) {
                 document.querySelector('.nr-result').innerHTML = `<div class="col-md-12"><pre class="bg-dark rounded text-white fs-5 m-0 p-3">${JSON.stringify(uaobj.bot, null, 2)}</pre></div>`;
             } else {

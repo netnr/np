@@ -7,12 +7,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>Netnr.FileServer.xml</DocumentationFile>
-    <DefineConstants>TRACE;Public;Fast;App</DefineConstants>
+    <DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;App</DefineConstants>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;Public;Fast;App</DefineConstants>
+    <DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;App</DefineConstants>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-preview.7.21378.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-rc.2.21480.10" />
     <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
   </ItemGroup>
 
   <ItemGroup>

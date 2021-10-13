@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-
-namespace Netnr.GraphDemo.Controllers;
+﻿namespace Netnr.GraphDemo.Controllers;
 
 public class HomeController : Controller
 {

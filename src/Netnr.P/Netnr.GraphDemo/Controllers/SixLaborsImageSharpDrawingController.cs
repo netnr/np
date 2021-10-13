@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SixLabors.Fonts;
+﻿using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;

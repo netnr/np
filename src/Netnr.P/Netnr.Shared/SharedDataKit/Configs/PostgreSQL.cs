@@ -13,6 +13,7 @@ namespace Netnr.SharedDataKit
             return $@"
 SELECT
   db.datname AS DatabaseName,
+  'DEFAULT' AS DatabaseClassify,
   tp.spcname AS DatabaseSpace,
   u1.usename AS DatabaseOwner,
   pg_encoding_to_char (db.ENCODING) AS DatabaseCharset,
@@ -65,89 +66,75 @@ WHERE
         {
             return $@"
 SELECT
-  c1.relname AS TableName,
-  obj_description (relfilenode) AS TableComment,
-  ab.attname AS ColumnName,
-  concat_ws (
-    '',
-    tp.typname,
-    SUBSTRING (
-      format_type (ab.atttypid, ab.atttypmod)
-      FROM
-        '\(.*\)'
-    )
-  ) AS ColumnType,
-  tp.typname AS DataType,
-  SUBSTRING (
-    format_type (ab.atttypid, ab.atttypmod)
-    FROM
-      '\d+'
-  ) AS DataLength,
-  REPLACE (
-    SUBSTRING (
-      format_type (ab.atttypid, ab.atttypmod)
-      FROM
-        '\,\d+'
-    ),
-    ',',
-    ''
-  ) AS DataScale,
-  ab.attnum AS ColumnOrder,
-  CASE
-    WHEN EXISTS (
-      SELECT
-        pg_attribute.attname
-      FROM
-        pg_constraint
-        INNER JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
-        INNER JOIN pg_attribute ON pg_attribute.attrelid = pg_class.oid
-        AND pg_attribute.attnum = pg_constraint.conkey [ 1 ]
-      WHERE
-        relname = c1.relname
-        AND attname = ab.attname
-    ) THEN 'YES'
-    ELSE ''
-  END AS PrimaryKey,
-  CASE
-    ab.attnotnull
-    WHEN 't' THEN 'YES'
-    ELSE ''
-  END AS NOTNULL,
-  t1.adsrc AS ColumnDefault,
-  col_description (ab.attrelid, ab.attnum) AS ColumnComment
+    c1.relname AS TableName,
+    OBJ_DESCRIPTION(relfilenode) AS TableComment,
+    ab.attname AS ColumnName,
+    CONCAT(tp.typname, SUBSTRING(FORMAT_TYPE(ab.atttypid, ab.atttypmod)
+            FROM '\(.*\)')) AS ColumnType,
+    tp.typname AS DataType,
+    SUBSTRING(FORMAT_TYPE(ab.atttypid, ab.atttypmod)
+        FROM '\d+') AS DataLength,
+    REPLACE(SUBSTRING(FORMAT_TYPE(ab.atttypid, ab.atttypmod)
+            FROM '\,\d+'), ',', '') AS DataScale,
+    ab.attnum AS ColumnOrder,
+    ARRAY_LENGTH(REGEXP_SPLIT_TO_ARRAY(SPLIT_PART(t2.index_order, CONCAT('""', ab.attname, '""'), 1), ','), 1) - 1 AS PrimaryKey,
+    CASE ab.attnotnull
+    WHEN 't' THEN
+        0
+    ELSE
+        1
+    END AS IsNullable,
+    t1.adsrc AS ColumnDefault,
+    COL_DESCRIPTION(ab.attrelid, ab.attnum) AS ColumnComment
 FROM
-  pg_class c1
-  LEFT JOIN pg_attribute ab ON ab.attrelid = c1.oid
-  LEFT JOIN pg_type tp ON ab.atttypid = tp.oid
-  LEFT JOIN (
-    SELECT
-      p1.relname,
-      p2.attname,
-      pg_get_expr (p3.adbin, p3.adrelid) AS adsrc
-    FROM
-      pg_class p1,
-      pg_attribute p2,
-      pg_attrdef p3
-    WHERE
-      p3.adrelid = p1.oid
-      AND adnum = p2.attnum
-      AND attrelid = p1.oid
-  ) t1 ON t1.relname = c1.relname
-  AND t1.attname = ab.attname
+    pg_class c1
+    LEFT JOIN pg_attribute ab ON ab.attrelid = c1.oid
+    LEFT JOIN pg_type tp ON ab.atttypid = tp.oid
+    LEFT JOIN(
+        SELECT
+            p1.relname,
+            p2.attname,
+            PG_GET_EXPR(p3.adbin, p3.adrelid) AS adsrc
+        FROM
+            pg_class p1,
+            pg_attribute p2,
+            pg_attrdef p3
+        WHERE
+            p3.adrelid = p1.oid
+            AND adnum = p2.attnum
+            AND attrelid = p1.oid) t1 ON t1.relname = c1.relname
+    AND t1.attname = ab.attname
+    LEFT JOIN(
+        SELECT
+            C.COLUMN_NAME,
+            tc.CONSTRAINT_NAME,
+            tc.TABLE_NAME,
+            CONCAT(', ', SUBSTRING(pi.indexdef
+                FROM '\(.*""')) index_order
+        FROM
+            information_schema.table_constraints tc
+            JOIN information_schema.constraint_column_usage ccu USING(CONSTRAINT_SCHEMA, CONSTRAINT_NAME)
+            JOIN information_schema.COLUMNS C ON C.table_schema = tc.CONSTRAINT_SCHEMA
+                AND tc.TABLE_NAME = C.TABLE_NAME
+                AND ccu.COLUMN_NAME = C.COLUMN_NAME
+            JOIN pg_indexes pi ON tc.TABLE_NAME = pi.tablename
+                AND tc.CONSTRAINT_NAME = pi.indexname
+        WHERE
+            tc.constraint_type = 'PRIMARY KEY') t2 ON t2.table_name = c1.relname
+    AND t2.COLUMN_NAME = ab.attname
 WHERE
-  c1.relname IN (
-    SELECT
-      tablename
-    FROM
-      pg_tables
-    WHERE
-      schemaname != 'pg_catalog'
-      AND schemaname != 'information_schema'
-  )
-  AND ab.attnum > 0 {Where}
+    c1.relname IN(
+        SELECT
+            tablename
+        FROM
+            pg_tables
+        WHERE
+            schemaname != 'pg_catalog'
+            AND schemaname != 'information_schema')
+    AND ab.attnum > 0 {Where}
 ORDER BY
-  c1.relname,
-  ab.attnum
+    c1.relname,
+    ab.attnum;
             ";
         }
 

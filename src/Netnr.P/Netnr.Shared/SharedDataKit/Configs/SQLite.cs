@@ -61,8 +61,9 @@ SELECT
   0 AS DataLength,
   0 AS DataScale,
   0 AS ColumnOrder,
-  '' AS PrimaryKey,
-  '' AS [NotNull],
+  0 AS PrimaryKey,
+  0 AS AutoIncr,
+  1 AS IsNullable,
   '' AS ColumnDefault
 UNION ALL
 SELECT
@@ -94,15 +95,13 @@ SELECT
     )
     ELSE NULL
   END AS DataScale,
-  p.cid + 1 AS ColumnOrder,
-	CASE
-    WHEN p.pk = 1 THEN 'YES'
-    ELSE ''
-  END AS PrimaryKey,
+  p.cid+1 AS ColumnOrder,
+  p.pk AS PrimaryKey,
+  0 AS AutoIncr,
   CASE
-    WHEN p.[notnull] = 1 THEN 'YES'
-    ELSE ''
-  END AS [NotNull],
+    WHEN p.[notnull] = 1 THEN 0
+    ELSE 1
+  END AS IsNullable,
   p.dflt_value AS ColumnDefault
 FROM
   {DatabaseName}.sqlite_master m

@@ -1,6 +1,4 @@
-using System.Drawing.Imaging;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 using Netnr.Core;
 using Netnr.Login;

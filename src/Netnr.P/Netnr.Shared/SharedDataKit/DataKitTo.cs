@@ -19,9 +19,10 @@ namespace Netnr.SharedDataKit
         /// </summary>
         /// <param name="tdb"></param>
         /// <param name="conn"></param>
+        /// <param name="database"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        private static SharedResultVM Entry(SharedEnum.TypeDB? tdb, string conn, Func<SharedResultVM, IDataKitTo, SharedResultVM> func)
+        private static SharedResultVM Entry(SharedEnum.TypeDB? tdb, string conn, string database, Func<SharedResultVM, IDataKitTo, SharedResultVM> func)
         {
             var vm = new SharedResultVM();
 
@@ -97,7 +98,12 @@ namespace Netnr.SharedDataKit
                             dkto = new DataKitSQLServerTo(new SqlConnection(conn));
                             break;
                         case SharedEnum.TypeDB.PostgreSQL:
-                            dkto = new DataKitPostgreSQLTo(new NpgsqlConnection(conn));
+                            var csb = new NpgsqlConnectionStringBuilder(conn);
+                            if (!string.IsNullOrWhiteSpace(database))
+                            {
+                                csb.Database = database;
+                            }
+                            dkto = new DataKitPostgreSQLTo(new NpgsqlConnection(csb.ConnectionString));
                             break;
                     }
                 }
@@ -120,7 +126,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM GetDatabase(SharedEnum.TypeDB? tdb, string conn)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, null, (vm, dk) =>
             {
                 if (dk != null)
                 {
@@ -140,7 +146,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM GetTable(SharedEnum.TypeDB? tdb, string conn, string DatabaseName = null)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, DatabaseName, (vm, dk) =>
             {
                 if (dk != null)
                 {
@@ -161,7 +167,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM GetTableDDL(SharedEnum.TypeDB? tdb, string conn, string filterTableName = null, string DatabaseName = null)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, DatabaseName, (vm, dk) =>
             {
                 if (dk != null)
                 {
@@ -182,7 +188,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM GetColumn(SharedEnum.TypeDB? tdb, string conn, string filterTableName = null, string DatabaseName = null)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, DatabaseName, (vm, dk) =>
             {
                 if (dk != null)
                 {
@@ -204,7 +210,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM SetTableComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string TableComment, string DatabaseName = null)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, DatabaseName, (vm, dk) =>
             {
                 if (dk != null)
                 {
@@ -227,11 +233,32 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM SetColumnComment(SharedEnum.TypeDB? tdb, string conn, string TableName, string ColumnName, string ColumnComment, string DatabaseName = null)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, DatabaseName, (vm, dk) =>
             {
                 if (dk != null)
                 {
                     vm.Data = dk.SetColumnComment(TableName, ColumnName, ColumnComment, DatabaseName);
+                    vm.Set(SharedEnum.RTag.success);
+                }
+                return vm;
+            });
+        }
+
+        /// <summary>
+        /// 执行脚本
+        /// </summary>
+        /// <param name="tdb">数据库类型</param>
+        /// <param name="conn">连接字符串</param>
+        /// <param name="sql">脚本</param>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <returns></returns>
+        public static SharedResultVM ExecuteSql(SharedEnum.TypeDB? tdb, string conn, string sql, string DatabaseName = null)
+        {
+            return Entry(tdb, conn, DatabaseName, (vm, dk) =>
+            {
+                if (dk != null)
+                {
+                    vm.Data = dk.ExecuteSql(sql.Trim(), DatabaseName);
                     vm.Set(SharedEnum.RTag.success);
                 }
                 return vm;
@@ -254,7 +281,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM GetData(SharedEnum.TypeDB? tdb, string conn, string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string DatabaseName = null)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, DatabaseName, (vm, dk) =>
             {
                 if (dk != null)
                 {
@@ -278,7 +305,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM GetDEI(SharedEnum.TypeDB? tdb, string conn)
         {
-            return Entry(tdb, conn, (vm, dk) =>
+            return Entry(tdb, conn, null, (vm, dk) =>
             {
                 if (dk != null)
                 {

@@ -83,7 +83,7 @@ namespace Netnr.SharedDataKit
         {
             if (string.IsNullOrWhiteSpace(DatabaseName))
             {
-                DatabaseName = DefaultDatabaseName();
+                //DatabaseName = DefaultDatabaseName();
             }
 
             return null;
@@ -152,6 +152,33 @@ namespace Netnr.SharedDataKit
             var sql = Configs.SetColumnCommentSQLServer(DatabaseName, TableName, ColumnName, ColumnComment);
             _ = db.SqlExecute(sql);
             return true;
+        }
+
+        /// <summary>
+        /// 执行脚本
+        /// </summary>
+        /// <param name="sql">脚本</param>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <returns></returns>
+        public Tuple<DataSet, object> ExecuteSql(string sql, string DatabaseName = null)
+        {
+            var ds = new DataSet();
+
+            var queryKey = "select,with".Split(',').ToList();
+            if (queryKey.Any(k => sql.StartsWith(k, StringComparison.OrdinalIgnoreCase)))
+            {
+                ds = db.SqlQuery(sql);
+            }
+            else
+            {
+                var dt = new DataTable();
+                dt.Columns.Add(new DataColumn("rows"));
+                var dr = dt.NewRow();
+                dr[0] = db.SqlExecute(sql);
+                ds.Tables.Add(dt);
+            }
+
+            return new Tuple<DataSet, object>(ds, null);
         }
 
         /// <summary>

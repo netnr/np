@@ -1,6 +1,4 @@
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
 using Netnr.Blog.Application.ViewModel;

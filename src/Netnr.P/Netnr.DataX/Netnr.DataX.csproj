@@ -7,21 +7,21 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>TRACE;Public;AdoFull;DataKit</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;Public;AdoFull;DataKit</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;Public;AdoFull;DataKit</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;Public;AdoFull;DataKit</DefineConstants>
 	</PropertyGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 	<ItemGroup>
-		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.2" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-preview.7.21378.4" />
+		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.4" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-rc.2.21480.5" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.3" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0-preview1.21237.2" />
-		<PackageReference Include="Npgsql" Version="6.0.0-preview7" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0-preview2.21264.2" />
+		<PackageReference Include="Npgsql" Version="6.0.0-rc.1" />
 	</ItemGroup>
 
 	<ItemGroup>

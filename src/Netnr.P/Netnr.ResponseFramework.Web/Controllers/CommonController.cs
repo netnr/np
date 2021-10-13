@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Netnr.ResponseFramework.Data;
 using Netnr.Core;
 using Netnr.SharedFast;

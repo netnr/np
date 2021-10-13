@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Netnr.FileServer.Model
+﻿namespace Netnr.FileServer.Model
 {
     /// <summary>
     /// 固定Token JSON实体

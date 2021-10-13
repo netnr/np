@@ -1505,12 +1505,5 @@
             <param name="typeDB"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDbContext.FactoryTo.GetTypeDB1(Microsoft.EntityFrameworkCore.DbContext)">
-            <summary>
-            获取数据库类型
-            </summary>
-            <param name="db"></param>
-            <returns></returns>
-        </member>
     </members>
 </doc>

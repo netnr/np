@@ -66,6 +66,14 @@ namespace Netnr.SharedDataKit
         bool SetColumnComment(string TableName, string ColumnName, string ColumnComment, string DatabaseName = null);
 
         /// <summary>
+        /// 执行脚本
+        /// </summary>
+        /// <param name="sql">脚本</param>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <returns></returns>
+        Tuple<DataSet, object> ExecuteSql(string sql, string DatabaseName = null);
+
+        /// <summary>
         /// 查询数据
         /// </summary>
         /// <param name="TableName">表名</param>

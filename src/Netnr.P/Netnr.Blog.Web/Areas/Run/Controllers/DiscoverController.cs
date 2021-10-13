@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Netnr.Blog.Web.Areas.Run.Controllers
+﻿namespace Netnr.Blog.Web.Areas.Run.Controllers
 {
     [Area("Run")]
     public class DiscoverController : Controller

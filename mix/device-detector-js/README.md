@@ -6,13 +6,5 @@
 ```
 npm install -g browserify
 npm install device-detector-js
-browserify index.js -o dd.js
-```
-
-### Usage
-
-```
-<script src="dd.js" ></script>
-
-dd(navigator.userAgent)
+browserify index.js -o device-detector-js.js
 ```

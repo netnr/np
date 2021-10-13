@@ -38,9 +38,17 @@ require(['vs/editor/editor.main'], function () {
             })
             //CSS格式化
             if (i == 2) {
-                editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
-                    editor3.setValue(cssFormatter(editor3.getValue()))
-                })
+                monaco.languages.registerDocumentFormattingEditProvider('css', {
+                    provideDocumentFormattingEdits: function (model, options, _token) {
+                        return [{
+                            text: cssFormatter(model.getValue(), options.tabSize),
+                            range: model.getFullModelRange()
+                        }];
+                    }
+                });
+                //editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+                //    editor3.setValue(cssFormatter(editor3.getValue()))
+                //})
             }
         }
         $(this).css('padding-left', 0);
@@ -280,13 +288,13 @@ var jsd = {
     }
 }
 
-function cssFormatter(css) {
+function cssFormatter(css, tabSize) {
     try {
         return prettier.format(css, {
             parser: 'css',
-            tabWidth: 4,
+            tabWidth: tabSize || 4,
             plugins: prettierPlugins
-        });
+        }).trim()
     } catch (e) {
         console.log(e);
         return null;

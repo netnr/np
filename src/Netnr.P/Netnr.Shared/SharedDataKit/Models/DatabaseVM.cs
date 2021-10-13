@@ -14,7 +14,7 @@ namespace Netnr.SharedDataKit
         /// </summary>
         public string DatabaseName { get; set; }
         /// <summary>
-        /// 归类（内置、用户创建）
+        /// 归类（用户、系统）
         /// </summary>
         public string DatabaseClassify { get; set; }
         /// <summary>

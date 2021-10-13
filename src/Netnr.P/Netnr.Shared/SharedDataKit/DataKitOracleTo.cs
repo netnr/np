@@ -163,6 +163,41 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
+        /// 执行脚本
+        /// </summary>
+        /// <param name="sql">脚本</param>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <returns></returns>
+        public Tuple<DataSet, object> ExecuteSql(string sql, string DatabaseName = null)
+        {
+            var ds = new DataSet();
+
+            var listSql = sql.Split(';').ToList();
+            var queryKey = "select,with".Split(',').ToList();
+            for (int i = 0; i < listSql.Count; i++)
+            {
+                var ls = listSql[i].ToString().Trim();
+                if (queryKey.Any(k => ls.StartsWith(k, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var dsout = db.SqlQuery(ls);
+                    var dtout = dsout.Tables[0];
+                    dsout.Tables.RemoveAt(0);
+                    ds.Tables.Add(dtout);
+                }
+                else
+                {
+                    var dt = new DataTable();
+                    dt.Columns.Add(new DataColumn("rows"));
+                    var dr = dt.NewRow();
+                    dr[0] = db.SqlExecute(ls);
+                    ds.Tables.Add(dt);
+                }
+            }
+
+            return new Tuple<DataSet, object>(ds, null);
+        }
+
+        /// <summary>
         /// 获取表数据
         /// </summary>
         /// <param name="TableName"></param>

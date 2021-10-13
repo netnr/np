@@ -51,7 +51,7 @@ namespace Netnr.FileServer.Model
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime? CreateTime { get; set; } = DateTime.Now;
+        public DateTime CreateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 备注

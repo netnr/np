@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Netnr.DataX.Application
+﻿namespace Netnr.DataX.Application
 {
     public class TextEncodingConversionService
     {

@@ -1,7 +1,6 @@
 using System.Xml;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Netnr.Blog.Data;
 using Netnr.SharedFast;
@@ -119,7 +118,7 @@ namespace Netnr.Blog.Web.Apps
 
                 var hc = context.HttpContext;
 
-                if (GlobalTo.GetValue<bool>("logs:enable") && string.IsNullOrWhiteSpace(hc.Request.Query["__nolog"].ToString()))
+                if (string.IsNullOrWhiteSpace(hc.Request.Query["__nolog"].ToString()))
                 {
                     string controller = context.RouteData.Values["controller"].ToString().ToLower();
                     string action = context.RouteData.Values["action"].ToString().ToLower();

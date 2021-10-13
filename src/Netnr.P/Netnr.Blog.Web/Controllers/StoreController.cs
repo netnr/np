@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Qcloud.Shared.Api;
 using Qcloud.Shared.Common;
 using Netease.Cloud.NOS;

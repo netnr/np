@@ -1771,6 +1771,14 @@
             <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.SharedDataKit.IDataKitTo.ExecuteSql(System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="sql">脚本</param>
+            <param name="DatabaseName">数据库名</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.SharedDataKit.IDataKitTo.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             查询数据
@@ -1833,7 +1841,7 @@
         </member>
         <member name="P:Netnr.SharedDataKit.DatabaseVM.DatabaseClassify">
             <summary>
-            归类（内置、用户创建）
+            归类（用户、系统）
             </summary>
         </member>
         <member name="P:Netnr.SharedDataKit.DatabaseVM.DatabaseOwner">
@@ -1961,6 +1969,14 @@
             <param name="DatabaseName"></param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.SharedDataKit.DataKitMySQLTo.ExecuteSql(System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="sql">脚本</param>
+            <param name="DatabaseName">数据库名</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.SharedDataKit.DataKitMySQLTo.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             获取表数据
@@ -2054,6 +2070,14 @@
             <param name="ColumnName"></param>
             <param name="ColumnComment"></param>
             <param name="DatabaseName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.DataKitOracleTo.ExecuteSql(System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="sql">脚本</param>
+            <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitOracleTo.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">
@@ -2151,6 +2175,14 @@
             <param name="DatabaseName"></param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.SharedDataKit.DataKitPostgreSQLTo.ExecuteSql(System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="sql">脚本</param>
+            <param name="DatabaseName">数据库名</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.SharedDataKit.DataKitPostgreSQLTo.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             获取表数据
@@ -2244,6 +2276,14 @@
             <param name="ColumnName"></param>
             <param name="ColumnComment"></param>
             <param name="DatabaseName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.DataKitSQLiteTo.ExecuteSql(System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="sql">脚本</param>
+            <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitSQLiteTo.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">
@@ -2341,6 +2381,14 @@
             <param name="DatabaseName"></param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.SharedDataKit.DataKitSQLServerTo.ExecuteSql(System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="sql">脚本</param>
+            <param name="DatabaseName">数据库名</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.SharedDataKit.DataKitSQLServerTo.GetData(System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             获取表数据
@@ -2366,12 +2414,13 @@
             DataKit调用
             </summary>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitTo.Entry(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.Func{Netnr.SharedResultVM,Netnr.SharedDataKit.IDataKitTo,Netnr.SharedResultVM})">
+        <member name="M:Netnr.SharedDataKit.DataKitTo.Entry(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.Func{Netnr.SharedResultVM,Netnr.SharedDataKit.IDataKitTo,Netnr.SharedResultVM})">
             <summary>
             入口
             </summary>
             <param name="tdb"></param>
             <param name="conn"></param>
+            <param name="database"></param>
             <param name="func"></param>
             <returns></returns>
         </member>
@@ -2432,6 +2481,16 @@
             <param name="TableName">表名</param>
             <param name="ColumnName">列名</param>
             <param name="ColumnComment">列注释</param>
+            <param name="DatabaseName">数据库名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.DataKitTo.ExecuteSql(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <param name="sql">脚本</param>
             <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
@@ -2593,17 +2652,17 @@
         </member>
         <member name="P:Netnr.SharedDataKit.ColumnVM.PrimaryKey">
             <summary>
-            主键（YES：是主键）
+            主键（大于等于1）
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.ColumnVM.AutoAdd">
+        <member name="P:Netnr.SharedDataKit.ColumnVM.AutoIncr">
             <summary>
-            自增（YES：是自增）
+            自增（1：是）
             </summary>
         </member>
-        <member name="P:Netnr.SharedDataKit.ColumnVM.NotNull">
+        <member name="P:Netnr.SharedDataKit.ColumnVM.IsNullable">
             <summary>
-            为空（YES：不为空）
+            可为空（1：空；0：非空）
             </summary>
         </member>
         <member name="P:Netnr.SharedDataKit.ColumnVM.ColumnDefault">
@@ -3117,24 +3176,26 @@
             <param name="conn">连接字符串</param>
             <returns></returns>
         </member>
-        <member name="M:DKControllerTo.GetTable(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+        <member name="M:DKControllerTo.GetTable(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
             <summary>
             获取表
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="conn">连接字符串</param>
+            <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
-        <member name="M:DKControllerTo.GetColumn(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
+        <member name="M:DKControllerTo.GetColumn(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
             <summary>
             获取列
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="conn">连接字符串</param>
             <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+            <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
-        <member name="M:DKControllerTo.SetTableComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
+        <member name="M:DKControllerTo.SetTableComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String,System.String)">
             <summary>
             设置表注释
             </summary>
@@ -3142,17 +3203,29 @@
             <param name="conn">连接字符串</param>
             <param name="TableName">表名</param>
             <param name="TableComment">表注释</param>
+            <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
-        <member name="M:DKControllerTo.SetColumnComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String,System.String)">
+        <member name="M:DKControllerTo.SetColumnComment(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String,System.String,System.String)">
             <summary>
             设置列注释
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="conn">连接字符串</param>
             <param name="TableName">表名</param>
-            <param name="FieldName">列名</param>
-            <param name="FieldComment">列注释</param>
+            <param name="ColumnName">列名</param>
+            <param name="ColumnComment">列注释</param>
+            <param name="DatabaseName">数据库名</param>
+            <returns></returns>
+        </member>
+        <member name="M:DKControllerTo.ExecuteSql(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <param name="sql">脚本</param>
+            <param name="DatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:DKControllerTo.GetData(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">

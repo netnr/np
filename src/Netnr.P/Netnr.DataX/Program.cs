@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Text;
 using Netnr.Core;
 
 namespace Netnr.DataX

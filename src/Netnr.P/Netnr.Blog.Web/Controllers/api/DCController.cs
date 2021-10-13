@@ -1,6 +1,5 @@
 ﻿using GemBox.Document;
 using GemBox.Spreadsheet;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Netnr.Blog.Web.Controllers.api
 {

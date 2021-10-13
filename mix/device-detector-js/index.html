@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    <script src='dd.min.js'></script>
+    <script src='device-detector-js.min.js'></script>
 </head>
 
 <body>
     <script>
+        var dd = new DeviceDetector();
+
         var pre = document.createElement('pre');
         pre.style.fontSize = "1.5rem";
-        pre.innerHTML = JSON.stringify(dd(navigator.userAgent), null, 2);
+        pre.innerHTML = JSON.stringify(dd.parse(navigator.userAgent), null, 2);
         document.body.appendChild(pre);
 
         setTimeout(function () {
             console.time();
             for (var i = 0; i < 999; i++) {
-                dd(navigator.userAgent)
+                dd.parse(navigator.userAgent)
             }
             console.log("999 parse");
             console.timeEnd();

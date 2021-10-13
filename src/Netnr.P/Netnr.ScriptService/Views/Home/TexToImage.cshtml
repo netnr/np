@@ -65,7 +65,6 @@
             //接收文件
             ss.receiveFiles(function (files) {
                 var file = files[0]
-                console.log(files, file);
                 //解析
                 if (file.type.indexOf("image") == 0) {
                     ti.showText(URL.createObjectURL(file));
@@ -93,7 +92,7 @@
                 }
             });
             $('#btnToTextDemo').click(function () {
-                var uri = 'https://img14.360buyimg.com/ddimg/jfs/t1/125681/26/19217/154989/5fb66c5fE20b7c048/fa5a3f63b1179289.png';
+                var uri = 'https://img13.360buyimg.com/ddimg/jfs/t1/204958/32/5863/175214/613ab6d5E0e894894/10cf6ad9fc63e04e.png';
                 $('#txtUri').val(uri);
                 $('#btnToText')[0].click();
             });
@@ -121,20 +120,13 @@
                 ti.editor.setValue(code);
             } else {
                 require(['vs/editor/editor.main'], function () {
-                    ti.editor = monaco.editor.create(document.getElementById("editor"), {
+                    ti.editor = monaco.editor.create(document.getElementById("editor"),
+                    ss.meConfig({
                         value: code,
-                        language: 'html',
-                        automaticLayout: true,
                         wordWrap: "on",
-                        theme: 'vs',
-                        scrollbar: {
-                            verticalScrollbarSize: 6,
-                            horizontalScrollbarSize: 6
-                        },
-                        minimap: {
-                            enabled: false
-                        }
-                    });
+                        language: 'html',
+                        minimap: {enabled: false}
+                    }))
                 });
             }
         },

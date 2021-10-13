@@ -536,7 +536,7 @@ const x2xmlnode = require('./xmlstr2xmlnode');
 const buildOptions = require('./util').buildOptions;
 const validator = require('./validator');
 
-exports.parse = function(xmlData, options, validationOption) {
+exports.parse = function(xmlData, givenOptions = {}, validationOption) {
   if( validationOption){
     if(validationOption === true) validationOption = {}
     
@@ -545,7 +545,16 @@ exports.parse = function(xmlData, options, validationOption) {
       throw Error( result.err.msg)
     }
   }
-  options = buildOptions(options, x2xmlnode.defaultOptions, x2xmlnode.props);
+  if(givenOptions.parseTrueNumberOnly 
+    && givenOptions.parseNodeValue !== false
+    && !givenOptions.numParseOptions){
+    
+      givenOptions.numParseOptions = {
+        leadingZeros: false,
+      }
+  }
+  let options = buildOptions(givenOptions, x2xmlnode.defaultOptions, x2xmlnode.props);
+
   const traversableObj = xmlToNodeobj.getTraversalObj(xmlData, options)
   //print(traversableObj, "  ");
   return nodeToJson.convertToJson(traversableObj, options);
@@ -1132,6 +1141,8 @@ module.exports = function(tagname, parent, val) {
 const util = require('./util');
 const buildOptions = require('./util').buildOptions;
 const xmlNode = require('./xmlNode');
+const toNumber = require("strnum");
+
 const regx =
   '<((!\\[CDATA\\[([\\s\\S]*?)(]]>))|((NAME:)?(NAME))([^>]*)>|((\\/)(NAME)\\s*>))([^<]*)'
   .replace(/NAME/g, util.nameRegexp);
@@ -1161,6 +1172,10 @@ const defaultOptions = {
   trimValues: true, //Trim string values of tag and attributes
   cdataTagName: false,
   cdataPositionChar: '\\c',
+  numParseOptions: {
+    hex: true,
+    leadingZeros: true
+  },
   tagValueProcessor: function(a, tagName) {
     return a;
   },
@@ -1189,6 +1204,7 @@ const props = [
   'tagValueProcessor',
   'attrValueProcessor',
   'parseTrueNumberOnly',
+  'numParseOptions',
   'stopNodes'
 ];
 exports.props = props;
@@ -1205,7 +1221,7 @@ function processTagValue(tagName, val, options) {
       val = val.trim();
     }
     val = options.tagValueProcessor(val, tagName);
-    val = parseValue(val, options.parseNodeValue, options.parseTrueNumberOnly);
+    val = parseValue(val, options.parseNodeValue, options.numParseOptions);
   }
 
   return val;
@@ -1225,26 +1241,13 @@ function resolveNameSpace(tagname, options) {
   return tagname;
 }
 
-function parseValue(val, shouldParse, parseTrueNumberOnly) {
+function parseValue(val, shouldParse, options) {
   if (shouldParse && typeof val === 'string') {
-    let parsed;
-    if (val.trim() === '' || isNaN(val)) {
-      parsed = val === 'true' ? true : val === 'false' ? false : val;
-    } else {
-      if (val.indexOf('0x') !== -1) {
-        //support hexa decimal
-        parsed = Number.parseInt(val, 16);
-      } else if (val.indexOf('.') !== -1) {
-        parsed = Number.parseFloat(val);
-        val = val.replace(/\.?0+$/, "");
-      } else {
-        parsed = Number.parseInt(val, 10);
-      }
-      if (parseTrueNumberOnly) {
-        parsed = String(parsed) === val ? parsed : val;
-      }
-    }
-    return parsed;
+    //console.log(options)
+    const newval = val.trim();
+    if(newval === 'true' ) return true;
+    else if(newval === 'false' ) return false;
+    else return toNumber(val, options);
   } else {
     if (util.isExist(val)) {
       return val;
@@ -1277,7 +1280,7 @@ function buildAttributesMap(attrStr, options) {
           attrs[options.attributeNamePrefix + attrName] = parseValue(
             matches[i][4],
             options.parseAttributeValue,
-            options.parseTrueNumberOnly
+            options.numParseOptions
           );
         } else if (options.allowBooleanAttributes) {
           attrs[options.attributeNamePrefix + attrName] = true;
@@ -1471,4 +1474,56 @@ function findClosingIndex(xmlData, str, i, errMsg){
 
 exports.getTraversalObj = getTraversalObj;
 
-},{"./util":7,"./xmlNode":9}]},{},[1]);
+},{"./util":7,"./xmlNode":9,"strnum":11}],11:[function(require,module,exports){
+const hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
+const numRegex = /^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;
+// const octRegex = /0x[a-z0-9]+/;
+// const binRegex = /0x[a-z0-9]+/;
+
+const consider = {
+    hex :  true,
+    leadingZeros: true,
+    decimalPoint: "\.",
+    //skipLike: /regex/
+};
+
+function toNumber(str, options = {}){
+    // const options = Object.assign({}, consider);
+    // if(opt.leadingZeros === false){
+    //     options.leadingZeros = false;
+    // }else if(opt.hex === false){
+    //     options.hex = false;
+    // }
+
+    options = Object.assign({}, consider, options );
+    if(!str || typeof str !== "string" ) return str;
+    
+    let trimmedStr  = str.trim();
+    
+    if(options.skipLike !== undefined && options.skipLike.test(trimmedStr)) return str;
+    else if (options.hex && hexRegex.test(trimmedStr)) {
+        return Number.parseInt(trimmedStr, 16);
+    // } else if (options.parseOct && octRegex.test(str)) {
+    //     return Number.parseInt(val, 8);
+    // }else if (options.parseBin && binRegex.test(str)) {
+    //     return Number.parseInt(val, 2);
+    }else{
+        //separate negative sign, leading zeros, and rest number
+        const match = numRegex.exec(trimmedStr);
+        if(match){
+            const negative = match[1];
+            const leadingZeros = match[2];
+            const num = match[3]; //complete num
+            const eNotation = match[4] || match[6];
+            if(leadingZeros.length === 1 && num[0] === ".") return Number(str);
+            else if(!options.leadingZeros && leadingZeros.length > 0) return str;
+            else return Number(trimmedStr);
+        }else{ //non-numeric string
+            return str;
+        }
+    }
+}
+
+module.exports = toNumber
+
+},{}]},{},[1]);

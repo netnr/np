@@ -15,6 +15,7 @@ namespace Netnr.SharedDataKit
             return $@"
 SELECT
 	t1.USERNAME AS DatabaseName,
+	'DEFAULT' AS DatabaseClassify,
 	t2.DEFAULT_TABLESPACE AS DatabaseSpace,
 	(
 	SELECT
@@ -136,8 +137,8 @@ SELECT
   END AS DataLength,
   t3.DATA_SCALE AS DataScale,
   t3.COLUMN_ID AS ColumnOrder,
-  DECODE(t5.COLUMN_NAME, t3.COLUMN_NAME, 'YES', '') AS PrimaryKey,
-  DECODE(t3.NULLABLE, 'N', 'YES', '') AS NotNull,
+  t5.POSITION AS PrimaryKey,
+  DECODE(t3.NULLABLE, 'N', 0, 1) AS IsNullable,
   t3.DATA_DEFAULT AS ColumnDefault,
   t4.COMMENTS AS ColumnComment
 FROM
@@ -153,7 +154,8 @@ FROM
     SELECT
       P1.OWNER,
       p1.TABLE_NAME,
-      p2.COLUMN_NAME
+      p2.COLUMN_NAME,
+      p2.POSITION
     FROM
       ALL_CONSTRAINTS p1
       LEFT JOIN ALL_CONS_COLUMNS p2 ON p1.OWNER = p2.OWNER

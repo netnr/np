@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-
 namespace Netnr.ScriptService.Controllers
 {
     public class HomeController : Controller

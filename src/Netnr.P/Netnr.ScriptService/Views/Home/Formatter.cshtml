@@ -4,7 +4,7 @@
             <div class="input-group">
                 <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
                 <select class="form-select" id="seLang">
-                    <option value="javascript">JS</option>
+                    <option value="javascript-babel">JS</option>
                     <option value="typescript">TypeScript</option>
                     <option value="html">HTML</option>
                     <option value="html-vue">VUE</option>
@@ -33,8 +33,7 @@
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("prettier,monaco-editor"))
 
 <script>
-
-    require(['vs/editor/editor.main'], function () {
+    require(['vs/editor/editor.main'], function() {
 
         var defaultContent = ss.lsStr("vscode-content") || '',
             defaultLang = ss.lsStr("vscode-lang") || 'javascript',
@@ -45,25 +44,22 @@
             language: defaultLang
         }));
 
-        ee.onDidChangeModelContent(function (e) {
+        ee.onDidChangeModelContent(function(e) {
             clearTimeout(window.defer1);
-            window.defer1 = setTimeout(function () {
+            window.defer1 = setTimeout(function() {
                 var txt = ee.getValue();
                 ss.ls["vscode-content"] = txt;
                 ss.lsSave();
             }, 1000 * 1)
         });
 
-        //快捷键
+        //格式化
         ee.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
-            $('#btnFormatter')[0].click();
-        })
-        ee.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
-            $('#btnFormatter')[0].click();
+            ss.keepSetValue(ee,codeFormatter(ee.getValue()))
         })
 
         //切换语言
-        $('#seLang').change(function () {
+        $('#seLang').change(function() {
             var lang = this.value.split('-')[0];
 
             var oldModel = ee.getModel();
@@ -79,45 +75,51 @@
         }).val(formatterLang);
 
         //格式化
-        $('#btnFormatter').click(function () {
-            var vlang = $('#seLang').val(), fmlang = vlang.split('-').pop();
-            var code = ee.getValue();
-            if (code != "") {
-                try {
-                    var ops = {
-                        parser: fmlang,
-                        tabWidth: $('.nr-tab-width').val() * 1,
-                        plugins: prettierPlugins
-                    };
-
-                    if (vlang.includes("html")) {
-                        ops.requirePragma = true;
-                        ops.htmlWhitespaceSensitivity = "ignore";
-                    }
-                    ee.setValue(prettier.format(code, ops))
-                } catch (e) {
-                    console.log(e);
-                    bs.msg("<h4>ERROR</h4>");
-                }
-            }
+        $('#btnFormatter').click(function() {
+            ss.keepSetValue(ee,codeFormatter(ee.getValue()))
         });
-        $('.nr-tab-width').on('input', function () {
+        $('.nr-tab-width').on('input', function() {
             $('#btnFormatter')[0].click();
         });
 
-        $(window).on('load resize', function () {
+        $(window).on('load resize', function() {
             var ch = $(window).height() - $('#editor').offset().top - 15;
             $('#editor').css('height', Math.max(200, ch));
         });
 
         //接收文件
-        ss.receiveFiles(function (files) {
+        ss.receiveFiles(function(files) {
             var file = files[0];
             var reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 ee.setValue(e.target.result);
             };
             reader.readAsText(file);
         });
     });
+
+    //格式化
+    function codeFormatter(code) {
+        var vlang = document.getElementById('seLang').value,
+            fmlang = vlang.split('-').pop();
+        if (code != "") {
+            try {
+                var ops = {
+                    printWidth: 999,
+                    parser: fmlang,
+                    tabWidth: document.querySelector('.nr-tab-width').value * 1,
+                    plugins: prettierPlugins
+                };
+
+                if (vlang.includes("html")) {
+                    ops.htmlWhitespaceSensitivity = "ignore";
+                }
+
+                return prettier.format(code, ops)
+            } catch (e) {
+                console.log(e);
+                bs.msg("<h4>ERROR</h4>");
+            }
+        }
+    }
 </script>

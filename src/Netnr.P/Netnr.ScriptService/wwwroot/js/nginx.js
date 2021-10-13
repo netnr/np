@@ -240,14 +240,36 @@ require(['vs/editor/editor.main'], function () {
         }, 1000 * 1)
     });
 
-    editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
-        $('#btnFormatterNginxConf')[0].click();
+    //格式化
+    monaco.languages.registerDocumentFormattingEditProvider('nginx', {
+        provideDocumentFormattingEdits: function (model, _options, _token) {
+            return [{
+                text: nginxFormatter(model.getValue()),
+                range: model.getFullModelRange()
+            }];
+        }
     });
 
     $(window).on("load resize", function () {
         var ch = $(window).height() - $('#editor').offset().top - 20;
         $('#editor').css('height', Math.max(200, ch));
     });
+});
+
+function nginxFormatter(text) {
+    var indent = "    ";
+    modifyOptions({ INDENTATION: indent });
+
+    var cleanLines = clean_lines(text);
+    modifyOptions({ trailingBlankLines: false });
+    cleanLines = join_opening_bracket(cleanLines);
+    cleanLines = perform_indentation(cleanLines, indent);
+
+    return cleanLines.join("\n")
+}
+
+$('#btnFormatterNginxConf').click(function () {
+    editor.trigger('a', 'editor.action.formatDocument')
 });
 
 //接收文件
@@ -258,15 +280,4 @@ ss.receiveFiles(function (files) {
         ss.keepSetValue(editor, e.target.result);
     };
     reader.readAsText(file);
-});
-
-$('#btnFormatterNginxConf').click(function () {
-    var indent = "    ";
-    modifyOptions({ INDENTATION: indent });
-    var cleanLines = clean_lines(editor.getValue());
-    modifyOptions({ trailingBlankLines: false });
-    cleanLines = join_opening_bracket(cleanLines);
-    cleanLines = perform_indentation(cleanLines, indent);
-
-    ss.keepSetValue(editor, cleanLines.join("\n"));
 });

@@ -9,6 +9,7 @@
     <Import_RootNamespace>Netnr</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)SharedImport\SharedImportVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedTimingVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelperExtend.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelper.cs" />
@@ -55,5 +56,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedNpoi\NpoiTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedPinyin\PinyinTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedUserAgent\UserAgentTo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)SharedImport\" />
   </ItemGroup>
 </Project>

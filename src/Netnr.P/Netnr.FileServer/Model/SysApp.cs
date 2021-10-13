@@ -39,12 +39,12 @@ namespace Netnr.FileServer.Model
         /// <summary>
         /// Token过期时间
         /// </summary>
-        public DateTime? TokenExpireTime { get; set; }
+        public DateTime TokenExpireTime { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime? CreateTime { get; set; }
+        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 备注
