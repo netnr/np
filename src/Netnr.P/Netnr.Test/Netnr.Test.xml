@@ -300,7 +300,7 @@
             <param name="bulkCopy">设置表复制对象</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchOracle(System.Data.DataTable,System.String,System.Action{Oracle.ManagedDataAccess.Client.OracleDataAdapter,System.Data.DataTable},System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchOracle(System.Data.DataTable,System.String,System.Action{Oracle.ManagedDataAccess.Client.OracleDataAdapter},System.Boolean)">
             <summary>
             表批量写入
             根据行数据 RowState 状态新增、修改
@@ -329,7 +329,7 @@
             <param name="openTransaction">开启事务，默认不开启</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchMySQL(System.Data.DataTable,System.String,System.Action{MySqlConnector.MySqlDataAdapter,System.Data.DataTable},System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchMySQL(System.Data.DataTable,System.String,System.Action{MySqlConnector.MySqlDataAdapter},System.Boolean)">
             <summary>
             表批量写入
             根据行数据 RowState 状态新增、修改
@@ -351,16 +351,16 @@
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.BulkCopyPostgreSQL(System.Data.DataTable,System.String)">
             <summary>
-            表批量写入
+            表批量写入（排除自增列）
             https://www.npgsql.org/doc/copy.html
             </summary>
             <param name="dt">数据表</param>
             <param name="table">数据库表名</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchPostgreSQL(System.Data.DataTable,System.String,System.Action{Npgsql.NpgsqlDataAdapter,System.Data.DataTable},System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchPostgreSQL(System.Data.DataTable,System.String,System.Action{Npgsql.NpgsqlDataAdapter},System.Boolean)">
             <summary>
-            表批量写入
+            表批量写入（须手动处理自增列SQL）
             根据行数据 RowState 状态新增、修改
             </summary>
             <param name="dt">数据表</param>
@@ -378,7 +378,7 @@
             <param name="bulkCopy">设置表复制对象</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLServer(System.Data.DataTable,System.String,System.Action{Microsoft.Data.SqlClient.SqlDataAdapter,System.Data.DataTable},System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchSQLServer(System.Data.DataTable,System.String,System.Action{Microsoft.Data.SqlClient.SqlDataAdapter},System.Boolean)">
             <summary>
             表批量写入
             根据行数据 RowState 状态新增、修改
@@ -533,17 +533,6 @@
             <param name="conn"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.ExportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Collections.Generic.List{System.String},System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
-            <summary>
-            导出数据库
-            </summary>
-            <param name="tdb"></param>
-            <param name="conn"></param>
-            <param name="zipPath">导出源目录</param>
-            <param name="tables">指定表</param>
-            <param name="le">日志事件</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.SharedDataKit.DataKitAidTo.ImportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Boolean,System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
             <summary>
             导入数据库
@@ -552,6 +541,17 @@
             <param name="conn"></param>
             <param name="zipPath">导入源 ZIP 压缩包</param>
             <param name="clearTable">导入前清空表，默认否</param>
+            <param name="le">日志事件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.DataKitAidTo.ExportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Collections.Generic.List{System.String},System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
+            <summary>
+            导出数据库
+            </summary>
+            <param name="tdb"></param>
+            <param name="conn"></param>
+            <param name="zipPath">导出源目录</param>
+            <param name="tables">指定表</param>
             <param name="le">日志事件</param>
             <returns></returns>
         </member>

@@ -46,7 +46,7 @@
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
                     var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
-                    var context = '<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>'
+                    var context = '<em class="badge bg-secondary" title="该信息已被屏蔽">block</em>'
                     if (!this.IsBlock) {
                         context = netnrmd.render(this.Content).replace(/@@\S+/g, function (n) {
                             return '<span class="text-primary">' + n + '</span>'
@@ -102,7 +102,7 @@
         var un = $('input[name="UserNickname"]'), uc = $('textarea[name="Content"]'), objv = {};
         objv.UserNickname = un.val().trim();
         objv.Content = uc.val().substring(0, 9999);
-        if (objv.Content == "") {
+        if (objv.Content == "" || netnrmd.render(objv.Content) == "") {
             bs.msg("<h4>请输入内容</h4>");
         } else {
             var query = mg.bquery;

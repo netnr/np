@@ -27,11 +27,12 @@ public class QuoteTo
             switch (item)
             {
                 case "the":
-                    vh.Add(@"
+                    vh.Add($@"
                             <!--
                             https://github.com/netnr
                             https://www.netnr.com
                             https://netnr.eu.org
+                            {DateTime.Now:yyyy-MM-dd HH:mm:ss}
                             -->
                             ");
                     break;
@@ -62,35 +63,31 @@ public class QuoteTo
                 case "bootstrap3.css":
                     vh.Add("<link href='https://npm.elemecdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css' rel='stylesheet' />");
                     break;
-
                 case "bootstrap3.js":
                     vh.Add("<script src='https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js'></script>");
-                    break;
-
-                case "bootstrap5.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' />");
-                    break;
-
-                case "bootstrap5.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>");
                     break;
 
                 case "bootstrap.css":
                 case "bootstrap4.css":
                     vh.Add("<link href='https://npm.elemecdn.com/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />");
                     break;
-
                 case "bootstrap.js":
                 case "bootstrap4.js":
                     vh.Add("<script src='https://npm.elemecdn.com/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>");
                     break;
 
-                case "swiper.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.0.8/swiper-bundle.min.css' rel='stylesheet' />");
+                case "bootstrap5.css":
+                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' />");
+                    break;
+                case "bootstrap5.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>");
                     break;
 
+                case "swiper.css":
+                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.2.0/swiper-bundle.min.css' rel='stylesheet' />");
+                    break;
                 case "swiper.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.0.8/swiper-bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.2.0/swiper-bundle.min.js'></script>");
                     break;
 
                 case "jz.js":
@@ -100,7 +97,6 @@ public class QuoteTo
                 case "netnrmd.css":
                     vh.Add("<link href='https://npm.elemecdn.com/netnrmd@3.0.0/src/netnrmd.css' rel='stylesheet' />");
                     break;
-
                 case "netnrmd.js":
                     vh.Add("<script src='https://npm.elemecdn.com/netnrmd@3.0.0/src/netnrmd.bundle.js'></script>");
                     break;
@@ -110,7 +106,7 @@ public class QuoteTo
                     break;
 
                 case "tocbot.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.13.4/dist/tocbot.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.17.0/dist/tocbot.min.js'></script>");
                     break;
 
                 case "selectpage":
@@ -182,11 +178,11 @@ public class QuoteTo
                     break;
 
                 case "highcharts.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.2.2/highcharts.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.0/highcharts.js'></script>");
                     break;
 
                 case "hls.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.0.11/dist/hls.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.0.12/dist/hls.min.js'></script>");
                     break;
 
                 case "watermark.js":
@@ -194,7 +190,7 @@ public class QuoteTo
                     break;
 
                 case "nsfwjs":
-                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.9.0/dist/tf.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.11.0/dist/tf.min.js'></script>");
                     vh.Add("<script src='https://npm.elemecdn.com/nsfwjs@2.4.1/dist/nsfwjs.min.js'></script>");
                     break;
 
@@ -243,18 +239,17 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@3.52.4/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.0.1/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@3.52.4/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@3.52.4/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.0.1/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.0.1/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "prettier-css":
                     vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/standalone.js'></script>"); ;
                     vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-postcss.js'></script>");
                     break;
-
                 case "prettier":
                     vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/standalone.js'></script>");
                     vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-angular.js'></script>");
@@ -294,7 +289,7 @@ public class QuoteTo
                     break;
 
                 case "monaco-editor":
-                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.29.1/min/vs/loader.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.30.0/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
                                 function htmlDecode(html) {
@@ -305,7 +300,7 @@ public class QuoteTo
 
                                 require.config({
                                     paths: {
-                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.29.1/min/vs'
+                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.30.0/min/vs'
                                     },
                                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                 });

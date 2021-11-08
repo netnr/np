@@ -100,8 +100,8 @@
         });
     });
 
-    $('#btnRun').click(function () {
-        switch (editor.getModel()._languageIdentifier.language) {
+    $('#btnRun').click(function () {        
+        switch (editor.getModel().getLanguageId()) {
             case "javascript":
                 try {
                     window.ee = new Function(editor.getValue());

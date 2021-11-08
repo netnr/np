@@ -1,10 +1,8 @@
-# svgo
-
-`svgo` browser support
-
 ### Build
 ```
 npm install -g browserify
-npm install clean-css
+
+npm i clean-css
+
 browserify index.js -o clean-css.js
 ```

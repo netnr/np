@@ -1,0 +1,3 @@
+var sqlForPostgreSQL = []
+
+export { sqlForPostgreSQL }

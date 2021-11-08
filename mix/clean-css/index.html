@@ -10,6 +10,10 @@
         var options = { /* options */ };
         var output = new CleanCSS(options).minify(input);
         console.log(output);
+
+        var node = document.createElement("pre");
+        node.innerHTML = JSON.stringify(output, null, 4);
+        document.body.appendChild(node);
     </script>
 </body>
 

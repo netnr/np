@@ -1,0 +1,6 @@
+/* 字体大小 */
+.ag-theme-alpine,
+.ag-theme-alpine-dark,
+.ag-row {
+    font-size: var(--nr-font-size) !important;
+}

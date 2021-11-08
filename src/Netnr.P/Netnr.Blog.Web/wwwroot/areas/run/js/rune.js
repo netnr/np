@@ -30,7 +30,7 @@ require(['vs/editor/editor.main'], function () {
             window["editor" + (i + 1)] = editor;
 
             //快捷键
-            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_M, function () {
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM, function () {
                 $(that).children('button')[0].click();
             })
             editor.addCommand(monaco.KeyCode.PauseBreak, function () {
@@ -46,7 +46,7 @@ require(['vs/editor/editor.main'], function () {
                         }];
                     }
                 });
-                //editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
+                //editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, function () {
                 //    editor3.setValue(cssFormatter(editor3.getValue()))
                 //})
             }

@@ -3,6 +3,7 @@
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using System.ComponentModel;
 
 namespace Netnr.SharedAdo
 {
@@ -22,6 +23,11 @@ namespace Netnr.SharedAdo
         public DbTransaction Transaction { get; set; }
 
         /// <summary>
+        /// 记录
+        /// </summary>
+        public Dictionary<string, DbCommand> DicCommand { get; set; } = new Dictionary<string, DbCommand>();
+
+        /// <summary>
         /// 构造
         /// </summary>
         /// <param name="dbConnection">连接对象</param>
@@ -31,45 +37,90 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// 查询
+        /// 执行（查询、新增、修改、删除等）
         /// </summary>
         /// <param name="sql">SQL语句，支持多条</param>
         /// <param name="parameters">带参</param>
         /// <param name="func">回调</param>
-        /// <returns>返回数据集</returns>
-        public DataSet SqlQuery(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null)
+        /// <param name="includeSchemaTable">包含表结构</param>
+        /// <returns>返回 表数据、受影响行数、表结构</returns>
+        public Tuple<DataSet, int, DataSet> SqlExecuteReader(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null, bool includeSchemaTable = false)
         {
             return SafeConn(() =>
             {
-                var cname = Connection.GetType().FullName.ToLower();
-                var isOracle = cname.Contains("oracle");
-
-                var listSql = new List<string>() { sql };
-                if (isOracle)
-                {
-                    listSql = sql.Split(';').ToList();
-                }
-
                 var ds = new DataSet();
+                var dsSchema = new DataSet();
+                int recordsAffected = -1;
 
-                foreach (var txt in listSql)
+                var isOracle = Connection.GetType().FullName.ToLower().Contains("oracle");
+
+                if (!isOracle)
                 {
-                    var dbc = GetCommand(txt, parameters);
+                    var dbc = GetCommand(sql, parameters);
                     if (func != null)
                     {
                         dbc = func(dbc);
                     }
-                    var tds = dbc.ExecuteDataSet();
-                    while (tds.Tables.Count > 0)
+                    var eds = dbc.ExecuteDataSet(includeSchemaTable);
+                    ds = eds.Item1;
+                    recordsAffected = eds.Item2;
+                    dsSchema = eds.Item3;
+
+                    if (DicCommand.ContainsKey(dbc.Site.Name))
                     {
-                        var dt = tds.Tables[0];
-                        dt.TableName = "table" + (ds.Tables.Count + 1).ToString();
-                        tds.Tables.RemoveAt(0);
-                        ds.Tables.Add(dt);
+                        DicCommand.Remove(dbc.Site.Name);
+                    }
+                }
+                else
+                {
+                    var listSql = sql.Split(';').ToList();
+                    var hasRa = false;
+                    var ra = 0;
+
+                    foreach (var txt in listSql)
+                    {
+                        var dbc = GetCommand(txt, parameters);
+                        if (func != null)
+                        {
+                            dbc = func(dbc);
+                        }
+                        var eds = dbc.ExecuteDataSet(includeSchemaTable);
+
+                        if (DicCommand.ContainsKey(dbc.Site.Name))
+                        {
+                            DicCommand.Remove(dbc.Site.Name);
+                        }
+
+                        while (eds.Item1.Tables.Count > 0)
+                        {
+                            var dt = eds.Item1.Tables[0];
+                            dt.TableName = $"table{ds.Tables.Count + 1}";
+                            eds.Item1.Tables.RemoveAt(0);
+                            ds.Tables.Add(dt);
+                        }
+
+                        if (eds.Item2 != -1)
+                        {
+                            hasRa = true;
+                            ra += eds.Item2;
+                        }
+
+                        while (eds.Item3.Tables.Count > 0)
+                        {
+                            var dt = eds.Item3.Tables[0];
+                            dt.TableName = $"table{dsSchema.Tables.Count + 1}";
+                            eds.Item3.Tables.RemoveAt(0);
+                            dsSchema.Tables.Add(dt);
+                        }
+                    }
+
+                    if (hasRa)
+                    {
+                        recordsAffected = ra;
                     }
                 }
 
-                return ds;
+                return new Tuple<DataSet, int, DataSet>(ds, recordsAffected, dsSchema);
             });
         }
 
@@ -79,11 +130,17 @@ namespace Netnr.SharedAdo
         /// <param name="sql">SQL语句</param>
         /// <param name="parameters">带参</param>
         /// <returns>返回受影响行数</returns>
-        public object SqlScalar(string sql, DbParameter[] parameters = null)
+        public object SqlExecuteScalar(string sql, DbParameter[] parameters = null)
         {
             return SafeConn(() =>
             {
-                var obj = GetCommand(sql, parameters).ExecuteScalar();
+                var dbc = GetCommand(sql, parameters);
+                var obj = dbc.ExecuteScalar();
+
+                if (DicCommand.ContainsKey(dbc.Site.Name))
+                {
+                    DicCommand.Remove(dbc.Site.Name);
+                }
                 return obj;
             });
         }
@@ -94,11 +151,17 @@ namespace Netnr.SharedAdo
         /// <param name="sql">SQL语句</param>
         /// <param name="parameters">带参</param>
         /// <returns>返回受影响行数</returns>
-        public int SqlExecute(string sql, DbParameter[] parameters = null)
+        public int SqlExecuteNonQuery(string sql, DbParameter[] parameters = null)
         {
             return SafeConn(() =>
             {
-                var num = GetCommand(sql, parameters).ExecuteNonQuery();
+                var dbc = GetCommand(sql, parameters);
+                var num = dbc.ExecuteNonQuery();
+
+                if (DicCommand.ContainsKey(dbc.Site.Name))
+                {
+                    DicCommand.Remove(dbc.Site.Name);
+                }
                 return num;
             });
         }
@@ -109,7 +172,7 @@ namespace Netnr.SharedAdo
         /// <param name="listSql">SQL语句</param>
         /// <param name="sqlBatchSize">脚本分批大小，单位：字节（byte），默认：1024 * 100 = 100KB</param>
         /// <returns>返回受影响行数</returns>
-        public int SqlExecute(List<string> listSql, int sqlBatchSize = 1024 * 100)
+        public int SqlExecuteNonQuery(List<string> listSql, int sqlBatchSize = 1024 * 100)
         {
             return SafeConn(() =>
             {
@@ -137,9 +200,14 @@ namespace Netnr.SharedAdo
 
                 foreach (var bs in listBatchSql)
                 {
-                    var cmd = GetCommand(bs);
-                    cmd.Transaction = Transaction;
-                    num += cmd.ExecuteNonQuery();
+                    var dbc = GetCommand(bs);
+                    dbc.Transaction = Transaction;
+                    num += dbc.ExecuteNonQuery();
+
+                    if (DicCommand.ContainsKey(dbc.Site.Name))
+                    {
+                        DicCommand.Remove(dbc.Site.Name);
+                    }
                 }
 
                 Transaction.Commit();
@@ -155,7 +223,7 @@ namespace Netnr.SharedAdo
         /// <returns></returns>
         public DataTable SqlEmptyTable(string table, DbCommandBuilder cb = null)
         {
-            var dt = SqlQuery($"select * from {cb?.QuotePrefix}{table}{cb?.QuoteSuffix} where 0=1").Tables[0];
+            var dt = SqlExecuteReader($"select * from {cb?.QuotePrefix}{table}{cb?.QuoteSuffix} where 0=1").Item1.Tables[0];
             return dt;
         }
 
@@ -170,6 +238,7 @@ namespace Netnr.SharedAdo
         public DbCommand GetCommand(string sql, DbParameter[] parameters = null, int timeout = 300, CommandType commandType = CommandType.Text)
         {
             var cmd = Connection.CreateCommand();
+            cmd.Site = new DBCSite();
             cmd.CommandTimeout = timeout;
             cmd.CommandType = commandType;
             cmd.CommandText = sql;
@@ -179,7 +248,34 @@ namespace Netnr.SharedAdo
                 cmd.Parameters.AddRange(parameters);
             }
 
+            DicCommand.Add(cmd.Site.Name, cmd);
+
             return cmd;
+        }
+
+        class DBCSite : ISite
+        {
+            public DBCSite(string name = null)
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    name = Guid.NewGuid().ToString("N");
+                }
+                Name = name;
+            }
+
+            public IComponent Component => null;
+
+            public IContainer Container => null;
+
+            public bool DesignMode => false;
+
+            public string Name { get; set; }
+
+            public object GetService(Type serviceType)
+            {
+                return null;
+            }
         }
 
         /// <summary>

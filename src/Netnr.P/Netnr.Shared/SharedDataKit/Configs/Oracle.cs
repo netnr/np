@@ -7,6 +7,22 @@ namespace Netnr.SharedDataKit
     public partial class Configs
     {
         /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDatabaseNameOracle()
+        {
+            return $@"
+SELECT
+	USERNAME AS DatabaseName
+FROM
+	ALL_USERS
+ORDER BY
+	USERNAME
+            ";
+        }
+
+        /// <summary>
         /// 获取库
         /// </summary>
         /// <returns></returns>

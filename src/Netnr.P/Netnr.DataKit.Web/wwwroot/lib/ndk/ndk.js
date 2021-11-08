@@ -811,7 +811,7 @@ var ndk = {
 
     //加载连接及数据库
     loadConnDatabase: function () {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             ndk.connGet().then(conns => {
                 if (conns.length == 0) {
                     conns = ndk.demoConn
@@ -982,6 +982,7 @@ var ndk = {
                                 params.node.setSelected(true);
                             }
                         },
+                        //子表数据
                         getDetailRowData: function (params) {
 
                             var dbkey = params.data.type == "Oracle" ? "user id=" : "database=", databaseName,
@@ -1148,13 +1149,6 @@ var ndk = {
                 }
                 ndk.themeGrid(ndk.theme);
                 ndk.gridOpsConnDatabase = new agGrid.Grid(ndk.domGridConnDatabase, gopscd).gridOptions;
-
-                //展开
-                //ndk.gridOpsConnDatabase.api.forEachNode((node) => {
-                //    if (node.level == 0) {
-                //        node.setExpanded(true);
-                //    }
-                //});
 
                 resolve()
             })
@@ -1762,6 +1756,7 @@ var ndk = {
             fd.append('tdb', connDatabase.type);
             fd.append('conn', connDatabase.conn);
             fd.append('sql', sql);
+            fd.append('DatabaseName', connDatabase.databaseName);
 
             ndk.request(ndk.apiExecuteSql, {
                 method: "POST",

@@ -1,0 +1,18 @@
+:root {
+    --sl-font-size-small: var(--nr-font-size) !important;
+}
+
+sl-alert::part(icon), sl-alert::part(message), sl-alert::part(close-button),
+sl-dialog::part(body), sl-dialog::part(close-button) {
+    font-size: 1.2em;
+}
+
+sl-tab::part(base) {
+    --sl-spacing-medium: 5px;
+    --sl-spacing-large: 15px;
+}
+
+sl-tab-panel::part(base) {
+    padding-top: 5px;
+    --sl-spacing-medium: 0;
+}

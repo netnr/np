@@ -19638,7 +19638,7 @@ function loadRemoteResource(uri, inlineRequest, inlineTimeout, callback) {
 module.exports = loadRemoteResource;
 
 },{"../utils/is-http-resource":154,"../utils/is-https-resource":155,"../utils/override":159,"http":19,"https":8,"url":39}],139:[function(require,module,exports){
-var DATA_URI_PATTERN = /^data:(\S*?)?(;charset=[^;]+)?(;[^,]+?)?,(.+)/;
+var DATA_URI_PATTERN = /^data:(\S*?)?(;charset=(?:(?!;charset=)[^;])+)?(;[^,]+?)?,(.+)/;
 
 function matchDataUri(uri) {
   return DATA_URI_PATTERN.exec(uri);
@@ -20999,7 +20999,7 @@ function hasProtocol(uri) {
 module.exports = hasProtocol;
 
 },{}],153:[function(require,module,exports){
-var DATA_URI_PATTERN = /^data:(\S*?)?(;charset=[^;]+)?(;[^,]+?)?,(.+)/;
+var DATA_URI_PATTERN = /^data:(\S*?)?(;charset=(?:(?!;charset=)[^;])+)?(;[^,]+?)?,(.+)/;
 
 function isDataUriResource(uri) {
   return DATA_URI_PATTERN.test(uri);

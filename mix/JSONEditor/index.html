@@ -13,13 +13,118 @@
     <meta name="keywords" content="JSON编辑器 NET牛人" />
     <meta name="description" content="JSON编辑器 JSON格式化工具 JSON在线工具" />
 
+    <link href="https://npm.elemecdn.com/jsoneditor@9.5.6/dist/jsoneditor.min.css" rel="stylesheet">
+    <script src="https://npm.elemecdn.com/jsoneditor@9.5.6/dist/jsoneditor.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.13/src-noconflict/theme-tomorrow_night.js"></script>
+
     <style>
+        @media (prefers-color-scheme: dark) {
+            html, button, div.jsoneditor-contextmenu .jsoneditor-menu {
+                color: #c5c8c6;
+                background-color: #22272e;
+            }
+
+            /* dark styling of the editor */
+            div.jsoneditor,
+            div.jsoneditor-statusbar,
+            div.jsoneditor-menu {
+                border-color: #4b4b4b;
+            }
+
+            div.jsoneditor-menu {
+                background: #4b4b4b !important;
+            }
+
+            div.jsoneditor-tree,
+            div.jsoneditor-statusbar,
+            div.jsoneditor-text,
+            div.jsoneditor-frame,
+            div.jsoneditor-frame input,
+            div.jsoneditor-navigation-bar,
+            div.jsoneditor textarea.jsoneditor-text {
+                background-color: #666666;
+                color: #ffffff;
+            }
+
+            div.jsoneditor-field,
+            div.jsoneditor-value {
+                color: #ffffff;
+            }
+
+            table.jsoneditor-search div.jsoneditor-frame {
+                background: #808080;
+            }
+
+            tr.jsoneditor-highlight,
+            tr.jsoneditor-selected {
+                background-color: #808080;
+            }
+
+            div.jsoneditor-field[contenteditable=true]:focus,
+            div.jsoneditor-field[contenteditable=true]:hover,
+            div.jsoneditor-value[contenteditable=true]:focus,
+            div.jsoneditor-value[contenteditable=true]:hover,
+            div.jsoneditor-field.jsoneditor-highlight,
+            div.jsoneditor-value.jsoneditor-highlight {
+                background-color: #808080;
+                border-color: #808080;
+            }
+
+            div.jsoneditor-field.highlight-active,
+            div.jsoneditor-field.highlight-active:focus,
+            div.jsoneditor-field.highlight-active:hover,
+            div.jsoneditor-value.highlight-active,
+            div.jsoneditor-value.highlight-active:focus,
+            div.jsoneditor-value.highlight-active:hover {
+                background-color: #b1b1b1;
+                border-color: #b1b1b1;
+            }
+
+            div.jsoneditor-tree button:focus {
+                background-color: #868686;
+            }
+
+            /* coloring of JSON in tree mode */
+            div.jsoneditor-readonly {
+                color: #acacac;
+            }
+
+            div.jsoneditor td.jsoneditor-separator {
+                color: #acacac;
+            }
+
+            div.jsoneditor-value.jsoneditor-string {
+                color: #00ff88;
+            }
+
+            div.jsoneditor-value.jsoneditor-object,
+            div.jsoneditor-value.jsoneditor-array {
+                color: #bababa;
+            }
+
+            div.jsoneditor-value.jsoneditor-number {
+                color: #ff4040;
+            }
+
+            div.jsoneditor-value.jsoneditor-boolean {
+                color: #ff8048;
+            }
+
+            div.jsoneditor-value.jsoneditor-null {
+                color: #49a7fc;
+            }
+
+            div.jsoneditor-value.jsoneditor-invalid {
+                color: white;
+            }
+        }
+
         html, body, div, ul, li {
             margin: 0;
             padding: 0;
             list-style: none;
             box-sizing: border-box;
-            font-size: 17px !important;
+            font-size: 16px !important;
         }
 
             .jsoneditor-popover, .jsoneditor-schema-error, div.jsoneditor td, div.jsoneditor textarea, div.jsoneditor th, div.jsoneditor-field, div.jsoneditor-value, pre.jsoneditor-preview {
@@ -64,7 +169,6 @@
                     padding: 5px 12px;
                     border-radius: 3px;
                     border: 1px solid #ddd;
-                    background-color: #ffffff;
                 }
 
                     .jvbox .td2 ul li button:hover {
@@ -93,19 +197,19 @@
                 <ul>
                     <li>
                         <button id="toTree" type="button" title="视图化">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                             </svg>
                         </button>
                         <button id="toCode" type="button" title="代码化">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
                             </svg>
                         </button>
                     </li>
                     <li>
                         <button id="toSave" type="button" title="保存">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
                                 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
                             </svg>
@@ -113,10 +217,10 @@
                     </li>
                     <li>
                         <button id="toEscape1" type="button" title="转义双引号">
-                            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M693.925415 895.873969L397.564062 81.652185a15.753846 15.753846 0 0 0-20.180677-9.405047l-44.425847 16.163447a15.753846 15.753846 0 0 0-9.405046 20.19643l296.3456 814.206031a15.753846 15.753846 0 0 0 20.196431 9.405046l44.410092-16.163446a15.753846 15.753846 0 0 0 9.4208-20.180677z"></path></svg>
+                            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><path d="M693.925415 895.873969L397.564062 81.652185a15.753846 15.753846 0 0 0-20.180677-9.405047l-44.425847 16.163447a15.753846 15.753846 0 0 0-9.405046 20.19643l296.3456 814.206031a15.753846 15.753846 0 0 0 20.196431 9.405046l44.410092-16.163446a15.753846 15.753846 0 0 0 9.4208-20.180677z"></path></svg>
                         </button>
                         <button id="toEscape2" type="button" title="清理转义">
-                            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M512 981.312A469.632 469.632 0 0 1 42.688 512 469.632 469.632 0 0 1 512 42.688 469.632 469.632 0 0 1 981.312 512 469.632 469.632 0 0 1 512 981.312zM512 136.832a375.168 375.168 0 1 0 0 750.272A375.168 375.168 0 0 0 512 136.832z" p-id="7815"></path><path d="M810.24 857.344a45.184 45.184 0 0 1-32.96-14.144l-596.48-596.48c-18.816-18.816-18.816-48.64 0-65.92 18.816-18.816 48.64-18.816 65.92 0l596.48 596.48c18.816 18.816 18.816 48.64 0 65.92a42.752 42.752 0 0 1-32.96 14.08z"></path></svg>
+                            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><path d="M512 981.312A469.632 469.632 0 0 1 42.688 512 469.632 469.632 0 0 1 512 42.688 469.632 469.632 0 0 1 981.312 512 469.632 469.632 0 0 1 512 981.312zM512 136.832a375.168 375.168 0 1 0 0 750.272A375.168 375.168 0 0 0 512 136.832z" p-id="7815"></path><path d="M810.24 857.344a45.184 45.184 0 0 1-32.96-14.144l-596.48-596.48c-18.816-18.816-18.816-48.64 0-65.92 18.816-18.816 48.64-18.816 65.92 0l596.48 596.48c18.816 18.816 18.816 48.64 0 65.92a42.752 42.752 0 0 1-32.96 14.08z"></path></svg>
                         </button>
                     </li>
                 </ul>
@@ -124,9 +228,6 @@
             <td class="td3 json-editor"></td>
         </tr>
     </table>
-
-    <link href="https://npm.elemecdn.com/jsoneditor@9.5.6/dist/jsoneditor.min.css" rel="stylesheet">
-    <script src="https://npm.elemecdn.com/jsoneditor@9.5.6/dist/jsoneditor.min.js"></script>
 
     <script>
         //示例JSON
@@ -142,6 +243,17 @@
                 tempSaveJson(value)
             }
         });
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            codeEditor.aceEditor.setTheme("ace/theme/tomorrow_night");
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                codeEditor.aceEditor.setTheme("ace/theme/tomorrow_night");
+            } else {
+                codeEditor.aceEditor.setTheme("ace/theme/jsoneditor");
+            }
+        });
+
         var jsonEditor = new JSONEditor(document.querySelector(".json-editor"), {
             mode: 'tree',
             modes: ['code', 'form', 'text', 'tree', 'view'],
@@ -159,7 +271,7 @@
         }
 
         function tempSaveJson(json) {
-            localStorage.setItem("JE", json);
+            localStorage.setItem("JE", typeof json == "string" ? json : JSON.stringify(json));
         }
 
         //视图化

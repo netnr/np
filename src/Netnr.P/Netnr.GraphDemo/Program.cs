@@ -1,4 +1,3 @@
-
 var builder = WebApplication.CreateBuilder(args);
 
 //ÅäÖÃswagger
@@ -30,9 +29,9 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseHsts();
 }
 
 //ÅäÖÃswagger
@@ -43,16 +42,7 @@ app.UseSwagger().UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
-//¾²Ì¬×ÊÔ´ÔÊÐí¿çÓò
-app.UseStaticFiles(new StaticFileOptions()
-{
-    OnPrepareResponse = (x) =>
-    {
-        x.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-        x.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
-    },
-    ServeUnknownFileTypes = true
-});
+app.UseStaticFiles();
 
 app.UseRouting();
 

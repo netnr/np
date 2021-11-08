@@ -52,10 +52,6 @@
 			<Version>6.0.0-rc.2.21480.5</Version>
 		</PackageReference>
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-		<PackageReference Include="System.IO.Compression" Version="4.3.0" />
-		<PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="favicon.png">

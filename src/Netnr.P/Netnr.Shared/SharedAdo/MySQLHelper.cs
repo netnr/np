@@ -59,7 +59,7 @@ namespace Netnr.SharedAdo
         /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
         /// <param name="openTransaction">开启事务，默认开启</param>
         /// <returns></returns>
-        public int BulkBatchMySQL(DataTable dt, string table, Action<MySqlDataAdapter, DataTable> dataAdapter = null, bool openTransaction = true)
+        public int BulkBatchMySQL(DataTable dt, string table, Action<MySqlDataAdapter> dataAdapter = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
@@ -85,34 +85,11 @@ namespace Netnr.SharedAdo
                 da.UpdateCommand.CommandTimeout = 300;
 
                 //执行前修改
-                dataAdapter?.Invoke(da, dt);
+                dataAdapter?.Invoke(da);
 
                 var num = da.Update(dt);
 
                 transaction?.Commit();
-
-                return num;
-            });
-        }
-
-        /// <summary>
-        /// 执行SQL语句，返回打印信息
-        /// </summary>
-        /// <param name="sql">SQL语句</param>
-        /// <param name="parameters">带参</param>
-        /// <param name="action"></param>
-        /// <returns>返回打印信息</returns>
-        public int SqlPrintMySQL(string sql, DbParameter[] parameters = null, Action<IReadOnlyList<MySqlError>> action = null)
-        {
-            return SafeConn(() =>
-            {
-                var connection = (MySqlConnection)Connection;
-
-                var listPrint = new List<string>();
-                connection.InfoMessage += (s, e) => action?.Invoke(e.Errors);
-
-                var cmd = GetCommand(sql, parameters);
-                var num = cmd.ExecuteNonQuery();
 
                 return num;
             });

@@ -111,7 +111,7 @@
             }
         },
         getLang: function (editor) {
-            return editor.getModel().getLanguageIdentifier().language
+            return editor.getModel().getLanguageId()
         },
         setEE: function (lang) {
             if (lang != jc.getLang(ee1)) {

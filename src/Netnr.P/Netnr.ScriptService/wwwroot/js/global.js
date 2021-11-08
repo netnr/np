@@ -224,6 +224,8 @@ var ss = {
                     mebox.removeClass('position-relative')
                 }
             })
+
+            console.clear();
         })
     },
 

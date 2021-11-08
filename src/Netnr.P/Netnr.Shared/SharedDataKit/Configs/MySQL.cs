@@ -7,6 +7,22 @@ namespace Netnr.SharedDataKit
     public partial class Configs
     {
         /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDatabaseNameMySQL()
+        {
+            return $@"
+SELECT
+  SCHEMA_NAME AS DatabaseName
+FROM
+  information_schema.schemata
+ORDER BY
+  SCHEMA_NAME
+            ";
+        }
+
+        /// <summary>
         /// 获取库
         /// </summary>
         /// <returns></returns>

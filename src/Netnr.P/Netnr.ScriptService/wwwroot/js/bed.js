@@ -27,7 +27,7 @@ var $wrap = $('#uploader'),
     $upload = $wrap.find('.uploadBtn'),
 
     // 没选择文件之前的内容。
-    $placeHolder = $wrap.find('.placeholder'),
+    $placeHolder = $wrap.find('.up-placeholder'),
 
     $progress = $statusBar.find('.progress').hide(),
 
@@ -92,6 +92,7 @@ uploader.addButton({
 //单个文件上传时
 uploader.on('uploadStart', function (file) {
     var up = $('#seup').val();
+    uploader.options.server = up;
     switch (up) {
         case "https://imgbb.com/json":
             {
@@ -113,7 +114,6 @@ uploader.on('uploadStart', function (file) {
             }
             break;
     }
-    uploader.options.server = up;
 });
 
 //上传成功

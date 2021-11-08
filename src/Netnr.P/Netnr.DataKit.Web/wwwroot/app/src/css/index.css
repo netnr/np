@@ -1,0 +1,68 @@
+/*主体*/
+.nr-main {
+    margin: .3em .3em 0;
+    --box1-width: 48%;
+    --box2-width: calc(100% - var(--box1-width) - var(--nrc-spliter-width));
+}
+/*左*/
+.nr-box1 {
+    width: var(--box1-width);
+}
+/*右*/
+.nr-box2 {
+    width: var(--box2-width);
+}
+/*上*/
+.nr-box0 {
+    display: flex;
+}
+
+    .nr-box0 > * {
+        margin-right: .5em;
+    }
+
+/*选项卡2对应的连接-数据库*/
+.nr-window-conns,
+.nr-window-database {
+    display: none;
+    min-width: 180px;
+}
+/*选项卡2分离器*/
+.nr-spliter2 {
+    --es-sql-height: 50%;
+}
+
+    .nr-spliter2 .nrc-spliter-item:first-child {
+        height: var(--es-sql-height)
+    }
+
+    .nr-spliter2 .nrc-spliter-item:last-child {
+        height: calc(100% - var(--nrc-spliter-width) - var(--es-sql-height))
+    }
+
+
+/*选项卡2编辑器*/
+.nr-editor-box {
+    display: flex;
+    --ebox-tool-width: 40px;
+}
+
+.nr-editor-tool {
+    width: var(--ebox-tool-width);
+    background-color: rgb(var(--sl-color-neutral-200));
+}
+
+.nr-editor-sql {
+    height: 100%;
+    width: calc(100% - var(--ebox-tool-width))
+}
+
+/*选项卡3*/
+.nr-tab-group-3 {
+    height: 100%;
+    width: 100%;
+}
+
+.nr-grid-execute-sql {
+    height: 200px;
+}

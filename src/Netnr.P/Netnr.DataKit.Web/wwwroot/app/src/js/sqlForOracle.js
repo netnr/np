@@ -1,0 +1,3 @@
+var sqlForOracle = []
+
+export { sqlForOracle }

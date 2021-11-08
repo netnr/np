@@ -45,7 +45,7 @@ var st = {
 
                 var txt = editor1.getValue();
                 var pout = st.parseJsonOrYaml(txt);
-                if (editor1.getModel()._languageIdentifier.language != pout.lang) {
+                if (editor1.getModel().getLanguageId() != pout.lang) {
                     st.setEditorLanguage(editor1, pout.lang);
                 }
 

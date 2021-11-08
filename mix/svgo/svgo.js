@@ -17992,44 +17992,45 @@ module.exports = function createWalker(config) {
 
 },{}],141:[function(require,module,exports){
 module.exports={
-  "name": "css-tree",
-  "version": "1.1.3",
-  "description": "A tool set for CSS: fast detailed parser (CSS → AST), walker (AST traversal), generator (AST → CSS) and lexer (validation and matching) based on specs and browser implementations",
-  "author": "Roman Dvornov <rdvornov@gmail.com> (https://github.com/lahmatiy)",
-  "license": "MIT",
-  "repository": "csstree/csstree",
-  "keywords": [
-    "css",
-    "ast",
-    "tokenizer",
-    "parser",
-    "walker",
-    "lexer",
-    "generator",
-    "utils",
-    "syntax",
-    "validation"
-  ],
-  "main": "lib/index.js",
-  "unpkg": "dist/csstree.min.js",
-  "jsdelivr": "dist/csstree.min.js",
-  "scripts": {
-    "build": "rollup --config",
-    "lint": "eslint data lib scripts test && node scripts/review-syntax-patch --lint && node scripts/update-docs --lint",
-    "lint-and-test": "npm run lint && npm test",
-    "update:docs": "node scripts/update-docs",
-    "review:syntax-patch": "node scripts/review-syntax-patch",
-    "test": "mocha --reporter progress",
-    "coverage": "nyc npm test",
-    "travis": "nyc npm run lint-and-test && npm run coveralls",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "prepublishOnly": "npm run build",
-    "hydrogen": "node --trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces --redirect-code-traces-to=code.asm --trace_hydrogen_file=code.cfg --print-opt-code bin/parse --stat -o /dev/null"
+  "_from": "css-tree@^1.1.3",
+  "_id": "css-tree@1.1.3",
+  "_inBundle": false,
+  "_integrity": "sha1-60hw+2/XcHMn7JXC/yqwm16NuR0=",
+  "_location": "/css-tree",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "css-tree@^1.1.3",
+    "name": "css-tree",
+    "escapedName": "css-tree",
+    "rawSpec": "^1.1.3",
+    "saveSpec": null,
+    "fetchSpec": "^1.1.3"
   },
+  "_requiredBy": [
+    "/csso",
+    "/svgo"
+  ],
+  "_resolved": "https://registry.npm.taobao.org/css-tree/download/css-tree-1.1.3.tgz",
+  "_shasum": "eb4870fb6fd7707327ec95c2ff2ab09b5e8db91d",
+  "_spec": "css-tree@^1.1.3",
+  "_where": "D:\\site\\npp\\mix\\svgo\\node_modules\\svgo",
+  "author": {
+    "name": "Roman Dvornov",
+    "email": "rdvornov@gmail.com",
+    "url": "https://github.com/lahmatiy"
+  },
+  "bugs": {
+    "url": "https://github.com/csstree/csstree/issues"
+  },
+  "bundleDependencies": false,
   "dependencies": {
     "mdn-data": "2.0.14",
     "source-map": "^0.6.1"
   },
+  "deprecated": false,
+  "description": "A tool set for CSS: fast detailed parser (CSS → AST), walker (AST traversal), generator (AST → CSS) and lexer (validation and matching) based on specs and browser implementations",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-json": "^4.0.2",
@@ -18049,7 +18050,43 @@ module.exports={
     "data",
     "dist",
     "lib"
-  ]
+  ],
+  "homepage": "https://github.com/csstree/csstree#readme",
+  "jsdelivr": "dist/csstree.min.js",
+  "keywords": [
+    "css",
+    "ast",
+    "tokenizer",
+    "parser",
+    "walker",
+    "lexer",
+    "generator",
+    "utils",
+    "syntax",
+    "validation"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "name": "css-tree",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csstree/csstree.git"
+  },
+  "scripts": {
+    "build": "rollup --config",
+    "coverage": "nyc npm test",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "hydrogen": "node --trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces --redirect-code-traces-to=code.asm --trace_hydrogen_file=code.cfg --print-opt-code bin/parse --stat -o /dev/null",
+    "lint": "eslint data lib scripts test && node scripts/review-syntax-patch --lint && node scripts/update-docs --lint",
+    "lint-and-test": "npm run lint && npm test",
+    "prepublishOnly": "npm run build",
+    "review:syntax-patch": "node scripts/review-syntax-patch",
+    "test": "mocha --reporter progress",
+    "travis": "nyc npm run lint-and-test && npm run coveralls",
+    "update:docs": "node scripts/update-docs"
+  },
+  "unpkg": "dist/csstree.min.js",
+  "version": "1.1.3"
 }
 
 },{}],142:[function(require,module,exports){
@@ -21944,50 +21981,46 @@ module.exports = {
 
 },{}],185:[function(require,module,exports){
 module.exports={
-  "name": "csso",
-  "version": "4.2.0",
-  "description": "CSS minifier with structural optimisations",
-  "homepage": "https://github.com/css/csso",
-  "author": "Sergey Kryzhanovsky <skryzhanovsky@ya.ru> (https://github.com/afelix)",
-  "maintainers": [
-    {
-      "name": "Roman Dvornov",
-      "email": "rdvornov@gmail.com",
-      "github-username": "lahmatiy"
-    }
-  ],
-  "license": "MIT",
-  "repository": "css/csso",
-  "bugs": {
-    "url": "https://github.com/css/csso/issues"
+  "_from": "csso@^4.2.0",
+  "_id": "csso@4.2.0",
+  "_inBundle": false,
+  "_integrity": "sha1-6jpWE0bo3J9UbW/r7dUBh884lSk=",
+  "_location": "/csso",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "csso@^4.2.0",
+    "name": "csso",
+    "escapedName": "csso",
+    "rawSpec": "^4.2.0",
+    "saveSpec": null,
+    "fetchSpec": "^4.2.0"
   },
-  "keywords": [
-    "css",
-    "compress",
-    "minifier",
-    "minify",
-    "optimise",
-    "optimisation",
-    "csstree"
+  "_requiredBy": [
+    "/svgo"
   ],
-  "main": "./lib/index",
-  "scripts": {
-    "test": "mocha --reporter dot",
-    "lint": "eslint lib test",
-    "lint-and-test": "npm run lint && npm test",
-    "build": "rollup --config && terser dist/csso.js --compress --mangle -o dist/csso.min.js",
-    "coverage": "nyc npm test",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "travis": "nyc npm run lint-and-test && npm run coveralls",
-    "hydrogen": "node --trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces --redirect-code-traces-to=code.asm --trace_hydrogen_file=code.cfg --print-opt-code bin/csso --stat -o /dev/null",
-    "prepublishOnly": "npm run build"
-  },
-  "dependencies": {
-    "css-tree": "^1.1.2"
+  "_resolved": "https://registry.nlark.com/csso/download/csso-4.2.0.tgz",
+  "_shasum": "ea3a561346e8dc9f546d6febedd50187cf389529",
+  "_spec": "csso@^4.2.0",
+  "_where": "D:\\site\\npp\\mix\\svgo\\node_modules\\svgo",
+  "author": {
+    "name": "Sergey Kryzhanovsky",
+    "email": "skryzhanovsky@ya.ru",
+    "url": "https://github.com/afelix"
   },
   "browser": {
     "css-tree": "css-tree/dist/csstree.min.js"
   },
+  "bugs": {
+    "url": "https://github.com/css/csso/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "css-tree": "^1.1.2"
+  },
+  "deprecated": false,
+  "description": "CSS minifier with structural optimisations",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.1",
     "@rollup/plugin-json": "^4.0.1",
@@ -22006,7 +22039,42 @@ module.exports={
   "files": [
     "dist",
     "lib"
-  ]
+  ],
+  "homepage": "https://github.com/css/csso",
+  "keywords": [
+    "css",
+    "compress",
+    "minifier",
+    "minify",
+    "optimise",
+    "optimisation",
+    "csstree"
+  ],
+  "license": "MIT",
+  "main": "./lib/index",
+  "maintainers": [
+    {
+      "name": "Roman Dvornov",
+      "email": "rdvornov@gmail.com"
+    }
+  ],
+  "name": "csso",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/css/csso.git"
+  },
+  "scripts": {
+    "build": "rollup --config && terser dist/csso.js --compress --mangle -o dist/csso.min.js",
+    "coverage": "nyc npm test",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "hydrogen": "node --trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces --redirect-code-traces-to=code.asm --trace_hydrogen_file=code.cfg --print-opt-code bin/csso --stat -o /dev/null",
+    "lint": "eslint lib test",
+    "lint-and-test": "npm run lint && npm test",
+    "prepublishOnly": "npm run build",
+    "test": "mocha --reporter dot",
+    "travis": "nyc npm run lint-and-test && npm run coveralls"
+  },
+  "version": "4.2.0"
 }
 
 },{}],186:[function(require,module,exports){

@@ -117,24 +117,45 @@ namespace Netnr.SharedAdo
         /// 查询返回数据集
         /// </summary>
         /// <param name="dbCommand"></param>
+        /// <param name="includeSchemaTable"></param>
         /// <returns></returns>
-        public static DataSet ExecuteDataSet(this DbCommand dbCommand)
+        public static Tuple<DataSet, int, DataSet> ExecuteDataSet(this DbCommand dbCommand, bool includeSchemaTable = false)
         {
             var ds = new DataSet();
+            var dsSchema = new DataSet();
 
-            var reader = dbCommand.ExecuteReader();
+            using var reader = dbCommand.ExecuteReader();
+            var recordsAffected = reader.RecordsAffected;
 
             do
             {
                 var table = new DataTable
                 {
-                    TableName = "table" + (ds.Tables.Count + 1).ToString()
+                    TableName = $"table{ds.Tables.Count + 1}"
                 };
+
+                if (includeSchemaTable && reader.FieldCount > 0)
+                {
+                    var st = reader.GetSchemaTable();
+                    st.TableName = table.TableName;
+                    dsSchema.Tables.Add(st);
+                }
+
                 table.Load(reader);
                 ds.Tables.Add(table);
             } while (!reader.IsClosed);
 
-            return ds;
+            return new Tuple<DataSet, int, DataSet>(ds, recordsAffected, dsSchema);
+        }
+
+        /// <summary>
+        /// 查询返回数据集
+        /// </summary>
+        /// <param name="dbCommand"></param>
+        /// <returns></returns>
+        public static DataSet ExecuteData(this DbCommand dbCommand)
+        {
+            return ExecuteDataSet(dbCommand).Item1;
         }
     }
 }

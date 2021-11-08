@@ -15,12 +15,12 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-rc.2.21480.5" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0-rc.2.21480.5" />
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-rc.1" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0-rc.1.ci.20211007223757" />
-		<PackageReference Include="MySqlConnector" Version="1.4.0-beta.4" />
-		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.3" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-rc.2" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0-rc.1.ci.20211102105754" />
+		<PackageReference Include="MySqlConnector" Version="2.0.0-rc.1" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0-rc.2.21480.5" />
-		<PackageReference Include="Npgsql" Version="6.0.0-rc.1" />
+		<PackageReference Include="Npgsql" Version="6.0.0-rc.2" />
 	</ItemGroup>
 
 	<ItemGroup>

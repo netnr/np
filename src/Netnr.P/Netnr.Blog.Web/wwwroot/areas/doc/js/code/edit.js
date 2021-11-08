@@ -12,7 +12,7 @@ require(['vs/editor/editor.main'], function () {
     })
 
     //快捷键
-    nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function () {
+    nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
         $('#btnSave')[0].click();
     })
 });

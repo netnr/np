@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "fast-xml-parser": "^3.20.3"
+    "fast-xml-parser": "^3.21.1"
   }
 }

@@ -10,7 +10,7 @@ namespace Netnr
     /// </summary>
     public class SharedTimingVM
     {
-        readonly Stopwatch sw;
+        public Stopwatch sw;
         private double et = 0;
 
         /// <summary>

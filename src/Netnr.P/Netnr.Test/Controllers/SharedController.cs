@@ -15,6 +15,52 @@ namespace Netnr.Test.Controllers
     public class SharedController : Controller
     {
         /// <summary>
+        /// 执行SQL获取打印消息
+        /// </summary>
+        /// <param name="typeDB"></param>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public SharedResultVM To_AdoInfo(SharedEnum.TypeDB typeDB, string conn, string sql)
+        {
+            var vm = new SharedResultVM();
+
+            DbConnection dbConn = null;
+
+            switch (typeDB)
+            {
+                case SharedEnum.TypeDB.MySQL:
+                case SharedEnum.TypeDB.MariaDB:
+                    {
+                        var dbc = new MySqlConnector.MySqlConnection(conn);
+                        dbc.InfoMessage += (s, e) => vm.Log.Add(e.Errors.FirstOrDefault()?.Message);
+                        dbConn = dbc;
+                    }
+                    break;
+                case SharedEnum.TypeDB.Oracle:
+                    {
+                        var dbc = new Oracle.ManagedDataAccess.Client.OracleConnection(conn);
+                        dbc.InfoMessage += (s, e) => vm.Log.Add(e.Message);
+                        dbConn = dbc;
+                    }
+                    break;
+                case SharedEnum.TypeDB.SQLServer:
+                    {
+                        var dbc = new Microsoft.Data.SqlClient.SqlConnection(conn);
+                        dbc.InfoMessage += (s, e) => vm.Log.Add(e.Message);
+                        dbConn = dbc;
+                    }
+                    break;
+            }
+
+            var db = new DbHelper(dbConn);
+            db.SqlExecuteReader(sql);
+
+            return vm;
+        }
+
+        /// <summary>
         /// User-Agent
         /// </summary>
         /// <param name="ua">User-Agent</param>

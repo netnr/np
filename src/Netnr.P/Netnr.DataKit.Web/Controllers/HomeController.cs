@@ -5,7 +5,7 @@
         [ResponseCache(Duration = 5)]
         public IActionResult Index()
         {
-            return Redirect("/lib/ndk/ndk.html");
+            return Redirect("/app/dist/index.html");
         }
 
         /// <summary>

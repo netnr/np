@@ -27,14 +27,14 @@
         }
 
         iframe {
-            width: 100%;
-            height: 80vh;
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
 <body>
     <div class="container-fluid">
-        <div class="row my-3">
+        <div class="row my-3 position-absolute w-100 opacity-75">
             <div class="col-auto">
                 <button class="btn btn-secondary" id="btnPlay">播放</button>
             </div>
@@ -59,7 +59,11 @@
         //线路
         var vipSource = [
             "https://okjx.cc/?url=",
+            "https://player.maqq.cn/?url=",
             "https://www.1717yun.com/jx/ty.php?url=",
+            "https://jx.jiubojx.com/vip/?url=",
+            "https://123.1dior.cn/?url=",
+            "https://www.2ajx.com/vip.php?url=",
             "https://vip.bljiex.com/?v="
         ];
 
@@ -99,13 +103,6 @@
             if (uri.length > 10) {
                 document.getElementById('inetnr').src = document.getElementById('seVtype').value + document.getElementById('txtVipUri').value;
             }
-        }
-
-        //自适应
-        window.onload = window.onresize = function () {
-            var iv = document.getElementById('inetnr');
-            var vh = document.documentElement.clientHeight - iv.getBoundingClientRect().top;
-            iv.style.height = vh + "px";
         }
 
         setTimeout(function () {

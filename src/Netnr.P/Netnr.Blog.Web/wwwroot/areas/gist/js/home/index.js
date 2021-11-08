@@ -41,7 +41,7 @@ require(['vs/editor/editor.main'], function () {
     });
 
     //快捷键
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function () {
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
         $('.nrSaveGist')[0].click();
     })
 });

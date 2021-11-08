@@ -14,6 +14,7 @@ public class SkiaSharpController : Controller
     /// <summary>
     /// 验证码
     /// </summary>
+    /// <param name="code"></param>
     /// <returns></returns>
     [HttpGet]
     public IActionResult Captcha(string code = null)
@@ -58,6 +59,7 @@ public class SkiaSharpController : Controller
     /// <summary>
     /// 水印
     /// </summary>
+    /// <param name="text"></param>
     /// <returns></returns>
     [HttpGet]
     public IActionResult Watermark(string text = "netnr")
@@ -78,7 +80,8 @@ public class SkiaSharpController : Controller
     /// <summary>
     /// 生成图片验证码
     /// </summary>
-    /// <param name="code">随机码</param>
+    /// <param name="code"></param>
+    /// <returns></returns>
     [HttpGet]
     public byte[] CreateImg(string code)
     {
@@ -203,8 +206,7 @@ public class SkiaSharpController : Controller
     /// <param name="text">文字</param>
     /// <param name="paint">绘画信息</param>
     /// <param name="point">位置</param>
-    [HttpGet]
-    public byte[] WatermarkForTextBin(string imgPath, string text, Action<SKPaint> paint = null, Action<SKPoint> point = null)
+    private byte[] WatermarkForTextBin(string imgPath, string text, Action<SKPaint> paint = null, Action<SKPoint> point = null)
     {
         SKBitmap bitmap = SKBitmap.Decode(imgPath);
 

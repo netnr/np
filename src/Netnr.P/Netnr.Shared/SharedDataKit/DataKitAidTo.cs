@@ -43,6 +43,115 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
+        /// 导入数据库
+        /// </summary>
+        /// <param name="tdb"></param>
+        /// <param name="conn"></param>
+        /// <param name="zipPath">导入源 ZIP 压缩包</param>
+        /// <param name="clearTable">导入前清空表，默认否</param>
+        /// <param name="le">日志事件</param>
+        /// <returns></returns>
+        public static SharedResultVM ImportDatabase(SharedEnum.TypeDB tdb, string conn, string zipPath, bool clearTable = false, Action<NotifyCollectionChangedEventArgs> le = null)
+        {
+            var vm = new SharedResultVM();
+            vm.LogEvent(le);
+
+            vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 数据库导入");
+
+            var hsName = new HashSet<string>();
+
+            var db = new DbHelper(DbConn(tdb, conn));
+
+            vm.Log.Add($"开始读取 {zipPath}");
+
+            using var zipRead = ZipFile.OpenRead(zipPath);
+            var zipList = zipRead.Entries.ToList();
+
+            for (int i = 0; i < zipList.Count; i++)
+            {
+                var dt = new DataTable();
+
+                var item = zipList[i];
+                dt.ReadXml(item.Open());
+
+                //清空表
+                if (hsName.Add(dt.TableName) && clearTable)
+                {
+                    var clearSql = (tdb == SharedEnum.TypeDB.SQLite ? "DELETE FROM " : "TRUNCATE TABLE ") + DbHelper.SqlQuote(tdb, dt.TableName);
+                    vm.Log.Add($"清空表（{dt.TableName}）数据，执行脚本：{clearSql}");
+                    db.SqlExecuteNonQuery(clearSql);
+                    vm.Log.Add($"已清空表（{dt.TableName}）数据，耗时：{vm.PartTime()}\n");
+                }
+
+                vm.Log.Add($"导入分片：{item.Name}，大小：{ParsingTo.FormatByteSize(item.Length)}，共 {dt.Rows.Count} 行，表：{dt.TableName}");
+
+                switch (tdb)
+                {
+                    case SharedEnum.TypeDB.SQLite:
+                        db.BulkBatchSQLite(dt, dt.TableName);
+                        break;
+                    case SharedEnum.TypeDB.MySQL:
+                    case SharedEnum.TypeDB.MariaDB:
+                        db.BulkCopyMySQL(dt, dt.TableName);
+                        break;
+                    case SharedEnum.TypeDB.Oracle:
+                        db.BulkCopyOracle(dt, dt.TableName);
+                        break;
+                    case SharedEnum.TypeDB.SQLServer:
+                        db.BulkCopySQLServer(dt, dt.TableName);
+                        break;
+                    case SharedEnum.TypeDB.PostgreSQL:
+                        {
+                            //自增列（使用SQL并指定自增列值写入）
+                            var autoIncrCol = dt.Columns.Cast<DataColumn>().Where(x => x.AutoIncrement == true).ToList();
+                            if (autoIncrCol.Count > 0)
+                            {
+                                db.BulkBatchPostgreSQL(dt, dt.TableName, dataAdapter =>
+                                {
+                                    var sqlquote = "\"";
+                                    var ct = dataAdapter.InsertCommand.CommandText;
+                                    autoIncrCol = autoIncrCol.Where(x => !ct.Contains($"{sqlquote + x.ColumnName + sqlquote}")).ToList();
+                                    if (autoIncrCol.Count > 0)
+                                    {
+                                        var fields = string.Empty;
+                                        var values = string.Empty;
+
+                                        for (int i = 0; i < autoIncrCol.Count; i++)
+                                        {
+                                            var col = autoIncrCol[i];
+                                            fields += $"{sqlquote + col.ColumnName + sqlquote}, ";
+                                            values += $"@{col.ColumnName}, ";
+
+                                            //新增参数
+                                            var parameter = new NpgsqlParameter(col.ColumnName, col.DataType);
+                                            parameter.SourceColumn = col.ColumnName;
+                                            dataAdapter.InsertCommand.Parameters.Add(parameter);
+                                        }
+
+                                        ct = ct.Replace("(\"", $"({fields}\"").Replace("(@", $"({values}@");
+                                        dataAdapter.InsertCommand.CommandText = ct;
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                db.BulkCopyPostgreSQL(dt, dt.TableName);
+                            }
+                        }
+                        break;
+                }
+
+                vm.Log.Add($"导入分片成功，耗时：{vm.PartTimeFormat()}，进度：{i + 1}/{zipList.Count}\n");
+            }
+
+            vm.Log.Add($"共耗时：{vm.UseTimeFormat}");
+
+            vm.Set(SharedEnum.RTag.success);
+
+            return vm;
+        }
+
+        /// <summary>
         /// 导出数据库
         /// </summary>
         /// <param name="tdb"></param>
@@ -67,8 +176,8 @@ namespace Netnr.SharedDataKit
             //数据库
             var db = new DbHelper(DbConn(tdb, conn));
 
-            var partMaxRow = 10000;
-            var partMaxSize = 1024 * 1024 * 25;
+            var partMaxRow = 50000;
+            var partMaxSize = 1024 * 1024 * 25 + GC.GetTotalMemory(true);
             var tmpFolder = Path.Combine(Path.GetDirectoryName(zipPath), Path.GetFileNameWithoutExtension(zipPath));
             if (!Directory.Exists(tmpFolder))
             {
@@ -103,7 +212,7 @@ namespace Netnr.SharedDataKit
                         dt.Columns.Add(new DataColumn(dr["ColumnName"].ToString(), (Type)(dr["DataType"]))
                         {
                             Unique = (bool)dr["IsUnique"],
-                            AllowDBNull = (bool)dr["AllowDBNull"],
+                            AllowDBNull = dr["AllowDBNull"] == DBNull.Value ? true : (bool)dr["AllowDBNull"],
                             AutoIncrement = (bool)dr["IsAutoIncrement"]
                         });
                     }
@@ -152,79 +261,6 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
-        /// 导入数据库
-        /// </summary>
-        /// <param name="tdb"></param>
-        /// <param name="conn"></param>
-        /// <param name="zipPath">导入源 ZIP 压缩包</param>
-        /// <param name="clearTable">导入前清空表，默认否</param>
-        /// <param name="le">日志事件</param>
-        /// <returns></returns>
-        public static SharedResultVM ImportDatabase(SharedEnum.TypeDB tdb, string conn, string zipPath, bool clearTable = false, Action<NotifyCollectionChangedEventArgs> le = null)
-        {
-            var vm = new SharedResultVM();
-            vm.LogEvent(le);
-
-            vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 数据库导入");
-
-            var hsName = new HashSet<string>();
-
-            var db = new DbHelper(DbConn(tdb, conn));
-
-            vm.Log.Add($"开始读取 {zipPath}");
-
-            using var zipRead = ZipFile.OpenRead(zipPath);
-            var zipList = zipRead.Entries.ToList();
-
-            for (int i = 0; i < zipList.Count; i++)
-            {
-                var dt = new DataTable();
-
-                var item = zipList[i];
-                dt.ReadXml(item.Open());
-
-                //清空表
-                if (hsName.Add(dt.TableName) && clearTable)
-                {
-                    var clearSql = (tdb == SharedEnum.TypeDB.SQLite ? "DELETE FROM " : "TRUNCATE TABLE ") + DbHelper.SqlQuote(tdb, dt.TableName);
-                    vm.Log.Add($"清空表（{dt.TableName}）数据，执行脚本：{clearSql}");
-                    db.SqlExecute(clearSql);
-                    vm.Log.Add($"已清空表（{dt.TableName}）数据，耗时：{vm.PartTime()}\n");
-                }
-
-                vm.Log.Add($"导入分片：{item.Name}，大小：{ParsingTo.FormatByteSize(item.Length)}，共 {dt.Rows.Count} 行，表：{dt.TableName}");
-
-                switch (tdb)
-                {
-                    case SharedEnum.TypeDB.SQLite:
-                        db.BulkBatchSQLite(dt, dt.TableName);
-                        break;
-                    case SharedEnum.TypeDB.MySQL:
-                    case SharedEnum.TypeDB.MariaDB:
-                        db.BulkCopyMySQL(dt, dt.TableName);
-                        break;
-                    case SharedEnum.TypeDB.Oracle:
-                        db.BulkCopyOracle(dt, dt.TableName);
-                        break;
-                    case SharedEnum.TypeDB.SQLServer:
-                        db.BulkCopySQLServer(dt, dt.TableName);
-                        break;
-                    case SharedEnum.TypeDB.PostgreSQL:
-                        db.BulkCopyPostgreSQL(dt, dt.TableName);
-                        break;
-                }
-
-                vm.Log.Add($"导入分片成功，耗时：{vm.PartTimeFormat()}，进度：{i + 1}/{zipList.Count}\n");
-            }
-
-            vm.Log.Add($"共耗时：{vm.UseTimeFormat}");
-
-            vm.Set(SharedEnum.RTag.success);
-
-            return vm;
-        }
-
-        /// <summary>
         /// 导出表
         /// </summary>
         /// <param name="tdb"></param>
@@ -243,8 +279,8 @@ namespace Netnr.SharedDataKit
             //数据库
             var db = new DbHelper(DbConn(tdb, conn));
 
-            var partMaxRow = 10000;
-            var partMaxSize = 1024 * 1024 * 25;
+            var partMaxRow = 50000;
+            var partMaxSize = 1024 * 1024 * 25 + GC.GetTotalMemory(true);
             var tmpFolder = Path.Combine(Path.GetDirectoryName(zipPath), Path.GetFileNameWithoutExtension(zipPath));
             if (!Directory.Exists(tmpFolder))
             {
@@ -279,7 +315,7 @@ namespace Netnr.SharedDataKit
                         dt.Columns.Add(new DataColumn(dr["ColumnName"].ToString(), (Type)(dr["DataType"]))
                         {
                             Unique = (bool)dr["IsUnique"],
-                            AllowDBNull = (bool)dr["AllowDBNull"],
+                            AllowDBNull = dr["AllowDBNull"] == DBNull.Value ? true : (bool)dr["AllowDBNull"],
                             AutoIncrement = (bool)dr["IsAutoIncrement"]
                         });
                     }

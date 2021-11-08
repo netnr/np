@@ -5,6 +5,22 @@ namespace Netnr.SharedDataKit
     public partial class Configs
     {
         /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDatabaseNameSQLServer()
+        {
+            return $@"
+SELECT
+  name AS DatabaseName
+FROM
+  sys.databases
+ORDER BY
+  name;
+            ";
+        }
+
+        /// <summary>
         /// 获取库
         /// </summary>
         /// <returns></returns>

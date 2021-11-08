@@ -141,7 +141,7 @@ public partial class MenuService
             case SharedEnum.TypeDB.MySQL:
             case SharedEnum.TypeDB.MariaDB:
                 {
-                    var drs = db.SqlQuery("SHOW VARIABLES").Tables[0].Select();
+                    var drs = db.SqlExecuteReader("SHOW VARIABLES").Item1.Tables[0].Select();
 
                     var dicVar1 = new Dictionary<string, string>
                         {
@@ -201,7 +201,7 @@ public partial class MenuService
                     if (listBetterSql.Count > 0)
                     {
                         DXService.Log($"\n执行优化脚本：\n{string.Join(Environment.NewLine, listBetterSql)}");
-                        db.SqlExecute(listBetterSql);
+                        db.SqlExecuteNonQuery(listBetterSql);
                     }
                 }
                 break;
@@ -236,7 +236,7 @@ public partial class MenuService
         var st = new SharedTimingVM();
 
         var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
-        var num = db.SqlExecute(FileTo.ReadText(sqlPath));
+        var num = db.SqlExecuteNonQuery(FileTo.ReadText(sqlPath));
 
         DXService.Log($"执行结束，受影响行数：{num}，耗时：{st.PartTimeFormat()}");
 
@@ -697,8 +697,8 @@ public partial class MenuService
 
         DXService.Log($"开始查询原表，查询语句：{cv.OdQuerySql}");
         //原表数据集
-        var odDs = odDB.SqlQuery(cv.OdQuerySql);
-        var odDt = odDs.Tables[0];
+        var odDs = odDB.SqlExecuteReader(cv.OdQuerySql);
+        var odDt = odDs.Item1.Tables[0];
 
         DXService.Log($"原表数据共：{odDt.Rows.Count} 行，查询耗时：{st.PartTimeFormat()}");
 
@@ -757,7 +757,7 @@ public partial class MenuService
         if (!string.IsNullOrWhiteSpace(cv.NdClearTableSql))
         {
             DXService.Log($"开始清空新表，执行脚本：{cv.NdClearTableSql}");
-            var num = ndDB.SqlExecute(cv.NdClearTableSql);
+            var num = ndDB.SqlExecuteNonQuery(cv.NdClearTableSql);
 
             DXService.Log($"返回受影响行数：{num}，执行耗时：{st.PartTimeFormat()}");
         }
@@ -920,7 +920,7 @@ public partial class MenuService
         var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
 
         //新表
-        var dt = db.SqlQuery("select top 0 * from cqzd2020.dbo.ANNEX_INFO").Tables[0];
+        var dt = db.SqlExecuteReader("select top 0 * from cqzd2020.dbo.ANNEX_INFO").Item1.Tables[0];
 
         //附件目录
         Console.Write($"附件存储目录（如 {co.DXHub} ）：");

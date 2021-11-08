@@ -1485,17 +1485,6 @@
             <param name="conn"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitAidTo.ExportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Collections.Generic.List{System.String},System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
-            <summary>
-            导出数据库
-            </summary>
-            <param name="tdb"></param>
-            <param name="conn"></param>
-            <param name="zipPath">导出源目录</param>
-            <param name="tables">指定表</param>
-            <param name="le">日志事件</param>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.SharedDataKit.DataKitAidTo.ImportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Boolean,System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
             <summary>
             导入数据库
@@ -1504,6 +1493,17 @@
             <param name="conn"></param>
             <param name="zipPath">导入源 ZIP 压缩包</param>
             <param name="clearTable">导入前清空表，默认否</param>
+            <param name="le">日志事件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.DataKitAidTo.ExportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Collections.Generic.List{System.String},System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
+            <summary>
+            导出数据库
+            </summary>
+            <param name="tdb"></param>
+            <param name="conn"></param>
+            <param name="zipPath">导出源目录</param>
+            <param name="tables">指定表</param>
             <param name="le">日志事件</param>
             <returns></returns>
         </member>

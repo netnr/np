@@ -33,6 +33,11 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
+        /// 获取DbHelper
+        /// </summary>
+        public DbHelper GetDbHelper() => db;
+
+        /// <summary>
         /// 默认库名
         /// </summary>
         /// <returns></returns>
@@ -42,15 +47,33 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetDatabaseName()
+        {
+            var sql = Configs.GetDatabaseNameSQLServer();
+            var dt = db.SqlExecuteReader(sql).Item1.Tables[0];
+
+            var list = new List<string>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                list.Add(dr[0].ToString());
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// 获取库
         /// </summary>
         /// <returns></returns>
         public List<DatabaseVM> GetDatabase()
         {
             var sql = Configs.GetDatabaseSQLServer();
-            var ds = db.SqlQuery(sql);
+            var ds = db.SqlExecuteReader(sql);
 
-            var list = ds.Tables[0].ToModel<DatabaseVM>();
+            var list = ds.Item1.Tables[0].ToModel<DatabaseVM>();
             return list;
         }
 
@@ -67,9 +90,9 @@ namespace Netnr.SharedDataKit
             }
 
             var sql = Configs.GetTableSQLServer(DatabaseName);
-            var ds = db.SqlQuery(sql);
+            var ds = db.SqlExecuteReader(sql);
 
-            var list = ds.Tables[0].ToModel<TableVM>();
+            var list = ds.Item1.Tables[0].ToModel<TableVM>();
             return list;
         }
 
@@ -77,11 +100,11 @@ namespace Netnr.SharedDataKit
         /// 表DDL
         /// </summary>
         /// <param name="filterTableName"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public Dictionary<string, string> GetTableDDL(string filterTableName = null, string DatabaseName = null)
+        public Dictionary<string, string> GetTableDDL(string filterTableName = null, string databaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
+            if (string.IsNullOrWhiteSpace(databaseName))
             {
                 //DatabaseName = DefaultDatabaseName();
             }
@@ -93,13 +116,13 @@ namespace Netnr.SharedDataKit
         /// 获取列
         /// </summary>
         /// <param name="filterTableName"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public List<ColumnVM> GetColumn(string filterTableName = null, string DatabaseName = null)
+        public List<ColumnVM> GetColumn(string filterTableName = null, string databaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
+            if (string.IsNullOrWhiteSpace(databaseName))
             {
-                DatabaseName = DefaultDatabaseName();
+                databaseName = DefaultDatabaseName();
             }
 
             var where = string.Empty;
@@ -108,10 +131,10 @@ namespace Netnr.SharedDataKit
                 where = $"AND t1.name IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
             }
 
-            var sql = Configs.GetColumnSQLServer(DatabaseName, where);
-            var ds = db.SqlQuery(sql);
+            var sql = Configs.GetColumnSQLServer(databaseName, where);
+            var ds = db.SqlExecuteReader(sql);
 
-            var list = ds.Tables[0].ToModel<ColumnVM>();
+            var list = ds.Item1.Tables[0].ToModel<ColumnVM>();
             return list;
         }
 
@@ -130,27 +153,27 @@ namespace Netnr.SharedDataKit
             }
 
             var sql = Configs.SetTableCommentSQLServer(DatabaseName, TableName, TableComment);
-            _ = db.SqlExecute(sql);
+            _ = db.SqlExecuteNonQuery(sql);
             return true;
         }
 
         /// <summary>
         /// 设置列注释
         /// </summary>
-        /// <param name="TableName"></param>
-        /// <param name="ColumnName"></param>
-        /// <param name="ColumnComment"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="columnName"></param>
+        /// <param name="columnComment"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public bool SetColumnComment(string TableName, string ColumnName, string ColumnComment, string DatabaseName = null)
+        public bool SetColumnComment(string tableName, string columnName, string columnComment, string databaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
+            if (string.IsNullOrWhiteSpace(databaseName))
             {
-                DatabaseName = DefaultDatabaseName();
+                databaseName = DefaultDatabaseName();
             }
 
-            var sql = Configs.SetColumnCommentSQLServer(DatabaseName, TableName, ColumnName, ColumnComment);
-            _ = db.SqlExecute(sql);
+            var sql = Configs.SetColumnCommentSQLServer(databaseName, tableName, columnName, columnComment);
+            _ = db.SqlExecuteNonQuery(sql);
             return true;
         }
 
@@ -158,46 +181,42 @@ namespace Netnr.SharedDataKit
         /// 执行脚本
         /// </summary>
         /// <param name="sql">脚本</param>
-        /// <param name="DatabaseName">数据库名</param>
+        /// <param name="databaseName">数据库名</param>
         /// <returns></returns>
-        public Tuple<DataSet, object> ExecuteSql(string sql, string DatabaseName = null)
+        public Tuple<DataSet, DataSet, object> ExecuteSql(string sql, string databaseName = null)
         {
-            var ds = new DataSet();
+            var st = new SharedTimingVM();
 
-            var queryKey = "select,with".Split(',').ToList();
-            if (queryKey.Any(k => sql.StartsWith(k, StringComparison.OrdinalIgnoreCase)))
+            //消息
+            var listInfo = new List<string>();
+            var dbConn = (Microsoft.Data.SqlClient.SqlConnection)db.Connection;
+            dbConn.InfoMessage += (s, e) =>
             {
-                ds = db.SqlQuery(sql);
-            }
-            else
-            {
-                var dt = new DataTable();
-                dt.Columns.Add(new DataColumn("rows"));
-                var dr = dt.NewRow();
-                dr[0] = db.SqlExecute(sql);
-                ds.Tables.Add(dt);
-            }
+                listInfo.Add(e.Message);
+            };
 
-            return new Tuple<DataSet, object>(ds, null);
+            var er = db.SqlExecuteReader(sql, includeSchemaTable: true);
+
+            return DataKitTo.AidExecuteSql(er, listInfo, st);
         }
 
         /// <summary>
         /// 获取表数据
         /// </summary>
-        /// <param name="TableName"></param>
+        /// <param name="tableName"></param>
         /// <param name="page"></param>
         /// <param name="rows"></param>
         /// <param name="sort"></param>
         /// <param name="order"></param>
         /// <param name="listFieldName"></param>
         /// <param name="whereSql"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public Tuple<DataTable, int> GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string DatabaseName = null)
+        public Tuple<DataTable, int> GetData(string tableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string databaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
+            if (string.IsNullOrWhiteSpace(databaseName))
             {
-                DatabaseName = DefaultDatabaseName();
+                databaseName = DefaultDatabaseName();
             }
 
             if (string.IsNullOrWhiteSpace(listFieldName))
@@ -224,17 +243,17 @@ namespace Netnr.SharedDataKit
                                     {sort} {order}
                                 ) as NumId,{listFieldName}
                             from
-                                [{DatabaseName}].dbo.[{TableName}] {whereSql}
+                                [{databaseName}].dbo.[{tableName}] {whereSql}
                             ) as t
                         where
                             NumId between {((page - 1) * rows + 1)} and {(page * rows)}";
 
-            sql += $";select count(1) as total from [{DatabaseName}].dbo.[{TableName}] {whereSql}";
+            sql += $";select count(1) as total from [{databaseName}].dbo.[{tableName}] {whereSql}";
 
-            var ds = db.SqlQuery(sql);
+            var ds = db.SqlExecuteReader(sql);
 
-            var dt = ds.Tables[0];
-            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out int total);
+            var dt = ds.Item1.Tables[0];
+            _ = int.TryParse(ds.Item1.Tables[1].Rows[0][0].ToString(), out int total);
 
             return new Tuple<DataTable, int>(dt, total);
         }
@@ -299,15 +318,15 @@ namespace Netnr.SharedDataKit
 
             var mo = new DEIVM();
 
-            var ds = db.SqlQuery(sql);
-            var dt = ds.Tables[0];
+            var ds = db.SqlExecuteReader(sql);
+            var dt = ds.Item1.Tables[0];
             mo = DataKitTo.TableToDEI(dt);
 
-            if (int.TryParse(ds.Tables[1].Rows[0]["config_value"].ToString(), out int wt))
+            if (int.TryParse(ds.Item1.Tables[1].Rows[0]["config_value"].ToString(), out int wt))
             {
                 mo.TimeOut = wt;
             }
-            mo.TimeZone = ds.Tables[2].Rows[0][1].ToString();
+            mo.TimeZone = ds.Item1.Tables[2].Rows[0][1].ToString();
 
             return mo;
         }
