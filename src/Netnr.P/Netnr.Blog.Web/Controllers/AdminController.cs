@@ -244,8 +244,9 @@ namespace Netnr.Blog.Web.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 listWhere = null;
             }
 
@@ -340,7 +341,7 @@ namespace Netnr.Blog.Web.Controllers
                         case "grab":
                             {
                                 string key = Request.Form["Key"].ToString();
-                                string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToEncode()}&bk_length=600";
+                                string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToUrlEncode()}&bk_length=600";
                                 string apirt = Core.HttpTo.Get(api);
                                 if (apirt.Length > 100)
                                 {
@@ -456,6 +457,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     rt[1] = ex.Message;
                     rt.Add(ex.StackTrace);
                 }

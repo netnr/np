@@ -867,7 +867,7 @@ public partial class MenuService
         }
     }
 
-    [Display(Name = "文本编码转换（请先备份）", GroupName = "66")]
+    [Display(Name = "转成 UTF8（请先备份）", GroupName = "66")]
     public static void TextEncodingConversion()
     {
         //输出头
@@ -877,7 +877,7 @@ public partial class MenuService
         TextEncodingConversionService.Run();
     }
 
-    [Display(Name = "项目清理（删除 bin、obj）", GroupName = "66")]
+    [Display(Name = "项目清理（bin、obj）", GroupName = "66")]
     public static void ProjectCleanup()
     {
         //输出头
@@ -887,7 +887,7 @@ public partial class MenuService
         ProjectCleanupService.Run();
     }
 
-    [Display(Name = "项目安全拷贝（替换 appsettings.json 密钥）", GroupName = "66")]
+    [Display(Name = "项目拷贝（替换 appsettings.json 密钥）", GroupName = "66")]
     public static void ProjectSafeCopy()
     {
         //输出头

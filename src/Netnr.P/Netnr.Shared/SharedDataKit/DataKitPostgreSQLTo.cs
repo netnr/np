@@ -67,10 +67,17 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 获取库
         /// </summary>
+        /// <param name="filterDatabaseName">数据库名</param>
         /// <returns></returns>
-        public List<DatabaseVM> GetDatabase()
+        public List<DatabaseVM> GetDatabase(string filterDatabaseName = null)
         {
-            var sql = Configs.GetDatabasePostgreSQL();
+            var where = string.Empty;
+            if (!string.IsNullOrWhiteSpace(filterDatabaseName))
+            {
+                where = $"AND t1.datname IN ('{string.Join("','", filterDatabaseName.Replace("'", "").Split(','))}')";
+            }
+
+            var sql = Configs.GetDatabasePostgreSQL(where);
             var ds = db.SqlExecuteReader(sql);
 
             var list = ds.Item1.Tables[0].ToModel<DatabaseVM>();
@@ -167,9 +174,18 @@ namespace Netnr.SharedDataKit
         public Tuple<DataSet, DataSet, object> ExecuteSql(string sql, string databaseName = null)
         {
             var st = new SharedTimingVM();
+
+            //消息
+            var listInfo = new List<string>();
+            var dbConn = (Npgsql.NpgsqlConnection)db.Connection;
+            dbConn.Notice += (s, e) =>
+            {
+                listInfo.Add(e.Notice.MessageText);
+            };
+
             var er = db.SqlExecuteReader(sql, includeSchemaTable: true);
 
-            return DataKitTo.AidExecuteSql(er, new List<string> { }, st);
+            return DataKitTo.AidExecuteSql(er, listInfo, st);
         }
 
         /// <summary>
@@ -241,111 +257,111 @@ namespace Netnr.SharedDataKit
         {
             var sql = @"
                         SELECT
-                          'Name' col,
-                          split_part(split_part(VERSION (), ',', 1),' on ',1)
+                            'Name' col,
+                            split_part(split_part(VERSION(), ',', 1), ' on ', 1)
                         UNION ALL
                         SELECT
-                          'Version' col,
-                          (
+                            'Version' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'server_version'
-                          ) val
+                                NAME = 'server_version'
+                            ) val
                         UNION ALL
                         SELECT
-                          'Compile' col,
-                          split_part(VERSION (), ',', 2) val
+                            'Compile' col,
+                            split_part(VERSION(), ',', 2) val
                         UNION ALL
                         SELECT
-                          'DirInstall' col,
-                          (
+                            'DirInstall' col,
+                            (
                             SELECT
-                              split_part(setting, 'main', 1)
+                                split_part(setting, 'main', 1)
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'archive_command'
-                          ) val
+                                NAME = 'archive_command'
+                            ) val
                         UNION ALL
                         SELECT
-                          'DirData' col,
-                          (
+                            'DirData' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'data_directory'
-                          ) val
+                                NAME = 'data_directory'
+                            ) val
                         UNION ALL
                         SELECT
-                          'CharSet' col,
-                          (
+                            'CharSet' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'server_encoding'
-                          ) val
+                                NAME = 'server_encoding'
+                            ) val
                         UNION ALL
                         SELECT
-                          'TimeZone' col,
-                          (
+                            'TimeZone' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'TimeZone'
-                          ) val
+                                NAME = 'TimeZone'
+                            ) val
                         UNION ALL
                         SELECT
-                          'DateTime' col,
-                          to_char(now(), 'YYYY-MM-DD HH24:MI:SS.MS') val
+                            'DateTime' col,
+                            to_char(now(), 'YYYY-MM-DD HH24:MI:SS.MS') val
                         UNION ALL
                         SELECT
-                          'MaxConn' col,
-                          (
+                            'MaxConn' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'max_connections'
-                          ) val
+                                NAME = 'max_connections'
+                            ) val
                         UNION ALL
                         SELECT
-                          'CurrConn' col,
-                          CAST (COUNT (1) AS VARCHAR) val
+                            'CurrConn' col,
+                            CAST(COUNT(1) AS VARCHAR) val
                         FROM
-                          pg_stat_activity
+                            pg_stat_activity
                         UNION ALL
                         SELECT
-                          'TimeOut' col,
-                          (
+                            'TimeOut' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'statement_timeout'
-                          ) val
+                                NAME = 'statement_timeout'
+                            ) val
                         UNION ALL
                         SELECT
-                          'IgnoreCase' col,
-                          CASE
+                            'IgnoreCase' col,
+                            CASE
                             'a' = 'A'
                             WHEN 't' THEN '1'
                             ELSE '0'
-                          END val
+                            END val
                         UNION ALL
                         SELECT
-                          'System' col,
-                          split_part(split_part(VERSION (), ',', 1), ' on ', 2) val
+                            'System' col,
+                            split_part(split_part(VERSION(), ',', 1), ' on ', 2) val
                         ";
 
             var mo = new DEIVM();

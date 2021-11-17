@@ -14,12 +14,6 @@ from main.sqlite_master m left join pragma_table_info(m.name) p ON m.name<>p.nam
 `
     },
     {
-        name: "内置命令",
-        sql: `VACUUM; -- 磁盘空间释放
-
-select hex(randomblob(16)); -- 模拟 UUID`
-    },
-    {
         name: "时间函数",
         sql: `select '日期时间' as name, datetime() as value
 union all
@@ -34,7 +28,17 @@ union all
 select '格式化（yyyy MM dd）', strftime('%Y %m %d','now')
 union all
 select '格式化（HH mm ss fff)', strftime('%H %M %S %s','now')`
-    }
+    },
+    {
+        name: "内置命令",
+        sql: `VACUUM; -- 磁盘空间释放
+
+select hex(randomblob(16)); -- 模拟 UUID`
+    },
+    {
+        name: "",
+        sql: ``
+    },
 ]
 
 export { sqlForSQLite }

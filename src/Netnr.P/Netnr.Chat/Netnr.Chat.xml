@@ -946,6 +946,20 @@
             <param name="pwd">密码</param>
             <param name="isDecrypt">是解密，加密 false</param>
         </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlParserBeginEnd(System.String)">
+            <summary>
+            解析 begin ... end;
+            </summary>
+            <param name="sql"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlParserCursors(System.String)">
+            <summary>
+            解析 open:name for
+            </summary>
+            <param name="sql"></param>
+            <returns></returns>
+        </member>
         <member name="P:Netnr.SharedAdo.DbHelper.Connection">
             <summary>
             连接对象
@@ -967,14 +981,15 @@
             </summary>
             <param name="dbConnection">连接对象</param>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteReader(System.String,System.Data.Common.DbParameter[],System.Func{System.Data.Common.DbCommand,System.Data.Common.DbCommand})">
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteReader(System.String,System.Data.Common.DbParameter[],System.Func{System.Data.Common.DbCommand,System.Data.Common.DbCommand},System.Boolean)">
             <summary>
             执行（查询、新增、修改、删除等）
             </summary>
             <param name="sql">SQL语句，支持多条</param>
             <param name="parameters">带参</param>
             <param name="func">回调</param>
-            <returns>返回表数据和受影响行数</returns>
+            <param name="includeSchemaTable">包含表结构</param>
+            <returns>返回 表数据、受影响行数、表结构</returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteScalar(System.String,System.Data.Common.DbParameter[])">
             <summary>
@@ -1128,15 +1143,15 @@
             扩展
             </summary>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand,System.Int32@)">
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand,System.Boolean)">
             <summary>
             查询返回数据集
             </summary>
             <param name="dbCommand"></param>
-            <param name="recordsAffected"></param>
+            <param name="includeSchemaTable"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand)">
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteData(System.Data.Common.DbCommand)">
             <summary>
             查询返回数据集
             </summary>

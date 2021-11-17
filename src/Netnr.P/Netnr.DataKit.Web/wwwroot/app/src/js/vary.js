@@ -1,7 +1,11 @@
 var vary = {
 
-    theme: "light", //主题 可选 dark
     version: '0.1.0',
+    theme: "light", //主题 可选 dark
+    config: {
+        autoFilterDatabaseNumber: 40, //数据库名超过自动过滤
+        selectDataLimit: 200, //查询数据默认限制行数
+    },
 
     //数据库类型
     typeDB: ["SQLite", "MySQL", "MariaDB", "Oracle", "SQLServer", "PostgreSQL"],
@@ -31,7 +35,9 @@ var vary = {
         add: "➕",
         remove: "❌",
         info: "🔔",
-        data: "🧮"
+        data: "🧮",
+        cog: "⚙",
+        clipboard:"📋"
     },
     /**
      * 获取 icon
@@ -50,11 +56,11 @@ var vary = {
     },
     //连接示例
     resConnDemo: [
-        { id: 10001, type: "SQLite", alias: "SQLite netnrf", group: "demo", order: 1, env: "Test", conn: "Data Source=https://s1.netnr.eu.org/2020/05/22/2037505934.db" },
-        { id: 10002, type: "MySQL", alias: "Heroku JawsDB（ustf345c1n0wkaow）", group: "demo", order: 2, env: "Test", conn: "Server=c8u4r7fp8i8qaniw.chr7pe7iynqr.eu-west-1.rds.amazonaws.com;Port=3306;Uid=fyxnmvubyl01t2k9;Pwd=ai7a4eg3c31scfcm;Database=ustf345c1n0wkaow;" },
-        { id: 10003, type: "MariaDB", alias: "Heroku JawsDB（gvx25hgtxzfr2lia）", group: "demo", order: 3, env: "Test", conn: "Server=eporqep6b4b8ql12.chr7pe7iynqr.eu-west-1.rds.amazonaws.com;Port=3306;Uid=hydfd5qr08d3akt9;Pwd=tk53sieop5ua97pv;Database=gvx25hgtxzfr2lia;" },
-        { id: 10004, type: "SQLServer", alias: "SOMEE MSSQL（netnr-kit）", group: "demo", order: 5, env: "Test", conn: "Server=198.37.116.112,1433;User Id=netnr_SQLLogin_1;Password=o2y9vrbjac;Database=netnr-kit;TrustServerCertificate=True;" },
-        { id: 10005, type: "PostgreSQL", alias: "Heroku PostgreSQL（d7mhfq80unm96q）", group: "demo", order: 6, env: "Test", conn: "Server=ec2-54-74-35-87.eu-west-1.compute.amazonaws.com;Port=5432;User Id=psphnovbbmsgtj;Password=7554b25380195aa5755a24c7f6e1f9f94f3de3dcef9c345c7e93ae8b07699ace;Database=d7mhfq80unm96q;;SslMode=Require;Trust Server Certificate=true;" }
+        { id: 10001, type: "SQLite", alias: "SQLite:netnrf", group: "demo", order: 1, env: "Test", conn: "Data Source=https://s1.netnr.eu.org/2020/05/22/2037505934.db" },
+        { id: 10002, type: "MySQL", alias: "Heroku JawsDB:ustf345c1n0wkaow", group: "demo", order: 2, env: "Test", conn: "Server=c8u4r7fp8i8qaniw.chr7pe7iynqr.eu-west-1.rds.amazonaws.com;Port=3306;Uid=fyxnmvubyl01t2k9;Pwd=ai7a4eg3c31scfcm;Database=ustf345c1n0wkaow;" },
+        { id: 10003, type: "MariaDB", alias: "Heroku JawsDB:gvx25hgtxzfr2lia", group: "demo", order: 3, env: "Test", conn: "Server=eporqep6b4b8ql12.chr7pe7iynqr.eu-west-1.rds.amazonaws.com;Port=3306;Uid=hydfd5qr08d3akt9;Pwd=tk53sieop5ua97pv;Database=gvx25hgtxzfr2lia;" },
+        { id: 10004, type: "SQLServer", alias: "SOMEE MSSQL:netnr-kit", group: "demo", order: 5, env: "Test", conn: "Server=198.37.116.112,1433;User Id=netnr_SQLLogin_1;Password=o2y9vrbjac;Database=netnr-kit;TrustServerCertificate=True;" },
+        { id: 10005, type: "PostgreSQL", alias: "Heroku PostgreSQL:d7mhfq80unm96q", group: "demo", order: 6, env: "Test", conn: "Server=ec2-54-74-35-87.eu-west-1.compute.amazonaws.com;Port=5432;User Id=psphnovbbmsgtj;Password=7554b25380195aa5755a24c7f6e1f9f94f3de3dcef9c345c7e93ae8b07699ace;Database=d7mhfq80unm96q;SslMode=Require;Trust Server Certificate=true;" }
     ],
     //服务
     resServer: [
@@ -67,7 +73,7 @@ var vary = {
     apiHeaders: null, //接口头部参数（如：{ Authorization: "token" }）
 
     apiGetDatabaseName: "/DK/GetDatabaseName",
-    apiGetDatabaseInfo: "/DK/GetDatabaseInfo",
+    apiGetDatabaseInfo: "/DK/GetDatabase",
     apiGetTable: "/DK/GetTable",
     apiGetColumn: "/DK/GetColumn",
     apiSetTableComment: "/DK/SetTableComment",

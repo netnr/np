@@ -26,7 +26,7 @@ ORDER BY
         /// 获取库
         /// </summary>
         /// <returns></returns>
-        public static string GetDatabaseOracle()
+        public static string GetDatabaseOracle(string Where = null)
         {
             return $@"
 SELECT
@@ -60,6 +60,7 @@ LEFT JOIN (
 	GROUP BY
 		TABLESPACE_NAME ) t4 ON
 	t4.TABLESPACE_NAME = t2.DEFAULT_TABLESPACE
+WHERE 1=1 {Where}
 ORDER BY
 	t1.USERNAME
             ";
@@ -123,7 +124,7 @@ ORDER BY
             var listSql = new List<string>();
             TableNames.ForEach(table =>
             {
-                listSql.Add($"SELECT DBMS_METADATA.GET_DDL('TABLE', 'PLTF_ACTIVITY','CQSME1') from dual; -- ddl");
+                listSql.Add($"SELECT DBMS_METADATA.GET_DDL('TABLE', 'PLTF_ACTIVITY','{DatabaseName}') from dual; -- ddl");
             });
             return string.Join(";", listSql);
         }

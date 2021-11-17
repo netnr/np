@@ -159,14 +159,15 @@ namespace Netnr.SharedDataKit
         /// </summary>
         /// <param name="tdb">数据库类型</param>
         /// <param name="conn">连接字符串</param>
+        /// <param name="filterDatabaseName">数据库名</param>
         /// <returns></returns>
-        public static SharedResultVM GetDatabase(SharedEnum.TypeDB? tdb, string conn)
+        public static SharedResultVM GetDatabase(SharedEnum.TypeDB? tdb, string conn, string filterDatabaseName = null)
         {
             return Entry(tdb, conn, null, (vm, dk) =>
             {
                 if (dk != null)
                 {
-                    vm.Data = dk.GetDatabase();
+                    vm.Data = dk.GetDatabase(filterDatabaseName);
                     vm.Set(SharedEnum.RTag.success);
                 }
                 return vm;
@@ -294,33 +295,6 @@ namespace Netnr.SharedDataKit
             {
                 if (dk != null)
                 {
-                    //if (string.IsNullOrWhiteSpace(ctype))
-                    //{
-                    //    var csql = sql.Trim().ToLower().Replace(Environment.NewLine, "");
-                    //    var queryKey1 = string.Empty;
-                    //    var queryKey2 = "select',select '";
-
-                    //    switch (tdb)
-                    //    {
-                    //        case SharedEnum.TypeDB.SQLite:
-                    //            queryKey1 = "select,pragma";
-                    //            break;
-                    //        case SharedEnum.TypeDB.MySQL:
-                    //        case SharedEnum.TypeDB.MariaDB:
-                    //        case SharedEnum.TypeDB.PostgreSQL:
-                    //            queryKey1 = "select,show";
-                    //            break;
-                    //        case SharedEnum.TypeDB.Oracle:
-                    //            queryKey1 = "select";
-                    //            break;
-                    //    }
-
-                    //    if (queryKey2.Split(',').ToList().TrueForAll(k => csql.Contains(k)) || queryKey1.Split(',').Any(k => sql.StartsWith(k)))
-                    //    {
-                    //        ctype = "query";
-                    //    }
-                    //}
-
                     vm.Data = dk.ExecuteSql(sql.Trim(), databaseName);
                     vm.Set(SharedEnum.RTag.success);
                 }
@@ -410,9 +384,9 @@ namespace Netnr.SharedDataKit
                             drValue = Convert.ChangeType(drValue, type);
                             pi.SetValue(mo, drValue, null);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-
+                            Console.WriteLine(ex);
                         }
                     }
                 }

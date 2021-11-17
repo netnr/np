@@ -182,9 +182,9 @@ namespace Netnr.ResponseFramework.Application
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             return result;

@@ -1,10 +1,13 @@
 import { fn } from './fn';
+import { vary } from './vary';
+
 
 var build = {
 
     buildSqlNumberType: {
         "SQLite": "",
         "MySQL": "bigint,int,tinyint,float,integer,year,double,real",
+        "MariDB": "bigint,int,tinyint,float,integer,year,double,real",
         "Oracle": "decimal,float,integer,number",
         "SQLServer": "bigint,int,float,money,numeric,smallint,smallmoney,tinyint",
         "PostgreSQL": "int2,int4,int8,integer,smallint,serial,float4,float8,real,numeric,money"
@@ -58,7 +61,7 @@ var build = {
             columns.forEach(column => cols.push(build.buildSqlQuote(cp.cobj.type, column.ColumnName)));
             return `SELECT ${cols.join(',')} FROM ${table}`
         } else {
-            var topn = 200;
+            var topn = vary.config.selectDataLimit;
             switch (cp.cobj.type) {
                 case "SQLServer":
                     return `SELECT TOP ${topn} * FROM ${table}`
@@ -92,17 +95,23 @@ var build = {
                 dval = 'false';
             } else if (build.buildSqlNumberType[cp.cobj.type].indexOf(column.DataType) >= 0) {
                 dval = 0;
+            } else if (cp.cobj.type == "SQLite") {
+                if (column.PrimaryKey > 0 && ["nvarchar", "varchar", "text"].includes(column.DataType)) {
+                    dval = "hex(randomblob(16))";
+                } else if (["datetime", "date", "time"].includes(column.DataType)) {
+                    dval = `'${fn.formatDateTime(column.DataType)}'`;
+                }
+            } else if (cp.cobj.type == "MySQL") {
+                if (column.PrimaryKey > 0 && ["varchar"].includes(column.DataType)) {
+                    dval = "uuid()";
+                } else if (["datetime", "date", "time"].includes(column.DataType)) {
+                    dval = `'${fn.formatDateTime(column.DataType)}'`;
+                }
             } else if (cp.cobj.type == "SQLServer") {
                 if (column.PrimaryKey > 0 && ["nvarchar", "varchar"].includes(column.DataType)) {
                     dval = "newid()";
                 } else if (["nvarchar", "nchar", "ntext"].includes(column.DataType)) {
                     dval = "N" + dval;
-                } else if (["datetime", "date", "time"].includes(column.DataType)) {
-                    dval = `'${fn.formatDateTime(column.DataType)}'`;
-                }
-            } else if (cp.cobj.type == "SQLite") {
-                if (column.PrimaryKey > 0 && ["nvarchar", "varchar", "text"].includes(column.DataType)) {
-                    dval = "hex(randomblob(16))";
                 } else if (["datetime", "date", "time"].includes(column.DataType)) {
                     dval = `'${fn.formatDateTime(column.DataType)}'`;
                 }

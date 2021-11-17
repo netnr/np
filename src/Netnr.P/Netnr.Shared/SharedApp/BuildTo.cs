@@ -60,7 +60,7 @@ namespace Netnr.SharedApp
                     FileTo.WriteText(html, savePath + mh.Name.ToLower() + ".html", false);
                 });
                 vm.Log.AddRange(cbs);
-                vm.Log.Add("Done");
+                Console.WriteLine("\nDone!\n");
 
                 vm.Set(SharedEnum.RTag.success);
             }

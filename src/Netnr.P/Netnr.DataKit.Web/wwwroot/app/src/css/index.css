@@ -49,7 +49,7 @@
 
 .nr-editor-tool {
     width: var(--ebox-tool-width);
-    background-color: rgb(var(--sl-color-neutral-200));
+    background-color: rgb(var(--sl-color-neutral-100));
 }
 
 .nr-editor-sql {

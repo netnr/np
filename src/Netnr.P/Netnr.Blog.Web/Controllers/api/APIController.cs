@@ -692,9 +692,9 @@ namespace Netnr.Blog.Web.Controllers.api
                     w = Convert.ToInt32(whs.First());
                     h = Convert.ToInt32(whs.Last());
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    Console.WriteLine(ex);
                 }
             }
 
@@ -827,7 +827,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
                                 foreach (var key in Request.Form.Keys)
                                 {
-                                    sb.Append($"&{key}={Request.Form[key].ToString().ToEncode()}");
+                                    sb.Append($"&{key}={Request.Form[key].ToString().ToUrlEncode()}");
                                 }
 
                                 data = Encoding.GetEncoding(charset).GetBytes(sb.Remove(0, 1).ToString());

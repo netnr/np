@@ -205,7 +205,7 @@
         "title": "ICP 备案查询"
       },
       {
-        "url": "//tool.chinaz.com/regex/",
+        "url": "/regex",
         "icon": "regex",
         "title": "正则表达式"
       },

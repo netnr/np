@@ -24,7 +24,7 @@ ORDER BY
         /// 获取库
         /// </summary>
         /// <returns></returns>
-        public static string GetDatabaseSQLServer()
+        public static string GetDatabaseSQLServer(string Where = null)
         {
             return $@"
 SELECT
@@ -73,6 +73,7 @@ SELECT
   t1.create_date AS DatabaseCreateTime
 FROM
   sys.databases t1
+WHERE 1=1 {Where}
 ORDER BY
   t1.name;
             ";

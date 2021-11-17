@@ -115,6 +115,20 @@
             <param name="pwd">密码</param>
             <param name="isDecrypt">是解密，加密 false</param>
         </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlParserBeginEnd(System.String)">
+            <summary>
+            解析 begin ... end;
+            </summary>
+            <param name="sql"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlParserCursors(System.String)">
+            <summary>
+            解析 open:name for
+            </summary>
+            <param name="sql"></param>
+            <returns></returns>
+        </member>
         <member name="P:Netnr.SharedAdo.DbHelper.Connection">
             <summary>
             连接对象
@@ -365,7 +379,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseMySQL">
+        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseMySQL(System.String)">
             <summary>
             获取库
             </summary>
@@ -419,7 +433,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseSQLServer">
+        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseSQLServer(System.String)">
             <summary>
             获取库
             </summary>
@@ -465,7 +479,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseOracle">
+        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseOracle(System.String)">
             <summary>
             获取库
             </summary>
@@ -519,7 +533,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.Configs.GetDatabasePostgreSQL">
+        <member name="M:Netnr.SharedDataKit.Configs.GetDatabasePostgreSQL(System.String)">
             <summary>
             获取库
             </summary>
@@ -600,10 +614,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.IDataKitTo.GetDatabase">
+        <member name="M:Netnr.SharedDataKit.IDataKitTo.GetDatabase(System.String)">
             <summary>
             获取库
             </summary>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.IDataKitTo.GetTable(System.String)">
@@ -809,10 +824,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitMySQLTo.GetDatabase">
+        <member name="M:Netnr.SharedDataKit.DataKitMySQLTo.GetDatabase(System.String)">
             <summary>
             获取库
             </summary>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitMySQLTo.GetTable(System.String)">
@@ -923,10 +939,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitOracleTo.GetDatabase">
+        <member name="M:Netnr.SharedDataKit.DataKitOracleTo.GetDatabase(System.String)">
             <summary>
             获取库
             </summary>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitOracleTo.GetTable(System.String)">
@@ -1037,10 +1054,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitPostgreSQLTo.GetDatabase">
+        <member name="M:Netnr.SharedDataKit.DataKitPostgreSQLTo.GetDatabase(System.String)">
             <summary>
             获取库
             </summary>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitPostgreSQLTo.GetTable(System.String)">
@@ -1151,10 +1169,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitSQLiteTo.GetDatabase">
+        <member name="M:Netnr.SharedDataKit.DataKitSQLiteTo.GetDatabase(System.String)">
             <summary>
             获取库
             </summary>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitSQLiteTo.GetTable(System.String)">
@@ -1265,10 +1284,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitSQLServerTo.GetDatabase">
+        <member name="M:Netnr.SharedDataKit.DataKitSQLServerTo.GetDatabase(System.String)">
             <summary>
             获取库
             </summary>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitSQLServerTo.GetTable(System.String)">
@@ -1364,12 +1384,13 @@
             <param name="conn">连接字符串</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKitTo.GetDatabase(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+        <member name="M:Netnr.SharedDataKit.DataKitTo.GetDatabase(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
             <summary>
             获取库
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="conn">连接字符串</param>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitTo.GetTable(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
@@ -2021,12 +2042,13 @@
             <param name="conn">连接字符串</param>
             <returns></returns>
         </member>
-        <member name="M:DKControllerTo.GetDatabase(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
+        <member name="M:DKControllerTo.GetDatabase(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">
             <summary>
             获取库
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="conn">连接字符串</param>
+            <param name="filterDatabaseName">数据库名</param>
             <returns></returns>
         </member>
         <member name="M:DKControllerTo.GetTable(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String)">

@@ -6,7 +6,7 @@ import { db } from './db';
 var step = {
     //连接记录
     "cp-1": {
-        cobj: null,
+        cobj: {},
         databaseName: null,
         tableName: null
     },
@@ -143,7 +143,7 @@ var step = {
 
             //连接缓存
             //step.cpKeys.forEach(k => sobj.connCache[k] = step.cpGet(k));
-            sobj.connCache['1'] = step.cpGet(1);
+            sobj.connCache['1'] = step.cpGet(1) || {};
 
             if (sobj.loadTable) {
                 sobj.selectedTable = vary.gridOpsTable.api.getSelectedRows().map(x => x.TableName);

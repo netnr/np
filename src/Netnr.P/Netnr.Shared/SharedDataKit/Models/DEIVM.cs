@@ -48,7 +48,7 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 当前时间
         /// </summary>
-        public DateTime DateTime { get; set; }
+        public DateTime? DateTime { get; set; }
         /// <summary>
         /// 最大连接数
         /// </summary>

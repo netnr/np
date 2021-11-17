@@ -67,10 +67,17 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 获取库
         /// </summary>
+        /// <param name="filterDatabaseName">数据库名</param>
         /// <returns></returns>
-        public List<DatabaseVM> GetDatabase()
+        public List<DatabaseVM> GetDatabase(string filterDatabaseName = null)
         {
-            var sql = Configs.GetDatabaseSQLServer();
+            var where = string.Empty;
+            if (!string.IsNullOrWhiteSpace(filterDatabaseName))
+            {
+                where = $"AND t1.name IN ('{string.Join("','", filterDatabaseName.Replace("'", "").Split(','))}')";
+            }
+
+            var sql = Configs.GetDatabaseSQLServer(where);
             var ds = db.SqlExecuteReader(sql);
 
             var list = ds.Item1.Tables[0].ToModel<DatabaseVM>();

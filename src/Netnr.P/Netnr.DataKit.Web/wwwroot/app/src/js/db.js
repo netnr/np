@@ -97,6 +97,7 @@ var db = {
             getRowNodeId: data => data.id, //指定行标识列
             defaultColDef: agg.defaultColDef({ editable: true }),
             columnDefs: [
+                { field: 'id', headerName: vary.icons.id, width: 150, editable: false, checkboxSelection: true, headerCheckboxSelection: true, },
                 { field: 'alias', headerName: vary.icons.connConn + "连接名", width: 350, rowDrag: true, },
                 {
                     field: 'type', headerName: vary.icons.connType + "类型", enableRowGroup: true, width: 160,
@@ -114,8 +115,7 @@ var db = {
                     }
                 },
                 { field: 'order', headerName: vary.icons.connOrder + "排序" },
-                { field: 'id', headerName: vary.icons.id, width: 150, editable: false, },
-                { field: 'conn', headerName: vary.icons.connConn + "连接字符串", width: 600, cellEditor: 'agLargeTextCellEditor', },
+                { field: 'conn', headerName: vary.icons.connConn + "连接字符串", width: 600, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
                 {
                     headerName: vary.icons.ctrl + "操作", pinned: 'right', width: 100, hide: true, filter: false, sortable: false, editable: false, menuTabs: false,
                     cellRenderer: class {
@@ -163,7 +163,6 @@ var db = {
                 },
             ],
             autoGroupColumnDef: agg.autoGroupColumnDef(),
-            suppressClickEdit: true, //禁用双击编辑
             rowDragManaged: true, //拖拽
             rowDragMultiRow: true, //多行拖拽
             onRowDragEnd: function (event) {
@@ -186,9 +185,9 @@ var db = {
                 //编辑连接信息
                 ls.connsSet(agg.getAllRows(vary.gridOpsConns, true));
             },
-            //双击连接打开
-            onRowDoubleClicked: function (event) {
-                if (!event.node.group) {
+            onCellDoubleClicked: function (event) {
+                //双击ID打开
+                if (event.colDef.field == "id") {
                     //切换连接
                     if (step.cpGet(1).cobj.id != event.node.data.id) {
                         ["database", "table", "column"].forEach(vkey => db.removeGrid(vkey))
@@ -407,9 +406,72 @@ var db = {
             } else {
                 var pars = db.parameterJoin({ tdb: cobj.type, conn: cobj.conn });
                 db.request(`${vary.apiServer}${vary.apiGetDatabaseName}?${pars}`).then(res => {
-                    ls.cc([cobj.id], res.data) //缓存
+                    var dbrows = [];
+                    res.data.forEach(name => {
+                        dbrows.push({ DatabaseName: name })
+                    })
+                    ls.cc([cobj.id], dbrows) //缓存
 
-                    resolve(res.data);
+                    resolve(dbrows);
+                }).catch(err => reject(err));
+            }
+        })
+    }),
+
+    /**
+     * 请求库信息
+     * @param {*} cobj
+     * @param {*} filterDatabaseName
+     * @param {*} forcedReload
+     * @returns 
+     */
+    reqDatabaseInfo: (cobj, filterDatabaseName, forcedReload = false) => new Promise((resolve, reject) => {
+        var fdn = filterDatabaseName == "" ? [] : filterDatabaseName.split(',');
+        new Promise(fr => {
+            if (forcedReload) {
+                fr()
+            } else {
+                ls.cc([cobj.id]).then(res => {
+                    if (res != null) {
+                        var hasdi = true;
+                        res.data.forEach(row => {
+                            if (fdn.length == 0) {
+                                if (!Object.hasOwnProperty.call(row, "DatabaseClassify")) {
+                                    hasdi = false;
+                                }
+                            } else {
+                                if (fdn.includes(row.DatabaseName) && !Object.hasOwnProperty.call(row, "DatabaseClassify")) {
+                                    hasdi = false;
+                                }
+                            }
+                        })
+                        if (hasdi) {
+                            fr(res.data)
+                        } else {
+                            fr()
+                        }
+                    } else {
+                        fr()
+                    }
+                }).catch(() => fr())
+            }
+        }).then(data => {
+            if (data) {
+                resolve(data)
+            } else {
+                var pars = db.parameterJoin({ tdb: cobj.type, conn: cobj.conn, filterDatabaseName: filterDatabaseName });
+                db.request(`${vary.apiServer}${vary.apiGetDatabaseInfo}?${pars}`).then(res => {
+                    ls.cc([cobj.id]).then(cdb => {
+                        cdb.data.forEach(row => {
+                            var newrow = res.data.filter(x => x.DatabaseName == row.DatabaseName);
+                            if (newrow.length > 0) {
+                                Object.assign(row, newrow[0]);
+                            }
+                        })
+                        ls.cc([cobj.id], cdb.data) //缓存
+
+                        resolve(cdb.data);
+                    })
                 }).catch(err => reject(err));
             }
         })
@@ -418,20 +480,10 @@ var db = {
     /**
      * 显示库
      * @param {*} databases 
-     * @param {*} nameOnly 
      */
-    viewDatabase: (databases, nameOnly = true) => new Promise(resolve => {
-        var dbrows = [];
-        if (nameOnly) {
-            databases.forEach(name => {
-                dbrows.push({ DatabaseName: name })
-            })
-        } else {
-            dbrows = databases;
-        }
-
+    viewDatabase: (databases) => new Promise(resolve => {
         var opsDatabase = agg.optionDef({
-            rowData: dbrows,//数据源
+            rowData: databases,//数据源
             getRowNodeId: data => data.DatabaseName, //指定行标识列
             columnDefs: [
                 {
@@ -467,10 +519,28 @@ var db = {
                     })
                 }
             },
+            //库信息展开
             onColumnGroupOpened: function (event) {
-                console.log('onColumnGroupOpened', event);
-                console.log(event.api.getFirstDisplayedRow());
-                console.log(event.api.getLastDisplayedRow());
+                if (event.columnGroup.expanded) {
+                    var rows = event.api.getSelectedRows();
+                    if (rows.length == 0) {
+                        var firstdi = event.api.getFirstDisplayedRow();
+                        var lastdi = event.api.getLastDisplayedRow();
+                        for (var i = firstdi; i <= lastdi; i++) {
+                            var row = event.api.getDisplayedRowAtIndex(i);
+                            rows.push(row.data);
+                        }
+                    } else if (agg.getAllRows(vary.gridOpsDatabase).length == rows.length) {
+                        rows = [];
+                    }
+
+                    var cp = step.cpGet(1);
+                    db.reqDatabaseInfo(cp.cobj, rows.map(row => row.DatabaseName).join(',')).then(res => {
+                        vary.gridOpsDatabase.api.applyTransactionAsync({
+                            update: res
+                        })
+                    });
+                }
             },
             //连接菜单项
             getContextMenuItems: (event) => {
@@ -549,14 +619,10 @@ var db = {
             }
         });
 
-        if (nameOnly) {
-            opsDatabase.columnDefs = opsDatabase.columnDefs.filter(x => x.field == null || x.field == 'DatabaseName');
-        }
-
         db.createGrid("database", opsDatabase);
 
         //如果库多，默认过滤显示
-        if (dbrows.length > 40) {
+        if (databases.length > vary.config.autoFilterDatabaseNumber) {
             var cd = step.cpGet(1);
             var dbkey = cd.cobj.type == "Oracle" ? "user id=" : "database=", databaseName, dbs = cd.cobj.conn.split(';').filter(kv => kv.toLowerCase().startsWith(dbkey));
             if (dbs.length) {
@@ -632,7 +698,7 @@ var db = {
                         return params.value;
                     }
                 },
-                { field: 'TableComment', tooltipField: "TableComment", headerName: vary.icons.comment + "表注释", width: 290, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', },
+                { field: 'TableComment', tooltipField: "TableComment", headerName: vary.icons.comment + "表注释", width: 290, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
                 { field: 'TableRows', headerName: "行数" },
                 {
                     field: 'TableDataLength', headerName: "数据大小", width: 160,
@@ -988,9 +1054,9 @@ var db = {
             columnDefs: [
                 { headerName: vary.icons.id, valueGetter: "node.rowIndex + 1", width: 120, checkboxSelection: true, headerCheckboxSelection: true, sortable: false, filter: false, menuTabs: false, hide: true },
                 { field: 'TableName', headerName: vary.icons.connTable + "表名", rowGroup: true, enableRowGroup: true, width: 350, hide: true, },
-                { field: 'TableComment', headerName: vary.icons.connTable + "表注释", width: 300, hide: true },                
+                { field: 'TableComment', headerName: vary.icons.connTable + "表注释", width: 300, hide: true },
                 { field: 'ColumnName', headerName: vary.icons.connColumn + "列名", width: 200, hide: true, },
-                { field: 'ColumnComment', tooltipField: "ColumnComment", headerName: vary.icons.comment + "列注释", width: 330, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', },
+                { field: 'ColumnComment', tooltipField: "ColumnComment", headerName: vary.icons.comment + "列注释", width: 330, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
                 { field: 'ColumnType', headerName: "类型及长度", width: 150, hide: true },
                 { field: 'DataType', headerName: "类型", width: 120, hide: true },
                 { field: 'DataLength', headerName: "长度", hide: true },

@@ -1,4 +1,5 @@
 ﻿using Netnr.Core;
+using System.Security.Cryptography;
 
 namespace Netnr.Test.Controllers
 {
@@ -8,6 +9,24 @@ namespace Netnr.Test.Controllers
     [Route("[controller]/[action]")]
     public class CoreController : Controller
     {
+        [HttpGet]
+        public SharedResultVM Extend()
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var vjson = new
+                {
+                    mail = "2247826170@qq.com",
+                    ts = DateTime.Now.ToTimestamp()
+                }.ToJson();
+
+                var v1 = vjson.ToBase64Encode();
+                var v2 = v1.ToUrlEncode();
+
+                return vm;
+            });
+        }
+
         /// <summary>
         /// CmdTo
         /// </summary>
@@ -53,7 +72,7 @@ namespace Netnr.Test.Controllers
             foreach (var item in vm.Log)
             {
                 Console.WriteLine(item);
-            }            
+            }
 
             return vm;
         }

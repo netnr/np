@@ -122,7 +122,8 @@ window.addEventListener("DOMContentLoaded", function () {
     step.stepStart().then(() => {
         vary.domLoading.style.display = "none";
         vary.domMain.style.visibility = "visible";
-        console.clear();
+
+        setTimeout(() => console.clear(), 1000 * 2);
     })
 
 }, false);

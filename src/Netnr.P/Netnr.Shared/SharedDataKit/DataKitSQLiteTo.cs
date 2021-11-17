@@ -50,9 +50,6 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public List<string> GetDatabaseName()
         {
-            Microsoft.Data.Sqlite.SqliteConnectionStringBuilder builder = new(dbConnection.ConnectionString);
-            var fi = new FileInfo(builder.DataSource);
-
             var list = new List<string>() { DefaultDatabaseName() };
 
             return list;
@@ -61,8 +58,9 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 获取库
         /// </summary>
+        /// <param name="filterDatabaseName">数据库名</param>
         /// <returns></returns>
-        public List<DatabaseVM> GetDatabase()
+        public List<DatabaseVM> GetDatabase(string filterDatabaseName = null)
         {
             Microsoft.Data.Sqlite.SqliteConnectionStringBuilder builder = new(dbConnection.ConnectionString);
             var fi = new FileInfo(builder.DataSource);

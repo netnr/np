@@ -5,7 +5,6 @@ namespace Netnr.FileServer.Controllers
     /// <summary>
     /// 切片
     /// </summary>
-    [Route("[controller]/[action]")]
     [Apps.FilterConfigs.AllowCors]
     public class SliceController : Controller
     {

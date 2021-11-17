@@ -249,9 +249,9 @@ namespace Netnr.Blog.Web.Controllers
                 uiR.Update(outMo);
                 db.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             try
@@ -694,8 +694,9 @@ namespace Netnr.Blog.Web.Controllers
 
                                             HttpTo.DownloadSave(HttpTo.HWRequest(avatar), PathTo.Combine(ppath, mo.UserPhoto));
                                         }
-                                        catch (Exception)
+                                        catch (Exception ex)
                                         {
+                                            Console.WriteLine(ex);
                                         }
                                     }
                                 }

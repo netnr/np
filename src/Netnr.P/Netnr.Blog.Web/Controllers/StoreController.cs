@@ -123,8 +123,9 @@ namespace Netnr.Blog.Web.Controllers
                         result = cos.GetFolderList(bucket, path, folderlistParasDic);
                         result = System.Net.WebUtility.UrlDecode(result);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex);
                         result = "{}";
                     }
                     break;
@@ -172,8 +173,9 @@ namespace Netnr.Blog.Web.Controllers
                             result = "0";
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex);
                         result = "0";
                     }
                     break;
@@ -187,8 +189,9 @@ namespace Netnr.Blog.Web.Controllers
                         string folder = Request.Form["folder"].ToString();
                         result = cos.CreateFolder(bucket, path + folder);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex);
                         result = "{}";
                     }
                     break;
@@ -224,8 +227,9 @@ namespace Netnr.Blog.Web.Controllers
                                     }
                                 }
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
+                                Console.WriteLine(ex);
                             }
                         }
                         foreach (var item in folder)
@@ -245,8 +249,9 @@ namespace Netnr.Blog.Web.Controllers
                                     }
                                 }
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
+                                Console.WriteLine(ex);
                             }
                         }
                         if (b2)
@@ -355,8 +360,9 @@ namespace Netnr.Blog.Web.Controllers
                         bool b = nosClient.DoesObjectExist(bucket, key);
                         result = b ? "1" : "0";
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex);
                         result = "error";
                     }
                     break;
@@ -377,8 +383,9 @@ namespace Netnr.Blog.Web.Controllers
                         }
                         result = "success";
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex);
                         result = "fail";
                     }
                     break;

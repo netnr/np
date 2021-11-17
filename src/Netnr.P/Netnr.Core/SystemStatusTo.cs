@@ -530,15 +530,14 @@ namespace Netnr.Core
                 string os = null;
                 try
                 {
-                    if (File.Exists("/etc/redhat-release"))
-                    {
-                        var list = FileTo.ReadText("/etc/redhat-release").Split(' ');
-                        os = list[0] + " " + list[3];
-                    }
-                    else if (File.Exists("/etc/os-release"))
+                    if (File.Exists("/etc/os-release"))
                     {
                         var list = FileTo.ReadText("/etc/os-release").Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                         os = list.FirstOrDefault(x => x.Contains("PRETTY_NAME")).Split('"')[1];
+                    }
+                    else if (File.Exists("/etc/redhat-release"))
+                    {
+                        os = FileTo.ReadText("/etc/redhat-release");
                     }
                     else if (File.Exists("/etc/lsb-release"))
                     {

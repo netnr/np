@@ -15,10 +15,26 @@
 
     <link href="https://npm.elemecdn.com/jsoneditor@9.5.6/dist/jsoneditor.min.css" rel="stylesheet">
     <script src="https://npm.elemecdn.com/jsoneditor@9.5.6/dist/jsoneditor.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.13/src-noconflict/theme-tomorrow_night.js"></script>
+    <script src="https://npm.elemecdn.com/ace-builds@1.4.13/src-noconflict/theme-tomorrow_night.js"></script>
 
     <style>
         @media (prefers-color-scheme: dark) {
+
+            /* 滚动条 */
+            ::-webkit-scrollbar {
+                background: #000;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #393812;
+                -webkit-border-radius: 1ex;
+                -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+            }
+
+            ::-webkit-scrollbar-corner {
+                background: #000;
+            }
+
             html, button, div.jsoneditor-contextmenu .jsoneditor-menu {
                 color: #c5c8c6;
                 background-color: #22272e;
@@ -42,8 +58,8 @@
             div.jsoneditor-frame input,
             div.jsoneditor-navigation-bar,
             div.jsoneditor textarea.jsoneditor-text {
-                background-color: #666666;
-                color: #ffffff;
+                background-color: #1d1f21;
+                color: #C5C8C6;
             }
 
             div.jsoneditor-field,

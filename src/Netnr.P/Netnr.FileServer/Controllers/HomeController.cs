@@ -13,7 +13,7 @@ namespace Netnr.FileServer.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            return View();
+            return Redirect("/swagger");
         }
 
         /// <summary>
@@ -44,6 +44,6 @@ namespace Netnr.FileServer.Controllers
                 StatusCode = 200,
                 ContentType = "text/css"
             };
-        }             
+        }
     }
 }

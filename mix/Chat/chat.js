@@ -473,38 +473,6 @@ c.init = function () {
 //NetnrMD编辑器 功能扩展
 
 netnrmd.extend = {
-    //表情
-    emoji: {
-        //按钮
-        button: { title: '表情', cmd: 'emoji', svg: '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>' },
-        //动作
-        action: function (that) {
-            if (!that.emojipopup) {
-                var epath = "https://s1.netnr.com/emoji/";
-                fetch(epath + 'api.json').then(x => x.json()).then(res => {
-                    //构建弹出内容
-                    var htm = [], emojis = res.filter(x => x.type == "wangwang")[0];
-                    for (var i = 0; i < emojis.list.length; i++) {
-                        var eurl = epath + emojis.type + '/' + i + emojis.ext;
-                        htm.push('<img class="netnrmd-emoji" title="' + emojis.list[i] + '" src="' + eurl + '" />');
-                    }
-                    //弹出
-                    that.emojipopup = netnrmd.popup("表情", htm.join(''));
-                    //选择表情
-                    that.emojipopup.addEventListener('click', function (e) {
-                        var target = e.target;
-                        if (target.nodeName == "IMG") {
-                            netnrmd.insertAfterText(that.obj.me, '![emoji](' + target.src + ' "' + target.title + '")\n');
-
-                            this.style.display = 'none';
-                        }
-                    }, false)
-                });
-            } else {
-                that.emojipopup.style.display = '';
-            }
-        }
-    },
     //上传
     upload: {
         //按钮
@@ -557,7 +525,7 @@ netnrmd.extend = {
                                     console.log(xhr.responseText)
                                     var res = JSON.parse(xhr.responseText);
                                     if (res.code == 200) {
-                                        let url = res.data.server + res.data.path;
+                                        let url = "https://www.netnr.eu.org" + res.data.path;
                                         //上传成功，插入链接
                                         netnrmd.insertAfterText(that.obj.me, '[' + file.name + '](' + url + ')');
                                         that.uploadpopup.style.display = "none";
@@ -586,21 +554,17 @@ require(['vs/editor/editor.main'], function () {
 
         //渲染前回调
         viewbefore: function () {
-            //工具栏隐藏项
-            $.each(this.items, function (i) {
-                if (i < 15) {
-                    this.class = "hidden";
+            this.items.forEach(item => {
+                if (!["emoji", "fullscreen", "splitscreen"].includes(item.cmd)) {
+                    item.class = item.class == null ? "hidden" : item.class + " hidden";
                 }
             })
-
-            this.items.splice(0, 0, netnrmd.extend.emoji.button);
             this.items.push(netnrmd.extend.upload.button);
         },
 
         //命令回调
         cmdcallback: function (cmd) {
             switch (cmd) {
-                case "emoji":
                 case "upload":
                     netnrmd.extend[cmd].action(this)
                     break;

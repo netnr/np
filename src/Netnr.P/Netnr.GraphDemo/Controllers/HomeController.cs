@@ -38,7 +38,7 @@ public class HomeController : Controller
         num = Math.Min(num, 66);
         num = Math.Max(num, 1);
 
-        var code = Guid.NewGuid().ToString("N").Substring(0, 4);
+        var code = Guid.NewGuid().ToString("N")[..4];
         var c1 = new SixLaborsImageSharpDrawingController();
         var c2 = new SystemDrawingCommonController(env);
         var c3 = new SkiaSharpController(env);

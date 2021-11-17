@@ -56,7 +56,7 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime DatabaseCreateTime { get; set; }
+        public DateTime? DatabaseCreateTime { get; set; }
     }
 }
 

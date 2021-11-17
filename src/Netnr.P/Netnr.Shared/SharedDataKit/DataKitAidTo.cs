@@ -123,8 +123,10 @@ namespace Netnr.SharedDataKit
                                             values += $"@{col.ColumnName}, ";
 
                                             //新增参数
-                                            var parameter = new NpgsqlParameter(col.ColumnName, col.DataType);
-                                            parameter.SourceColumn = col.ColumnName;
+                                            var parameter = new NpgsqlParameter(col.ColumnName, col.DataType)
+                                            {
+                                                SourceColumn = col.ColumnName
+                                            };
                                             dataAdapter.InsertCommand.Parameters.Add(parameter);
                                         }
 
@@ -212,7 +214,7 @@ namespace Netnr.SharedDataKit
                         dt.Columns.Add(new DataColumn(dr["ColumnName"].ToString(), (Type)(dr["DataType"]))
                         {
                             Unique = (bool)dr["IsUnique"],
-                            AllowDBNull = dr["AllowDBNull"] == DBNull.Value ? true : (bool)dr["AllowDBNull"],
+                            AllowDBNull = dr["AllowDBNull"] == DBNull.Value || (bool)dr["AllowDBNull"],
                             AutoIncrement = (bool)dr["IsAutoIncrement"]
                         });
                     }
@@ -315,7 +317,7 @@ namespace Netnr.SharedDataKit
                         dt.Columns.Add(new DataColumn(dr["ColumnName"].ToString(), (Type)(dr["DataType"]))
                         {
                             Unique = (bool)dr["IsUnique"],
-                            AllowDBNull = dr["AllowDBNull"] == DBNull.Value ? true : (bool)dr["AllowDBNull"],
+                            AllowDBNull = dr["AllowDBNull"] == DBNull.Value || (bool)dr["AllowDBNull"],
                             AutoIncrement = (bool)dr["IsAutoIncrement"]
                         });
                     }

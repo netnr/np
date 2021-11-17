@@ -48,7 +48,7 @@
                     var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
                     var context = '<em class="badge bg-secondary" title="该信息已被屏蔽">block</em>'
                     if (!this.IsBlock) {
-                        context = netnrmd.render(this.Content).replace(/@@\S+/g, function (n) {
+                        context = netnrmd.render(netnrmd.spacing(this.Content)).replace(/@@\S+/g, function (n) {
                             return '<span class="text-primary">' + n + '</span>'
 
                         }).replace(/#\d+/g, function (n) {

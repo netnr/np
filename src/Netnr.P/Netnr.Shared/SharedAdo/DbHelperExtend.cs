@@ -2,6 +2,7 @@
 
 using System.Data;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 
 namespace Netnr.SharedAdo
 {
@@ -106,6 +107,43 @@ namespace Netnr.SharedAdo
                 return conn = Core.CalcTo.AESEncrypt(conn, pwd);
             }
         }
+
+        /// <summary>
+        /// 解析 begin ... end;
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static bool SqlParserBeginEnd(string sql)
+        {
+            string pattern = @"begin(.*)end(\s+||\s\S+);";
+            RegexOptions options = RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline;
+            return Regex.Matches(sql, pattern, options).Count > 0;
+        }
+
+        /// <summary>
+        /// 解析 open:name for
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static HashSet<string> SqlParserCursors(string sql)
+        {
+            var list = new HashSet<string>();
+
+            string pattern = @"open(\s+|):(\S+)\s+for";
+            RegexOptions options = RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline;
+
+            var mcs = Regex.Matches(sql, pattern, options);
+            for (int i = 0; i < mcs.Count; i++)
+            {
+                var mc = mcs[i];
+                if (mc.Success)
+                {
+                    list.Add(mc.Groups[2].ToString().ToLower());
+                }
+            }
+
+            return list;
+        }
     }
 
     /// <summary>
@@ -134,7 +172,8 @@ namespace Netnr.SharedAdo
                     TableName = $"table{ds.Tables.Count + 1}"
                 };
 
-                if (includeSchemaTable && reader.FieldCount > 0)
+                var hasField = reader.FieldCount > 0;
+                if (includeSchemaTable && hasField)
                 {
                     var st = reader.GetSchemaTable();
                     st.TableName = table.TableName;
@@ -142,7 +181,10 @@ namespace Netnr.SharedAdo
                 }
 
                 table.Load(reader);
-                ds.Tables.Add(table);
+                if (hasField)
+                {
+                    ds.Tables.Add(table);
+                }
             } while (!reader.IsClosed);
 
             return new Tuple<DataSet, int, DataSet>(ds, recordsAffected, dsSchema);

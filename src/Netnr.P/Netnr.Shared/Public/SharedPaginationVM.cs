@@ -33,8 +33,9 @@ namespace Netnr
                 {
                     pt = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(Total) / Convert.ToDecimal(PageSize)));
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                 }
                 return pt;
             }

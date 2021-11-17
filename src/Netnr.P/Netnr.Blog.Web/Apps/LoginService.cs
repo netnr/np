@@ -87,9 +87,9 @@ namespace Netnr.Blog.Web.Apps
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             return mo;

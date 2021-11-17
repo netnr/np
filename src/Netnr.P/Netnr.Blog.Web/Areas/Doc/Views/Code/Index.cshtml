@@ -23,6 +23,10 @@
             color: #42b983;
         }
 
+        .sidebar ul li.active > a {
+            font-weight: 400 !important;
+        }
+
 
         /*目录*/
         @@media (min-width: 800px) {
@@ -122,15 +126,15 @@
             <li>
                 @if (uinfo.UserId == 0)
                 {
-                    <a data-href="/doc/discover" title="Doc">
-                        <i class="fa fa-fw fa-lg fa-book text-success"></i>
-                    </a>
+                        <a data-href="/doc/discover" title="Doc">
+                            <i class="fa fa-fw fa-lg fa-book text-success"></i>
+                        </a>
                 }
                 else
                 {
-                    <a data-href="/doc/user/@uinfo.UserId" title="Your doc">
-                        <i class="fa fa-fw fa-lg fa-book text-success"></i>
-                    </a>
+                        <a data-href="/doc/user/@uinfo.UserId" title="Your doc">
+                            <i class="fa fa-fw fa-lg fa-book text-success"></i>
+                        </a>
                 }
             </li>
             <li>
@@ -238,10 +242,10 @@
 
         const nd = {
             sourceList: [
-                "https://npm.elemecdn.com/@@highlightjs/cdn-assets@11.2.0/styles/vs.min.css",
-                "https://npm.elemecdn.com/@@highlightjs/cdn-assets@11.2.0/highlight.min.js",
                 "https://npm.elemecdn.com/docsify@4.12.1/lib/themes/vue.css",
-                "https://npm.elemecdn.com/docsify@4.12.1/lib/docsify.min.js"
+                "https://npm.elemecdn.com/docsify@4.12.1/lib/docsify.min.js",
+                "https://npm.elemecdn.com/@@highlightjs/cdn-assets@11.3.1/styles/vs.min.css",
+                "https://npm.elemecdn.com/@@highlightjs/cdn-assets@11.3.1/highlight.min.js"
             ],
             createNode: function (nn, html) {
                 let em = document.createElement(nn);
@@ -258,10 +262,14 @@
 
                     var head = document.getElementsByTagName("HEAD")[0];
 
-                    head.appendChild(nd.createNode("STYLE", res[0]));
-                    head.appendChild(nd.createNode("SCRIPT", res[1]));
-                    head.appendChild(nd.createNode("STYLE", "*" + res[2].split(';*')[1]));
-                    head.appendChild(nd.createNode("SCRIPT", res[3]));
+                    for (let i = 0; i < res.length; i++) {
+                        let suri = nd.sourceList[i];
+                        let text = res[i];
+                        if (text.includes("fonts.googleapis.com")) {
+                            text = "*" + text.split(';*')[1];
+                        }
+                        head.appendChild(nd.createNode(suri.endsWith('.js') ? "SCRIPT" : "STYLE", text));
+                    }
 
                     document.querySelector(".app-nav").style.display = "";
                 })

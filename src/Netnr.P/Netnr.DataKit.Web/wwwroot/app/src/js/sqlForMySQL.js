@@ -22,8 +22,22 @@ show slave status; -- 从状态
 show master status; -- 主状态`
     },
     {
-        name: "",
-        sql: ``
+        name: "时间函数",
+        sql: `select now(), sysdate(), sleep(1)
+union all
+select now(), sysdate(), 0; -- 当前日期时间，now 执行开始得到值 sysdate 实时获取
+
+select concat('日期：',current_date(),' , 时间：',current_time()) '日期、时间' -- 日期、时间
+union all
+select concat('UTC日期：',utc_date(),' , UTC时间：',utc_time());
+
+select utc_timestamp(); -- utc日期时间
+select unix_timestamp(now()); -- 转时间戳
+select date_format(now(), '%Y/%m/%d %H:%i:%s'); -- 格式化`
+    },
+    {
+        name: "内置方法、对象",
+        sql: `select uuid()`
     },
     {
         name: "",

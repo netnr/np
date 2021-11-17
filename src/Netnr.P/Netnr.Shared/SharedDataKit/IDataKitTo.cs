@@ -33,8 +33,9 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 获取库
         /// </summary>
+        /// <param name="filterDatabaseName">数据库名</param>
         /// <returns></returns>
-        List<DatabaseVM> GetDatabase();
+        List<DatabaseVM> GetDatabase(string filterDatabaseName = null);
 
         /// <summary>
         /// 获取表

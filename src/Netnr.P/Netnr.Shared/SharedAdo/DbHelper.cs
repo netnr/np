@@ -53,25 +53,13 @@ namespace Netnr.SharedAdo
                 int recordsAffected = -1;
 
                 var isOracle = Connection.GetType().FullName.ToLower().Contains("oracle");
-
-                if (!isOracle)
+                var isSplit = false;
+                if (isOracle)
                 {
-                    var dbc = GetCommand(sql, parameters);
-                    if (func != null)
-                    {
-                        dbc = func(dbc);
-                    }
-                    var eds = dbc.ExecuteDataSet(includeSchemaTable);
-                    ds = eds.Item1;
-                    recordsAffected = eds.Item2;
-                    dsSchema = eds.Item3;
-
-                    if (DicCommand.ContainsKey(dbc.Site.Name))
-                    {
-                        DicCommand.Remove(dbc.Site.Name);
-                    }
+                    isSplit = !SqlParserBeginEnd(sql);
                 }
-                else
+
+                if (isOracle && isSplit)
                 {
                     var listSql = sql.Split(';').ToList();
                     var hasRa = false;
@@ -79,6 +67,11 @@ namespace Netnr.SharedAdo
 
                     foreach (var txt in listSql)
                     {
+                        if (string.IsNullOrWhiteSpace(txt))
+                        {
+                            continue;
+                        }
+
                         var dbc = GetCommand(txt, parameters);
                         if (func != null)
                         {
@@ -117,6 +110,24 @@ namespace Netnr.SharedAdo
                     if (hasRa)
                     {
                         recordsAffected = ra;
+                    }
+                }
+                else
+                {
+                    var cmd = GetCommand(sql, parameters);
+                    if (func != null)
+                    {
+                        cmd = func(cmd);
+                    }
+
+                    var eds = cmd.ExecuteDataSet(includeSchemaTable);
+                    ds = eds.Item1;
+                    recordsAffected = eds.Item2;
+                    dsSchema = eds.Item3;
+
+                    if (DicCommand.ContainsKey(cmd.Site.Name))
+                    {
+                        DicCommand.Remove(cmd.Site.Name);
                     }
                 }
 

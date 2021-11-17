@@ -1,6 +1,5 @@
 ﻿#if Full || DKController
 
-using Microsoft.AspNetCore.Mvc;
 using Netnr;
 using Netnr.SharedDataKit;
 
@@ -26,11 +25,12 @@ public class DKControllerTo : Controller
     /// </summary>
     /// <param name="tdb">数据库类型</param>
     /// <param name="conn">连接字符串</param>
+    /// <param name="filterDatabaseName">数据库名</param>
     /// <returns></returns>
     [HttpGet]
-    public SharedResultVM GetDatabase(SharedEnum.TypeDB? tdb, string conn)
+    public SharedResultVM GetDatabase(SharedEnum.TypeDB? tdb, string conn, string filterDatabaseName = null)
     {
-        return DataKitTo.GetDatabase(tdb, conn);
+        return DataKitTo.GetDatabase(tdb, conn, filterDatabaseName);
     }
 
     /// <summary>

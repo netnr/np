@@ -123,7 +123,7 @@ var fn = {
      * @param {*} duration 
      * @returns 
      */
-    msg: function (message, type = 'warning', icon = 'exclamation-triangle', duration = 9000) {
+    msg: function (message, type = 'warning', icon = 'exclamation-triangle', duration = 8000) {
 
         const alert = Object.assign(document.createElement('sl-alert'), {
             type: type,
@@ -180,6 +180,22 @@ var fn = {
     random: function (s = 20000, e = 99999) { return Math.floor(Math.random() * (e - s + 1) + s) },
 
     /**
+     * 下载
+     * @param {any} content
+     * @param {any} filename
+     */
+    download: function (content, filename) {
+        var aTag = document.createElement('a');
+        var blob = new Blob([content]);
+        aTag.download = filename;
+        aTag.href = URL.createObjectURL(blob);
+        document.body.appendChild(aTag);
+        aTag.click();
+        URL.revokeObjectURL(blob);
+        aTag.remove();
+    },
+
+    /**
      * 动作命令
      * @param {*} cmd
      * @param {*} args
@@ -204,6 +220,82 @@ var fn = {
                     }
                     step.stepSave();
                 }
+                break;
+            //打开备份还原
+            case "config-backup-restore":
+                {
+                    if (vary.domConfigBackupRestore == null) {
+                        var wrap = document.createElement("div");
+                        wrap.innerHTML = `
+<sl-dialog label="${vary.icons.cog}配置备份还原" class="dialog-width" style="--width: 60vw;">
+    <div>
+        <sl-button type="text" data-cmd="config-backup-file">${vary.icons.comment}备份配置</sl-button>
+        <sl-button type="text" data-cmd="config-backup-clipboard">${vary.icons.clipboard}备份配置到剪贴板</sl-button>
+        <sl-divider></sl-divider>
+        <sl-textarea style="margin:0 1em" placeholder="粘贴配置内容"></sl-textarea>
+        <sl-button type="text" data-cmd="config-restore">${vary.icons.comment}还原配置</sl-button>
+    </div>
+</sl-dialog>
+                        `;
+                        vary.domConfigBackupRestore = wrap.querySelector("sl-dialog");
+                        document.body.appendChild(wrap);
+                        wrap.addEventListener('click', function (e) {
+                            if (e.target.type == "primary") {
+                                vary.domConfigBackupRestore.hide();
+                                ok && ok();
+                            } else if (e.target.type == "default") {
+                                vary.domConfigBackupRestore.hide()
+                            }
+                        }, false)
+                    }
+                    vary.domConfigBackupRestore.show();
+                }
+                break;
+            //备份配置文件
+            //备份配置到剪贴板
+            case "config-backup-file":
+            case "config-backup-clipboard":
+                {
+                    ls.dkStore.keys().then(keys => {
+                        var parr = [], configObj = {};
+                        keys.forEach(key => parr.push(ls.dkStore.getItem(key)))
+                        Promise.all(parr).then(arr => {
+                            for (var i = 0; i < arr.length; i++) {
+                                configObj[keys[i]] = arr[i];
+                            }
+                            var content = JSON.stringify(configObj, null, 2);
+                            if (cmd.endsWith("clipboard")) {
+                                navigator.clipboard.writeText(content).then(() => {
+                                    fn.msg("Done!")
+                                })
+                            } else {
+                                fn.download(content, "ndk.json")
+                            }
+                        })
+                    })
+                }
+                break;
+            //还原配置
+            case "config-restore":
+                {
+                    var content = args.previousElementSibling.value;
+                    try {
+                        if (content.trim() != "") {
+                            var configObj = JSON.parse(content);
+                            for (let key in configObj) {
+                                let val = configObj[key];
+                                ls.dkStore.setItem(key, val)
+                            }
+                            fn.msg("Done!");
+                        } else {
+                            fn.msg("配置内容不能为空");
+                        }
+                    } catch (e) {
+                        console.warn(e)
+                        fn.msg(e)
+                    }
+                }
+                break;
                 break;
             //分离器1大小
             case "box1-size":

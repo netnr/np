@@ -40,11 +40,11 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime TableCreateTime { get; set; }
+        public DateTime? TableCreateTime { get; set; }
         /// <summary>
         /// 修改时间
         /// </summary>
-        public DateTime TableModifyTime { get; set; }
+        public DateTime? TableModifyTime { get; set; }
         /// <summary>
         /// 排序规则
         /// </summary>

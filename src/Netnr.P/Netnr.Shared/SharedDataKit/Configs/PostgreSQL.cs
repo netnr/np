@@ -24,16 +24,16 @@ ORDER BY
         /// 获取库
         /// </summary>
         /// <returns></returns>
-        public static string GetDatabasePostgreSQL()
+        public static string GetDatabasePostgreSQL(string Where = null)
         {
             return $@"
 SELECT
-  db.datname AS DatabaseName,
+  t1.datname AS DatabaseName,
   'DEFAULT' AS DatabaseClassify,
-  tp.spcname AS DatabaseSpace,
+  t2.spcname AS DatabaseSpace,
   u1.usename AS DatabaseOwner,
-  pg_encoding_to_char (db.ENCODING) AS DatabaseCharset,
-  db.datcollate AS DatabaseCollation,
+  pg_encoding_to_char (t1.ENCODING) AS DatabaseCharset,
+  t1.datcollate AS DatabaseCollation,
   (
     SELECT
       setting
@@ -42,13 +42,14 @@ SELECT
     WHERE
       NAME = 'data_directory'
   ) AS DatabasePath,
-  pg_database_size (db.datname) AS DatabaseDataLength
+  pg_database_size (t1.datname) AS DatabaseDataLength
 FROM
-  pg_database db
-  LEFT JOIN pg_tablespace tp ON db.dattablespace = tp.oid
-  LEFT JOIN pg_user u1 ON u1.usesysid = db.datdba
+  pg_database t1
+  LEFT JOIN pg_tablespace t2 ON t1.dattablespace = t2.oid
+  LEFT JOIN pg_user u1 ON u1.usesysid = t1.datdba
+WHERE 1=1 {Where}
 ORDER BY
-  db.datname
+  t1.datname
             ";
         }
 

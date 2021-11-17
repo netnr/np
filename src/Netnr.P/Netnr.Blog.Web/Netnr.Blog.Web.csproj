@@ -16,16 +16,19 @@
 
 	<ItemGroup>
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
-		<PackageReference Include="GemBox.Bundle" Version="39.0.1000" />
 		<PackageReference Include="Markdig" Version="0.26.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0-rc.2.21480.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
 		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
 		<PackageReference Include="Qiniu.Shared" Version="7.2.15" />
 		<PackageReference Include="Qcloud.Shared.NetCore" Version="1.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.3" />
-		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.155" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.155" />
+		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.155">
+		  <TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.155">
+		  <TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.4.1" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />

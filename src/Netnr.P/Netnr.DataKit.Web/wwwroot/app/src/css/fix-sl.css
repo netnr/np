@@ -7,6 +7,10 @@ sl-dialog::part(body), sl-dialog::part(close-button) {
     font-size: 1.2em;
 }
 
+sl-tab-group::part(tabs) {
+    border-bottom-color: transparent;
+}
+
 sl-tab::part(base) {
     --sl-spacing-medium: 5px;
     --sl-spacing-large: 15px;

@@ -95,10 +95,10 @@ public class QuoteTo
                     break;
 
                 case "netnrmd.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/netnrmd@3.0.0/src/netnrmd.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.css' rel='stylesheet' />");
                     break;
                 case "netnrmd.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/netnrmd@3.0.0/src/netnrmd.bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.bundle.js'></script>");
                     break;
 
                 case "netnrnav.js":
@@ -170,7 +170,7 @@ public class QuoteTo
                     break;
 
                 case "fast-xml-parser.js":
-                    vh.Add($"<script src='{srServer}/libs/fast-xml-parser/fast-xml-parser-v3.20.3.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/fast-xml-parser/fast-xml-parser-v3.21.1.min.js'></script>");
                     break;
 
                 case "sql-formatter.js":
@@ -178,11 +178,11 @@ public class QuoteTo
                     break;
 
                 case "highcharts.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.0/highcharts.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.1/highcharts.js'></script>");
                     break;
 
                 case "hls.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.0.12/dist/hls.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.1.1/dist/hls.min.js'></script>");
                     break;
 
                 case "watermark.js":
@@ -200,11 +200,11 @@ public class QuoteTo
                     break;
 
                 case "terser.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.9.0/dist/bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.10.0/dist/bundle.min.js'></script>");
                     break;
 
                 case "clean-css.js":
-                    vh.Add($"<script src='{srServer}/libs/clean-css/clean-css-v5.2.1.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/clean-css/clean-css-v5.2.2.min.js'></script>");
                     break;
 
                 case "svgo.js":
@@ -239,11 +239,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.0.1/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.1.0/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.0.1/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.0.1/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.0/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.0/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "prettier-css":
@@ -269,7 +269,7 @@ public class QuoteTo
                     break;
 
                 case "identicon.js":
-                    vh.Add($"<script src='{srServer}/libs/identicon/2.3.3/identicon.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/identicon/identicon-v2.3.3.min.js'></script>");
                     break;
 
                 case "jdenticon.js":
@@ -289,7 +289,7 @@ public class QuoteTo
                     break;
 
                 case "monaco-editor":
-                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.30.0/min/vs/loader.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.30.1/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
                                 function htmlDecode(html) {
@@ -300,7 +300,7 @@ public class QuoteTo
 
                                 require.config({
                                     paths: {
-                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.30.0/min/vs'
+                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.30.1/min/vs'
                                     },
                                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                 });

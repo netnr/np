@@ -14,7 +14,7 @@ var tab = {
     tabOpen: (key, title, type) => new Promise(resolve => {
 
         key = `tp-${key}`;
-        if (!(key in tab.tabKeys)) {            
+        if (!(key in tab.tabKeys)) {
 
             var pbox = '';
             switch (type) {

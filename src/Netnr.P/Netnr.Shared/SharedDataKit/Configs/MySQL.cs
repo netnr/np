@@ -26,7 +26,7 @@ ORDER BY
         /// 获取库
         /// </summary>
         /// <returns></returns>
-        public static string GetDatabaseMySQL()
+        public static string GetDatabaseMySQL(string Where = null)
         {
             return $@"
 SELECT
@@ -66,6 +66,7 @@ FROM
     ORDER BY
       MIN(CREATE_TIME)
   ) t3 ON t1.SCHEMA_NAME = t3.TABLE_SCHEMA
+WHERE 1=1 {Where}
 ORDER BY
   t1.SCHEMA_NAME
             ";
