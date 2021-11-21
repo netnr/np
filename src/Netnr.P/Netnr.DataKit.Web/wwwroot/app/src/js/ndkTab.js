@@ -1,8 +1,10 @@
-import { fn } from './fn';
-import { me } from './me';
-import { vary } from './vary';
+import { ndkFn } from './ndkFn';
+import { ndkEditor } from './ndkEditor';
+import { ndkVary } from './ndkVary';
+import { ndkStep } from './ndkStep';
+import { ndkDb } from './ndkDb';
 
-var tab = {
+var ndkTab = {
     tabKeys: {},
 
     /**
@@ -14,7 +16,7 @@ var tab = {
     tabOpen: (key, title, type) => new Promise(resolve => {
 
         key = `tp-${key}`;
-        if (!(key in tab.tabKeys)) {
+        if (!(key in ndkTab.tabKeys)) {
 
             var pbox = '';
             switch (type) {
@@ -30,8 +32,8 @@ var tab = {
             <sl-tooltip content="格式化脚本（Alt + Shift + F）" placement="right">
               <sl-icon-button data-cmd="sql-formatting" panel="${key}" name="brush-fill" style="font-size: 1.5rem;"></sl-icon-button>
             </sl-tooltip>
-            <sl-tooltip content="常用脚本" placement="right">
-              <sl-icon-button data-cmd="sql-common" panel="${key}" name="journal-code" style="font-size: 1.5rem;"></sl-icon-button>
+            <sl-tooltip content="SQL 笔记" placement="right">
+              <sl-icon-button data-cmd="sql-note" panel="${key}" name="journal-code" style="font-size: 1.5rem;"></sl-icon-button>
             </sl-tooltip>
         </div>
         <div class="nr-editor-sql" panel="${key}"></div>
@@ -85,7 +87,7 @@ var tab = {
                         sitem1.style.height = psize;
 
                         activebar.nextElementSibling.style.height = `calc(100% - var(--nrc-spliter-width) - ${psize})`;
-                        fn.size();
+                        ndkFn.size();
 
                         window.removeEventListener('mousemove', fnmove)
                         window.removeEventListener('mouseup', fnup)
@@ -115,18 +117,18 @@ var tab = {
                     activebar.style.top = '15%';
                     activebar.nextElementSibling.style.height = `calc(100% - var(--nrc-spliter-width) - 15%)`;
                 }
-                fn.size();
+                ndkFn.size();
             })
 
-            var slpanels = vary.domTabGroup2.querySelectorAll("sl-tab-panel");
-            vary.domTabGroup2.insertBefore(domTab, slpanels[0]);
-            vary.domTabGroup2.appendChild(domTabPanel);
-            tab.tabNavFix();
+            var slpanels = ndkVary.domTabGroup2.querySelectorAll("sl-tab-panel");
+            ndkVary.domTabGroup2.insertBefore(domTab, slpanels[0]);
+            ndkVary.domTabGroup2.appendChild(domTabPanel);
+            ndkTab.tabNavFix();
 
             tabbox.remove();
 
             //存储
-            tab.tabKeys[key] = {
+            ndkTab.tabKeys[key] = {
                 tpkey: key,
                 type,
                 domTab,
@@ -137,18 +139,18 @@ var tab = {
             };
 
             //构建编辑器
-            me.meCreate(domEditorSql).then(editor => {
-                tab.tabKeys[key].editor = editor;//编辑器对象
+            ndkEditor.create(domEditorSql).then(editor => {
+                ndkTab.tabKeys[key].editor = editor;//编辑器对象
 
                 //Ctrl + R 执行选中或全部脚本
                 editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyR, function () {
-                    tab.tabEditorExecuteSql(key)
+                    ndkTab.tabEditorExecuteSql(key)
                 })
             });
         }
 
         setTimeout(() => {
-            vary.domTabGroup2.show(key);
+            ndkVary.domTabGroup2.show(key);
             resolve(key);
         }, 10)
     }),
@@ -158,15 +160,15 @@ var tab = {
      * @param {any} tpkey
      */
     tabEditorExecuteSql: (tpkey) => {
-        var tpobj = tab.tabKeys[tpkey];
+        var tpobj = ndkTab.tabKeys[tpkey];
 
-        var sql = me.meSelectedOrAllValue(tpobj.editor);
+        var sql = ndkEditor.selectedOrAllValue(tpobj.editor);
         if (sql.trim() == "") {
-            fn.msg("执行 SQL 不能为空");
+            ndkFn.msg("执行 SQL 不能为空");
         } else {
-            var tpcp = step.cpGet(tpkey)
-            db.reqExecuteSql(tpcp.cobj, tpcp.databaseName, sql).then(esdata => {
-                db.viewExecuteSql(esdata, tpkey)
+            var tpcp = ndkStep.cpGet(tpkey)
+            ndkDb.reqExecuteSql(tpcp.cobj, tpcp.databaseName, sql).then(esdata => {
+                ndkDb.viewExecuteSql(esdata, tpkey)
             })
         }
     },
@@ -179,4 +181,4 @@ var tab = {
     }
 }
 
-export { tab }
+export { ndkTab }

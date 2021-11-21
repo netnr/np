@@ -1,4 +1,4 @@
-var vary = {
+var ndkVary = {
 
     version: '0.1.0',
     theme: "light", //主题 可选 dark
@@ -9,9 +9,9 @@ var vary = {
 
     //数据库类型
     typeDB: ["SQLite", "MySQL", "MariaDB", "Oracle", "SQLServer", "PostgreSQL"],
-    iconDB: type => ["🖤", "💚", "🤎", "💗", "🧡", "💙"][vary.typeDB.indexOf(type)], //对应图标
+    iconDB: type => ["🖤", "💚", "🤎", "💗", "🧡", "💙"][ndkVary.typeDB.indexOf(type)], //对应图标
     typeEnv: ["Development", "Test", "Production"], //环境类型
-    iconEnv: env => ["⚪", "🔵", "🔴"][vary.typeEnv.indexOf(env)], //环境图标
+    iconEnv: env => ["⚪", "🔵", "🔴"][ndkVary.typeEnv.indexOf(env)], //环境图标
     icons: {
         id: "🆔",
         connType: "💞",
@@ -83,17 +83,4 @@ var vary = {
     apiGetDEI: "/DK/GetDEI",
 };
 
-window.addEventListener("DOMContentLoaded", function () {
-
-    //dom对象
-    document.querySelectorAll('*').forEach(node => {
-        if (node.classList.value.startsWith('nr-')) {
-            var vkey = 'dom';
-            node.classList[0].substring(3).split('-').forEach(c => vkey += c.substring(0, 1).toUpperCase() + c.substring(1))
-            vary[vkey] = node;
-        }
-    })
-
-}, false);
-
-export { vary }
+export { ndkVary }

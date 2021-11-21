@@ -4,3 +4,14 @@
 .ag-row {
     font-size: var(--nr-font-size) !important;
 }
+
+.ag-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
+}

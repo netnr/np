@@ -1,10 +1,12 @@
-import { me } from "./me";
-import { sqlFor } from './sqlFor';
-import { step } from "./step";
-import { tab } from "./tab";
-import { vary } from './vary';
+import { ndkEditor } from "./ndkEditor";
+import { ndkStep } from "./ndkStep";
+import { ndkTab } from "./ndkTab";
+import { ndkVary } from './ndkVary';
+import { ndkDb } from './ndkDb';
+import { ndkLs } from "./ndkLs";
+import { ndkSqlNote } from "./ndkSqlNote";
 
-var fn = {
+var ndkFn = {
 
     /**
      * 首字母大写
@@ -145,22 +147,22 @@ var fn = {
      * @param {*} ok 确定
      */
     confirm: (tip, ok) => {
-        if (vary.domConfirm == null) {
-            vary.domConfirm = document.createElement('sl-dialog');
-            document.body.appendChild(vary.domConfirm);
-            vary.domConfirm.addEventListener('click', function (e) {
+        if (ndkVary.domConfirm == null) {
+            ndkVary.domConfirm = document.createElement('sl-dialog');
+            document.body.appendChild(ndkVary.domConfirm);
+            ndkVary.domConfirm.addEventListener('click', function (e) {
                 if (e.target.type == "primary") {
-                    vary.domConfirm.hide();
+                    ndkVary.domConfirm.hide();
                     ok && ok();
                 } else if (e.target.type == "default") {
-                    vary.domConfirm.hide()
+                    ndkVary.domConfirm.hide()
                 }
             }, false)
         }
-        vary.domConfirm.innerHTML = `${tip}
+        ndkVary.domConfirm.innerHTML = `${tip}
         <sl-button slot="footer" type="default">取消</sl-button>
         <sl-button slot="footer" type="primary">确定</sl-button>`;
-        vary.domConfirm.show();
+        ndkVary.domConfirm.show();
     },
 
     /**
@@ -168,7 +170,7 @@ var fn = {
      * @param {*} isShow 
      */
     requestStatus: function (isShow = true) {
-        vary.domRequestStatus.loading = isShow;
+        ndkVary.domRequestStatus.loading = isShow;
     },
 
     /**
@@ -206,10 +208,10 @@ var fn = {
             case "theme-light":
             case "theme-dark":
                 {
-                    vary.theme = cmd.split('-').pop();
-                    fn.themeGrid(vary.theme);
-                    fn.themeEditor(vary.theme);
-                    if (vary.theme == "dark") {
+                    ndkVary.theme = cmd.split('-').pop();
+                    ndkFn.themeGrid(ndkVary.theme);
+                    ndkFn.themeEditor(ndkVary.theme);
+                    if (ndkVary.theme == "dark") {
                         document.querySelector('sl-menu-item[data-cmd="theme-light"]').checked = false;
                         document.querySelector('sl-menu-item[data-cmd="theme-dark"]').checked = true;
                         document.documentElement.classList.add('sl-theme-dark');
@@ -218,81 +220,84 @@ var fn = {
                         document.querySelector('sl-menu-item[data-cmd="theme-dark"]').checked = false;
                         document.documentElement.classList.remove('sl-theme-dark');
                     }
-                    step.stepSave();
+                    ndkStep.stepSave();
                 }
                 break;
-            //打开备份还原
-            case "config-backup-restore":
+            //设置
+            case "setting-manager":
                 {
-                    if (vary.domConfigBackupRestore == null) {
-                        var wrap = document.createElement("div");
-                        wrap.innerHTML = `
-<sl-dialog label="${vary.icons.cog}配置备份还原" class="dialog-width" style="--width: 60vw;">
-    <div>
-        <sl-button type="text" data-cmd="config-backup-file">${vary.icons.comment}备份配置</sl-button>
-        <sl-button type="text" data-cmd="config-backup-clipboard">${vary.icons.clipboard}备份配置到剪贴板</sl-button>
-        <sl-divider></sl-divider>
-        <sl-textarea style="margin:0 1em" placeholder="粘贴配置内容"></sl-textarea>
-        <sl-button type="text" data-cmd="config-restore">${vary.icons.comment}还原配置</sl-button>
-    </div>
-</sl-dialog>
-                        `;
-                        vary.domConfigBackupRestore = wrap.querySelector("sl-dialog");
-                        document.body.appendChild(wrap);
-                        wrap.addEventListener('click', function (e) {
-                            if (e.target.type == "primary") {
-                                vary.domConfigBackupRestore.hide();
-                                ok && ok();
-                            } else if (e.target.type == "default") {
-                                vary.domConfigBackupRestore.hide()
-                            }
-                        }, false)
+                    ndkVary.domDialogSetting.show();
+                    //回填
+                    ndkVary.domTextApiServer.value = ndkVary.apiServer;
+
+                    if (ndkVary.domDialogSetting.getAttribute('event-bind') != 1) {
+                        ndkVary.domDialogSetting.setAttribute('event-bind', 1);
+
+                        //服务设置
+                        ndkVary.domTextApiServer.addEventListener('input', function () {
+                            ndkVary.apiServer = this.value;
+                        }, false);
                     }
-                    vary.domConfigBackupRestore.show();
                 }
                 break;
-            //备份配置文件
-            //备份配置到剪贴板
-            case "config-backup-file":
-            case "config-backup-clipboard":
+            //设置
+            case "set-api-server":
                 {
-                    ls.dkStore.keys().then(keys => {
+                    var val = args.innerHTML;
+                    switch (val) {
+                        case "当前":
+                            val = location.origin;
+                            break;
+                    }
+                    ndkVary.domTextApiServer.value = ndkVary.apiServer = val;
+                }
+                break;
+            //导出配置
+            //导出配置到剪贴板
+            case "config-export-file":
+            case "config-export-clipboard":
+                {
+                    ndkLs.storeConfig.keys().then(keys => {
                         var parr = [], configObj = {};
-                        keys.forEach(key => parr.push(ls.dkStore.getItem(key)))
+                        keys.forEach(key => parr.push(ndkLs.storeConfig.getItem(key)))
                         Promise.all(parr).then(arr => {
                             for (var i = 0; i < arr.length; i++) {
                                 configObj[keys[i]] = arr[i];
                             }
-                            var content = JSON.stringify(configObj, null, 2);
                             if (cmd.endsWith("clipboard")) {
+                                var content = JSON.stringify(configObj, null, 4);
                                 navigator.clipboard.writeText(content).then(() => {
-                                    fn.msg("Done!")
+                                    ndkFn.msg("导出完成")
                                 })
                             } else {
-                                fn.download(content, "ndk.json")
+                                var content = JSON.stringify(configObj);
+                                ndkFn.download(content, "ndk.json")
                             }
                         })
                     })
                 }
                 break;
-            //还原配置
-            case "config-restore":
+            //导入配置
+            case "config-import":
                 {
                     var content = args.previousElementSibling.value;
                     try {
                         if (content.trim() != "") {
-                            var configObj = JSON.parse(content);
+                            var configObj = JSON.parse(content), parr = [];
                             for (let key in configObj) {
                                 let val = configObj[key];
-                                ls.dkStore.setItem(key, val)
+                                parr.push(ndkLs.storeConfig.setItem(key, val));
                             }
-                            fn.msg("Done!");
+                            Promise.all(parr).then(() => {
+                                ndkFn.msg("导入完成");
+                                location.reload(false);
+                            })
                         } else {
-                            fn.msg("配置内容不能为空");
+                            ndkFn.msg("配置内容不能为空");
                         }
                     } catch (e) {
                         console.warn(e)
-                        fn.msg(e)
+                        ndkFn.msg(e)
                     }
                 }
                 break;
@@ -300,8 +305,8 @@ var fn = {
             //分离器1大小
             case "box1-size":
                 {
-                    fn.cssvar(vary.domMain, '--box1-width', args);
-                    step.stepSave();
+                    ndkFn.cssvar(ndkVary.domMain, '--box1-width', args);
+                    ndkStep.stepSave();
                 }
                 break;
             //执行选中脚本
@@ -310,27 +315,27 @@ var fn = {
             case "sql-execute-all":
                 {
                     var tpkey = args.getAttribute('panel');
-                    var tpobj = tab.tabKeys[tpkey];
+                    var tpobj = ndkTab.tabKeys[tpkey];
 
                     var isSelected = cmd.includes("selected");
-                    tab.tabEditorExecuteSql(tpkey, isSelected)
+                    ndkTab.tabEditorExecuteSql(tpkey, isSelected)
                 }
                 break;
             //格式化SQL
             case "sql-formatting":
                 {
                     var tpkey = args.getAttribute('panel');
-                    var tpobj = tab.tabKeys[tpkey];
+                    var tpobj = ndkTab.tabKeys[tpkey];
 
-                    me.meFormatter(tpobj.editor);
+                    ndkEditor.formatter(tpobj.editor);
                 }
                 break
-            //常用脚本
-            case "sql-common":
+            //SQL 笔记
+            case "sql-note":
                 {
                     var tpkey = args.getAttribute('panel');
-                    var cp = step.cpGet(tpkey);
-                    db.viewExecuteSql({ Item1: { "sql-common": sqlFor[`sqlFor${cp.cobj.type}`] } }, tpkey)
+                    var cp = ndkStep.cpGet(tpkey);
+                    ndkDb.viewExecuteSql({ Item1: { "sql-note": ndkSqlNote[cp.cobj.type] } }, tpkey)
                 }
                 break
         }
@@ -338,7 +343,7 @@ var fn = {
 
     /**
      * 设置主题
-     * @param {any} theme
+     * @param {*} theme 
      */
     themeGrid: function (theme) {
 
@@ -354,21 +359,21 @@ var fn = {
             }
         }
 
-        for (const key in vary) {
+        for (const key in ndkVary) {
             if (key.startsWith("domGrid")) {
-                var dom = vary[key];
+                var dom = ndkVary[key];
                 setTheme(dom, theme);
             }
         }
 
         //选项卡2 表格
-        vary.domTabGroup2.querySelectorAll('.nr-grid-execute-sql').forEach(dom => {
+        ndkVary.domTabGroup2.querySelectorAll('.nr-grid-execute-sql').forEach(dom => {
             setTheme(dom, theme);
         })
 
         //选项卡3 表格
-        for (var i in tab.tabKeys) {
-            var tpkey = tab.tabKeys[i];
+        for (var i in ndkTab.tabKeys) {
+            var tpkey = ndkTab.tabKeys[i];
             if (tpkey.grids) {
                 tpkey.grids.forEach(grid => {
                     var dom = grid.domGridExecuteSql;
@@ -399,10 +404,10 @@ var fn = {
         var vh = document.documentElement.clientHeight;
 
         //分离容器高度
-        vary.domSpliter1.style.height = `${vh - vary.domSpliter1.getBoundingClientRect().top - 5}px`;
+        ndkVary.domSpliter1.style.height = `${vh - ndkVary.domSpliter1.getBoundingClientRect().top - 5}px`;
 
         ['Conns', 'Database', 'Table', 'Column'].forEach(vkey => {
-            var dom = vary[`domGrid${vkey}`];
+            var dom = ndkVary[`domGrid${vkey}`];
             if (getComputedStyle(dom.parentElement).display != "none") {
                 var gt = dom.getBoundingClientRect().top + 5;
                 dom.style.height = `${vh - gt}px`;
@@ -410,14 +415,14 @@ var fn = {
         });
 
         //选项卡2
-        vary.domTabGroup2.querySelectorAll('.nr-spliter2').forEach(node => {
+        ndkVary.domTabGroup2.querySelectorAll('.nr-spliter2').forEach(node => {
             var pnode = node.parentElement;
             if (getComputedStyle(pnode).display != "none") {
                 var gt = node.getBoundingClientRect().top + 5;
                 node.style.height = `${vh - gt}px`;
 
                 //选项卡3
-                var tpkey = tab.tabKeys[pnode.name];
+                var tpkey = ndkTab.tabKeys[pnode.name];
                 if (tpkey && tpkey.grids) {
                     setTimeout(() => {
                         tpkey.grids.forEach(grid => {
@@ -445,4 +450,4 @@ var fn = {
     }
 }
 
-export { fn };
+export { ndkFn };

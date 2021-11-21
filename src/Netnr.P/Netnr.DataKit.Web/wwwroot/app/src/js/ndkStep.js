@@ -1,9 +1,9 @@
-import { vary } from './vary';
-import { ls } from './ls';
-import { fn } from './fn';
-import { db } from './db';
+import { ndkVary } from './ndkVary';
+import { ndkLs } from './ndkLs';
+import { ndkFn } from './ndkFn';
+import { ndkDb } from './ndkDb';
 
-var step = {
+var ndkStep = {
     //连接记录
     "cp-1": {
         cobj: {},
@@ -19,7 +19,7 @@ var step = {
      * @param {*} key 
      * @returns 
      */
-    cpGet: key => step[`cp-${key}`],
+    cpGet: key => ndkStep[`cp-${key}`],
     /**
      * 设置
      * @param {*} key 
@@ -29,23 +29,23 @@ var step = {
      * @returns 
      */
     cpSet: (key, cobj, databaseName, tableName) => {
-        if (!step.cpKeys.includes(key)) {
-            step.cpKeys.push(key)
+        if (!ndkStep.cpKeys.includes(key)) {
+            ndkStep.cpKeys.push(key)
         }
-        step[`cp-${key}`] = { cobj, databaseName, tableName }
-        step.stepSave();
+        ndkStep[`cp-${key}`] = { cobj, databaseName, tableName }
+        ndkStep.stepSave();
     },
     /**
      * 删除
      * @param {*} key 
      */
     cpRemove: key => {
-        var ki = step.cpKeys.indexOf(key);
+        var ki = ndkStep.cpKeys.indexOf(key);
         if (ki >= 0) {
-            step.cpKeys.splice(ki, 1);
+            ndkStep.cpKeys.splice(ki, 1);
         }
-        delete step[`cp-${key}`];
-        step.stepSave();
+        delete ndkStep[`cp-${key}`];
+        ndkStep.stepSave();
     },
     /**
      * 显示
@@ -55,30 +55,30 @@ var step = {
      */
     cpInfo: (key) => {
         if (key == "reset") {
-            vary.domWindowConns.style.display = "none";
-            vary.domWindowDatabase.style.display = "none";
-            vary.domWindowConns.innerHTML = '';
-            vary.domWindowDatabase.innerHTML = '';
+            ndkVary.domWindowConns.style.display = "none";
+            ndkVary.domWindowDatabase.style.display = "none";
+            ndkVary.domWindowConns.innerHTML = '';
+            ndkVary.domWindowDatabase.innerHTML = '';
         } else {
-            var cp = step.cpGet(key);
+            var cp = ndkStep.cpGet(key);
             if (cp != null) {
                 var cobj = cp.cobj;
                 if (key == 1) {
-                    var viewItem = `${vary.iconDB(cobj.type)} ${cobj.type} ${vary.icons.connConn} ${cobj.alias} ${vary.iconEnv(cobj.env)} ${cobj.env} ${cp.databaseName == null ? "" : vary.icons.connDatabase + " " + cp.databaseName}\n${vary.icons.connConn} ${cobj.conn}`;
+                    var viewItem = `${ndkVary.iconDB(cobj.type)} ${cobj.type} ${ndkVary.icons.connConn} ${cobj.alias} ${ndkVary.iconEnv(cobj.env)} ${cobj.env} ${cp.databaseName == null ? "" : ndkVary.icons.connDatabase + " " + cp.databaseName}\n${ndkVary.icons.connConn} ${cobj.conn}`;
 
                     ['database', 'table', 'column'].forEach(tp => {
-                        vary.domTabGroup1.querySelector(`[panel="tp1-${tp}"]`).title = viewItem;
+                        ndkVary.domTabGroup1.querySelector(`[panel="tp1-${tp}"]`).title = viewItem;
                     });
                 } else {
-                    vary.domWindowConns.style.display = "block";
-                    vary.domWindowDatabase.style.display = "block";
+                    ndkVary.domWindowConns.style.display = "block";
+                    ndkVary.domWindowDatabase.style.display = "block";
 
-                    vary.domWindowConns.innerHTML = `<sl-menu-item value="${cobj.id}">${vary.iconDB(cobj.type) + cobj.alias + vary.iconEnv(cobj.env)}</sl-menu-item>`;
-                    vary.domWindowConns.value = cobj.id + "";
+                    ndkVary.domWindowConns.innerHTML = `<sl-menu-item value="${cobj.id}">${ndkVary.iconDB(cobj.type) + cobj.alias + ndkVary.iconEnv(cobj.env)}</sl-menu-item>`;
+                    ndkVary.domWindowConns.value = cobj.id + "";
                     if (cp.databaseName) {
-                        vary.domWindowDatabase.innerHTML = `<sl-menu-item>${vary.icons.connDatabase + cp.databaseName}</sl-menu-item>`;
+                        ndkVary.domWindowDatabase.innerHTML = `<sl-menu-item>${ndkVary.icons.connDatabase + cp.databaseName}</sl-menu-item>`;
                     } else {
-                        vary.domWindowDatabase.innerHTML = `<sl-menu-item>（none）</sl-menu-item>`;
+                        ndkVary.domWindowDatabase.innerHTML = `<sl-menu-item>（none）</sl-menu-item>`;
                     }
                 }
             }
@@ -98,21 +98,21 @@ var step = {
         switch (ing) {
             //开始
             case 1:
-                step.stepVarStart = Date.now();
-                step.stepVarIng = ing;
-                step.stepVarIndex = 0;
+                ndkStep.stepVarStart = Date.now();
+                ndkStep.stepVarIng = ing;
+                ndkStep.stepVarIndex = 0;
                 break;
             //完成
             case 2:
-                step.stepVarEnd = Date.now();
-                step.stepVarIng = ing;
-                console.warn(`step done ${step.stepVarEnd - step.stepVarStart}`);
-                clearTimeout(step.stepVarDefer);
+                ndkStep.stepVarEnd = Date.now();
+                ndkStep.stepVarIng = ing;
+                console.warn(`step done ${ndkStep.stepVarEnd - ndkStep.stepVarStart}`);
+                clearTimeout(ndkStep.stepVarDefer);
                 break;
             //超时
             default:
-                step.stepVarEnd = Date.now();
-                step.stepVarIng = -1;
+                ndkStep.stepVarEnd = Date.now();
+                ndkStep.stepVarIng = -1;
                 console.warn("step timeout");
                 break;
         }
@@ -122,65 +122,65 @@ var step = {
      */
     stepSave: () => {
         //非恢复中
-        if (step.stepVarIng != 1) {
+        if (ndkStep.stepVarIng != 1) {
 
             var sobj = {
-                theme: vary.theme,
-                box1Size: fn.cssvar(vary.domMain, '--box1-width'),
+                theme: ndkVary.theme,
+                box1Size: ndkFn.cssvar(ndkVary.domMain, '--box1-width'),
                 connCache: {},
                 tabGroup1Show: "tp-conns",
-                viewDatabase: vary.gridOpsDatabase != null,
-                viewTable: vary.gridOpsTable != null,
-                viewColumn: vary.gridOpsColumn != null,
+                viewDatabase: ndkVary.gridOpsDatabase != null,
+                viewTable: ndkVary.gridOpsTable != null,
+                viewColumn: ndkVary.gridOpsColumn != null,
             };
 
             //显示选项卡
-            vary.domTabGroup1.querySelectorAll('sl-tab-panel').forEach(node => {
+            ndkVary.domTabGroup1.querySelectorAll('sl-tab-panel').forEach(node => {
                 if (node.style.display == "block") {
                     sobj.tabGroup1Show = node.name
                 }
             });
 
             //连接缓存
-            //step.cpKeys.forEach(k => sobj.connCache[k] = step.cpGet(k));
-            sobj.connCache['1'] = step.cpGet(1) || {};
+            //ndkStep.cpKeys.forEach(k => sobj.connCache[k] = ndkStep.cpGet(k));
+            sobj.connCache['1'] = ndkStep.cpGet(1) || {};
 
             if (sobj.loadTable) {
-                sobj.selectedTable = vary.gridOpsTable.api.getSelectedRows().map(x => x.TableName);
+                sobj.selectedTable = ndkVary.gridOpsTable.api.getSelectedRows().map(x => x.TableName);
             }
             if (sobj.loadColumn) {
-                sobj.selectedColumn = vary.gridOpsColumn.api.getSelectedRows().map(x => x.TableName + ":" + x.ColumnName);
+                sobj.selectedColumn = ndkVary.gridOpsColumn.api.getSelectedRows().map(x => x.TableName + ":" + x.ColumnName);
             }
 
-            ls.stepsSet(sobj)
+            ndkLs.stepsSet(sobj)
         }
     },
     /**
      * 步骤恢复开始
      */
     stepStart: () => new Promise(resolve => {
-        if (step.stepVarIng == 1) {
-            fn.msg("正在进行中...");
+        if (ndkStep.stepVarIng == 1) {
+            ndkFn.msg("正在进行中...");
         } else {
-            step.stepStatus(1);
+            ndkStep.stepStatus(1);
 
-            step.stepVarDefer = setTimeout(() => {
-                step.stepStatus(-1);
+            ndkStep.stepVarDefer = setTimeout(() => {
+                ndkStep.stepStatus(-1);
                 resolve();
             }, 1000 * 30);
 
-            ls.stepsGet().then(sobj => step.stepItemRun([
+            ndkLs.stepsGet().then(sobj => ndkStep.stepItemRun([
                 "step-theme",
                 "step-box1-size",
                 "step-conn-cache",
                 "step-view-conns",
                 "step-tab-group1-show",
-            ], sobj).then(() => step.stepItemRun([
+            ], sobj).then(() => ndkStep.stepItemRun([
                 "step-view-database",
                 "step-view-table",
                 "step-view-column"
             ], sobj).then(() => {
-                step.stepStatus(2);
+                ndkStep.stepStatus(2);
                 resolve()
             })));
         }
@@ -192,7 +192,7 @@ var step = {
      */
     stepItemRun: (items, sobj) => new Promise(resolve => {
         var ics = [];
-        items.forEach(item => ics.push(step.stepItemCmd(item, sobj)));
+        items.forEach(item => ics.push(ndkStep.stepItemCmd(item, sobj)));
         Promise.all(ics).then(() => resolve()).catch(() => resolve())
     }),
     /**
@@ -206,13 +206,13 @@ var step = {
         switch (stepItem) {
             //主题
             case "step-theme":
-                fn.actionRun(sobj.theme == "dark" ? "theme-dark" : "theme-light");
+                ndkFn.actionRun(sobj.theme == "dark" ? "theme-dark" : "theme-light");
                 resolve();
                 break;
             //分离器大小
             case "step-box1-size":
                 if (sobj.box1Size && sobj.box1Size != "") {
-                    fn.cssvar(vary.domMain, '--box1-width', sobj.box1Size);
+                    ndkFn.cssvar(ndkVary.domMain, '--box1-width', sobj.box1Size);
                 }
                 resolve();
                 break;
@@ -220,15 +220,15 @@ var step = {
             case "step-conn-cache":
                 for (var k in sobj.connCache) {
                     var cp = sobj.connCache[k];
-                    step.cpSet(k, cp.cobj, cp.databaseName, cp.tableName)
+                    ndkStep.cpSet(k, cp.cobj, cp.databaseName, cp.tableName)
                 }
                 resolve();
                 break;
             //载入连接
             case "step-view-conns":
-                db.reqConns().then(conns => {
-                    db.viewConns(conns).then(() => {
-                        step.stepItemCmd('step-tab-group1-show', sobj)
+                ndkDb.reqConns().then(conns => {
+                    ndkDb.viewConns(conns).then(() => {
+                        ndkStep.stepItemCmd('step-tab-group1-show', sobj)
                         resolve();
                     })
                 })
@@ -236,11 +236,11 @@ var step = {
             //载入库
             case "step-view-database":
                 if (sobj.viewDatabase) {
-                    var cp = step.cpGet(1);
-                    db.reqDatabaseName(cp.cobj).then(databases => {
-                        db.viewDatabase(databases).then(() => {
-                            step.stepItemCmd('step-tab-group1-show', sobj)
-                            step.cpInfo(1);
+                    var cp = ndkStep.cpGet(1);
+                    ndkDb.reqDatabaseName(cp.cobj).then(databases => {
+                        ndkDb.viewDatabase(databases).then(() => {
+                            ndkStep.stepItemCmd('step-tab-group1-show', sobj)
+                            ndkStep.cpInfo(1);
                             resolve();
                         })
                     })
@@ -250,12 +250,12 @@ var step = {
                 break;
             //载入表
             case "step-view-table":
-                var cp = step.cpGet(1);
+                var cp = ndkStep.cpGet(1);
                 if (sobj.viewTable && cp.databaseName != null) {
-                    db.reqTable(cp.cobj, cp.databaseName).then(tables => {
-                        db.viewTable(tables, cp.cobj).then(() => {
-                            step.stepItemCmd('step-tab-group1-show', sobj)
-                            step.cpInfo(1);
+                    ndkDb.reqTable(cp.cobj, cp.databaseName).then(tables => {
+                        ndkDb.viewTable(tables, cp.cobj).then(() => {
+                            ndkStep.stepItemCmd('step-tab-group1-show', sobj)
+                            ndkStep.cpInfo(1);
                             resolve();
                         })
                     })
@@ -265,12 +265,12 @@ var step = {
                 break;
             //载入列
             case "step-view-column":
-                var cp = step.cpGet(1);
+                var cp = ndkStep.cpGet(1);
                 if (sobj.viewColumn && cp.databaseName != null && cp.tableName != null) {
-                    db.reqColumn(cp.cobj, cp.databaseName, cp.tableName).then(columns => {
-                        db.viewColumn(columns, cp.cobj).then(() => {
-                            step.stepItemCmd('step-tab-group1-show', sobj)
-                            step.cpInfo(1);
+                    ndkDb.reqColumn(cp.cobj, cp.databaseName, cp.tableName).then(columns => {
+                        ndkDb.viewColumn(columns, cp.cobj).then(() => {
+                            ndkStep.stepItemCmd('step-tab-group1-show', sobj)
+                            ndkStep.cpInfo(1);
                             resolve();
                         })
                     })
@@ -281,7 +281,7 @@ var step = {
             //显示选项卡
             case "step-tab-group1-show":
                 if (sobj.tabGroup1Show && sobj.tabGroup1Show != "") {
-                    vary.domTabGroup1.show(sobj.tabGroup1Show);
+                    ndkVary.domTabGroup1.show(sobj.tabGroup1Show);
                 }
                 resolve();
                 break;
@@ -291,4 +291,4 @@ var step = {
     })
 }
 
-export { step }
+export { ndkStep }

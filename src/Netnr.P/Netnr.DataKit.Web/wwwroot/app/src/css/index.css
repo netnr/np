@@ -21,6 +21,11 @@
         margin-right: .5em;
     }
 
+/* 设置 */
+.nr-dialog-setting sl-details{
+    margin-bottom: .5em;
+}
+
 /*选项卡2对应的连接-数据库*/
 .nr-window-conns,
 .nr-window-database {

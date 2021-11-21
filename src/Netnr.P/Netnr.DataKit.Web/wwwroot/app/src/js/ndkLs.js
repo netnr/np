@@ -1,8 +1,8 @@
-import { fn } from './fn';
+import { ndkFn } from './ndkFn';
 
-var ls = {
-    dkStore: localforage.createInstance({ name: "ndk" }),
-    ccStore: localforage.createInstance({ name: "ndk-cc" }),
+var ndkLs = {
+    storeConfig: localforage.createInstance({ name: "ndk-config" }),
+    storeCache: localforage.createInstance({ name: "ndk-cache" }),
 
     keyConns: "conns",
     keySteps: "steps",
@@ -13,8 +13,8 @@ var ls = {
      * @returns 
      */
     connsSet: connObj => new Promise((resolve) => {
-        ls.connsGet().then(conns => {
-            if (fn.type(connObj) != "Array") {
+        ndkLs.connsGet().then(conns => {
+            if (ndkFn.type(connObj) != "Array") {
                 connObj = [connObj];
             }
 
@@ -30,7 +30,7 @@ var ls = {
 
             conns = conns.concat(connObj)
 
-            ls.dkStore.setItem(ls.keyConns, conns).then(() => resolve(conns))
+            ndkLs.storeConfig.setItem(ndkLs.keyConns, conns).then(() => resolve(conns))
         })
     }),
     /**
@@ -39,7 +39,7 @@ var ls = {
      * @returns 
      */
     connsDelete: id => new Promise((resolve) => {
-        ls.connsGet().then(conns => {
+        ndkLs.connsGet().then(conns => {
             for (var i = 0; i < conns.length; i++) {
                 var cobj = conns[i];
                 if (cobj.id == id) {
@@ -48,7 +48,7 @@ var ls = {
                 }
             }
 
-            ls.dkStore.setItem(ls.keyConns, conns).then(() => resolve(conns))
+            ndkLs.storeConfig.setItem(ndkLs.keyConns, conns).then(() => resolve(conns))
         })
     }),
     /**
@@ -57,7 +57,7 @@ var ls = {
      * @returns 
      */
     connsGet: id => new Promise((resolve) => {
-        ls.dkStore.getItem(ls.keyConns).then(conns => {
+        ndkLs.storeConfig.getItem(ndkLs.keyConns).then(conns => {
             conns = conns || [];
             if (id != null) {
                 resolve(conns.filter(x => x.id == id).pop() || [])
@@ -71,15 +71,15 @@ var ls = {
      * 设置步骤
      * @param {any} steps
      */
-    stepsSet: steps => ls.dkStore.setItem(ls.keySteps, steps),
+    stepsSet: steps => ndkLs.storeConfig.setItem(ndkLs.keySteps, steps),
     /**
      * 获取步骤
      */
-    stepsGet: () => ls.dkStore.getItem(ls.keySteps),
+    stepsGet: () => ndkLs.storeConfig.getItem(ndkLs.keySteps),
     /**
      * 删除步骤
      */
-    stepsDelete: () => ls.dkStore.removeItem(ls.keySteps),
+    stepsDelete: () => ndkLs.storeConfig.removeItem(ndkLs.keySteps),
 
     /**
      * 获取或设置连接缓存
@@ -93,12 +93,12 @@ var ls = {
             default: idDatabaseTable.splice(1, 0, 'column'); break;
         }
         if (data == null) {
-            ls.ccStore.getItem(idDatabaseTable.join('-')).then(res => resolve(res));
+            ndkLs.storeCache.getItem(idDatabaseTable.join('-')).then(res => resolve(res));
         } else {
-            ls.ccStore.setItem(idDatabaseTable.join('-'), { data, date: Date.now() }).then(res => resolve(res));
+            ndkLs.storeCache.setItem(idDatabaseTable.join('-'), { data, date: Date.now() }).then(res => resolve(res));
         }
     })
 
 }
 
-export { ls }
+export { ndkLs }

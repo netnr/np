@@ -1,8 +1,10 @@
-import { vary } from './vary'
-import { fn } from './fn'
-import { tab } from './tab';
+import { agg } from './agg';
+import { ndkVary } from './ndkVary'
+import { ndkFn } from './ndkFn'
+import { ndkTab } from './ndkTab'
+import { ndkStep } from './ndkStep'
 
-var init = {
+var ndkInit = {
 
     //事件初始化
     event: function () {
@@ -11,12 +13,12 @@ var init = {
         document.body.addEventListener('click', function (e) {
             var cmd = e.target.getAttribute("data-cmd")
             if (cmd != null) {
-                fn.actionRun(cmd, e.target);
+                ndkFn.actionRun(cmd, e.target);
             }
         }, false);
 
         //选项卡1-调整大小
-        vary.domSpliter1.querySelector('.nrc-spliter-bar').addEventListener('mousedown', function (edown) {
+        ndkVary.domSpliter1.querySelector('.nrc-spliter-bar').addEventListener('mousedown', function (edown) {
             var sitem1 = edown.target.previousElementSibling,
                 activebar = edown.target.nextElementSibling,
                 spliter = edown.target.parentElement,
@@ -37,7 +39,7 @@ var init = {
                         psize = (parseInt(activebar.style.left || sitem1.clientWidth) / spliter.clientWidth * 100).toFixed(4) + '%'; //占比
                     }
                     activebar.style.left = psize;
-                    fn.actionRun('box1-size', psize)
+                    ndkFn.actionRun('box1-size', psize)
 
                     window.removeEventListener('mousemove', fnmove)
                     window.removeEventListener('mouseup', fnup)
@@ -50,32 +52,32 @@ var init = {
 
             this.setCapture && this.setCapture();
         }, false);
-        vary.domSpliter1.querySelector('.nrc-spliter-bar').addEventListener('dblclick', function (event) {
+        ndkVary.domSpliter1.querySelector('.nrc-spliter-bar').addEventListener('dblclick', function (event) {
             var psize = (event.clientY - event.target.getBoundingClientRect().top) / event.target.clientHeight,
                 activebar = event.target.nextElementSibling;
             if (psize < 0.33333) {
                 activebar.style.left = '85%';
-                fn.actionRun('box1-size', '85%')
+                ndkFn.actionRun('box1-size', '85%')
             } else if (psize > 0.33333 && psize < 0.66666) {
                 activebar.style.left = '50%';
-                fn.actionRun('box1-size', '50%')
+                ndkFn.actionRun('box1-size', '50%')
             } else {
                 activebar.style.left = '15%';
-                fn.actionRun('box1-size', '15%')
+                ndkFn.actionRun('box1-size', '15%')
             }
         })
         //选项卡1-连接、库、表、列 面板切换调整大小
-        vary.domTabGroup1.addEventListener('sl-tab-show', function () {
+        ndkVary.domTabGroup1.addEventListener('sl-tab-show', function () {
             setTimeout(() => {
-                fn.size()
-                step.stepSave()
+                ndkFn.size()
+                ndkStep.stepSave()
             }, 1)
         }, false);
         //搜索-连接、库、表、列
         ['conns', 'database', 'table', 'column'].forEach(vkey => {
-            vkey = fn.fu(vkey);
-            vary[`domFilter${vkey}`].addEventListener('input', function () {
-                var gridOps = vary[`gridOps${vkey}`];
+            vkey = ndkFn.fu(vkey);
+            ndkVary[`domFilter${vkey}`].addEventListener('input', function () {
+                var gridOps = ndkVary[`gridOps${vkey}`];
                 if (gridOps && gridOps.api) {
                     gridOps.api.setQuickFilter(this.value);
                 }
@@ -83,49 +85,60 @@ var init = {
         })
 
         //选项卡2-关闭
-        vary.domTabGroup2.addEventListener('sl-close', async event => {
+        ndkVary.domTabGroup2.addEventListener('sl-close', async event => {
             var sltab = event.target;
-            var panel = vary.domTabGroup2.querySelector(`sl-tab-panel[name="${sltab.panel}"]`);
+            var panel = ndkVary.domTabGroup2.querySelector(`sl-tab-panel[name="${sltab.panel}"]`);
 
             if (sltab.active) {
                 var otab = sltab.previousElementSibling || sltab.nextElementSibling;
                 if (otab.nodeName != "sl-tab-panel".toUpperCase()) {
-                    vary.domTabGroup2.show(otab.panel);
+                    ndkVary.domTabGroup2.show(otab.panel);
                 } else {
-                    step.cpInfo("reset"); //重置连接信息
+                    ndkStep.cpInfo("reset"); //重置连接信息
                 }
             }
 
             sltab.remove();
             panel.remove();
-            tab.tabNavFix();
+            ndkTab.tabNavFix();
 
             //删除key
-            delete tab.tabKeys[sltab.panel];
-            step.cpRemove(sltab.panel)
+            delete ndkTab.tabKeys[sltab.panel];
+            ndkStep.cpRemove(sltab.panel)
         });
         //选项卡2-显示
-        vary.domTabGroup2.addEventListener('sl-tab-show', function (event) {
-            step.cpInfo(event.detail.name); //显示连接
+        ndkVary.domTabGroup2.addEventListener('sl-tab-show', function (event) {
+            ndkStep.cpInfo(event.detail.name); //显示连接
             setTimeout(() => {
-                fn.size()
+                ndkFn.size()
             }, 1)
         }, false);
 
-        window.addEventListener('resize', () => fn.size(), false)
+        window.addEventListener('resize', () => ndkFn.size(), false)
     },
 
 }
 
 window.addEventListener("DOMContentLoaded", function () {
-    init.event();
-    step.stepStart().then(() => {
-        vary.domLoading.style.display = "none";
-        vary.domMain.style.visibility = "visible";
+    agg.lk();
+
+    //dom对象
+    document.querySelectorAll('*').forEach(node => {
+        if (node.classList.value.startsWith('nr-')) {
+            var vkey = 'dom';
+            node.classList[0].substring(3).split('-').forEach(c => vkey += c.substring(0, 1).toUpperCase() + c.substring(1))
+            ndkVary[vkey] = node;
+        }
+    })
+
+    ndkInit.event();
+    ndkStep.stepStart().then(() => {
+        ndkVary.domLoading.style.display = "none";
+        ndkVary.domMain.style.visibility = "visible";
 
         setTimeout(() => console.clear(), 1000 * 2);
     })
 
 }, false);
 
-export { init }
+export { ndkInit }

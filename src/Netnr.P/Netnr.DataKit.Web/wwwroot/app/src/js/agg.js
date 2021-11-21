@@ -237,7 +237,7 @@ var agg = {
         axis: '轴',
         navigator: '导航',
         color: '颜色',
-        thickness: 'Thickness',
+        thickness: '坐标宽度',
         xType: 'X Type',
         automatic: 'Automatic',
         category: '类别',
@@ -264,7 +264,7 @@ var agg = {
         size: '大小',
         minSize: '最小',
         maxSize: '最大',
-        legend: 'Legend',
+        legend: '指标项',
         position: '位置',
         markerSize: 'Marker Size',
         markerStroke: 'Marker Stroke',
@@ -274,24 +274,24 @@ var agg = {
         itemPaddingY: 'Item Padding Y',
         layoutHorizontalSpacing: 'Horizontal Spacing',
         layoutVerticalSpacing: 'Vertical Spacing',
-        strokeWidth: 'Stroke Width',
+        strokeWidth: '线条宽度',
         offset: 'Offset',
         offsets: 'Offsets',
-        tooltips: 'Tooltips',
+        tooltips: '显示提示',
         callout: 'Callout',
-        markers: 'Markers',
-        shadow: 'Shadow',
-        blur: 'Blur',
-        xOffset: 'X Offset',
-        yOffset: 'Y Offset',
-        lineWidth: 'Line Width',
-        normal: 'Normal',
-        bold: 'Bold',
-        italic: 'Italic',
-        boldItalic: 'Bold Italic',
+        markers: '标点',
+        shadow: '阴影',
+        blur: '发散',
+        xOffset: 'X 偏移',
+        yOffset: 'Y 偏移',
+        lineWidth: '线条粗细',
+        normal: '正常',
+        bold: '加粗',
+        italic: '斜体',
+        boldItalic: '加粗斜体',
         predefined: 'Predefined',
-        fillOpacity: 'Fill Opacity',
-        strokeOpacity: 'Line Opacity',
+        fillOpacity: '填充透明度',
+        strokeOpacity: '线条透明度',
         histogramBinCount: 'Bin count',
         columnGroup: '柱状',
         barGroup: '条形',
@@ -347,9 +347,5 @@ var agg = {
         ariaSearchFilterValues: 'Search filter values'
     }
 }
-
-window.addEventListener("DOMContentLoaded", function () {
-    agg.lk();
-}, false);
 
 export { agg }

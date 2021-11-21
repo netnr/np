@@ -4,6 +4,17 @@
 .ag-row {
     font-size: var(--nr-font-size) !important;
 }
+
+.ag-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
+}
 :root {
     --sl-font-size-small: var(--nr-font-size) !important;
 }
@@ -73,6 +84,11 @@ html, body {
         margin-right: .5em;
     }
 
+/* 设置 */
+.nr-dialog-setting sl-details{
+    margin-bottom: .5em;
+}
+
 /*选项卡2对应的连接-数据库*/
 .nr-window-conns,
 .nr-window-database {
@@ -118,7 +134,6 @@ html, body {
 .nr-grid-execute-sql {
     height: 200px;
 }
-
 :root {
     --nrc-spliter-width: 8px;
 }

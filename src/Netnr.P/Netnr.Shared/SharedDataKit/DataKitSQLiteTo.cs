@@ -63,6 +63,8 @@ namespace Netnr.SharedDataKit
         public List<DatabaseVM> GetDatabase(string filterDatabaseName = null)
         {
             Microsoft.Data.Sqlite.SqliteConnectionStringBuilder builder = new(dbConnection.ConnectionString);
+            var dt = db.SqlExecuteReader("PRAGMA encoding").Item1.Tables[0];
+
             var fi = new FileInfo(builder.DataSource);
 
             var list = new List<DatabaseVM>
@@ -70,6 +72,8 @@ namespace Netnr.SharedDataKit
                 new DatabaseVM
                 {
                     DatabaseName = DefaultDatabaseName(),
+                    DatabaseClassify = "DEFAULT",
+                    DatabaseCharset = dt.Rows[0][0].ToString(),
                     DatabasePath = builder.DataSource,
                     DatabaseDataLength = fi.Length,
                     DatabaseCreateTime = fi.CreationTime

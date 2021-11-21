@@ -1,14 +1,14 @@
-import { vary } from "./vary";
+import { ndkVary } from "./ndkVary";
 
-var me = {
+var ndkEditor = {
 
     /**
      * 配置
      * @param {any} ops
      */
-    meConfig: ops => Object.assign({
+    config: ops => Object.assign({
         value: "",
-        theme: vary.theme == "dark" ? "vs-dark" : "vs",
+        theme: ndkVary.theme == "dark" ? "vs-dark" : "vs",
         fontSize: 18,
         language: 'sql',
         automaticLayout: true,
@@ -26,8 +26,8 @@ var me = {
      * @param {any} dom
      * @param {any} config
      */
-    meCreate: (dom, config) => new Promise(resolve => {
-        var editor = monaco.editor.create(dom, me.meConfig(config));
+    create: (dom, config) => new Promise(resolve => {
+        var editor = monaco.editor.create(dom, ndkEditor.config(config));
         resolve(editor);
     }),
 
@@ -35,13 +35,13 @@ var me = {
      * 执行格式化
      * @param {any} editor
      */
-    meFormatter: editor => editor.trigger('a', 'editor.action.formatDocument'),
+    formatter: editor => editor.trigger('a', 'editor.action.formatDocument'),
 
     /**
      * 获取选中值
      * @param {any} editor
      */
-    meSelectedValue: editor => {
+    selectedValue: editor => {
         return editor.getModel().getValueInRange(editor.getSelection());
     },
 
@@ -49,8 +49,8 @@ var me = {
      * 获取选中或全部值
      * @param {any} editor
      */
-    meSelectedOrAllValue: editor => {
-        var val = me.meSelectedValue(editor);
+    selectedOrAllValue: editor => {
+        var val = ndkEditor.selectedValue(editor);
         if (val.trim() == "") {
             val = editor.getValue();
         }
@@ -62,7 +62,7 @@ var me = {
      * @param {any} text
      * @param {any} type
      */
-    meFormatterSQL: function (text, type) {
+    formatterSQL: function (text, type) {
         var sqlang;
         switch (type) {
             case "MySQL":
@@ -83,4 +83,4 @@ var me = {
     },
 }
 
-export { me }
+export { ndkEditor }

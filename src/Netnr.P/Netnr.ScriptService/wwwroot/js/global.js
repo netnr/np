@@ -544,7 +544,7 @@ var ss = {
      * @param {any} hi 指定代理
      */
     ajax: function (obj, hi) {
-        var hosts = ["https://cors.eu.org/", "https://bird.ioliu.cn/v2?url=", "https://www.netnr.eu.org/api/v1/Proxy?url="];
+        var hosts = ["https://cors.eu.org/", "https://seep.eu.org/", "https://www.netnr.eu.org/api/v1/Proxy?url="];
         if (hi != null) {
             obj.url = hosts[hi] + encodeURIComponent(obj.url);
             $.ajax(obj)
