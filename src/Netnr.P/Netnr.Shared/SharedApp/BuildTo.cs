@@ -47,8 +47,7 @@ namespace Netnr.SharedApp
                 var type = typeof(T);
                 var methods = type.GetMethods().Where(x => x.DeclaringType == type).ToList();
 
-                vm.Log.Add($"构建总数：{methods.Count}");
-                vm.Log.Add("开始构建：");
+                vm.Log.Add($"Build Count：{methods.Count}");
 
                 var cbs = new ConcurrentBag<string>();
                 //并行请求
@@ -61,6 +60,7 @@ namespace Netnr.SharedApp
                     FileTo.WriteText(html, savePath + mh.Name.ToLower() + ".html", false);
                 });
                 vm.Log.AddRange(cbs);
+                Console.WriteLine("\nDone!\n");
 
                 vm.Set(SharedEnum.RTag.success);
             }

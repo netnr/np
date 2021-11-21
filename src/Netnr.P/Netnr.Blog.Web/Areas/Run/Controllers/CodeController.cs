@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.Blog.Data;
+﻿using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Areas.Run.Controllers
 {

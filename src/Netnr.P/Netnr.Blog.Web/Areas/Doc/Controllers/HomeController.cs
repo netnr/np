@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Netnr.Blog.Web.Areas.Doc.Controllers
+﻿namespace Netnr.Blog.Web.Areas.Doc.Controllers
 {
     [Area("Doc")]
     public class HomeController : Controller

@@ -33,6 +33,11 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
+        /// 获取DbHelper
+        /// </summary>
+        public DbHelper GetDbHelper() => db;
+
+        /// <summary>
         /// 默认库名
         /// </summary>
         /// <returns></returns>
@@ -42,29 +47,54 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
-        /// 获取库
+        /// 获取库名
         /// </summary>
         /// <returns></returns>
-        public List<DatabaseVM> GetDatabase()
+        public List<string> GetDatabaseName()
         {
-            var sql = Configs.GetDatabasePostgreSQL();
-            var ds = db.SqlQuery(sql);
+            var sql = Configs.GetDatabaseNamePostgreSQL();
+            var dt = db.SqlExecuteReader(sql).Item1.Tables[0];
 
-            var list = ds.Tables[0].ToModel<DatabaseVM>();
+            var list = new List<string>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                list.Add(dr[0].ToString());
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// 获取库
+        /// </summary>
+        /// <param name="filterDatabaseName">数据库名</param>
+        /// <returns></returns>
+        public List<DatabaseVM> GetDatabase(string filterDatabaseName = null)
+        {
+            var where = string.Empty;
+            if (!string.IsNullOrWhiteSpace(filterDatabaseName))
+            {
+                where = $"AND t1.datname IN ('{string.Join("','", filterDatabaseName.Replace("'", "").Split(','))}')";
+            }
+
+            var sql = Configs.GetDatabasePostgreSQL(where);
+            var ds = db.SqlExecuteReader(sql);
+
+            var list = ds.Item1.Tables[0].ToModel<DatabaseVM>();
             return list;
         }
 
         /// <summary>
         /// 获取表
         /// </summary>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public List<TableVM> GetTable(string DatabaseName = null)
+        public List<TableVM> GetTable(string databaseName = null)
         {
             var sql = Configs.GetTablePostgreSQL();
-            var ds = db.SqlQuery(sql);
+            var ds = db.SqlExecuteReader(sql);
 
-            var list = ds.Tables[0].ToModel<TableVM>();
+            var list = ds.Item1.Tables[0].ToModel<TableVM>();
             return list;
         }
 
@@ -72,13 +102,13 @@ namespace Netnr.SharedDataKit
         /// 表DDL
         /// </summary>
         /// <param name="filterTableName"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public Dictionary<string, string> GetTableDDL(string filterTableName = null, string DatabaseName = null)
+        public Dictionary<string, string> GetTableDDL(string filterTableName = null, string databaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
+            if (string.IsNullOrWhiteSpace(databaseName))
             {
-                DatabaseName = DefaultDatabaseName();
+                databaseName = DefaultDatabaseName();
             }
 
             return null;
@@ -88,9 +118,9 @@ namespace Netnr.SharedDataKit
         /// 获取列
         /// </summary>
         /// <param name="filterTableName"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public List<ColumnVM> GetColumn(string filterTableName = null, string DatabaseName = null)
+        public List<ColumnVM> GetColumn(string filterTableName = null, string databaseName = null)
         {
             var where = string.Empty;
             if (!string.IsNullOrWhiteSpace(filterTableName))
@@ -99,9 +129,9 @@ namespace Netnr.SharedDataKit
             }
 
             var sql = Configs.GetColumnPostgreSQL(where);
-            var ds = db.SqlQuery(sql);
+            var ds = db.SqlExecuteReader(sql);
 
-            var list = ds.Tables[0].ToModel<ColumnVM>();
+            var list = ds.Item1.Tables[0].ToModel<ColumnVM>();
 
             return list;
         }
@@ -109,49 +139,72 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 设置表注释
         /// </summary>
-        /// <param name="TableName"></param>
-        /// <param name="TableComment"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="tableComment"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public bool SetTableComment(string TableName, string TableComment, string DatabaseName = null)
+        public bool SetTableComment(string tableName, string tableComment, string databaseName = null)
         {
-            var sql = Configs.SetTableCommentPostgreSQL(TableName, TableComment);
-            _ = db.SqlExecute(sql);
+            var sql = Configs.SetTableCommentPostgreSQL(tableName, tableComment);
+            _ = db.SqlExecuteNonQuery(sql);
             return true;
         }
 
         /// <summary>
         /// 设置列注释
         /// </summary>
-        /// <param name="TableName"></param>
-        /// <param name="ColumnName"></param>
-        /// <param name="ColumnComment"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="columnName"></param>
+        /// <param name="columnComment"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public bool SetColumnComment(string TableName, string ColumnName, string ColumnComment, string DatabaseName = null)
+        public bool SetColumnComment(string tableName, string columnName, string columnComment, string databaseName = null)
         {
-            var sql = Configs.SetColumnCommentPostgreSQL(TableName, ColumnName, ColumnComment);
-            _ = db.SqlExecute(sql);
+            var sql = Configs.SetColumnCommentPostgreSQL(tableName, columnName, columnComment);
+            _ = db.SqlExecuteNonQuery(sql);
             return true;
+        }
+
+        /// <summary>
+        /// 执行脚本
+        /// </summary>
+        /// <param name="sql">脚本</param>
+        /// <param name="databaseName">数据库名</param>
+        /// <returns></returns>
+        public Tuple<DataSet, DataSet, object> ExecuteSql(string sql, string databaseName = null)
+        {
+            var st = new SharedTimingVM();
+
+            //消息
+            var listInfo = new List<string>();
+            var dbConn = (Npgsql.NpgsqlConnection)db.Connection;
+            dbConn.Notice += (s, e) =>
+            {
+                listInfo.Add(e.Notice.MessageText);
+            };
+
+            var er = db.SqlExecuteReader(sql, includeSchemaTable: true);
+
+            return DataKitTo.AidExecuteSql(er, listInfo, st);
         }
 
         /// <summary>
         /// 获取表数据
         /// </summary>
-        /// <param name="TableName"></param>
+        /// <param name="tableName"></param>
         /// <param name="page"></param>
         /// <param name="rows"></param>
         /// <param name="sort"></param>
         /// <param name="order"></param>
         /// <param name="listFieldName"></param>
         /// <param name="whereSql"></param>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public Tuple<DataTable, int> GetData(string TableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string DatabaseName = null)
+        public Tuple<DataTable, int> GetData(string tableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string databaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
+            if (string.IsNullOrWhiteSpace(databaseName))
             {
-                DatabaseName = DefaultDatabaseName();
+                databaseName = DefaultDatabaseName();
             }
 
             if (string.IsNullOrWhiteSpace(listFieldName))
@@ -164,7 +217,7 @@ namespace Netnr.SharedDataKit
                 listFieldName = "\"" + string.Join("\",\"", listFieldName.Split(',')) + "\"";
             }
 
-            TableName = "\"" + TableName + "\"";
+            tableName = "\"" + tableName + "\"";
             sort = "\"" + sort + "\"";
 
             if (string.IsNullOrWhiteSpace(whereSql))
@@ -180,18 +233,18 @@ namespace Netnr.SharedDataKit
                         SELECT
                             {listFieldName}
                         FROM
-                            {TableName} {whereSql}
+                            {tableName} {whereSql}
                         ORDER BY
                             {sort} {order}
                         LIMIT
                             {rows} OFFSET {(page - 1) * rows}";
 
-            sql += $";select count(1) as total from {TableName} {whereSql}";
+            sql += $";select count(1) as total from {tableName} {whereSql}";
 
-            var ds = db.SqlQuery(sql);
+            var ds = db.SqlExecuteReader(sql);
 
-            var dt = ds.Tables[0];
-            _ = int.TryParse(ds.Tables[1].Rows[0][0].ToString(), out int total);
+            var dt = ds.Item1.Tables[0];
+            _ = int.TryParse(ds.Item1.Tables[1].Rows[0][0].ToString(), out int total);
 
             return new Tuple<DataTable, int>(dt, total);
         }
@@ -204,116 +257,116 @@ namespace Netnr.SharedDataKit
         {
             var sql = @"
                         SELECT
-                          'Name' col,
-                          split_part(split_part(VERSION (), ',', 1),' on ',1)
+                            'Name' col,
+                            split_part(split_part(VERSION(), ',', 1), ' on ', 1)
                         UNION ALL
                         SELECT
-                          'Version' col,
-                          (
+                            'Version' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'server_version'
-                          ) val
+                                NAME = 'server_version'
+                            ) val
                         UNION ALL
                         SELECT
-                          'Compile' col,
-                          split_part(VERSION (), ',', 2) val
+                            'Compile' col,
+                            split_part(VERSION(), ',', 2) val
                         UNION ALL
                         SELECT
-                          'DirInstall' col,
-                          (
+                            'DirInstall' col,
+                            (
                             SELECT
-                              split_part(setting, 'main', 1)
+                                split_part(setting, 'main', 1)
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'archive_command'
-                          ) val
+                                NAME = 'archive_command'
+                            ) val
                         UNION ALL
                         SELECT
-                          'DirData' col,
-                          (
+                            'DirData' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'data_directory'
-                          ) val
+                                NAME = 'data_directory'
+                            ) val
                         UNION ALL
                         SELECT
-                          'CharSet' col,
-                          (
+                            'CharSet' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'server_encoding'
-                          ) val
+                                NAME = 'server_encoding'
+                            ) val
                         UNION ALL
                         SELECT
-                          'TimeZone' col,
-                          (
+                            'TimeZone' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'TimeZone'
-                          ) val
+                                NAME = 'TimeZone'
+                            ) val
                         UNION ALL
                         SELECT
-                          'DateTime' col,
-                          to_char(now(), 'YYYY-MM-DD HH24:MI:SS.MS') val
+                            'DateTime' col,
+                            to_char(now(), 'YYYY-MM-DD HH24:MI:SS.MS') val
                         UNION ALL
                         SELECT
-                          'MaxConn' col,
-                          (
+                            'MaxConn' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'max_connections'
-                          ) val
+                                NAME = 'max_connections'
+                            ) val
                         UNION ALL
                         SELECT
-                          'CurrConn' col,
-                          CAST (COUNT (1) AS VARCHAR) val
+                            'CurrConn' col,
+                            CAST(COUNT(1) AS VARCHAR) val
                         FROM
-                          pg_stat_activity
+                            pg_stat_activity
                         UNION ALL
                         SELECT
-                          'TimeOut' col,
-                          (
+                            'TimeOut' col,
+                            (
                             SELECT
-                              setting
+                                setting
                             FROM
-                              pg_settings
+                                pg_settings
                             WHERE
-                              NAME = 'statement_timeout'
-                          ) val
+                                NAME = 'statement_timeout'
+                            ) val
                         UNION ALL
                         SELECT
-                          'IgnoreCase' col,
-                          CASE
+                            'IgnoreCase' col,
+                            CASE
                             'a' = 'A'
                             WHEN 't' THEN '1'
                             ELSE '0'
-                          END val
+                            END val
                         UNION ALL
                         SELECT
-                          'System' col,
-                          split_part(split_part(VERSION (), ',', 1), ' on ', 2) val
+                            'System' col,
+                            split_part(split_part(VERSION(), ',', 1), ' on ', 2) val
                         ";
 
             var mo = new DEIVM();
 
-            var dt = db.SqlQuery(sql).Tables[0];
+            var dt = db.SqlExecuteReader(sql).Item1.Tables[0];
             mo = DataKitTo.TableToDEI(dt);
 
             return mo;

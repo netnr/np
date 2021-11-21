@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Netnr.DataKit.Web.Controllers
+﻿namespace Netnr.DataKit.Web.Controllers
 {
     /// <summary>
     /// Netnr.DataKit API

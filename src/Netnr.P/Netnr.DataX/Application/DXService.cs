@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using Netnr.Core;
+﻿using Netnr.Core;
 using Netnr.DataX.Domain;
 
 namespace Netnr.DataX.Application

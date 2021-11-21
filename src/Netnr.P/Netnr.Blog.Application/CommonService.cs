@@ -217,9 +217,9 @@ namespace Netnr.Blog.Application
                         }.ToJson();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    Console.WriteLine(ex);
                 }
             }
 

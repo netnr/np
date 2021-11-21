@@ -45,7 +45,7 @@ var st = {
 
                 var txt = editor1.getValue();
                 var pout = st.parseJsonOrYaml(txt);
-                if (editor1.getModel()._languageIdentifier.language != pout.lang) {
+                if (editor1.getModel().getLanguageId() != pout.lang) {
                     st.setEditorLanguage(editor1, pout.lang);
                 }
 
@@ -209,20 +209,26 @@ var st = {
                             }
                             break;
                         case "pdf":
-                            require(['https://s1.netnr.com/libs/html2pdf/0.9.3/html2pdf.bundle.min.js'], function (module) {
-                                var ch = that.obj.view.clientHeight;
-                                that.obj.view.style.height = 'auto';
-                                var vm = that.obj.viewmodel;
-                                that.toggleView(3);
-                                module(that.obj.view, {
-                                    margin: 3,
-                                    filename: 'swagger.pdf',
-                                    html2canvas: { scale: 1 }
-                                }).then(function () {
-                                    that.obj.view.height = ch + 'px';
-                                    that.toggleView(vm);
+                            {
+                                var uri = location.host.includes("netnr.com")
+                                    ? "https://s1.netnr.com/libs/html2pdf/html2pdf.bundle-v0.10.1.min.js"
+                                    : "https://s1.netnr.eu.org/libs/html2pdf/html2pdf.bundle-v0.10.1.min.js";
+
+                                require([uri], function (module) {
+                                    var ch = that.obj.view.clientHeight;
+                                    that.obj.view.style.height = 'auto';
+                                    var vm = that.obj.viewmodel;
+                                    that.toggleView(3);
+                                    module(that.obj.view, {
+                                        margin: 3,
+                                        filename: 'swagger.pdf',
+                                        html2canvas: { scale: 1 }
+                                    }).then(function () {
+                                        that.obj.view.height = ch + 'px';
+                                        that.toggleView(vm);
+                                    })
                                 })
-                            })
+                            }
                             break;
                         case "png":
                             {

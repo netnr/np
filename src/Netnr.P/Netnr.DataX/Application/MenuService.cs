@@ -1,7 +1,4 @@
-﻿using System.Text;
-using System.Data;
-using System.Reflection;
-using System.Data.Common;
+﻿using System.Reflection;
 using Newtonsoft.Json.Linq;
 using Netnr.Core;
 using Netnr.SharedAdo;
@@ -144,7 +141,7 @@ public partial class MenuService
             case SharedEnum.TypeDB.MySQL:
             case SharedEnum.TypeDB.MariaDB:
                 {
-                    var drs = db.SqlQuery("SHOW VARIABLES").Tables[0].Select();
+                    var drs = db.SqlExecuteReader("SHOW VARIABLES").Item1.Tables[0].Select();
 
                     var dicVar1 = new Dictionary<string, string>
                         {
@@ -204,7 +201,7 @@ public partial class MenuService
                     if (listBetterSql.Count > 0)
                     {
                         DXService.Log($"\n执行优化脚本：\n{string.Join(Environment.NewLine, listBetterSql)}");
-                        db.SqlExecute(listBetterSql);
+                        db.SqlExecuteNonQuery(listBetterSql);
                     }
                 }
                 break;
@@ -239,7 +236,7 @@ public partial class MenuService
         var st = new SharedTimingVM();
 
         var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
-        var num = db.SqlExecute(FileTo.ReadText(sqlPath));
+        var num = db.SqlExecuteNonQuery(FileTo.ReadText(sqlPath));
 
         DXService.Log($"执行结束，受影响行数：{num}，耗时：{st.PartTimeFormat()}");
 
@@ -700,8 +697,8 @@ public partial class MenuService
 
         DXService.Log($"开始查询原表，查询语句：{cv.OdQuerySql}");
         //原表数据集
-        var odDs = odDB.SqlQuery(cv.OdQuerySql);
-        var odDt = odDs.Tables[0];
+        var odDs = odDB.SqlExecuteReader(cv.OdQuerySql);
+        var odDt = odDs.Item1.Tables[0];
 
         DXService.Log($"原表数据共：{odDt.Rows.Count} 行，查询耗时：{st.PartTimeFormat()}");
 
@@ -760,7 +757,7 @@ public partial class MenuService
         if (!string.IsNullOrWhiteSpace(cv.NdClearTableSql))
         {
             DXService.Log($"开始清空新表，执行脚本：{cv.NdClearTableSql}");
-            var num = ndDB.SqlExecute(cv.NdClearTableSql);
+            var num = ndDB.SqlExecuteNonQuery(cv.NdClearTableSql);
 
             DXService.Log($"返回受影响行数：{num}，执行耗时：{st.PartTimeFormat()}");
         }
@@ -870,7 +867,7 @@ public partial class MenuService
         }
     }
 
-    [Display(Name = "文本编码转换（请先备份）", GroupName = "66")]
+    [Display(Name = "转成 UTF8（请先备份）", GroupName = "66")]
     public static void TextEncodingConversion()
     {
         //输出头
@@ -880,7 +877,7 @@ public partial class MenuService
         TextEncodingConversionService.Run();
     }
 
-    [Display(Name = "项目清理（删除 bin、obj）", GroupName = "66")]
+    [Display(Name = "项目清理（bin、obj）", GroupName = "66")]
     public static void ProjectCleanup()
     {
         //输出头
@@ -890,7 +887,7 @@ public partial class MenuService
         ProjectCleanupService.Run();
     }
 
-    [Display(Name = "项目安全拷贝（替换 appsettings.json 密钥）", GroupName = "66")]
+    [Display(Name = "项目拷贝（替换 appsettings.json 密钥）", GroupName = "66")]
     public static void ProjectSafeCopy()
     {
         //输出头
@@ -898,6 +895,99 @@ public partial class MenuService
         DXService.ShowTitleInfo(mi);
 
         ProjectSafeCopyService.Run();
+    }
+
+    #endregion
+
+    #region 99
+
+    [Display(Name = "ZD 提取数据库文件到磁盘", GroupName = "99")]
+    public static void ZDSaveAsFile()
+    {
+        //输出头
+        var mi = MethodBase.GetCurrentMethod();
+        DXService.ShowTitleInfo(mi);
+
+        //配置
+        var co = new ConfigObj();
+
+        var st = new SharedTimingVM();
+
+        //选择库
+        var cdb = DXService.ConsoleReadDatabase(co);
+
+        //数据库
+        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
+
+        //新表
+        var dt = db.SqlExecuteReader("select top 0 * from cqzd2020.dbo.ANNEX_INFO").Item1.Tables[0];
+
+        //附件目录
+        Console.Write($"附件存储目录（如 {co.DXHub} ）：");
+        var annexPath = Console.ReadLine();
+        if (!Directory.Exists(annexPath))
+        {
+            Directory.CreateDirectory(annexPath);
+        }
+
+        //查询脚本
+        Console.Write("查询脚本（如 select top 10 * from cqzd2016Annex.dbo.ANNEX_INFO）：");
+        var querySql = Console.ReadLine();
+        var note = querySql.Contains("cqzd2016Annex") ? "cqzd2016Annex" : "cqzd2020Annex";
+
+        DXService.Log($"执行查询脚本: {querySql}");
+
+        int wi = 0;
+        db.SafeConn(() =>
+        {
+            var cmd = db.Connection.CreateCommand();
+            cmd.CommandTimeout = 300;
+            cmd.CommandText = querySql;
+
+            var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var dr = dt.NewRow();
+                byte[] bin = null;
+                for (int f = 0; f < reader.FieldCount; f++)
+                {
+                    //image
+                    if (f == 5)
+                    {
+                        bin = (byte[])reader[f];
+                    }
+                    else
+                    {
+                        dr[f] = reader[f];
+                    }
+                }
+                var id = dr["ID"].ToString();
+                var suff = dr["SUFFIX_NAME"].ToString().TrimStart('.');
+                dr["SUFFIX_NAME"] = suff;
+                dr["NOTE"] = note;
+
+                var vpath = id + "." + suff;
+                dr["ANNEX_PATH"] = vpath;
+                var path = Path.Combine(annexPath, vpath);
+                File.WriteAllBytes(path, bin);
+                DXService.Log($"写入文件（{++wi}）：{path}");
+
+                dt.Rows.Add(dr.ItemArray);
+            }
+        });
+
+        DXService.Log($"导出文件（{wi}）耗时: {st.PartTimeFormat()}");
+
+        DXService.Log($"回写文件路径");
+
+        var csb = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(cdb.Conn);
+        csb.InitialCatalog = "cqzd2020";
+        var dbmain = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, csb.ConnectionString));
+        dbmain.BulkCopySQLServer(dt, "ANNEX_INFO");
+        DXService.Log($"写入文件路径耗时: {st.PartTimeFormat()}");
+
+        DXService.Log($"共耗时: {st.TotalTimeFormat()}");
     }
 
     #endregion

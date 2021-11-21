@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.Blog.Data;
+﻿using Netnr.Blog.Data;
 using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Areas.Draw.Controllers
@@ -54,11 +53,11 @@ namespace Netnr.Blog.Web.Areas.Draw.Controllers
 
             if (!string.IsNullOrWhiteSpace(filename))
             {
-                filename = filename.ToDecode();
+                filename = filename.ToUrlDecode();
             }
             if (!string.IsNullOrWhiteSpace(xml))
             {
-                xml = xml.ToDecode();
+                xml = xml.ToUrlDecode();
             }
 
             //新增、编辑

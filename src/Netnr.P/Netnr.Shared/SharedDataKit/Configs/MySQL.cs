@@ -7,14 +7,34 @@ namespace Netnr.SharedDataKit
     public partial class Configs
     {
         /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDatabaseNameMySQL()
+        {
+            return $@"
+SELECT
+  SCHEMA_NAME AS DatabaseName
+FROM
+  information_schema.schemata
+ORDER BY
+  SCHEMA_NAME
+            ";
+        }
+
+        /// <summary>
         /// 获取库
         /// </summary>
         /// <returns></returns>
-        public static string GetDatabaseMySQL()
+        public static string GetDatabaseMySQL(string Where = null)
         {
             return $@"
 SELECT
   SCHEMA_NAME AS DatabaseName,
+  CASE
+    WHEN t3.rid > 4 THEN 'USER'
+    ELSE 'SYSTEM'
+  END AS DatabaseClassify,
   DEFAULT_CHARACTER_SET_NAME AS DatabaseCharset,
   DEFAULT_COLLATION_NAME AS DatabaseCollation,
   @@datadir AS DatabasePath,
@@ -32,6 +52,21 @@ FROM
     GROUP BY
       TABLE_SCHEMA
   ) t2 ON t1.SCHEMA_NAME = t2.TABLE_SCHEMA
+  LEFT JOIN (
+    SELECT
+      TABLE_SCHEMA,
+      ROW_NUMBER() OVER(
+        ORDER BY
+          MIN(CREATE_TIME)
+      ) rid
+    FROM
+      information_schema.tables
+    GROUP BY
+      TABLE_SCHEMA
+    ORDER BY
+      MIN(CREATE_TIME)
+  ) t3 ON t1.SCHEMA_NAME = t3.TABLE_SCHEMA
+WHERE 1=1 {Where}
 ORDER BY
   t1.SCHEMA_NAME
             ";
@@ -102,29 +137,25 @@ SELECT
   END AS DataLength,
   t1.NUMERIC_SCALE AS DataScale,
   t1.ORDINAL_POSITION AS ColumnOrder,
+  (
+    SELECT
+      ORDINAL_POSITION
+    FROM
+      information_schema.key_column_usage
+    WHERE
+      TABLE_SCHEMA = t2.TABLE_SCHEMA
+      AND TABLE_NAME = t2.TABLE_NAME
+      AND COLUMN_NAME = t1.COLUMN_NAME
+    LIMIT 1 
+  ) AS PrimaryKey,
   CASE
-    WHEN (
-      SELECT
-        Count(1)
-      FROM
-        information_schema.key_column_usage
-      WHERE
-        TABLE_SCHEMA = t2.TABLE_SCHEMA
-        AND TABLE_NAME = t2.TABLE_NAME
-        AND COLUMN_NAME = t1.COLUMN_NAME
-      LIMIT
-        0, 1
-    ) = 0 THEN ''
-    ELSE 'YES'
-  END AS PrimaryKey,
+    WHEN t1.EXTRA = 'auto_increment' THEN 1
+    ELSE NULL
+  END AS AutoIncr,
   CASE
-    WHEN t1.EXTRA = 'auto_increment' THEN 'YES'
-    ELSE ''
-  END AS AutoAdd,
-  CASE
-    WHEN t1.IS_NULLABLE = 'YES' THEN ''
-    ELSE 'YES'
-  END AS NotNull,
+    WHEN t1.IS_NULLABLE = 'YES' THEN 1
+    ELSE 0
+  END AS IsNullable,
   t1.COLUMN_DEFAULT AS ColumnDefault,
   t1.COLUMN_COMMENT AS ColumnComment
 FROM

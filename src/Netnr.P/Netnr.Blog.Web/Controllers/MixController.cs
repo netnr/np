@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Netnr.Core;
 
 namespace Netnr.Blog.Web.Controllers

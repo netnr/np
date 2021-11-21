@@ -36,8 +36,8 @@ namespace Netnr.DataX.Application
                     }
 
                     var txt = Core.FileTo.ReadText(filePath)
-                        .Replace("https://www.nentr.com", "https://www.nentr.eu.org")
-                        .Replace("https://s1.nentr.com", "https://s1.nentr.eu.org");
+                        .Replace("https://www.netnr.com", "https://www.netnr.eu.org")
+                        .Replace("https://s1.netnr.com", "https://s1.netnr.eu.org");
                     bool isFound = false;
 
                     string pattern = @"\""(\S+)\"": \""(\S+)\""";

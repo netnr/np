@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Netnr.Chat.Controllers
+﻿namespace Netnr.Chat.Controllers
 {
     public class HomeController : Controller
     {

@@ -76,23 +76,28 @@
             }, 1000 * 1)
         });
 
-        //快捷键
-        editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, function () {
-            $('#btnSqlFormatter')[0].click();
-        })
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, function () {
-            $('#btnSqlFormatter')[0].click();
-        })
+        //格式化
+        monaco.languages.registerDocumentFormattingEditProvider('sql', {
+            provideDocumentFormattingEdits: function (model, _options, _token) {
+                return [{
+                    text: formatterSQL(model.getValue()),
+                    range: model.getFullModelRange()
+                }];
+            }
+        });
     });
 
     $(window).resize(AutoHeight);
+    
+    function formatterSQL(text) {
+        return sqlFormatter.format(text, {
+            language:document.querySelector('.nrSqlConfigLanguage').value,
+            uppercase:document.querySelector('.nrSqlConfigUpperCase').value == "1"
+        });
+    }
 
     $('#btnSqlFormatter').click(function () {
-        var sf = sqlFormatter.format(editor.getValue(), {
-            language: $('.nrSqlConfigLanguage').val(),
-            uppercase: $('.nrSqlConfigUpperCase').val() == "1"
-        });
-        editor.setValue(sf);
+        editor.trigger('a', 'editor.action.formatDocument')
     })
 
     //接收文件

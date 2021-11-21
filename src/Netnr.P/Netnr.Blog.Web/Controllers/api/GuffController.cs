@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.Blog.Data;
+﻿using Netnr.Blog.Data;
 using Netnr.Core;
 using Netnr.SharedFast;
 

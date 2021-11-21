@@ -15,7 +15,7 @@ namespace Netnr.SharedAdo
     public partial class DbHelper
     {
         /// <summary>
-        /// 表批量写入
+        /// 表批量写入（排除自增列）
         /// https://www.npgsql.org/doc/copy.html
         /// </summary>
         /// <param name="dt">数据表</param>
@@ -34,6 +34,8 @@ namespace Netnr.SharedAdo
                 {
                     SelectCommand = new NpgsqlCommand($"select * from {quoteTable} where 0=1", connection)
                 };
+
+                //获取列类型
                 var pars = cb.GetInsertCommand(true).Parameters;
                 var colDbType = new Dictionary<string, NpgsqlDbType>();
                 foreach (NpgsqlParameter par in pars)
@@ -41,8 +43,16 @@ namespace Netnr.SharedAdo
                     colDbType.Add(par.SourceColumn, par.NpgsqlDbType);
                 }
 
+                //获取自增
+                var dtSchema = new DataTable();
+                cb.DataAdapter.FillSchema(dtSchema, SchemaType.Source);
+                var autoIncrCol = dtSchema.Columns.Cast<DataColumn>().Where(x => x.AutoIncrement == true).Select(x => x.ColumnName).ToList();
+
+                //排除自增
                 var columns = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
+                columns = columns.Except(autoIncrCol).ToList();
                 string copyString = $"COPY {quoteTable}(\"" + string.Join("\",\"", columns) + "\") FROM STDIN (FORMAT BINARY)";
+                autoIncrCol.ForEach(x => dt.Columns.Remove(x));
 
                 var num = 0;
                 using (var writer = connection.BeginBinaryImport(copyString))
@@ -84,7 +94,7 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// 表批量写入
+        /// 表批量写入（须手动处理自增列SQL）
         /// 根据行数据 RowState 状态新增、修改
         /// </summary>
         /// <param name="dt">数据表</param>
@@ -92,7 +102,7 @@ namespace Netnr.SharedAdo
         /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
         /// <param name="openTransaction">开启事务，默认开启</param>
         /// <returns></returns>
-        public int BulkBatchPostgreSQL(DataTable dt, string table, Action<NpgsqlDataAdapter, DataTable> dataAdapter = null, bool openTransaction = true)
+        public int BulkBatchPostgreSQL(DataTable dt, string table, Action<NpgsqlDataAdapter> dataAdapter = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
@@ -126,13 +136,12 @@ namespace Netnr.SharedAdo
                         if (val is not DBNull)
                         {
                             dr[colName] = val.ToString().Replace("\0", "");
-                            System.Diagnostics.Debug.WriteLineIf(val.ToString().Contains("\0"), val.ToString());
                         }
                     });
                 }
 
                 //执行前修改
-                dataAdapter?.Invoke(da, dt);
+                dataAdapter?.Invoke(da);
 
                 var num = da.Update(dt);
 

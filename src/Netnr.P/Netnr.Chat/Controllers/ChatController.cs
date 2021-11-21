@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Netnr.Chat.Application.ViewModel;
 using Netnr.SharedFast;
 using chs = Netnr.Chat.Application.ChatHubService;

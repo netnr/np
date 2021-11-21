@@ -80,7 +80,7 @@ del {
     clip: rect(1px,1px,1px,1px);
 }
 
-#uploader .placeholder {
+#uploader .up-placeholder {
     border: 3px dashed #e6e6e6;
     min-height: 220px;
     padding-top: 20px;
@@ -89,7 +89,7 @@ del {
     position: relative;
 }
 
-    #uploader .placeholder .webuploader-pick {
+    #uploader .up-placeholder .webuploader-pick {
         font-size: 18px;
         background: #00b7ee;
         border-radius: 3px;
@@ -102,11 +102,11 @@ del {
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
     }
 
-    #uploader .placeholder .webuploader-pick-hover {
+    #uploader .up-placeholder .webuploader-pick-hover {
         background: #00a2d4;
     }
 
-    #uploader .placeholder .flashTip {
+    #uploader .up-placeholder .flashTip {
         color: #666666;
         font-size: 12px;
         position: absolute;
@@ -115,20 +115,20 @@ del {
         bottom: 20px;
     }
 
-        #uploader .placeholder .flashTip a {
+        #uploader .up-placeholder .flashTip a {
             color: #0785d1;
             text-decoration: none;
         }
 
-            #uploader .placeholder .flashTip a:hover {
+            #uploader .up-placeholder .flashTip a:hover {
                 text-decoration: underline;
             }
 
-    #uploader .placeholder.webuploader-dnd-over {
+    #uploader .up-placeholder.webuploader-dnd-over {
         border-color: #999999;
     }
 
-        #uploader .placeholder.webuploader-dnd-over.webuploader-dnd-denied {
+        #uploader .up-placeholder.webuploader-dnd-over.webuploader-dnd-denied {
             border-color: red;
         }
 

@@ -3,6 +3,7 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
+2021-11-17 16:50:57
 -->
 
 
@@ -23,10 +24,10 @@ https://netnr.eu.org
 
 </head>
 <body>
-<link href='https://npm.elemecdn.com/bootstrap@5.1.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' />
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
-<script src='https://npm.elemecdn.com/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js'></script>
+<script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
         <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
         <script src="/js/global.js?v=iI6S1dq4Ay8fyMpS0OsLvNeW168LY94KNVHrCFU_1pM"></script>
             <!-- 导航 -->
@@ -103,8 +104,8 @@ https://netnr.eu.org
 </div>
 
 <script src='https://s1.netnr.com/libs/bmob/1.7.0/bmob.min.js?170'></script>
-<script src='https://npm.elemecdn.com/netnrmd@3.0.0/src/netnrmd.bundle.js'></script>
-<script src='https://s1.netnr.com/libs/identicon/2.3.3/identicon.js'></script>
+<script src='https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.bundle.js'></script>
+<script src='https://s1.netnr.com/libs/identicon/identicon-v2.3.3.min.js'></script>
 
 
 <script>
@@ -125,9 +126,9 @@ https://netnr.eu.org
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
                     var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
-                    var context = '<em class="badge badge-secondary" title="该信息已被屏蔽">block</em>'
+                    var context = '<em class="badge bg-secondary" title="该信息已被屏蔽">block</em>'
                     if (!this.IsBlock) {
-                        context = netnrmd.render(this.Content).replace(/@\S+/g, function (n) {
+                        context = netnrmd.render(netnrmd.spacing(this.Content)).replace(/@\S+/g, function (n) {
                             return '<span class="text-primary">' + n + '</span>'
 
                         }).replace(/#\d+/g, function (n) {
@@ -181,7 +182,7 @@ https://netnr.eu.org
         var un = $('input[name="UserNickname"]'), uc = $('textarea[name="Content"]'), objv = {};
         objv.UserNickname = un.val().trim();
         objv.Content = uc.val().substring(0, 9999);
-        if (objv.Content == "") {
+        if (objv.Content == "" || netnrmd.render(objv.Content) == "") {
             bs.msg("<h4>请输入内容</h4>");
         } else {
             var query = mg.bquery;

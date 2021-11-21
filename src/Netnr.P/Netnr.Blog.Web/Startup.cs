@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using Netnr.Core;
 using Netnr.Login;
 using Netnr.SharedFast;
@@ -176,6 +177,9 @@ namespace Netnr.Blog.Web
                 // dotnet dev-certs https --trust
                 app.UseHsts();
             }
+
+            var createScript = db.Database.GenerateCreateScript();
+            Console.WriteLine(createScript);
 
             //数据库不存在则创建，创建后返回true
             if (db.Database.EnsureCreated())

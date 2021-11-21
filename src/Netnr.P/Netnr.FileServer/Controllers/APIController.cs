@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.FileServer.Application;
+﻿using Netnr.FileServer.Application;
 using Netnr.FileServer.Model;
 using Netnr.Core;
 using Netnr.SharedFast;

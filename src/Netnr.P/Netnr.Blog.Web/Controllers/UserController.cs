@@ -1,6 +1,4 @@
-using System.Drawing.Imaging;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 using Netnr.Core;
 using Netnr.Login;
@@ -632,11 +630,14 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new SharedResultVM();
 
-            var id = RouteData.Values["id"]?.ToString().ToUpper();
+            var id = RouteData.Values["id"]?.ToString();
 
             if (!string.IsNullOrWhiteSpace(id))
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
+
+                var vcurl = GlobalTo.GetValue("VerifyCode:Url");
+                var vckey = GlobalTo.GetValue("VerifyCode:Key");
 
                 switch (id.ToLower())
                 {
@@ -664,8 +665,8 @@ namespace Netnr.Blog.Web.Controllers
                                     }
                                     else
                                     {
-                                        var tml = FileTo.ReadText(GlobalTo.WebRootPath + "/lib/mailchecker/list.txt");
-                                        if (tml.Contains(usermo.UserMail.Split('@').LastOrDefault()))
+                                        var mcs = FileTo.ReadText(GlobalTo.WebRootPath + "/lib/mailchecker/list.txt").Split(Environment.NewLine);
+                                        if (mcs.Contains(usermo.UserMail.Split('@').LastOrDefault().ToLower()))
                                         {
                                             vm.Msg = "该邮箱已被屏蔽";
                                         }
@@ -680,9 +681,9 @@ namespace Netnr.Blog.Web.Controllers
                                                 mail = ToMail,
                                                 ts = DateTime.Now.ToTimestamp()
                                             }.ToJson();
-                                            var vcode = CalcTo.AESEncrypt(vjson, GlobalTo.GetValue("VerifyCode:Key")).ToLower();
 
-                                            var VerifyLink = string.Format(GlobalTo.GetValue("VerifyCode:Url"), vcode);
+                                            var vcode = CalcTo.AESEncrypt(vjson, vckey).ToBase64Encode().ToUrlEncode();
+                                            var VerifyLink = string.Format(vcurl, vcode);
 
                                             var txt = FileTo.ReadText(GlobalTo.WebRootPath + "/template/sendmailverify.html");
                                             txt = txt.Replace("@ToMail@", ToMail).Replace("@VerifyLink@", VerifyLink);
@@ -709,7 +710,7 @@ namespace Netnr.Blog.Web.Controllers
                     default:
                         try
                         {
-                            var vjson = CalcTo.AESDecrypt(id, GlobalTo.GetValue("VerifyCode:Key")).ToJObject();
+                            var vjson = CalcTo.AESDecrypt(id.ToUrlDecode().ToBase64Decode(), vckey).ToJObject();
                             if (DateTime.Now.ToTimestamp() - Convert.ToInt32(vjson["ts"]) < 60 * 5)
                             {
                                 var mail = vjson["mail"].ToString();
@@ -752,8 +753,9 @@ namespace Netnr.Blog.Web.Controllers
                                 vm.Msg = "链接已过期（5分钟内有效）";
                             }
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            Console.WriteLine(ex);
                             vm.Msg = "链接已失效";
                         }
                         break;

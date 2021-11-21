@@ -160,7 +160,7 @@ namespace Netnr.SharedLogging
                 );
             ";
 
-            new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecute(createTableSql);
+            new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecuteNonQuery(createTableSql);
         }
 
         /// <summary>
@@ -373,7 +373,7 @@ namespace Netnr.SharedLogging
                 listSql.Add($"insert into {OptionsDbTableName} ({fields}) values ('{values}')");
             }
 
-            return new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecute(listSql);
+            return new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecuteNonQuery(listSql);
         }
 
         /// <summary>
@@ -611,7 +611,7 @@ namespace Netnr.SharedLogging
                     db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
 
                     vm.Total = Convert.ToInt32(db.GetCommand(totalSql).ExecuteScalar());
-                    vm.Data = db.GetCommand(sql).ExecuteDataSet().Tables[0];
+                    vm.Data = db.GetCommand(sql).ExecuteData().Tables[0];
                 });
 
                 vm.Lost = lost;
@@ -670,7 +670,7 @@ namespace Netnr.SharedLogging
                 db.SafeConn(() =>
                 {
                     db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
-                    return db.GetCommand(sql).ExecuteDataSet().Tables[0].Select();
+                    return db.GetCommand(sql).ExecuteData().Tables[0].Select();
                 });
 
                 switch (type)
@@ -752,7 +752,7 @@ namespace Netnr.SharedLogging
                     var dt =
                     db.SafeConn(() =>
                     {
-                        return db.GetCommand(sql).ExecuteDataSet().Tables[0];
+                        return db.GetCommand(sql).ExecuteData().Tables[0];
                     });
 
                     while (dt.Rows.Count > 50)

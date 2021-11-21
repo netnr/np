@@ -5,4 +5,4 @@ https://github.com/FGRibreau/mailchecker
 
 wget https://raw.githubusercontent.com/FGRibreau/mailchecker/master/list.txt
 
-更新时间 2021-07-26
+更新时间 2021-11-11

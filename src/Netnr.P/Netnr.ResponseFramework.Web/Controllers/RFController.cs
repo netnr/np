@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.ResponseFramework.Data;
+﻿using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Domain;
 
 namespace Netnr.ResponseFramework.Web.Controllers

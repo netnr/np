@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.Login;
+﻿using Netnr.Login;
 
 namespace Netnr.Test.Controllers
 {
@@ -27,7 +26,7 @@ namespace Netnr.Test.Controllers
 
             ar.code = "";
             //此处打断点，赋值上面拿到的code再继续
-            ar.code = ar.code.ToDecode();
+            ar.code = ar.code.ToUrlDecode();
             ar.auth_code = ar.code;
 
             lc.AuthCallback(ar);

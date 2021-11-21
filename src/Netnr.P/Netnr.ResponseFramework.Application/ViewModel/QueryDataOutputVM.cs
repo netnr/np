@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 /// <summary>
 /// 输出信息

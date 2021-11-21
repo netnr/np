@@ -7,35 +7,31 @@
 
   //连接信息
   "db-conn": [
-    {
-      "type": "Oracle",
-      "conn": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.100.115)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=ABC;Password=PWD",
-      "remark": "100.115 Oracle"
-    },
-    {
-      "type": "MySQL",
-      "conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=tmp",
-      "remark": "100.115 MySQL tmp"
-    },
-    {
-      "type": "MySQL",
-      "conn": "Server=192.168.100.115;uid=root;pwd=Abc123....;database=diff-main",
-      "remark": "100.115 MySQL diff-main"
-    },
-    {
-      "type": "SQLServer",
-      "conn": "Server=192.168.100.115;uid=sa;pwd=Abc123....;database=netnrf;TrustServerCertificate=True;",
-      "remark": "100.115 SQLServer netnrf"
-    },
-    {
-      "type": "PostgreSQL",
-      "conn": "Host=192.168.100.115;Username=postgres;Password=Abc123....;Database=tmpdb",
-      "remark": "100.115 PostgreSQL tmpdb"
-    },
+
     {
       "type": "SQLite",
       "conn": "Data Source=D:\\tmp\\tmp.db",
       "remark": "Local tmp"
+    },
+    {
+      "type": "MySQL",
+      "conn": "Server=local.host;uid=root;pwd=Abc123....;database=netnr",
+      "remark": "local MySQL netnr"
+    },
+    {
+      "type": "SQLServer",
+      "conn": "Server=local.host;uid=sa;pwd=Abc123....;database=netnr;TrustServerCertificate=True;",
+      "remark": "local SQLServer netnr"
+    },
+    {
+      "type": "PostgreSQL",
+      "conn": "Server=local.host;Port=5432;User Id=postgres;Password=Abc123....;Database=netnr;",
+      "remark": "local PostgreSQL netnr"
+    },
+    {
+      "type": "Oracle",
+      "conn": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=ABC;Password=PWD",
+      "remark": "local Oracle"
     }
   ]
 }

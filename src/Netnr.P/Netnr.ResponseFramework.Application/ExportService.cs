@@ -2,7 +2,6 @@ using Netnr.ResponseFramework.Domain;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System.Data;
 using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Application
@@ -183,9 +182,9 @@ namespace Netnr.ResponseFramework.Application
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             return result;

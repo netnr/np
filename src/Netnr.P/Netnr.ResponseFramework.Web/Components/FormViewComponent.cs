@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Application.ViewModel;
 

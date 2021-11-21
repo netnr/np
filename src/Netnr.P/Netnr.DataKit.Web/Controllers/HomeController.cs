@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Netnr.DataKit.Web.Controllers
+﻿namespace Netnr.DataKit.Web.Controllers
 {
     public class HomeController : Controller
     {
         [ResponseCache(Duration = 5)]
         public IActionResult Index()
         {
-            return Redirect("/lib/dk/dk.html");
+            return Redirect("/app/dist/index.html");
         }
 
         /// <summary>

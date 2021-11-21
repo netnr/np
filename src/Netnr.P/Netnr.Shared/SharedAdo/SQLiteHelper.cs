@@ -70,7 +70,7 @@ namespace Netnr.SharedAdo
             });
         }
 
-        //public int BulkBatchSQLite(DataTable dt, string table, Action<SQLiteDataAdapter, DataTable> dataAdapter = null, bool openTransaction = true)
+        //public int BulkBatchSQLite(DataTable dt, string table, Action<SQLiteDataAdapter> dataAdapter = null, bool openTransaction = true)
         //{
         //    return SafeConn(() =>
         //    {
@@ -96,7 +96,7 @@ namespace Netnr.SharedAdo
         //        da.UpdateCommand.CommandTimeout = 300;
 
         //        //执行前修改
-        //        dataAdapter?.Invoke(da, dt);
+        //        dataAdapter?.Invoke(da);
 
         //        var num = da.Update(dt);
 

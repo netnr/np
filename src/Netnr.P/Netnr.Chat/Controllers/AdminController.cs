@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using chs = Netnr.Chat.Application.ChatHubService;
+﻿using chs = Netnr.Chat.Application.ChatHubService;
 
 namespace Netnr.Chat.Controllers
 {

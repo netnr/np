@@ -5,28 +5,77 @@ namespace Netnr.SharedDataKit
     public partial class Configs
     {
         /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDatabaseNameSQLServer()
+        {
+            return $@"
+SELECT
+  name AS DatabaseName
+FROM
+  sys.databases
+ORDER BY
+  name;
+            ";
+        }
+
+        /// <summary>
         /// 获取库
         /// </summary>
         /// <returns></returns>
-        public static string GetDatabaseSQLServer()
+        public static string GetDatabaseSQLServer(string Where = null)
         {
             return $@"
 SELECT
   t1.name AS DatabaseName,
   t1.collation_name AS DatabaseCollation,
-  t2.physical_name AS DatabasePath,
-  t3.physical_name AS DatabaseLogPath,
-  t2.[size] * 8 * 1024 AS DatabaseDataLength,
-  t3.[size] * 8 * 1024 AS DatabaseLogLength,
+  CASE
+    WHEN t1.database_id > 4 THEN 'USER'
+    ELSE 'SYSTEM'
+  END AS DatabaseClassify,
+  (
+    SELECT
+      physical_name
+    FROM
+      sys.master_files f
+    WHERE
+      f.database_id = t1.database_id
+      AND f.file_id = 1
+  ) AS DatabasePath,
+  (
+    SELECT
+      physical_name
+    FROM
+      sys.master_files f
+    WHERE
+      f.database_id = t1.database_id
+      AND f.file_id = 2
+  ) AS DatabaseLogPath,
+  (
+    SELECT
+      sum(CONVERT(bigint, f0.[size])) * 8 * 1024
+    FROM
+      sys.master_files f0
+    WHERE
+      f0.database_id = t1.database_id
+      AND f0.[type] = 0
+  ) AS DatabaseDataLength,
+  (
+    SELECT
+      sum(CONVERT(bigint, f1.[size])) * 8 * 1024
+    FROM
+      sys.master_files f1
+    WHERE
+      f1.database_id = t1.database_id
+      AND f1.[type] = 1
+  ) AS DatabaseLogLength,
   t1.create_date AS DatabaseCreateTime
 FROM
   sys.databases t1
-  LEFT JOIN sys.master_files t2 ON t2.[type] = 0
-  AND t1.database_id = t2.database_id
-  LEFT JOIN sys.master_files t3 ON t3.[type] = 1
-  AND t1.database_id = t3.database_id
+WHERE 1=1 {Where}
 ORDER BY
-  t1.name
+  t1.name;
             ";
         }
 
@@ -85,6 +134,7 @@ FROM
     GROUP BY
       object_id
   ) c1 ON t1.object_id = c1.object_id
+  ORDER BY t1.name
             ";
         }
 
@@ -99,21 +149,34 @@ FROM
             return $@"
 USE [{ DatabaseName}];
 SELECT
-  t1.name AS TableName,
-  ep1.value AS TableComment,
-  c1.name AS ColumnName,
-  t2.name AS DataType,
-  c1.max_length AS DataLength,
+  t1.[name] AS TableName,
+  ep1.[value] AS TableComment,
+  c1.[name] AS ColumnName,
+  ColumnType = CASE
+    WHEN COLUMNPROPERTY(c1.object_id, c1.[name], 'charmaxlen') IS NULL THEN t2.[name]
+    ELSE t2.[name] + '(' + CONVERT(
+      VARCHAR(50),
+      COLUMNPROPERTY(c1.object_id, c1.[name], 'charmaxlen')
+    ) + ')'
+  END,
+  t2.[name] AS DataType,
+  [DataLength] = ISNULL(
+    COLUMNPROPERTY(c1.object_id, c1.[name], 'charmaxlen'),
+    c1.[precision]
+  ),
   c1.[scale] AS DataScale,
   c1.column_id AS ColumnOrder,
-  idx.index_id AS PrimaryKey,
-  AutoAdd = CASE
-    WHEN ic2.name IS NULL THEN ''
-    ELSE 'YES'
+  ipk.key_ordinal AS PrimaryKey,
+  AutoIncr = CASE
+    WHEN ic2.[name] IS NOT NULL THEN 'YES'
+    ELSE NULL
   END,
-  c1.is_nullable AS NotNull,
-  dc.definition AS ColumnDefault,
-  ep2.value AS ColumnComment
+  c1.is_nullable AS IsNullable,
+  CONVERT(
+    nvarchar(4000),
+    OBJECT_DEFINITION(c1.default_object_id)
+  ) AS ColumnDefault,
+  ep2.[value] AS ColumnComment
 FROM
   sys.tables t1
   LEFT JOIN sys.columns c1 ON t1.object_id = c1.object_id
@@ -122,20 +185,27 @@ FROM
   LEFT JOIN sys.extended_properties ep2 ON ep2.class = 1
   AND ep2.major_id = t1.object_id
   AND ep2.minor_id = c1.column_id
-  AND ep2.name = 'MS_Description'
   LEFT JOIN sys.types t2 ON c1.user_type_id = t2.user_type_id
-  LEFT JOIN sys.index_columns ic1 ON t1.object_id = ic1.object_id
-  AND c1.column_id = ic1.column_id
-  LEFT JOIN sys.indexes idx ON ic1.object_id = idx.object_id
-  AND ic1.index_id = idx.index_id
+  LEFT JOIN (
+    SELECT
+      idx.object_id,
+      ic1.key_ordinal,
+      ic1.column_id
+    FROM
+      sys.indexes AS idx
+      INNER JOIN sys.index_columns AS ic1 ON idx.object_id = ic1.object_id
+      AND idx.index_id = ic1.index_id
+    WHERE
+      idx.is_primary_key = 1
+  ) ipk ON ipk.object_id = c1.object_id
+  AND c1.column_id = ipk.column_id
   LEFT JOIN sys.identity_columns ic2 ON c1.object_id = ic2.object_id
   AND c1.column_id = ic2.column_id
-  LEFT JOIN sys.default_constraints dc ON dc.parent_object_id = c1.object_id
-  AND dc.parent_column_id = c1.column_id
-WHERE 1 = 1 {Where}
+WHERE
+  1 = 1 {Where}
 ORDER BY
-  t1.name,
-  c1.column_id
+  t1.[name],
+  c1.column_id;
             ";
         }
 

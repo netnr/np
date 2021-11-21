@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
 using Netnr.Blog.Data;
 using Netnr.Login;
 using System.Security.Claims;
@@ -250,9 +249,9 @@ namespace Netnr.Blog.Web.Controllers
                 uiR.Update(outMo);
                 db.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             try
@@ -695,8 +694,9 @@ namespace Netnr.Blog.Web.Controllers
 
                                             HttpTo.DownloadSave(HttpTo.HWRequest(avatar), PathTo.Combine(ppath, mo.UserPhoto));
                                         }
-                                        catch (Exception)
+                                        catch (Exception ex)
                                         {
+                                            Console.WriteLine(ex);
                                         }
                                     }
                                 }

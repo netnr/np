@@ -55,7 +55,7 @@ namespace Netnr.SharedAdo
         /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
         /// <param name="openTransaction">开启事务，默认开启</param>
         /// <returns></returns>
-        public int BulkBatchSQLServer(DataTable dt, string table, Action<SqlDataAdapter, DataTable> dataAdapter = null, bool openTransaction = true)
+        public int BulkBatchSQLServer(DataTable dt, string table, Action<SqlDataAdapter> dataAdapter = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
@@ -82,35 +82,13 @@ namespace Netnr.SharedAdo
                 da.UpdateCommand.CommandTimeout = 300;
 
                 //执行前修改
-                dataAdapter?.Invoke(da, dt);
+                dataAdapter?.Invoke(da);
 
                 var num = da.Update(dt);
 
                 transaction?.Commit();
 
                 return num;
-            });
-        }
-
-        /// <summary>
-        /// 执行SQL语句，返回打印信息
-        /// </summary>
-        /// <param name="sql">SQL语句</param>
-        /// <param name="parameters">带参</param>
-        /// <returns>返回打印信息</returns>
-        public List<string> SqlPrintSQLServer(string sql, DbParameter[] parameters = null)
-        {
-            return SafeConn(() =>
-            {
-                var connection = (SqlConnection)Connection;
-
-                var listPrint = new List<string>();
-                connection.InfoMessage += (s, e) => listPrint.Add(e.Message);
-
-                var cmd = GetCommand(sql, parameters);
-                cmd.ExecuteNonQuery();
-
-                return listPrint;
             });
         }
     }

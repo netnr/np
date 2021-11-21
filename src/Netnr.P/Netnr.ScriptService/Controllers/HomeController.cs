@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-
 namespace Netnr.ScriptService.Controllers
 {
     public class HomeController : Controller
@@ -459,7 +457,20 @@ namespace Netnr.ScriptService.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Git 存储
+        /// </summary>
+        /// <returns></returns>
         public IActionResult GitStorage()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 正则
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Regex()
         {
             return View();
         }

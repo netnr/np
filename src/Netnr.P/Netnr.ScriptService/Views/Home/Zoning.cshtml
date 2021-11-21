@@ -4,28 +4,26 @@
             <h3>npm i zoningjs</h3>
             <p><a href="https://unpkg.com/zoningjs/">https://unpkg.com/zoningjs/</a></p>
             <h3>source</h3>
-            <p><a href="https://github.com/netnr/zoning">https://github.com/netnr/zoning</a></p>
+            <p><a href="https://github.com/netnr/stats">https://github.com/netnr/stats</a></p>
         </div>
     </div>
 
-    <h4 class="my-3">四级联动(省地县乡级)</h4>
-    <div class="row" id="zoning4">
-        <div class="col-md-3 col-sm-6 mb-2">
+    <h4 class="my-3">三级联动(省地县级)</h4>
+    <div class="row nr3">
+        <div class="col-md-4 col-sm-6 mb-2">
             <select class="form-select"></select>
         </div>
-        <div class="col-md-3 col-sm-6 mb-2">
+        <div class="col-md-4 col-sm-6 mb-2">
             <select class="form-select"></select>
         </div>
-        <div class="col-md-3 col-sm-6 mb-2">
-            <select class="form-select"></select>
-        </div>
-        <div class="col-md-3 col-sm-6 mb-2">
+        <div class="col-md-4 col-sm-6 mb-2">
             <select class="form-select"></select>
         </div>
     </div>
+    <div class="nrout3"></div>
 
     <h4 class="my-3">五级联动(省地县乡和村级)</h4>
-    <div class="row" id="zoning5">
+    <div class="row nr5">
         <div class="col-xl col-md-3 col-sm-6 mb-2">
             <select class="form-select"></select>
         </div>
@@ -42,117 +40,117 @@
             <select class="form-select"></select>
         </div>
     </div>
-    <p class="psecode mt-2" id="zoningcode5"></p>
+    <div class="nrout5"></div>
 </div>
 
 <script>
-    var npmsrc = "https://npm.elemecdn.com/zoningjs@2.0.20/";
+    var npmsrc = "https://npm.elemecdn.com/zoningjs@2.2020.0/";
 
-    var zoning4 = {
-        json: {},
-        load: function (callback) {
-            $.getJSON(npmsrc + "zoning-4.json", null, function (data) {
-                zoning4.json = data;
-                callback();
-            });
-        },
-        change: function (ses, index) {
-            var se1 = ses[index++];
-            if (index < ses.length) {
-                var se2 = ses[index], sd = zoning4.json[se1.value];
-                se2.options.length = 0;
-                se2.options.add(new Option("（请选择）", ""));
-                if (se1.value != "" && sd) {
-                    for (var i = 0; i < sd.length; i++) {
-                        var sdi = sd[i];
-                        se2.options.add(new Option(sdi.text, sdi.id));
-                    }
-                }
-                if (index + 1 < ses.length) {
-                    zoning4.change(ses, index);
-                }
+    function requestJson(json) {
+        return new Promise((resolve, reject) => {
+            if (!window.cacheJson) {
+                window.cacheJson = {};
             }
-        },
-        getvalues: function (ses) {
-            var codes = [];
-            ses.each(function () {
-                codes.push(this.value || "-");
-            });
-            return codes;
-        },
-        init: function (ses) {
-            ses.each(function (index) {
-                $(this).attr('data-index', index);
-                this.options.add(new Option("（请选择）", ""));
-                if (!index) {
-                    var idb = zoning4.json["0"];
-                    for (var i = 0; i < idb.length; i++) {
-                        var sdi = idb[i];
-                        this.options.add(new Option(sdi.text, sdi.id));
-                    }
-                }
-            }).change(function () {
-                zoning4.change(ses, $(this).attr('data-index'));
 
-                $('#zoningcode4').html(zoning4.getvalues(ses).join('</br>'));
-            })
-        }
-    }
-    zoning4.load(function () {
-        zoning4.init($('#zoning4').find('select'))
-    });
-
-    var zoning5 = {
-        list: function (pid, callback) {
-            var pidaspath = pid > 0 ? (pid.substring(0, 2) + "/" + pid) : 0;
-            $.getJSON(npmsrc + pidaspath + ".json", null, callback)
-        },
-        change: function (ses, index) {
-            var se1 = ses[index++];
-            if (index < ses.length) {
-                var se2 = ses[index];
-                se2.options.length = 0;
-                se2.options.add(new Option("（请选择）", ""));
-                if (se1.value != "") {
-                    zoning5.list(se1.value, function (res) {
-                        for (var i = 0; i < res.length; i++) {
-                            var rei = res[i];
-                            se2.options.add(new Option(rei.text, rei.id));
-                        }
-                    })
-                }
-                if (index + 1 < ses.length) {
-                    zoning5.change(ses, index);
-                }
+            if (json in window.cacheJson) {
+                resolve(window.cacheJson[json])
+            } else {
+                fetch(json).then(x => x.json()).then(res => {
+                    window.cacheJson[json] = res;
+                    resolve(res);
+                }).catch(err => {
+                    reject(err);
+                })
             }
-        },
-        getvalues: function (ses) {
-            var codes = [];
-            ses.each(function () {
-                codes.push(this.value || "-");
-            });
-            return codes;
-        },
-        init: function (ses) {
-            ses.each(function (index) {
-                $(this).attr('data-index', index);
-                this.options.add(new Option("（请选择）", ""));
-                if (!index) {
-                    var that = this;
-                    zoning5.list("0", function (res) {
-                        for (var i = 0; i < res.length; i++) {
-                            var rei = res[i];
-                            that.options.add(new Option(rei.text, rei.id));
-                        }
-                    })
-                }
-            }).change(function () {
-                zoning5.change(ses, $(this).attr('data-index'));
-
-                $('#zoningcode5').html(zoning5.getvalues(ses).join(' / '));
-            })
-        }
+        });
     }
 
-    zoning5.init($('#zoning5').find('select'));
+    function linkage(box, deep) {
+        var ses = box.querySelectorAll("select");
+        for (var i = 0; i < deep; i++) {
+            var sei = ses[i];
+            sei.setAttribute('data-index', i);
+            sei.options.add(new Option("（请选择）", ""));
+
+            //构建第一级
+            var se0 = box.querySelector('select');
+            if (i == 0) {
+                requestJson(`${npmsrc}0.json`).then(json => {
+                    var fdata = json.filter(x => x.pid == "0");
+                    fdata.forEach(item => {
+                        var option = new Option(`${item.txt}（${item.id}）`, item.id);
+                        option.setAttribute('data-item', JSON.stringify(item))
+                        se0.options.add(option);
+                    });
+                });
+            }
+
+            //选择联动
+            sei.onchange = function () {
+                var sekey = this.value,
+                    sei = Number(this.getAttribute('data-index')),
+                    senext = box.querySelector(`[data-index="${sei + 1}"]`);
+
+                //子节点重置
+                box.querySelectorAll('select').forEach(se => {
+                    if (se.getAttribute('data-index') > sei) {
+                        se.innerHTML = '';
+                        se.options.add(new Option("（请选择）", ""));
+                    }
+                });
+
+                //显示值
+                var val1 = [], val2 = [];
+                box.querySelectorAll('select').forEach(se => {
+                    if (se.value != "") {
+                        var seitem = JSON.parse(se.options[se.selectedIndex].getAttribute('data-item'));
+                        if (seitem.ct != null) {
+                            val1.push(`${seitem.id},${seitem.ct}`);
+                            val2.push(`${seitem.id},${seitem.ct}`);
+                        } else {
+                            val1.push(seitem.id);
+                            val2.push(seitem.sid);
+                        }
+                    }
+                });
+                box.nextElementSibling.innerHTML = `<div>ID：<b>${val1.join(' / ')}</b></div><div>Short ID：<b>${val2.join(' / ')}</b></div>`;
+
+                //子节点绑值
+                if (senext && sekey != "") {
+                    var seitem = JSON.parse(this.options[this.selectedIndex].getAttribute('data-item'));
+
+                    if (seitem.deep >= 3) {
+                        if (seitem.leaf == 1) {
+                            senext.innerHTML = '';
+                            senext.options.add(new Option("（无数据）", ""));
+                        } else {
+                            requestJson(`${npmsrc}${seitem.id.substring(0, 4)}.json`).then(json => {
+                                //根据父节点筛选数据
+                                var fdata = json.filter(x => x.pid == sekey);
+                                if (fdata.length) {
+                                    fdata.forEach(item => {
+                                        var option = new Option(`${item.txt}（${item.id}）`, item.id);
+                                        option.setAttribute('data-item', JSON.stringify(item))
+                                        senext.options.add(option);
+                                    });
+                                }
+                            });
+                        }
+                    } else {
+                        requestJson(`${npmsrc}0.json`).then(json => {
+                            var fdata = json.filter(x => x.pid == sekey);
+                            fdata.forEach(item => {
+                                var option = new Option(`${item.txt}（${item.id}）`, item.id);
+                                option.setAttribute('data-item', JSON.stringify(item))
+                                senext.options.add(option);
+                            });
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    linkage(document.querySelector('.nr3'), 3)
+    linkage(document.querySelector('.nr5'), 5)
 </script>

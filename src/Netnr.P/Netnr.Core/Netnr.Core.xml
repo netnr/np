@@ -1192,19 +1192,64 @@
             <param name="table">表</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Extend.ToEncode(System.String,System.String)">
+        <member name="M:Netnr.Extend.ToUrlEncode(System.String)">
             <summary>
-            编码
+            URL 编码
             </summary>
-            <param name="uri">内容</param>
-            <param name="charset">编码格式</param>
+            <param name="value">内容</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Extend.ToDecode(System.String)">
+        <member name="M:Netnr.Extend.ToUrlDecode(System.String)">
             <summary>
-            解码
+            URL 解码
             </summary>
-            <param name="uriToDecode">内容</param>
+            <param name="value">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.ToHtmlEncode(System.String)">
+            <summary>
+            HTML 编码
+            </summary>
+            <param name="value">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.ToHtmlDecode(System.String)">
+            <summary>
+            HTML 解码
+            </summary>
+            <param name="value">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.ToByte(System.String,System.Text.Encoding)">
+            <summary>
+            转 Byte
+            </summary>
+            <param name="value">内容</param>
+            <param name="encoding">默认 UTF8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.ToText(System.Byte[],System.Text.Encoding)">
+            <summary>
+            Byte 转
+            </summary>
+            <param name="value">内容</param>
+            <param name="encoding">默认 UTF8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.ToBase64Encode(System.String,System.Text.Encoding)">
+            <summary>
+            Base64 编码
+            </summary>
+            <param name="value">内容</param>
+            <param name="encoding">默认 UTF8</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.ToBase64Decode(System.String,System.Text.Encoding)">
+            <summary>
+            Base64 解码
+            </summary>
+            <param name="value"></param>
+            <param name="encoding">默认 UTF8</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Extend.ToTimestamp(System.DateTime,System.Boolean)">

@@ -59,48 +59,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Blog.Web", "Netnr.Blo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.GraphDemo", "Netnr.GraphDemo\Netnr.GraphDemo.csproj", "{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "..\..\docs\", "{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_60778"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\docs\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60778\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_60778"
-		Release.AspNetCompiler.PhysicalPath = "..\..\docs\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60778\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "60778"
-		SlnRelativePath = "..\..\docs\"
-	EndProjectSection
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mix", "..\..\mix\", "{58B01763-7D4F-4168-B6BE-DABE92007795}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_4920"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\mix\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_4920\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_4920"
-		Release.AspNetCompiler.PhysicalPath = "..\..\mix\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_4920\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "4920"
-		SlnRelativePath = "..\..\mix\"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Netnr.Shared\Netnr.Shared.projitems*{0d99d943-8dd0-4458-9910-27b300b0d569}*SharedItemsImports = 5
@@ -112,9 +70,13 @@ Global
 		Netnr.Shared\Netnr.Shared.projitems*{7bca6cdb-6e14-41e9-986d-0390582e2dab}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{962f1f29-4ddc-48c6-8043-915240872570}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{9a7be0e5-e753-42ec-8b26-2835b9407bbb}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{ab17b140-0696-4e64-aa2d-57b1c33618b5}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{b1dfb9d5-857f-44a0-9e95-6f59ecb29caf}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{c3e1dc11-4331-48bf-9e8b-df32b2c053d0}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{c7dade7c-5fc1-437a-8157-0529ea35a88e}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{c8137a02-02d6-4765-8aea-f9b352cd15d5}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{e46fa4e1-44e6-48a8-a5b8-3f98000ae7bf}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{e6561193-b387-404e-ac3a-0ce9d267bf26}*SharedItemsImports = 5
 		Netnr.Shared\Netnr.Shared.projitems*{f500586b-5ae0-4283-b959-2654a3e21b6b}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -198,14 +160,6 @@ Global
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{58B01763-7D4F-4168-B6BE-DABE92007795}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

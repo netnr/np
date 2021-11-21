@@ -1,18 +1,10 @@
-# svgo
-
-`svgo` browser support
-
 ### Build
 ```
 npm install -g browserify
-npm install svgo
+npm install -g terser
+
+npm i svgo
+
 browserify index.js -o svgo.js
-```
-
-### Usage
-
-```
-<script src="svgo.js" ></script>
-
-//console.log(svgo)
+terser svgo.js -o svgo.min.js
 ```

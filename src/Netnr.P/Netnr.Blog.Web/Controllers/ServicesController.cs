@@ -1,6 +1,4 @@
 using System.Net;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Netnr.Core;
@@ -366,8 +364,8 @@ namespace Netnr.Blog.Web.Controllers
 
             try
             {
-                var export_before = "backup_demo_before.zip";
-                var export_demo = "backup_demo.zip";
+                var export_before = "db/backup_demo_before.zip";
+                var export_demo = "db/backup_demo.zip";
 
                 //备份
                 if (DatabaseExport(export_before).Code == 200)

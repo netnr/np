@@ -104,7 +104,7 @@ namespace Netnr.FileServer
                 {
                     FileProvider = new PhysicalFileProvider(prootdir),
                     //目录浏览链接
-                    RequestPath = new PathString(vrootdir),
+                    RequestPath = new Microsoft.AspNetCore.Http.PathString(vrootdir),
                     EnableDirectoryBrowsing = true,
                     EnableDefaultFiles = false
                 });

@@ -200,10 +200,7 @@ namespace Netnr
                             drValue = Convert.ChangeType(drValue, type);
                             pi.SetValue(model, drValue, null);
                         }
-                        catch (Exception)
-                        {
-
-                        }
+                        catch (Exception) { }
                     }
                 }
                 list.Add(model);
@@ -212,48 +209,91 @@ namespace Netnr
         }
 
         /// <summary>
-        /// 编码
+        /// URL 编码
         /// </summary>
-        /// <param name="uri">内容</param>
-        /// <param name="charset">编码格式</param>
+        /// <param name="value">内容</param>
         /// <returns></returns>
-        public static string ToEncode(this string uri, string charset = "utf-8")
+        public static string ToUrlEncode(this string value)
         {
-            string URL_ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
-
-            if (string.IsNullOrEmpty(uri))
-                return string.Empty;
-
-            const string escapeFlag = "%";
-            var encodedUri = new StringBuilder(uri.Length * 2);
-            var bytes = Encoding.GetEncoding(charset).GetBytes(uri);
-            foreach (var b in bytes)
-            {
-                char ch = (char)b;
-                if (URL_ALLOWED_CHARS.IndexOf(ch) != -1)
-                    encodedUri.Append(ch);
-                else
-                {
-                    encodedUri.Append(escapeFlag).Append(string.Format(CultureInfo.InstalledUICulture, "{0:X2}", (int)b));
-                }
-            }
-            return encodedUri.ToString();
+            return System.Net.WebUtility.UrlEncode(value);
         }
 
         /// <summary>
-        /// 解码
+        /// URL 解码
         /// </summary>
-        /// <param name="uriToDecode">内容</param>
+        /// <param name="value">内容</param>
         /// <returns></returns>
-        public static string ToDecode(this string uriToDecode)
+        public static string ToUrlDecode(this string value)
         {
-            if (!string.IsNullOrEmpty(uriToDecode))
-            {
-                uriToDecode = uriToDecode.Replace("+", " ");
-                return Uri.UnescapeDataString(uriToDecode);
-            }
+            return System.Net.WebUtility.UrlDecode(value);
+        }
 
-            return string.Empty;
+        /// <summary>
+        /// HTML 编码
+        /// </summary>
+        /// <param name="value">内容</param>
+        /// <returns></returns>
+        public static string ToHtmlEncode(this string value)
+        {
+            return System.Net.WebUtility.HtmlEncode(value);
+        }
+
+        /// <summary>
+        /// HTML 解码
+        /// </summary>
+        /// <param name="value">内容</param>
+        /// <returns></returns>
+        public static string ToHtmlDecode(this string value)
+        {
+            return System.Net.WebUtility.HtmlDecode(value);
+        }
+
+        /// <summary>
+        /// 转 Byte
+        /// </summary>
+        /// <param name="value">内容</param>
+        /// <param name="encoding">默认 UTF8</param>
+        /// <returns></returns>
+        public static byte[] ToByte(this string value, Encoding encoding = null)
+        {
+            encoding = encoding ?? Encoding.UTF8;
+            return encoding.GetBytes(value);
+        }
+
+        /// <summary>
+        /// Byte 转
+        /// </summary>
+        /// <param name="value">内容</param>
+        /// <param name="encoding">默认 UTF8</param>
+        /// <returns></returns>
+        public static string ToText(this byte[] value, Encoding encoding = null)
+        {
+            encoding = encoding ?? Encoding.UTF8;
+            return encoding.GetString(value);
+        }
+
+        /// <summary>
+        /// Base64 编码
+        /// </summary>
+        /// <param name="value">内容</param>
+        /// <param name="encoding">默认 UTF8</param>
+        /// <returns></returns>
+        public static string ToBase64Encode(this string value, Encoding encoding = null)
+        {
+            encoding = encoding ?? Encoding.UTF8;
+            return Convert.ToBase64String(encoding.GetBytes(value));
+        }
+
+        /// <summary>
+        /// Base64 解码
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="encoding">默认 UTF8</param>
+        /// <returns></returns>
+        public static string ToBase64Decode(this string value, Encoding encoding = null)
+        {
+            encoding = encoding ?? Encoding.UTF8;
+            return encoding.GetString(Convert.FromBase64String(value));
         }
 
         /// <summary>

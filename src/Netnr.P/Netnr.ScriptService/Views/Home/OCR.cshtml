@@ -111,7 +111,10 @@
                 var formData = new FormData();
                 formData.append("file", file);
 
-                fetch(`${ss.apiServer}/api/v1/OCR`, {
+                var tmpu = `${ss.apiServer}/api/v1/OCR`;
+                tmpu = 'https://api.netnr.eu.org/aip/ocr';
+
+                fetch(tmpu, {
                     method: 'POST',
                     body: formData
                 }).then(x => x.json()).then(res => {

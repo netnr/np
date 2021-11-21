@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Netnr.Blog.Web.Areas.Gist.Controllers
+﻿namespace Netnr.Blog.Web.Areas.Gist.Controllers
 {
     [Area("Gist")]
     public class DiscoverController : Controller

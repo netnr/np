@@ -37,6 +37,7 @@ const props = [
   'supressEmptyNode',
   'tagValueProcessor',
   'attrValueProcessor',
+  'rootNodeName', //when array as root
 ];
 
 function Parser(options) {
@@ -58,6 +59,8 @@ function Parser(options) {
   }
   this.replaceCDATAstr = replaceCDATAstr;
   this.replaceCDATAarr = replaceCDATAarr;
+
+  this.processTextOrObjNode = processTextOrObjNode
 
   if (this.options.format) {
     this.indentate = indentate;
@@ -84,16 +87,18 @@ function Parser(options) {
 }
 
 Parser.prototype.parse = function(jObj) {
+  if(Array.isArray(jObj) && this.options.rootNodeName && this.options.rootNodeName.length > 1){
+    jObj = {
+      [this.options.rootNodeName] : jObj
+    }
+  }
   return this.j2x(jObj, 0).val;
 };
 
 Parser.prototype.j2x = function(jObj, level) {
   let attrStr = '';
   let val = '';
-  const keys = Object.keys(jObj);
-  const len = keys.length;
-  for (let i = 0; i < len; i++) {
-    const key = keys[i];
+  for (let key in jObj) {
     if (typeof jObj[key] === 'undefined') {
       // supress undefined node
     } else if (jObj[key] === null) {
@@ -142,8 +147,7 @@ Parser.prototype.j2x = function(jObj, level) {
           } else if (item === null) {
             val += this.indentate(level) + '<' + key + '/' + this.tagEndChar;
           } else if (typeof item === 'object') {
-            const result = this.j2x(item, level + 1);
-            val += this.buildObjNode(result.val, key, result.attrStr, level);
+            val += this.processTextOrObjNode(item, key, level)
           } else {
             val += this.buildTextNode(item, key, '', level);
           }
@@ -158,13 +162,21 @@ Parser.prototype.j2x = function(jObj, level) {
           attrStr += ' ' + Ks[j] + '="' + this.options.attrValueProcessor('' + jObj[key][Ks[j]]) + '"';
         }
       } else {
-        const result = this.j2x(jObj[key], level + 1);
-        val += this.buildObjNode(result.val, key, result.attrStr, level);
+        val += this.processTextOrObjNode(jObj[key], key, level)
       }
     }
   }
   return {attrStr: attrStr, val: val};
 };
+
+function processTextOrObjNode (object, key, level) {
+  const result = this.j2x(object, level + 1);
+  if (object[this.options.textNodeName] !== undefined && Object.keys(object).length === 1) {
+    return this.buildTextNode(result.val, key, result.attrStr, level);
+  } else {
+    return this.buildObjNode(result.val, key, result.attrStr, level);
+  }
+}
 
 function replaceCDATAstr(str, cdata) {
   str = this.options.tagValueProcessor('' + str);
@@ -188,7 +200,7 @@ function replaceCDATAarr(str, cdata) {
 }
 
 function buildObjectNode(val, key, attrStr, level) {
-  if (attrStr && !val.includes('<')) {
+  if (attrStr && val.indexOf('<') === -1) {
     return (
       this.indentate(level) +
       '<' +
@@ -323,7 +335,7 @@ const _e = function(node, e_schema, options) {
         //attributes can't be repeated. hence check in children tags only
         str += chars.arrStart;
         const itemSchema = e_schema[0];
-        //var itemSchemaType = itemSchema;
+        //const itemSchemaType = itemSchema;
         const arr_len = node.length;
 
         if (typeof itemSchema === 'string') {
@@ -427,7 +439,7 @@ const convertToJson = function(node, options, parentTagName) {
   const jObj = {};
 
   // when no child node or attr is present
-  if ((!node.child || util.isEmptyObject(node.child)) && (!node.attrsMap || util.isEmptyObject(node.attrsMap))) {
+  if (!options.alwaysCreateTextNode && (!node.child || util.isEmptyObject(node.child)) && (!node.attrsMap || util.isEmptyObject(node.attrsMap))) {
     return util.isExist(node.val) ? node.val : '';
   }
 
@@ -484,10 +496,10 @@ const _cToJsonStr = function(node, options, level) {
   const keys = Object.keys(node.child);
 
   for (let index = 0; index < keys.length; index++) {
-    var tagname = keys[index];
+    const tagname = keys[index];
     if (node.child[tagname] && node.child[tagname].length > 1) {
       jObj += '"' + tagname + '" : [ ';
-      for (var tag in node.child[tagname]) {
+      for (let tag in node.child[tagname]) {
         jObj += _cToJsonStr(node.child[tagname][tag], options) + ' , ';
       }
       jObj = jObj.substr(0, jObj.length - 1) + ' ] '; //remove extra comma in last
@@ -536,7 +548,7 @@ const x2xmlnode = require('./xmlstr2xmlnode');
 const buildOptions = require('./util').buildOptions;
 const validator = require('./validator');
 
-exports.parse = function(xmlData, options, validationOption) {
+exports.parse = function(xmlData, givenOptions = {}, validationOption) {
   if( validationOption){
     if(validationOption === true) validationOption = {}
     
@@ -545,7 +557,16 @@ exports.parse = function(xmlData, options, validationOption) {
       throw Error( result.err.msg)
     }
   }
-  options = buildOptions(options, x2xmlnode.defaultOptions, x2xmlnode.props);
+  if(givenOptions.parseTrueNumberOnly 
+    && givenOptions.parseNodeValue !== false
+    && !givenOptions.numParseOptions){
+    
+      givenOptions.numParseOptions = {
+        leadingZeros: false,
+      }
+  }
+  let options = buildOptions(givenOptions, x2xmlnode.defaultOptions, x2xmlnode.props);
+
   const traversableObj = xmlToNodeobj.getTraversalObj(xmlData, options)
   //print(traversableObj, "  ");
   return nodeToJson.convertToJson(traversableObj, options);
@@ -609,6 +630,7 @@ const getAllMatches = function(string, regex) {
   let match = regex.exec(string);
   while (match) {
     const allmatches = [];
+    allmatches.startIndex = regex.lastIndex - match[0].length;
     const len = match.length;
     for (let index = 0; index < len; index++) {
       allmatches.push(match[index]);
@@ -666,7 +688,7 @@ exports.getValue = function(v) {
 // const fakeCallNoReturn = function() {};
 
 exports.buildOptions = function(options, defaultOptions, props) {
-  var newOptions = {};
+  let newOptions = {};
   if (!options) {
     return defaultOptions; //if there are not options
   }
@@ -743,7 +765,7 @@ exports.validate = function (xmlData, options) {
     }else if (xmlData[i] === '<') {
       //starting of tag
       //read until you reach to '>' avoiding any '>' in attribute value
-
+      let tagStartPos = i;
       i++;
       
       if (xmlData[i] === '!') {
@@ -779,7 +801,7 @@ exports.validate = function (xmlData, options) {
         if (!validateTagName(tagName)) {
           let msg;
           if (tagName.trim().length === 0) {
-            msg = "There is an unnecessary space between tag name and backward slash '</ ..'.";
+            msg = "Invalid space after '<'.";
           } else {
             msg = "Tag '"+tagName+"' is an invalid name.";
           }
@@ -795,6 +817,7 @@ exports.validate = function (xmlData, options) {
 
         if (attrStr[attrStr.length - 1] === '/') {
           //self closing tag
+          const attrStrStart = i - attrStr.length;
           attrStr = attrStr.substring(0, attrStr.length - 1);
           const isValid = validateAttributeString(attrStr, options);
           if (isValid === true) {
@@ -804,17 +827,20 @@ exports.validate = function (xmlData, options) {
             //the result from the nested function returns the position of the error within the attribute
             //in order to get the 'true' error line, we need to calculate the position where the attribute begins (i - attrStr.length) and then add the position within the attribute
             //this gives us the absolute index in the entire xml, which we can use to find the line at last
-            return getErrorObject(isValid.err.code, isValid.err.msg, getLineNumberForPosition(xmlData, i - attrStr.length + isValid.err.line));
+            return getErrorObject(isValid.err.code, isValid.err.msg, getLineNumberForPosition(xmlData, attrStrStart + isValid.err.line));
           }
         } else if (closingTag) {
           if (!result.tagClosed) {
             return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' doesn't have proper closing.", getLineNumberForPosition(xmlData, i));
           } else if (attrStr.trim().length > 0) {
-            return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' can't have attributes or invalid starting.", getLineNumberForPosition(xmlData, i));
+            return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' can't have attributes or invalid starting.", getLineNumberForPosition(xmlData, tagStartPos));
           } else {
             const otg = tags.pop();
-            if (tagName !== otg) {
-              return getErrorObject('InvalidTag', "Closing tag '"+otg+"' is expected inplace of '"+tagName+"'.", getLineNumberForPosition(xmlData, i));
+            if (tagName !== otg.tagName) {
+              let openPos = getLineNumberForPosition(xmlData, otg.tagStartPos);
+              return getErrorObject('InvalidTag',
+                "Expected closing tag '"+otg.tagName+"' (opened in line "+openPos.line+", col "+openPos.col+") instead of closing tag '"+tagName+"'.",
+                getLineNumberForPosition(xmlData, tagStartPos));
             }
 
             //when there are no more tags, we reached the root level.
@@ -835,7 +861,7 @@ exports.validate = function (xmlData, options) {
           if (reachedRoot === true) {
             return getErrorObject('InvalidXml', 'Multiple possible root nodes found.', getLineNumberForPosition(xmlData, i));
           } else {
-            tags.push(tagName);
+            tags.push({tagName, tagStartPos});
           }
           tagFound = true;
         }
@@ -876,8 +902,12 @@ exports.validate = function (xmlData, options) {
 
   if (!tagFound) {
     return getErrorObject('InvalidXml', 'Start tag expected.', 1);
-  } else if (tags.length > 0) {
-    return getErrorObject('InvalidXml', "Invalid '"+JSON.stringify(tags, null, 4).replace(/\r?\n/g, '')+"' found.", 1);
+  }else if (tags.length == 1) {
+      return getErrorObject('InvalidTag', "Unclosed tag '"+tags[0].tagName+"'.", getLineNumberForPosition(xmlData, tags[0].tagStartPos));
+  }else if (tags.length > 0) {
+      return getErrorObject('InvalidXml', "Invalid '"+
+          JSON.stringify(tags.map(t => t.tagName), null, 4).replace(/\r?\n/g, '')+
+          "' found.", {line: 1, col: 1});
   }
 
   return true;
@@ -889,11 +919,11 @@ exports.validate = function (xmlData, options) {
  * @param {*} i
  */
 function readPI(xmlData, i) {
-  var start = i;
+  const start = i;
   for (; i < xmlData.length; i++) {
     if (xmlData[i] == '?' || xmlData[i] == ' ') {
       //tagname
-      var tagname = xmlData.substr(start, i - start);
+      const tagname = xmlData.substr(start, i - start);
       if (i > 5 && tagname === 'xml') {
         return getErrorObject('InvalidXml', 'XML declaration allowed only at the start of the document.', getLineNumberForPosition(xmlData, i));
       } else if (xmlData[i] == '?' && xmlData[i + 1] == '>') {
@@ -959,8 +989,8 @@ function readCommentAndCDATA(xmlData, i) {
   return i;
 }
 
-var doubleQuote = '"';
-var singleQuote = "'";
+const doubleQuote = '"';
+const singleQuote = "'";
 
 /**
  * Keep reading xmlData until '<' is found outside the attribute value.
@@ -977,7 +1007,6 @@ function readAttributeStr(xmlData, i) {
         startChar = xmlData[i];
       } else if (startChar !== xmlData[i]) {
         //if vaue is enclosed with double quote then single quotes are allowed inside the value and vice versa
-        continue;
       } else {
         startChar = '';
       }
@@ -1018,23 +1047,23 @@ function validateAttributeString(attrStr, options) {
   for (let i = 0; i < matches.length; i++) {
     if (matches[i][1].length === 0) {
       //nospace before attribute name: a="sd"b="saf"
-      return getErrorObject('InvalidAttr', "Attribute '"+matches[i][2]+"' has no space in starting.", getPositionFromMatch(attrStr, matches[i][0]))
+      return getErrorObject('InvalidAttr', "Attribute '"+matches[i][2]+"' has no space in starting.", getPositionFromMatch(matches[i]))
     } else if (matches[i][3] === undefined && !options.allowBooleanAttributes) {
       //independent attribute: ab
-      return getErrorObject('InvalidAttr', "boolean attribute '"+matches[i][2]+"' is not allowed.", getPositionFromMatch(attrStr, matches[i][0]));
+      return getErrorObject('InvalidAttr', "boolean attribute '"+matches[i][2]+"' is not allowed.", getPositionFromMatch(matches[i]));
     }
     /* else if(matches[i][6] === undefined){//attribute without value: ab=
                     return { err: { code:"InvalidAttr",msg:"attribute " + matches[i][2] + " has no value assigned."}};
                 } */
     const attrName = matches[i][2];
     if (!validateAttrName(attrName)) {
-      return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is an invalid name.", getPositionFromMatch(attrStr, matches[i][0]));
+      return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is an invalid name.", getPositionFromMatch(matches[i]));
     }
     if (!attrNames.hasOwnProperty(attrName)) {
       //check for duplicate attribute.
       attrNames[attrName] = 1;
     } else {
-      return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is repeated.", getPositionFromMatch(attrStr, matches[i][0]));
+      return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is repeated.", getPositionFromMatch(matches[i]));
     }
   }
 
@@ -1081,7 +1110,8 @@ function getErrorObject(code, message, lineNumber) {
     err: {
       code: code,
       msg: message,
-      line: lineNumber,
+      line: lineNumber.line || lineNumber,
+      col: lineNumber.col,
     },
   };
 }
@@ -1098,13 +1128,18 @@ function validateTagName(tagname) {
 
 //this function returns the line number for the character at the given index
 function getLineNumberForPosition(xmlData, index) {
-  var lines = xmlData.substring(0, index).split(/\r?\n/);
-  return lines.length;
+  const lines = xmlData.substring(0, index).split(/\r?\n/);
+  return {
+    line: lines.length,
+
+    // column number is last line's length + 1, because column numbering starts at 1:
+    col: lines[lines.length - 1].length + 1
+  };
 }
 
-//this function returns the position of the last character of match within attrStr
-function getPositionFromMatch(attrStr, match) {
-  return attrStr.indexOf(match) + match.length;
+//this function returns the position of the first character of match within attrStr
+function getPositionFromMatch(match) {
+  return match.startIndex + match[1].length;
 }
 
 },{"./util":7}],9:[function(require,module,exports){
@@ -1132,6 +1167,8 @@ module.exports = function(tagname, parent, val) {
 const util = require('./util');
 const buildOptions = require('./util').buildOptions;
 const xmlNode = require('./xmlNode');
+const toNumber = require("strnum");
+
 const regx =
   '<((!\\[CDATA\\[([\\s\\S]*?)(]]>))|((NAME:)?(NAME))([^>]*)>|((\\/)(NAME)\\s*>))([^<]*)'
   .replace(/NAME/g, util.nameRegexp);
@@ -1161,13 +1198,18 @@ const defaultOptions = {
   trimValues: true, //Trim string values of tag and attributes
   cdataTagName: false,
   cdataPositionChar: '\\c',
+  numParseOptions: {
+    hex: true,
+    leadingZeros: true
+  },
   tagValueProcessor: function(a, tagName) {
     return a;
   },
   attrValueProcessor: function(a, attrName) {
     return a;
   },
-  stopNodes: []
+  stopNodes: [],
+  alwaysCreateTextNode: false
   //decodeStrict: false,
 };
 
@@ -1189,7 +1231,9 @@ const props = [
   'tagValueProcessor',
   'attrValueProcessor',
   'parseTrueNumberOnly',
-  'stopNodes'
+  'numParseOptions',
+  'stopNodes',
+  'alwaysCreateTextNode'
 ];
 exports.props = props;
 
@@ -1205,7 +1249,7 @@ function processTagValue(tagName, val, options) {
       val = val.trim();
     }
     val = options.tagValueProcessor(val, tagName);
-    val = parseValue(val, options.parseNodeValue, options.parseTrueNumberOnly);
+    val = parseValue(val, options.parseNodeValue, options.numParseOptions);
   }
 
   return val;
@@ -1225,26 +1269,13 @@ function resolveNameSpace(tagname, options) {
   return tagname;
 }
 
-function parseValue(val, shouldParse, parseTrueNumberOnly) {
+function parseValue(val, shouldParse, options) {
   if (shouldParse && typeof val === 'string') {
-    let parsed;
-    if (val.trim() === '' || isNaN(val)) {
-      parsed = val === 'true' ? true : val === 'false' ? false : val;
-    } else {
-      if (val.indexOf('0x') !== -1) {
-        //support hexa decimal
-        parsed = Number.parseInt(val, 16);
-      } else if (val.indexOf('.') !== -1) {
-        parsed = Number.parseFloat(val);
-        val = val.replace(/\.?0+$/, "");
-      } else {
-        parsed = Number.parseInt(val, 10);
-      }
-      if (parseTrueNumberOnly) {
-        parsed = String(parsed) === val ? parsed : val;
-      }
-    }
-    return parsed;
+    //console.log(options)
+    const newval = val.trim();
+    if(newval === 'true' ) return true;
+    else if(newval === 'false' ) return false;
+    else return toNumber(val, options);
   } else {
     if (util.isExist(val)) {
       return val;
@@ -1277,7 +1308,7 @@ function buildAttributesMap(attrStr, options) {
           attrs[options.attributeNamePrefix + attrName] = parseValue(
             matches[i][4],
             options.parseAttributeValue,
-            options.parseTrueNumberOnly
+            options.numParseOptions
           );
         } else if (options.allowBooleanAttributes) {
           attrs[options.attributeNamePrefix + attrName] = true;
@@ -1471,4 +1502,56 @@ function findClosingIndex(xmlData, str, i, errMsg){
 
 exports.getTraversalObj = getTraversalObj;
 
-},{"./util":7,"./xmlNode":9}]},{},[1]);
+},{"./util":7,"./xmlNode":9,"strnum":11}],11:[function(require,module,exports){
+const hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
+const numRegex = /^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;
+// const octRegex = /0x[a-z0-9]+/;
+// const binRegex = /0x[a-z0-9]+/;
+
+const consider = {
+    hex :  true,
+    leadingZeros: true,
+    decimalPoint: "\.",
+    //skipLike: /regex/
+};
+
+function toNumber(str, options = {}){
+    // const options = Object.assign({}, consider);
+    // if(opt.leadingZeros === false){
+    //     options.leadingZeros = false;
+    // }else if(opt.hex === false){
+    //     options.hex = false;
+    // }
+
+    options = Object.assign({}, consider, options );
+    if(!str || typeof str !== "string" ) return str;
+    
+    let trimmedStr  = str.trim();
+    
+    if(options.skipLike !== undefined && options.skipLike.test(trimmedStr)) return str;
+    else if (options.hex && hexRegex.test(trimmedStr)) {
+        return Number.parseInt(trimmedStr, 16);
+    // } else if (options.parseOct && octRegex.test(str)) {
+    //     return Number.parseInt(val, 8);
+    // }else if (options.parseBin && binRegex.test(str)) {
+    //     return Number.parseInt(val, 2);
+    }else{
+        //separate negative sign, leading zeros, and rest number
+        const match = numRegex.exec(trimmedStr);
+        if(match){
+            const negative = match[1];
+            const leadingZeros = match[2];
+            const num = match[3]; //complete num
+            const eNotation = match[4] || match[6];
+            if(leadingZeros.length === 1 && num[0] === ".") return Number(str);
+            else if(!options.leadingZeros && leadingZeros.length > 0) return str;
+            else return Number(trimmedStr);
+        }else{ //non-numeric string
+            return str;
+        }
+    }
+}
+
+module.exports = toNumber
+
+},{}]},{},[1]);
