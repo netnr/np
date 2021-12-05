@@ -162,7 +162,7 @@ namespace Netnr.SharedAdo
             var ds = new DataSet();
             var dsSchema = new DataSet();
 
-            using var reader = dbCommand.ExecuteReader();
+            using var reader = dbCommand.ExecuteReader(CommandBehavior.KeyInfo);
             var recordsAffected = reader.RecordsAffected;
 
             do

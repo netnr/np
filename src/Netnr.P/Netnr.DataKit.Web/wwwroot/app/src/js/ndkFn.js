@@ -106,6 +106,8 @@ var ndkFn = {
                     hour: 'numeric', minute: '2-digit', second: '2-digit'
                 }, options)
                 break;
+            case "year":
+                return new Date(date).getFullYear();
             case "datetime":
             default:
                 options = Object.assign({
@@ -125,8 +127,7 @@ var ndkFn = {
      * @param {*} duration 
      * @returns 
      */
-    msg: function (message, type = 'warning', icon = 'exclamation-triangle', duration = 8000) {
-
+    msg: function (message, type = 'primary', icon = 'info-circle', duration = 8000) {
         const alert = Object.assign(document.createElement('sl-alert'), {
             type: type,
             closable: true,
@@ -169,8 +170,31 @@ var ndkFn = {
      * 请求状态
      * @param {*} isShow 
      */
-    requestStatus: function (isShow = true) {
+    requestStatus: (isShow = true) => {
         ndkVary.domRequestStatus.loading = isShow;
+        isShow ? ndkFn.requestStatusTitle.run() : ndkFn.requestStatusTitle.stop();
+    },
+    requestStatusTitle: {
+        title: document.title,
+        si: null,
+        run: (index = 1, dir = true) => {
+            var arr = [], icon = "🛑";
+            for (var i = 0; i < index; i++) {
+                arr.push(icon);
+            }
+            document.title = " " + arr.join(" ");
+            dir ? index++ : index--;
+            dir = index == 9 ? false : dir;
+            dir = index == 1 ? true : dir;
+
+            ndkFn.requestStatusTitle.si = setTimeout(() => {
+                ndkFn.requestStatusTitle.run(index, dir);
+            }, 600);
+        },
+        stop: () => {
+            clearTimeout(ndkFn.requestStatusTitle.si);
+            document.title = ndkFn.requestStatusTitle.title;
+        }
     },
 
     /**
@@ -179,7 +203,7 @@ var ndkFn = {
      * @param {*} e 
      * @returns 
      */
-    random: function (s = 20000, e = 99999) { return Math.floor(Math.random() * (e - s + 1) + s) },
+    random: (s = 20000, e = 99999) => Math.floor(Math.random() * (e - s + 1) + s),
 
     /**
      * 下载
@@ -230,17 +254,58 @@ var ndkFn = {
                     //回填
                     ndkVary.domTextApiServer.value = ndkVary.apiServer;
 
+                    var pchtm = [];
+                    for (const key in ndkVary.parameterConfig) {
+                        const item = ndkVary.parameterConfig[key];
+                        switch (item.type) {
+                            case "number":
+                                pchtm.push(`<div><sl-input name="${key}" label="${item.label}" type="${item.type}" required value="${item.value}"></sl-input></div>`);
+                                break;
+                            case "select":
+                            case "boolean":
+                                {
+                                    pchtm.push(`<div><sl-select name="${key}" label="${item.label}" value="${item.value}" hoist="true">`);
+                                    item.list.forEach(obj => {
+                                        pchtm.push(`<sl-menu-item value="${obj.val}">${obj.txt}</sl-menu-item>`);
+                                    })
+                                    pchtm.push(`</sl-select></div>`);
+                                }
+                                break;
+                        }
+                    }
+                    pchtm.push(`<div><sl-button type="default" outline>${ndkVary.icons.success}保存</sl-button></div>`);
+                    ndkVary.domParameterConfig.innerHTML = pchtm.join('');
+
                     if (ndkVary.domDialogSetting.getAttribute('event-bind') != 1) {
                         ndkVary.domDialogSetting.setAttribute('event-bind', 1);
 
-                        //服务设置
+                        //接口服务
                         ndkVary.domTextApiServer.addEventListener('input', function () {
                             ndkVary.apiServer = this.value;
+                            ndkStep.stepSave();
+                        }, false);
+
+                        //参数保存
+                        ndkVary.domParameterConfig.addEventListener('click', function (e) {
+                            if (e.target.tagName == "SL-BUTTON") {
+                                for (const key in ndkVary.parameterConfig) {
+                                    const item = ndkVary.parameterConfig[key];
+                                    let val = ndkVary.domParameterConfig.querySelector(`[name="${key}"]`).value;
+                                    if (item.type == "number") {
+                                        val = parseInt(val);
+                                    } else if (item.type == "boolean") {
+                                        val = val == "true";
+                                    }
+                                    item.value = val;
+                                }
+                                ndkStep.stepSave();
+                                ndkFn.msg("保存成功");
+                            }
                         }, false);
                     }
                 }
                 break;
-            //设置
+            //设置接口服务
             case "set-api-server":
                 {
                     var val = args.innerHTML;
@@ -250,6 +315,7 @@ var ndkFn = {
                             break;
                     }
                     ndkVary.domTextApiServer.value = ndkVary.apiServer = val;
+                    ndkStep.stepSave();
                 }
                 break;
             //导出配置
@@ -296,7 +362,7 @@ var ndkFn = {
                             ndkFn.msg("配置内容不能为空");
                         }
                     } catch (e) {
-                        console.warn(e)
+                        console.debug(e)
                         ndkFn.msg(e)
                     }
                 }
@@ -399,7 +465,7 @@ var ndkFn = {
         }
     },
 
-    //自适应大小
+    //自适应大小 (动画结束后调用)
     size: function () {
         var vh = document.documentElement.clientHeight;
 
@@ -424,26 +490,24 @@ var ndkFn = {
                 //选项卡3
                 var tpkey = ndkTab.tabKeys[pnode.name];
                 if (tpkey && tpkey.grids) {
-                    setTimeout(() => {
-                        tpkey.grids.forEach(grid => {
-                            if (getComputedStyle(grid.domTabPanel).display != "none") {
-                                var tableh = `${vh - grid.domGridExecuteSql.getBoundingClientRect().top - 5}px`;
-                                grid.domGridExecuteSql.style.height = tableh;
+                    tpkey.grids.forEach(grid => {
+                        if (getComputedStyle(grid.domTabPanel).display != "none") {
+                            var tableh = `${vh - grid.domGridExecuteSql.getBoundingClientRect().top - 5}px`;
+                            grid.domGridExecuteSql.style.height = tableh;
 
-                                //显示表格
-                                if (!grid.gridOps && grid.opsExecuteSql) {
-                                    var gridOps = new agGrid.Grid(grid.domGridExecuteSql, grid.opsExecuteSql).gridOptions;
+                            //显示表格
+                            if (!grid.gridOps && grid.opsExecuteSql) {
+                                var gridOps = new agGrid.Grid(grid.domGridExecuteSql, grid.opsExecuteSql).gridOptions;
 
-                                    //快捷搜索
-                                    grid.domFilterExecuteSql.addEventListener('input', function () {
-                                        gridOps.api.setQuickFilter(this.value);
-                                    }, false);
+                                //快捷搜索
+                                grid.domFilterExecuteSql.addEventListener('input', function () {
+                                    gridOps.api.setQuickFilter(this.value);
+                                }, false);
 
-                                    grid.gridOps = gridOps;
-                                }
+                                grid.gridOps = gridOps;
                             }
-                        })
-                    }, 200)
+                        }
+                    })
                 }
             }
         });

@@ -95,6 +95,14 @@ namespace Netnr
         }
 
         /// <summary>
+        /// 总耗时，可视化
+        /// </summary>
+        public string TotalTimeFormat()
+        {
+            return TimeSpan.FromMilliseconds(sw.Elapsed.TotalMilliseconds).ToString(@"hh\:mm\:ss\:fff");
+        }
+
+        /// <summary>
         /// 片段耗时，毫秒
         /// </summary>
         /// <returns></returns>

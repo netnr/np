@@ -1425,7 +1425,7 @@
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitAidTo.ImportDatabase(Netnr.SharedEnum.TypeDB,System.String,System.String,System.Boolean,System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
             <summary>
-            导入数据库
+            导入数据
             </summary>
             <param name="tdb"></param>
             <param name="conn"></param>

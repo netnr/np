@@ -43,7 +43,7 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
-        /// 导入数据库
+        /// 导入数据
         /// </summary>
         /// <param name="tdb"></param>
         /// <param name="conn"></param>
@@ -56,7 +56,7 @@ namespace Netnr.SharedDataKit
             var vm = new SharedResultVM();
             vm.LogEvent(le);
 
-            vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 数据库导入");
+            vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 导入数据");
 
             var hsName = new HashSet<string>();
 
@@ -65,7 +65,7 @@ namespace Netnr.SharedDataKit
             vm.Log.Add($"开始读取 {zipPath}");
 
             using var zipRead = ZipFile.OpenRead(zipPath);
-            var zipList = zipRead.Entries.ToList();
+            var zipList = zipRead.Entries.OrderBy(x => x.Name).ToList();
 
             for (int i = 0; i < zipList.Count; i++)
             {
@@ -164,102 +164,19 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static SharedResultVM ExportDatabase(SharedEnum.TypeDB tdb, string conn, string zipPath, List<string> tables = null, Action<NotifyCollectionChangedEventArgs> le = null)
         {
-            var vm = new SharedResultVM();
-            vm.LogEvent(le);
-
-            vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 数据库导出");
-
             if (tables == null || tables.Count == 0)
             {
                 tables = (DataKitTo.GetTable(tdb, conn).Data as List<TableVM>).Select(x => x.TableName).ToList();
             }
-            vm.Log.Add($"导出表（{tables.Count}）：{string.Join(",", tables)}");
 
-            //数据库
-            var db = new DbHelper(DbConn(tdb, conn));
-
-            var partMaxRow = 50000;
-            var partMaxSize = 1024 * 1024 * 25 + GC.GetTotalMemory(true);
-            var tmpFolder = Path.Combine(Path.GetDirectoryName(zipPath), Path.GetFileNameWithoutExtension(zipPath));
-            if (!Directory.Exists(tmpFolder))
+            var sqls = new List<string>();
+            foreach (var table in tables)
             {
-                Directory.CreateDirectory(tmpFolder);
-            }
-
-            for (int i = 0; i < tables.Count; i++)
-            {
-                var table = tables[i];
-
                 var sql = $"SELECT * FROM {DbHelper.SqlQuote(tdb, table)}";
-                vm.Log.Add($"查询表 {table}，执行脚本：{sql}");
-
-                var fi = 1;
-
-                db.SafeConn(() =>
-                {
-                    var cmd = db.Connection.CreateCommand();
-                    cmd.CommandTimeout = 300;
-                    cmd.CommandText = sql;
-
-                    var reader = cmd.ExecuteReader();
-
-                    var dt = new DataTable
-                    {
-                        TableName = table
-                    };
-
-                    var dtSchema = reader.GetSchemaTable();
-                    foreach (DataRow dr in dtSchema.Rows)
-                    {
-                        dt.Columns.Add(new DataColumn(dr["ColumnName"].ToString(), (Type)(dr["DataType"]))
-                        {
-                            Unique = (bool)dr["IsUnique"],
-                            AllowDBNull = dr["AllowDBNull"] == DBNull.Value || (bool)dr["AllowDBNull"],
-                            AutoIncrement = (bool)dr["IsAutoIncrement"]
-                        });
-                    }
-
-                    while (reader.Read())
-                    {
-                        var dr = dt.NewRow();
-                        for (int f = 0; f < reader.FieldCount; f++)
-                        {
-                            dr[f] = reader[f];
-                        }
-                        dt.Rows.Add(dr.ItemArray);
-
-                        if (dt.Rows.Count >= partMaxRow || (dt.Rows.Count % 100 == 0 && GC.GetTotalMemory(true) > partMaxSize))
-                        {
-                            var outXml = Path.Combine(tmpFolder, $"{table}_{fi.ToString().PadLeft(7, '0')}.xml");
-                            dt.WriteXml(outXml, XmlWriteMode.WriteSchema);
-                            fi++;
-
-                            vm.Log.Add($"写入分片：{outXml}，耗时：{vm.PartTimeFormat()}");
-
-                            dt.Clear();
-                        }
-                    }
-
-                    if (fi == 1 || dt.Rows.Count > 0)
-                    {
-                        var outXml = Path.Combine(tmpFolder, $"{table}_{fi.ToString().PadLeft(7, '0')}.xml");
-                        dt.WriteXml(outXml, XmlWriteMode.WriteSchema);
-                    }
-
-                    vm.Log.Add($"导出表 {table} 完成，进度：{i + 1}/{tables.Count}\n");
-                });
+                sqls.Add(sql);
             }
 
-            vm.Log.Add($"导出完成，共耗时：{vm.UseTimeFormat}");
-
-            vm.Log.Add($"开始打包：{zipPath}");
-            ZipTo.Create(tmpFolder);
-            vm.Log.Add($"打包完成，耗时：{vm.PartTimeFormat()}，清理临时目录：{tmpFolder}");
-            Directory.Delete(tmpFolder, true);
-
-            vm.Set(SharedEnum.RTag.success);
-
-            return vm;
+            return ExportDataTable(tdb, conn, zipPath, sqls, le);
         }
 
         /// <summary>
@@ -276,13 +193,14 @@ namespace Netnr.SharedDataKit
             var vm = new SharedResultVM();
             vm.LogEvent(le);
 
-            vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 表导出");
+            vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 导出数据");
 
             //数据库
             var db = new DbHelper(DbConn(tdb, conn));
 
-            var partMaxRow = 50000;
-            var partMaxSize = 1024 * 1024 * 25 + GC.GetTotalMemory(true);
+            var partMaxRow = 50000; //分片最大数据行
+            var gcMaxSize = GC.GetTotalMemory(true) + 1024 * 1024 * 500; //内存占用限制
+
             var tmpFolder = Path.Combine(Path.GetDirectoryName(zipPath), Path.GetFileNameWithoutExtension(zipPath));
             if (!Directory.Exists(tmpFolder))
             {
@@ -311,6 +229,7 @@ namespace Netnr.SharedDataKit
                     {
                         TableName = table
                     };
+                    var rowCount = 0;
 
                     foreach (DataRow dr in dtSchema.Rows)
                     {
@@ -331,13 +250,15 @@ namespace Netnr.SharedDataKit
                         }
                         dt.Rows.Add(dr.ItemArray);
 
-                        if (dt.Rows.Count >= partMaxRow || (dt.Rows.Count % 100 == 0 && GC.GetTotalMemory(true) > partMaxSize))
+                        if (dt.Rows.Count >= partMaxRow || (dt.Rows.Count % 100 == 0 && GC.GetTotalMemory(true) > gcMaxSize))
                         {
+                            rowCount += dt.Rows.Count;
+
                             var outXml = Path.Combine(tmpFolder, $"{table}_{fi.ToString().PadLeft(7, '0')}.xml");
                             dt.WriteXml(outXml, XmlWriteMode.WriteSchema);
                             fi++;
 
-                            vm.Log.Add($"写入分片：{outXml}，耗时：{vm.PartTimeFormat()}");
+                            vm.Log.Add($"写入分片：{outXml}，共 {dt.Rows.Count} 行，耗时：{vm.PartTimeFormat()}");
 
                             dt.Clear();
                         }
@@ -345,15 +266,19 @@ namespace Netnr.SharedDataKit
 
                     if (fi == 1 || dt.Rows.Count > 0)
                     {
+                        rowCount += dt.Rows.Count;
+
                         var outXml = Path.Combine(tmpFolder, $"{table}_{fi.ToString().PadLeft(7, '0')}.xml");
                         dt.WriteXml(outXml, XmlWriteMode.WriteSchema);
+
+                        vm.Log.Add($"写入分片：{outXml}，共 {dt.Rows.Count} 行，耗时：{vm.PartTimeFormat()}");
                     }
 
-                    vm.Log.Add($"导出表 {table} 完成，进度：{i + 1}/{sqls.Count}\n");
+                    vm.Log.Add($"导出表 {table} 完成，共 {rowCount} 行，进度：{i + 1}/{sqls.Count}\n");
                 });
             }
 
-            vm.Log.Add($"导出完成，共耗时：{vm.UseTimeFormat}");
+            vm.Log.Add($"导出完成，共耗时：{vm.TotalTimeFormat()}");
 
             vm.Log.Add($"开始打包：{zipPath}");
             ZipTo.Create(tmpFolder);

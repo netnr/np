@@ -1,3 +1,5 @@
+import { ndkFn } from "./ndkFn";
+
 var agg = {
     lk: () => agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { },
 
@@ -6,8 +8,8 @@ var agg = {
      * @param {any} ops
      */
     defaultColDef: ops => Object.assign({
-        width: 150, maxWidth: 2000, filter: true, sortable: true, resizable: true,
-        menuTabs: ['generalMenuTab', 'filterMenuTab', 'columnsMenuTab']
+        width: 150, maxWidth: 4000, filter: true, sortable: true, resizable: true,
+        filter: 'agMultiColumnFilter', menuTabs: ['generalMenuTab', 'filterMenuTab', 'columnsMenuTab']
     }, ops),
 
     /**
@@ -15,7 +17,7 @@ var agg = {
      * @param {any} ops
      */
     autoGroupColumnDef: ops => Object.assign({
-        width: 300, maxWidth: 2000
+        width: 300, maxWidth: 4000
     }, ops),
 
     /**
@@ -31,13 +33,80 @@ var agg = {
         rowSelection: 'multiple', //多选
         suppressRowClickSelection: true, //单击行不选择
         enableRangeSelection: true, //范围选择
+        autoSizePadding: 40, //自动调整列宽追加值（标题动态图标、排序标记等）
         headerHeight: 42, //表头高度
         pagination: false, //不分页
         paginationPageSize: 100,
         cacheBlockSize: 100,
         suppressMoveWhenRowDragging: true, //拖拽不实时移动
         animateRows: true, //动画
+        //排序后刷新（更新行号）
+        onSortChanged(event) {
+            event.api.refreshCells();
+        },
+        //排序后刷新（更新行号）
+        onFilterChanged(event) {
+            event.api.refreshCells();
+        },
     }, ops),
+
+    /**
+     * 行号
+     * @param {any} ops
+     * @returns
+     */
+    numberCol: ops => Object.assign({
+        headerName: ndkVary.icons.id, valueGetter: "node.rowIndex + 1", width: 120,
+        checkboxSelection: true, headerCheckboxSelection: true,
+        headerCheckboxSelectionFilteredOnly: true, //仅全选过滤的数据行
+        sortable: false, filter: false, menuTabs: false
+    }, ops),
+
+    /**
+     * 过滤器
+     * @param {*} type 
+     * @param {*} ops 
+     * @returns 
+     */
+    filterParamsDef: (type, ops) => {
+        switch (type) {
+            case "Number":
+                return { filters: [{ filter: `ag${type}ColumnFilter` }, { filter: 'agSetColumnFilter', }] }
+            case "Date":
+                return {
+                    filters: [
+                        {
+                            filter: 'agDateColumnFilter',
+                            filterParams: {
+                                comparator: function (filterDate, cellValue) {
+                                    if (cellValue == null || cellValue == "") return -1;
+
+                                    //仅比较日期
+                                    var cellDate = new Date(cellValue);
+                                    cellDate = new Date(Number(cellDate.getFullYear()), Number(cellDate.getMonth()) - 1, Number(cellDate.getDate()));
+                                    filterDate = new Date(Number(filterDate.getFullYear()), Number(filterDate.getMonth()) - 1, Number(filterDate.getDate()));
+
+                                    if (filterDate.getTime() == cellDate.getTime()) {
+                                        return 0;
+                                    }
+                                    if (cellDate < filterDate) {
+                                        return -1;
+                                    }
+                                    if (cellDate > filterDate) {
+                                        return 1;
+                                    }
+                                }
+                            },
+                        },
+                        {
+                            filter: 'agSetColumnFilter',
+                            filterParams: { comparator: (a, b) => a = b },
+                        },
+                    ],
+                };
+        }
+        return ops;
+    },
 
     /**
      * 获取所有行

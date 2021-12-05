@@ -5,7 +5,6 @@ try { eval("() => 1") } catch (e) { top.location = "https://ub.netnr.eu.org" }
     upstream: From nginx upstream
     Source must support cross-domain
  */
-
 (function (window) {
     var ups = function (hosts, callback, timeout) {
         //全局对象、默认请求超时、默认源过期
@@ -22,7 +21,7 @@ try { eval("() => 1") } catch (e) { top.location = "https://ub.netnr.eu.org" }
             cacheKey = hosts.join(','),
             hostsCache = window[gk][cacheKey];
 
-        if (hostsCache && startTime - hostsCache.date < es) {
+        if (hostsCache && hostsCache.ok.length && startTime - hostsCache.date < es) {
             callback(hostsCache.ok[0], hostsCache.ok);
         } else {
             var ok = [], bad = 0, i = 0, len = hosts.length;
@@ -173,27 +172,19 @@ let bs = {
 /* ScriptService */
 var ss = {
     apiServer: "https://www.netnr.eu.org",
-    meConfig: function (config) {
-        var ops = {
-            value: "",
-            theme: "vs",
-            fontSize: 18,
-            automaticLayout: true,
-            scrollbar: {
-                verticalScrollbarSize: 13,
-                horizontalScrollbarSize: 13
-            },
-            minimap: {
-                enabled: true
-            }
+    meConfig: config => Object.assign({
+        value: "",
+        theme: "vs",
+        fontSize: 18,
+        automaticLayout: true,
+        scrollbar: {
+            verticalScrollbarSize: 13,
+            horizontalScrollbarSize: 13
+        },
+        minimap: {
+            enabled: true
         }
-        if (config) {
-            for (var i in config) {
-                ops[i] = config[i];
-            }
-        }
-        return ops;
-    },
+    }, config),
     keepSetValue: function (me, text) {
         var cpos = me.getPosition();
         me.executeEdits('', [{

@@ -27,14 +27,12 @@
 }
 
 /*选项卡2对应的连接-数据库*/
-.nr-window-conns,
-.nr-window-database {
-    display: none;
-    min-width: 180px;
+.nr-window-conns {
+    margin-left: 1em;
 }
 /*选项卡2分离器*/
 .nr-spliter2 {
-    --es-sql-height: 50%;
+    --es-sql-height: 45%;
 }
 
     .nr-spliter2 .nrc-spliter-item:first-child {
@@ -49,12 +47,16 @@
 /*选项卡2编辑器*/
 .nr-editor-box {
     display: flex;
-    --ebox-tool-width: 40px;
+    border: 1px solid var(--sl-color-primary-100);
+    --ebox-tool-width: 30px;
 }
 
 .nr-editor-tool {
     width: var(--ebox-tool-width);
-    background-color: rgb(var(--sl-color-neutral-100));
+    background-color: var(--sl-color-neutral-100);
+}
+.nr-editor-tool sl-icon-button::part(base){
+    padding: .2em .1em;    
 }
 
 .nr-editor-sql {
@@ -70,4 +72,36 @@
 
 .nr-grid-execute-sql {
     height: 200px;
+}
+
+/*设置参数*/
+.nr-parameter-config {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;    
+    align-items: flex-end;
+}
+.nr-parameter-config > div {
+    min-width: 8em;
+    margin: 0 1em 1em;
+}
+
+/*svg图标-数据库*/
+.nr-svg-typedb {
+    width: 1.4em;
+    height: 1.4em;
+    margin-right: 0.2em;
+    vertical-align: middle;
+}
+.nr-svg-typedb-menu {
+    width: 1em;
+    height: 1em;
+    vertical-align: bottom;
+}
+
+/*svg图标-数据头部*/
+.nr-svg-headertype {
+    height: 1.2em;
+    width: 1.2em;
+    margin-right: 0.2em;
 }

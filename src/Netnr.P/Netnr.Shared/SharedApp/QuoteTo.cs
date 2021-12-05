@@ -84,10 +84,10 @@ public class QuoteTo
                     break;
 
                 case "swiper.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.2.0/swiper-bundle.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.3.1/swiper-bundle.min.css' rel='stylesheet' />");
                     break;
                 case "swiper.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.2.0/swiper-bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.3.1/swiper-bundle.min.js'></script>");
                     break;
 
                 case "jz.js":
@@ -106,7 +106,7 @@ public class QuoteTo
                     break;
 
                 case "tocbot.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.17.0/dist/tocbot.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.17.1/dist/tocbot.min.js'></script>");
                     break;
 
                 case "selectpage":
@@ -129,11 +129,11 @@ public class QuoteTo
                     break;
 
                 case "ag-grid-community.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@26.1.0/dist/ag-grid-community.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@26.2.0/dist/ag-grid-community.min.js'></script>");
                     break;
 
                 case "ag-grid-enterprise.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@26.1.0/dist/ag-grid-enterprise.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@26.2.0/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
                     break;
 
@@ -158,7 +158,7 @@ public class QuoteTo
                     break;
 
                 case "qrcode.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/qrcode@1.4.4/build/qrcode.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/qrcode@1.5.0/build/qrcode.js'></script>");
                     break;
 
                 case "jsqr.js":
@@ -178,7 +178,7 @@ public class QuoteTo
                     break;
 
                 case "highcharts.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.1/highcharts.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.2/highcharts.js'></script>");
                     break;
 
                 case "hls.js":
@@ -239,29 +239,29 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.1.0/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.1.2/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.0/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.0/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.2/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.2/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "prettier-css":
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/standalone.js'></script>"); ;
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-postcss.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/standalone.js'></script>"); ;
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-postcss.js'></script>");
                     break;
                 case "prettier":
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/standalone.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-angular.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-babel.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-flow.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-glimmer.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-graphql.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-html.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-markdown.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-postcss.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-typescript.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.4.1/parser-yaml.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/standalone.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-angular.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-babel.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-flow.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-glimmer.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-graphql.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-html.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-markdown.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-postcss.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-typescript.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-yaml.js'></script>");
                     break;
 
                 case "lrz.js":

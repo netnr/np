@@ -10,7 +10,7 @@
     <meta name="keywords" content="netnr,Netnr.DataKit" />
     <meta name="description" content="netnr,Netnr.DataKit" />
 
-    <title>Netnr.DataKit (NDK)</title>
+    <title>NDK (Netnr.DataKit)</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 </head>
 
@@ -19,14 +19,14 @@
 
     <script src="https://npm.elemecdn.com/localforage@1.10.0/dist/localforage.min.js"></script>
     <script src="https://npm.elemecdn.com/sql-formatter@4.0.2/dist/sql-formatter.min.js"></script>
-    <script src="https://npm.elemecdn.com/ag-grid-enterprise@26.1.0/dist/ag-grid-enterprise.min.js"></script>
-    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.60/dist/themes/light.css">
-    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.60/dist/themes/dark.css">
+    <script src="https://npm.elemecdn.com/ag-grid-enterprise@26.2.0/dist/ag-grid-enterprise.min.js"></script>
+    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist/themes/light.css">
+    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist/themes/dark.css">
 
     <script src="https://npm.elemecdn.com/monaco-editor@0.30.1/min/vs/loader.js"></script>
     <script type="module">
-        import * as sl from 'https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.60/dist/shoelace.js'
-        sl.setBasePath('https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.60/dist')
+        import * as sl from 'https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist/shoelace.js'
+        sl.setBasePath('https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist')
 
         require.config({
             paths: {
@@ -35,30 +35,10 @@
             'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
         });
 
+        //编辑器资源载入
         require(['vs/editor/editor.main'], function () {
-            //xml formatter
-            monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
-
-            //sql fromatter
-            monaco.languages.registerDocumentFormattingEditProvider('sql', {
-                provideDocumentFormattingEdits: function (model, _options, _token) {
-
-                    var dbtype;
-                    vary.domTabGroup2.querySelectorAll('.nr-editor-sql').forEach(node => {
-                        var tpkey = node.getAttribute('panel');
-                        var tpobj = tab.tabKeys[tpkey];
-                        if (tpobj.editor.getModel() == model) {
-                            dbtype = step.cpGet(tpkey).cobj.type;
-                        }
-                    })
-
-                    return [{
-                        text: me.meFormatterSQL(model.getValue(), dbtype),
-                        range: model.getFullModelRange()
-                    }];
-                }
-            });
-        });
+            ndkEditor.extend();
+        });      
     </script>
 
     <!--整体-->
@@ -68,7 +48,7 @@
         <div class="nr-box0">
             <!--菜单-->
             <sl-dropdown class="nr-menu mb-2">
-                <sl-button slot="trigger" caret class="nr-request-status">Ⓜ菜单</sl-button>
+                <sl-button slot="trigger" size="small" caret class="nr-request-status">Ⓜ菜单</sl-button>
                 <sl-menu>
                     <sl-menu-item data-cmd="setting-manager">设置</sl-menu-item>
                     <sl-divider></sl-divider>
@@ -77,18 +57,27 @@
                 </sl-menu>
             </sl-dropdown>
 
+            <!--快捷01-->
+            <sl-dropdown class="nr-quick01 mb-2">
+                <sl-button slot="trigger" size="small" caret>📌快捷</sl-button>
+                <sl-menu>
+                    <sl-menu-item data-cmd="quick-note">📔笔记</sl-menu-item>
+                    <sl-divider></sl-divider>
+                    <sl-menu-item data-cmd="quick-note">📔笔记</sl-menu-item>
+                </sl-menu>
+            </sl-dropdown>
+
             <!--设置-->
-            <sl-dialog label="⚙设置" class="nr-dialog-setting dialog-width" style="--width: 60vw;">                
-                <sl-details summary="服务设置" open>
+            <sl-dialog label="⚙设置" class="nr-dialog-setting dialog-width" style="--width: 70vw;">                
+                <sl-details summary="🧶服务设置" open>
                     <sl-input class="nr-text-api-server mb-2" placeholder="服务地址"></sl-input>
                     <sl-button type="text" data-cmd="set-api-server" >当前</sl-button>
                     <sl-button type="text" data-cmd="set-api-server" >https://localhost:5001</sl-button>
                 </sl-details>
-                <sl-details summary="参数设置" open>
-                    <sl-input placeholder="参数名"></sl-input>
-                    <sl-input placeholder="参数值"></sl-input>                    
+                <sl-details summary="🛠参数设置" open>
+                    <div class="nr-parameter-config"></div>
                 </sl-details>
-                <sl-details summary="配置导入导出" open>
+                <sl-details summary="♻配置导入导出" open>
                     <sl-button type="default" data-cmd="config-export-file">💾导出配置</sl-button>
                     <sl-button type="default" data-cmd="config-export-clipboard">📋导出配置到剪贴板</sl-button>
                     <sl-divider></sl-divider>
@@ -97,8 +86,9 @@
                 </sl-details>
             </sl-dialog>
 
-            <sl-select class="nr-window-conns"></sl-select>
-            <sl-select class="nr-window-database"></sl-select>
+            <!--当前选项卡连接信息-->
+            <sl-dropdown class="nr-tabconns"></sl-dropdown>
+            <sl-dropdown class="nr-tabdatabase"></sl-dropdown>
         </div>
 
         <!--主体分离器-->

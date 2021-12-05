@@ -1,7 +1,5 @@
 临时短信 Temporary SMS
-- <https://www.114sim.com>
 - <https://yunduanxin.net>
-- <https://www.shejiinn.com>
 - <https://ch.freephonenum.com>
 - <https://zh.mytrashmobile.com>
 - <https://www.receive-sms-online.info>
@@ -36,6 +34,7 @@ NodeJs
 无服务 Serverless
 - <https://vercel.com/home>
 - <https://www.netlify.com>
+- <https://pages.cloudflare.com>
 
 域名本地解析
 - <http://127.0.0.1.sslip.io>

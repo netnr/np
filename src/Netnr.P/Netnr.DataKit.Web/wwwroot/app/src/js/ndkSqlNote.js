@@ -82,7 +82,14 @@ select date_format(now(), '%Y/%m/%d %H:%i:%s'); -- 格式化`
     },
     {
         name: "内置方法、对象",
-        sql: `select uuid()`
+        sql: `select uuid(); -- UUID
+
+-- 字符串字节长度、字符长度
+SELECT
+  LENGTH("demo") "英文(demo)",
+  LENGTH("测试。") "中文符号(测试。)",
+  CHAR_LENGTH("demo") "CHAR - 英文(demo)",
+  CHAR_LENGTH("测试。") "CHAR - 中文符号(测试。)";`
     },
     {
         name: "",
@@ -219,12 +226,12 @@ ORDER BY QS.creation_time DESC`
     {
         name: "表大小情况",
         sql: `-- 定义表变量
-DECLARE @T TABLE([name] VARCHAR(100),
+DECLARE @T TABLE([name] VARCHAR(99),
 [rows] INT,
-reserved VARCHAR(100),
-data_size VARCHAR(100),
-index_size VARCHAR(100),
-unused VARCHAR(100));
+reserved VARCHAR(99),
+data_size VARCHAR(99),
+index_size VARCHAR(99),
+unused VARCHAR(99));
 
 -- 将表占用情况存放到表变量
 INSERT INTO @T EXEC sp_MSforeachtable "exec sp_spaceused '?'";
@@ -235,17 +242,17 @@ SELECT * FROM @T`
         sql: `declare @local datetime=getdate()
 declare @utc datetime=getutcdate()
 declare @utc8 datetime=dateadd(hour, 8, getutcdate())
-print N'当前时间：'+CONVERT(varchar(100), @local, 21)
-print N'UTC：'+CONVERT(varchar(100), @utc, 21)
-print N'UTC +8：'+CONVERT(varchar(100), @utc8, 21)
-print N'格式化（yyyy-MM-dd HH:mm:ss.fff）：'+CONVERT(varchar(100), @utc8, 21)
-print N'格式化（yyyy-MM-dd HH:mm:ss）：'+CONVERT(varchar(100), @utc8, 20)
-print N'格式化（yyyy-MM-dd）：'+CONVERT(varchar(100), @utc8, 23)
-print N'格式化（yyyy.MM.dd）：'+CONVERT(varchar(100), @utc8, 102)
-print N'格式化（yyyy/MM/dd）：'+CONVERT(varchar(100), @utc8, 111)
-print N'格式化（yyyyMMdd）：'+CONVERT(varchar(100), @utc8, 112)
-print N'格式化（HH:mm:ss）：'+CONVERT(varchar(100), @utc8, 24)
-print N'追加一天：'+CONVERT(varchar(100), dateadd(day, 1, @utc8), 21)`
+print N'当前时间：'+CONVERT(varchar(99), @local, 21)
+print N'UTC：'+CONVERT(varchar(99), @utc, 21)
+print N'UTC +8：'+CONVERT(varchar(99), @utc8, 21)
+print N'格式化（yyyy-MM-dd HH:mm:ss.fff）：'+CONVERT(varchar(99), @utc8, 21)
+print N'格式化（yyyy-MM-dd HH:mm:ss）：'+CONVERT(varchar(99), @utc8, 20)
+print N'格式化（yyyy-MM-dd）：'+CONVERT(varchar(99), @utc8, 23)
+print N'格式化（yyyy.MM.dd）：'+CONVERT(varchar(99), @utc8, 102)
+print N'格式化（yyyy/MM/dd）：'+CONVERT(varchar(99), @utc8, 111)
+print N'格式化（yyyyMMdd）：'+CONVERT(varchar(99), @utc8, 112)
+print N'格式化（HH:mm:ss）：'+CONVERT(varchar(99), @utc8, 24)
+print N'追加一天：'+CONVERT(varchar(99), dateadd(day, 1, @utc8), 21)`
     },
     {
         name: "内置方法、对象",
@@ -259,7 +266,7 @@ print N'追加一天：'+CONVERT(varchar(100), dateadd(day, 1, @utc8), 21)`
 
 ndkSqlNote["PostgreSQL"] = [
     {
-        name: "",
+        name: "查看信息",
         sql: `SELECT
   'Name' col,
   split_part(split_part(VERSION(), ',', 1), ' on ', 1)
@@ -369,12 +376,12 @@ SELECT
 `
     },
     {
-        name: "���÷���������",
+        name: "内置方法、对象",
         sql: `DO $$
 BEGIN
-    RAISE NOTICE '��ǰ����ʱ�䣺%', now();
-    RAISE NOTICE '�汾��Ϣ��%', version();
-    RAISE NOTICE 'UUID��%', uuid_generate_v4(); -- create extension "uuid-ossp"; -- Ϊ��������չ
+    RAISE NOTICE '当前日期时间：%', now();
+    RAISE NOTICE '版本信息：%', version();
+    RAISE NOTICE 'UUID：%', uuid_generate_v4(); -- create extension "uuid-ossp"; -- 为表添加扩展
 END;
 $$;
 `

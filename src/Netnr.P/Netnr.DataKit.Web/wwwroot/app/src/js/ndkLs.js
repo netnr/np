@@ -4,8 +4,21 @@ var ndkLs = {
     storeConfig: localforage.createInstance({ name: "ndk-config" }),
     storeCache: localforage.createInstance({ name: "ndk-cache" }),
 
-    keyConns: "conns",
-    keySteps: "steps",
+    //键配置
+    keys: {
+        keyConns: {
+            label: "连接信息",
+            key: "conns",
+        },
+        keySteps: {
+            label: "步骤信息",
+            key: "steps",
+        },
+        keyNotes: {
+            label: "笔记信息",
+            key: "notes",
+        }
+    },
 
     /**
      * 设置连接字符串，根据 id 更新
@@ -30,25 +43,29 @@ var ndkLs = {
 
             conns = conns.concat(connObj)
 
-            ndkLs.storeConfig.setItem(ndkLs.keyConns, conns).then(() => resolve(conns))
+            ndkLs.storeConfig.setItem(ndkLs.keys.keyConns.key, conns).then(() => resolve(conns))
         })
     }),
     /**
      * 删除连接字符串
-     * @param {*} id 
+     * @param {*} id 一个或数组
      * @returns 
      */
     connsDelete: id => new Promise((resolve) => {
+        id = ndkFn.type(id) == "Array" ? id : [id];
         ndkLs.connsGet().then(conns => {
             for (var i = 0; i < conns.length; i++) {
                 var cobj = conns[i];
-                if (cobj.id == id) {
+                if (id.includes(cobj.id)) {
                     conns.splice(i, 1);
-                    break;
                 }
             }
+            //删除连接缓存
+            ndkLs.storeCache.keys().then(keys => {
+                keys.filter(key => id.includes(key.split("-")[0])).forEach(x => ndkLs.storeCache.removeItem(x))
+            })
 
-            ndkLs.storeConfig.setItem(ndkLs.keyConns, conns).then(() => resolve(conns))
+            ndkLs.storeConfig.setItem(ndkLs.keys.keyConns.key, conns).then(() => resolve(conns))
         })
     }),
     /**
@@ -57,7 +74,7 @@ var ndkLs = {
      * @returns 
      */
     connsGet: id => new Promise((resolve) => {
-        ndkLs.storeConfig.getItem(ndkLs.keyConns).then(conns => {
+        ndkLs.storeConfig.getItem(ndkLs.keys.keyConns.key).then(conns => {
             conns = conns || [];
             if (id != null) {
                 resolve(conns.filter(x => x.id == id).pop() || [])
@@ -71,15 +88,15 @@ var ndkLs = {
      * 设置步骤
      * @param {any} steps
      */
-    stepsSet: steps => ndkLs.storeConfig.setItem(ndkLs.keySteps, steps),
+    stepsSet: steps => ndkLs.storeConfig.setItem(ndkLs.keys.keySteps.key, steps),
     /**
      * 获取步骤
      */
-    stepsGet: () => ndkLs.storeConfig.getItem(ndkLs.keySteps),
+    stepsGet: () => ndkLs.storeConfig.getItem(ndkLs.keys.keySteps.key),
     /**
      * 删除步骤
      */
-    stepsDelete: () => ndkLs.storeConfig.removeItem(ndkLs.keySteps),
+    stepsDelete: () => ndkLs.storeConfig.removeItem(ndkLs.keys.keySteps.key),
 
     /**
      * 获取或设置连接缓存

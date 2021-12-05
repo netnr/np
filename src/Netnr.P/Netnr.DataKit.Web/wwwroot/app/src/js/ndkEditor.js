@@ -1,6 +1,36 @@
 import { ndkVary } from "./ndkVary";
+import { ndkTab } from "./ndkTab";
+import { ndkStep } from "./ndkStep";
 
 var ndkEditor = {
+
+    // 拓展
+    extend: () => {
+        //xml formatter
+        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
+
+        //sql formatter
+        let langs = ['sql', 'mysql', 'pgsql'];
+        langs.forEach(lang => {
+            monaco.languages.registerDocumentFormattingEditProvider(lang, {
+                provideDocumentFormattingEdits: function (model, _options, _token) {
+                    let dbtype;
+                    ndkVary.domTabGroup2.querySelectorAll('.nr-editor-sql').forEach(node => {
+                        let tpkey = node.getAttribute('panel');
+                        let tpobj = ndkTab.tabKeys[tpkey];
+                        if (tpobj.editor.getModel() == model) {
+                            dbtype = ndkStep.cpGet(tpkey).cobj.type;
+                        }
+                    })
+
+                    return [{
+                        text: ndkEditor.formatterSQL(model.getValue(), dbtype),
+                        range: model.getFullModelRange()
+                    }]
+                }
+            })
+        });
+    },
 
     /**
      * 配置
@@ -9,15 +39,17 @@ var ndkEditor = {
     config: ops => Object.assign({
         value: "",
         theme: ndkVary.theme == "dark" ? "vs-dark" : "vs",
-        fontSize: 18,
+        fontSize: ndkVary.parameterConfig.editorFontSize.value,
         language: 'sql',
+        lineNumbers: ndkVary.parameterConfig.editorLineNumbers.value,
+        wordWrap: ndkVary.parameterConfig.editorWordWrap.value,
         automaticLayout: true,
         scrollbar: {
             verticalScrollbarSize: 13,
             horizontalScrollbarSize: 13
         },
         minimap: {
-            enabled: true
+            enabled: false
         }
     }, ops),
 
@@ -80,6 +112,42 @@ var ndkEditor = {
             language: sqlang,
             uppercase: true
         });
+    },
+
+    /**
+     * 全屏切换
+     * @param {any} editor
+     */
+    fullScreen: function (editor) {
+        editor.addAction({
+            id: "meid-fullscreen",
+            label: "全屏切换",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM],
+            contextMenuGroupId: "me-01",
+            run: function (event) {
+                var ebox = event.getContainerDomNode();
+                ebox.classList.toggle('nrc-fullscreen');
+            }
+        });
+    },
+
+    /**
+     * 数据库类型转编辑器语言
+     * @param {any} type
+     */
+    typeAsLanguage: function (type) {
+        var sqlang;
+        switch (type) {
+            case "MySQL":
+            case "MariaDB":
+                sqlang = "mysql";
+                break;
+            case "PostgreSQL":
+                sqlang = "pgsql";
+                break;
+            default: sqlang = 'sql'; break;
+        }
+        return sqlang;
     },
 }
 

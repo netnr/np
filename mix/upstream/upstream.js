@@ -22,7 +22,7 @@
             cacheKey = hosts.join(','),
             hostsCache = window[gk][cacheKey];
 
-        if (hostsCache && startTime - hostsCache.date < es) {
+        if (hostsCache && hostsCache.ok.length && startTime - hostsCache.date < es) {
             callback(hostsCache.ok[0], hostsCache.ok, true);
         } else {
             var ok = [], bad = 0, i = 0, len = hosts.length;

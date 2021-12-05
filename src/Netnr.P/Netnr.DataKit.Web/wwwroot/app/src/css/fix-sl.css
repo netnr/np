@@ -12,8 +12,8 @@ sl-tab-group::part(tabs) {
 }
 
 sl-tab::part(base) {
-    --sl-spacing-medium: 5px;
-    --sl-spacing-large: 15px;
+    --sl-spacing-medium: 3px;
+    --sl-spacing-large: 12px;
 }
 
 sl-tab-panel::part(base) {

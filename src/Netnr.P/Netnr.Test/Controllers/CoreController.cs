@@ -13,18 +13,15 @@ namespace Netnr.Test.Controllers
         public SharedResultVM Extend()
         {
             return SharedResultVM.Try(vm =>
-            {
-                var vjson = new
-                {
-                    mail = "2247826170@qq.com",
-                    ts = DateTime.Now.ToTimestamp()
-                }.ToJson();
-
-                var v1 = vjson.ToBase64Encode();
-                var v2 = v1.ToUrlEncode();
-
+            {                
                 return vm;
             });
+        }
+
+        [HttpGet]
+        public FileResult Tmp1()
+        {
+            return PhysicalFile("", "application/octet-stream");
         }
 
         /// <summary>

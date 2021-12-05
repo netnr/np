@@ -847,22 +847,32 @@ namespace Netnr.Blog.Web.Controllers.api
                     {
                         if (!skipHeader.Contains(key))
                         {
-                            hwr.Headers[key] = Request.Headers[key];
+                            try
+                            {
+                                hwr.Headers[key] = Request.Headers[key].ToString();
+                            }
+                            catch (Exception)
+                            {
+
+                            }
                         }
                     }
 
                     HttpWebResponse response = null;
                     var stream = HttpTo.Stream(hwr, ref response, charset);
+                    if (!string.IsNullOrEmpty(response.ContentType))
+                    {
+                        outContentType = response.ContentType;
+                    }
 
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        return File(stream.BaseStream, response.ContentType, Path.GetFileName(url));
+                        return File(stream.BaseStream, outContentType, Path.GetFileName(url));
                     }
                     else
                     {
                         outContent = stream.ReadToEnd();
                         outCode = (int)response.StatusCode;
-                        outContentType = response.ContentType;
                     }
                 }
             }

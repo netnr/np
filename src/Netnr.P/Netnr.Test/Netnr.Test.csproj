@@ -33,8 +33,8 @@
 		<PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
 		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.155" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.155" />
-		<PackageReference Include="MySqlConnector" Version="2.0.0" />
-		<PackageReference Include="Npgsql" Version="6.0.0" />
+		<PackageReference Include="MySqlConnector" Version="2.1.0" />
+		<PackageReference Include="Npgsql" Version="6.0.1" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.4" />
 	</ItemGroup>
 

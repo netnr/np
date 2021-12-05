@@ -211,8 +211,8 @@ var st = {
                         case "pdf":
                             {
                                 var uri = location.host.includes("netnr.com")
-                                    ? "https://s1.netnr.com/libs/html2pdf/html2pdf.bundle-v0.10.1.min.js"
-                                    : "https://s1.netnr.eu.org/libs/html2pdf/html2pdf.bundle-v0.10.1.min.js";
+                                    ? "https://s1.netnr.com/libs/html2pdf/0.9.3/html2pdf.bundle.min.js"
+                                    : "https://s1.netnr.eu.org/libs/html2pdf/0.9.3/html2pdf.bundle.min.js";
 
                                 require([uri], function (module) {
                                     var ch = that.obj.view.clientHeight;
@@ -238,7 +238,7 @@ var st = {
                                     backvm = true;
                                 }
 
-                                require(['https://npm.elemecdn.com/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'], function (module) {
+                                require(['https://npm.elemecdn.com/html2canvas@1.3.3/dist/html2canvas.min.js'], function (module) {
                                     var ch = that.obj.view.clientHeight;
                                     that.obj.view.style.height = 'auto';
                                     module(that.obj.view, {

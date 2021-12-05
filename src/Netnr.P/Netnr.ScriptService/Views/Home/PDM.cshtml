@@ -1,6 +1,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
+            <input class="form-control nr-search" placeholder="搜索">
+        </div>
+        <div class="col-auto">
             <input id="txtFile" type="file" class="form-control" multiple accept="*">
         </div>
         <div class="col-auto">
@@ -255,6 +258,11 @@
 
             pdm.grid = new agGrid.Grid(pdm.gbox, gridOptions);
 
+            //搜索
+            document.querySelector('.nr-search').addEventListener('input', function() {
+                pdm.grid.gridOptions.api.setQuickFilter(this.value.trim());
+            }, false);
+
             //展开节点
             setTimeout(function () {
                 gridOptions.api.forEachNode(function (node) {
@@ -290,7 +298,7 @@
                     console.log(e);
                     pdm.tip();
                 }
-            }, 0);
+            }, 1);
         },
 
         groupBy: function (array, f) {

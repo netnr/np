@@ -206,7 +206,7 @@ namespace Netnr.DataX.Application
         public static void ShowTitleInfo(System.Reflection.MethodBase mi)
         {
             var desc = mi.CustomAttributes.LastOrDefault()?.NamedArguments.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value.ToString();
-            Log($"\n{DateTime.Now:F} {desc}\n");
+            Log($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss} {desc}\n");
         }
     }
 }

@@ -39,7 +39,7 @@
             }, false);
 
             document.querySelector('.nr-select-m3u8').addEventListener('change', function () {
-                vd.open(this.value);
+                vd.play(this.value, true);
             }, false);
 
             vd.autoSize();

@@ -9,7 +9,7 @@
     width: 100%;
     max-width: 100%;
     height: auto;
-    border-top: 1px solid rgb(var(--sl-color-neutral-200));
+    border-top: 1px solid var(--sl-color-primary-100);
 }
 
 .nrc-spliter-item {
@@ -33,7 +33,7 @@
 
     .nrc-spliter-bar:hover {
         border: 1px dashed #0284c7;
-        background: linear-gradient(to bottom,rgb(var(--sl-color-orange-100)) 0%,rgb(var(--sl-color-orange-100)) 33.333%,rgb(var(--sl-color-orange-200)) 33.333%,rgb(var(--sl-color-orange-200)) 66.666%,rgb(var(--sl-color-orange-300)) 66.666%,rgb(var(--sl-color-orange-300)) 100%);
+        background: linear-gradient(to bottom,var(--sl-color-orange-100) 0%,var(--sl-color-orange-100) 33.333%,var(--sl-color-orange-200) 33.333%,var(--sl-color-orange-200) 66.666%,var(--sl-color-orange-300) 66.666%,var(--sl-color-orange-300) 100%);
     }
 
 .nrc-spliter-bar-active {
@@ -43,7 +43,7 @@
     display: none;
     user-select: none;
     pointer-events: none;
-    background-color: rgb(var(--sl-color-orange-300));
+    background-color: var(--sl-color-orange-300);
     width: var(--nrc-spliter-width);
 }
 
@@ -64,7 +64,7 @@
     }
 
         .nrc-spliter-vertical .nrc-spliter-bar:hover {
-            background: linear-gradient(to right,rgb(var(--sl-color-orange-100)) 0%,rgb(var(--sl-color-orange-100)) 33.333%,rgb(var(--sl-color-orange-200)) 33.333%,rgb(var(--sl-color-orange-200)) 66.666%,rgb(var(--sl-color-orange-300)) 66.666%,rgb(var(--sl-color-orange-300)) 100%);
+            background: linear-gradient(to right,var(--sl-color-orange-100) 0%,var(--sl-color-orange-100) 33.333%,var(--sl-color-orange-200) 33.333%,var(--sl-color-orange-200) 66.666%,var(--sl-color-orange-300) 66.666%,var(--sl-color-orange-300) 100%);
         }
 
     .nrc-spliter-vertical .nrc-spliter-bar-active {
@@ -85,4 +85,16 @@
 
 .nrc-rotate-1 {
     animation: kf-rotate 1s infinite;
+}
+
+/*全屏*/
+.nrc-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
 }

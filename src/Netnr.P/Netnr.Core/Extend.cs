@@ -256,7 +256,7 @@ namespace Netnr
         /// <returns></returns>
         public static byte[] ToByte(this string value, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
             return encoding.GetBytes(value);
         }
 
@@ -268,7 +268,7 @@ namespace Netnr
         /// <returns></returns>
         public static string ToText(this byte[] value, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
             return encoding.GetString(value);
         }
 
@@ -280,7 +280,7 @@ namespace Netnr
         /// <returns></returns>
         public static string ToBase64Encode(this string value, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
             return Convert.ToBase64String(encoding.GetBytes(value));
         }
 
@@ -292,7 +292,7 @@ namespace Netnr
         /// <returns></returns>
         public static string ToBase64Decode(this string value, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
             return encoding.GetString(Convert.FromBase64String(value));
         }
 

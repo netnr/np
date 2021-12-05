@@ -8,12 +8,12 @@ var ndkTab = {
     tabKeys: {},
 
     /**
-     * 新选项卡
+     * 构建选项卡
      * @param {any} key
      * @param {any} title
      * @param {any} type
      */
-    tabOpen: (key, title, type) => new Promise(resolve => {
+    tabBuild: (key, title, type) => new Promise(resolve => {
 
         key = `tp-${key}`;
         if (!(key in ndkTab.tabKeys)) {
@@ -32,7 +32,7 @@ var ndkTab = {
             <sl-tooltip content="格式化脚本（Alt + Shift + F）" placement="right">
               <sl-icon-button data-cmd="sql-formatting" panel="${key}" name="brush-fill" style="font-size: 1.5rem;"></sl-icon-button>
             </sl-tooltip>
-            <sl-tooltip content="SQL 笔记" placement="right">
+            <sl-tooltip content="笔记" placement="right">
               <sl-icon-button data-cmd="sql-note" panel="${key}" name="journal-code" style="font-size: 1.5rem;"></sl-icon-button>
             </sl-tooltip>
         </div>
@@ -117,8 +117,13 @@ var ndkTab = {
                     activebar.style.top = '15%';
                     activebar.nextElementSibling.style.height = `calc(100% - var(--nrc-spliter-width) - 15%)`;
                 }
-                ndkFn.size();
-            })
+            });
+            //动画结束
+            tabbox.querySelector('.nrc-spliter-item').addEventListener('transitionend', function (event) {
+                if (event.propertyName == 'height') {
+                    ndkFn.size();
+                }
+            });
 
             var slpanels = ndkVary.domTabGroup2.querySelectorAll("sl-tab-panel");
             ndkVary.domTabGroup2.insertBefore(domTab, slpanels[0]);
@@ -139,8 +144,10 @@ var ndkTab = {
             };
 
             //构建编辑器
-            ndkEditor.create(domEditorSql).then(editor => {
+            ndkEditor.create(domEditorSql, { language: ndkEditor.typeAsLanguage(type) }).then(editor => {
                 ndkTab.tabKeys[key].editor = editor;//编辑器对象
+
+                ndkEditor.fullScreen(editor); //全屏
 
                 //Ctrl + R 执行选中或全部脚本
                 editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyR, function () {
@@ -149,10 +156,8 @@ var ndkTab = {
             });
         }
 
-        setTimeout(() => {
-            ndkVary.domTabGroup2.show(key);
-            resolve(key);
-        }, 10)
+        // ndkVary.domTabGroup2.show(key); //在回调结果中调用
+        resolve(key);
     }),
 
     /**

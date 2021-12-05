@@ -108,7 +108,9 @@ var ndkInit = {
         });
         //选项卡2-显示
         ndkVary.domTabGroup2.addEventListener('sl-tab-show', function (event) {
-            ndkStep.cpInfo(event.detail.name); //显示连接
+            if (event.target.classList.contains("nr-tab-group-2")) {
+                ndkStep.cpInfo(event.detail.name); //显示连接                
+            }
             setTimeout(() => {
                 ndkFn.size()
             }, 1)
@@ -131,12 +133,14 @@ window.addEventListener("DOMContentLoaded", function () {
         }
     })
 
+    //事件
     ndkInit.event();
+    //步骤恢复
     ndkStep.stepStart().then(() => {
         ndkVary.domLoading.style.display = "none";
         ndkVary.domMain.style.visibility = "visible";
 
-        setTimeout(() => console.clear(), 1000 * 2);
+        //setTimeout(() => console.clear(), 1000 * 2);
     })
 
 }, false);
