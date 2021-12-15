@@ -15,7 +15,7 @@
     "webpack-dev-server": "^4.3.1"
   },
   "scripts": {
-    "dev": "webpack-dev-server --mode development --devtool source-map --progress",
+    "dev": "webpack-dev-server --https --mode development --devtool source-map --progress",
     "prod": "webpack --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -15,6 +15,7 @@
 /*上*/
 .nr-box0 {
     display: flex;
+    flex-wrap: wrap;
 }
 
     .nr-box0 > * {
@@ -26,11 +27,11 @@
     margin-bottom: .5em;
 }
 
-/*选项卡2对应的连接-数据库*/
+/*选项卡2窗口 对应的连接-数据库*/
 .nr-window-conns {
     margin-left: 1em;
 }
-/*选项卡2分离器*/
+/*选项卡2窗口 分离器*/
 .nr-spliter2 {
     --es-sql-height: 45%;
 }
@@ -44,7 +45,7 @@
     }
 
 
-/*选项卡2编辑器*/
+/*选项卡2窗口 编辑器*/
 .nr-editor-box {
     display: flex;
     border: 1px solid var(--sl-color-primary-100);
@@ -64,7 +65,7 @@
     width: calc(100% - var(--ebox-tool-width))
 }
 
-/*选项卡3*/
+/*选项卡3执行结果*/
 .nr-tab-group-3 {
     height: 100%;
     width: 100%;
@@ -96,7 +97,7 @@
 .nr-svg-typedb-menu {
     width: 1em;
     height: 1em;
-    vertical-align: bottom;
+    vertical-align: middle;
 }
 
 /*svg图标-数据头部*/

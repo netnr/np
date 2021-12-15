@@ -1,4 +1,5 @@
 import { ndkFn } from './ndkFn';
+import { ndkVary } from './ndkVary';
 
 var ndkLs = {
     storeConfig: localforage.createInstance({ name: "ndk-config" }),
@@ -17,6 +18,10 @@ var ndkLs = {
         keyNotes: {
             label: "笔记信息",
             key: "notes",
+        },
+        keyErrors: {
+            label: "错误信息",
+            key: "errors",
         }
     },
 
@@ -43,6 +48,7 @@ var ndkLs = {
 
             conns = conns.concat(connObj)
 
+            ndkVary.envConnsChanged = true; //连接变化
             ndkLs.storeConfig.setItem(ndkLs.keys.keyConns.key, conns).then(() => resolve(conns))
         })
     }),
@@ -65,6 +71,7 @@ var ndkLs = {
                 keys.filter(key => id.includes(key.split("-")[0])).forEach(x => ndkLs.storeCache.removeItem(x))
             })
 
+            ndkVary.envConnsChanged = true; //连接变化            
             ndkLs.storeConfig.setItem(ndkLs.keys.keyConns.key, conns).then(() => resolve(conns))
         })
     }),
@@ -114,7 +121,32 @@ var ndkLs = {
         } else {
             ndkLs.storeCache.setItem(idDatabaseTable.join('-'), { data, date: Date.now() }).then(res => resolve(res));
         }
-    })
+    }),
+
+    /**
+     * 添加错误信息
+     * @param {*} eobj 
+     * @returns 
+     */
+    errorsAdd: (eobj) => new Promise((resolve) => {
+        ndkLs.errorsGet().then(errors => {
+            if (errors.length > 100) {
+                errors.length = 50;
+            }
+            errors.push(Object.assign({ date: ndkFn.formatDateTime('datetime') }, eobj));
+            ndkLs.storeConfig.setItem(ndkLs.keys.keyErrors.key, errors).then(() => resolve(errors))
+        })
+    }),
+    /**
+     * 获取错误信息
+     * @param {*} eobj 
+     * @returns 
+     */
+    errorsGet: () => new Promise((resolve) => {
+        ndkLs.storeConfig.getItem(ndkLs.keys.keyErrors.key).then(errors => {
+            resolve(errors || [])
+        })
+    }),
 
 }
 

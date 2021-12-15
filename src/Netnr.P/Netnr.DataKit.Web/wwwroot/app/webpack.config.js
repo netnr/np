@@ -16,7 +16,7 @@ module.exports = {
         static: {
             directory: path.join(__dirname, './src'),
         },
-        port: 45,
+        port: 45
     },
     module: {
         // Bundle styles

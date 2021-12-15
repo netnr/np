@@ -1,4 +1,5 @@
 import { agg } from './agg';
+import { ndkI18n } from './ndkI18n';
 import { ndkFn } from './ndkFn';
 import { ndkLs } from './ndkLs';
 import { ndkVary } from './ndkVary';
@@ -40,7 +41,7 @@ var ndkDb = {
                 reject(res);
             }
         }).catch(err => {
-            ndkFn.confirm(err);
+            ndkFn.confirm(`${err}<sl-divider></sl-divider><code>${url}</code>`);
             ndkFn.requestStatus(false);
             reject(err);
         });
@@ -74,6 +75,34 @@ var ndkDb = {
         }
     },
 
+    // 表格组件
+    gridComponents: {
+        // 连接状态
+        connStatusBarComponent: class {
+            init(params) {
+                this.params = params;
+
+                var cp = ndkStep.cpGet(1);
+                var color = ndkVary.colorEnv(cp.cobj.env);
+                if (color) {
+                    color = `color:${color};`
+                } else {
+                    color = "";
+                }
+                var ihtm = ndkVary.iconSvg(cp.cobj.type, "nr-svg-typedb") + cp.cobj.alias;
+                if (cp.databaseName) {
+                    ihtm += " &nbsp; " + ndkVary.iconSvg("database", "nr-svg-typedb") + cp.databaseName;
+                }
+
+                this.eGui = document.createElement('div');
+                this.eGui.innerHTML = `<sl-tooltip content="${cp.cobj.conn}"><small style="white-space: nowrap;${color}">${ihtm}</small></sl-tooltip>`;
+            }
+            getGui() {
+                return this.eGui
+            }
+        }
+    },
+
     /**
      * 请求连接
      */
@@ -100,7 +129,7 @@ var ndkDb = {
             suppressClickEdit: true, //禁点击编辑
             columnDefs: [
                 {
-                    field: 'alias', headerName: ndkVary.icons.connConn + "连接名", tooltipField: 'conn', width: 350,
+                    field: 'alias', headerName: ndkVary.icons.connConn + ndkI18n.lg.connAlias, tooltipField: 'conn', width: 350,
                     checkboxSelection: true, headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, //仅全选过滤的数据行
                     cellRenderer: (params) => {
                         if (!params.node.group) {
@@ -119,26 +148,26 @@ var ndkDb = {
                     }
                 },
                 {
-                    field: 'env', headerName: ndkVary.icons.connEnv + "环境", width: 160, enableRowGroup: true,
+                    field: 'env', headerName: ndkVary.icons.connEnv + ndkI18n.lg.connEnv, width: 160, enableRowGroup: true,
                     cellRenderer: params => params.value ? ndkVary.iconEnv(params.value) + params.value : "",
                     cellEditor: 'agRichSelectCellEditor', cellEditorParams: {
                         values: ndkVary.typeEnv, formatValue: fv => ndkVary.iconEnv(fv) + fv
                     }
                 },
-                { field: 'group', headerName: ndkVary.icons.connGroup + "分组", width: 160, enableRowGroup: true },
+                { field: 'group', headerName: ndkVary.icons.connGroup + ndkI18n.lg.connGroup, width: 160, enableRowGroup: true },
                 {
-                    field: 'type', headerName: ndkVary.icons.connType + "类型", enableRowGroup: true, width: 160,
+                    field: 'type', headerName: ndkVary.icons.connType + ndkI18n.lg.connType, enableRowGroup: true, width: 160,
                     cellRenderer: params => params.value ? ndkVary.iconSvg(params.value, "nr-svg-typedb") + params.value : "",
                     cellEditor: 'agRichSelectCellEditor', cellEditorParams: { values: ndkVary.typeDB }
                 },
                 {
-                    field: 'order', headerName: ndkVary.icons.connOrder + "排序", rowDrag: true,
+                    field: 'order', headerName: ndkVary.icons.connOrder + ndkI18n.lg.connOrder, rowDrag: true,
                     filterParams: agg.filterParamsDef("Number")
                 },
                 { field: 'id', headerName: ndkVary.icons.id, width: 150, editable: false },
-                { field: 'conn', headerName: ndkVary.icons.connConn + "连接字符串", width: 600, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
+                { field: 'conn', headerName: ndkVary.icons.connConn + ndkI18n.lg.connConnection, width: 600, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
                 {
-                    headerName: ndkVary.icons.ctrl + "操作", pinned: 'right', width: 100, hide: true, filter: false, sortable: false, editable: false, menuTabs: false,
+                    headerName: ndkVary.icons.ctrl + ndkI18n.lg.connControl, pinned: 'right', width: 100, hide: true, filter: false, sortable: false, editable: false, menuTabs: false,
                     cellRenderer: class {
                         init(params) {
                             this.eGui = document.createElement('div');
@@ -183,10 +212,6 @@ var ndkDb = {
                     }
                 },
             ],
-            //非分组显示复选框
-            isRowSelectable: function (rowNode) {
-                return rowNode.group !== true;
-            },
             rowDragManaged: true, //拖拽
             rowDragMultiRow: true, //多行拖拽
             onRowDragEnd: function (event) {
@@ -218,15 +243,21 @@ var ndkDb = {
                 //切换连接
                 if (ndkStep.cpGet(1).cobj.id != event.data.id) {
                     ["database", "table", "column"].forEach(vkey => ndkDb.removeGrid(vkey))
-                    ndkStep.cpInfo(1);
                 }
                 ndkStep.cpSet(1, event.data); //记录连接
                 ndkDb.reqDatabaseName(event.data).then(databases => {
                     ndkDb.viewDatabase(databases).then(() => {
-                        ndkStep.cpInfo(1); //显示连接
                         ndkVary.domTabGroup1.show('tp1-database')
                     })
                 })
+            },
+            // 单元格按键
+            onCellKeyDown: function (event) {
+                //全屏切换
+                if (event.event.altKey && event.event.code == "KeyM") {
+                    ndkVary.domGridConns.classList.toggle('nrc-fullscreen');
+                    ndkFn.size();
+                }
             },
             //连接右键菜单
             getContextMenuItems: (event) => {
@@ -296,7 +327,7 @@ var ndkDb = {
                 }
                 if (srows.length) {
                     deletedbs.push({
-                        name: `确定删除（${srows.length}）`, icon: ndkVary.icons.ok,
+                        name: `${ndkI18n.lg.confirmDelete}（${srows.length}）`, icon: ndkVary.icons.ok,
                         action: function () {
                             ndkVary.gridOpsConns.api.applyTransaction({ remove: srows });
                             ndkLs.connsDelete(srows.map(x => x.id));
@@ -304,7 +335,7 @@ var ndkDb = {
                     });
                     srows.forEach(row => {
                         deletedbs.push({
-                            name: ndkVary.iconSvg(row.type, "nr-svg-typedb") + row.alias, icon: ndkVary.icons.remove,
+                            name: ndkVary.iconSvg(row.type, "nr-svg-typedb-menu") + " " + row.alias, icon: ndkVary.icons.remove,
                             action: function () {
                                 ndkVary.gridOpsConns.api.applyTransaction({ remove: [row] });
                                 ndkLs.connsDelete(row.id);
@@ -315,7 +346,7 @@ var ndkDb = {
 
                 var result = [
                     {
-                        name: '新建查询', icon: ndkVary.icons.comment, disabled: edata == null,
+                        name: ndkI18n.lg.newQuery, icon: ndkVary.icons.comment, disabled: edata == null,
                         action: function () {
                             //打开选项卡
                             ndkTab.tabBuild(ndkFn.random(), ndkVary.icons.connConn + edata.alias, 'sql').then(tpkey => {
@@ -327,7 +358,7 @@ var ndkDb = {
                     },
                     'separator',
                     {
-                        name: '打开连接', icon: ndkVary.icons.connDatabase, disabled: edata == null,
+                        name: ndkI18n.lg.openConn, icon: ndkVary.icons.connDatabase, disabled: edata == null,
                         action: function () {
                             //切换连接
                             if (ndkStep.cpGet(1).cobj.id != event.node.data.id) {
@@ -336,22 +367,15 @@ var ndkDb = {
                             ndkStep.cpSet(1, event.node.data); //记录连接
                             ndkDb.reqDatabaseName(event.node.data).then(databases => {
                                 ndkDb.viewDatabase(databases).then(() => {
-                                    ndkStep.cpInfo(1); //显示连接
                                     ndkVary.domTabGroup1.show('tp1-database')
                                 })
                             })
                         }
                     },
+                    { name: ndkI18n.lg.createConn, icon: ndkVary.icons.connConn, subMenu: adddbs },
+                    { name: ndkI18n.lg.demoConn, subMenu: demodbs },
                     {
-                        name: '创建连接', icon: ndkVary.icons.connConn,
-                        subMenu: adddbs
-                    },
-                    {
-                        name: '示例连接',
-                        subMenu: demodbs
-                    },
-                    {
-                        name: '编辑连接', icon: ndkVary.icons.edit, disabled: edata == null,
+                        name: ndkI18n.lg.editConn, icon: ndkVary.icons.edit, disabled: edata == null,
                         action: function () {
                             event.api.startEditingCell({
                                 rowIndex: event.node.rowIndex,
@@ -360,7 +384,7 @@ var ndkDb = {
                         }
                     },
                     {
-                        name: '复制连接', icon: ndkVary.iconGrid('copy'), disabled: edata == null,
+                        name: ndkI18n.lg.copyConn, icon: ndkVary.iconGrid('copy'), disabled: edata == null,
                         action: function () {
                             var newrow = { ...event.node.data };
                             newrow.id = ndkFn.random();
@@ -375,32 +399,32 @@ var ndkDb = {
                         }
                     },
                     {
-                        name: '删除连接', icon: ndkVary.icons.remove, disabled: deletedbs.length == 0,
+                        name: ndkI18n.lg.deleteConn, icon: ndkVary.icons.remove, disabled: deletedbs.length == 0,
                         subMenu: deletedbs
                     },
                     {
-                        name: '导出', icon: ndkVary.iconGrid('save'),
+                        name: ndkI18n.lg.export, icon: ndkVary.iconGrid('save'),
                         subMenu: [
                             'csvExport',
                             'excelExport',
                             'separator',
                             {
-                                name: "导出 JSON", icon: ndkVary.iconGrid('save'),
+                                name: "JSON", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown（Copy）", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown（Copy）", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Custom", icon: ndkVary.iconGrid('save'),
+                                name: "Custom", icon: ndkVary.iconGrid('save'),
                             }
                         ]
                     },
                     'separator',
                     {
-                        name: '刷新', icon: ndkVary.icons.loading,
+                        name: ndkI18n.lg.refresh, icon: ndkVary.icons.loading,
                         action: function () {
                             ndkDb.reqConns().then(conns => {
                                 ndkDb.viewConns(conns)
@@ -410,7 +434,7 @@ var ndkDb = {
                     'autoSizeAll',
                     'resetColumns',
                     {
-                        name: '全屏切换', icon: ndkVary.iconGrid("maximize"),
+                        name: ndkI18n.lg.fullScreenSwitch, icon: ndkVary.iconGrid("maximize"), shortcut: 'Alt+M',
                         action: function () {
                             ndkVary.domGridConns.classList.toggle('nrc-fullscreen');
                             ndkFn.size();
@@ -536,42 +560,48 @@ var ndkDb = {
             getRowNodeId: data => data.DatabaseName, //指定行标识列
             columnDefs: [
                 {
-                    headerName: '数据库信息',
+                    headerName: ndkI18n.lg.databaseInfo,
                     children: [
                         agg.numberCol(), //行号
-                        { field: 'DatabaseName', headerName: ndkVary.icons.connDatabase + "库名", tooltipField: 'DatabaseName', width: 350 },
-                        { field: 'DatabaseClassify', headerName: "类别", enableRowGroup: true, columnGroupShow: 'open' },
-                        { field: 'DatabaseOwner', headerName: "所属者", enableRowGroup: true, columnGroupShow: 'open' },
-                        { field: 'DatabaseSpace', headerName: "表空间", enableRowGroup: true, columnGroupShow: 'open' },
-                        { field: 'DatabaseCharset', headerName: "字符集", enableRowGroup: true, columnGroupShow: 'open' },
-                        { field: 'DatabaseCollation', headerName: "排序规则", width: 180, enableRowGroup: true, columnGroupShow: 'open' },
+                        { field: 'DatabaseName', headerName: ndkVary.icons.connDatabase + ndkI18n.lg.dbName, tooltipField: 'DatabaseName', width: 350 },
+                        { field: 'DatabaseClassify', headerName: ndkI18n.lg.dbCatagory, enableRowGroup: true, columnGroupShow: 'open' },
+                        { field: 'DatabaseOwner', headerName: ndkI18n.lg.dbOwner, enableRowGroup: true, columnGroupShow: 'open' },
+                        { field: 'DatabaseSpace', headerName: ndkI18n.lg.dbSpace, enableRowGroup: true, columnGroupShow: 'open' },
+                        { field: 'DatabaseCharset', headerName: ndkI18n.lg.dbCharSet, enableRowGroup: true, columnGroupShow: 'open' },
+                        { field: 'DatabaseCollation', headerName: ndkI18n.lg.dbCollate, width: 180, enableRowGroup: true, columnGroupShow: 'open' },
                         {
-                            field: 'DatabaseDataLength', headerName: "数据大小", columnGroupShow: 'open', aggFunc: 'sum',
+                            field: 'DatabaseDataLength', headerName: ndkI18n.lg.dbDataSize, columnGroupShow: 'open', aggFunc: 'sum',
                             cellRenderer: params => params.value > 0 ? ndkFn.formatByteSize(params.value) : "",
                             filterParams: agg.filterParamsDef("Number")
                         },
                         {
-                            field: 'DatabaseLogLength', headerName: "日志大小", columnGroupShow: 'open', aggFunc: 'sum',
+                            field: 'DatabaseLogLength', headerName: ndkI18n.lg.dbLogSize, columnGroupShow: 'open', aggFunc: 'sum',
                             cellRenderer: params => params.value > 0 ? ndkFn.formatByteSize(params.value) : "",
                             filterParams: agg.filterParamsDef("Number")
                         },
                         {
-                            field: 'DatabaseIndexLength', headerName: "索引大小", columnGroupShow: 'open', aggFunc: 'sum',
+                            field: 'DatabaseIndexLength', headerName: ndkI18n.lg.dbIndexSize, columnGroupShow: 'open', aggFunc: 'sum',
                             cellRenderer: params => params.value > 0 ? ndkFn.formatByteSize(params.value) : "",
                             filterParams: agg.filterParamsDef("Number")
                         },
-                        { field: 'DatabasePath', headerName: "库路径", width: 400, columnGroupShow: 'open' },
-                        { field: 'DatabaseLogPath', headerName: "日志路径", width: 400, columnGroupShow: 'open' },
+                        { field: 'DatabasePath', headerName: ndkI18n.lg.dbDataPath, width: 400, columnGroupShow: 'open' },
+                        { field: 'DatabaseLogPath', headerName: ndkI18n.lg.dbLogPath, width: 400, columnGroupShow: 'open' },
                         {
-                            field: 'DatabaseCreateTime', headerName: "创建时间", width: 200, columnGroupShow: 'open',
+                            field: 'DatabaseCreateTime', headerName: ndkI18n.lg.createTime, width: 200, columnGroupShow: 'open',
                             filterParams: agg.filterParamsDef("Date")
                         },
                     ]
                 }
             ],
-            //非分组显示复选框
-            isRowSelectable: function (rowNode) {
-                return rowNode.group !== true;
+            statusBar: {
+                statusPanels: [
+                    { statusPanel: 'connStatusBarComponent', align: 'left', },
+                    { statusPanel: 'agSelectedRowCountComponent' },
+                    { statusPanel: 'agTotalAndFilteredRowCountComponent' },
+                ],
+            },
+            components: {
+                connStatusBarComponent: ndkDb.gridComponents.connStatusBarComponent
             },
             //双击库打开表
             onRowDoubleClicked: function (event) {
@@ -580,7 +610,6 @@ var ndkDb = {
                     ndkStep.cpSet(1, cp.cobj, event.node.data.DatabaseName); //记录连接
                     ndkDb.reqTable(cp.cobj, event.node.data.DatabaseName).then(tables => {
                         ndkDb.viewTable(tables, cp.cobj).then(() => {
-                            ndkStep.cpInfo(1); //显示连接
                             ndkVary.domTabGroup1.show('tp1-table')
                         })
                     })
@@ -611,13 +640,21 @@ var ndkDb = {
                     });
                 }
             },
+            // 单元格按键
+            onCellKeyDown: function (event) {
+                //全屏切换
+                if (event.event.altKey && event.event.code == "KeyM") {
+                    ndkVary.domGridDatabase.classList.toggle('nrc-fullscreen');
+                    ndkFn.size();
+                }
+            },
             //连接菜单项
             getContextMenuItems: (event) => {
                 var edata = event.node ? event.node.data : null;
 
                 var result = [
                     {
-                        name: '新建查询', icon: ndkVary.icons.comment, disabled: edata == null,
+                        name: ndkI18n.lg.newQuery, icon: ndkVary.icons.comment, disabled: edata == null,
                         action: function () {
                             //构建选项卡
                             ndkTab.tabBuild(ndkFn.random(), ndkVary.icons.connDatabase + edata.DatabaseName, 'sql').then(tpkey => {
@@ -630,47 +667,46 @@ var ndkDb = {
                     },
                     'separator',
                     {
-                        name: '打开数据库', icon: ndkVary.icons.connTable, disabled: edata == null,
+                        name: ndkI18n.lg.openDatabase, icon: ndkVary.icons.connTable, disabled: edata == null,
                         action: function () {
                             var cp = ndkStep.cpGet(1);
                             ndkStep.cpSet(1, cp.cobj, edata.DatabaseName); //记录连接
                             ndkDb.reqTable(cp.cobj, edata.DatabaseName).then(tables => {
                                 ndkDb.viewTable(tables, cp.cobj).then(() => {
-                                    ndkStep.cpInfo(1); //显示连接
                                     ndkVary.domTabGroup1.show('tp1-table')
                                 })
                             })
                         }
                     },
                     {
-                        name: '导出', icon: ndkVary.iconGrid('save'),
+                        name: ndkI18n.lg.export, icon: ndkVary.iconGrid('save'),
                         subMenu: [
                             'csvExport',
                             'excelExport',
                             'separator',
                             {
-                                name: "导出 JSON", icon: ndkVary.iconGrid('save'),
+                                name: "JSON", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown（Copy）", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown（Copy）", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Custom", icon: ndkVary.iconGrid('save'),
+                                name: "Custom", icon: ndkVary.iconGrid('save'),
                             }
                         ]
                     },
                     {
-                        name: '导入', icon: ndkVary.iconGrid('asc'),
+                        name: ndkI18n.lg.import, icon: ndkVary.iconGrid('asc'),
                         action: function () {
 
                         }
                     },
                     'separator',
                     {
-                        name: '刷新', icon: ndkVary.icons.loading,
+                        name: ndkI18n.lg.refresh, icon: ndkVary.icons.loading,
                         action: function () {
                             var cp = ndkStep.cpGet(1);
                             ndkDb.reqDatabaseName(cp.cobj, true).then(databases => {
@@ -681,7 +717,7 @@ var ndkDb = {
                     'autoSizeAll',
                     'resetColumns',
                     {
-                        name: '全屏切换', icon: ndkVary.iconGrid("maximize"),
+                        name: ndkI18n.lg.fullScreenSwitch, icon: ndkVary.iconGrid("maximize"), shortcut: 'Alt+M',
                         action: function () {
                             ndkVary.domGridDatabase.classList.toggle('nrc-fullscreen');
                             ndkFn.size();
@@ -779,43 +815,49 @@ var ndkDb = {
             columnDefs: [
                 agg.numberCol(), //行号
                 {
-                    field: 'TableName', tooltipField: "TableName", headerName: ndkVary.icons.connTable + "表名", width: 350,
+                    field: 'TableName', tooltipField: "TableName", headerName: ndkVary.icons.connTable + ndkI18n.lg.tableName, width: 350,
                     cellRenderer: params => {
-                        if (isSQLServer) {
+                        if (isSQLServer && params.data) {
                             return `${params.data.TableSchema}.${params.value}`;
                         }
                         return params.value;
                     }
                 },
-                { field: 'TableComment', tooltipField: "TableComment", headerName: ndkVary.icons.comment + "表注释", width: 290, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
-                { field: 'TableRows', headerName: "行数", filterParams: agg.filterParamsDef("Number"), aggFunc: 'sum', },
+                { field: 'TableComment', tooltipField: "TableComment", headerName: ndkVary.icons.comment + ndkI18n.lg.tableComment, width: 290, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
+                { field: 'TableRows', headerName: ndkI18n.lg.tableRows, filterParams: agg.filterParamsDef("Number"), aggFunc: 'sum', },
                 {
-                    field: 'TableDataLength', headerName: "数据大小", width: 160, aggFunc: 'sum',
+                    field: 'TableDataLength', headerName: ndkI18n.lg.tableDataSize, width: 160, aggFunc: 'sum',
                     cellRenderer: params => ndkFn.formatByteSize(params.value),
                     filterParams: agg.filterParamsDef("Number")
                 },
                 {
-                    field: 'TableIndexLength', headerName: "索引大小", width: 160, aggFunc: 'sum',
+                    field: 'TableIndexLength', headerName: ndkI18n.lg.tableIndexSize, width: 160, aggFunc: 'sum',
                     cellRenderer: params => ndkFn.formatByteSize(params.value),
                     filterParams: agg.filterParamsDef("Number")
                 },
-                { field: 'TableCollation', headerName: "字符集", width: 180, },
+                { field: 'TableCollation', headerName: ndkI18n.lg.tableCollate, width: 180, },
                 {
-                    field: 'TableCreateTime', headerName: "创建时间", width: 220,
+                    field: 'TableCreateTime', headerName: ndkI18n.lg.createTime, width: 220,
                     filterParams: agg.filterParamsDef("Date")
                 },
                 {
-                    field: 'TableModifyTime', headerName: "修改时间", width: 220,
+                    field: 'TableModifyTime', headerName: ndkI18n.lg.updateTime, width: 220,
                     filterParams: agg.filterParamsDef("Date")
                 },
-                { field: 'TableSchema', headerName: "Schema" },
-                { field: 'TableType', headerName: "分类" },
+                { field: 'TableSchema', headerName: ndkI18n.lg.tableSchema },
+                { field: 'TableType', headerName: ndkI18n.lg.tableCatagory },
             ],
             groupIncludeFooter: true, //显示分组小计
             groupIncludeTotalFooter: true, //显示分组总计
-            //非分组显示复选框
-            isRowSelectable: function (rowNode) {
-                return rowNode.group !== true;
+            statusBar: {
+                statusPanels: [
+                    { statusPanel: 'connStatusBarComponent', align: 'left', },
+                    { statusPanel: 'agSelectedRowCountComponent' },
+                    { statusPanel: 'agTotalAndFilteredRowCountComponent' },
+                ],
+            },
+            components: {
+                connStatusBarComponent: ndkDb.gridComponents.connStatusBarComponent
             },
             //双击表打开列
             onCellDoubleClicked: function (event) {
@@ -825,7 +867,6 @@ var ndkDb = {
                     ndkStep.cpSet(1, cp.cobj, cp.databaseName); //记录连接
                     ndkDb.reqColumn(cp.cobj, cp.databaseName, event.node.data.TableName).then(columns => {
                         ndkDb.viewColumn(columns, cp.cobj).then(() => {
-                            ndkStep.cpInfo(1); //显示连接
                             ndkVary.domTabGroup1.show('tp1-column')
                         })
                     })
@@ -840,13 +881,21 @@ var ndkDb = {
                     })
                 }
             },
+            // 单元格按键
+            onCellKeyDown: function (event) {
+                //全屏切换
+                if (event.event.altKey && event.event.code == "KeyM") {
+                    ndkVary.domGridTable.classList.toggle('nrc-fullscreen');
+                    ndkFn.size();
+                }
+            },
             //表菜单项
             getContextMenuItems: (event) => {
                 var edata = event.node ? event.node.data : null;
                 var isSQLite = ndkStep.cpGet(1).cobj.type == "SQLite";
                 var result = [
                     {
-                        name: '表设计', disabled: event.node?.data == null, icon: ndkVary.iconGrid('columns'),
+                        name: ndkI18n.lg.tableDesign, disabled: event.node?.data == null, icon: ndkVary.iconGrid('columns'),
                         action: function () {
                             var srows = ndkVary.gridOpsTable.api.getSelectedRows();
                             //选中的表行或右键行
@@ -858,20 +907,19 @@ var ndkDb = {
                             if (ndkVary.gridOpsTable.rowData.length != srows.length) {
                                 filterTable = srows.map(x => x.TableName).join(',')
                             }
-                            console.log(filterTable, srows);
 
                             var cp = ndkStep.cpGet(1);
                             ndkStep.cpSet(1, cp.cobj, cp.databaseName); //记录连接
                             ndkDb.reqColumn(cp.cobj, cp.databaseName, filterTable).then(columns => {
                                 ndkDb.viewColumn(columns, cp.cobj).then(() => {
-                                    ndkStep.cpInfo(1); //显示连接
                                     ndkVary.domTabGroup1.show('tp1-column')
+                                    ndkStep.stepSave();
                                 })
                             })
                         }
                     },
                     {
-                        name: '表数据', icon: ndkVary.iconGrid('grip'), disabled: event.node?.data == null, tooltip: "查询表数据",
+                        name: ndkI18n.lg.tableData, icon: ndkVary.iconGrid('grip'), disabled: event.node?.data == null,
                         action: function () {
                             var srows = ndkVary.gridOpsTable.api.getSelectedRows();
                             //选中的表行或右键行
@@ -884,7 +932,7 @@ var ndkDb = {
                                 ndkVary.domTabGroup2.show(tpkey);//显示选项卡
                                 var tpobj = ndkTab.tabKeys[tpkey];
 
-                                tpobj.editor.setValue("-- 正在生成脚本");
+                                tpobj.editor.setValue(`-- ${ndkI18n.lg.generatingScript}`);
 
                                 var cp = ndkStep.cpGet(1);
                                 ndkStep.cpSet(tpkey, cp.cobj, cp.databaseName); //记录连接
@@ -911,7 +959,7 @@ var ndkDb = {
                         }
                     },
                     {
-                        name: '生成 SQL', icon: ndkVary.icons.generate,
+                        name: ndkI18n.lg.tableGenerateSQL, icon: ndkVary.icons.generate,
                         subMenu: [
                             {
                                 name: `SELECT`, icon: ndkVary.iconGrid('paste'), action: function () {
@@ -955,31 +1003,31 @@ var ndkDb = {
                         ]
                     },
                     {
-                        name: '导出', icon: ndkVary.iconGrid('desc'),
+                        name: ndkI18n.lg.export, icon: ndkVary.iconGrid('desc'),
                         subMenu: [
                             'csvExport',
                             'excelExport',
                             'separator',
                             {
-                                name: "导出 JSON", icon: ndkVary.iconGrid('save'),
+                                name: "JSON", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown（Copy）", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown（Copy）", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Custom", icon: ndkVary.iconGrid('save'),
+                                name: "Custom", icon: ndkVary.iconGrid('save'),
                             }
                         ]
                     },
                     {
-                        name: '导入', icon: ndkVary.iconGrid('asc'),
+                        name: ndkI18n.lg.import, icon: ndkVary.iconGrid('asc'),
                     },
                     'separator',
                     {
-                        name: '刷新', icon: ndkVary.icons.loading,
+                        name: ndkI18n.lg.refresh, icon: ndkVary.icons.loading,
                         action: function () {
                             var cp = ndkStep.cpGet(1);
                             ndkDb.reqTable(cp.cobj, cp.databaseName, true).then(tables => {
@@ -990,7 +1038,7 @@ var ndkDb = {
                     'autoSizeAll',
                     'resetColumns',
                     {
-                        name: '全屏切换', icon: ndkVary.iconGrid("maximize"),
+                        name: ndkI18n.lg.fullScreenSwitch, icon: ndkVary.iconGrid("maximize"), shortcut: 'Alt+M',
                         action: function () {
                             ndkVary.domGridTable.classList.toggle('nrc-fullscreen');
                             ndkFn.size();
@@ -1114,37 +1162,37 @@ var ndkDb = {
             //列
             columnDefs: [
                 agg.numberCol({ hide: true }), //行号
-                { field: 'TableName', headerName: ndkVary.icons.connTable + "表名", rowGroup: true, enableRowGroup: true, width: 350, hide: true, },
-                { field: 'TableComment', headerName: ndkVary.icons.connTable + "表注释", width: 300, hide: true },
-                { field: 'ColumnName', headerName: ndkVary.icons.connColumn + "列名", width: 200, hide: true, },
-                { field: 'ColumnComment', tooltipField: "ColumnComment", headerName: ndkVary.icons.comment + "列注释", width: 330, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
-                { field: 'ColumnType', headerName: "类型及长度", width: 150, hide: true },
-                { field: 'DataType', headerName: "类型", width: 120, hide: true },
+                { field: 'TableName', headerName: ndkVary.icons.connTable + ndkI18n.lg.tableName, rowGroup: true, enableRowGroup: true, width: 350, hide: true, },
+                { field: 'TableComment', headerName: ndkVary.icons.connTable + ndkI18n.lg.tableComment, width: 300, hide: true },
+                { field: 'ColumnName', headerName: ndkVary.icons.connColumn + ndkI18n.lg.columnName, width: 200, hide: true, },
+                { field: 'ColumnComment', tooltipField: "ColumnComment", headerName: ndkVary.icons.comment + ndkI18n.lg.columnComment, width: 330, hide: isSQLite, editable: !isSQLite, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
+                { field: 'ColumnType', headerName: ndkI18n.lg.columnTypeLength, width: 150, hide: true },
+                { field: 'DataType', headerName: ndkI18n.lg.columnType, width: 120, hide: true },
                 {
-                    field: 'DataLength', headerName: "长度", hide: true,
+                    field: 'DataLength', headerName: ndkI18n.lg.columnLength, hide: true,
                     filterParams: agg.filterParamsDef("Number")
                 },
                 {
-                    field: 'DataScale', headerName: "精度", hide: true,
+                    field: 'DataScale', headerName: ndkI18n.lg.columnScale, hide: true,
                     filterParams: agg.filterParamsDef("Number")
                 },
                 {
-                    field: 'ColumnOrder', headerName: "列序",
+                    field: 'ColumnOrder', headerName: ndkI18n.lg.columnOrder,
                     filterParams: agg.filterParamsDef("Number")
                 },
                 {
-                    field: 'PrimaryKey', headerName: "主键", hide: true,
+                    field: 'PrimaryKey', headerName: ndkI18n.lg.columnPrimary, hide: true,
                     cellRenderer: params => params.value > 0 ? ndkVary.icons.key + params.value : ""
                 },
-                { field: 'AutoIncr', headerName: "自增", cellRenderer: params => params.value == 1 ? ndkVary.icons.incr : "" },
+                { field: 'AutoIncr', headerName: ndkI18n.lg.columnAutoIncrement, cellRenderer: params => params.value == 1 ? ndkVary.icons.incr : "" },
                 {
-                    field: 'IsNullable', headerName: "必填", hide: true,
+                    field: 'IsNullable', headerName: ndkI18n.lg.columnIsNullable, hide: true,
                     cellRenderer: params => params.value == 1 ? "" : ndkVary.icons.edit
                 },
-                { field: 'ColumnDefault', headerName: "默认值", width: 120, },
+                { field: 'ColumnDefault', headerName: ndkI18n.lg.columnDefault, width: 120, },
             ],
             autoGroupColumnDef: agg.autoGroupColumnDef({
-                field: "ColumnName", headerName: "分组", width: 560,
+                field: "ColumnName", headerName: ndkI18n.lg.group, width: 560,
                 headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, //仅全选过滤的数据行
                 filterValueGetter: params => params.data.TableName,
                 cellRendererParams: {
@@ -1172,6 +1220,16 @@ var ndkDb = {
                     }
                 }
             }),
+            statusBar: {
+                statusPanels: [
+                    { statusPanel: 'connStatusBarComponent', align: 'left', },
+                    { statusPanel: 'agSelectedRowCountComponent' },
+                    { statusPanel: 'agTotalAndFilteredRowCountComponent' },
+                ],
+            },
+            components: {
+                connStatusBarComponent: ndkDb.gridComponents.connStatusBarComponent
+            },
             onCellValueChanged: function (event) {
                 //修改列注释
                 if (event.column.colId == "ColumnComment") {
@@ -1181,34 +1239,42 @@ var ndkDb = {
                     })
                 }
             },
+            // 单元格按键
+            onCellKeyDown: function (event) {
+                //全屏切换
+                if (event.event.altKey && event.event.code == "KeyM") {
+                    ndkVary.domGridColumn.classList.toggle('nrc-fullscreen');
+                    ndkFn.size();
+                }
+            },
             //列右键菜单项
             getContextMenuItems: (params) => {
                 var result = [
                     'expandAll',
                     'contractAll',
                     {
-                        name: '导出', icon: ndkVary.iconGrid('save'),
+                        name: ndkI18n.lg.export, icon: ndkVary.iconGrid('save'),
                         subMenu: [
                             'csvExport',
                             'excelExport',
                             'separator',
                             {
-                                name: "导出 JSON", icon: ndkVary.iconGrid('save'),
+                                name: "JSON", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Markdown（Copy）", icon: ndkVary.iconGrid('save'),
+                                name: "Markdown（Copy）", icon: ndkVary.iconGrid('save'),
                             },
                             {
-                                name: "导出 Custom", icon: ndkVary.iconGrid('save'),
+                                name: "Custom", icon: ndkVary.iconGrid('save'),
                             },
                         ]
                     },
                     'separator',
                     {
-                        name: '刷新', icon: ndkVary.icons.loading,
+                        name: ndkI18n.lg.refresh, icon: ndkVary.icons.loading,
                         action: function () {
                             var cp = ndkStep.cpGet(1);
                             ndkDb.reqColumn(cp.cobj, cp.databaseName, cp.tableName, true).then(columns => {
@@ -1219,7 +1285,7 @@ var ndkDb = {
                     'autoSizeAll',
                     'resetColumns',
                     {
-                        name: '全屏切换', icon: ndkVary.iconGrid("maximize"),
+                        name: ndkI18n.lg.fullScreenSwitch, icon: ndkVary.iconGrid("maximize"), shortcut: 'Alt+M',
                         action: function () {
                             ndkVary.domGridColumn.classList.toggle('nrc-fullscreen');
                             ndkFn.size();
@@ -1237,13 +1303,11 @@ var ndkDb = {
         ndkDb.createGrid("column", opsColumn);
 
         //展开分组
-        setTimeout(() => {
-            ndkVary.gridOpsColumn.api.forEachNode((node) => {
-                if (node.level == 0) {
-                    node.setExpanded(true);
-                }
-            });
-        }, 300);
+        ndkVary.gridOpsColumn.api.forEachNode((node) => {
+            if (node.level == 0) {
+                node.setExpanded(true);
+            }
+        });
 
         resolve();
     }),
@@ -1312,7 +1376,7 @@ var ndkDb = {
         if (!tpobj.domTabGroup3.getAttribute("data-bind")) {
             tpobj.domTabGroup3.setAttribute("data-bind", true);
 
-            //选项卡3-关闭
+            //选项卡3执行结果-关闭
             tpobj.domTabGroup3.addEventListener('sl-close', async event => {
                 var sltab = event.target;
                 var panel = tpobj.domTabGroup3.querySelector(`sl-tab-panel[name="${sltab.panel}"]`);
@@ -1340,7 +1404,7 @@ var ndkDb = {
                 //阻止冒泡
                 event.stopPropagation();
             });
-            //选项卡3-显示
+            //选项卡3执行结果-显示
             tpobj.domTabGroup3.addEventListener('sl-tab-show', function (event) {
                 ndkFn.size()
             }, false);
@@ -1379,8 +1443,8 @@ var ndkDb = {
                     tabbox.innerHTML = `
 <sl-tab slot="nav" panel="${tabpanel}" closable>${tabname}</sl-tab>
 <sl-tab-panel name="${tabpanel}">
-    <sl-input class="nr-filter-execute-sql mb-2" placeholder="搜索" size="small"></sl-input>
-    <div class="nr-grid-execute-sql"></div>
+    <sl-input class="nr-filter-execute-sql mb-2" placeholder="${ndkI18n.lg.search}" size="small"></sl-input>
+    <div class="nr-grid-execute-sql" data-key="${tpkey}"></div>
 </sl-tab-panel>
                 `;
                     let domTab = tabbox.querySelector('sl-tab'),
@@ -1460,7 +1524,7 @@ var ndkDb = {
                                             break;
                                     }
                                     if (colSchema.IsKey) {
-                                        htag.push(ndkVary.iconSvg("key", "nr-svg-headertype"))
+                                        htag.push(ndkVary.iconSvg("key", "nr-svg-headertype nrc-text-orange"))
                                     }
 
                                     colDef.width = Math.max(colDef.width, 200);
@@ -1499,6 +1563,12 @@ var ndkDb = {
                             var col = esdata.Item2[iname][coln];
                             columnDefs.push({ headerName: col.ColumnName, field: col.ColumnName, headerTooltip: field });
                         }
+
+                        gridReady = function (event) {
+                            console.log("gridReady", event);
+                            event.columnApi.autoSizeAllColumns();
+                            ndkFn.size();
+                        }
                     }
 
                     var opsExecuteSql = agg.optionDef({
@@ -1510,38 +1580,41 @@ var ndkDb = {
                                 'copy',
                                 'copyWithHeaders',
                                 {
-                                    name: '导出', icon: ndkVary.iconGrid('save'),
+                                    name: ndkI18n.lg.export, icon: ndkVary.iconGrid('save'),
                                     subMenu: [
                                         'csvExport',
                                         'excelExport',
                                         'separator',
                                         {
-                                            name: "导出 JSON", icon: ndkVary.iconGrid('save'),
+                                            name: "JSON", icon: ndkVary.iconGrid('save'),
                                         },
                                         {
-                                            name: "导出 Markdown", icon: ndkVary.iconGrid('save'),
+                                            name: "Markdown", icon: ndkVary.iconGrid('save'),
                                         },
                                         {
-                                            name: "导出 Markdown（Copy）", icon: ndkVary.iconGrid('save'),
+                                            name: "Markdown（Copy）", icon: ndkVary.iconGrid('save'),
                                         },
                                         {
-                                            name: "导出 Custom", icon: ndkVary.iconGrid('save'),
+                                            name: "Custom", icon: ndkVary.iconGrid('save'),
                                         }
                                     ]
                                 },
                                 {
-                                    name: '生成 SQL', icon: ndkVary.icons.generate,
+                                    name: ndkI18n.lg.dataGenerateSQL, icon: ndkVary.icons.generate,
                                     subMenu: [
                                         {
                                             name: `INSERT`, icon: ndkVary.iconGrid('paste'), action: function () {
+                                                ndkBuild.dataNewSql(event, "Insert");
                                             }
                                         },
                                         {
                                             name: `UPDATE`, icon: ndkVary.iconGrid('paste'), action: function () {
+                                                ndkBuild.dataNewSql(event, "Update");
                                             }
                                         },
                                         {
                                             name: `DELETE`, icon: ndkVary.iconGrid('paste'), action: function () {
+                                                ndkBuild.dataNewSql(event, "Delete");
                                             }
                                         }
                                     ]
@@ -1550,7 +1623,7 @@ var ndkDb = {
                                 'autoSizeAll',
                                 'resetColumns',
                                 {
-                                    name: '全屏切换', icon: ndkVary.iconGrid("maximize"),
+                                    name: ndkI18n.lg.fullScreenSwitch, icon: ndkVary.iconGrid("maximize"), shortcut: 'Alt+M',
                                     action: function () {
                                         domGridExecuteSql.classList.toggle('nrc-fullscreen');
                                         ndkFn.size();
@@ -1581,7 +1654,7 @@ var ndkDb = {
                             'autoSizeAll',
                             'resetColumns',
                             {
-                                name: '全屏切换', icon: ndkVary.iconGrid("maximize"),
+                                name: ndkI18n.lg.fullScreenSwitch, icon: ndkVary.iconGrid("maximize"), shortcut: 'Alt+M',
                                 action: function () {
                                     domGridExecuteSql.classList.toggle('nrc-fullscreen');
                                     ndkFn.size();
@@ -1617,7 +1690,7 @@ var ndkDb = {
             //切换面板时再呈现表
             ndkFn.size();
 
-            resolve(esdata);
+            resolve(tpobj);
         })
     })
 

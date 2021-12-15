@@ -98,3 +98,12 @@
     width: 100% !important;
     height: 100% !important;
 }
+
+/*字体色*/
+.nrc-text-orange {
+    color: var(--sl-color-orange-700);
+}
+/*默认项*/
+.nrc-item-default {
+    background-color: var(--sl-color-orange-50);
+}

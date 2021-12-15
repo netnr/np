@@ -3,6 +3,7 @@ import { ndkEditor } from './ndkEditor';
 import { ndkVary } from './ndkVary';
 import { ndkStep } from './ndkStep';
 import { ndkDb } from './ndkDb';
+import { ndkI18n } from './ndkI18n';
 
 var ndkTab = {
     tabKeys: {},
@@ -26,13 +27,13 @@ var ndkTab = {
     <!--SQL-->
     <div class="nr-editor-box nrc-spliter-item">
         <div class="nr-editor-tool" panel="${key}">
-            <sl-tooltip content="执行选中或全部脚本（Ctrl + R）" placement="right">
+            <sl-tooltip content="${ndkI18n.lg.sqlButtonExecute} Ctrl + R" placement="right">
               <sl-icon-button data-cmd="sql-execute-selected" panel="${key}" name="caret-right-fill" style="font-size: 1.5rem;"></sl-icon-button>
             </sl-tooltip>
-            <sl-tooltip content="格式化脚本（Alt + Shift + F）" placement="right">
+            <sl-tooltip content="${ndkI18n.lg.sqlButtonFormat} Alt + Shift + F" placement="right">
               <sl-icon-button data-cmd="sql-formatting" panel="${key}" name="brush-fill" style="font-size: 1.5rem;"></sl-icon-button>
             </sl-tooltip>
-            <sl-tooltip content="笔记" placement="right">
+            <sl-tooltip content="${ndkI18n.lg.sqlButtonNote}" placement="right">
               <sl-icon-button data-cmd="sql-note" panel="${key}" name="journal-code" style="font-size: 1.5rem;"></sl-icon-button>
             </sl-tooltip>
         </div>
@@ -147,6 +148,7 @@ var ndkTab = {
             ndkEditor.create(domEditorSql, { language: ndkEditor.typeAsLanguage(type) }).then(editor => {
                 ndkTab.tabKeys[key].editor = editor;//编辑器对象
 
+                ndkEditor.wordWrap(editor); //换行
                 ndkEditor.fullScreen(editor); //全屏
 
                 //Ctrl + R 执行选中或全部脚本
@@ -169,7 +171,7 @@ var ndkTab = {
 
         var sql = ndkEditor.selectedOrAllValue(tpobj.editor);
         if (sql.trim() == "") {
-            ndkFn.msg("执行 SQL 不能为空");
+            ndkFn.msg(ndkI18n.lg);
         } else {
             var tpcp = ndkStep.cpGet(tpkey)
             ndkDb.reqExecuteSql(tpcp.cobj, tpcp.databaseName, sql).then(esdata => {

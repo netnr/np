@@ -2,6 +2,7 @@ import '../css/fix-grid.css'
 import '../css/fix-sl.css'
 import '../css/fix.css'
 import '../css/index.css'
+import '../css/index-mobile.css'
 import '../css/nrc.css'
 import '../css/theme-dark.css'
 
@@ -21,6 +22,7 @@ import '../icon/sqlserver.svg'
 import '../icon/table.svg'
 
 import { agg } from './agg'
+import { ndkI18n } from './ndkI18n'
 import { ndkVary } from './ndkVary'
 import { ndkLs } from './ndkLs'
 import { ndkDb } from './ndkDb'
@@ -33,5 +35,5 @@ import { ndkSqlNote } from './ndkSqlNote'
 
 import { ndkInit } from './ndkInit'
 Object.assign(window, {
-    agg, ndkVary, ndkLs, ndkDb, ndkFn, ndkEditor, ndkTab, ndkStep, ndkBuild, ndkSqlNote, ndkInit
+    agg, ndkI18n, ndkVary, ndkLs, ndkDb, ndkFn, ndkEditor, ndkTab, ndkStep, ndkBuild, ndkSqlNote, ndkInit
 })

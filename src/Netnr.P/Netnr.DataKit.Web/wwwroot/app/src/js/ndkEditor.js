@@ -1,8 +1,32 @@
 import { ndkVary } from "./ndkVary";
+import { ndkI18n } from "./ndkI18n";
 import { ndkTab } from "./ndkTab";
 import { ndkStep } from "./ndkStep";
 
 var ndkEditor = {
+    init: (meRequire) => {
+        //提取脚本连接        
+        var melsrc, ops = { paths: {} }
+        for (var i = 0; i < document.scripts.length; i++) {
+            var script = document.scripts[i];
+            if (script.src.includes("monaco-editor")) {
+                melsrc = script.src;
+                break;
+            }
+        }
+        ops.paths["vs"] = melsrc.replace("/loader.js", "");
+
+        // 本地化
+        if (ndkI18n.languageGet() == "zh-CN") {
+            ops['vs/nls'] = { availableLanguages: { '*': 'zh-cn' } };
+        }
+        meRequire.config(ops);
+
+        //编辑器资源载入
+        meRequire(['vs/editor/editor.main'], function () {
+            ndkEditor.extend();
+        });
+    },
 
     // 拓展
     extend: () => {
@@ -38,7 +62,7 @@ var ndkEditor = {
      */
     config: ops => Object.assign({
         value: "",
-        theme: ndkVary.theme == "dark" ? "vs-dark" : "vs",
+        theme: ndkVary.themeGet() == "dark" ? "vs-dark" : "vs",
         fontSize: ndkVary.parameterConfig.editorFontSize.value,
         language: 'sql',
         lineNumbers: ndkVary.parameterConfig.editorLineNumbers.value,
@@ -121,12 +145,29 @@ var ndkEditor = {
     fullScreen: function (editor) {
         editor.addAction({
             id: "meid-fullscreen",
-            label: "全屏切换",
-            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM],
+            label: ndkI18n.lg.fullScreenSwitch,
+            keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.KeyM],
             contextMenuGroupId: "me-01",
             run: function (event) {
                 var ebox = event.getContainerDomNode();
                 ebox.classList.toggle('nrc-fullscreen');
+            }
+        });
+    },
+
+    /**
+     * 是否换行
+     * @param {any} editor
+     */
+    wordWrap: function (editor) {
+        editor.addAction({
+            id: "meid-wordwrap",
+            label: ndkI18n.lg.wrapSwitch,
+            keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.KeyL],
+            contextMenuGroupId: "me-01",
+            run: function (event) {
+                var ov = event.getOption(116) == "on" ? "off" : "on";
+                event.updateOptions({ wordWrap: ov })
             }
         });
     },

@@ -1,4 +1,4 @@
-import { ndkFn } from "./ndkFn";
+import { ndkI18n } from "./ndkI18n";
 
 var agg = {
     lk: () => agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { },
@@ -25,7 +25,7 @@ var agg = {
      * @param {any} ops
      */
     optionDef: ops => Object.assign({
-        localeText: agg.localeText, //语言
+        localeText: ndkI18n.languageGet() == "zh-CN" ? agg.localeText : null, //语言
         defaultColDef: agg.defaultColDef(), //列配置
         autoGroupColumnDef: agg.autoGroupColumnDef(), //分组
         rowGroupPanelShow: 'always', //启用列拖拽分组 'never', 'always', 'onlyWhenGrouping'
@@ -40,14 +40,9 @@ var agg = {
         cacheBlockSize: 100,
         suppressMoveWhenRowDragging: true, //拖拽不实时移动
         animateRows: true, //动画
-        //排序后刷新（更新行号）
-        onSortChanged(event) {
-            event.api.refreshCells();
-        },
-        //排序后刷新（更新行号）
-        onFilterChanged(event) {
-            event.api.refreshCells();
-        },
+        isRowSelectable: rowNode => rowNode.group !== true, //非分组显示复选框        
+        onSortChanged: event => event.api.refreshCells(), //排序后刷新（更新行号）        
+        onFilterChanged: event => event.api.refreshCells(), //排序后刷新（更新行号）
     }, ops),
 
     /**
@@ -123,6 +118,13 @@ var agg = {
         }
         return rowData;
     },
+
+    /**
+     * 获取容器
+     * @param {*} event 
+     * @returns 
+     */
+    getContainer: event => event.api.gridOptionsWrapper.environment.eGridDiv,
 
     /**
      * 设置加载状态

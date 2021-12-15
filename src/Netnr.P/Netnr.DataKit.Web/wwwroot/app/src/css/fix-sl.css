@@ -20,3 +20,7 @@ sl-tab-panel::part(base) {
     padding-top: 5px;
     --sl-spacing-medium: 0;
 }
+
+sl-tooltip::part(base) {
+    word-wrap: break-all;
+}

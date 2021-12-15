@@ -5,15 +5,26 @@
     font-size: var(--nr-font-size) !important;
 }
 
-.ag-fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9;
-    width: 100% !important;
-    height: 100% !important;
+/*标题类型标记*/
+.ag-header-type-icon {
+    position: absolute;
+    top: 1px;
+    left: 3px;
+}
+
+/*右键菜单*/
+.ag-menu-option-part {
+    line-height: 8px !important;
+    padding: .4em !important;
+}
+
+/*状态栏*/
+.ag-status-bar {
+    line-height: .5;
+}
+.ag-status-name-value {
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
 }
 :root {
     --sl-font-size-small: var(--nr-font-size) !important;
@@ -29,8 +40,8 @@ sl-tab-group::part(tabs) {
 }
 
 sl-tab::part(base) {
-    --sl-spacing-medium: 5px;
-    --sl-spacing-large: 15px;
+    --sl-spacing-medium: 3px;
+    --sl-spacing-large: 12px;
 }
 
 sl-tab-panel::part(base) {
@@ -38,6 +49,9 @@ sl-tab-panel::part(base) {
     --sl-spacing-medium: 0;
 }
 
+sl-tooltip::part(base) {
+    word-wrap: break-all;
+}
 :root {
     --nr-font-size: 16px;
     --nr-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -78,6 +92,7 @@ html, body {
 /*上*/
 .nr-box0 {
     display: flex;
+    flex-wrap: wrap;
 }
 
     .nr-box0 > * {
@@ -89,15 +104,13 @@ html, body {
     margin-bottom: .5em;
 }
 
-/*选项卡2对应的连接-数据库*/
-.nr-window-conns,
-.nr-window-database {
-    display: none;
-    min-width: 180px;
+/*选项卡2窗口 对应的连接-数据库*/
+.nr-window-conns {
+    margin-left: 1em;
 }
-/*选项卡2分离器*/
+/*选项卡2窗口 分离器*/
 .nr-spliter2 {
-    --es-sql-height: 50%;
+    --es-sql-height: 45%;
 }
 
     .nr-spliter2 .nrc-spliter-item:first-child {
@@ -109,15 +122,19 @@ html, body {
     }
 
 
-/*选项卡2编辑器*/
+/*选项卡2窗口 编辑器*/
 .nr-editor-box {
     display: flex;
-    --ebox-tool-width: 40px;
+    border: 1px solid var(--sl-color-primary-100);
+    --ebox-tool-width: 30px;
 }
 
 .nr-editor-tool {
     width: var(--ebox-tool-width);
-    background-color: rgb(var(--sl-color-neutral-100));
+    background-color: var(--sl-color-neutral-100);
+}
+.nr-editor-tool sl-icon-button::part(base){
+    padding: .2em .1em;    
 }
 
 .nr-editor-sql {
@@ -125,7 +142,7 @@ html, body {
     width: calc(100% - var(--ebox-tool-width))
 }
 
-/*选项卡3*/
+/*选项卡3执行结果*/
 .nr-tab-group-3 {
     height: 100%;
     width: 100%;
@@ -133,6 +150,57 @@ html, body {
 
 .nr-grid-execute-sql {
     height: 200px;
+}
+
+/*设置参数*/
+.nr-parameter-config {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;    
+    align-items: flex-end;
+}
+.nr-parameter-config > div {
+    min-width: 8em;
+    margin: 0 1em 1em;
+}
+
+/*svg图标-数据库*/
+.nr-svg-typedb {
+    width: 1.4em;
+    height: 1.4em;
+    margin-right: 0.2em;
+    vertical-align: middle;
+}
+.nr-svg-typedb-menu {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+}
+
+/*svg图标-数据头部*/
+.nr-svg-headertype {
+    height: 1.2em;
+    width: 1.2em;
+    margin-right: 0.2em;
+}
+/*移动端*/
+@media screen and (max-width: 800px) {    
+    .nrc-spliter-horizontal {
+        flex-wrap: wrap;
+    }    
+    .nr-spliter1 .nrc-spliter-item {
+        width: 100% !important;
+        max-height: none;
+    }
+    .nr-box2 {
+        margin-top: .5rem;
+    }
+    .nr-spliter2 .nrc-spliter-item {
+        height: 100vh !important;
+    }
+    .nrc-spliter-vertical {
+        height: auto !important;
+    }
 }
 :root {
     --nrc-spliter-width: 8px;
@@ -145,7 +213,7 @@ html, body {
     width: 100%;
     max-width: 100%;
     height: auto;
-    border-top: 1px solid rgb(var(--sl-color-neutral-200));
+    border-top: 1px solid var(--sl-color-primary-100);
 }
 
 .nrc-spliter-item {
@@ -169,7 +237,7 @@ html, body {
 
     .nrc-spliter-bar:hover {
         border: 1px dashed #0284c7;
-        background: linear-gradient(to bottom,rgb(var(--sl-color-orange-100)) 0%,rgb(var(--sl-color-orange-100)) 33.333%,rgb(var(--sl-color-orange-200)) 33.333%,rgb(var(--sl-color-orange-200)) 66.666%,rgb(var(--sl-color-orange-300)) 66.666%,rgb(var(--sl-color-orange-300)) 100%);
+        background: linear-gradient(to bottom,var(--sl-color-orange-100) 0%,var(--sl-color-orange-100) 33.333%,var(--sl-color-orange-200) 33.333%,var(--sl-color-orange-200) 66.666%,var(--sl-color-orange-300) 66.666%,var(--sl-color-orange-300) 100%);
     }
 
 .nrc-spliter-bar-active {
@@ -179,7 +247,7 @@ html, body {
     display: none;
     user-select: none;
     pointer-events: none;
-    background-color: rgb(var(--sl-color-orange-300));
+    background-color: var(--sl-color-orange-300);
     width: var(--nrc-spliter-width);
 }
 
@@ -200,7 +268,7 @@ html, body {
     }
 
         .nrc-spliter-vertical .nrc-spliter-bar:hover {
-            background: linear-gradient(to right,rgb(var(--sl-color-orange-100)) 0%,rgb(var(--sl-color-orange-100)) 33.333%,rgb(var(--sl-color-orange-200)) 33.333%,rgb(var(--sl-color-orange-200)) 66.666%,rgb(var(--sl-color-orange-300)) 66.666%,rgb(var(--sl-color-orange-300)) 100%);
+            background: linear-gradient(to right,var(--sl-color-orange-100) 0%,var(--sl-color-orange-100) 33.333%,var(--sl-color-orange-200) 33.333%,var(--sl-color-orange-200) 66.666%,var(--sl-color-orange-300) 66.666%,var(--sl-color-orange-300) 100%);
         }
 
     .nrc-spliter-vertical .nrc-spliter-bar-active {
@@ -223,6 +291,26 @@ html, body {
     animation: kf-rotate 1s infinite;
 }
 
+/*全屏*/
+.nrc-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/*字体色*/
+.nrc-text-orange {
+    color: var(--sl-color-orange-700);
+}
+/*默认项*/
+.nrc-item-default {
+    background-color: var(--sl-color-orange-50);
+}
 /* dark model */
 .sl-theme-dark {
     color: #cdd9e5;
@@ -250,4 +338,3 @@ html, body {
     --ag-header-foreground-color: var(--ag-data-color); /*头*/
     --ag-foreground-color: var(--ag-data-color) /*右键*/
 }
-

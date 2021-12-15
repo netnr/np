@@ -84,10 +84,10 @@ public class QuoteTo
                     break;
 
                 case "swiper.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.3.1/swiper-bundle.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.3.2/swiper-bundle.min.css' rel='stylesheet' />");
                     break;
                 case "swiper.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.3.1/swiper-bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.3.2/swiper-bundle.min.js'></script>");
                     break;
 
                 case "jz.js":
@@ -106,7 +106,7 @@ public class QuoteTo
                     break;
 
                 case "tocbot.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.17.1/dist/tocbot.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.17.3/dist/tocbot.min.js'></script>");
                     break;
 
                 case "selectpage":
@@ -190,7 +190,7 @@ public class QuoteTo
                     break;
 
                 case "nsfwjs":
-                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.11.0/dist/tf.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.12.0/dist/tf.min.js'></script>");
                     vh.Add("<script src='https://npm.elemecdn.com/nsfwjs@2.4.1/dist/nsfwjs.min.js'></script>");
                     break;
 
@@ -239,11 +239,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.1.2/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.1.3/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.2/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.2/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.3/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.3/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "prettier-css":
@@ -289,7 +289,7 @@ public class QuoteTo
                     break;
 
                 case "monaco-editor":
-                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.30.1/min/vs/loader.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
                                 function htmlDecode(html) {
@@ -300,7 +300,7 @@ public class QuoteTo
 
                                 require.config({
                                     paths: {
-                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.30.1/min/vs'
+                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs'
                                     },
                                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                 });

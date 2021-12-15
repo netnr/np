@@ -5,6 +5,7 @@ import { ndkVary } from './ndkVary';
 import { ndkDb } from './ndkDb';
 import { ndkLs } from "./ndkLs";
 import { ndkSqlNote } from "./ndkSqlNote";
+import { ndkI18n } from "./ndkI18n";
 
 var ndkFn = {
 
@@ -119,6 +120,29 @@ var ndkFn = {
         return new Intl.DateTimeFormat('zh-CN', options).format(date);
     },
 
+    /* 浏览器通知 */
+    notify: (title, options) => {
+        if (window.Notification) {
+            if (Notification.permission === 'granted') {
+                var notification = new Notification(title, options);
+                notification.onclick = function () {
+                    window.focus();
+                    notification.close();
+                };
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission(function (permission) {
+                    if (permission === 'granted') {
+                        var notification = new Notification(title, options);
+                        notification.onclick = function () {
+                            window.focus();
+                            notification.close();
+                        };
+                    }
+                });
+            }
+        }
+    },
+
     /**
      * 消息
      * @param {*} message 
@@ -161,8 +185,8 @@ var ndkFn = {
             }, false)
         }
         ndkVary.domConfirm.innerHTML = `${tip}
-        <sl-button slot="footer" type="default">取消</sl-button>
-        <sl-button slot="footer" type="primary">确定</sl-button>`;
+        <sl-button slot="footer" type="default">${ndkI18n.lg.cancel}</sl-button>
+        <sl-button slot="footer" type="primary">${ndkI18n.lg.confirm}</sl-button>`;
         ndkVary.domConfirm.show();
     },
 
@@ -178,15 +202,16 @@ var ndkFn = {
         title: document.title,
         si: null,
         run: (index = 1, dir = true) => {
-            var arr = [], icon = "🛑";
+            var arr = [], icon = ndkVary.icons.loading;
             for (var i = 0; i < index; i++) {
                 arr.push(icon);
             }
             document.title = " " + arr.join(" ");
             dir ? index++ : index--;
-            dir = index == 9 ? false : dir;
+            dir = index == 5 ? false : dir;
             dir = index == 1 ? true : dir;
 
+            clearTimeout(ndkFn.requestStatusTitle.si);
             ndkFn.requestStatusTitle.si = setTimeout(() => {
                 ndkFn.requestStatusTitle.run(index, dir);
             }, 600);
@@ -229,22 +254,28 @@ var ndkFn = {
     actionRun: function (cmd, args) {
         switch (cmd) {
             //主题
-            case "theme-light":
-            case "theme-dark":
+            case "theme":
                 {
-                    ndkVary.theme = cmd.split('-').pop();
-                    ndkFn.themeGrid(ndkVary.theme);
-                    ndkFn.themeEditor(ndkVary.theme);
-                    if (ndkVary.theme == "dark") {
-                        document.querySelector('sl-menu-item[data-cmd="theme-light"]').checked = false;
-                        document.querySelector('sl-menu-item[data-cmd="theme-dark"]').checked = true;
-                        document.documentElement.classList.add('sl-theme-dark');
-                    } else {
-                        document.querySelector('sl-menu-item[data-cmd="theme-light"]').checked = true;
-                        document.querySelector('sl-menu-item[data-cmd="theme-dark"]').checked = false;
-                        document.documentElement.classList.remove('sl-theme-dark');
-                    }
+                    ndkVary.theme = typeof (args) == "object" ? args.getAttribute('data-val') : args;
+                    ndkFn.themeSL();
+                    ndkFn.themeGrid();
+                    ndkFn.themeEditor();
+
                     ndkStep.stepSave();
+                }
+                break;
+            //语言
+            case "language":
+                {
+                    ndkI18n.language = typeof (args) == "object" ? args.getAttribute('data-val') : args;
+                    ndkVary.domMenu.querySelectorAll('[data-cmd="language"]').forEach(item => {
+                        item.checked = item.getAttribute('data-val') == ndkI18n.language;
+                    });
+                    //点击菜单时
+                    if (typeof (args) == "object") {
+                        ndkFn.msg(ndkI18n.lg.reloadDone);
+                        ndkStep.stepSave();
+                    }
                 }
                 break;
             //设置
@@ -256,24 +287,26 @@ var ndkFn = {
 
                     var pchtm = [];
                     for (const key in ndkVary.parameterConfig) {
-                        const item = ndkVary.parameterConfig[key];
+                        const item = ndkVary.parameterConfig[key], label = item[ndkI18n.languageGet()];
                         switch (item.type) {
                             case "number":
-                                pchtm.push(`<div><sl-input name="${key}" label="${item.label}" type="${item.type}" required value="${item.value}"></sl-input></div>`);
+                                pchtm.push(`<div><sl-input name="${key}" label="${label}" type="${item.type}" required placeholder="${ndkI18n.lg.default} ${item.defaultValue}" value="${item.value}"></sl-input></div>`);
                                 break;
                             case "select":
                             case "boolean":
                                 {
-                                    pchtm.push(`<div><sl-select name="${key}" label="${item.label}" value="${item.value}" hoist="true">`);
+                                    pchtm.push(`<div><sl-select name="${key}" label="${label}" value="${item.value}" hoist="true">`);
                                     item.list.forEach(obj => {
-                                        pchtm.push(`<sl-menu-item value="${obj.val}">${obj.txt}</sl-menu-item>`);
+                                        var txt = obj[ndkI18n.languageGet()];
+                                        var ic = item.defaultValue == obj.val ? "class='nrc-item-default'" : "";
+                                        pchtm.push(`<sl-menu-item ${ic} value="${obj.val}">${txt}</sl-menu-item>`);
                                     })
                                     pchtm.push(`</sl-select></div>`);
                                 }
                                 break;
                         }
                     }
-                    pchtm.push(`<div><sl-button type="default" outline>${ndkVary.icons.success}保存</sl-button></div>`);
+                    pchtm.push(`<div><sl-button size="large" pill>${ndkVary.icons.success}${ndkI18n.lg.save}</sl-button></div>`);
                     ndkVary.domParameterConfig.innerHTML = pchtm.join('');
 
                     if (ndkVary.domDialogSetting.getAttribute('event-bind') != 1) {
@@ -299,7 +332,7 @@ var ndkFn = {
                                     item.value = val;
                                 }
                                 ndkStep.stepSave();
-                                ndkFn.msg("保存成功");
+                                ndkFn.msg(ndkI18n.lg.done);
                             }
                         }, false);
                     }
@@ -308,9 +341,9 @@ var ndkFn = {
             //设置接口服务
             case "set-api-server":
                 {
-                    var val = args.innerHTML;
+                    var val = typeof (args) == "object" ? args.getAttribute('data-val') : args;
                     switch (val) {
-                        case "当前":
+                        case "current":
                             val = location.origin;
                             break;
                     }
@@ -333,7 +366,7 @@ var ndkFn = {
                             if (cmd.endsWith("clipboard")) {
                                 var content = JSON.stringify(configObj, null, 4);
                                 navigator.clipboard.writeText(content).then(() => {
-                                    ndkFn.msg("导出完成")
+                                    ndkFn.msg(ndkI18n.lg.done)
                                 })
                             } else {
                                 var content = JSON.stringify(configObj);
@@ -355,18 +388,17 @@ var ndkFn = {
                                 parr.push(ndkLs.storeConfig.setItem(key, val));
                             }
                             Promise.all(parr).then(() => {
-                                ndkFn.msg("导入完成");
+                                ndkFn.msg(ndkI18n.lg.done);
                                 location.reload(false);
                             })
                         } else {
-                            ndkFn.msg("配置内容不能为空");
+                            ndkFn.msg(ndkI18n.lg.contentNotEmpty);
                         }
                     } catch (e) {
                         console.debug(e)
                         ndkFn.msg(e)
                     }
                 }
-                break;
                 break;
             //分离器1大小
             case "box1-size":
@@ -408,15 +440,28 @@ var ndkFn = {
     },
 
     /**
-     * 设置主题
-     * @param {*} theme 
+     * 设置主题（SL组件）
      */
-    themeGrid: function (theme) {
+    themeSL: () => {
+        ndkVary.domMenu.querySelectorAll(`sl-menu-item[data-cmd="theme"]`).forEach(item => {
+            item.checked = item.getAttribute("data-val") == ndkVary.theme;
+        })
+        if (ndkVary.themeGet() == "dark") {
+            document.documentElement.classList.add('sl-theme-dark');
+        } else {
+            document.documentElement.classList.remove('sl-theme-dark');
+        }
+    },
 
-        var setTheme = (dom, theme) => {
+    /**
+     * 设置主题（表格）
+     */
+    themeGrid: function () {
+
+        var setTheme = (dom) => {
             dom.classList.remove('ag-theme-alpine');
             dom.classList.remove('ag-theme-alpine-dark');
-            switch (theme) {
+            switch (ndkVary.themeGet()) {
                 case "dark":
                     dom.classList.add("ag-theme-alpine-dark");
                     break;
@@ -428,34 +473,33 @@ var ndkFn = {
         for (const key in ndkVary) {
             if (key.startsWith("domGrid")) {
                 var dom = ndkVary[key];
-                setTheme(dom, theme);
+                setTheme(dom);
             }
         }
 
-        //选项卡2 表格
+        //选项卡2窗口 表格
         ndkVary.domTabGroup2.querySelectorAll('.nr-grid-execute-sql').forEach(dom => {
-            setTheme(dom, theme);
+            setTheme(dom);
         })
 
-        //选项卡3 表格
+        //选项卡3执行结果 表格
         for (var i in ndkTab.tabKeys) {
             var tpkey = ndkTab.tabKeys[i];
             if (tpkey.grids) {
                 tpkey.grids.forEach(grid => {
                     var dom = grid.domGridExecuteSql;
-                    setTheme(dom, theme);
+                    setTheme(dom);
                 })
             }
         }
     },
 
     /**
-     * 设置主题
-     * @param {any} theme
+     * 设置主题（编辑器）
      */
-    themeEditor: function (theme) {
+    themeEditor: function () {
         if (window.monaco) {
-            switch (theme) {
+            switch (ndkVary.themeGet()) {
                 case "dark":
                     monaco.editor.setTheme("vs-dark");
                     break;
@@ -480,14 +524,14 @@ var ndkFn = {
             }
         });
 
-        //选项卡2
+        //选项卡2窗口
         ndkVary.domTabGroup2.querySelectorAll('.nr-spliter2').forEach(node => {
             var pnode = node.parentElement;
             if (getComputedStyle(pnode).display != "none") {
                 var gt = node.getBoundingClientRect().top + 5;
                 node.style.height = `${vh - gt}px`;
 
-                //选项卡3
+                //选项卡3执行结果
                 var tpkey = ndkTab.tabKeys[pnode.name];
                 if (tpkey && tpkey.grids) {
                     tpkey.grids.forEach(grid => {

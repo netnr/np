@@ -1,61 +1,131 @@
 var ndkVary = {
 
     version: '0.1.0',
-    theme: "light", //主题 可选 dark
+    theme: "auto", //主题 可选 auto、dark、light
+    themeGet: () => {
+        if (ndkVary.theme == "auto") {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+        }
+        return ndkVary.theme;
+    },
     parameterConfig: {
         autoFilterDatabaseNumber: {
-            label: "数据库名超过自动过滤",
+            "zh-CN": "数据库名超过自动过滤",
+            "en-US": "Auto filter database number",
             type: "number",
             value: 40
         },
         selectDataLimit: {
-            label: "查询数据默认限制行数",
+            "zh-CN": "查询数据默认限制行数",
+            "en-US": "Select data default limit",
             type: "number",
-            value: 200
+            value: 100
         },
         buildSqlWithQuote: {
-            label: "生成 SQL 带符号",
+            "zh-CN": "生成 SQL 带符号",
+            "en-US": "Build SQL with quote",
             type: "boolean",
             list: [
-                { txt: "带符号", val: true },
-                { txt: "不带", val: false }
+                {
+                    "zh-CN": "带符号",
+                    "en-US": "With quote",
+                    val: true
+                },
+                {
+                    "zh-CN": "不带",
+                    "en-US": "Without quote",
+                    val: false
+                }
             ],
             value: true
         },
         buildSqlWithComment: {
-            label: "生成 SQL 带注释",
+            "zh-CN": "生成 SQL 带注释",
+            "en-US": "Build SQL with comment",
             type: "boolean",
             list: [
-                { txt: "带注释", val: true },
-                { txt: "不带", val: false }
+                {
+                    "zh-CN": "带注释",
+                    "en-US": "With comment",
+                    val: true
+                },
+                {
+                    "zh-CN": "不带",
+                    "en-US": "Without comment",
+                    val: false
+                }
+            ],
+            value: true
+        },
+        dataSqlBulkInsert: {
+            "zh-CN": "数据 SQL 批量插入",
+            "en-US": "Data SQL bulk insert",
+            type: "number",
+            value: 10
+        },
+        dataSqlWithAutoIncrement: {
+            "zh-CN": "数据 SQL 带自增列",
+            "en-US": "Data SQL with auto increment",
+            type: "boolean",
+            list: [
+                {
+                    "zh-CN": "带自增列",
+                    "en-US": "With auto increment",
+                    val: true
+                },
+                {
+                    "zh-CN": "不带自增列",
+                    "en-US": "Without auto increment",
+                    val: false
+                }
             ],
             value: true
         },
         editorFontSize: {
-            label: "编辑器字体大小",
+            "zh-CN": "编辑器字体大小",
+            "en-US": "Editor font size",
             type: "number",
             value: 18
         },
         editorLineNumbers: {
-            label: "编辑器行号",
+            "zh-CN": "编辑器行号",
+            "en-US": "Editor line numbers",
             type: "select",
             list: [
-                { txt: "显示", val: 'on' },
-                { txt: "不显示", val: 'off' }
+                {
+                    "zh-CN": "显示",
+                    "en-US": "Show",
+                    val: 'on'
+                },
+                {
+                    "zh-CN": "不显示",
+                    "en-US": "Hide",
+                    val: 'off'
+                }
             ],
             value: 'on'
         },
         editorWordWrap: {
-            label: "编辑器换行",
+            "zh-CN": "编辑器换行",
+            "en-US": "Editor word wrap",
             type: "select",
             list: [
-                { txt: "自动换行", val: 'on' },
-                { txt: "不换行", val: 'off' }
+                {
+                    "zh-CN": "自动换行",
+                    "en-US": "Auto wrap",
+                    val: 'on'
+                },
+                {
+                    "zh-CN": "不换行",
+                    "en-US": "No wrap",
+                    val: 'off'
+                }
             ],
-            value: 'on'
+            value: 'off'
         },
         gridDataShowLength: {
-            label: "表格数据显示截断",
+            "zh-CN": "表格数据显示截断",
+            "en-US": "Grid data show length",
             type: "number",
             value: 200
         }
@@ -83,6 +153,8 @@ var ndkVary = {
     iconSvg: (name, style) => `<svg class="${style || ""}" aria-hidden="true"><use xlink:href="#${name.toLowerCase()}"></use></svg>`,
 
     icons: {
+        menu: "Ⓜ",
+        quick: "📌",
         id: "🆔",
         connType: "💞",
         connOrder: "🚩",
@@ -108,9 +180,15 @@ var ndkVary = {
         info: "🔔",
         data: "🧮",
         cog: "⚙",
+        parameter: "🛠",
+        server: "🌎",
+        io: "♻",
         clipboard: "📋",
+        save: "💾",
+        full: "💯",
         date: "🕓",
         cut: "✂",
+        loading: "🛑",
     },
     /**
      * 获取 icon
@@ -153,6 +231,13 @@ var ndkVary = {
     apiExecuteSql: "/DK/ExecuteSql",
     apiGetData: "/DK/GetData",
     apiGetDEI: "/DK/GetDEI",
+
+    envConnsChanged: false, //连接变化
 };
+
+//参数默认值
+for (const key in ndkVary.parameterConfig) {
+    ndkVary.parameterConfig[key].defaultValue = ndkVary.parameterConfig[key].value;
+}
 
 export { ndkVary }

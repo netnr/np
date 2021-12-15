@@ -20,116 +20,16 @@
     <script src="https://npm.elemecdn.com/localforage@1.10.0/dist/localforage.min.js"></script>
     <script src="https://npm.elemecdn.com/sql-formatter@4.0.2/dist/sql-formatter.min.js"></script>
     <script src="https://npm.elemecdn.com/ag-grid-enterprise@26.2.0/dist/ag-grid-enterprise.min.js"></script>
-    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist/themes/light.css">
-    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist/themes/dark.css">
+    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.62/dist/themes/light.css">
+    <link rel="stylesheet" href="https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.62/dist/themes/dark.css">
 
-    <script src="https://npm.elemecdn.com/monaco-editor@0.30.1/min/vs/loader.js"></script>
+    <script src="https://npm.elemecdn.com/monaco-editor@0.31.0/min/vs/loader.js"></script>
     <script type="module">
-        import * as sl from 'https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist/shoelace.js'
-        sl.setBasePath('https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.61/dist')
-
-        require.config({
-            paths: {
-                vs: 'https://npm.elemecdn.com/monaco-editor@0.30.1/min/vs'
-            },
-            'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
-        });
-
-        //编辑器资源载入
-        require(['vs/editor/editor.main'], function () {
-            ndkEditor.extend();
-        });      
+        import * as sl from 'https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.62/dist/shoelace.js'
+        sl.setBasePath('https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.62/dist')
+        
+        window.meRequire = require;
     </script>
-
-    <!--整体-->
-    <div class="nr-main" style="visibility: hidden;">
-
-        <!--顶部-->
-        <div class="nr-box0">
-            <!--菜单-->
-            <sl-dropdown class="nr-menu mb-2">
-                <sl-button slot="trigger" size="small" caret class="nr-request-status">Ⓜ菜单</sl-button>
-                <sl-menu>
-                    <sl-menu-item data-cmd="setting-manager">设置</sl-menu-item>
-                    <sl-divider></sl-divider>
-                    <sl-menu-item data-cmd="theme-light">Theme-Light</sl-menu-item>
-                    <sl-menu-item data-cmd="theme-dark">Theme-Dark</sl-menu-item>
-                </sl-menu>
-            </sl-dropdown>
-
-            <!--快捷01-->
-            <sl-dropdown class="nr-quick01 mb-2">
-                <sl-button slot="trigger" size="small" caret>📌快捷</sl-button>
-                <sl-menu>
-                    <sl-menu-item data-cmd="quick-note">📔笔记</sl-menu-item>
-                    <sl-divider></sl-divider>
-                    <sl-menu-item data-cmd="quick-note">📔笔记</sl-menu-item>
-                </sl-menu>
-            </sl-dropdown>
-
-            <!--设置-->
-            <sl-dialog label="⚙设置" class="nr-dialog-setting dialog-width" style="--width: 70vw;">                
-                <sl-details summary="🧶服务设置" open>
-                    <sl-input class="nr-text-api-server mb-2" placeholder="服务地址"></sl-input>
-                    <sl-button type="text" data-cmd="set-api-server" >当前</sl-button>
-                    <sl-button type="text" data-cmd="set-api-server" >https://localhost:5001</sl-button>
-                </sl-details>
-                <sl-details summary="🛠参数设置" open>
-                    <div class="nr-parameter-config"></div>
-                </sl-details>
-                <sl-details summary="♻配置导入导出" open>
-                    <sl-button type="default" data-cmd="config-export-file">💾导出配置</sl-button>
-                    <sl-button type="default" data-cmd="config-export-clipboard">📋导出配置到剪贴板</sl-button>
-                    <sl-divider></sl-divider>
-                    <sl-textarea class="mb-2" placeholder="粘贴配置内容"></sl-textarea>
-                    <sl-button type="default" data-cmd="config-import">💯导入配置并刷新</sl-button>
-                </sl-details>
-            </sl-dialog>
-
-            <!--当前选项卡连接信息-->
-            <sl-dropdown class="nr-tabconns"></sl-dropdown>
-            <sl-dropdown class="nr-tabdatabase"></sl-dropdown>
-        </div>
-
-        <!--主体分离器-->
-        <div class="nr-spliter1 nrc-spliter-horizontal">
-
-            <!--左-->
-            <div class="nr-box1 nrc-spliter-item">
-                <!--选项卡-->
-                <sl-tab-group class="nr-tab-group-1">
-                    <sl-tab slot="nav" panel="tp1-conns">🔗连接</sl-tab>
-                    <sl-tab slot="nav" panel="tp1-database">🎒库</sl-tab>
-                    <sl-tab slot="nav" panel="tp1-table">📚表</sl-tab>
-                    <sl-tab slot="nav" panel="tp1-column">📙列</sl-tab>
-
-                    <sl-tab-panel name="tp1-conns">
-                        <sl-input class="nr-filter-conns mb-2" placeholder="搜索" size="small"></sl-input>
-                        <div class="nr-grid-conns"></div>
-                    </sl-tab-panel>
-                    <sl-tab-panel name="tp1-database">
-                        <sl-input class="nr-filter-database mb-2" placeholder="搜索" size="small"></sl-input>
-                        <div class="nr-grid-database"></div>
-                    </sl-tab-panel>
-                    <sl-tab-panel name="tp1-table">
-                        <sl-input class="nr-filter-table mb-2" placeholder="搜索" size="small"></sl-input>
-                        <div class="nr-grid-table"></div>
-                    </sl-tab-panel>
-                    <sl-tab-panel name="tp1-column">
-                        <sl-input class="nr-filter-column mb-2" placeholder="搜索" size="small"></sl-input>
-                        <div class="nr-grid-column"></div>
-                    </sl-tab-panel>
-                </sl-tab-group>
-            </div>
-            <div class="nrc-spliter-bar"></div>
-            <div class="nrc-spliter-bar-active"></div>
-            <!--右-->
-            <div class="nr-box2 nrc-spliter-item">
-                <sl-tab-group class="nr-tab-group-2">
-                </sl-tab-group>
-            </div>
-        </div>
-    </div>
 </body>
 
 </html>

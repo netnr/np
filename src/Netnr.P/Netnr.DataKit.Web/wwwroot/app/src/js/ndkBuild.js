@@ -1,10 +1,12 @@
 import { ndkFn } from './ndkFn';
+import { ndkI18n } from './ndkI18n';
+import { ndkStep } from './ndkStep';
 import { ndkTab } from './ndkTab';
 import { ndkVary } from './ndkVary';
 
 var ndkBuild = {
     sqlDataType: (tdb, column) => {
-        var colComment = (column.ColumnComment || "").replaceAll("\n", " "),
+        var colComment = (column.ColumnComment || "").trim().replace(/[\r\n]/g, "").replace(/\s+/g, " "),
             vlen = column.DataLength > 0 ? column.DataLength : 999,
             dval = colComment.replaceAll("'", "''").substring(0, vlen);
 
@@ -163,8 +165,11 @@ var ndkBuild = {
     buildNewTabSql: (edata, name) => {
         //选中的表行
         var srows = ndkVary.gridOpsTable.api.getSelectedRows();
-        if (srows.length == 0) {
+        if (srows.length == 0 && edata != null) {
             srows = [edata];
+        }
+        if (srows.length == 0) {
+            return;
         }
 
         //构建选项卡
@@ -172,7 +177,7 @@ var ndkBuild = {
             ndkVary.domTabGroup2.show(tpkey); //显示选项卡            
             var tpobj = ndkTab.tabKeys[tpkey];
 
-            tpobj.editor.setValue("-- 正在生成脚本");
+            tpobj.editor.setValue(`-- ${ndkI18n.lg.generatingScript}`);
 
             var cp = ndkStep.cpGet(1);
             ndkStep.cpSet(tpkey, cp.cobj, cp.databaseName, srows[0].TableName); //记录连接
@@ -336,6 +341,257 @@ var ndkBuild = {
         var tableName = ndkBuild.sqlFullTableName(cp, tableRow);
 
         return `DROP TABLE ${tableName}`
+    },
+
+
+    /**
+     * 数据 完整表名
+     * @param {any} cp
+     * @param {any} tableRow
+     */
+    dataFullTableName: (cp, tableSchema) => {
+        var tableName = tableSchema.BaseTableName, databaseName, modeName;
+        switch (cp.cobj.type) {
+            case "SQLite":
+                databaseName = tableSchema.BaseCatalogName;
+                break;
+            case "MySQL":
+            case "MariaDB":
+            case "Oracle":
+                databaseName = tableSchema.BaseSchemaName;
+                break;
+            case "SQLServer":
+            case "PostgreSQL":
+                databaseName = tableSchema.BaseCatalogName;
+                modeName = tableSchema.BaseSchemaName;
+                break;
+        }
+
+        var ftn = [ndkBuild.sqlQuote(cp.cobj.type, databaseName)];
+        if (modeName != null) {
+            ftn.push(ndkBuild.sqlQuote(cp.cobj.type, modeName))
+        }
+        ftn.push(ndkBuild.sqlQuote(cp.cobj.type, tableName))
+
+        return ftn.join('.')
+    },
+
+    /**
+     * 数据生成 SQL
+     * @param {*} event 
+     * @param {*} name 菜单名
+     */
+    dataNewSql: (event, name) => {
+        var dom = agg.getContainer(event), tabkey = dom.getAttribute("data-key"),
+            tabobj = ndkTab.tabKeys[tabkey], tableSchema;
+        for (var i = 0; i < tabobj.grids.length; i++) {
+            var grid = tabobj.grids[i];
+            if (grid.domGridExecuteSql == dom) {
+                tableSchema = tabobj.esdata.Item2[Object.keys(tabobj.esdata.Item2)[i]];
+                break;
+            }
+        }
+        if (tableSchema) {
+            var cp = ndkStep.cpGet(tabkey), rowData = event.api.getSelectedRows();
+            if (rowData.length) {
+                var result = ndkBuild[`data${name}Sql`](cp, rowData, tableSchema);
+                //复制到剪贴板
+                navigator.clipboard.writeText(result).then(() => {
+                    ndkFn.msg("Done!");
+                })
+            }else{
+                ndkFn.msg(ndkI18n.lg.selectDataRows);
+            }
+        }
+    },
+
+    /**
+     * 数据 SQL
+     * @param {*} rowData 
+     * @param {*} tableSchema 
+     * @returns 
+     */
+    dataInsertSql: (cp, rowData, tableSchema) => {
+        var tableName = ndkBuild.dataFullTableName(cp, tableSchema[0]), outSqls = [], tableColumnType = {};
+        //表列类型
+        tableSchema.forEach(colSchema => {
+            var colType = colSchema.DataTypeName;
+            if (colType == null) {
+                colType = colSchema.DataType.split(',')[0].split('.')[1].toLowerCase();
+            }
+            var column = {
+                DataType: colSchema.DataTypeName == null ? colType.replace(/\d+/g, '') : colSchema.DataTypeName,
+                DataLength: colSchema.ColumnSize,
+                AutoIncrement: colSchema.IsAutoIncrement,
+                PrimaryKey: colSchema.IsKey ? 1 : 0
+            }
+            var sdt = ndkBuild.sqlDataType(cp.cobj.type, column);
+            tableColumnType[colSchema.ColumnName] = { sdt, column };
+        });
+
+        //批量插入行数
+        var biRows = ndkVary.parameterConfig.dataSqlBulkInsert.value, cols = [], vcols = [];
+        if (biRows <= 1 || cp.cobj.type == "Oracle") {
+            biRows = 1;
+        }
+
+        //带自增列
+        var wai = ndkVary.parameterConfig.dataSqlWithAutoIncrement.value;
+
+        //遍历数据
+        rowData.forEach(row => {
+            cols = [];
+            var vcol = [];
+            for (var key in row) {
+                var field = ndkBuild.sqlQuote(cp.cobj.type, key), val = row[key];
+                const { sdt, column } = tableColumnType[key];
+
+                //跳过自增列
+                if (wai == false && column.AutoIncrement) {
+                    continue;
+                }
+
+                cols.push(field);
+                if (val == null) {
+                    vcol.push('null');
+                } else if (typeof (val) == "number" || ["number", "boolean"].includes(sdt.category)) {
+                    vcol.push(val);
+                } else {
+                    if (cp.cobj.type == "SQLServer" && sdt.mockValue.startsWith(`N'`)) {
+                        vcol.push(`N'${val.replaceAll("'", "''")}'`);
+                    } else {
+                        vcol.push(`'${val.replaceAll("'", "''")}'`);
+                    }
+                }
+            }
+            vcols.push(vcol);
+            if (vcols.length >= biRows) {
+                var isone = vcols.length == 1 ? "" : "\n"
+                outSqls.push(`INSERT INTO ${tableName} (${cols.join(', ')}) VALUES ${isone}${vcols.map(v => `(${v.join(', ')})`).join(',\n')}`);
+                vcols = [];
+            }
+        });
+        if (vcols.length > 0) {
+            var isone = vcols.length == 1 ? "" : "\n"
+            outSqls.push(`INSERT INTO ${tableName} (${cols.join(', ')}) VALUES ${isone}${vcols.map(v => `(${v.join(', ')})`).join(',\n')}`);
+        }
+
+        return outSqls.join(';\n')
+    },
+
+    /**
+     * 数据 SQL
+     * @param {*} rowData 
+     * @param {*} tableSchema 
+     * @returns 
+     */
+    dataUpdateSql: (cp, rowData, tableSchema) => {
+        var tableName = ndkBuild.dataFullTableName(cp, tableSchema[0]), outSqls = [], tableColumnType = {};
+        //表列类型
+        tableSchema.forEach(colSchema => {
+            var colType = colSchema.DataTypeName;
+            if (colType == null) {
+                colType = colSchema.DataType.split(',')[0].split('.')[1].toLowerCase();
+            }
+            var column = {
+                DataType: colSchema.DataTypeName == null ? colType.replace(/\d+/g, '') : colSchema.DataTypeName,
+                DataLength: colSchema.ColumnSize,
+                AutoIncrement: colSchema.IsAutoIncrement,
+                PrimaryKey: colSchema.IsKey ? 1 : 0
+            }
+            var sdt = ndkBuild.sqlDataType(cp.cobj.type, column);
+            tableColumnType[colSchema.ColumnName] = { sdt, column };
+        });
+
+        //遍历数据
+        rowData.forEach(row => {
+            var ucol = [], wcol = [];
+            for (var key in row) {
+
+                var field = ndkBuild.sqlQuote(cp.cobj.type, key), val = row[key], setkv;
+                const { sdt, column } = tableColumnType[key];
+                if (val == null) {
+                    setkv = `${field} = null`;
+                } else if (typeof (val) == "number" || ["number", "boolean"].includes(sdt.category)) {
+                    setkv = `${field} = ${val}`;
+                } else {
+                    if (cp.cobj.type == "SQLServer" && sdt.mockValue.startsWith(`N'`)) {
+                        setkv = `${field} = N'${val.replaceAll("'", "''")}'`;
+                    } else {
+                        setkv = `${field} = '${val.replaceAll("'", "''")}'`;
+                    }
+                }
+                if (column.PrimaryKey > 0) {
+                    wcol.push(setkv);
+                } else {
+                    ucol.push(setkv);
+                }
+            }
+
+            if (wcol.length == 0) {
+                wcol = ucol;
+            }
+            outSqls.push(`UPDATE ${tableName} SET ${ucol.join(', ')} WHERE ${wcol.join(' AND ')}`);
+        });
+
+        return outSqls.join(';\n')
+    },
+
+    /**
+     * 数据 SQL
+     * @param {*} rowData 
+     * @param {*} tableSchema 
+     * @returns 
+     */
+    dataDeleteSql: (cp, rowData, tableSchema) => {
+        var tableName = ndkBuild.dataFullTableName(cp, tableSchema[0]), outSqls = [], tableColumnType = {};
+        //表列类型
+        tableSchema.forEach(colSchema => {
+            var colType = colSchema.DataTypeName;
+            if (colType == null) {
+                colType = colSchema.DataType.split(',')[0].split('.')[1].toLowerCase();
+            }
+            var column = {
+                DataType: colSchema.DataTypeName == null ? colType.replace(/\d+/g, '') : colSchema.DataTypeName,
+                DataLength: colSchema.ColumnSize,
+                PrimaryKey: colSchema.IsKey ? 1 : 0
+            }
+            var sdt = ndkBuild.sqlDataType(cp.cobj.type, column);
+            tableColumnType[colSchema.ColumnName] = { sdt, column };
+        });
+
+        //遍历数据
+        rowData.forEach(row => {
+            var cols = [], wcol = [];
+            for (var key in row) {
+
+                var field = ndkBuild.sqlQuote(cp.cobj.type, key), val = row[key], setkv;
+                const { sdt, column } = tableColumnType[key];
+                if (val == null) {
+                    setkv = `${field} = null`;
+                } else if (typeof (val) == "number" || ["number", "boolean"].includes(sdt.category)) {
+                    setkv = `${field} = ${val}`;
+                } else {
+                    if (cp.cobj.type == "SQLServer" && sdt.mockValue.startsWith(`N'`)) {
+                        setkv = `${field} = 'N${val.replaceAll("'", "''")}'`;
+                    } else {
+                        setkv = `${field} = '${val.replaceAll("'", "''")}'`;
+                    }
+                }
+                if (column.PrimaryKey > 0) {
+                    wcol.push(setkv);
+                } else {
+                    cols.push(setkv);
+                }
+            }
+
+            if (wcol.length == 0) {
+                wcol = cols;
+            }
+            outSqls.push(`DELETE FROM ${tableName} WHERE ${wcol.join(' AND ')}`);
+        });
+
+        return outSqls.join(';\n')
     },
 }
 

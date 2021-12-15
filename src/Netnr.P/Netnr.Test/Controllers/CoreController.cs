@@ -13,15 +13,9 @@ namespace Netnr.Test.Controllers
         public SharedResultVM Extend()
         {
             return SharedResultVM.Try(vm =>
-            {                
+            {
                 return vm;
             });
-        }
-
-        [HttpGet]
-        public FileResult Tmp1()
-        {
-            return PhysicalFile("", "application/octet-stream");
         }
 
         /// <summary>

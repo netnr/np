@@ -1,6 +1,6 @@
 /*
  * netnr
- * 2020-08-12
+ * 2021-12-13
  */
 
 if (console) {
@@ -52,8 +52,8 @@ if (console) {
 
 //节日
 if (true) {
-    let txt = null;
-    switch ((new Date(new Date().valueOf() + 8 * 3600000)).toISOString().substring(5, 10)) {
+    let txt = null, day = (new Date(new Date().valueOf() + 8 * 3600000)).toISOString().substring(5, 10);
+    switch (day) {
         case "10-01":
         case "10-02":
         case "10-03":
@@ -66,7 +66,12 @@ if (true) {
             txt = "元旦快乐哟!";
             break;
         case "04-04":
+        case "12-13":
             {
+                if (day == "12-13") {
+                    txt = "对和平的向往和坚守，不延续仇恨!";
+                }
+
                 var des = document.documentElement.style;
                 des["filter"] = "progid: DXImageTransform.Microsoft.BasicImage(grayscale = 1)";
                 des["-webkit-filter"] = "grayscale(100%)";
@@ -74,7 +79,7 @@ if (true) {
             break;
     }
 
-    if (txt && location.pathname.indexOf("/draw/mind") == -1) {
+    if (txt && (location.pathname == "/" || location.pathname.startsWith("/home"))) {
         var dh = document.createElement('div');
         dh.innerHTML = '<div class="d-none d-md-block text-center h4 py-2 text-warning bg-danger">' + txt.split('').join(' ') + '</div>';
         document.body.insertBefore(dh, document.body.firstChild);

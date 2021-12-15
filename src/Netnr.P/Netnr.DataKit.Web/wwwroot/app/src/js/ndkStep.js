@@ -1,4 +1,5 @@
 import { ndkVary } from './ndkVary';
+import { ndkI18n } from './ndkI18n';
 import { ndkLs } from './ndkLs';
 import { ndkFn } from './ndkFn';
 import { ndkDb } from './ndkDb';
@@ -57,15 +58,10 @@ var ndkStep = {
             ndkVary.domTabconns.style.display = "none";
             ndkVary.domTabdatabase.style.display = "none";
         } else {
-            //设置当前选项卡
-            ndkVary.domTabconns.setAttribute("data-key", key);
-            ndkVary.domTabdatabase.setAttribute("data-key", key);
-
             //显示的连接-数据库
             var cp = ndkStep.cpGet(key);
             if (cp != null) {
                 var cobj = cp.cobj;
-                ndkVary.domTabdatabase.setAttribute("data-cobjid", cobj.id);
                 //左侧连接
                 if (key == 1) {
                     var viewItem = `${ndkVary.iconDB(cobj.type)} ${cobj.type} ${ndkVary.icons.connConn} ${cobj.alias} ${ndkVary.iconEnv(cobj.env)} ${cobj.env} ${cp.databaseName == null ? "" : ndkVary.icons.connDatabase + " " + cp.databaseName}\n${ndkVary.icons.connConn} ${cobj.conn}`;
@@ -79,13 +75,17 @@ var ndkStep = {
                     ndkVary.domTabconns.style.display = "block";
                     ndkVary.domTabdatabase.style.display = "block";
 
+                    //设置当前选项卡
+                    ndkVary.domTabconns.setAttribute("data-key", key);
+                    ndkVary.domTabdatabase.setAttribute("data-cobjid", cobj.id);
+
                     //连接
                     if (!ndkVary.domGridTabconns) {
                         ndkVary.domTabconns.innerHTML = `
                         <sl-button title="${cobj.conn}" slot="trigger" size="small" caret>${ndkVary.iconSvg(cobj.type, "nr-svg-typedb") + cobj.alias + ndkVary.iconEnv(cobj.env)}</sl-button>
                         <sl-menu>
                             <div>
-                                <sl-input class="nr-filter-tabconns mb-2" size="small" placeholder="搜索"></sl-input>
+                                <sl-input class="nr-filter-tabconns mb-2" size="small" placeholder="${ndkI18n.lg.search}"></sl-input>
                             </div>
                             <div class="nr-grid-tabconns" style="width:25em;max-width:100%;height:55vh"></div>
                         </sl-menu>
@@ -98,69 +98,77 @@ var ndkStep = {
                             ndkVary.gridOpsTabconns.api.setQuickFilter(this.value);
                         });
 
-                        //载入选项卡连接
-                        var opsTabconns = agg.optionDef({
-                            rowData: [...ndkVary.gridOpsConns.rowData],//数据源
-                            getRowNodeId: data => data.id, //指定行标识列
-                            rowGroupPanelShow: 'never',
-                            rowSelection: 'single', //单选
-                            suppressRowClickSelection: false, //点击选择行
-                            headerHeight: 0,
-                            columnDefs: [
-                                {
-                                    field: 'alias', headerName: ndkVary.icons.connConn + "连接名", tooltipField: 'conn', flex: 1, checkboxSelection: true,
-                                    cellRenderer: (params) => {
-                                        if (!params.node.group) {
-                                            if (params.data.type) {
-                                                return ndkVary.iconSvg(params.data.type, "nr-svg-typedb") + params.value;
-                                            }
-                                            return params.value
-                                        }
-                                    },
-                                    cellStyle: params => {
-                                        switch (params.node.data?.env) {
-                                            case "Test":
-                                            case "Production":
-                                                return { 'color': ndkVary.colorEnv(params.node.data?.env) };
-                                        }
-                                    }
-                                }
-                            ],
-                            // 改变连接
-                            onSelectionChanged: function () {
-                                var tabkey = ndkVary.domTabconns.getAttribute("data-key");
-                                var tabcp = ndkStep.cpGet(tabkey);
-                                var srows = ndkVary.gridOpsTabconns.api.getSelectedRows();
-                                //连接变化
-                                if (tabcp.cobj.id != srows[0].id) {
-                                    ndkStep.cpSet(tabkey, srows[0]);
-                                    //更新标签名
-                                    ndkTab.tabKeys[tabkey].domTab.innerHTML = ndkVary.icons.connConn + srows[0].alias;
-                                    ndkTab.tabNavFix();
-
-                                    ndkStep.cpInfo(tabkey);
-                                }
-                            }
-                        });
-
-                        ndkDb.createGrid("tabconns", opsTabconns);
-
-                        //显示连接
+                        //显示连接（检测是否重新加载表格、回填选中）
                         ndkVary.domTabconns.addEventListener("sl-show", function (event) {
                             var tabkey = ndkVary.domTabconns.getAttribute("data-key");
                             var tabcp = ndkStep.cpGet(tabkey);
+
+                            //检测是否重新加载表格
+                            if (ndkVary.gridOpsTabconns == null || ndkVary.envConnsChanged == true) {
+                                ndkVary.envConnsChanged = false;
+
+                                var opsTabconns = agg.optionDef({
+                                    rowData: agg.getAllRows(ndkVary.gridOpsConns),//数据源
+                                    getRowNodeId: data => data.id, //指定行标识列
+                                    rowGroupPanelShow: 'never',
+                                    rowSelection: 'single', //单选
+                                    suppressRowClickSelection: false, //点击选择行
+                                    enableRangeSelection: false, //关闭选择范围
+                                    suppressContextMenu: true, //禁用右键菜单
+                                    headerHeight: 0,
+                                    columnDefs: [
+                                        {
+                                            field: 'alias', headerName: ndkVary.icons.connConn + ndkI18n.lg.connAlias, tooltipField: 'conn', flex: 1, checkboxSelection: true,
+                                            cellRenderer: (params) => {
+                                                if (!params.node.group) {
+                                                    if (params.data.type) {
+                                                        return ndkVary.iconSvg(params.data.type, "nr-svg-typedb") + params.value;
+                                                    }
+                                                    return params.value
+                                                }
+                                            },
+                                            cellStyle: params => {
+                                                switch (params.node.data?.env) {
+                                                    case "Test":
+                                                    case "Production":
+                                                        return { 'color': ndkVary.colorEnv(params.node.data?.env) };
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    // 改变连接
+                                    onSelectionChanged: function () {
+                                        var tabkey = ndkVary.domTabconns.getAttribute("data-key");
+                                        var tabcp = ndkStep.cpGet(tabkey);
+                                        var srows = ndkVary.gridOpsTabconns.api.getSelectedRows();
+                                        //连接变化
+                                        if (srows.length && tabcp.cobj.id != srows[0].id) {
+                                            ndkStep.cpSet(tabkey, srows[0]);
+                                            //更新标签名
+                                            ndkTab.tabKeys[tabkey].domTab.innerHTML = ndkVary.icons.connConn + srows[0].alias;
+                                            ndkTab.tabNavFix();
+
+                                            ndkStep.cpInfo(tabkey);
+                                        }
+                                    }
+                                });
+
+                                ndkDb.createGrid("tabconns", opsTabconns);
+                            }
 
                             //清空过滤
                             ndkVary.domFilterTabconns.value = "";
                             ndkVary.gridOpsTabconns.api.setQuickFilter("");
 
+                            ndkVary.gridOpsTabconns.api.clearRangeSelection(); //清除范围选择                            
                             //选中当前
                             ndkVary.gridOpsTabconns.api.forEachNode(function (node) {
                                 if (node.data.id == tabcp.cobj.id) {
-                                    ndkVary.gridOpsTabconns.api.selectNode(node, true);
+                                    node.setSelected(true, true);
+                                    ndkVary.gridOpsTabconns.api.ensureIndexVisible(node.rowIndex); //滚动到行显示
                                 }
-                            });
-                        });
+                            })
+                        })
                     } else {
                         var btn = ndkVary.domTabconns.firstElementChild;
                         btn.title = cobj.conn;
@@ -174,7 +182,7 @@ var ndkStep = {
                         <sl-button title="${cp.databaseName || ""}" slot="trigger" size="small" caret>${showDatabaseName}</sl-button>
                         <sl-menu>
                             <div>
-                                <sl-input class="nr-filter-tabdatabase mb-2" size="small" placeholder="搜索"></sl-input>
+                                <sl-input class="nr-filter-tabdatabase mb-2" size="small" placeholder="${ndkI18n.lg.search}"></sl-input>
                             </div>
                             <div class="nr-grid-tabdatabase" style="width:25em;max-width:100%;height:55vh"></div>
                         </sl-menu>
@@ -187,24 +195,86 @@ var ndkStep = {
                             ndkVary.gridOpsTabdatabase.api.setQuickFilter(this.value);
                         });
 
-                        //载入选项卡数据库
-                        ndkStep.cpDatabase(cp).then(() => {
-                            //显示数据库
-                            ndkVary.domTabdatabase.addEventListener("sl-show", function (event) {
-                                var tabkey = ndkVary.domTabdatabase.getAttribute("data-key");
-                                var tabcp = ndkStep.cpGet(tabkey);
+                        //显示数据库（检测是否重新加载表格、回填选中）
+                        ndkVary.domTabdatabase.addEventListener("sl-show", function (event) {
 
+                            var tabkey = ndkVary.domTabconns.getAttribute("data-key");
+                            var tabcp = ndkStep.cpGet(tabkey);
+                            var gridcobjid = ndkVary.domTabdatabase.getAttribute("data-grid-cobjid");
+
+                            new Promise((resolve, reject) => {
+                                //检测是否重新加载表格
+                                if (ndkVary.gridOpsTabdatabase == null || gridcobjid != tabcp.cobj.id) {
+                                    ndkVary.domTabdatabase.setAttribute("data-grid-cobjid", tabcp.cobj.id);
+
+                                    ndkDb.reqDatabaseName(tabcp.cobj).then(rowData => {
+                                        //载入选项卡数据库
+                                        var opsTabdatabase = agg.optionDef({
+                                            rowData: rowData,//数据源
+                                            getRowNodeId: data => data.DatabaseName, //指定行标识列
+                                            rowGroupPanelShow: 'never',
+                                            rowSelection: 'single', //单选
+                                            suppressRowClickSelection: false, //点击选择行
+                                            enableRangeSelection: false, //关闭选择范围
+                                            suppressContextMenu: true, //禁用右键菜单
+                                            headerHeight: 0,
+                                            columnDefs: [
+                                                {
+                                                    field: 'DatabaseName', headerName: ndkVary.icons.connDatabase + ndkI18n.lg.dbName, tooltipField: 'DatabaseName', flex: 1, checkboxSelection: true,
+                                                    cellRenderer: (params) => {
+                                                        return ndkVary.iconSvg("database", "nr-svg-typedb") + params.value;
+                                                    }
+                                                },
+                                            ],
+                                            // 改变数据库
+                                            onSelectionChanged: function () {
+                                                var tabkey = ndkVary.domTabconns.getAttribute("data-key");
+                                                var tabcp = ndkStep.cpGet(tabkey);
+                                                var srows = ndkVary.gridOpsTabdatabase.api.getSelectedRows();
+                                                var databaseName = srows.length ? srows[0].DatabaseName : null;
+
+                                                //数据库变化
+                                                if (tabcp.databaseName != databaseName) {
+                                                    ndkStep.cpSet(tabkey, tabcp.cobj, databaseName);
+                                                    //更新标签名
+                                                    if (databaseName) {
+                                                        ndkTab.tabKeys[tabkey].domTab.innerHTML = ndkVary.icons.connDatabase + srows[0].DatabaseName;
+                                                    } else {
+                                                        ndkTab.tabKeys[tabkey].domTab.innerHTML = ndkVary.icons.connConn + tabcp.cobj.alias;
+                                                    }
+                                                    ndkTab.tabNavFix();
+
+                                                    ndkStep.cpInfo(tabkey);
+                                                }
+                                            }
+                                        });
+
+                                        ndkDb.createGrid("tabdatabase", opsTabdatabase);
+
+                                        resolve();
+                                    }).catch(err => {
+                                        reject(err);
+                                    });
+                                } else {
+                                    resolve();
+                                }
+                            }).then(() => {
                                 //清空过滤
                                 ndkVary.domFilterTabdatabase.value = "";
                                 ndkVary.gridOpsTabdatabase.api.setQuickFilter("");
 
+                                ndkVary.gridOpsTabdatabase.api.clearRangeSelection(); //清除范围选择
                                 //选中当前
-                                ndkVary.gridOpsTabdatabase.api.forEachNode(function (node) {
-                                    if (node.data.DatabaseName == tabcp.databaseName) {
-                                        ndkVary.gridOpsTabdatabase.api.selectNode(node, true);
-                                    }
-                                });
-                            });
+                                if (tabcp.databaseName) {
+                                    ndkVary.gridOpsTabdatabase.api.forEachNode(function (node) {
+                                        if (node.data.DatabaseName == tabcp.databaseName) {
+                                            node.setSelected(true, true);
+                                        }
+                                    })
+                                } else {
+                                    ndkVary.gridOpsTabdatabase.api.deselectAll();
+                                }
+                            })
                         })
                     } else {
                         var btn = ndkVary.domTabdatabase.firstElementChild;
@@ -212,86 +282,10 @@ var ndkStep = {
                         var showDatabaseName = cp.databaseName == null ? "(none)" : ndkVary.iconSvg("database", "nr-svg-typedb") + cp.databaseName;
                         btn.innerHTML = showDatabaseName;
                     }
-
-                    // ndkDb.reqDatabaseName(cobj).then(rowData => {
-                    //     var databaseItems = [];
-                    //     rowData.forEach(row => {
-                    //         databaseItems.push(`<sl-menu-item title="${row.DatabaseName}" value="${row.DatabaseName}" ${cp.databaseName == row.DatabaseName ? "checked" : ""} >${ndkVary.icons.connDatabase + row.DatabaseName}</sl-menu-item>`)
-                    //     })
-                    //     var showDatabaseName = cp.databaseName == null ? "(none)" : ndkVary.icons.connDatabase + cp.databaseName;
-                    //     ndkVary.domTabdatabase.innerHTML = `
-                    //     <sl-button title="${showDatabaseName}" slot="trigger" size="small" caret>${showDatabaseName}</sl-button>
-                    //     <sl-menu>${databaseItems.join('')}</sl-menu>
-                    //     `;
-                    //     //切换数据库
-                    //     if (!ndkVary.domTabdatabase.getAttribute("event-bind")) {
-                    //         ndkVary.domTabdatabase.setAttribute("event-bind", "click");
-                    //         ndkVary.domTabdatabase.addEventListener('click', e => {
-                    //             var el = e.target;
-                    //             if (el.tagName == "SL-MENU-ITEM") {
-                    //                 var ckey = ndkVary.domTabdatabase.getAttribute("data-key");
-                    //                 var cp = ndkStep.cpGet(ckey);
-                    //                 var databaseName = el.getAttribute('value');
-                    //                 ndkStep.cpSet(ckey, cp.cobj, databaseName);
-                    //                 //更新标签名
-                    //                 ndkTab.tabKeys[ckey].domTab.innerHTML = ndkVary.icons.connDatabase + databaseName;
-                    //                 ndkTab.tabNavFix();
-
-                    //                 ndkStep.cpInfo(ckey);
-                    //             }
-                    //         }, false);
-                    //     }
-                    // })
                 }
             }
         }
     },
-
-    /**
-     * 显示数据库
-     * @param {*} cp 
-     */
-    cpDatabase: (cp) => new Promise((resolve, reject) => {
-        ndkDb.reqDatabaseName(cp.cobj).then(rowData => {
-            //载入选项卡数据库
-            var opsTabdatabase = agg.optionDef({
-                rowData: rowData,//数据源
-                getRowNodeId: data => data.DatabaseName, //指定行标识列
-                rowGroupPanelShow: 'never',
-                rowSelection: 'single', //单选
-                suppressRowClickSelection: false, //点击选择行
-                headerHeight: 0,
-                columnDefs: [
-                    {
-                        field: 'DatabaseName', headerName: ndkVary.icons.connDatabase + "库名", tooltipField: 'DatabaseName', flex: 1, checkboxSelection: true,
-                        cellRenderer: (params) => {
-                            return ndkVary.iconSvg("database", "nr-svg-typedb") + params.value;
-                        }
-                    },
-                ],
-                // 改变数据库
-                onSelectionChanged: function () {
-                    var tabkey = ndkVary.domTabdatabase.getAttribute("data-key");
-                    var tabcp = ndkStep.cpGet(tabkey);
-                    console.log(cp, tabcp);
-
-                    var srows = ndkVary.gridOpsTabdatabase.api.getSelectedRows();
-                    ndkStep.cpSet(tabkey, tabcp.cobj, srows[0].DatabaseName);
-                    //更新标签名
-                    ndkTab.tabKeys[tabkey].domTab.innerHTML = ndkVary.icons.connDatabase + srows[0].DatabaseName;
-                    ndkTab.tabNavFix();
-
-                    ndkStep.cpInfo(tabkey);
-                }
-            });
-
-            ndkDb.createGrid("tabdatabase", opsTabdatabase);
-
-            resolve();
-        }).catch(err => {
-            reject(err);
-        });
-    }),
 
     stepVarIng: 0,//状态（1：恢复中）
     stepVarStart: Date.now(),//恢复开始时间
@@ -334,16 +328,20 @@ var ndkStep = {
 
             var sobj = {
                 theme: ndkVary.theme, //主题
+                language: ndkI18n.language, //语言
                 box1Size: ndkFn.cssvar(ndkVary.domMain, '--box1-width'), //左侧宽度
                 apiServer: ndkVary.apiServer, //api服务器
                 parameterConfig: {}, //参数配置
                 connCache: {}, //连接缓存
                 tabGroup1Show: "tp-conns", //左侧标签组显示
+                filterConns: ndkVary.domFilterConns.value, //连接过滤
                 viewDatabase: ndkVary.gridOpsDatabase != null, //显示数据库
+                filterDatabase: ndkVary.domFilterDatabase.value, //数据库过滤
                 viewTable: ndkVary.gridOpsTable != null, //显示表
-                selectedTable: [], //选中表
+                filterTable: ndkVary.domFilterTable.value, //表过滤
                 viewColumn: ndkVary.gridOpsColumn != null, //显示列
-                selectedColumn: [], //选中列
+                filterColumn: ndkVary.domFilterColumn.value, //列过滤
+                viewColumnTableName: [], //列信息表名
             };
 
             //存储参数值
@@ -362,13 +360,11 @@ var ndkStep = {
             //ndkStep.cpKeys.forEach(k => sobj.connCache[k] = ndkStep.cpGet(k));
             sobj.connCache['1'] = ndkStep.cpGet(1) || {};
 
-            if (sobj.viewTable) {
-                sobj.selectedTable = ndkVary.gridOpsTable.api.getSelectedRows().map(x => x.TableName);
-            }
+            //列信息表名
             if (sobj.viewColumn) {
-                sobj.selectedColumn = ndkVary.gridOpsColumn.api.getSelectedRows().map(x => x.TableName + ":" + x.ColumnName);
+                sobj.viewColumnTableName = ndkFn.groupBy(ndkVary.gridOpsColumn.rowData, x => x.TableName);
             }
-
+            
             ndkLs.stepsSet(sobj)
         }
     },
@@ -377,7 +373,7 @@ var ndkStep = {
      */
     stepStart: () => new Promise(resolve => {
         if (ndkStep.stepVarIng == 1) {
-            ndkFn.msg("正在进行中...");
+            ndkFn.msg(ndkI18n.lg.inProgress);
         } else {
             ndkStep.stepStatus(1);
 
@@ -425,7 +421,7 @@ var ndkStep = {
         switch (stepItem) {
             //主题
             case "step-theme":
-                ndkFn.actionRun(sobj.theme == "dark" ? "theme-dark" : "theme-light");
+                ndkFn.actionRun('theme', sobj.theme);
                 resolve();
                 break;
             //分离器大小
@@ -464,6 +460,11 @@ var ndkStep = {
                 ndkDb.reqConns().then(conns => {
                     ndkDb.viewConns(conns).then(() => {
                         ndkStep.stepItemCmd('step-tab-group1-show', sobj)
+                        var fv = (sobj.filterConns || "").trim();
+                        if (fv != "") {
+                            ndkVary.domFilterConns.value = fv;
+                            ndkVary.gridOpsConns.api.setQuickFilter(fv);
+                        }
                         resolve();
                     })
                 })
@@ -475,7 +476,12 @@ var ndkStep = {
                     ndkDb.reqDatabaseName(cp.cobj).then(databases => {
                         ndkDb.viewDatabase(databases).then(() => {
                             ndkStep.stepItemCmd('step-tab-group1-show', sobj)
-                            ndkStep.cpInfo(1);
+
+                            var fv = (sobj.filterDatabase || "").trim();
+                            if (fv != "") {
+                                ndkVary.domFilterDatabase.value = fv;
+                                ndkVary.gridOpsDatabase.api.setQuickFilter(fv);
+                            }
                             resolve();
                         })
                     })
@@ -490,7 +496,12 @@ var ndkStep = {
                     ndkDb.reqTable(cp.cobj, cp.databaseName).then(tables => {
                         ndkDb.viewTable(tables, cp.cobj).then(() => {
                             ndkStep.stepItemCmd('step-tab-group1-show', sobj)
-                            ndkStep.cpInfo(1);
+
+                            var fv = (sobj.filterTable || "").trim();
+                            if (fv != "") {
+                                ndkVary.domFilterTable.value = fv;
+                                ndkVary.gridOpsTable.api.setQuickFilter(fv);
+                            }
                             resolve();
                         })
                     })
@@ -501,11 +512,16 @@ var ndkStep = {
             //载入列
             case "step-view-column":
                 var cp = ndkStep.cpGet(1);
-                if (sobj.viewColumn && cp.databaseName != null && cp.tableName != null) {
-                    ndkDb.reqColumn(cp.cobj, cp.databaseName, cp.tableName).then(columns => {
+                if (sobj.viewColumn && sobj.viewColumnTableName.length && cp.databaseName != null) {
+                    ndkDb.reqColumn(cp.cobj, cp.databaseName, sobj.viewColumnTableName.join(',')).then(columns => {
                         ndkDb.viewColumn(columns, cp.cobj).then(() => {
                             ndkStep.stepItemCmd('step-tab-group1-show', sobj)
-                            ndkStep.cpInfo(1);
+
+                            var fv = (sobj.filterColumn || "").trim();
+                            if (fv != "") {
+                                ndkVary.domFilterColumn.value = fv;
+                                ndkVary.gridOpsColumn.api.setQuickFilter(fv);
+                            }
                             resolve();
                         })
                     })
@@ -513,7 +529,7 @@ var ndkStep = {
                     resolve();
                 }
                 break;
-            //显示选项卡
+            //显示选项卡1连接
             case "step-tab-group1-show":
                 if (sobj.tabGroup1Show && sobj.tabGroup1Show != "") {
                     ndkVary.domTabGroup1.show(sobj.tabGroup1Show);
