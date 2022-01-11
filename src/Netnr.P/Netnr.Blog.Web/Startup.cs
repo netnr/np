@@ -149,7 +149,7 @@ namespace Netnr.Blog.Web
             services.AddDbContextPool<Data.ContextBase>(options =>
             {
                 Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
-            }, 20);
+            }, 10);
 
             //定时任务
             if (!GlobalTo.GetValue<bool>("ReadOnly"))
@@ -179,6 +179,10 @@ namespace Netnr.Blog.Web
             }
 
             var createScript = db.Database.GenerateCreateScript();
+            if (GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
+            {
+                createScript = createScript.Replace(" datetime ", " timestamp ");
+            }
             Console.WriteLine(createScript);
 
             //数据库不存在则创建，创建后返回true

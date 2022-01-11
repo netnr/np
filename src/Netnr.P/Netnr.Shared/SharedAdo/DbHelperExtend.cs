@@ -109,6 +109,45 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
+        /// 解析 Heroku 环境变量的连接字符串
+        /// 遵循规则：postgres://{username}:{password}@{host}:{port}/{dbname}
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <returns></returns>
+        public static string SqlConnFromHeroku(string ev)
+        {
+            string conn = string.Empty;
+
+            string pattern = @"(\w+):\/\/(\w+):(\w+)@(.*):(\d+)\/(\w+)";
+            var val = Environment.GetEnvironmentVariable(ev);
+            Match m = Regex.Match(val, pattern);
+            if (m.Success)
+            {
+                string username = m.Groups[2].Value.ToString();
+                string password = m.Groups[3].Value.ToString();
+                string host = m.Groups[4].Value.ToString();
+                string port = m.Groups[5].Value.ToString();
+                string dbname = m.Groups[6].Value.ToString();
+
+                switch (m.Groups[1].ToString().ToLower())
+                {
+                    case "postgres":
+                        conn = $"Server={host};Port={port};User Id={username};Password={password};Database={dbname};SslMode=Require;Trust Server Certificate=true;";
+                        break;
+                    case "mysql":
+                        conn = $"Server={host};Port={port};Uid={username};Pwd={password};Database={dbname};";
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"解析 Heroku 环境变量连接字符串失败，环境变量：{ev}，值：{val}");
+            }
+
+            return conn;
+        }
+
+        /// <summary>
         /// 解析 begin ... end;
         /// </summary>
         /// <param name="sql"></param>

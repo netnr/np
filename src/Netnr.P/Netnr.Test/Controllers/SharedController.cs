@@ -1,9 +1,13 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using Microsoft.Data.Sqlite;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Sdk.Sfc;
+using Microsoft.SqlServer.Management.Smo;
 using Netnr.Core;
 using Netnr.SharedAdo;
 using Netnr.SharedCompile;
 using Netnr.SharedDataKit;
+using System.Net;
 using System.Text.Json;
 
 namespace Netnr.Test.Controllers
@@ -14,6 +18,61 @@ namespace Netnr.Test.Controllers
     [Route("[controller]/[action]")]
     public class SharedController : Controller
     {
+        [HttpGet]
+        public SharedResultVM To_DK()
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                Server srv = new Server(new ServerConnection("local.host,1433", "sa", "Abc123...."));
+                Database db = srv.Databases["netnr"];
+
+                Scripter scrp = new Scripter(srv);
+                scrp.Options.Indexes = true;
+                scrp.Options.ScriptDrops = false;
+                scrp.Options.WithDependencies = true;
+                scrp.Options.DriAllConstraints = true;
+
+                foreach (Table tb in db.Tables)
+                {
+                    if (tb.IsSystemObject == false && tb.Name == "UserInfo")
+                    {
+                        var sc = scrp.ScriptWithList(new Urn[] { tb.Urn });
+                        vm.Log.Add(sc);
+                        vm.Log.Add("");
+                    }
+                }
+
+                return vm;
+            });
+        }
+
+        [HttpGet]
+        public SharedResultVM To_SQLite_Attach()
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var c1 = @"Data Source=D:\tmp\tmp.db";
+                var conn = new SqliteConnection(c1);
+                conn.Open();
+                var sql1 = "PRAGMA database_list";
+                var cmd1 = new SqliteCommand(sql1, conn);
+                vm.Log.Add(cmd1.ExecuteDataSet(true).Item1);
+
+                var sql2 = @"ATTACH DATABASE 'D:\tmp\netnrf.db' AS nr";
+                var cmd2 = new SqliteCommand(sql2, conn);
+                var v2 = cmd2.ExecuteDataSet(true);
+
+                vm.Log.Add(cmd1.ExecuteDataSet(true).Item1);
+
+                conn.Close();
+                conn.Open();
+                vm.Log.Add(cmd1.ExecuteDataSet(true).Item1);
+
+
+                return vm;
+            });
+        }
+
         /// <summary>
         /// 执行SQL获取打印消息
         /// </summary>

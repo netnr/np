@@ -209,6 +209,14 @@
             <param name="pwd">密码</param>
             <param name="isDecrypt">是解密，加密 false</param>
         </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlConnFromHeroku(System.String)">
+            <summary>
+            解析 Heroku 环境变量的连接字符串
+            遵循规则：postgres://{username}:{password}@{host}:{port}/{dbname}
+            </summary>
+            <param name="ev"></param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlParserBeginEnd(System.String)">
             <summary>
             解析 begin ... end;
@@ -747,6 +755,7 @@
         <member name="M:Netnr.SharedDataKit.Configs.GetTablePostgreSQL">
             <summary>
             获取表
+            预估数据行：https://stackoverflow.com/questions/2596670
             </summary>
             <returns></returns>
         </member>
@@ -771,6 +780,18 @@
             <param name="TableName">表名</param>
             <param name="ColumnName">列名</param>
             <param name="ColumnComment">列注释</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseNameSQLite">
+            <summary>
+            获取库名
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedDataKit.Configs.GetDatabaseSQLite">
+            <summary>
+            获取库名
+            </summary>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.Configs.GetTableSQLite(System.String)">
@@ -934,11 +955,6 @@
         <member name="P:Netnr.SharedDataKit.DatabaseVM.DatabaseName">
             <summary>
             库名
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedDataKit.DatabaseVM.DatabaseClassify">
-            <summary>
-            归类（用户、系统）
             </summary>
         </member>
         <member name="P:Netnr.SharedDataKit.DatabaseVM.DatabaseOwner">
@@ -1500,7 +1516,7 @@
             <summary>
             获取表
             </summary>
-            <param name="DatabaseName"></param>
+            <param name="databaseName"></param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedDataKit.DataKitSQLServerTo.GetTableDDL(System.String,System.String)">
@@ -1790,6 +1806,11 @@
             表名
             </summary>
         </member>
+        <member name="P:Netnr.SharedDataKit.ColumnVM.TableSchema">
+            <summary>
+            模式
+            </summary>
+        </member>
         <member name="P:Netnr.SharedDataKit.ColumnVM.TableComment">
             <summary>
             表注释
@@ -1863,6 +1884,16 @@
         <member name="P:Netnr.SharedDataKit.TableVM.TableSchema">
             <summary>
             模式
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.TableVM.TableOwner">
+            <summary>
+            所属
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedDataKit.TableVM.TableSpace">
+            <summary>
+            空间
             </summary>
         </member>
         <member name="P:Netnr.SharedDataKit.TableVM.TableType">
@@ -2883,6 +2914,16 @@
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="conn">连接字符串</param>
+            <param name="databaseName">数据库名</param>
+            <returns></returns>
+        </member>
+        <member name="M:DKControllerTo.GetTableDDL(System.Nullable{Netnr.SharedEnum.TypeDB},System.String,System.String,System.String)">
+            <summary>
+            获取表
+            </summary>
+            <param name="tdb">数据库类型</param>
+            <param name="conn">连接字符串</param>
+            <param name="filterTableName">表名</param>
             <param name="databaseName">数据库名</param>
             <returns></returns>
         </member>

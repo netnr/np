@@ -10,14 +10,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static string GetDatabaseNameSQLServer()
         {
-            return $@"
-SELECT
-  name AS DatabaseName
-FROM
-  sys.databases
-ORDER BY
-  name;
-            ";
+            return $@"SELECT name AS DatabaseName FROM sys.databases ORDER BY name";
         }
 
         /// <summary>
@@ -29,29 +22,10 @@ ORDER BY
             return $@"
 SELECT
   t1.name AS DatabaseName,
+  suser_sname(t1.owner_sid) AS DatabaseOwner,
   t1.collation_name AS DatabaseCollation,
-  CASE
-    WHEN t1.database_id > 4 THEN 'USER'
-    ELSE 'SYSTEM'
-  END AS DatabaseClassify,
-  (
-    SELECT
-      physical_name
-    FROM
-      sys.master_files f
-    WHERE
-      f.database_id = t1.database_id
-      AND f.file_id = 1
-  ) AS DatabasePath,
-  (
-    SELECT
-      physical_name
-    FROM
-      sys.master_files f
-    WHERE
-      f.database_id = t1.database_id
-      AND f.file_id = 2
-  ) AS DatabaseLogPath,
+  t2.physical_name AS DatabasePath,
+  t3.physical_name AS DatabaseLogPath,
   (
     SELECT
       sum(CONVERT(bigint, f0.[size])) * 8 * 1024
@@ -73,9 +47,13 @@ SELECT
   t1.create_date AS DatabaseCreateTime
 FROM
   sys.databases t1
-WHERE 1=1 {Where}
+  LEFT JOIN sys.master_files t2 ON t2.database_id = t1.database_id
+  LEFT JOIN sys.master_files t3 ON t3.database_id = t1.database_id
+WHERE
+  t2.[type] = 0
+  AND t3.[type] = 1 {Where}
 ORDER BY
-  t1.name;
+  t1.name
             ";
         }
 
@@ -87,54 +65,54 @@ ORDER BY
         public static string GetTableSQLServer(string DatabaseName)
         {
             return $@"
-USE [{ DatabaseName}];
+USE [{DatabaseName}];
 SELECT
-  t1.name AS TableName,
-  ss.name AS TableSchema,
-  t1.type_desc AS TableType,
-  pt.[rows] AS TableRows,
-  t2.pages AS TableDataLength,
-  (t2.used_pages_count - t2.pages) AS TableIndexLength,
-  t1.create_date AS TableCreateTime,
-  t1.modify_date AS TableModifyTime,
-  c1.TableCollation,
+  o.name AS TableName,
+  SCHEMA_NAME(o.schema_id) AS TableSchema,
+  CASE
+    o.type
+    WHEN 'U' THEN 'BASE TABLE'
+    WHEN 'V' THEN 'VIEW'
+    ELSE o.type
+  END AS TableType,
+  m1.TableRows,
+  m1.TableDataLength,
+  m2.TableIndexLength,
+  o.create_date AS TableCreateTime,
+  o.modify_date AS TableModifyTime,
   ep.value AS TableComment
 FROM
-  sys.tables t1
-  LEFT JOIN sys.schemas ss ON t1.schema_id = ss.schema_id
-  LEFT JOIN sys.extended_properties ep ON ep.major_id = t1.object_id
+  sys.objects o
+  LEFT JOIN sys.extended_properties ep ON ep.major_id = o.object_id
   AND ep.minor_id = 0
-  LEFT JOIN sys.partitions pt ON t1.object_id = pt.object_id
-  AND pt.index_id <= 1
   LEFT JOIN (
     SELECT
-      ps.object_id,
-      SUM (ps.used_page_count) * 8 * 1024 AS used_pages_count,
-      SUM (
-        CASE
-          WHEN (idx.index_id < 2) THEN (
-            in_row_data_page_count + lob_used_page_count + row_overflow_used_page_count
-          )
-          ELSE lob_used_page_count + row_overflow_used_page_count
-        END
-      ) * 8 * 1024 AS pages
+      t.object_id,
+      p.rows AS TableRows,
+      SUM(a.total_pages) * 8 * 1024 AS TableDataLength
     FROM
-      sys.dm_db_partition_stats ps
-      JOIN sys.indexes idx ON ps.object_id = idx.object_id
-      AND ps.index_id = idx.index_id
+      sys.tables t
+      INNER JOIN sys.indexes i ON t.object_id = i.object_id
+      INNER JOIN sys.partitions p ON i.object_id = p.OBJECT_ID
+      AND i.index_id = p.index_id
+      INNER JOIN sys.allocation_units a ON p.partition_id = a.container_id
     GROUP BY
-      ps.object_id
-  ) t2 ON t1.object_id = t2.object_id
+      t.object_id,
+      p.rows
+  ) m1 ON o.object_id = m1.object_id
   LEFT JOIN (
     SELECT
       object_id,
-      max(collation_name) TableCollation
+      SUM([used_page_count]) * 8 * 1024 AS TableIndexLength
     FROM
-      sys.columns
+      sys.dm_db_partition_stats
     GROUP BY
       object_id
-  ) c1 ON t1.object_id = c1.object_id
-  ORDER BY t1.name
+  ) m2 ON o.object_id = m2.object_id
+WHERE
+  o.type IN ('U', 'V')
+ORDER BY
+  o.name
             ";
         }
 
@@ -147,45 +125,36 @@ FROM
         public static string GetColumnSQLServer(string DatabaseName, string Where)
         {
             return $@"
-USE [{ DatabaseName}];
+USE [{DatabaseName}];
 SELECT
-  t1.[name] AS TableName,
-  ep1.[value] AS TableComment,
-  c1.[name] AS ColumnName,
-  ColumnType = CASE
-    WHEN COLUMNPROPERTY(c1.object_id, c1.[name], 'charmaxlen') IS NULL THEN t2.[name]
-    ELSE t2.[name] + '(' + CONVERT(
-      VARCHAR(50),
-      COLUMNPROPERTY(c1.object_id, c1.[name], 'charmaxlen')
-    ) + ')'
-  END,
-  t2.[name] AS DataType,
-  [DataLength] = ISNULL(
-    COLUMNPROPERTY(c1.object_id, c1.[name], 'charmaxlen'),
-    c1.[precision]
-  ),
-  c1.[scale] AS DataScale,
-  c1.column_id AS ColumnOrder,
-  ipk.key_ordinal AS PrimaryKey,
-  AutoIncr = CASE
-    WHEN ic2.[name] IS NOT NULL THEN 'YES'
-    ELSE NULL
-  END,
-  c1.is_nullable AS IsNullable,
-  CONVERT(
-    nvarchar(4000),
-    OBJECT_DEFINITION(c1.default_object_id)
-  ) AS ColumnDefault,
-  ep2.[value] AS ColumnComment
+  o.name AS TableName,
+  SCHEMA_NAME(o.schema_id) AS TableSchema,
+  ep1.value AS TableComment,
+  c.name AS ColumnName,
+  CASE
+    WHEN c.system_type_id IN (48, 52, 56, 59, 60, 62, 106, 108, 122, 127) THEN t.name
+    WHEN c.system_type_id IN (40, 41, 42, 43, 58, 61) THEN t.name
+    ELSE CONCAT(t.name, '(', COLUMNPROPERTY(c.object_id, c.name, 'charmaxlen'), ')')
+  END AS ColumnType,
+  t.name AS DataType,
+  CASE
+    WHEN c.system_type_id IN (48, 52, 56, 59, 60, 62, 106, 108, 122, 127) THEN c.precision
+    ELSE COLUMNPROPERTY(c.object_id, c.name, 'charmaxlen')
+  END AS DataLength,
+  CASE
+    WHEN c.system_type_id IN (40, 41, 42, 43, 58, 61) THEN NULL
+    ELSE ODBCSCALE(c.system_type_id, c.scale)
+  END AS DataScale,
+  c.column_id AS ColumnOrder,
+  k.key_ordinal AS PrimaryKey,
+  c.is_identity AS AutoIncr,
+  c.is_nullable AS IsNullable,
+  OBJECT_DEFINITION(c.default_object_id) AS ColumnDefault,
+  ep2.value AS ColumnComment
 FROM
-  sys.tables t1
-  LEFT JOIN sys.columns c1 ON t1.object_id = c1.object_id
-  LEFT JOIN sys.extended_properties ep1 ON t1.object_id = ep1.major_id
-  AND ep1.minor_id = 0
-  LEFT JOIN sys.extended_properties ep2 ON ep2.class = 1
-  AND ep2.major_id = t1.object_id
-  AND ep2.minor_id = c1.column_id
-  LEFT JOIN sys.types t2 ON c1.user_type_id = t2.user_type_id
+  sys.objects o
+  JOIN sys.columns c ON c.object_id = o.object_id
+  LEFT JOIN sys.types t ON c.user_type_id = t.user_type_id
   LEFT JOIN (
     SELECT
       idx.object_id,
@@ -197,15 +166,17 @@ FROM
       AND idx.index_id = ic1.index_id
     WHERE
       idx.is_primary_key = 1
-  ) ipk ON ipk.object_id = c1.object_id
-  AND c1.column_id = ipk.column_id
-  LEFT JOIN sys.identity_columns ic2 ON c1.object_id = ic2.object_id
-  AND c1.column_id = ic2.column_id
+  ) k ON c.object_id = k.object_id
+  AND c.column_id = k.column_id
+  LEFT JOIN sys.extended_properties ep1 ON c.object_id = ep1.major_id
+  AND ep1.minor_id = 0
+  LEFT JOIN sys.extended_properties ep2 ON ep2.major_id = c.object_id
+  AND ep2.minor_id = c.column_id
 WHERE
-  1 = 1 {Where}
+  o.type IN ('U', 'V') {Where}
 ORDER BY
-  t1.[name],
-  c1.column_id;
+  o.name,
+  c.column_id
             ";
         }
 
@@ -219,7 +190,7 @@ ORDER BY
         public static string SetTableCommentSQLServer(string DatabaseName, string TableName, string TableComment)
         {
             return @$"
-USE [{ DatabaseName}];
+USE [{DatabaseName}];
 IF NOT EXISTS (
   SELECT
     A.name,
@@ -256,7 +227,7 @@ EXEC sp_updateextendedproperty @name = N'MS_Description',
         public static string SetColumnCommentSQLServer(string DatabaseName, string TableName, string ColumnName, string ColumnComment)
         {
             return @$"
-USE [{ DatabaseName}];
+USE [{DatabaseName}];
 IF NOT EXISTS (
   SELECT
     C.value AS column_description

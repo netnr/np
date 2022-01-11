@@ -18,13 +18,21 @@ namespace Netnr.SharedDataKit
         /// </summary>
         public string TableSchema { get; set; }
         /// <summary>
+        /// 所属
+        /// </summary>
+        public string TableOwner { get; set; }
+        /// <summary>
+        /// 空间
+        /// </summary>
+        public string TableSpace { get; set; }
+        /// <summary>
         /// 表类型（表、视图）
         /// </summary>
         public string TableType { get; set; }
         /// <summary>
         /// 引擎
         /// </summary>
-        public long TableEngine { get; set; }
+        public string TableEngine { get; set; }
         /// <summary>
         /// 总行数
         /// </summary>

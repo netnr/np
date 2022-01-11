@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Netnr.Blog.Data;
 using Netnr.Core;
 using Netnr.Login;
@@ -477,7 +478,12 @@ namespace Netnr.Blog.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(pe1))
             {
-                query = query.Where(x => x.UwTitle.Contains(pe1));
+                query = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.UwTitle, $"%{pe1}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.UwTitle, $"%{pe1}%")),
+                    _ => query.Where(x => x.UwTitle.Contains(pe1)),
+                };
             }
 
             query = QueryableTo.OrderBy(query, sort, order);

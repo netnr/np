@@ -46,7 +46,7 @@
                 $(res).each(function (i) {
                     var id = 'mi' + (i + 1);
                     var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
-                    var context = '<em class="badge bg-secondary" title="该信息已被屏蔽">block</em>'
+                    var context = '<p><em class="badge bg-secondary" title="该信息已被屏蔽">block</em></p>'
                     if (!this.IsBlock) {
                         context = netnrmd.render(netnrmd.spacing(this.Content)).replace(/@@\S+/g, function (n) {
                             return '<span class="text-primary">' + n + '</span>'

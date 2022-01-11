@@ -790,6 +790,162 @@ public partial class MenuService
         return true;
     }
 
+    [Display(Name = "相同表数据复制", GroupName = "4466")]
+    public static bool TableCopy()
+    {
+        //输出头
+        var mi = MethodBase.GetCurrentMethod();
+        DXService.ShowTitleInfo(mi);
+
+        //配置
+        var co = new ConfigObj();
+
+        //选择原库
+        var odb = DXService.ConsoleReadDatabase(co, "设置原库：");
+
+        //选择新库
+        var ndb = DXService.ConsoleReadDatabase(co, "设置新库：");
+
+        DXService.Log($"{odb.TDB} => {ndb.TDB}");
+
+        //转换变量
+        var cv = new ConversionObj()
+        {
+            //原库表名
+            OdTableName = "",
+            //原库表数据查询SQL
+            OdQuerySql = "",
+            //新库表名
+            NdTableName = "",
+            //新库表数据清理（为空不清理）
+            NdClearTableSql = ""
+        };
+
+        Console.Write("输入原库表名：");
+        cv.OdTableName = Console.ReadLine();
+
+        //原表数据查询
+        var odQuerySql = $"SELECT * FROM {DbHelper.SqlQuote(odb.TDB, cv.OdTableName)}";
+        Console.Write($"原表数据查询 SQL（默认 {odQuerySql}）：");
+        cv.OdQuerySql = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(cv.OdQuerySql))
+        {
+            cv.OdQuerySql = odQuerySql;
+        }
+
+        Console.Write("输入新库表名：");
+        cv.NdTableName = Console.ReadLine();
+
+        //新表清空数据脚本（为空时不清空）
+        var ndClearTableSql = DbHelper.SqlQuote(ndb.TDB, cv.NdTableName);
+        ndClearTableSql = ndb.TDB == SharedEnum.TypeDB.SQLite ? $"DELETE FROM {ndClearTableSql}" : $"TRUNCATE TABLE {ndClearTableSql}";
+        Console.Write($"新表清空数据脚本 SQL，为空时不清空（如 {ndClearTableSql}）：");
+        cv.NdClearTableSql = Console.ReadLine();
+
+        //跑表
+        var st = new SharedTimingVM();
+
+        DbConnection odc = DataKitAidTo.DbConn(odb.TDB, odb.Conn);
+        DbConnection ndc = DataKitAidTo.DbConn(ndb.TDB, ndb.Conn);
+        //原数据库
+        var odDB = new DbHelper(odc);
+        //新数据库
+        var ndDB = new DbHelper(ndc);
+
+        DXService.Log($"开始查询原表，查询语句：{cv.OdQuerySql}");
+        //原表数据集
+        var odDs = odDB.SqlExecuteReader(cv.OdQuerySql);
+        var odDt = odDs.Item1.Tables[0];
+
+        DXService.Log($"原表数据共：{odDt.Rows.Count} 行，查询耗时：{st.PartTimeFormat()}");
+
+        //构建新表空数据
+        var ndDt = ndDB.SqlEmptyTable($"{DbHelper.SqlQuote(ndb.TDB, cv.NdTableName)}");
+        var ndColumnName = ndDt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
+
+        //原表列对应新表列
+        var columnMap = new Dictionary<string, string>();
+        foreach (DataColumn odDc in odDt.Columns)
+        {
+            var ndName = ndColumnName.FirstOrDefault(x => x.ToLower() == odDc.ColumnName.ToLower());
+            if (ndName != null)
+            {
+                columnMap.Add(odDc.ColumnName, ndName);
+            }
+        }
+
+        //遍历原表数据 填充到 新表
+        foreach (DataRow odDr in odDt.Rows)
+        {
+            //构建新表一行
+            var ndNewRow = ndDt.NewRow();
+
+            //根据原表列映射新表列填充单元格数据
+            foreach (var odName in columnMap.Keys)
+            {
+                //原表列值
+                var odValue = odDr[odName];
+                if (odValue is not DBNull)
+                {
+                    //原表列值 转换类型为 新表列值
+                    try
+                    {
+                        //新表列
+                        var ndName = columnMap[odName];
+                        //新表列类型
+                        var ndType = ndDt.Columns[ndName].DataType;
+                        //赋值原表列值
+                        ndNewRow[ndName] = Convert.ChangeType(odValue, ndType);
+                    }
+                    catch (Exception ex)
+                    {
+                        DXService.Log($"列值转换失败");
+                        DXService.Log(ex.ToJson());
+                    }
+                }
+            }
+
+            //新行添加到新表
+            ndDt.Rows.Add(ndNewRow.ItemArray);
+        }
+
+        DXService.Log($"原表数据填充到新表耗时：{st.PartTimeFormat()}");
+
+        if (!string.IsNullOrWhiteSpace(cv.NdClearTableSql))
+        {
+            DXService.Log($"开始清空新表，执行脚本：{cv.NdClearTableSql}");
+            var num = ndDB.SqlExecuteNonQuery(cv.NdClearTableSql);
+
+            DXService.Log($"返回受影响行数：{num}，执行耗时：{st.PartTimeFormat()}");
+        }
+
+        DXService.Log($"开始写入新表，共：{ndDt.Rows.Count} 行");
+        switch (ndb.TDB)
+        {
+            case SharedEnum.TypeDB.SQLite:
+                ndDB.BulkBatchSQLite(ndDt, cv.NdTableName);
+                break;
+            case SharedEnum.TypeDB.MySQL:
+            case SharedEnum.TypeDB.MariaDB:
+                ndDB.BulkCopyMySQL(ndDt, cv.NdTableName);
+                break;
+            case SharedEnum.TypeDB.Oracle:
+                ndDB.BulkCopyOracle(ndDt, cv.NdTableName);
+                break;
+            case SharedEnum.TypeDB.SQLServer:
+                ndDB.BulkCopySQLServer(ndDt, cv.NdTableName);
+                break;
+            case SharedEnum.TypeDB.PostgreSQL:
+                ndDB.BulkCopyPostgreSQL(ndDt, cv.NdTableName);
+                break;
+        }
+
+        DXService.Log($"已写入新表，耗时：{st.PartTimeFormat()}");
+        DXService.Log($"总共耗时：{st.TotalTimeFormat()}");
+
+        return true;
+    }
+
     #endregion
 
     #region 66
@@ -896,101 +1052,6 @@ public partial class MenuService
         DXService.ShowTitleInfo(mi);
 
         ProjectSafeCopyService.Run();
-    }
-
-    #endregion
-
-    #region 99
-
-    [Display(Name = "ZD 提取数据库文件到磁盘", GroupName = "99")]
-    public static void ZDSaveAsFile()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        //配置
-        var co = new ConfigObj();
-
-        var st = new SharedTimingVM();
-
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        //数据库
-        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
-
-        //新表
-        var dt = db.SqlExecuteReader("select top 0 * from cqzd2020.dbo.ANNEX_INFO").Item1.Tables[0];
-
-        //附件目录
-        Console.Write($"附件存储目录（如 {co.DXHub} ）：");
-        var annexPath = Console.ReadLine();
-        if (!Directory.Exists(annexPath))
-        {
-            Directory.CreateDirectory(annexPath);
-        }
-
-        //查询脚本
-        Console.Write("查询脚本（如 select top 10 * from cqzd2016Annex.dbo.ANNEX_INFO）：");
-        var querySql = Console.ReadLine();
-        var note = querySql.Contains("cqzd2016Annex") ? "cqzd2016Annex" : "cqzd2020Annex";
-
-        DXService.Log($"执行查询脚本: {querySql}");
-
-        int wi = 0;
-        db.SafeConn(() =>
-        {
-            var cmd = db.Connection.CreateCommand();
-            cmd.CommandTimeout = 300;
-            cmd.CommandText = querySql;
-
-            var reader = cmd.ExecuteReader();
-
-            while (reader.Read())
-            {
-                var dr = dt.NewRow();
-                byte[] bin = null;
-                for (int f = 0; f < reader.FieldCount; f++)
-                {
-                    //image
-                    if (f == 5)
-                    {
-                        bin = (byte[])reader[f];
-                    }
-                    else
-                    {
-                        dr[f] = reader[f];
-                    }
-                }
-                var id = dr["ID"].ToString();
-                var suff = dr["SUFFIX_NAME"].ToString().TrimStart('.');
-                dr["SUFFIX_NAME"] = suff;
-                dr["NOTE"] = note;
-
-                var vpath = id + "." + suff;
-                dr["ANNEX_PATH"] = vpath;
-                var path = Path.Combine(annexPath, vpath);
-                File.WriteAllBytes(path, bin);
-                DXService.Log($"写入文件（{++wi}）：{path}");
-
-                dt.Rows.Add(dr.ItemArray);
-            }
-        });
-
-        DXService.Log($"导出文件（{wi}）耗时: {st.PartTimeFormat()}");
-
-        DXService.Log($"回写文件路径");
-
-        var csb = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(cdb.Conn)
-        {
-            InitialCatalog = "cqzd2020"
-        };
-        var dbmain = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, csb.ConnectionString));
-        dbmain.BulkCopySQLServer(dt, "ANNEX_INFO");
-        DXService.Log($"写入文件路径耗时: {st.PartTimeFormat()}");
-
-        DXService.Log($"共耗时: {st.TotalTimeFormat()}");
     }
 
     #endregion

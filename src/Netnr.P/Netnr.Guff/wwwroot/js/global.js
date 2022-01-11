@@ -746,7 +746,7 @@
             htm.push('<form id="rwform" onsubmit="return false">');
             htm.push('<input type="hidden" name="id" value="' + id + '">');
             if (!guff.dc["userinfo"]) {
-                htm.push('<div class="row">');
+                htm.push('<div class="row d-none">');
 
                 htm.push('<div class="col-lg-4 mb-1"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">昵称</div></div>');
                 htm.push('<input class="form-control" name="UrAnonymousName" placeholder="请输入昵称" maxlength="20"></div></div>');
@@ -834,15 +834,15 @@
                 alink = $('input[name="UrAnonymousLink"]').val(),
                 amail = $('input[name="UrAnonymousMail"]').val();
             if (!guff.dc["userinfo"]) {
-                if (aname.trim() == "") {
-                    err.push('昵称不能为空');
-                }
-                if (alink != "" && alink.toLowerCase().indexOf("http") != 0) {
-                    err.push('链接请以 http 开头');
-                }
-                if (amail == "" || !/^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/.test(amail)) {
-                    err.push('邮箱格式有误');
-                }
+                //if (aname.trim() == "") {
+                //    err.push('昵称不能为空');
+                //}
+                //if (alink != "" && alink.toLowerCase().indexOf("http") != 0) {
+                //    err.push('链接请以 http 开头');
+                //}
+                //if (amail == "" || !/^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/.test(amail)) {
+                //    err.push('邮箱格式有误');
+                //}
             }
             if (content.trim().length < 1) {
                 err.push('回复内容不能为空');

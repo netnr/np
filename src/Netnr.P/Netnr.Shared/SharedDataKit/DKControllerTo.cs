@@ -47,6 +47,20 @@ public class DKControllerTo : Controller
     }
 
     /// <summary>
+    /// 获取表
+    /// </summary>
+    /// <param name="tdb">数据库类型</param>
+    /// <param name="conn">连接字符串</param>
+    /// <param name="filterTableName">表名</param>
+    /// <param name="databaseName">数据库名</param>
+    /// <returns></returns>
+    [HttpPost]
+    public SharedResultVM GetTableDDL([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "", [FromForm] string databaseName = null)
+    {
+        return DataKitTo.GetTableDDL(tdb, conn, filterTableName, databaseName);
+    }
+
+    /// <summary>
     /// 获取列
     /// </summary>
     /// <param name="tdb">数据库类型</param>

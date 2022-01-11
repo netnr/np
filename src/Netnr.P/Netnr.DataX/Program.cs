@@ -9,7 +9,7 @@ namespace Netnr.DataX
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            Console.OutputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = Encoding.Unicode;
             Console.Title = MethodBase.GetCurrentMethod().DeclaringType.Namespace + "  v0.0.1";
             Console.CancelKeyPress += (s, e) => Environment.Exit(0);
 

@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using Npgsql;
+using NpgsqlTypes;
+using System.Reflection;
 
 namespace Netnr.Test.Controllers
 {

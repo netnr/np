@@ -102,6 +102,9 @@ const oConsole = Object.assign({
             }
         }
 
+        if (fn == "clear") {
+            oConsole.oGui.innerHTML = '';
+        }
         oConsole.oGui.appendChild(item);
         oConsole.oGui.scrollBy(0, 99999);
     }

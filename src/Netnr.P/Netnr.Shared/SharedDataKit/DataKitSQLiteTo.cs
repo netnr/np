@@ -50,7 +50,15 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public List<string> GetDatabaseName()
         {
-            var list = new List<string>() { DefaultDatabaseName() };
+            var sql = Configs.GetDatabaseNameSQLite();
+            var ds = db.SqlExecuteReader(sql);
+
+            var list = new List<string>();
+            var dt = ds.Item1.Tables[0];
+            foreach (DataRow dr in dt.Rows)
+            {
+                list.Add(dr["name"].ToString());
+            }
 
             return list;
         }
@@ -62,23 +70,27 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public List<DatabaseVM> GetDatabase(string filterDatabaseName = null)
         {
-            Microsoft.Data.Sqlite.SqliteConnectionStringBuilder builder = new(dbConnection.ConnectionString);
-            var dt = db.SqlExecuteReader("PRAGMA encoding").Item1.Tables[0];
+            var sql = Configs.GetDatabaseSQLite();
+            var ds = db.SqlExecuteReader(sql);
 
-            var fi = new FileInfo(builder.DataSource);
-
-            var list = new List<DatabaseVM>
+            var list = new List<DatabaseVM>();
+            var dt1 = ds.Item1.Tables[0];
+            var charset = ds.Item1.Tables[1].Rows[0][0].ToString();
+            foreach (DataRow dr in dt1.Rows)
             {
-                new DatabaseVM
+                var name = dr["name"].ToString();
+                var file = dr["file"].ToString();
+                var fi = new FileInfo(file);
+
+                list.Add(new DatabaseVM
                 {
-                    DatabaseName = DefaultDatabaseName(),
-                    DatabaseClassify = "DEFAULT",
-                    DatabaseCharset = dt.Rows[0][0].ToString(),
-                    DatabasePath = builder.DataSource,
+                    DatabaseName = name,
+                    DatabaseCharset = charset,
+                    DatabasePath = file,
                     DatabaseDataLength = fi.Length,
                     DatabaseCreateTime = fi.CreationTime
-                }
-            };
+                });
+            }
 
             return list;
         }
@@ -97,8 +109,18 @@ namespace Netnr.SharedDataKit
 
             var sql = Configs.GetTableSQLite(databaseName);
             var ds = db.SqlExecuteReader(sql);
-
             var list = ds.Item1.Tables[0].ToModel<TableVM>();
+
+            //计算表行 https://stackoverflow.com/questions/4474873
+            var rcsql = new List<string>();
+            list.ForEach(t => rcsql.Add($"SELECT max(RowId) - min(RowId) + 1 FROM {DbHelper.SqlQuote(SharedEnum.TypeDB.SQLite, t.TableName)}"));
+            var rcrows = db.SqlExecuteReader(string.Join("\nUNION ALL\n", rcsql)).Item1.Tables[0].Rows;
+            for (int i = 0; i < rcrows.Count; i++)
+            {
+                var trows = rcrows[i][0];
+                list[i].TableRows = trows == DBNull.Value ? 0 : Convert.ToInt64(trows);
+            }
+
             return list;
         }
 

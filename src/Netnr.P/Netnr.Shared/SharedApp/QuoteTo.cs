@@ -84,10 +84,10 @@ public class QuoteTo
                     break;
 
                 case "swiper.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.3.2/swiper-bundle.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.4.1/swiper-bundle.min.css' rel='stylesheet' />");
                     break;
                 case "swiper.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.3.2/swiper-bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.4.1/swiper-bundle.min.js'></script>");
                     break;
 
                 case "jz.js":
@@ -106,12 +106,12 @@ public class QuoteTo
                     break;
 
                 case "tocbot.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.17.3/dist/tocbot.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.18.0/dist/tocbot.min.js'></script>");
                     break;
 
                 case "selectpage":
-                    vh.Add("<link href='https://npm.elemecdn.com/selectpage@2.19.0/selectpage.css' rel='stylesheet' />");
-                    vh.Add("<script src='https://npm.elemecdn.com/selectpage@2.19.0/selectpage.min.js'></script>");
+                    vh.Add("<link href='https://npm.elemecdn.com/selectpage@2.20.0/selectpage.css' rel='stylesheet' />");
+                    vh.Add("<script src='https://npm.elemecdn.com/selectpage@2.20.0/selectpage.min.js'></script>");
                     break;
 
                 case "ace.css":
@@ -129,11 +129,11 @@ public class QuoteTo
                     break;
 
                 case "ag-grid-community.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@26.2.0/dist/ag-grid-community.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@26.2.1/dist/ag-grid-community.min.js'></script>");
                     break;
 
                 case "ag-grid-enterprise.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@26.2.0/dist/ag-grid-enterprise.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@26.2.1/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
                     break;
 
@@ -182,7 +182,7 @@ public class QuoteTo
                     break;
 
                 case "hls.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.1.1/dist/hls.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.1.2/dist/hls.min.js'></script>");
                     break;
 
                 case "watermark.js":

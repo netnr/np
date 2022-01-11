@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using JiebaNet.Segmenter;
+using LinqKit;
 using Netnr.Core;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
-using JiebaNet.Segmenter;
-using LinqKit;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Application
 {
@@ -137,7 +138,19 @@ namespace Netnr.Blog.Application
                 kws = kws.Distinct().ToList();
 
                 var inner = PredicateBuilder.New<UserWriting>();
-                kws.ForEach(k => inner.Or(x => x.UwTitle.Contains(k)));
+                switch (GlobalTo.TDB)
+                {
+                    case SharedEnum.TypeDB.SQLite:
+                        kws.ForEach(k => inner.Or(x => EF.Functions.Like(x.UwTitle, $"%{k}%")));
+                        break;
+                    case SharedEnum.TypeDB.PostgreSQL:
+                        kws.ForEach(k => inner.Or(x => EF.Functions.ILike(x.UwTitle, $"%{k}%")));
+                        break;
+                    default:
+                        kws.ForEach(k => inner.Or(x => x.UwTitle.Contains(k)));
+                        break;
+                }
+
                 query = query.Where(inner);
             }
 
@@ -549,7 +562,12 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query1 = query1.Where(x => x.a.GistFilename.Contains(q) || x.a.GistContent.Contains(q) || x.a.GistRemark.Contains(q));
+                query1 = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query1.Where(x => EF.Functions.Like(x.a.GistFilename, $"%{q}%") || EF.Functions.Like(x.a.GistRemark, $"%{q}%") || EF.Functions.Like(x.a.GistContent, $"%{q}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query1.Where(x => EF.Functions.ILike(x.a.GistFilename, $"%{q}%") || EF.Functions.ILike(x.a.GistRemark, $"%{q}%") || EF.Functions.ILike(x.a.GistContent, $"%{q}%")),
+                    _ => query1.Where(x => x.a.GistFilename.Contains(q) || x.a.GistRemark.Contains(q) || x.a.GistContent.Contains(q)),
+                };
             }
 
             //所属用户
@@ -576,10 +594,30 @@ namespace Netnr.Blog.Application
             {
                 var query2 = query1.Select(x => new
                 {
-                    SearchOrder = (x.a.GistFilename.Contains(q) ? 4 : 0) + (x.a.GistContent.Contains(q) ? 2 : 0) + (x.a.GistRemark.Contains(q) ? 1 : 0),
+                    SearchOrder = (x.a.GistFilename.Contains(q) ? 4 : 0) + (x.a.GistRemark.Contains(q) ? 2 : 0) + (x.a.GistContent.Contains(q) ? 1 : 0),
                     x.Nickname,
                     x.a
                 }).OrderByDescending(x => x.SearchOrder);
+
+                switch (GlobalTo.TDB)
+                {
+                    case SharedEnum.TypeDB.SQLite:
+                        query2 = query1.Select(x => new
+                        {
+                            SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{q}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{q}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{q}%") ? 1 : 0),
+                            x.Nickname,
+                            x.a
+                        }).OrderByDescending(x => x.SearchOrder);
+                        break;
+                    case SharedEnum.TypeDB.PostgreSQL:
+                        query2 = query1.Select(x => new
+                        {
+                            SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{q}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{q}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{q}%") ? 1 : 0),
+                            x.Nickname,
+                            x.a
+                        }).OrderByDescending(x => x.SearchOrder);
+                        break;
+                }
 
                 query = query2.Select(x => new Gist
                 {
@@ -686,7 +724,12 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query = query.Where(x => x.DsName.Contains(q) || x.DsRemark.Contains(q));
+                query = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DsName, $"%{q}%") || EF.Functions.Like(x.DsRemark, $"%{q}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DsName, $"%{q}%") || EF.Functions.ILike(x.DsRemark, $"%{q}%")),
+                    _ => query.Where(x => x.DsName.Contains(q) || x.DsRemark.Contains(q)),
+                };
             }
 
             var pag = new SharedPaginationVM
@@ -758,7 +801,12 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query = query.Where(x => x.RunRemark.Contains(q));
+                query = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.RunRemark, $"%{q}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.RunRemark, $"%{q}%")),
+                    _ => query.Where(x => x.RunRemark.Contains(q)),
+                };
             }
 
             var pag = new SharedPaginationVM
@@ -833,7 +881,12 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query = query.Where(x => x.DrName.Contains(q) || x.DrRemark.Contains(q));
+                query = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DrName, $"%{q}%") || EF.Functions.Like(x.DrRemark, $"%{q}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DrName, $"%{q}%") || EF.Functions.ILike(x.DrRemark, $"%{q}%")),
+                    _ => query.Where(x => x.DrName.Contains(q) || x.DrRemark.Contains(q)),
+                };
             }
 
             var pag = new SharedPaginationVM
@@ -1069,7 +1122,12 @@ namespace Netnr.Blog.Application
 
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query = query.Where(x => x.GrContent.Contains(q) || x.GrTag.Contains(q));
+                query = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.GrContent, $"%{q}%") || EF.Functions.Like(x.GrTag, $"%{q}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.GrContent, $"%{q}%") || EF.Functions.ILike(x.GrTag, $"%{q}%")),
+                    _ => query.Where(x => x.GrContent.Contains(q) || x.GrTag.Contains(q)),
+                };
             }
 
             var pag = new SharedPaginationVM

@@ -3,8 +3,8 @@
         <div class="col-md-12">
             <h3>npm i zoningjs</h3>
             <p><a href="https://unpkg.com/zoningjs/">https://unpkg.com/zoningjs/</a></p>
-            <h3>source</h3>
-            <p><a href="https://github.com/netnr/stats">https://github.com/netnr/stats</a></p>
+            <h3>release</h3>
+            <p><a href="https://github.com/netnr/zoning">https://github.com/netnr/zoning</a></p>
         </div>
     </div>
 
@@ -44,7 +44,7 @@
 </div>
 
 <script>
-    var npmsrc = "https://npm.elemecdn.com/zoningjs@2.2020.0/";
+    var npmsrc = "https://npm.elemecdn.com/zoningjs@2.2021.0/";
 
     function requestJson(json) {
         return new Promise((resolve, reject) => {
@@ -78,7 +78,7 @@
                 requestJson(`${npmsrc}0.json`).then(json => {
                     var fdata = json.filter(x => x.pid == "0");
                     fdata.forEach(item => {
-                        var option = new Option(`${item.txt}（${item.id}）`, item.id);
+                        var option = new Option(`${item.txt} - ${item.id}`, item.id);
                         option.setAttribute('data-item', JSON.stringify(item))
                         se0.options.add(option);
                     });
@@ -129,7 +129,7 @@
                                 var fdata = json.filter(x => x.pid == sekey);
                                 if (fdata.length) {
                                     fdata.forEach(item => {
-                                        var option = new Option(`${item.txt}（${item.id}）`, item.id);
+                                        var option = new Option(`${item.txt} - ${item.id}`, item.id);
                                         option.setAttribute('data-item', JSON.stringify(item))
                                         senext.options.add(option);
                                     });
@@ -140,7 +140,7 @@
                         requestJson(`${npmsrc}0.json`).then(json => {
                             var fdata = json.filter(x => x.pid == sekey);
                             fdata.forEach(item => {
-                                var option = new Option(`${item.txt}（${item.id}）`, item.id);
+                                var option = new Option(`${item.txt} - ${item.id}`, item.id);
                                 option.setAttribute('data-item', JSON.stringify(item))
                                 senext.options.add(option);
                             });

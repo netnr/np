@@ -10,14 +10,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static string GetDatabaseNamePostgreSQL()
         {
-            return $@"
-SELECT
-  datname AS DatabaseName
-FROM
-  pg_database
-ORDER BY
-  datname
-            ";
+            return $@"SELECT datname AS DatabaseName FROM pg_database ORDER BY datname";
         }
 
         /// <summary>
@@ -29,10 +22,9 @@ ORDER BY
             return $@"
 SELECT
   t1.datname AS DatabaseName,
-  'DEFAULT' AS DatabaseClassify,
+  pg_get_userbyid(t1.datdba) AS DatabaseOwner,
   t2.spcname AS DatabaseSpace,
-  u1.usename AS DatabaseOwner,
-  pg_encoding_to_char (t1.ENCODING) AS DatabaseCharset,
+  pg_encoding_to_char(t1.encoding) AS DatabaseCharset,
   t1.datcollate AS DatabaseCollation,
   (
     SELECT
@@ -42,12 +34,12 @@ SELECT
     WHERE
       NAME = 'data_directory'
   ) AS DatabasePath,
-  pg_database_size (t1.datname) AS DatabaseDataLength
+  pg_catalog.pg_database_size(t1.oid) AS DatabaseDataLength
 FROM
   pg_database t1
   LEFT JOIN pg_tablespace t2 ON t1.dattablespace = t2.oid
-  LEFT JOIN pg_user u1 ON u1.usesysid = t1.datdba
-WHERE 1=1 {Where}
+WHERE
+  1 = 1 {Where}
 ORDER BY
   t1.datname
             ";
@@ -55,23 +47,33 @@ ORDER BY
 
         /// <summary>
         /// 获取表
+        /// 预估数据行：https://stackoverflow.com/questions/2596670
         /// </summary>
         /// <returns></returns>
         public static string GetTablePostgreSQL()
         {
             return $@"
 SELECT
-  t1.tablename AS TableName,
-  t1.schemaname AS TableSchema,
-  pg_table_size ('""' || t1.tablename || '""') AS TableDataLength,
-  pg_indexes_size('""' || t1.tablename || '""') AS TableIndexLength,
- obj_description (c1.relfilenode) AS TableComment
+  t1.table_name AS TableName,
+  t1.table_schema AS TableSchema,
+  t3.tableowner AS TableOwner,
+  t3.tablespace AS TableSpace,
+  t1.table_type AS TableType,
+  t2.n_live_tup AS TableRows,
+  pg_relation_size(t2.relid) AS TableDataLength,
+  pg_indexes_size(t2.relid) AS TableIndexLength,
+  obj_description(t2.relid) AS TableComment
 FROM
-  pg_tables t1
-  LEFT JOIN pg_class c1 ON t1.tablename = c1.relname
+  information_schema.tables t1
+  LEFT JOIN pg_stat_user_tables t2 ON t1.table_name = t2.relname
+  AND t1.table_schema = t2.schemaname
+  LEFT JOIN pg_tables t3 ON t1.table_name = t3.tablename
+  AND t1.table_schema = t3.schemaname
 WHERE
-  t1.schemaname != 'pg_catalog'
-  AND t1.schemaname != 'information_schema'
+  t1.table_type = 'BASE TABLE'
+  AND t1.table_schema NOT IN('pg_catalog', 'information_schema')
+ORDER BY
+  t1.table_name
             ";
         }
 
@@ -83,75 +85,47 @@ WHERE
         {
             return $@"
 SELECT
-    c1.relname AS TableName,
-    OBJ_DESCRIPTION(relfilenode) AS TableComment,
-    ab.attname AS ColumnName,
-    CONCAT(tp.typname, SUBSTRING(FORMAT_TYPE(ab.atttypid, ab.atttypmod)
-            FROM '\(.*\)')) AS ColumnType,
-    tp.typname AS DataType,
-    SUBSTRING(FORMAT_TYPE(ab.atttypid, ab.atttypmod)
-        FROM '\d+') AS DataLength,
-    REPLACE(SUBSTRING(FORMAT_TYPE(ab.atttypid, ab.atttypmod)
-            FROM '\,\d+'), ',', '') AS DataScale,
-    ab.attnum AS ColumnOrder,
-    ARRAY_LENGTH(REGEXP_SPLIT_TO_ARRAY(SPLIT_PART(t2.index_order, CONCAT('""', ab.attname, '""'), 1), ','), 1) - 1 AS PrimaryKey,
-    CASE ab.attnotnull
-    WHEN 't' THEN
-        0
-    ELSE
-        1
-    END AS IsNullable,
-    t1.adsrc AS ColumnDefault,
-    COL_DESCRIPTION(ab.attrelid, ab.attnum) AS ColumnComment
+  t1.table_name AS TableName,
+  t1.table_schema AS TableSchema,
+  obj_description (
+    format ('%s.""%s""', t1.table_schema, t1.table_name) :: regclass :: oid,
+    'pg_class'
+  ) AS TableComment,
+  t1.column_name AS ColumnName,
+  CASE
+    WHEN t1.character_maximum_length IS NULL THEN t1.udt_name
+    ELSE CONCAT(t1.udt_name, '(', t1.character_maximum_length, ')')
+  END AS ColumnType,
+  t1.udt_name AS DataType,
+  COALESCE(t1.character_maximum_length, numeric_precision) AS DataLength,
+  numeric_scale AS DataScale,
+  t1.ordinal_position AS ColumnOrder,
+  CASE
+    t1.is_identity
+    WHEN 'YES' THEN 1
+    ELSE 0
+  END AS AutoIncr,
+  t2.ordinal_position AS PrimaryKey,
+  CASE
+    t1.is_nullable
+    WHEN 'NO' THEN 1
+    ELSE 0
+  END AS IsNullable,
+  t1.column_default AS ColumnDefault,
+  col_description (
+    format ('%s.""%s""', t1.table_schema, t1.table_name) :: regclass :: oid,
+    t1.ordinal_position
+  ) AS ColumnComment
 FROM
-    pg_class c1
-    LEFT JOIN pg_attribute ab ON ab.attrelid = c1.oid
-    LEFT JOIN pg_type tp ON ab.atttypid = tp.oid
-    LEFT JOIN(
-        SELECT
-            p1.relname,
-            p2.attname,
-            PG_GET_EXPR(p3.adbin, p3.adrelid) AS adsrc
-        FROM
-            pg_class p1,
-            pg_attribute p2,
-            pg_attrdef p3
-        WHERE
-            p3.adrelid = p1.oid
-            AND adnum = p2.attnum
-            AND attrelid = p1.oid) t1 ON t1.relname = c1.relname
-    AND t1.attname = ab.attname
-    LEFT JOIN(
-        SELECT
-            C.COLUMN_NAME,
-            tc.CONSTRAINT_NAME,
-            tc.TABLE_NAME,
-            CONCAT(', ', SUBSTRING(pi.indexdef
-                FROM '\(.*""')) index_order
-        FROM
-            information_schema.table_constraints tc
-            JOIN information_schema.constraint_column_usage ccu USING(CONSTRAINT_SCHEMA, CONSTRAINT_NAME)
-            JOIN information_schema.COLUMNS C ON C.table_schema = tc.CONSTRAINT_SCHEMA
-                AND tc.TABLE_NAME = C.TABLE_NAME
-                AND ccu.COLUMN_NAME = C.COLUMN_NAME
-            JOIN pg_indexes pi ON tc.TABLE_NAME = pi.tablename
-                AND tc.CONSTRAINT_NAME = pi.indexname
-        WHERE
-            tc.constraint_type = 'PRIMARY KEY') t2 ON t2.table_name = c1.relname
-    AND t2.COLUMN_NAME = ab.attname
+  information_schema.columns t1
+  LEFT JOIN information_schema.key_column_usage t2 ON t1.table_name = t2.table_name
+  AND t1.table_schema = t2.table_schema
+  AND t1.column_name = t2.column_name
 WHERE
-    c1.relname IN(
-        SELECT
-            tablename
-        FROM
-            pg_tables
-        WHERE
-            schemaname != 'pg_catalog'
-            AND schemaname != 'information_schema')
-    AND ab.attnum > 0 {Where}
+  t1.table_schema NOT IN('pg_catalog', 'information_schema') {Where}
 ORDER BY
-    c1.relname,
-    ab.attnum;
+  t1.table_name,
+  t1.ordinal_position
             ";
         }
 

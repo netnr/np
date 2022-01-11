@@ -10,7 +10,6 @@
                 <a class="mr-3 text-nowrap" href="https://uuid.fun" title="一个基于Git的书签托管">书签</a>
                 <a class="mr-3 text-nowrap" href="https://guff.ltd" title="分享有趣的人或事">尬服</a>
                 <a class="mr-3 text-nowrap" rel="noopener norefferrer" target="_blank" href="https://www.jscss.cc" title="GitHub：svon">前端笔记</a>
-                <a class="mr-3 text-nowrap" rel="noopener norefferrer" target="_blank" href="https://dotnet9.com" title="GitHub：dotnet9">Dotnet9</a>
                 <a class="mr-3 text-nowrap" href="https://ss.netnr.com/message" title="匿名留言">留言</a>
                 <a class="mr-3 text-nowrap" target="_blank" href="https://netnr.eu.org" title="zme.ink">联系打赏</a>
                 <a class="mr-3 text-nowrap" target="_blank" href="/swagger">API</a>
@@ -18,12 +17,14 @@
         </div>
         <div class="mb-5 small text-muted">
             @{
+                var fd = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
                 var os = Netnr.Core.SystemStatusTo.GetOSPlatform();
             }
-            <a class="text-muted text-nowrap mr-3" href="//dot.net">Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription ❤️ @os</a>
+            <a class="text-muted text-nowrap mr-3" href="//dot.net">Powered by @fd 🧡 @os</a>
             <a class="text-muted text-nowrap mr-3" href="/mix/about">About</a>
-            <a class="text-muted text-nowrap mr-3" href="/mix/terms">Terms</a>
             <a class="text-muted text-nowrap mr-3" href="/mix/faq">FAQ</a>
+            <a class="text-muted text-nowrap mr-3" href="/mix/terms">Terms</a>
+            <a class="text-muted text-nowrap mr-3" href="https://www.netnr.eu.org" title="不定时备份到镜像只读站点">Mirror</a>
             <a class="text-muted text-nowrap mr-3" href="https://beian.miit.gov.cn">渝ICP备15000995号-3</a>
             <span>&copy; @GlobalTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
         </div>

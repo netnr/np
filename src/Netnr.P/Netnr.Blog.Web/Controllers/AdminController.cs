@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Netnr.Blog.Data;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using Netnr.Blog.Data;
 using Netnr.SharedLogging;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -72,7 +74,12 @@ namespace Netnr.Blog.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(ivm.Pe1))
             {
-                query = query.Where(x => x.UwTitle.Contains(ivm.Pe1));
+                query = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.UwTitle, $"%{ivm.Pe1}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.UwTitle, $"%{ivm.Pe1}%")),
+                    _ => query.Where(x => x.UwTitle.Contains(ivm.Pe1)),
+                };
             }
 
             Application.CommonService.QueryJoin(query, ivm, ref ovm);
@@ -163,7 +170,12 @@ namespace Netnr.Blog.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(ivm.Pe1))
             {
-                query = query.Where(x => x.UrContent.Contains(ivm.Pe1));
+                query = GlobalTo.TDB switch
+                {
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.UrContent, $"%{ivm.Pe1}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.UrContent, $"%{ivm.Pe1}%")),
+                    _ => query.Where(x => x.UrContent.Contains(ivm.Pe1)),
+                };
             }
 
             Application.CommonService.QueryJoin(query, ivm, ref ovm);

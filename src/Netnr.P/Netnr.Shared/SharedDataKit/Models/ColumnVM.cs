@@ -12,6 +12,10 @@ namespace Netnr.SharedDataKit
         /// </summary>
         public string TableName { get; set; }
         /// <summary>
+        /// 模式
+        /// </summary>
+        public string TableSchema { get; set; }
+        /// <summary>
         /// 表注释
         /// </summary>
         public string TableComment { get; set; }

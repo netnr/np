@@ -169,12 +169,8 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    if (GlobalTo.GetValue<bool>("Common:CompleteInfo") && db.UserInfo.Find(uinfo.UserId).UserMailValid != 1)
-                    {
-                        vm.Code = 1;
-                        vm.Msg = "请先验证邮箱";
-                    }
-                    else
+                    vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                    if (vm.Code == 200)
                     {
                         var now = DateTime.Now;
 
@@ -424,25 +420,6 @@ namespace Netnr.Blog.Web.Controllers.api
 
             try
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
-
-                if (HttpContext.User.Identity.IsAuthenticated)
-                {
-                    mo.Uid = uinfo.UserId;
-                }
-                else
-                {
-                    if (string.IsNullOrWhiteSpace(mo.UrAnonymousName) || !ParsingTo.IsMail(mo.UrAnonymousMail))
-                    {
-                        vm.Set(SharedEnum.RTag.invalid);
-                        vm.Msg = "昵称、邮箱不能为空";
-
-                        return vm;
-                    }
-
-                    mo.Uid = 0;
-                }
-
                 if (string.IsNullOrWhiteSpace(id))
                 {
                     vm.Set(SharedEnum.RTag.invalid);
@@ -454,29 +431,35 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    var guffmo = db.GuffRecord.Find(id);
-                    if (guffmo == null)
+                    vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                    if (vm.Code == 200)
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
-                    }
-                    else
-                    {
-                        mo.Uid = uinfo.UserId;
-                        mo.UrTargetType = Application.EnumService.ConnectionType.GuffRecord.ToString();
-                        mo.UrTargetId = id;
-                        mo.UrCreateTime = DateTime.Now;
-                        mo.UrStatus = 1;
-                        mo.UrTargetPid = 0;
+                        var uinfo = Apps.LoginService.Get(HttpContext);
 
-                        mo.UrAnonymousLink = ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
+                        var guffmo = db.GuffRecord.Find(id);
+                        if (guffmo == null)
+                        {
+                            vm.Set(SharedEnum.RTag.invalid);
+                        }
+                        else
+                        {
+                            mo.Uid = uinfo.UserId;
+                            mo.UrTargetType = Application.EnumService.ConnectionType.GuffRecord.ToString();
+                            mo.UrTargetId = id;
+                            mo.UrCreateTime = DateTime.Now;
+                            mo.UrStatus = 1;
+                            mo.UrTargetPid = 0;
 
-                        db.UserReply.Add(mo);
+                            mo.UrAnonymousLink = ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
 
-                        guffmo.GrReplyNum += 1;
-                        db.GuffRecord.Update(guffmo);
+                            db.UserReply.Add(mo);
 
-                        int num = db.SaveChanges();
-                        vm.Set(num > 0);
+                            guffmo.GrReplyNum += 1;
+                            db.GuffRecord.Update(guffmo);
+
+                            int num = db.SaveChanges();
+                            vm.Set(num > 0);
+                        }
                     }
                 }
             }

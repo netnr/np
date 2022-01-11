@@ -83,7 +83,7 @@ namespace Netnr.ResponseFramework.Web
             services.AddDbContextPool<ContextBase>(options =>
             {
                 ContextBaseFactory.CreateDbContextOptionsBuilder(options);
-            }, 20);
+            }, 10);
 
             //定时任务
             FluentScheduler.JobManager.Initialize(new Apps.TaskService.Reg());
@@ -110,6 +110,10 @@ namespace Netnr.ResponseFramework.Web
             }
 
             var createScript = db.Database.GenerateCreateScript();
+            if (GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
+            {
+                createScript = createScript.Replace(" datetime ", " timestamp ");
+            }
             Console.WriteLine(createScript);
 
             //数据库不存在则创建，创建后返回true

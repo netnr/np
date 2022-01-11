@@ -4,7 +4,9 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
 using Netnr.SharedAdo;
+using Msm = Microsoft.SqlServer.Management;
 
 namespace Netnr.SharedDataKit
 {
@@ -87,16 +89,16 @@ namespace Netnr.SharedDataKit
         /// <summary>
         /// 获取表
         /// </summary>
-        /// <param name="DatabaseName"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public List<TableVM> GetTable(string DatabaseName = null)
+        public List<TableVM> GetTable(string databaseName = null)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseName))
+            if (string.IsNullOrWhiteSpace(databaseName))
             {
-                DatabaseName = DefaultDatabaseName();
+                databaseName = DefaultDatabaseName();
             }
 
-            var sql = Configs.GetTableSQLServer(DatabaseName);
+            var sql = Configs.GetTableSQLServer(databaseName);
             var ds = db.SqlExecuteReader(sql);
 
             var list = ds.Item1.Tables[0].ToModel<TableVM>();
@@ -113,10 +115,75 @@ namespace Netnr.SharedDataKit
         {
             if (string.IsNullOrWhiteSpace(databaseName))
             {
-                //DatabaseName = DefaultDatabaseName();
+                databaseName = DefaultDatabaseName();
             }
 
-            return null;
+            var ftn = new List<string>();
+            if (filterTableName != null)
+            {
+                ftn = filterTableName.Split(',').ToList();
+            }
+
+            var dicDDL = new Dictionary<string, string>();
+
+            var csb = new SqlConnectionStringBuilder(dbConnection.ConnectionString);
+            Msm.Smo.Server smoServer = new(new Msm.Common.ServerConnection(csb.DataSource, csb.UserID, csb.Password));
+            Msm.Smo.Database smoDatabase = smoServer.Databases[databaseName];
+
+            Msm.Smo.Scripter smoScripter = new(smoServer);
+            smoScripter.Options.Indexes = true;
+            smoScripter.Options.WithDependencies = true;
+            smoScripter.Options.DriAllConstraints = true;
+
+            foreach (Msm.Smo.Table smoTable in smoDatabase.Tables)
+            {
+                if (smoTable.IsSystemObject || (filterTableName != null && !ftn.Contains(smoTable.Name)))
+                {
+                    continue;
+                }
+
+                var ddl = new List<string>();
+
+                smoScripter.Options.ScriptDrops = true;
+                var sc1 = smoScripter.Script(new Msm.Sdk.Sfc.Urn[] { smoTable.Urn });
+                for (int i = 0; i < sc1.Count; i++)
+                {
+                    ddl.Add(sc1[i].ToString().Trim());
+                }
+
+                smoScripter.Options.ScriptDrops = false;
+                var sc2 = smoScripter.Script(new Msm.Sdk.Sfc.Urn[] { smoTable.Urn });
+                for (int i = 0; i < sc2.Count; i++)
+                {
+                    ddl.Add(sc2[i].ToString().Trim());
+                }
+
+                var ddlComment = new List<string>();
+                //表注释
+                var tableComment = smoTable.ExtendedProperties["MS_Description"];
+                if (tableComment != null)
+                {
+                    ddlComment.Add($"EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'{tableComment.Value.ToString().OfSql()}', @level0type=N'SCHEMA', @level0name=N'{smoTable.Schema}', @level1type=N'TABLE', @level1name=N'{smoTable.Name}'");
+                }
+
+                //列注释
+                foreach (Msm.Smo.Column smoColumn in smoTable.Columns)
+                {
+                    var columnComment = smoColumn.ExtendedProperties["MS_Description"];
+                    if (columnComment != null)
+                    {
+                        ddlComment.Add($"EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'{columnComment.Value.ToString().OfSql()}', @level0type=N'SCHEMA', @level0name=N'{smoTable.Schema}', @level1type=N'TABLE', @level1name=N'{smoTable.Name}', @level2type=N'COLUMN', @level2name=N'{smoColumn.Name}'");
+                    }
+                }
+                if (ddlComment.Count > 0)
+                {
+                    ddl.Add(string.Join(";\r\n", ddlComment));
+                }
+
+                dicDDL.Add(smoTable.Name, string.Join(";\r\n\r\n", ddl) + ";");
+            }
+
+            return dicDDL;
         }
 
         /// <summary>
@@ -135,7 +202,7 @@ namespace Netnr.SharedDataKit
             var where = string.Empty;
             if (!string.IsNullOrWhiteSpace(filterTableName))
             {
-                where = $"AND t1.name IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
+                where = $"AND o.name IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
             }
 
             var sql = Configs.GetColumnSQLServer(databaseName, where);

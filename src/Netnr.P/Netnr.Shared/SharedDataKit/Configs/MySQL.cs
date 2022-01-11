@@ -12,14 +12,7 @@ namespace Netnr.SharedDataKit
         /// <returns></returns>
         public static string GetDatabaseNameMySQL()
         {
-            return $@"
-SELECT
-  SCHEMA_NAME AS DatabaseName
-FROM
-  information_schema.schemata
-ORDER BY
-  SCHEMA_NAME
-            ";
+            return $@"SELECT SCHEMA_NAME AS DatabaseName FROM information_schema.schemata ORDER BY SCHEMA_NAME";
         }
 
         /// <summary>
@@ -30,45 +23,28 @@ ORDER BY
         {
             return $@"
 SELECT
-  SCHEMA_NAME AS DatabaseName,
-  CASE
-    WHEN t3.rid > 4 THEN 'USER'
-    ELSE 'SYSTEM'
-  END AS DatabaseClassify,
-  DEFAULT_CHARACTER_SET_NAME AS DatabaseCharset,
-  DEFAULT_COLLATION_NAME AS DatabaseCollation,
+  t1.SCHEMA_NAME AS DatabaseName,
+  t1.DEFAULT_CHARACTER_SET_NAME AS DatabaseCharset,
+  t1.DEFAULT_COLLATION_NAME AS DatabaseCollation,
   @@datadir AS DatabasePath,
   t2.DatabaseDataLength,
-  t2.DatabaseIndexLength
+  t2.DatabaseIndexLength,
+  t2.DatabaseCreateTime
 FROM
   information_schema.schemata t1
   LEFT JOIN (
     SELECT
       TABLE_SCHEMA,
       SUM(DATA_LENGTH) AS DatabaseDataLength,
-      SUM(INDEX_LENGTH) AS DatabaseIndexLength
+      SUM(INDEX_LENGTH) AS DatabaseIndexLength,
+      MIN(CREATE_TIME) AS DatabaseCreateTime
     FROM
       information_schema.tables
     GROUP BY
       TABLE_SCHEMA
   ) t2 ON t1.SCHEMA_NAME = t2.TABLE_SCHEMA
-  LEFT JOIN (
-    SELECT
-      TABLE_SCHEMA,
-      ROW_NUMBER() OVER(
-        ORDER BY
-          MIN(CREATE_TIME)
-      ) rid
-    FROM
-      information_schema.tables
-    GROUP BY
-      TABLE_SCHEMA
-    ORDER BY
-      MIN(CREATE_TIME)
-  ) t3 ON t1.SCHEMA_NAME = t3.TABLE_SCHEMA
-WHERE 1=1 {Where}
-ORDER BY
-  t1.SCHEMA_NAME
+WHERE
+  1 = 1 {Where}
             ";
         }
 
@@ -82,6 +58,7 @@ ORDER BY
             return $@"
 SELECT
   TABLE_NAME AS TableName,
+  TABLE_SCHEMA AS TableSchema,
   TABLE_TYPE AS TableType,
   ENGINE AS TableEngine,
   TABLE_ROWS AS TableRows,
@@ -93,7 +70,8 @@ SELECT
 FROM
   information_schema.tables
 WHERE
-  TABLE_SCHEMA = '{DatabaseName}'
+  TABLE_TYPE = 'BASE TABLE'
+  AND TABLE_SCHEMA = '{DatabaseName}'
 ORDER BY
   TABLE_NAME
             ";
@@ -125,32 +103,19 @@ ORDER BY
         {
             return $@"
 SELECT
-  t2.TABLE_NAME AS TableName,
+  t1.TABLE_NAME AS TableName,
+  t1.TABLE_SCHEMA AS TableSchema,
   t2.TABLE_COMMENT AS TableComment,
   t1.COLUMN_NAME AS ColumnName,
   t1.COLUMN_TYPE AS ColumnType,
   t1.DATA_TYPE AS DataType,
-  CASE
-    WHEN t1.CHARACTER_MAXIMUM_LENGTH IS NOT NULL THEN t1.CHARACTER_MAXIMUM_LENGTH
-    WHEN t1.NUMERIC_PRECISION IS NOT NULL THEN t1.NUMERIC_PRECISION
-    ELSE NULL
-  END AS DataLength,
+  COALESCE(t1.CHARACTER_MAXIMUM_LENGTH, t1.NUMERIC_PRECISION) AS DataLength,
   t1.NUMERIC_SCALE AS DataScale,
   t1.ORDINAL_POSITION AS ColumnOrder,
-  (
-    SELECT
-      ORDINAL_POSITION
-    FROM
-      information_schema.key_column_usage
-    WHERE
-      TABLE_SCHEMA = t2.TABLE_SCHEMA
-      AND TABLE_NAME = t2.TABLE_NAME
-      AND COLUMN_NAME = t1.COLUMN_NAME
-    LIMIT 1 
-  ) AS PrimaryKey,
+  t3.ORDINAL_POSITION AS PrimaryKey,
   CASE
     WHEN t1.EXTRA = 'auto_increment' THEN 1
-    ELSE NULL
+    ELSE 0
   END AS AutoIncr,
   CASE
     WHEN t1.IS_NULLABLE = 'YES' THEN 1
@@ -162,10 +127,13 @@ FROM
   information_schema.columns t1
   LEFT JOIN information_schema.tables t2 ON t1.TABLE_SCHEMA = t2.TABLE_SCHEMA
   AND t1.TABLE_NAME = t2.TABLE_NAME
+  LEFT JOIN information_schema.key_column_usage t3 ON t3.TABLE_SCHEMA = t1.TABLE_SCHEMA
+  AND t3.TABLE_NAME = t1.TABLE_NAME
+  AND t3.COLUMN_NAME = t1.COLUMN_NAME
 WHERE
-  t2.TABLE_SCHEMA = '{DatabaseName}' {Where}
+  t1.TABLE_SCHEMA = '{DatabaseName}' {Where}
 ORDER BY
-  t2.TABLE_NAME,
+  t1.TABLE_NAME,
   t1.ORDINAL_POSITION
             ";
         }

@@ -125,7 +125,7 @@ namespace Netnr.SharedDataKit
             var where = string.Empty;
             if (!string.IsNullOrWhiteSpace(filterTableName))
             {
-                where = $"AND c1.relname IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
+                where = $"AND t1.table_name IN ('{string.Join("','", filterTableName.Replace("'", "").Split(','))}')";
             }
 
             var sql = Configs.GetColumnPostgreSQL(where);

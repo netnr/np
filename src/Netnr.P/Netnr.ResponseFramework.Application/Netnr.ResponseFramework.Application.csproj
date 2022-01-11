@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="NPOI" Version="2.5.5" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.14" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.15" />
   </ItemGroup>
 
   <ItemGroup>

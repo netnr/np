@@ -129,9 +129,24 @@ namespace Netnr.Blog.Web.Apps
                             vm.Log.Add("验证邮箱");
                         }
 
-                        if (umo.UserCreateTime.Value.AddDays(3) > DateTime.Now)
+                        if (string.IsNullOrWhiteSpace(umo.UserPhone) || umo.UserPhone.Trim().Length != 11)
                         {
-                            vm.Log.Add("新注册用户需 3 天以后才能操作");
+                            vm.Log.Add("填写手机号码");
+                        }
+
+                        if (string.IsNullOrWhiteSpace(umo.OpenId1)
+                            && string.IsNullOrWhiteSpace(umo.OpenId2)
+                            && string.IsNullOrWhiteSpace(umo.OpenId3)
+                            && string.IsNullOrWhiteSpace(umo.OpenId4)
+                            && string.IsNullOrWhiteSpace(umo.OpenId5)
+                            && string.IsNullOrWhiteSpace(umo.OpenId6))
+                        {
+                            vm.Log.Add("绑定一项授权关联");
+                        }
+
+                        if (umo.UserCreateTime.Value.AddDays(15) > DateTime.Now)
+                        {
+                            vm.Log.Add("新注册用户需 15 天以后才能操作");
                         }
                     }
                 }

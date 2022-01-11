@@ -1,7 +1,8 @@
 @{
     ViewData["Title"] = "draw";
 
-    var mindBaseServer = "https://s1.netnr.com/libs/kityminder/20190212"; ;
+    var mindBaseServer = ViewContext.HttpContext.Request.Headers.Host.ToString().Contains("netnr.eu.org")
+    ? "https://s1.netnr.eu.org/libs/kityminder/20190212" : "https://s1.netnr.com/libs/kityminder/20190212";
 }
 
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading"))

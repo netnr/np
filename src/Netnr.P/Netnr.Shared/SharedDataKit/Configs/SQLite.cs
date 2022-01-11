@@ -5,22 +5,31 @@ namespace Netnr.SharedDataKit
     public partial class Configs
     {
         /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDatabaseNameSQLite()
+        {
+            return $@"PRAGMA database_list";
+        }
+
+        /// <summary>
+        /// 获取库名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDatabaseSQLite()
+        {
+            return $@"PRAGMA database_list;PRAGMA encoding";
+        }
+
+        /// <summary>
         /// 获取表
         /// </summary>
         /// <param name="DatabaseName">数据库名</param>
         /// <returns></returns>
         public static string GetTableSQLite(string DatabaseName)
         {
-            return $@"
-SELECT
-  tbl_name AS TableName
-FROM
-  {DatabaseName}.sqlite_master
-WHERE
-  type = 'table'
-ORDER BY
-  tbl_name
-            ";
+            return $@"SELECT tbl_name AS TableName FROM {DatabaseName}.sqlite_master WHERE type = 'table' ORDER BY tbl_name";
         }
 
         /// <summary>

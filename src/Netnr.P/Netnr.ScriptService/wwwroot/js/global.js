@@ -8,7 +8,7 @@ try { eval("() => 1") } catch (e) { top.location = "https://ub.netnr.eu.org" }
 (function (window) {
     var ups = function (hosts, callback, timeout) {
         //全局对象、默认请求超时、默认源过期
-        var gk = "upstreamCache", dto = 3000, es = 1000 * 300;
+        var gk = "upstreamCache", dto = 3000, es = 1000 * 120;
         if (!(gk in window)) {
             try {
                 window[gk] = JSON.parse(localStorage.getItem(gk)) || {};
