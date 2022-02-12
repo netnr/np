@@ -181,7 +181,7 @@ var st = {
                         case "word":
                             {
                                 var netnrmd_body = that.gethtml();
-                                $.get("https://npm.elemecdn.com/netnrmd@2.6.3/src/netnrmd.css", null, function (netnrmd_style) {
+                                $.get("https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.css", null, function (netnrmd_style) {
                                     var html = `
                                                 <!DOCTYPE html>
                                                 <html>
@@ -211,8 +211,8 @@ var st = {
                         case "pdf":
                             {
                                 var uri = location.host.includes("netnr.com")
-                                    ? "https://s1.netnr.com/libs/html2pdf/0.9.3/html2pdf.bundle.min.js"
-                                    : "https://s1.netnr.eu.org/libs/html2pdf/0.9.3/html2pdf.bundle.min.js";
+                                    ? "https://s1.netnr.com/libs/mix/html2pdf.bundle.min.js"
+                                    : "https://s1.netnr.eu.org/libs/mix/html2pdf.bundle.min.js";
 
                                 require([uri], function (module) {
                                     var ch = that.obj.view.clientHeight;
@@ -238,7 +238,7 @@ var st = {
                                     backvm = true;
                                 }
 
-                                require(['https://npm.elemecdn.com/html2canvas@1.3.3/dist/html2canvas.min.js'], function (module) {
+                                require(['https://npm.elemecdn.com/html2canvas@1.4.1/dist/html2canvas.min.js'], function (module) {
                                     var ch = that.obj.view.clientHeight;
                                     that.obj.view.style.height = 'auto';
                                     module(that.obj.view, {

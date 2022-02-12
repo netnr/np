@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv=X-UA-Compatible content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="never">
 
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
@@ -58,9 +59,9 @@
 
         //线路
         var vipSource = [
-            "https://vip.bljiex.com/?v=",
-            "https://17kyun.com/api.php?url=",
-            "https://okjx.cc/?url="
+            "https://sb.5gseo.net/?url=",
+            "https://jx.quanmingjiexi.com/?url=",
+            "https://client.uiul.xyz/dplayer/?url=",
         ];
 
         //初始化
@@ -71,15 +72,12 @@
                 htm.push('<option value="' + vipSource[i++] + '">线路 ' + i + '</option>');
             }
             document.getElementById('seVtype').innerHTML = htm.join('');
+
             //带参播放
-            var pars = location.search.toLowerCase().substring(1).split('&');
-            for (var i = 0; i < pars.length; i++) {
-                var pi = pars[i];
-                if (pi.indexOf('url=') >= 0) {
-                    document.getElementById('txtVipUri').value = decodeURIComponent(pi.substring(4));
-                    document.getElementById('btnPlay').click();
-                    break;
-                }
+            var playUrl = new URLSearchParams(location.search).get("url");
+            if (playUrl) {
+                document.getElementById('txtVipUri').value = playUrl.split('?')[0];
+                document.getElementById('btnPlay').click();
             }
         }
 

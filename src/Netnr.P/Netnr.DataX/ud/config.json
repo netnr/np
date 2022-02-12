@@ -1,37 +1,156 @@
 ﻿{
-  //表映射完整匹配（默认忽略符号、大小写）
-  "mapping-table-full-match": false,
+  //2022-02-10
+  "Version": "0.1.0",
 
-  //列映射完整匹配（默认忽略符号、大小写）
-  "mapping-column-full-match": false,
+  //控制台输出编码，不指定时：Windows 为 Unicode，Linux 为 UTF-8
+  "Console_Encoding": "",
 
-  //连接信息
-  "db-conn": [
+  //映射匹配模式（读写 表、列）：Same（相同） Similar（相似）
+  "MapingMatchPattern": "Similar",
 
+  //数据库连接信息
+  "ListConnectionInfo": [
     {
-      "type": "SQLite",
-      "conn": "Data Source=D:\\tmp\\tmp.db",
-      "remark": "Local tmp"
+      "ConnectionType": "SQLite",
+      "ConnectionString": "Data Source=D:\\tmp\\tmp.db",
+      "ConnectionRemark": "Local tmp"
     },
     {
-      "type": "MySQL",
-      "conn": "Server=local.host;uid=root;pwd=Abc123....;database=netnr",
-      "remark": "local MySQL netnr"
+      "ConnectionType": "MySQL",
+      "ConnectionString": "Server=local.host;uid=root;pwd=Abc123....;database=cqsme_platform_main",
+      "ConnectionRemark": "local MySQL cqsme_platform_main"
     },
     {
-      "type": "SQLServer",
-      "conn": "Server=local.host;uid=sa;pwd=Abc123....;database=netnr;TrustServerCertificate=True;",
-      "remark": "local SQLServer netnr"
+      "ConnectionType": "MySQL",
+      "ConnectionString": "Server=local.host;uid=root;pwd=Abc123....;database=netnr",
+      "ConnectionRemark": "local MySQL netnr"
     },
     {
-      "type": "PostgreSQL",
-      "conn": "Server=local.host;Port=5432;User Id=postgres;Password=Abc123....;Database=netnr;",
-      "remark": "local PostgreSQL netnr"
+      "ConnectionType": "SQLServer",
+      "ConnectionString": "Server=local.host;uid=sa;pwd=Abc123....;database=netnr;TrustServerCertificate=True;",
+      "ConnectionRemark": "local SQLServer netnr"
     },
     {
-      "type": "Oracle",
-      "conn": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=ABC;Password=PWD",
-      "remark": "local Oracle"
+      "ConnectionType": "PostgreSQL",
+      "ConnectionString": "Server=local.host;Port=5432;User Id=postgres;Password=Abc123....;Database=netnr;",
+      "ConnectionRemark": "local PostgreSQL netnr"
+    },
+    {
+      "ConnectionType": "PostgreSQL",
+      "ConnectionString": "Server=local.host;Port=5432;User Id=postgres;Password=Abc123....;Database=netnrf;",
+      "ConnectionRemark": "local PostgreSQL netnrf"
+    },
+    {
+      "ConnectionType": "Oracle",
+      "ConnectionString": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=Abc123....",
+      "ConnectionRemark": "local Oracle"
     }
-  ]
+  ],
+
+  //参数模式（静默执行）dx Task_Demo
+  "Silence": {
+
+    //任务名（Task_ 开头，示例配置，建议新建任务名）
+    "Task_Demo": {
+
+      //迁移数据表
+      "MigrateDataTable": {
+        // 读取连接（引用配置 ConnectionRemark）
+        "RefReadConnectionInfo": "local SQLServer netnr",
+        // 写入连接
+        "RefWriteConnectionInfo": "local PostgreSQL netnr",
+        //读写项配置
+        "ListReadWrite": [
+          {
+            //读取数据表
+            "ReadSQL": "select * from UserInfo",
+            //写入表名
+            "WriteTableName": "UserInfo",
+            //写入前，清空，可选
+            "WriteDeleteSQL": "TRUNCATE TABLE \"UserInfo\"",
+            //读写列名映射，默认自动映射，可选
+            "ReadWriteColumnMap": {
+              "redadField1": "writeField1",
+              "redadField2": "writeField2"
+            }
+          },
+          {
+            "ReadSQL": "select * from UserWritingTags",
+            "WriteTableName": "UserWritingTags",
+            "WriteDeleteSQL": "DELETE FROM \"UserWritingTags\" WHERE 1=1"
+          }
+        ]
+      },
+
+      //迁移数据库
+      "MigrateDatabase": {
+        // 读取连接（引用配置 ConnectionRemark）
+        "RefReadConnectionInfo": "local SQLServer netnr",
+        // 写入连接
+        "RefWriteConnectionInfo": "local PostgreSQL netnr",
+        // 写入前删除表数据
+        "WriteDeleteData": true
+      },
+
+      //导出数据表
+      "ExportDataTable": {
+        "RefReadConnectionInfo": "local SQLServer netnr",
+        //导出包完整路径
+        "ZipPath": "~/Task_ExportDataTable_{yyyyMMdd_HHmmss}.zip",
+        //读取数据表
+        "ListReadSQL": [
+          "select * from UserInfo",
+          "select top 10 * from UserWritingTags"
+        ]
+      },
+
+      //导出数据库
+      "ExportDatabase": {
+        "RefReadConnectionInfo": "local SQLServer netnr",
+        //导出包完整路径
+        "ZipPath": "~/Task_ExportDatabase_{yyyy}{MMdd}.zip",
+        //读取表名，可选，默认全表
+        "ListReadTableName": []
+      },
+
+      //导入数据库
+      "ImportDatabase": {
+        // 写入连接
+        "RefWriteConnectionInfo": "local PostgreSQL netnr",
+        // 写入前删除表数据
+        "WriteDeleteData": true,
+        //导入包完整路径
+        "ZipPath": "~/Task_ExportDatabase_{yyyy}{MMdd}.zip",
+        //读取表 映射 写入表，可选
+        "ReadWriteTableMap": {
+          "redadTable1": "writeTable1",
+          "redadTable2": "writeTable2"
+        }
+      }
+    },
+
+    //构建新的任务
+    "Task_New": {
+
+      //迁移数据表
+      "MigrateDataTable": {
+        // 读取连接（引用配置 ConnectionRemark）
+        "RefReadConnectionInfo": "local Oracle",
+        // 写入连接
+        "RefWriteConnectionInfo": "local PostgreSQL netnrf",
+        //读写项配置
+        "ListReadWrite": [
+          {
+            //读取数据表
+            "ReadSQL": "select * from SYS_SERVICESCORETEMP",
+            //写入表名
+            "WriteTableName": "SYS_SERVICESCORETEMP",
+            //写入前，清空，可选
+            "WriteDeleteSQL": "TRUNCATE TABLE \"SYS_SERVICESCORETEMP\""
+          }
+        ]
+      }
+
+    }
+  }
 }

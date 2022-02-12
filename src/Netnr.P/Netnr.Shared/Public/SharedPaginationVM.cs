@@ -1,7 +1,5 @@
 ﻿#if Full || Public
 
-using System;
-
 namespace Netnr
 {
     /// <summary>

@@ -78,22 +78,6 @@ ORDER BY
         }
 
         /// <summary>
-        /// 表DLL
-        /// </summary>
-        /// <param name="DatabaseName">数据库名</param>
-        /// <param name="TableNames">表名</param>
-        /// <returns></returns>
-        public static string GetTableDDLMySQL(string DatabaseName, List<string> TableNames)
-        {
-            var listSql = new List<string>();
-            TableNames.ForEach(table =>
-            {
-                listSql.Add($"SHOW CREATE TABLE `{DatabaseName}`.`{table}`");
-            });
-            return string.Join(";", listSql);
-        }
-
-        /// <summary>
         /// 获取列
         /// </summary>
         /// <param name="DatabaseName">数据库名</param>
@@ -163,6 +147,16 @@ ORDER BY
             return $"ALTER TABLE `{DatabaseName}`.`{TableName}` MODIFY COLUMN `{ColumnName}` int NULL COMMENT '{ColumnComment.OfSql()}'";
         }
 
+        /// <summary>
+        /// 表DLL
+        /// </summary>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <param name="TableName">表名</param>
+        /// <returns></returns>
+        public static string GetTableDDLMySQL(string DatabaseName, string TableName)
+        {
+            return $"SHOW CREATE TABLE `{DatabaseName}`.`{TableName}`";
+        }
     }
 }
 

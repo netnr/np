@@ -15,8 +15,8 @@ namespace Netnr.Blog.Web
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
 
-            //编码注册
-            GlobalTo.EncodingReg();
+            SharedReady.ReadyTo.EncodingReg();
+            SharedReady.ReadyTo.LegacyTimestamp();
 
             //结巴词典路径
             var jbPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
@@ -181,6 +181,9 @@ namespace Netnr.Blog.Web
             var createScript = db.Database.GenerateCreateScript();
             if (GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
             {
+                //https://www.npgsql.org/efcore/release-notes/6.0.html
+                AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
                 createScript = createScript.Replace(" datetime ", " timestamp ");
             }
             Console.WriteLine(createScript);

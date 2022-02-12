@@ -1,8 +1,5 @@
 ﻿#if Full || Public
 
-using System;
-using System.Diagnostics;
-
 namespace Netnr
 {
     /// <summary>

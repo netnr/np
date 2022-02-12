@@ -43,11 +43,14 @@ namespace Netnr.SharedAdo
         /// <param name="parameters">带参</param>
         /// <param name="func">回调</param>
         /// <param name="includeSchemaTable">包含表结构</param>
+        /// <param name="openTransaction">开启事务，默认</param>
         /// <returns>返回 表数据、受影响行数、表结构</returns>
-        public Tuple<DataSet, int, DataSet> SqlExecuteReader(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null, bool includeSchemaTable = false)
+        public Tuple<DataSet, int, DataSet> SqlExecuteReader(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null, bool includeSchemaTable = false, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
+                Transaction = openTransaction ? Connection.BeginTransaction() : null;
+
                 var ds = new DataSet();
                 var dsSchema = new DataSet();
                 int recordsAffected = -1;
@@ -131,7 +134,58 @@ namespace Netnr.SharedAdo
                     }
                 }
 
+                Transaction?.Commit();
+
                 return new Tuple<DataSet, int, DataSet>(ds, recordsAffected, dsSchema);
+            });
+        }
+
+        /// <summary>
+        /// 查询 读取行
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="readRow"></param>
+        public void SqlExecuteDataRow(string sql, Action<DataRow> readRow)
+        {
+            SafeConn(() =>
+            {
+                var isOracle = Connection.GetType().FullName.ToLower().Contains("oracle");
+                var isSplit = false;
+                if (isOracle)
+                {
+                    isSplit = !SqlParserBeginEnd(sql);
+                }
+
+                if (isOracle && isSplit)
+                {
+                    var listSql = sql.Split(';').ToList();
+
+                    foreach (var txt in listSql)
+                    {
+                        if (string.IsNullOrWhiteSpace(txt))
+                        {
+                            continue;
+                        }
+
+                        var cmd = GetCommand(sql, timeout: 600);
+                        cmd.ExecuteDataRow(readRow);
+
+                        if (DicCommand.ContainsKey(cmd.Site.Name))
+                        {
+                            DicCommand.Remove(cmd.Site.Name);
+                        }
+                    }
+                }
+                else
+                {
+                    var cmd = GetCommand(sql, timeout: 600);
+                    cmd.ExecuteDataRow(readRow);
+
+                    if (DicCommand.ContainsKey(cmd.Site.Name))
+                    {
+                        DicCommand.Remove(cmd.Site.Name);
+                    }
+                }
             });
         }
 
@@ -212,7 +266,6 @@ namespace Netnr.SharedAdo
                 foreach (var bs in listBatchSql)
                 {
                     var dbc = GetCommand(bs);
-                    dbc.Transaction = Transaction;
                     num += dbc.ExecuteNonQuery();
 
                     if (DicCommand.ContainsKey(dbc.Site.Name))
@@ -227,18 +280,6 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// 返回空表格
-        /// </summary>
-        /// <param name="table">数据库表名</param>
-        /// <param name="cb">构建对象，取引用符号</param>
-        /// <returns></returns>
-        public DataTable SqlEmptyTable(string table, DbCommandBuilder cb = null)
-        {
-            var dt = SqlExecuteReader($"select * from {cb?.QuotePrefix}{table}{cb?.QuoteSuffix} where 0=1").Item1.Tables[0];
-            return dt;
-        }
-
-        /// <summary>
         /// 拿到 DbCommand
         /// </summary>
         /// <param name="sql">SQL语句</param>
@@ -248,8 +289,15 @@ namespace Netnr.SharedAdo
         /// <returns></returns>
         public DbCommand GetCommand(string sql, DbParameter[] parameters = null, int timeout = 300, CommandType commandType = CommandType.Text)
         {
-            var cmd = Connection.CreateCommand();
+            var cmd = Connection.CreateCommand().ToFix();
+
+            if (Transaction != null)
+            {
+                cmd.Transaction = Transaction;
+            }
+
             cmd.Site = new DBCSite();
+
             cmd.CommandTimeout = timeout;
             cmd.CommandType = commandType;
             cmd.CommandText = sql;
@@ -324,6 +372,7 @@ namespace Netnr.SharedAdo
             finally
             {
                 Transaction?.Dispose();
+                Transaction = null;
                 if (Connection.State == ConnectionState.Open)
                 {
                     Connection.Close();

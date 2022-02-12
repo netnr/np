@@ -14,8 +14,7 @@ namespace Netnr.FileServer
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
 
-            //编码注册
-            GlobalTo.EncodingReg();
+            SharedReady.ReadyTo.EncodingReg();
         }
 
         //配置swagger

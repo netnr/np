@@ -14,8 +14,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="6.0.27" />
-		<PackageReference Include="MailKit" Version="3.0.0" />
+		<PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="6.1.0" />
+		<PackageReference Include="MailKit" Version="3.1.1" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 	</ItemGroup>
 

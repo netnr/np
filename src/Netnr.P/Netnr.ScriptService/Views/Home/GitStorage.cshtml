@@ -254,7 +254,9 @@
                         var items = clipboardData.items, len = items.length;
                         for (var i = 0; i < len; i++) {
                             var blob = items[i].getAsFile();
-                            gs.add(blob);
+                            if(blob){
+                                gs.add(blob);
+                            }
                         }
                     }
                 }

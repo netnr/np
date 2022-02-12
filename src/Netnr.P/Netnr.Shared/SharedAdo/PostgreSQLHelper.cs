@@ -19,17 +19,38 @@ namespace Netnr.SharedAdo
         /// https://www.npgsql.org/doc/copy.html
         /// </summary>
         /// <param name="dt">数据表</param>
-        /// <param name="table">数据库表名</param>
         /// <returns></returns>
-        public int BulkCopyPostgreSQL(DataTable dt, string table)
+        public int BulkCopyPostgreSQL(DataTable dt)
         {
+            var containsDate = false;
+            var dtNew = dt.Clone();
+
+            foreach (DataColumn dc in dtNew.Columns)
+            {
+                if (dc.DataType.FullName == "System.DateTime")
+                {
+                    dc.DateTimeMode = DataSetDateTime.Utc;
+                    containsDate = true;
+                }
+            }
+
+            if (containsDate)
+            {
+                foreach (DataRow row in dt.Rows)
+                {
+                    dtNew.ImportRow(row);
+                }
+
+                dt = dtNew;
+            }
+
             return SafeConn(() =>
             {
                 var connection = (NpgsqlConnection)Connection;
 
                 //提取表列类型与数据库类型
                 var cb = new NpgsqlCommandBuilder();
-                var quoteTable = $"{cb.QuotePrefix}{table}{cb.QuoteSuffix}";
+                var quoteTable = $"{cb.QuotePrefix}{dt.TableName}{cb.QuoteSuffix}";
                 cb.DataAdapter = new NpgsqlDataAdapter
                 {
                     SelectCommand = new NpgsqlCommand($"select * from {quoteTable} where 0=1", connection)
@@ -47,6 +68,13 @@ namespace Netnr.SharedAdo
                 var dtSchema = new DataTable();
                 cb.DataAdapter.FillSchema(dtSchema, SchemaType.Source);
                 var autoIncrCol = dtSchema.Columns.Cast<DataColumn>().Where(x => x.AutoIncrement == true).Select(x => x.ColumnName).ToList();
+
+                //自增列是主键时，清空主键属性
+                var pkCol = dt.PrimaryKey.Select(x => x.ColumnName);
+                if (autoIncrCol.Any(x => pkCol.Contains(x)))
+                {
+                    dt.PrimaryKey = null;
+                }
 
                 //排除自增
                 var columns = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
@@ -98,23 +126,26 @@ namespace Netnr.SharedAdo
         /// 根据行数据 RowState 状态新增、修改
         /// </summary>
         /// <param name="dt">数据表</param>
-        /// <param name="table">数据库表名</param>
+        /// <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
         /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
         /// <param name="openTransaction">开启事务，默认开启</param>
         /// <returns></returns>
-        public int BulkBatchPostgreSQL(DataTable dt, string table, Action<NpgsqlDataAdapter> dataAdapter = null, bool openTransaction = true)
+        public int BulkBatchPostgreSQL(DataTable dt, string sqlEmpty = null, Action<NpgsqlDataAdapter> dataAdapter = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
-                dt.TableName = table;
-
                 var connection = (NpgsqlConnection)Connection;
                 NpgsqlTransaction transaction = openTransaction ? (NpgsqlTransaction)(Transaction = connection.BeginTransaction()) : null;
 
                 var cb = new NpgsqlCommandBuilder();
+                if (string.IsNullOrWhiteSpace(sqlEmpty))
+                {
+                    sqlEmpty = SqlEmpty(dt.TableName, cb);
+                }
+
                 cb.DataAdapter = new NpgsqlDataAdapter
                 {
-                    SelectCommand = new NpgsqlCommand($"select * from {cb.QuotePrefix}{table}{cb.QuoteSuffix}", connection, transaction)
+                    SelectCommand = new NpgsqlCommand(sqlEmpty, connection, transaction)
                 };
                 cb.ConflictOption = ConflictOption.OverwriteChanges;
 
@@ -149,6 +180,52 @@ namespace Netnr.SharedAdo
 
                 return num;
             });
+        }
+
+        /// <summary>
+        /// 表批量写入（保留自增值）
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public int BulkKeepIdentityPostgreSQL(DataTable dt)
+        {
+            //自增列（使用SQL并指定自增列值写入）
+            var autoIncrCol = dt.Columns.Cast<DataColumn>().Where(x => x.AutoIncrement == true).ToList();
+            if (autoIncrCol.Count > 0)
+            {
+                return BulkBatchPostgreSQL(dt, dataAdapter: dataAdapter =>
+                {
+                    var sqlquote = "\"";
+                    var ct = dataAdapter.InsertCommand.CommandText;
+                    autoIncrCol = autoIncrCol.Where(x => !ct.Contains($"{sqlquote + x.ColumnName + sqlquote}")).ToList();
+                    if (autoIncrCol.Count > 0)
+                    {
+                        var fields = string.Empty;
+                        var values = string.Empty;
+
+                        for (int i = 0; i < autoIncrCol.Count; i++)
+                        {
+                            var col = autoIncrCol[i];
+                            fields += $"{sqlquote + col.ColumnName + sqlquote}, ";
+                            values += $"@{col.ColumnName}, ";
+
+                            //新增参数
+                            var parameter = new NpgsqlParameter(col.ColumnName, col.DataType)
+                            {
+                                SourceColumn = col.ColumnName
+                            };
+                            dataAdapter.InsertCommand.Parameters.Add(parameter);
+                        }
+
+                        ct = ct.Replace("(\"", $"({fields}\"").Replace("(@", $"({values}@");
+                        dataAdapter.InsertCommand.CommandText = ct;
+                    }
+                });
+            }
+            else
+            {
+                return BulkCopyPostgreSQL(dt);
+            }
         }
     }
 }

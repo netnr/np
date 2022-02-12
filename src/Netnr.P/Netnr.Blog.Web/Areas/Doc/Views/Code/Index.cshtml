@@ -126,15 +126,15 @@
             <li>
                 @if (uinfo.UserId == 0)
                 {
-                        <a data-href="/doc/discover" title="Doc">
-                            <i class="fa fa-fw fa-lg fa-book text-success"></i>
-                        </a>
+                    <a data-href="/doc/discover" title="Doc">
+                        <i class="fa fa-fw fa-lg fa-book text-success"></i>
+                    </a>
                 }
                 else
                 {
-                        <a data-href="/doc/user/@uinfo.UserId" title="Your doc">
-                            <i class="fa fa-fw fa-lg fa-book text-success"></i>
-                        </a>
+                    <a data-href="/doc/user/@uinfo.UserId" title="Your doc">
+                        <i class="fa fa-fw fa-lg fa-book text-success"></i>
+                    </a>
                 }
             </li>
             <li>
@@ -215,6 +215,7 @@
             },
             plugins: [
                 function (hook) {
+                    var tocnode = document.querySelector('.toc');
                     hook.doneEach(function () {
 
                         tocbot.init({
@@ -223,7 +224,6 @@
                             headingSelector: 'h2, h3, h4, h5, h6'
                         });
 
-                        var tocnode = document.querySelector('.toc');
                         if (tocnode.children.length) {
                             tocnode.classList.add("nr-toc");
                             tocnode.querySelectorAll('a').forEach(item => {
@@ -231,9 +231,15 @@
                                 item.onclick = function (e) {
                                     e.stopPropagation();
                                     e.preventDefault();
-                                    document.querySelector('[data-id="' + this.hash.substring(1) + '"]').click();
+                                    document.querySelector(`[data-id="${decodeURIComponent(this.hash).substring(1)}"]`).click();
                                 }
                             });
+                        }
+
+                        if(tocnode.querySelectorAll('a').length == 0 || document.body.clientHeight == document.body.scrollHeight){
+                            tocnode.style.transform = "translateY(-100vh)";
+                        }else{
+                            tocnode.style.transform = "";
                         }
                     });
                 }

@@ -9,10 +9,10 @@ namespace Netnr.DataX.Application
             try
             {
                 var sourceDp = Path.Combine(Environment.CurrentDirectory, "npp");
-                var sourcePath = DXService.ConsoleReadPath("请输入源目录：", 2, sourceDp);
+                var sourcePath = DXService.ConsoleReadPath("请输入源目录", 2, sourceDp);
 
                 var targetDp = Path.Combine(Environment.CurrentDirectory, "np");
-                var targetPath = DXService.ConsoleReadPath("请输入目标目录：", 2, targetDp);
+                var targetPath = DXService.ConsoleReadPath("请输入目标目录", 2, targetDp);
 
                 var ignoreForder = "bin,obj,Properties,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel".Split(',').ToList();
                 DXService.Log($"Ignored folders\n{ignoreForder.ToJson(true)}");
@@ -47,7 +47,7 @@ namespace Netnr.DataX.Application
                         {
                             if (!isFound)
                             {
-                                DXService.Log($"\n处理关键信息：{filePath}");
+                                DXService.Log($"\n处理关键信息: {filePath}");
                             }
                             isFound = true;
 
@@ -81,7 +81,7 @@ namespace Netnr.DataX.Application
             }
             catch (Exception ex)
             {
-                DXService.Log($"ERROR：{ex.Message}");
+                DXService.Log($"ERROR: {ex.Message}");
             }
         }
     }

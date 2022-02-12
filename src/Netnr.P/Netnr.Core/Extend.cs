@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -294,6 +293,39 @@ namespace Netnr
         {
             encoding ??= Encoding.UTF8;
             return encoding.GetString(Convert.FromBase64String(value));
+        }
+
+        /// <summary>
+        /// 对象值读取源
+        /// </summary>
+        /// <param name="target">需要赋值的对象</param>
+        /// <param name="source">源对象</param>
+        public static T ToRead<T>(this T target, object source) where T : class
+        {
+            var targetPis = target.GetType().GetProperties();
+            var sourcePis = source.GetType().GetProperties();
+
+            foreach (var sourcePi in sourcePis)
+            {
+                foreach (var targetPi in targetPis)
+                {
+                    if (targetPi.Name == sourcePi.Name)
+                    {
+                        var sourcePiVal = sourcePi.GetValue(source, null);
+                        if (targetPi.PropertyType.IsAssignableFrom(sourcePi.PropertyType))
+                        {
+                            targetPi.SetValue(target, sourcePiVal, null);
+                        }
+                        else
+                        {
+                            targetPi.ToRead(sourcePiVal);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            return target;
         }
 
         /// <summary>

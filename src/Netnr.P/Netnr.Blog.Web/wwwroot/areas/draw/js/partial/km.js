@@ -4,8 +4,6 @@ var body = document.body;
 body.setAttribute('ng-app', "MindMap");
 body.setAttribute('ng-controller', "MainController");
 
-document.querySelector('.eh').style.display = "block";
-
 //完成时
 window.addEventListener('DOMContentLoaded', function () {
     angular.module('MindMap', ['kityminderEditor'])
@@ -17,16 +15,56 @@ window.addEventListener('DOMContentLoaded', function () {
                 window.editor = editor;
                 window.minder = minder;
 
-                //初始化回调
-                km.init();
+                km.inject();
+
+                $('#LoadingMask').fadeOut(200);
             };
         });
-
-    $('#LoadingMask').fadeOut(200);
 }, false);
 
 var km = {
     RequestActive: null,
+
+    inject: function () {
+        setTimeout(() => {
+            var ul = document.querySelector('.ng-isolate-scope ul');
+
+            var liMenu = document.createElement('li');
+            liMenu.innerHTML = `
+<div class="dropdown">
+    <button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+        菜单 <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" id="mmmenu">
+        <li><a data-mc="save" href="javascript:void(0)">保存 (Ctrl+S)</a></li>
+        <li><a data-mc="export" href="javascript:void(0)">导出</a></li>
+        <li><a data-mc="import" href="javascript:void(0)">导入</a></li>
+        <li class="divider"></li>
+        <li><a href="/draw/discover">Discover</a></li>
+        <li><a href="/">Netnr</a></li>
+    </ul>
+</div>
+`
+            var liTitle = document.createElement('li');
+            liTitle.classList.add("hidden-xs")
+            liTitle.style.float = "right";
+            liTitle.innerHTML = `
+<div class="form-inline">
+    <div class="form-group">
+        <input class="form-control input-sm" id="DrName" value="" placeholder="标题名称" maxlength="30" />
+    </div>
+    <a class="btn btn-link btn-sm" href="/draw/discover">Discover</a>
+    <a class="btn btn-link btn-sm" href="/">Netnr</a>
+</div>
+`
+
+            ul.insertBefore(liMenu, ul.firstElementChild);
+            ul.appendChild(liTitle)
+
+            //初始化回调
+            km.init();
+        }, 200)
+    },
 
     init: function () {
         //菜单

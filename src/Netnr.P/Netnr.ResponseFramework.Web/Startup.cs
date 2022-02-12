@@ -14,8 +14,8 @@ namespace Netnr.ResponseFramework.Web
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
 
-            //编码注册
-            GlobalTo.EncodingReg();
+            SharedReady.ReadyTo.EncodingReg();
+            SharedReady.ReadyTo.LegacyTimestamp();
         }
 
         //配置swagger

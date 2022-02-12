@@ -24,7 +24,16 @@
                         <option value="0">不处理</option>
                     </optgroup>
                 </select>
-                <a target="_blank" class="btn btn-warning" href="https://sqlformat.darold.net/">pgFormatter</a>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        More
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="https://sqlformat.darold.net">pgFormatter</a></li>
+                        <li><a class="dropdown-item" href="http://sql-format.com">Devart For SQLServer</a></li>
+                        <li><a class="dropdown-item" href="https://www.red-gate.com/website/sql-formatter">Reg-Data For SQLServer</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="col-md-12">
@@ -88,7 +97,7 @@
     });
 
     $(window).resize(AutoHeight);
-    
+
     function formatterSQL(text) {
         return sqlFormatter.format(text, {
             language:document.querySelector('.nrSqlConfigLanguage').value,

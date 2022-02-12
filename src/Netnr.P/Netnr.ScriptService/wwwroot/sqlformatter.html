@@ -3,7 +3,7 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-01-11 14:56:08
+2022-02-12 14:59:27
 -->
 
 
@@ -101,7 +101,16 @@ https://netnr.eu.org
                         <option value="0">不处理</option>
                     </optgroup>
                 </select>
-                <a target="_blank" class="btn btn-warning" href="https://sqlformat.darold.net/">pgFormatter</a>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        More
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="https://sqlformat.darold.net">pgFormatter</a></li>
+                        <li><a class="dropdown-item" href="http://sql-format.com">Devart For SQLServer</a></li>
+                        <li><a class="dropdown-item" href="https://www.red-gate.com/website/sql-formatter">Reg-Data For SQLServer</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="col-md-12">
@@ -121,7 +130,7 @@ https://netnr.eu.org
 </script>
 
 <script src='https://npm.elemecdn.com/sql-formatter@4.0.2/dist/sql-formatter.min.js'></script>
-<script src='https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs/loader.js'></script>
+<script src='https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs/loader.js'></script>
 
 <script>
     function htmlDecode(html) {
@@ -132,7 +141,7 @@ https://netnr.eu.org
 
     require.config({
         paths: {
-            vs: 'https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs'
+            vs: 'https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
@@ -183,7 +192,7 @@ https://netnr.eu.org
     });
 
     $(window).resize(AutoHeight);
-    
+
     function formatterSQL(text) {
         return sqlFormatter.format(text, {
             language:document.querySelector('.nrSqlConfigLanguage').value,

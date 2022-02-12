@@ -6,7 +6,7 @@
     [Route("api/v1/dk/[action]")]
     [ResponseCache(Duration = 2)]
     [Apps.FilterConfigs.AllowCors]
-    public class DKController : DKControllerTo
+    public class DKController : DataKitController
     {
 
     }

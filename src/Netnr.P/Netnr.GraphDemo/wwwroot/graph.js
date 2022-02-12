@@ -1,11 +1,5 @@
 ﻿var config = [
     {
-        name: "System.Drawing.Common",
-        link: null,
-        captcha: "/SystemDrawingCommon/Captcha",
-        resize: "/SystemDrawingCommon/Resize",
-        watermarkForText: "/SystemDrawingCommon/Watermark"
-    }, {
         name: "SkiaSharp",
         link: "https://github.com/mono/SkiaSharp",
         captcha: "/SkiaSharp/Captcha",

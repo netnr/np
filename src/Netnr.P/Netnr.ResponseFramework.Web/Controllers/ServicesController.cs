@@ -18,7 +18,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index()
         {
-            return Content("Servers is OK");
+            return Ok("Normal Service!");
         }
 
         /// <summary>
@@ -39,11 +39,18 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 }
                 else
                 {
-                    var fullPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName);
+                    var idb = new SharedDataKit.TransferVM.ImportDatabase
+                    {
+                        WriteConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo
+                        {
+                            ConnectionType = GlobalTo.TDB,
+                            ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=")
+                        },
+                        ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                        WriteDeleteData = true
+                    };
 
-                    var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
-
-                    vm = SharedDataKit.DataKitAidTo.ImportDatabase(GlobalTo.TDB, conn, fullPath, true);
+                    vm = SharedDataKit.DataKit.ImportDatabase(idb);
                 }
 
                 return vm;
@@ -66,11 +73,17 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                 if (CoverBack)
                 {
-                    var fullPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName);
+                    var edb = new SharedDataKit.TransferVM.ExportDatabase
+                    {
+                        ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                        ReadConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo()
+                        {
+                            ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source="),
+                            ConnectionType = GlobalTo.TDB
+                        }
+                    };
 
-                    var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
-
-                    vm = SharedDataKit.DataKitAidTo.ExportDatabase(GlobalTo.TDB, conn, fullPath);
+                    vm = SharedDataKit.DataKit.ExportDatabase(edb);
                 }
                 else
                 {

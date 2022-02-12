@@ -119,22 +119,6 @@ ORDER BY
         }
 
         /// <summary>
-        /// 表DLL
-        /// </summary>
-        /// <param name="DatabaseName">数据库名</param>
-        /// <param name="TableNames">表名</param>
-        /// <returns></returns>
-        public static string GetTableDDLOracle(string DatabaseName, List<string> TableNames)
-        {
-            var listSql = new List<string>();
-            TableNames.ForEach(table =>
-            {
-                listSql.Add($"SELECT DBMS_METADATA.GET_DDL('TABLE', 'PLTF_ACTIVITY','{DatabaseName}') from dual; -- ddl");
-            });
-            return string.Join(";", listSql);
-        }
-
-        /// <summary>
         /// 获取列
         /// </summary>
         /// <param name="DatabaseName">数据库名</param>
@@ -172,6 +156,7 @@ FROM
   LEFT JOIN ALL_CONS_COLUMNS t5 ON t1.OWNER = t5.OWNER
   AND t1.TABLE_NAME = t5.TABLE_NAME
   AND t3.COLUMN_NAME = t5.COLUMN_NAME
+  AND t5.POSITION IS NOT NULL
 WHERE
   t1.OWNER = '{DatabaseName}' {Where}
 ORDER BY
@@ -205,6 +190,32 @@ ORDER BY
             return $"COMMENT ON COLUMN \"{DatabaseName}\".\"{TableName}\".\"{ColumnName}\" IS '{ColumnComment.OfSql()}'";
         }
 
+        /// <summary>
+        /// 表DLL
+        /// </summary>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <param name="TableName">表名</param>
+        /// <returns></returns>
+        public static string GetTableDDLOracle(string DatabaseName, string TableName)
+        {
+            var list = new List<string>()
+            {
+                $"SELECT DBMS_METADATA.GET_DDL('TABLE', '{TableName}','{DatabaseName}') AS ddl_table FROM DUAL",
+                $"SELECT DBMS_METADATA.GET_DDL('INDEX', INDEX_NAME, '{DatabaseName}') AS ddl_index FROM ALL_INDEXES WHERE OWNER = '{DatabaseName}' AND TABLE_NAME = '{TableName}'",
+                $"SELECT DBMS_METADATA.GET_DDL('CONSTRAINT', CONSTRAINT_NAME) AS ddl_check FROM ALL_CONSTRAINTS WHERE OWNER = '{DatabaseName}' AND TABLE_NAME = '{TableName}' ORDER BY CONSTRAINT_TYPE DESC",
+                $"SELECT COMMENTS FROM ALL_TAB_COMMENTS WHERE OWNER = '{DatabaseName}' AND TABLE_NAME = '{TableName}'",
+                $"SELECT COLUMN_NAME, COMMENTS FROM ALL_COL_COMMENTS WHERE OWNER = '{DatabaseName}' AND TABLE_NAME = '{TableName}'"
+            };
+
+            var sql = "BEGIN\n";
+            for (int i = 0; i < list.Count; i++)
+            {
+                sql += $"\tOPEN :o{i} FOR {list[i]};\n";
+            }
+            sql += "END;";
+
+            return sql;
+        }
     }
 }
 

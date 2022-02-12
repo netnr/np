@@ -11,7 +11,7 @@ require(['vs/editor/editor.main'], function () {
             var tc = htmlDecode(this.innerHTML);
             this.innerHTML = "";
 
-            var editor = monaco.editor.create(this, {
+            let editor = monaco.editor.create(this, {
                 value: tc,
                 language: lang,
                 automaticLayout: true,
@@ -36,6 +36,30 @@ require(['vs/editor/editor.main'], function () {
             editor.addCommand(monaco.KeyCode.PauseBreak, function () {
                 RunPreview();
             })
+
+            //载入最后一次运行
+            editor.addAction({
+                id: "meid-run-last",
+                label: "恢复为最后一次运行",
+                keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.KeyL],
+                contextMenuGroupId: "me-01",
+                run: function () {
+                    try {
+                        var json = localStorage.getItem("run_last")
+                        if (json) {
+                            json = JSON.parse(json);
+
+                            editor1.setValue(json.html);
+                            editor2.setValue(json.javascript);
+                            editor3.setValue(json.css);
+                        }
+                    } catch (e) {
+                        console.debug(e)
+                        alert("Fail")
+                    }
+                }
+            });
+
             //CSS格式化
             if (i == 2) {
                 monaco.languages.registerDocumentFormattingEditProvider('css', {
@@ -83,15 +107,21 @@ require(['vs/editor/editor.main'], function () {
         }
     });
 
-    RunPreview();
+    RunPreview(1);
 });
 
 //preview
-function RunPreview() {
+function RunPreview(isInit) {
     var iframebox = $('.re4');
     iframebox.children('iframe').remove();
 
     var e1 = editor1.getValue(), e2 = editor2.getValue().trim(), e3 = editor3.getValue().trim();
+
+    //存储运行
+    if (!isInit) {
+        localStorage.setItem("run_last", JSON.stringify({ html: e1, javascript: e2, css: e3 }))
+    }
+
     var iframe = document.createElement('iframe');
     iframe.name = "Run preview";
     iframebox.append(iframe);

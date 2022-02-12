@@ -1,1 +1,0 @@
-global.DeviceDetector = require("device-detector-js");

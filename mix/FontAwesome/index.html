@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Font Awesome，一套绝佳的图标字体库和CSS框架">
     <meta name="author" content="fontawesome.dashgame.com">
-    <meta name="keywords" content="Font Awesome,Bootstrap,CSS,图标,字体,icon font,极风游,极风游科技,dashgame">
+    <meta name="keywords" content="Font Awesome,Bootstrap,CSS,图标,字体,icon font">
     <link rel="shortcut icon" href="favicon.ico">
     <title>Font Awesome，一套绝佳的图标字体库和CSS框架</title>
 
@@ -1827,7 +1827,7 @@
             <a href="https://github.com/FortAwesome/Font-Awesome/issues">问题与建议</a> &middot;
         </div>
         <div class="dashgame">
-            Font Awesome 4.7.0 中文文档由 <a href="http://www.dashgame.com" target="_blank">极风游科技</a> 翻译整理。&nbsp;&nbsp;
+            Font Awesome 4.7.0 中文文档由
         </div>
     </div>
 
@@ -1835,8 +1835,29 @@
     <script src="https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
 
     <script src="assets/js/jquery.nav.min.js"></script>
-    <script src="assets/libs/zclip/jquery.zclip.min.js"></script>
     <script src="assets/libs/toastr/toastr.min.js"></script>
-    <script src="assets/js/site.js"></script>
+
+    <script>
+        $('#icon-carousel').carousel({ interval: 5000 });
+        $('#main-nav').onePageNav({ currentClass: 'active', });
+
+        if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {
+            $('.fa-hover a').each(function (i, e) {
+                $(this).removeClass("col-xs-11");
+            });
+        } else {
+            $('.fa-hover').each(function (i, e) {
+                var tempEle = $(this);
+                tempEle.append("<span class='clipboard text-muted' style='line-height: 32px;'><i class='fa fa-clipboard'></i></span>");
+
+                tempEle.find('.clipboard').click(function () {
+                    var copyText = "fa-" + tempEle.text().substr(12).replace(" (alias)", "")
+                    navigator.clipboard.writeText(copyText).then(() => {
+                        toastr.warning('已成功复制标签，请直接粘贴')
+                    })
+                })
+            });
+        }
+    </script>
 </body>
 </html>

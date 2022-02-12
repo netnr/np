@@ -1,11 +1,6 @@
 ﻿#if Full || Public
 
-using System;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
 namespace Netnr
 {

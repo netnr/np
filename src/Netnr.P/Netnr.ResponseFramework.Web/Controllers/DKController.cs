@@ -9,7 +9,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
     [Route("[controller]/[action]")]
     [ResponseCache(Duration = 2)]
     [Apps.FilterConfigs.IsAdmin]
-    public class DKController : DKControllerTo
+    public class DKController : DataKitController
     {
         public ContextBase db;
         public DKController(ContextBase cb)

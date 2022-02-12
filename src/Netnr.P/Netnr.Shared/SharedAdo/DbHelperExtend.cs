@@ -40,6 +40,47 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
+        /// 构建查询空表脚本
+        /// </summary>
+        /// <param name="table">数据库表名</param>
+        /// <param name="cb">构建对象，取引用符号</param>
+        /// <param name="tdb">数据库类型，取引用符号</param>
+        /// <returns></returns>
+        public static string SqlEmpty(string table, DbCommandBuilder cb = null, SharedEnum.TypeDB? tdb = null)
+        {
+            if (cb != null)
+            {
+                table = $"{cb?.QuotePrefix}{table}{cb?.QuoteSuffix}";
+            }
+            else if (tdb != null)
+            {
+                table = SqlQuote(tdb, table);
+            }
+
+            return $"SELECT * FROM {table} WHERE 0 = 1";
+        }
+
+        /// <summary>
+        /// 构建清空表数据脚本
+        /// </summary>
+        /// <param name="tdb"></param>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public static string SqlClearTable(SharedEnum.TypeDB tdb, string table)
+        {
+            var fullTableName = SqlQuote(tdb, table);
+
+            if (tdb == SharedEnum.TypeDB.SQLite)
+            {
+                return $"DELETE FROM {fullTableName}";
+            }
+            else
+            {
+                return $"TRUNCATE TABLE {fullTableName}";
+            }
+        }
+
+        /// <summary>
         /// SQL连接字符串预检
         /// </summary>
         /// <param name="tdb">数据库类型</param>
@@ -183,6 +224,59 @@ namespace Netnr.SharedAdo
 
             return list;
         }
+
+        /// <summary>
+        /// 获取空表结构、元信息
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns>NULL 或 {dt、dtSchema}</returns>
+        public static Tuple<DataTable, DataTable> ReaderAdSchema(DbDataReader reader)
+        {
+            var hasField = reader.FieldCount > 0;
+            if (hasField)
+            {
+                var dtSchema = reader.GetSchemaTable();
+                var dt = new DataTable();
+
+                if (dtSchema.Columns.Contains("BaseTableName"))
+                {
+                    dt.TableName = dtSchema.Rows[0]["BaseTableName"].ToString();
+                    dtSchema.TableName = dt.TableName;
+                }
+
+                var keyCols = new List<DataColumn>();
+                foreach (DataRow dr in dtSchema.Rows)
+                {
+                    var column = new DataColumn()
+                    {
+                        ColumnName = dr["ColumnName"].ToString(),
+                        DataType = (Type)dr["DataType"],
+                        Unique = (bool)dr["IsUnique"],
+                        AllowDBNull = dr["AllowDBNull"] == DBNull.Value || (bool)dr["AllowDBNull"],
+                        AutoIncrement = (bool)dr["IsAutoIncrement"]
+                    };
+
+                    if (column.DataType == typeof(string))
+                    {
+                        column.MaxLength = (int)dr["ColumnSize"];
+                    }
+                    if ((bool)dr["IsKey"])
+                    {
+                        keyCols.Add(column);
+                    }
+
+                    dt.Columns.Add(column);
+                }
+                if (keyCols.Count > 0)
+                {
+                    dt.PrimaryKey = keyCols.ToArray();
+                }
+
+                return new Tuple<DataTable, DataTable>(dt, dtSchema);
+            }
+
+            return null;
+        }
     }
 
     /// <summary>
@@ -206,7 +300,7 @@ namespace Netnr.SharedAdo
 
             do
             {
-                var table = new DataTable
+                var dt = new DataTable
                 {
                     TableName = $"table{ds.Tables.Count + 1}"
                 };
@@ -215,14 +309,14 @@ namespace Netnr.SharedAdo
                 if (includeSchemaTable && hasField)
                 {
                     var st = reader.GetSchemaTable();
-                    st.TableName = table.TableName;
+                    st.TableName = dt.TableName;
                     dsSchema.Tables.Add(st);
                 }
 
-                table.Load(reader);
+                dt.Load(reader);
                 if (hasField)
                 {
-                    ds.Tables.Add(table);
+                    ds.Tables.Add(dt);
                 }
             } while (!reader.IsClosed);
 
@@ -233,10 +327,71 @@ namespace Netnr.SharedAdo
         /// 查询返回数据集
         /// </summary>
         /// <param name="dbCommand"></param>
+        /// <param name="readRow"></param>
+        /// <returns></returns>
+        public static void ExecuteDataRow(this DbCommand dbCommand, Action<DataRow> readRow)
+        {
+            using var reader = dbCommand.ExecuteReader(CommandBehavior.KeyInfo | CommandBehavior.CloseConnection);
+
+            do
+            {
+                var rs = DbHelper.ReaderAdSchema(reader);
+                if (rs != null)
+                {
+                    var dt = rs.Item1;
+
+                    while (reader.Read())
+                    {
+                        var dr = dt.NewRow();
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            var col = dt.Columns[i];
+                            var cellValue = reader[i];
+                            if (cellValue != DBNull.Value)
+                            {
+                                dr[i] = cellValue;
+                            }
+                            else if (col.AllowDBNull == false)
+                            {
+                                col.AllowDBNull = true;
+                            }
+                        }
+
+                        readRow.Invoke(dr);
+                    }
+                }
+            } while (reader.NextResult());
+        }
+
+        /// <summary>
+        /// 查询返回数据集
+        /// </summary>
+        /// <param name="dbCommand"></param>
         /// <returns></returns>
         public static DataSet ExecuteData(this DbCommand dbCommand)
         {
             return ExecuteDataSet(dbCommand).Item1;
+        }
+
+        /// <summary>
+        /// 修复：避免内存泄露
+        /// ref: https://stackoverflow.com/questions/3699143
+        /// ref: https://support.oracle.com/knowledge/Oracle%20Database%20Products/1050515_1.html
+        /// </summary>
+        /// <param name="cmd"></param>
+        public static DbCommand ToFix(this DbCommand cmd)
+        {
+            var gtCmd = cmd.GetType();
+            if (gtCmd.Name == "OracleCommand")
+            {
+                var gpLob = gtCmd.GetProperty("InitialLOBFetchSize");
+                gpLob.SetValue(cmd, -1);
+
+                var gpLong = gtCmd.GetProperty("InitialLONGFetchSize");
+                gpLong.SetValue(cmd, -1);
+            }
+
+            return cmd;
         }
     }
 }

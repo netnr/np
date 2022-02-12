@@ -84,10 +84,10 @@ public class QuoteTo
                     break;
 
                 case "swiper.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swiper@7.4.1/swiper-bundle.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swiper@8.0.5/swiper-bundle.min.css' rel='stylesheet' />");
                     break;
                 case "swiper.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swiper@7.4.1/swiper-bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swiper@8.0.5/swiper-bundle.min.js'></script>");
                     break;
 
                 case "jz.js":
@@ -129,11 +129,11 @@ public class QuoteTo
                     break;
 
                 case "ag-grid-community.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@26.2.1/dist/ag-grid-community.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@27.0.1/dist/ag-grid-community.min.js'></script>");
                     break;
 
                 case "ag-grid-enterprise.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@26.2.1/dist/ag-grid-enterprise.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@27.0.1/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
                     break;
 
@@ -166,11 +166,11 @@ public class QuoteTo
                     break;
 
                 case "bmob.js":
-                    vh.Add($"<script src='{srServer}/libs/bmob/1.7.0/bmob.min.js?170'></script>");
+                    vh.Add($"<script src='{srServer}/libs/mix/bmob.min.js?170'></script>");
                     break;
 
                 case "fast-xml-parser.js":
-                    vh.Add($"<script src='{srServer}/libs/fast-xml-parser/fast-xml-parser-v3.21.1.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/mix/fast-xml-parser.min.js'></script>");
                     break;
 
                 case "sql-formatter.js":
@@ -178,11 +178,11 @@ public class QuoteTo
                     break;
 
                 case "highcharts.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.2/highcharts.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.3/highcharts.js'></script>");
                     break;
 
                 case "hls.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.1.2/dist/hls.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.1.4/dist/hls.min.js'></script>");
                     break;
 
                 case "watermark.js":
@@ -190,7 +190,7 @@ public class QuoteTo
                     break;
 
                 case "nsfwjs":
-                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.12.0/dist/tf.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.13.0/dist/tf.min.js'></script>");
                     vh.Add("<script src='https://npm.elemecdn.com/nsfwjs@2.4.1/dist/nsfwjs.min.js'></script>");
                     break;
 
@@ -204,19 +204,19 @@ public class QuoteTo
                     break;
 
                 case "clean-css.js":
-                    vh.Add($"<script src='{srServer}/libs/clean-css/clean-css-v5.2.2.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/mix/clean-css.min.js'></script>");
                     break;
 
                 case "svgo.js":
-                    vh.Add($"<script src='{srServer}/libs/svgo/svgo-v2.7.0.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/mix/svgo.min.js'></script>");
                     break;
 
                 case "device-detector-js.js":
-                    vh.Add($"<script src='{srServer}/libs/device-detector-js/device-detector-js-v2.2.10.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/mix/device-detector-js.min.js'></script>");
                     break;
 
                 case "html2canvas.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/html2canvas@1.4.1/dist/html2canvas.min.js'></script>");
                     break;
 
                 case "asciinema-player.css":
@@ -239,11 +239,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.1.3/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.5.0/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.3/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.1.3/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "prettier-css":
@@ -269,7 +269,7 @@ public class QuoteTo
                     break;
 
                 case "identicon.js":
-                    vh.Add($"<script src='{srServer}/libs/identicon/identicon-v2.3.3.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/mix/identicon.min.js'></script>");
                     break;
 
                 case "jdenticon.js":
@@ -280,8 +280,8 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/jszip@3.7.1/dist/jszip.min.js'></script>");
                     break;
 
-                case "tti.js":
-                    vh.Add($"<script src='{srServer}/libs/text-to-image/20201119/tti.js'></script>");
+                case "text-to-image.js":
+                    vh.Add($"<script src='{srServer}/libs/mix/text-to-image.js'></script>");
                     break;
 
                 case "nginxbeautifier":
@@ -289,7 +289,7 @@ public class QuoteTo
                     break;
 
                 case "monaco-editor":
-                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs/loader.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
                                 function htmlDecode(html) {
@@ -300,7 +300,7 @@ public class QuoteTo
 
                                 require.config({
                                     paths: {
-                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs'
+                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs'
                                     },
                                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                 });

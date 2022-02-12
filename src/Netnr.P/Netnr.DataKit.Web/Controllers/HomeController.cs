@@ -2,10 +2,10 @@
 {
     public class HomeController : Controller
     {
-        [ResponseCache(Duration = 5)]
+        [ResponseCache(Duration = 10)]
         public IActionResult Index()
         {
-            return Redirect("/app/dist/index.html");
+            return PhysicalFile(Path.Combine(SharedFast.GlobalTo.WebRootPath, "index.html"), "text/html");
         }
 
         /// <summary>

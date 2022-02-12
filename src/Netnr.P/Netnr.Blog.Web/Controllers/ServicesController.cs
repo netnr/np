@@ -204,11 +204,17 @@ namespace Netnr.Blog.Web.Controllers
         {
             return SharedResultVM.Try(vm =>
             {
-                var fullPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName);
+                var edb = new SharedDataKit.TransferVM.ExportDatabase
+                {
+                    ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                    ReadConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo()
+                    {
+                        ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source="),
+                        ConnectionType = GlobalTo.TDB
+                    }
+                };
 
-                var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
-
-                vm = SharedDataKit.DataKitAidTo.ExportDatabase(GlobalTo.TDB, conn, fullPath);
+                vm = SharedDataKit.DataKit.ExportDatabase(edb);
 
                 return vm;
             });
@@ -446,11 +452,18 @@ namespace Netnr.Blog.Web.Controllers
         {
             return SharedResultVM.Try(vm =>
             {
-                var fullPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName);
+                var idb = new SharedDataKit.TransferVM.ImportDatabase
+                {
+                    WriteConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo
+                    {
+                        ConnectionType = GlobalTo.TDB,
+                        ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=")
+                    },
+                    ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                    WriteDeleteData = clearTable
+                };
 
-                var conn = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=");
-
-                vm = SharedDataKit.DataKitAidTo.ImportDatabase(GlobalTo.TDB, conn, fullPath, clearTable);
+                vm = SharedDataKit.DataKit.ImportDatabase(idb);
 
                 return vm;
             });

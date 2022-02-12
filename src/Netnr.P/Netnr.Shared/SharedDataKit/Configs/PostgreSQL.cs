@@ -108,8 +108,8 @@ SELECT
   t2.ordinal_position AS PrimaryKey,
   CASE
     t1.is_nullable
-    WHEN 'NO' THEN 1
-    ELSE 0
+    WHEN 'NO' THEN 0
+    ELSE 1
   END AS IsNullable,
   t1.column_default AS ColumnDefault,
   col_description (
@@ -150,6 +150,207 @@ ORDER BY
         public static string SetColumnCommentPostgreSQL(string TableName, string ColumnName, string ColumnComment)
         {
             return $"COMMENT ON COLUMN public.\"{TableName}\".\"{ColumnName}\" IS '{ColumnComment.OfSql()}'";
+        }
+
+        /// <summary>
+        /// 表DLL
+        /// </summary>
+        /// <param name="TableSchema">模式</param>
+        /// <param name="TableName">表名</param>
+        /// <returns></returns>
+        public static string GetTableDDLPostgreSQL(string TableSchema, string TableName)
+        {
+            // https://stackoverflow.com/questions/2593803
+            var sql = $@"
+DO $$
+DECLARE
+  in_schema_name VARCHAR := '{TableSchema}';
+  in_table_name VARCHAR := '{TableName}';
+  newline VARCHAR := E'\n';
+  -- the ddl we're building
+  v_table_ddl TEXT;
+  -- data about the target table
+  v_table_oid INT;
+  -- records for looping
+  v_column_record record;
+  v_constraint_record record;
+  v_index_record record;
+  v_table_comment TEXT;
+  v_column_comment TEXT;
+BEGIN
+  SELECT
+    c.oid INTO v_table_oid
+  FROM
+    pg_catalog.pg_class c
+    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+  WHERE
+    1 = 1
+    AND c.relkind = 'r'
+    AND c.relname = in_table_name
+    AND n.nspname = in_schema_name;
+  -- the schema
+  -- throw an error if table was not found
+  IF (v_table_oid IS NULL) THEN
+    RAISE EXCEPTION 'table(%) does not exist',in_table_name;
+  END IF;
+  -- start the create definition
+  v_table_ddl := concat(
+    'DROP TABLE IF EXISTS ',
+    in_schema_name,
+    '.""',
+    in_table_name,
+    '"";',
+    newline,
+    'CREATE TABLE ',
+    in_schema_name,
+    '.""',
+    in_table_name,
+    '"" (',
+    newline
+  );
+  -- define all of the columns in the table; https://stackoverflow.com/a/8153081/3068233
+  FOR v_column_record IN
+  SELECT
+    c.table_schema,
+    c.table_name,
+    c.column_name,
+    c.data_type,
+    c.character_maximum_length,
+    c.is_nullable,
+    c.column_default,
+    col_description(
+      format('%s.""%s""', c.table_schema, c.table_name) :: regclass :: oid,
+      c.ordinal_position
+    ) AS column_comment
+  FROM
+    information_schema.columns c
+  WHERE
+    (table_schema, table_name) = (in_schema_name, in_table_name)
+  ORDER BY
+    ordinal_position LOOP v_table_ddl := concat(
+      v_table_ddl,
+      '  ""',
+      v_column_record.column_name,
+      '"" ',
+      v_column_record.data_type,
+      CASE
+        WHEN v_column_record.character_maximum_length IS NOT NULL THEN concat('(', v_column_record.character_maximum_length, ')')
+        ELSE ''
+      END,
+      ' ',
+      CASE
+        WHEN v_column_record.is_nullable = 'NO' THEN 'NOT NULL'
+        ELSE 'NULL'
+      END,
+      CASE
+        WHEN v_column_record.column_default IS NOT NULL THEN concat(' DEFAULT ', v_column_record.column_default)
+        ELSE ''
+      END,
+      ',',
+      newline
+    );
+  -- column comment
+  v_column_comment := concat(
+    v_column_comment,    
+    newline,
+    'COMMENT ON COLUMN ',
+    v_column_record.table_schema,
+    '.""',
+    v_column_record.table_name,
+    '"".""',
+    v_column_record.column_name,
+    '"" IS ''',
+    v_column_record.column_comment,
+    ''';'
+  );
+  END LOOP;
+  -- define all the constraints in the; https://dba.stackexchange.com/a/214877/75296
+  FOR v_constraint_record IN
+  SELECT
+    con.conname AS constraint_name,
+    con.contype AS constraint_type,
+    CASE
+      WHEN con.contype = 'p' THEN 1 -- primary key constraint
+      WHEN con.contype = 'u' THEN 2 -- unique constraint
+      WHEN con.contype = 'f' THEN 3 -- foreign key constraint
+      WHEN con.contype = 'c' THEN 4
+      ELSE 5
+    END AS type_rank,
+    pg_get_constraintdef(con.oid) AS constraint_definition
+  FROM
+    pg_catalog.pg_constraint con
+    JOIN pg_catalog.pg_class rel ON rel.oid = con.conrelid
+    JOIN pg_catalog.pg_namespace nsp ON nsp.oid = connamespace
+  WHERE
+    nsp.nspname = in_schema_name
+    AND rel.relname = in_table_name
+  ORDER BY
+    type_rank LOOP v_table_ddl := concat(
+      v_table_ddl,
+      '  ',
+      'CONSTRAINT ""',
+      v_constraint_record.constraint_name,
+      '"" ',
+      v_constraint_record.constraint_definition,
+      ',',
+      newline
+    );
+  END LOOP;
+  -- drop the last comma before ending the create statement
+  v_table_ddl = concat(
+    substr(v_table_ddl, 0, length(v_table_ddl) - 1),
+    newline
+  );
+  -- end the create definition
+  v_table_ddl := concat(v_table_ddl, ');', newline, newline);
+  -- suffix create statement with all of the indexes on the table
+  FOR v_index_record IN
+  SELECT
+    indexdef
+  FROM
+    pg_indexes
+  WHERE
+    (schemaname, tablename) = (in_schema_name, in_table_name)
+    AND indexname NOT IN (
+      SELECT
+        conname
+      FROM
+        pg_catalog.pg_constraint
+      WHERE
+        contype = 'p'
+    ) LOOP v_table_ddl := concat(v_table_ddl, v_index_record.indexdef, ';', newline);
+  END LOOP;
+  -- table comment
+  SELECT
+    concat(
+      'COMMENT ON TABLE ',
+      schemaname,
+      '.""',
+      relname,
+      '""',
+      ' IS ''',
+      REPLACE(obj_description(relid), '''', ''''''),
+      ''';',
+      newline
+    ) INTO v_table_comment
+  FROM
+    pg_stat_user_tables
+  WHERE
+    schemaname = in_schema_name
+    AND relname = in_table_name;
+  -- comment
+  v_table_ddl := concat(
+    v_table_ddl,
+    newline,
+    v_table_comment,
+    v_column_comment
+  );
+  -- return the ddl
+  RAISE NOTICE '%', REPLACE(v_table_ddl, concat(newline, newline, newline), newline);
+END
+$$;
+";
+            return sql;
         }
 
     }

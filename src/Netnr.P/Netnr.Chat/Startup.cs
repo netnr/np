@@ -13,8 +13,7 @@ namespace Netnr.Chat
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
 
-            //±‡¬Î◊¢≤·
-            GlobalTo.EncodingReg();
+            SharedReady.ReadyTo.EncodingReg();
         }
 
         //≈‰÷√swagger

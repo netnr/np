@@ -2,7 +2,6 @@
 
 using System;
 using System.Data;
-using Microsoft.Data.Sqlite;
 
 namespace Netnr.SharedAdo
 {
@@ -16,96 +15,112 @@ namespace Netnr.SharedAdo
         /// 根据行数据 RowState 状态新增、修改
         /// </summary>
         /// <param name="dt">数据表</param>
-        /// <param name="table">数据库表名</param>
+        /// <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
         /// <param name="openTransaction">开启事务</param>
         /// <returns></returns>
-        public int BulkBatchSQLite(DataTable dt, string table, bool openTransaction = true)
+        public int BulkBatchSQLite(DataTable dt, string sqlEmpty = null, bool openTransaction = true)
         {
+            var fullTableName = $"[{dt.TableName}]";
+
+            if (string.IsNullOrWhiteSpace(sqlEmpty))
+            {
+                sqlEmpty = SqlEmpty(fullTableName);
+            }
+
+            //空表（新增、更新的模板）
+            var dtEmpty = SqlExecuteReader(sqlEmpty).Item1.Tables[0];
+
+            var listCols = dtEmpty.Columns.Cast<DataColumn>().ToList();
+
+            var sqlAdd = $"INSERT INTO {fullTableName}([{string.Join("], [", listCols)}]) VALUES (@{string.Join(", @", listCols)})";
+
+            var colKey = dtEmpty.PrimaryKey.ToList();
+            if (colKey.Count == 0)
+            {
+                colKey.Add(dtEmpty.Columns[0]);
+            }
+            var colMod = listCols.Where(x => !colKey.Contains(x));
+            var sqlMod = $"UPDATE {fullTableName} SET {string.Join(", ", colMod.Select(x => $"[{x.ColumnName}] = @{x.ColumnName}"))} WHERE {string.Join(", ", colKey.Select(x => $"[{x.ColumnName}] = @{x.ColumnName}"))}";
+
             return SafeConn(() =>
             {
-                dt.TableName = table;
+                var cmdAdd = Connection.CreateCommand();
+                cmdAdd.CommandText = sqlAdd;
 
-                var connection = (SqliteConnection)Connection;
-                SqliteTransaction transaction = openTransaction ? (SqliteTransaction)(Transaction = connection.BeginTransaction()) : null;
+                var cmdMod = Connection.CreateCommand();
+                cmdMod.CommandText = sqlMod;
 
-                var listCols = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
-                var sql = $"INSERT INTO [{table}]([{string.Join("],[", listCols)}]) VALUES (${string.Join(", $", listCols)})";
+                if (openTransaction)
+                {
+                    Transaction = Connection.BeginTransaction();
 
-                var cmd = connection.CreateCommand();
-                cmd.CommandText = sql;
+                    cmdAdd.Transaction = Transaction;
+                    cmdMod.Transaction = Transaction;
+                }
 
-                var parameters = new List<SqliteParameter>();
+                var parametersAdd = new List<DbParameter>();
+                var parametersMod = new List<DbParameter>();
                 listCols.ForEach(col =>
                 {
-                    var parameter = cmd.CreateParameter();
-                    parameter.ParameterName = $"${col}";
-                    cmd.Parameters.Add(parameter);
+                    var parameterAdd = cmdAdd.CreateParameter();
+                    var parameterMod = cmdMod.CreateParameter();
 
-                    parameters.Add(parameter);
+                    parameterAdd.ParameterName = $"@{col.ColumnName}";
+                    parameterMod.ParameterName = $"@{col.ColumnName}";
+
+                    cmdAdd.Parameters.Add(parameterAdd);
+                    cmdMod.Parameters.Add(parameterMod);
+
+                    parametersAdd.Add(parameterAdd);
+                    parametersMod.Add(parameterMod);
                 });
 
                 var nums = 0;
                 foreach (DataRow dr in dt.Rows)
                 {
-                    for (int i = 0; i < listCols.Count; i++)
+                    if (dr.RowState == DataRowState.Added)
                     {
-                        var cell = dr[listCols[i]];
-                        if (cell == DBNull.Value)
+                        for (int i = 0; i < listCols.Count; i++)
                         {
-                            parameters[i].Value = DBNull.Value;
+                            var cell = dr[listCols[i].ColumnName];
+                            if (cell == DBNull.Value)
+                            {
+                                parametersAdd[i].Value = DBNull.Value;
+                            }
+                            else
+                            {
+                                parametersAdd[i].Value = cell;
+                            }
                         }
-                        else
-                        {
-                            parameters[i].Value = cell;
-                        }
-                    }
 
-                    var num = cmd.ExecuteNonQuery();
-                    nums += num;
+                        var num = cmdAdd.ExecuteNonQuery();
+                        nums += num;
+                    }
+                    else if (dr.RowState == DataRowState.Modified)
+                    {
+                        for (int i = 0; i < listCols.Count; i++)
+                        {
+                            var cell = dr[listCols[i].ColumnName];
+                            if (cell == DBNull.Value)
+                            {
+                                parametersMod[i].Value = DBNull.Value;
+                            }
+                            else
+                            {
+                                parametersMod[i].Value = cell;
+                            }
+                        }
+
+                        var num = cmdMod.ExecuteNonQuery();
+                        nums += num;
+                    }
                 }
 
-                transaction?.Commit();
+                Transaction?.Commit();
 
                 return nums;
             });
         }
-
-        //public int BulkBatchSQLite(DataTable dt, string table, Action<SQLiteDataAdapter> dataAdapter = null, bool openTransaction = true)
-        //{
-        //    return SafeConn(() =>
-        //    {
-        //        dt.TableName = table;
-
-        //        var connection = (SQLiteConnection)Connection;
-        //        SQLiteTransaction transaction = openTransaction ? (SQLiteTransaction)(Transaction = connection.BeginTransaction()) : null;
-
-        //        var cb = new SQLiteCommandBuilder();
-
-        //        cb.DataAdapter = new SQLiteDataAdapter
-        //        {
-        //            SelectCommand = new SQLiteCommand($"select * from {cb.QuotePrefix}{table}{cb.QuoteSuffix} where 0=1", connection, transaction)
-        //        };
-        //        cb.ConflictOption = ConflictOption.OverwriteChanges;
-
-        //        var da = new SQLiteDataAdapter
-        //        {
-        //            InsertCommand = cb.GetInsertCommand(true),
-        //            UpdateCommand = cb.GetUpdateCommand(true)
-        //        };
-        //        da.InsertCommand.CommandTimeout = 300;
-        //        da.UpdateCommand.CommandTimeout = 300;
-
-        //        //执行前修改
-        //        dataAdapter?.Invoke(da);
-
-        //        var num = da.Update(dt);
-
-        //        transaction?.Commit();
-
-        //        return num;
-        //    });
-        //}
-
     }
 }
 

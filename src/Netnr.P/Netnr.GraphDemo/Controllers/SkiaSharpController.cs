@@ -23,7 +23,7 @@ public class SkiaSharpController : Controller
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                code = Guid.NewGuid().ToString("N").Substring(0, 4).ToUpper();
+                code = Guid.NewGuid().ToString("N")[..4].ToUpper();
             }
 
             byte[] bytes = CreateImg(code);
@@ -206,7 +206,7 @@ public class SkiaSharpController : Controller
     /// <param name="text">文字</param>
     /// <param name="paint">绘画信息</param>
     /// <param name="point">位置</param>
-    private byte[] WatermarkForTextBin(string imgPath, string text, Action<SKPaint> paint = null, Action<SKPoint> point = null)
+    private static byte[] WatermarkForTextBin(string imgPath, string text, Action<SKPaint> paint = null, Action<SKPoint> point = null)
     {
         SKBitmap bitmap = SKBitmap.Decode(imgPath);
 

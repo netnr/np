@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Collections.Concurrent;
-using System.Linq;
 
 namespace Netnr.Core
 {
@@ -20,7 +20,7 @@ namespace Netnr.Core
         /// <summary>
         /// 写入标记
         /// </summary>
-        static readonly object WriteMark = new();
+        static int WriteN = 0;
 
         /// <summary>
         /// 写入错误信息
@@ -33,6 +33,7 @@ namespace Netnr.Core
             sb.AppendLine(ex.ToJson());
             Log(sb);
         }
+
 
         /// <summary>
         /// 写入消息
@@ -57,10 +58,10 @@ namespace Netnr.Core
 
             CurrentCacheLog.Enqueue(txt);
 
-            if (Monitor.TryEnter(WriteMark))
+            if (WriteN == 0)
             {
-                SaveLog();
-                Monitor.Exit(WriteMark);
+                Interlocked.Exchange(ref WriteN, 1);
+                ThreadPool.QueueUserWorkItem(_ => SaveLog());
             }
         }
 
@@ -69,25 +70,38 @@ namespace Netnr.Core
         /// </summary>
         private static void SaveLog()
         {
-        wmark:
-            var sblog = new StringBuilder();
-            while (CurrentCacheLog.TryDequeue(out string log))
-            {
-                sblog.AppendLine(log);
-            }
-            if (sblog != null)
-            {
-                var now = DateTime.Now;
-                var filename = $"console_{now:yyyyMMdd}.log";
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.Year.ToString(), filename);
+            Thread.Sleep(1000);
 
-                FileTo.WriteText(sblog.ToString(), path);
-            }
+            var now = DateTime.Now;
+            var filename = $"console_{now:yyyyMMdd}.log";
 
-            if (!CurrentCacheLog.IsEmpty)
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.Year.ToString());
+            if (!Directory.Exists(path))
             {
-                goto wmark;
+                Directory.CreateDirectory(path);
             }
+            var fullPath = Path.Combine(path, filename);
+
+            do
+            {
+                var sblog = new StringBuilder();
+                while (CurrentCacheLog.TryDequeue(out string log) && sblog.Length < 1024 * 1024 * 10)
+                {
+                    sblog.AppendLine(log);
+                }
+
+                if (sblog != null)
+                {
+                    //流写入
+                    using var fs = File.Open(fullPath, File.Exists(fullPath) ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                    using var sw = new StreamWriter(fs);
+                    sw.WriteLine(sblog);
+                    sw.Flush();
+                    sw.Close();
+                }
+            } while (!CurrentCacheLog.IsEmpty);
+
+            Interlocked.Exchange(ref WriteN, 0);
         }
 
         /// <summary>
@@ -125,12 +139,16 @@ namespace Netnr.Core
             bool isMenumNum;
             do
             {
-                Console.Write("\n请输入数字：");
+                Console.Write("\nPlease enter the number: ");
                 isMenumNum = int.TryParse(Console.ReadLine(), out int num) && num >= 0 && num < cms.Count;
                 if (isMenumNum)
                 {
-                    cms[num].Invoke(ctype, null);
+                    var mi = cms[num];
 
+                    var desc = mi.CustomAttributes.LastOrDefault()?.NamedArguments.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value.ToString();
+                    Console.WriteLine($"\nSelected {num}. {mi.Name} -> {desc} ({DateTime.Now:yyyy-MM-dd HH:mm:ss})\n");
+
+                    mi.Invoke(ctype, null);
                     InvokeMenu(ctype);
                 }
             } while (!isMenumNum);

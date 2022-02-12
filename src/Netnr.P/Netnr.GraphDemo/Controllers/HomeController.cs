@@ -40,7 +40,6 @@ public class HomeController : Controller
 
         var code = Guid.NewGuid().ToString("N")[..4];
         var c1 = new SixLaborsImageSharpDrawingController();
-        var c2 = new SystemDrawingCommonController(env);
         var c3 = new SkiaSharpController(env);
 
         var dicout = new Dictionary<string, object> { { "Loop", num } };
@@ -63,20 +62,6 @@ public class HomeController : Controller
         }
 
         sw.Restart();
-
-        try
-        {
-            for (int i = 0; i < num; i++)
-            {
-                c2.CreateImg(code);
-            }
-            dicout.Add("System.Drawing.Common", sw.ElapsedMilliseconds);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            dicout.Add("System.Drawing.Common", ex.Message);
-        }
 
         sw.Restart();
 

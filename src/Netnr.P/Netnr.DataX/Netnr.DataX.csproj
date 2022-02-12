@@ -4,25 +4,25 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;Public;AdoFull;DataKit</DefineConstants>
+		<DefineConstants>TRACE;Ready;ImportBase;Public;AdoFull;DataKit</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;Public;AdoFull;DataKit</DefineConstants>
+		<DefineConstants>TRACE;Ready;ImportBase;Public;AdoFull;DataKit</DefineConstants>
 	</PropertyGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.1" />
-		<PackageReference Include="MySqlConnector" Version="2.1.2" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.2" />
+		<PackageReference Include="MySqlConnector" Version="2.1.6" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.50" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0" />
-		<PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.46521.71" />
-		<PackageReference Include="Npgsql" Version="6.0.2" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
+		<PackageReference Include="Npgsql" Version="6.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -37,5 +37,7 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties ud_4config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -17,17 +17,16 @@ namespace Netnr.SharedAdo
         /// 表批量写入
         /// </summary>
         /// <param name="dt">数据表</param>
-        /// <param name="table">数据库表名</param>
         /// <param name="bulkCopy">设置表复制对象</param>
         /// <returns></returns>
-        public int BulkCopyOracle(DataTable dt, string table, Action<OracleBulkCopy> bulkCopy = null)
+        public int BulkCopyOracle(DataTable dt, Action<OracleBulkCopy> bulkCopy = null)
         {
             return SafeConn(() =>
             {
                 var connection = (OracleConnection)Connection;
                 using var bulk = new OracleBulkCopy(connection)
                 {
-                    DestinationTableName = table,
+                    DestinationTableName = dt.TableName,
                     BatchSize = dt.Rows.Count,
                     BulkCopyTimeout = 3600
                 };
@@ -50,24 +49,26 @@ namespace Netnr.SharedAdo
         /// 根据行数据 RowState 状态新增、修改
         /// </summary>
         /// <param name="dt">数据表</param>
-        /// <param name="table">数据库表名</param>
+        /// <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
         /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
         /// <param name="openTransaction">开启事务，默认开启</param>
         /// <returns></returns>
-        public int BulkBatchOracle(DataTable dt, string table, Action<OracleDataAdapter> dataAdapter = null, bool openTransaction = true)
+        public int BulkBatchOracle(DataTable dt, string sqlEmpty = null, Action<OracleDataAdapter> dataAdapter = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
-                dt.TableName = table;
-
                 var connection = (OracleConnection)Connection;
                 OracleTransaction transaction = openTransaction ? (OracleTransaction)(Transaction = connection.BeginTransaction()) : null;
 
                 var cb = new OracleCommandBuilder();
-                var quoteTable = $"{cb.QuotePrefix}{table}{cb.QuoteSuffix}";
+                if (string.IsNullOrWhiteSpace(sqlEmpty))
+                {
+                    sqlEmpty = SqlEmpty(dt.TableName, cb);
+                }
+
                 cb.DataAdapter = new OracleDataAdapter
                 {
-                    SelectCommand = new OracleCommand($"select * from {quoteTable} where 0=1", connection)
+                    SelectCommand = new OracleCommand(sqlEmpty, connection)
                 };
                 cb.ConflictOption = ConflictOption.OverwriteChanges;
 

@@ -745,11 +745,6 @@
             <param name="value">值</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedFast.GlobalTo.EncodingReg">
-            <summary>
-            编码注册
-            </summary>
-        </member>
         <member name="T:Netnr.SharedPageVM">
             <summary>
             分页视图
@@ -866,6 +861,11 @@
         <member name="P:Netnr.SharedResultVM.UseTimeFormat">
             <summary>
             用时，可视化
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedResultVM.TotalTimeFormat">
+            <summary>
+            总耗时，可视化
             </summary>
         </member>
         <member name="M:Netnr.SharedResultVM.PartTime">
@@ -1000,6 +1000,16 @@
         <member name="F:Netnr.SharedEnum.RTag.exception">
             <summary>
             异常
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedReady.ReadyTo.EncodingReg">
+            <summary>
+            编码注册
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedReady.ReadyTo.LegacyTimestamp">
+            <summary>
+            启用旧时间戳行为
             </summary>
         </member>
     </members>

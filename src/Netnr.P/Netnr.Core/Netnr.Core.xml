@@ -303,7 +303,7 @@
             缓存
             </summary>
         </member>
-        <member name="F:Netnr.Core.ConsoleTo.WriteMark">
+        <member name="F:Netnr.Core.ConsoleTo.WriteN">
             <summary>
             写入标记
             </summary>
@@ -892,9 +892,9 @@
             可用交换空间（Linux）B
             </summary>
         </member>
-        <member name="P:Netnr.Core.SystemStatusTo.GCTotalMemory">
+        <member name="P:Netnr.Core.SystemStatusTo.UsePhysicalMemory">
             <summary>
-            GC 总占用内存
+            使用物理内存
             </summary>
         </member>
         <member name="P:Netnr.Core.SystemStatusTo.LogicalDisk">
@@ -1251,6 +1251,13 @@
             <param name="value"></param>
             <param name="encoding">默认 UTF8</param>
             <returns></returns>
+        </member>
+        <member name="M:Netnr.Extend.ToRead``1(``0,System.Object)">
+            <summary>
+            对象值读取源
+            </summary>
+            <param name="target">需要赋值的对象</param>
+            <param name="source">源对象</param>
         </member>
         <member name="M:Netnr.Extend.ToTimestamp(System.DateTime,System.Boolean)">
             <summary>

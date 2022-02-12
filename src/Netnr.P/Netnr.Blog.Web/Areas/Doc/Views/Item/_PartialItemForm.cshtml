@@ -3,36 +3,39 @@
     ViewData["Title"] = ViewContext.RouteData.Values["action"].ToString() + " Doc";
     var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
 }
-<style>
-    .adf {
-        margin: auto;
-        max-width: 400px;
-    }
 
-        .adf textarea {
-            height: 120px;
-        }
-</style>
 <div class="container">
     <div class="row">
-        <div class="col-12">
-            <form class="adf my-5" onsubmit="return savedoc()">
-                <div class="form-group">
-                    <input type="text" class="form-control" name="DsName" value="@Model?.DsName" placeholder="名称" maxlength="50" autofocus />
-                    <small class="form-text text-muted">必填</small>
+        <div class="col-md-8 offset-md-2">
+            <form class="my-5" onsubmit="return savedoc()">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">标题</span>
+                    </div>
+                    <input type="text" class="form-control form-control-lg" name="DsName" value="@Model?.DsName" placeholder="名称" maxlength="50" autofocus />
                 </div>
-                <div class="form-group">
-                    <textarea class="form-control" name="DsRemark" placeholder="描述" maxlength="200">@Model?.DsRemark</textarea>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">描述</span>
+                    </div>
+                    <textarea class="form-control" name="DsRemark" placeholder="描述" maxlength="20" rows="5">@Model?.DsRemark</textarea>
                 </div>
-                <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">分享</span>
+                    </div>
                     <select class="custom-select" name="DsOpen" data-value="@(Model?.DsOpen??1)">
                         <option value="1">公开（只读）</option>
                         <option value="0">私有</option>
                     </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text">密码</span>
+                    </div>
+                    <input type="number" class="form-control" name="Spare1" value="@Model?.Spare1" placeholder="分享码，不需要分享可不填写" maxlength="20" />
                 </div>
-                <div class="form-group">
-                    <input type="number" class="form-control" name="Spare1" value="@Model?.Spare1" placeholder="分享码，不需要分享可不填写" maxlength="4" />
-                    <small class="form-text text-muted">私有时，可根据分享码 <b>查看</b>，长度 4 位</small>
+                <div class="input-group mb-3">
+                    <small class="form-text text-muted">私有时，可根据分享码 <b>查看</b>，4 - 20 位</small>
                 </div>
                 <input type="hidden" name="DsCode" value="@Model?.DsCode" />
                 <input type="hidden" id="hid_uid" name="Uid" value="@uinfo.UserId" />
@@ -53,8 +56,8 @@
         if ($('input[name="DsName"]').val().trim() == "") {
             err.push('名称 必填');
         }
-        if (sc.val() != "" && sc.val().length != 4) {
-            err.push('分享码为 4 位数字');
+        if (sc.val().length < 4 || sc.val().length > 20) {
+            err.push('分享码为 4 - 20 位数字');
         }
 
         if (err.length) {
@@ -84,8 +87,8 @@
         sc[0].readOnly = open.val() == 1;
     });
     sc.on('input', function () {
-        if (this.value.length > 4) {
-            this.value = String(this.value).substr(0, 4);
+        if (this.value.length > 20) {
+            this.value = String(this.value).substring(0, 20);
         }
     });
 </script>

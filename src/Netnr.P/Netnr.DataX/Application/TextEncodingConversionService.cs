@@ -7,13 +7,13 @@
             try
             {
                 var dp = Environment.CurrentDirectory.TrimEnd('/').TrimEnd('\\');
-                var rootPath = DXService.ConsoleReadPath("请输入文件或文件夹：", 0, dp);
+                var rootPath = DXService.ConsoleReadPath("请输入文件或文件夹", 0, dp);
 
                 Encoding newec = new UTF8Encoding(false);
                 var badec = false;
                 do
                 {
-                    Console.Write($"设置新的编码（默认 {newec.BodyName})：");
+                    Console.Write($"设置新的编码(默认 {newec.BodyName}): ");
 
                     try
                     {
@@ -27,7 +27,7 @@
                     catch (Exception ex)
                     {
                         badec = true;
-                        DXService.Log($"ERROR：{ex.Message}");
+                        DXService.Log($"ERROR: {ex.Message}");
                     }
                 } while (badec);
 
@@ -39,7 +39,7 @@
                 else if (Directory.Exists(rootPath))
                 {
                     var filterExtension = "*";
-                    Console.Write($"设置文件格式，如：.md .js ，默认 {filterExtension}）：");
+                    Console.Write($"设置文件格式(如 .md .js, 默认 {filterExtension}): ");
                     var nfe = Console.ReadLine();
 
                     var listFe = new List<string>();
@@ -53,7 +53,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR：{ex.Message}");
+                Console.WriteLine($"ERROR: {ex.Message}");
             }
         }
 

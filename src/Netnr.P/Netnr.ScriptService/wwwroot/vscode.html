@@ -3,7 +3,7 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-01-11 14:56:09
+2022-02-12 14:59:28
 -->
 
 
@@ -78,19 +78,21 @@ https://netnr.eu.org
             <div class="container-fluid d-none nr-vscode-box">
     <div class="row">
         <div class="col-auto">
-            <div class="input-group">
-                <select class="form-select" id="selanguage">
-                    <optgroup label="Language"></optgroup>
-                </select>
-                <select class="form-select" id="setheme">
-                    <optgroup label="Theme">
-                        <option value="vs">vs</option>
-                        <option value="vs-dark">vs-dark</option>
-                        <option value="hc-black">hc-black</option>
-                    </optgroup>
-                </select>
-                <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
-            </div>
+            <select class="form-select" id="selanguage">
+                <optgroup label="Language"></optgroup>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="setheme">
+                <optgroup label="Theme">
+                    <option value="vs">vs</option>
+                    <option value="vs-dark">vs-dark</option>
+                    <option value="hc-black">hc-black</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-warning d-none" id="btnRun" title="运行全局对象：window.ee">运行</button>
         </div>
     </div>
     <div class="row mt-3">
@@ -102,7 +104,7 @@ https://netnr.eu.org
     </div>
 </div>
 
-<script src='https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs/loader.js'></script>
+<script src='https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs/loader.js'></script>
 
 <script>
     function htmlDecode(html) {
@@ -113,7 +115,7 @@ https://netnr.eu.org
 
     require.config({
         paths: {
-            vs: 'https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs'
+            vs: 'https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
@@ -129,9 +131,11 @@ https://netnr.eu.org
 
     require(['vs/editor/editor.main'], function () {
         //xml formatter
-        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
+        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true });
 
         var modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
+        modesIds = modesIds.filter(x=>!x.includes('.'));
+
         var te = $("#editor"), selang = $('#selanguage'), languagehtm = [];
 
         for (var i = 0; i < modesIds.length; i++) {
@@ -194,7 +198,7 @@ https://netnr.eu.org
         });
     });
 
-    $('#btnRun').click(function () {        
+    $('#btnRun').click(function () {
         switch (editor.getModel().getLanguageId()) {
             case "javascript":
                 try {

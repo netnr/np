@@ -1,7 +1,5 @@
 ﻿#if Full || Public
 
-using System.Collections.Generic;
-
 namespace Netnr
 {
     /// <summary>
@@ -73,7 +71,7 @@ namespace Netnr
             }
             if (pageIndex != 1)
             {
-                up = up + (up.Contains("?") ? "&" : "?") + PageKeyName + "=" + pageIndex;
+                up = up + (up.Contains('?') ? '&' : '?') + PageKeyName + "=" + pageIndex;
             }
             return up;
         }

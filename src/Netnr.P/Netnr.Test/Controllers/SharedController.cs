@@ -1,8 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using Microsoft.Data.Sqlite;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Sdk.Sfc;
-using Microsoft.SqlServer.Management.Smo;
 using Netnr.Core;
 using Netnr.SharedAdo;
 using Netnr.SharedCompile;
@@ -18,34 +15,6 @@ namespace Netnr.Test.Controllers
     [Route("[controller]/[action]")]
     public class SharedController : Controller
     {
-        [HttpGet]
-        public SharedResultVM To_DK()
-        {
-            return SharedResultVM.Try(vm =>
-            {
-                Server srv = new Server(new ServerConnection("local.host,1433", "sa", "Abc123...."));
-                Database db = srv.Databases["netnr"];
-
-                Scripter scrp = new Scripter(srv);
-                scrp.Options.Indexes = true;
-                scrp.Options.ScriptDrops = false;
-                scrp.Options.WithDependencies = true;
-                scrp.Options.DriAllConstraints = true;
-
-                foreach (Table tb in db.Tables)
-                {
-                    if (tb.IsSystemObject == false && tb.Name == "UserInfo")
-                    {
-                        var sc = scrp.ScriptWithList(new Urn[] { tb.Urn });
-                        vm.Log.Add(sc);
-                        vm.Log.Add("");
-                    }
-                }
-
-                return vm;
-            });
-        }
-
         [HttpGet]
         public SharedResultVM To_SQLite_Attach()
         {

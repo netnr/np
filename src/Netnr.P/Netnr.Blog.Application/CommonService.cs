@@ -735,7 +735,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 16
+                PageSize = 20
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
@@ -892,7 +892,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 16
+                PageSize = 20
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
@@ -1080,7 +1080,7 @@ namespace Netnr.Blog.Application
             //分类名/分类值
             if (!string.IsNullOrWhiteSpace(nv))
             {
-                if (!nv.Contains("/"))
+                if (!nv.Contains('/'))
                 {
                     nv += "/";
                 }

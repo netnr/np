@@ -89,9 +89,9 @@ namespace Netnr.Core
         /// </summary>
         public long SwapFree { get; set; }
         /// <summary>
-        /// GC 总占用内存
+        /// 使用物理内存
         /// </summary>
-        public long GCTotalMemory { get; set; } = GC.GetTotalMemory(true);
+        public long UsePhysicalMemory { get; set; } = Environment.WorkingSet;
         /// <summary>
         /// 逻辑磁盘 B
         /// </summary>
@@ -563,11 +563,11 @@ namespace Netnr.Core
             {
                 { 0, "" },
                 { 1, $" Framework: {FrameworkDescription}" },
-                { 2, $" GC: {ParsingTo.FormatByteSize(GCTotalMemory)}" },
-                { 3, $" Boot: {Math.Round(TickCount*1.0/1000/24/3600,2)} Days" },
-                { 4, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
-                { 5, $" OSVersion: {OSVersion.VersionString}" },
-                { 6, $" User: {UserName}" },
+                { 2, $" Use Physical Memory: {ParsingTo.FormatByteSize(UsePhysicalMemory)}" },
+                { 3, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
+                { 4, $" OSVersion: {OSVersion.VersionString}" },
+                { 5, $" User: {UserName}" },
+                { 6, $" Boot: {Math.Round(TickCount*1.0/1000/24/3600,2)} Days" },
                 { 7, $" CPU: {ProcessorName} , {ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
                 { 8, $" RAM: {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
             };

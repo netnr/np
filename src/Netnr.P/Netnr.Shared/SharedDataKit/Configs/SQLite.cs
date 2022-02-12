@@ -33,27 +33,6 @@ namespace Netnr.SharedDataKit
         }
 
         /// <summary>
-        /// 表DLL
-        /// </summary>
-        /// <param name="DatabaseName">数据库名</param>
-        /// <param name="TableNames">表名</param>
-        /// <returns></returns>
-        public static string GetTableDDLSQLite(string DatabaseName, List<string> TableNames)
-        {
-            return $@"
-SELECT
-  name,
-  sql
-FROM
-  {DatabaseName}.sqlite_master
-WHERE
-  type = 'table' AND name in ('{string.Join("','", TableNames)}')
-ORDER BY
-  tbl_name
-            ";
-        }
-
-        /// <summary>
         /// 获取列
         /// </summary>
         /// <param name="DatabaseName">数据库名</param>
@@ -123,6 +102,17 @@ ORDER BY
 
 SELECT name, sql FROM {DatabaseName}.sqlite_master m WHERE 1=1 {Where}
             ";
+        }
+
+        /// <summary>
+        /// 表DLL
+        /// </summary>
+        /// <param name="DatabaseName">数据库名</param>
+        /// <param name="TableName">表名</param>
+        /// <returns></returns>
+        public static string GetTableDDLSQLite(string DatabaseName, string TableName)
+        {
+            return $@"SELECT type, tbl_name, sql FROM {DatabaseName}.sqlite_master WHERE tbl_name = '{TableName}' ORDER BY type DESC";
         }
     }
 }

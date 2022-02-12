@@ -5,6 +5,7 @@ using Netnr.SharedAdo;
 using Netnr.DataX.Domain;
 using Netnr.SharedDataKit;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Concurrent;
 
 namespace Netnr.DataX.Application;
 
@@ -13,322 +14,374 @@ namespace Netnr.DataX.Application;
 /// </summary>
 public partial class MenuService
 {
-    [Display(Name = "退出", GroupName = "0")]
+    [Display(Name = "Console Exit", GroupName = "0")]
     public static void Exit()
     {
         Environment.Exit(0);
     }
 
-    #region 11
+    [Display(Name = "Console Config (Encoding)", GroupName = "0")]
+    public static void ConsoleConfig()
+    {
+        DXService.Log($"Current: {Console.OutputEncoding}");
 
-    [Display(Name = "系统状态", GroupName = "11")]
+        //选择编码
+        var cri = DXService.ConsoleReadItem("Choose an encoding", "Unicode,UTF-8".Split(','), 1);
+        switch (cri)
+        {
+            case 1: Console.OutputEncoding = Encoding.Unicode; break;
+            case 2: Console.OutputEncoding = Encoding.UTF8; break;
+        }
+    }
+
+
+    [Display(Name = "System Status Info", GroupName = "11")]
     public static void SystemStatus()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         var ss = new SystemStatusTo();
         DXService.Log(ss.ToView());
     }
 
-    [Display(Name = "打开 Hub 文件夹", GroupName = "11")]
+    [Display(Name = "Open Hub Folder", GroupName = "11")]
     public static void OpenHubFolder()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
         if (CmdTo.IsWindows)
         {
-            CmdTo.Execute($"start {co.DXHub}");
+            CmdTo.Execute($"start {ci.DXHub}");
         }
         else
         {
-            var cr = CmdTo.Execute($"cd {co.DXHub} && pwd && ls -lh");
+            var cr = CmdTo.Execute($"cd {ci.DXHub} && pwd && ls -lh");
             DXService.Log(cr.CrOutput);
         }
     }
 
-    #endregion
-
-    #region 44
-
-    [Display(Name = "数据库信息", GroupName = "44")]
-    public static bool DatabaseInfo()
+    [Display(Name = "Ready", GroupName = "11")]
+    public static bool Ready()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //查询项
-        var qi = DXService.ConsoleReadItem("选择查询项：", "环境信息,库信息,表信息".Split(','), 1);
+        var cri = DXService.ConsoleReadItem("请选择", "Test connection,GC,数据库参数优化（MySQL）".Split(','));
 
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        DXService.Log("正在查询，请稍等...\n");
-        switch (qi)
+        switch (cri)
         {
+            //测试配置的连接
             case 1:
                 {
-                    var vm = DataKitTo.GetDEI(cdb.TDB, cdb.Conn);
-                    if (vm.Code == 200)
+                    if (co.ListConnectionInfo.Count > 0)
                     {
-                        DXService.Log(vm.Data.ToJson(true));
+                        var badConn = 0;
+                        Parallel.ForEach(co.ListConnectionInfo, ci =>
+                        {
+                            var connInfo = new List<string> { $"{ci.ConnectionRemark} -> {ci.ConnectionType} => {ci.ConnectionString}" };
+
+                            using var dbConn = DataKit.DbConn(ci.ConnectionType, ci.ConnectionString);
+                            try
+                            {
+                                dbConn.Open();
+
+                                connInfo.Insert(0, $"\nTest connection is successful ({ci.ConnectionType} {dbConn.ServerVersion})");
+
+                                var qv = string.Empty;
+                                switch (ci.ConnectionType)
+                                {
+                                    case SharedEnum.TypeDB.Oracle:
+                                        qv = "select * from v$version where rownum=1";
+                                        break;
+                                    case SharedEnum.TypeDB.SQLServer:
+                                        qv = "select @@version";
+                                        break;
+                                    case SharedEnum.TypeDB.PostgreSQL:
+                                        qv = "select version()";
+                                        break;
+                                }
+                                if (!string.IsNullOrWhiteSpace(qv))
+                                {
+                                    var db = new DbHelper(dbConn);
+                                    connInfo.Add(db.SqlExecuteScalar(qv).ToString());
+                                }
+
+                                if (dbConn.State != ConnectionState.Closed)
+                                {
+                                    dbConn.Close();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                badConn++;
+                                connInfo.Insert(0, "\nTest connection failed");
+                                connInfo.Add(ex.Message);
+                            }
+
+                            connInfo.Add($"Drive: {dbConn.GetType().Assembly.FullName}");
+
+                            DXService.Log(string.Join(Environment.NewLine, connInfo));
+                        });
+
+                        DXService.Log($"\nSuccessful: {co.ListConnectionInfo.Count - badConn}, Failed: {badConn}");
                     }
                     else
                     {
-                        DXService.Log($"{vm.Msg}");
+                        DXService.Log($"Not Found");
                     }
                 }
                 break;
             case 2:
                 {
-                    var vm = DataKitTo.GetDatabase(cdb.TDB, cdb.Conn);
-                    if (vm.Code == 200)
-                    {
-                        DXService.Log($"{vm.Data.ToJson(true)}");
-                    }
-                    else
-                    {
-                        DXService.Log($"{vm.Msg}");
-                    }
+                    DXService.Log($"Use Physical Memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
+                    GC.Collect();
+                    Thread.Sleep(1000);
+                    DXService.Log($"Use Physical Memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
                 }
                 break;
+            //数据库参数优化
             case 3:
                 {
-                    var vm = DataKitTo.GetTable(cdb.TDB, cdb.Conn);
-                    if (vm.Code == 200)
+                    //选择库
+                    var cdb = DXService.ConsoleReadDatabase(co);
+                    var db = cdb.NewDbHelper();
+
+                    switch (cdb.ConnectionType)
                     {
-                        DXService.Log($"{vm.Data.ToJson(true)}");
-                    }
-                    else
-                    {
-                        DXService.Log($"{vm.Msg}");
-                    }
-                }
-                break;
-        }
-
-        return true;
-    }
-
-    [Display(Name = "数据库优化", GroupName = "44")]
-    public static bool DatabaseBetter()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        //配置
-        var co = new ConfigObj();
-
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        //新数据库
-        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
-
-        switch (cdb.TDB)
-        {
-            case SharedEnum.TypeDB.SQLite:
-                break;
-            case SharedEnum.TypeDB.MySQL:
-            case SharedEnum.TypeDB.MariaDB:
-                {
-                    var drs = db.SqlExecuteReader("SHOW VARIABLES").Item1.Tables[0].Select();
-
-                    var dicVar1 = new Dictionary<string, string>
-                    {
-                        { "local_infile","是否允许加载本地数据，BulkCopy 需要开启"},
-                        { "innodb_lock_wait_timeout","innodb 的 dml 操作的行级锁的等待时间，事务等待获取资源等待的最长时间，BulkCopy 量大超时设置，单位：秒"},
-
-                        { "max_allowed_packet","传输的 packet 大小限制，最大 1G，单位：B"},
-
-                        { "information_schema_stats","缓存中统计信息过期时间，要直接从存储引擎获取统计信息，将其设置为 0，单位：秒"},
-                        { "information_schema_stats_expiry","MySQL8，缓存中统计信息过期时间，要直接从存储引擎获取统计信息，将其设置为 0，单位：秒"}
-                    };
-
-                    var listBetterSql = new List<string>();
-                    foreach (var key in dicVar1.Keys)
-                    {
-                        var dr = drs.FirstOrDefault(x => x[0].ToString() == key);
-                        if (dr != null)
-                        {
-                            var val = dr[1]?.ToString();
-                            switch (key)
+                        case SharedEnum.TypeDB.SQLite:
+                            break;
+                        case SharedEnum.TypeDB.MySQL:
+                        case SharedEnum.TypeDB.MariaDB:
                             {
-                                case "local_infile":
-                                    if (val != "ON")
+                                var drs = db.SqlExecuteReader("SHOW VARIABLES").Item1.Tables[0].Select();
+
+                                var dicVar1 = new Dictionary<string, string>
+                                {
+                                    { "local_infile","是否允许加载本地数据，BulkCopy 需要开启"},
+                                    { "innodb_lock_wait_timeout","innodb 的 dml 操作的行级锁的等待时间，事务等待获取资源等待的最长时间，BulkCopy 量大超时设置，单位：秒"},
+
+                                    { "max_allowed_packet","传输的 packet 大小限制，最大 1G，单位：B"},
+
+                                    { "information_schema_stats","缓存中统计信息过期时间，要直接从存储引擎获取统计信息，将其设置为 0，单位：秒"},
+                                    { "information_schema_stats_expiry","MySQL8，缓存中统计信息过期时间，要直接从存储引擎获取统计信息，将其设置为 0，单位：秒"}
+                                };
+
+                                var listBetterSql = new List<string>();
+                                foreach (var key in dicVar1.Keys)
+                                {
+                                    var dr = drs.FirstOrDefault(x => x[0].ToString() == key);
+                                    if (dr != null)
                                     {
-                                        //ON 开启，OFF 关闭
-                                        listBetterSql.Add("SET GLOBAL local_infile = ON");
+                                        var val = dr[1]?.ToString();
+                                        switch (key)
+                                        {
+                                            case "local_infile":
+                                                if (val != "ON")
+                                                {
+                                                    //ON 开启，OFF 关闭
+                                                    listBetterSql.Add("SET GLOBAL local_infile = ON");
+                                                }
+                                                break;
+                                            case "innodb_lock_wait_timeout":
+                                                if (Convert.ToInt32(val) < 600)
+                                                {
+                                                    //10 分钟超时
+                                                    listBetterSql.Add("SET GLOBAL innodb_lock_wait_timeout = 600");
+                                                }
+                                                break;
+                                            case "max_allowed_packet":
+                                                if (Convert.ToInt32(val) != 1073741824)
+                                                {
+                                                    //传输的 packet 大小 1G
+                                                    listBetterSql.Add("SET GLOBAL max_allowed_packet = 1073741824");
+                                                }
+                                                break;
+                                            case "information_schema_stats":
+                                            case "information_schema_stats_expiry":
+                                                if (val != "0")
+                                                {
+                                                    //缓存统计信息实时
+                                                    listBetterSql.Add($"SET GLOBAL {key} = 0");
+                                                }
+                                                break;
+                                        }
+
+                                        DXService.Log($"\n{key} -> {val} （{dicVar1[key]}）");
                                     }
-                                    break;
-                                case "innodb_lock_wait_timeout":
-                                    if (Convert.ToInt32(val) < 600)
-                                    {
-                                        //10 分钟超时
-                                        listBetterSql.Add("SET GLOBAL innodb_lock_wait_timeout = 600");
-                                    }
-                                    break;
-                                case "max_allowed_packet":
-                                    if (Convert.ToInt32(val) != 1073741824)
-                                    {
-                                        //传输的 packet 大小 1G
-                                        listBetterSql.Add("SET GLOBAL max_allowed_packet = 1073741824");
-                                    }
-                                    break;
-                                case "information_schema_stats":
-                                case "information_schema_stats_expiry":
-                                    if (val != "0")
-                                    {
-                                        //缓存统计信息实时
-                                        listBetterSql.Add($"SET GLOBAL {key} = 0");
-                                    }
-                                    break;
+                                }
+
+                                if (listBetterSql.Count > 0)
+                                {
+                                    DXService.Log($"\n执行优化脚本：\n{string.Join(Environment.NewLine, listBetterSql)}");
+                                    db.SqlExecuteNonQuery(listBetterSql);
+                                }
                             }
-
-                            DXService.Log($"\n{key} -> {val} （{dicVar1[key]}）");
-                        }
-                    }
-
-                    if (listBetterSql.Count > 0)
-                    {
-                        DXService.Log($"\n执行优化脚本：\n{string.Join(Environment.NewLine, listBetterSql)}");
-                        db.SqlExecuteNonQuery(listBetterSql);
+                            break;
+                        case SharedEnum.TypeDB.Oracle:
+                            break;
+                        case SharedEnum.TypeDB.SQLServer:
+                            break;
+                        case SharedEnum.TypeDB.PostgreSQL:
+                            break;
                     }
                 }
                 break;
-            case SharedEnum.TypeDB.Oracle:
-                break;
-            case SharedEnum.TypeDB.SQLServer:
-                break;
-            case SharedEnum.TypeDB.PostgreSQL:
-                break;
+            default: DXService.Log("not support"); break;
         }
 
         return true;
     }
 
-    [Display(Name = "执行 SQL", GroupName = "44")]
-    public static bool Execute()
+
+    [Display(Name = "静默任务", GroupName = "30")]
+    public static bool SilenceTask()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        var sqlPath = DXService.ConsoleReadPath("脚本路径（sql）：", 1);
-        DXService.Log($"开始执行脚本 {sqlPath}");
-
-        //跑表
-        var st = new SharedTimingVM();
-
-        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
-        var num = db.SqlExecuteNonQuery(FileTo.ReadText(sqlPath));
-
-        DXService.Log($"执行结束，受影响行数：{num}，耗时：{st.PartTimeFormat()}");
+        var tasks = ci.Silence.Properties().Select(x => x.Name).ToList();
+        if (tasks.Count == 0)
+        {
+            DXService.Log("没找到静默任务");
+        }
+        else
+        {
+            var taskIndex = DXService.ConsoleReadItem("选择执行任务", tasks);
+            var taskName = tasks[taskIndex - 1];
+            SilenceService.Run(new List<string> { taskName });
+        }
 
         return true;
     }
 
-    [Display(Name = "导入数据库", GroupName = "4411")]
-    public static bool ImportDatabase()
+
+    [Display(Name = "迁移数据表", GroupName = "31")]
+    public static bool MigrateDataTable()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
+        DXService.Log("\n注意：参数模式（静默执行）可配置多表、指定列映射\n");
 
-        var db = new DbHelper(DataKitAidTo.DbConn(cdb.TDB, cdb.Conn));
-
-        var zipPath = DXService.ConsoleReadPath("导入源（zip）：", 1);
-
-        var clearTable = DXService.ConsoleReadItem("导入前删除表数据？", "不清空表数据,清空表数据".Split(','), 1) == 2;
-
-        var vm = DataKitAidTo.ImportDatabase(cdb.TDB, cdb.Conn, zipPath, clearTable, cce =>
+        var mdt = new TransferVM.MigrateDataTable
         {
-            DXService.Log($"{cce.NewItems[0]}");
-        });
+            ReadConnectionInfo = DXService.ConsoleReadDatabase(co, "读取库"),
+            WriteConnectionInfo = DXService.ConsoleReadDatabase(co, "写入库")
+        };
+        var rwi = new TransferVM.ReadWriteItem();
+
+        Console.Write("读取表 SQL: ");
+        rwi.ReadSQL = Console.ReadLine();
+
+        Console.Write("写入表名: ");
+        rwi.WriteTableName = Console.ReadLine();
+
+        var clearTableSql = DbHelper.SqlClearTable(mdt.WriteConnectionInfo.ConnectionType, rwi.WriteTableName);
+        Console.Write($"清空写入表(可选, {clearTableSql}): ");
+        rwi.WriteDeleteSQL = Console.ReadLine();
+
+        mdt.ListReadWrite = new List<TransferVM.ReadWriteItem>() { rwi };
+
+        var vm = DataKit.MigrateDataTable(mdt, le => DXService.Log(le.NewItems[0].ToString()));
 
         return vm.Code == 200;
     }
 
-    [Display(Name = "导出数据库", GroupName = "4411")]
-    public static bool ExportDatabase()
+    [Display(Name = "迁移数据库", GroupName = "31")]
+    public static bool MigrateDatabase()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        var tables = new List<string>();
-        //指定表
-        Console.Write("指定表（默认所有表，多个表逗号分隔）：");
-        var tns = Console.ReadLine().Trim();
-        if (!string.IsNullOrWhiteSpace(tns))
+        var mdb = new TransferVM.MigrateDatabase
         {
-            tables.AddRange(tns.Split(','));
-        }
+            ReadConnectionInfo = DXService.ConsoleReadDatabase(co, "读取库："),
+            WriteConnectionInfo = DXService.ConsoleReadDatabase(co, "写入库："),
+            WriteDeleteData = DXService.ConsoleReadItem("写入前清空表数据", "保留,清空".Split(',')) == 2
+        };
 
-        var outPath = PathTo.Combine(co.DXHub, $"{cdb.TDB}_{mi.Name}_{DateTime.Now:yyyyMMdd_HHmmss}.zip");
-
-        var vm = DataKitAidTo.ExportDatabase(cdb.TDB, cdb.Conn, outPath, tables, cce =>
-        {
-            DXService.Log($"{cce.NewItems[0]}");
-        });
+        var mdt = mdb.AsMigrateDataTable();
+        var vm = DataKit.MigrateDataTable(mdt, le => DXService.Log(le.NewItems[0].ToString()));
 
         return vm.Code == 200;
     }
 
-    [Display(Name = "导出表", GroupName = "4411")]
+
+    [Display(Name = "导出数据表", GroupName = "32")]
     public static bool ExportDataTable()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
+        var et = new TransferVM.ExportDataTable()
+        {
+            ReadConnectionInfo = DXService.ConsoleReadDatabase(co)
+        };
 
-        var sqls = new List<string>();
-        //指定表
-        Console.Write("查询表脚本（SELECT * FROM table1; SELECT * FROM table2）：");
+        //读取表
+        Console.Write("读取表(SELECT * FROM Table1; SELECT * FROM Table2): ");
         var tns = Console.ReadLine().Trim();
         if (!string.IsNullOrWhiteSpace(tns))
         {
-            sqls.AddRange(tns.Split(';'));
+            et.ListReadSQL.AddRange(tns.Split(';'));
         }
-        sqls = sqls.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        et.ListReadSQL = et.ListReadSQL.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
-        var outPath = PathTo.Combine(co.DXHub, $"{cdb.TDB}_{mi.Name}_{DateTime.Now:yyyyMMdd_HHmmss}.zip");
+        et.ZipPath = PathTo.Combine(ci.DXHub, DXService.NewFileName(et.ReadConnectionInfo.ConnectionType, ".zip"));
+        et.ZipPath = DXService.ConsoleReadPath("导出完整路径", 1, et.ZipPath, false);
 
-        var vm = DataKitAidTo.ExportDataTable(cdb.TDB, cdb.Conn, outPath, sqls, cce =>
+        var vm = DataKit.ExportDataTable(et, le => DXService.Log($"{le.NewItems[0]}"));
+
+        return vm.Code == 200;
+    }
+
+    [Display(Name = "导出数据库", GroupName = "32")]
+    public static bool ExportDatabase()
+    {
+        //配置
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
+
+        var ed = new TransferVM.ExportDatabase()
+        {
+            ReadConnectionInfo = DXService.ConsoleReadDatabase(co)
+        };
+
+        //指定表名
+        Console.Write("指定表名(默认所有表, 多个表逗号分隔): ");
+        var tns = Console.ReadLine().Trim();
+        if (!string.IsNullOrWhiteSpace(tns))
+        {
+            ed.ListReadTableName.AddRange(tns.Split(','));
+        }
+
+        ed.ZipPath = PathTo.Combine(ci.DXHub, DXService.NewFileName(ed.ReadConnectionInfo.ConnectionType, ".zip"));
+        ed.ZipPath = DXService.ConsoleReadPath("导出完整路径", 1, ed.ZipPath, false);
+
+        var vm = DataKit.ExportDatabase(ed, le => DXService.Log($"{le.NewItems[0]}"));
+
+        return vm.Code == 200;
+    }
+
+
+    [Display(Name = "导入数据库", GroupName = "33")]
+    public static bool ImportDatabase()
+    {
+        //配置
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
+
+        var idb = new TransferVM.ImportDatabase()
+        {
+            WriteConnectionInfo = DXService.ConsoleReadDatabase(co),
+            ZipPath = DXService.ConsoleReadPath("导入包(zip): ", 1),
+            WriteDeleteData = DXService.ConsoleReadItem("写入前清空表数据", "保留,清空".Split(',')) == 2
+        };
+
+        var vm = DataKit.ImportDatabase(idb, cce =>
         {
             DXService.Log($"{cce.NewItems[0]}");
         });
@@ -336,631 +389,229 @@ public partial class MenuService
         return vm.Code == 200;
     }
 
-    [Display(Name = "生成 DDL", GroupName = "44")]
-    public static bool BuildTableDDL()
+
+    [Display(Name = "生成 表映射(读=>写)", GroupName = "34")]
+    public static bool GenerateTableMapping()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
+        var ciRead = DXService.ConsoleReadDatabase(co, "读取库");
+        var ciWrite = DXService.ConsoleReadDatabase(co, "写入库");
 
-        var vm = DataKitTo.GetTableDDL(cdb.TDB, cdb.Conn);
-        if (vm.Code == 200)
+        DXService.Log($"{ciRead.ConnectionType} => {ciWrite.ConnectionType}");
+        DXService.Log($"正在读取表信息");
+
+        var vmRead = DataKit.GetTable(ciRead.ConnectionType, ciRead.ConnectionString);
+        var vmWrite = DataKit.GetTable(ciWrite.ConnectionType, ciWrite.ConnectionString);
+
+        if (vmRead.Code == 200 && vmWrite.Code == 200)
         {
-            var dic = vm.Data as Dictionary<string, string>;
+            var tableRead = vmRead.Data as List<TableVM>;
+            var tableWrite = vmWrite.Data as List<TableVM>;
 
-            DXService.Log($"生成成功，共 {dic.Keys.Count} 张表");
+            DXService.Log($"读取库 {tableRead.Count} 张表，写入库 {tableWrite.Count} 张表");
 
-            var sbSql = new StringBuilder();
-            foreach (var key in dic.Keys)
+            var rws = new List<TransferVM.ReadWriteItem>();
+
+            foreach (var itemRead in tableRead)
             {
-                var sql = dic[key];
-                sbSql.AppendLine($"-- {key}\n");
-                sbSql.Append(sql);
-                sbSql.AppendLine(";\n");
-            }
-
-            var outPath = PathTo.Combine(co.DXHub, DXService.NewFileName($"{cdb.TDB}_{mi.Name}", ".sql"));
-
-            FileTo.WriteText(sbSql.ToString(), outPath, false);
-            DXService.Log($"已写入 {outPath}");
-        }
-
-        return true;
-    }
-
-    [Display(Name = "生成 Drop Table SQL", GroupName = "44")]
-    public static bool BuildDropTable()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        //配置
-        var co = new ConfigObj();
-
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        var vm = DataKitTo.GetTable(cdb.TDB, cdb.Conn);
-        if (vm.Code == 200)
-        {
-            var tables = vm.Data as List<TableVM>;
-
-            var listSql = new List<string>();
-            foreach (var item in tables)
-            {
-                var sql = "DROP TABLE";
-                listSql.Add($"{sql} {DbHelper.SqlQuote(cdb.TDB, item.TableName)}");
-            }
-            var sqls = string.Join(";\n", listSql);
-
-            DXService.Log($"生成成功：\n{sqls}");
-
-            var outPath = PathTo.Combine(co.DXHub, DXService.NewFileName($"{cdb.TDB}_{mi.Name}", ".sql"));
-            FileTo.WriteText(sqls, outPath, false);
-
-            DXService.Log($"已写入 {outPath}");
-        }
-
-        return true;
-    }
-
-    [Display(Name = "生成 Truncate Table SQL", GroupName = "44")]
-    public static bool BuildTruncateTable()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        //配置
-        var co = new ConfigObj();
-
-        //选择库
-        var cdb = DXService.ConsoleReadDatabase(co);
-
-        var vm = DataKitTo.GetTable(cdb.TDB, cdb.Conn);
-        if (vm.Code == 200)
-        {
-            var tables = vm.Data as List<TableVM>;
-
-            var listSql = new List<string>();
-            foreach (var item in tables)
-            {
-                var sql = cdb.TDB == SharedEnum.TypeDB.SQLite ? "DELETE FROM" : "TRUNCATE TABLE";
-                listSql.Add($"{sql} {DbHelper.SqlQuote(cdb.TDB, item.TableName)}");
-            }
-            var sqls = string.Join(";\n", listSql);
-
-            DXService.Log($"生成成功：\n{sqls}");
-
-            var outPath = PathTo.Combine(co.DXHub, DXService.NewFileName($"{cdb.TDB}_{mi.Name}", ".sql"));
-            FileTo.WriteText(sqls, outPath, false);
-
-            DXService.Log($"已写入 {outPath}");
-        }
-
-        return true;
-    }
-
-    [Display(Name = "生成 表映射（原=>新）", GroupName = "4466")]
-    public static bool BuildMappingTable()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        //配置
-        var co = new ConfigObj();
-
-        //选择原库
-        var odb = DXService.ConsoleReadDatabase(co, "设置原库：");
-
-        //选择新库
-        var ndb = DXService.ConsoleReadDatabase(co, "设置新库：");
-
-        DXService.Log($"{odb.TDB} => {ndb.TDB}");
-
-        DXService.Log($"读取两个库的表名");
-
-        var odvm = DataKitTo.GetTable(odb.TDB, odb.Conn);
-        var ndvm = DataKitTo.GetTable(ndb.TDB, ndb.Conn);
-
-        if (odvm.Code == 200 && ndvm.Code == 200)
-        {
-            var odTable = odvm.Data as List<TableVM>;
-            var ndTable = ndvm.Data as List<TableVM>;
-
-            DXService.Log($"原库 {odTable.Count} 张表，新库 {ndTable.Count} 张表");
-            DXService.Log($"开始遍历原库表名");
-
-            var mapping = new Dictionary<string, string>();
-            foreach (var odItem in odTable)
-            {
-                var newTable = string.Empty;
-                foreach (var ndItem in ndTable)
+                var mo = new TransferVM.ReadWriteItem()
                 {
-                    //完整匹配
-                    if (co.MappingTableFullMatch && ndItem.TableName == odItem.TableName)
+                    ReadTableName = itemRead.TableName
+                };
+
+                //相同
+                if (tableWrite.Any(x => x.TableName == itemRead.TableName))
+                {
+                    mo.WriteTableName = itemRead.TableName;
+                    DXService.Log($"Same Mapping {itemRead.TableName}");
+                }
+                //相似
+                else if (co.MapingMatchPattern == "Similar")
+                {
+                    foreach (var itemWrite in tableWrite)
                     {
-                        newTable = ndItem.TableName;
-                        DXService.Log($"{odItem.TableName} 完整匹配到 {newTable}");
-                        break;
-                    }
-                    //模糊匹配
-                    else if (DXService.FuzzyMatch(ndItem.TableName, odItem.TableName))
-                    {
-                        newTable = ndItem.TableName;
-                        DXService.Log($"{odItem.TableName} 模糊匹配到 {newTable}");
-                        break;
+                        if (DXService.SimilarMatch(itemWrite.TableName, itemRead.TableName))
+                        {
+                            mo.WriteTableName = itemWrite.TableName;
+                            DXService.Log($"{co.MapingMatchPattern} Mapping {itemRead.TableName}:{mo.WriteTableName}");
+                            break;
+                        }
                     }
                 }
 
-                if (string.IsNullOrEmpty(newTable))
+                mo.ReadSQL = $"SELECT * FROM {DbHelper.SqlQuote(ciRead.ConnectionType, itemRead.TableName)}";
+                if (string.IsNullOrEmpty(mo.WriteTableName))
                 {
-                    DXService.Log($"{odItem.TableName} 未匹配到");
+                    DXService.Log($"No Mapping {itemRead.TableName}");
+                }
+                else
+                {
+                    mo.WriteDeleteSQL = DbHelper.SqlClearTable(ciWrite.ConnectionType, mo.WriteTableName);
                 }
 
-                mapping.Add(odItem.TableName, newTable);
+                rws.Add(mo);
             }
 
             //表映射文件名
             var MappingTableName = DXService.NewFileName("MappingTable", ".json");
-            var MappingTablePath = PathTo.Combine(co.DXHub, MappingTableName);
-            DXService.Log($"写入表映射：{MappingTablePath}");
-            FileTo.WriteText(mapping.ToJson(true), MappingTablePath, false);
+            var MappingTablePath = PathTo.Combine(ci.DXHub, MappingTableName);
+
+            DXService.Log($"写入表映射: {MappingTablePath}");
+            FileTo.WriteText(rws.ToJson(true), MappingTablePath, false);
+        }
+        else
+        {
+            DXService.Log($"未获取到表信息");
         }
 
         return true;
     }
 
-    [Display(Name = "生成 列映射（原=>新）", GroupName = "4466")]
-    public static bool BuildMappingColumn()
+    [Display(Name = "生成 列映射(读=>写)", GroupName = "34")]
+    public static bool GenerateColumnMapping()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //表映射
-        var mtPath = DXService.ConsoleReadPath("表映射配置文件路径：");
-        JObject MappingTable = FileTo.ReadText(mtPath).ToJObject();
+        var ciRead = DXService.ConsoleReadDatabase(co, "读取库");
+        var ciWrite = DXService.ConsoleReadDatabase(co, "写入库");
 
-        //选择原库
-        var odb = DXService.ConsoleReadDatabase(co, "设置原库：");
+        DXService.Log($"{ciRead.ConnectionType} => {ciWrite.ConnectionType}");
 
-        //选择新库
-        var ndb = DXService.ConsoleReadDatabase(co, "设置新库：");
+        var tableMapPath = DXService.ConsoleReadPath("表映射文件");
+        var rws = File.ReadAllText(tableMapPath).ToEntitys<TransferVM.ReadWriteItem>();
 
-        DXService.Log($"{odb.TDB} => {ndb.TDB}");
+        DXService.Log($"正在读取列信息");
+        var vmRead = DataKit.GetColumn(ciRead.ConnectionType, ciRead.ConnectionString);
+        var vmWrite = DataKit.GetColumn(ciWrite.ConnectionType, ciWrite.ConnectionString);
 
-        DXService.Log($"读取两个库的所有列");
-
-        var odvm = DataKitTo.GetColumn(odb.TDB, odb.Conn);
-        var ndvm = DataKitTo.GetColumn(ndb.TDB, ndb.Conn);
-
-        if (odvm.Code == 200 && ndvm.Code == 200)
+        if (vmRead.Code == 200 && vmWrite.Code == 200)
         {
-            var odColumn = odvm.Data as List<ColumnVM>;
-            var ndColumn = ndvm.Data as List<ColumnVM>;
+            var columnRead = vmRead.Data as List<ColumnVM>;
+            var columnWrite = vmWrite.Data as List<ColumnVM>;
 
-            DXService.Log($"原库 {odColumn.Count} 列，新库 {ndColumn.Count} 列");
-            DXService.Log($"开始按原库表名分组遍历列");
+            DXService.Log($"读取库 {columnRead.Count} 列, 写入库 {columnWrite.Count} 列");
 
-            var mapping = new Dictionary<string, Dictionary<string, string>>();
-
-            var odIgs = odColumn.GroupBy(x => x.TableName);
-            foreach (var odIg in odIgs)
+            foreach (var rw in rws)
             {
-                //根据表映射配置筛选列
-                var ndIgs = ndColumn.Where(x => x.TableName == MappingTable[odIg.Key]?.ToString());
+                rw.ReadWriteColumnMap.Clear();
+                var igRead = columnRead.Where(x => x.TableName == rw.ReadTableName);
+                var igWrite = columnWrite.Where(x => x.TableName == rw.WriteTableName);
 
-                var mappingOne = new Dictionary<string, string>();
-                foreach (var odItem in odIg)
+                foreach (var itemRead in igRead)
                 {
                     var newField = string.Empty;
-                    foreach (var ndItem in ndIgs)
+
+                    //相同
+                    if (igWrite.Any(x => x.ColumnName == itemRead.ColumnName))
                     {
-                        //完整匹配
-                        if (co.MappingColumnFullMatch && ndItem.ColumnName == odItem.ColumnName)
+                        newField = itemRead.ColumnName;
+                        DXService.Log($"Same {itemRead.TableName}.{itemRead.ColumnName}");
+                    }
+                    //相似
+                    else if (co.MapingMatchPattern == "Similar")
+                    {
+                        foreach (var itemWrite in igWrite)
                         {
-                            newField = ndItem.ColumnName;
-                            DXService.Log($"{odItem.TableName}.{odItem.ColumnName} 完整匹配到 {ndItem.TableName}.{newField}");
-                            break;
-                        }
-                        //模糊匹配
-                        else if (DXService.FuzzyMatch(ndItem.ColumnName, odItem.ColumnName))
-                        {
-                            newField = ndItem.ColumnName;
-                            DXService.Log($"{odItem.TableName}.{odItem.ColumnName} 模糊匹配到 {ndItem.TableName}.{newField}");
-                            break;
+                            if (DXService.SimilarMatch(itemWrite.ColumnName, itemRead.ColumnName))
+                            {
+                                newField = itemWrite.ColumnName;
+                                DXService.Log($"{co.MapingMatchPattern} Mapping {itemRead.TableName}.{itemRead.ColumnName}:{itemWrite.TableName}.{newField}");
+                                break;
+                            }
                         }
                     }
 
                     if (string.IsNullOrEmpty(newField))
                     {
-                        DXService.Log($"{odItem.TableName}.{odItem.ColumnName} 未匹配到");
+                        DXService.Log($"No Mapping {itemRead.TableName}.{itemRead.ColumnName}");
                     }
 
-                    //添加表的一列
-                    mappingOne.Add(odItem.ColumnName, newField);
+                    rw.ReadWriteColumnMap.Add(itemRead.ColumnName, newField);
                 }
-
-                //添加一个表
-                mapping.Add(odIg.Key, mappingOne);
             }
 
-            var dicmt = new Dictionary<string, string>();
-            foreach (var item in MappingTable)
-            {
-                dicmt.Add(item.Key, item.Value.ToString());
-            }
-            mapping.Add("__ON_MappingTable", dicmt);
-
-            //列映射文件名
-            var MappingColumnName = DXService.NewFileName("MappingColumn", ".json");
-            var MappingColumnPath = PathTo.Combine(co.DXHub, MappingColumnName);
-            DXService.Log($"写入列映射：{MappingColumnPath}");
-            FileTo.WriteText(mapping.ToJson(true), MappingColumnPath, false);
+            //更新列映射
+            DXService.Log($"写入列映射: {tableMapPath}");
+            FileTo.WriteText(rws.ToJson(true), tableMapPath, false);
+        }
+        else
+        {
+            DXService.Log($"未获取到表信息");
         }
 
         return true;
     }
 
-    [Display(Name = "表数据转换（原=>新）", GroupName = "4466")]
-    public static bool Conversion()
+
+    [Display(Name = "执行 SQL", GroupName = "35")]
+    public static bool ExecuteSQL()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         //配置
-        var co = new ConfigObj();
+        var ci = new ConfigInit();
+        var co = ci.ConfigObj;
 
-        //选择原库
-        var odb = DXService.ConsoleReadDatabase(co, "设置原库：");
+        //选择库
+        var cdb = DXService.ConsoleReadDatabase(co);
 
-        //选择新库
-        var ndb = DXService.ConsoleReadDatabase(co, "设置新库：");
-
-        DXService.Log($"{odb.TDB} => {ndb.TDB}");
-
-        //列映射
-        var mcPath = DXService.ConsoleReadPath("列映射配置文件路径：");
-        JObject MappingColumn = FileTo.ReadText(mcPath).ToJObject();
-
-        //表映射
-        JToken MappingTable = MappingColumn["__ON_MappingTable"];
-
-        //转换变量
-        var cv = new ConversionObj()
-        {
-            //原库表名
-            OdTableName = "",
-            //原库表数据查询SQL
-            OdQuerySql = "",
-            //新库表名
-            NdTableName = "",
-            //新库表数据清理（为空不清理）
-            NdClearTableSql = ""
-        };
-
-    Flag2:
-        Console.Write("输入原库表名：");
-        //原数据库表名
-        cv.OdTableName = Console.ReadLine();
-        if (!MappingColumn.ContainsKey(cv.OdTableName))
-        {
-            DXService.Log($"{cv.OdTableName} 原库表名无效");
-            goto Flag2;
-        }
-
-        //原表数据查询
-        var odQuerySql = $"SELECT * FROM {DbHelper.SqlQuote(odb.TDB, cv.OdTableName)}";
-        Console.Write($"原表数据查询 SQL（默认 {odQuerySql}）：");
-        cv.OdQuerySql = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(cv.OdQuerySql))
-        {
-            cv.OdQuerySql = odQuerySql;
-        }
-
-        //新表名
-        if (string.IsNullOrWhiteSpace(cv.NdTableName) && !string.IsNullOrWhiteSpace(cv.OdTableName))
-        {
-            cv.NdTableName = MappingTable[cv.OdTableName].ToString();
-        }
-
-        //新表清空数据脚本（为空时不清空）
-        var ndClearTableSql = DbHelper.SqlQuote(ndb.TDB, cv.NdTableName);
-        ndClearTableSql = ndb.TDB == SharedEnum.TypeDB.SQLite ? $"DELETE FROM {ndClearTableSql}" : $"TRUNCATE TABLE {ndClearTableSql}";
-        Console.Write($"新表清空数据脚本 SQL（如 {ndClearTableSql}）：");
-        cv.NdClearTableSql = Console.ReadLine();
-
-        //原表列映射新表列
-        JToken mappingColumn = MappingColumn[cv.OdTableName];
+        var sqlPath = DXService.ConsoleReadPath("脚本路径(sql): ", 1);
+        DXService.Log($"开始执行脚本 {sqlPath}");
 
         //跑表
         var st = new SharedTimingVM();
 
-        DbConnection odc = DataKitAidTo.DbConn(odb.TDB, odb.Conn);
-        DbConnection ndc = DataKitAidTo.DbConn(ndb.TDB, ndb.Conn);
-        //原数据库
-        var odDB = new DbHelper(odc);
-        //新数据库
-        var ndDB = new DbHelper(ndc);
+        var db = cdb.NewDbHelper();
+        var er = db.SqlExecuteReader(FileTo.ReadText(sqlPath));
 
-        DXService.Log($"开始查询原表，查询语句：{cv.OdQuerySql}");
-        //原表数据集
-        var odDs = odDB.SqlExecuteReader(cv.OdQuerySql);
-        var odDt = odDs.Item1.Tables[0];
-
-        DXService.Log($"原表数据共：{odDt.Rows.Count} 行，查询耗时：{st.PartTimeFormat()}");
-
-        //构建新表空数据
-        var ndDt = ndDB.SqlEmptyTable($"{DbHelper.SqlQuote(ndb.TDB, cv.NdTableName)}");
-
-        //遍历原表数据 填充到 新表
-        foreach (DataRow odDr in odDt.Rows)
-        {
-            //构建新表一行
-            var ndNewRow = ndDt.NewRow();
-
-            //根据原表列映射新表列填充单元格数据
-            foreach (DataColumn odDc in odDt.Columns)
-            {
-                //原表列值
-                var odColValue = odDr[odDc.ColumnName];
-                if (odColValue is not DBNull)
-                {
-                    //当前原表列映射的新表列
-                    var ndColName = mappingColumn[odDc.ColumnName]?.ToString();
-                    if (!string.IsNullOrWhiteSpace(ndColName))
-                    {
-                        //原表列值 转换类型为 新表列值
-                        try
-                        {
-                            //新表列类型
-                            var ndColType = ndDt.Columns[ndColName].DataType;
-
-                            //赋值原表列值
-                            ndNewRow[ndColName] = Convert.ChangeType(odColValue, ndColType);
-                        }
-                        catch (Exception ex)
-                        {
-                            DXService.Log($"列值转换失败");
-                            DXService.Log(ex.ToJson());
-                        }
-                    }
-                }
-
-                //处理未映射的列
-                //TO DO
-                //示例：某一列设置为当前时间
-                //if (odDc.ColumnName == "inputedate")
-                //{
-                //    ndNewRow[odDc.ColumnName] = DateTime.Now;
-                //}
-            }
-
-            //新行添加到新表
-            ndDt.Rows.Add(ndNewRow.ItemArray);
-        }
-
-        DXService.Log($"原表数据填充到新表耗时：{st.PartTimeFormat()}");
-
-        if (!string.IsNullOrWhiteSpace(cv.NdClearTableSql))
-        {
-            DXService.Log($"开始清空新表，执行脚本：{cv.NdClearTableSql}");
-            var num = ndDB.SqlExecuteNonQuery(cv.NdClearTableSql);
-
-            DXService.Log($"返回受影响行数：{num}，执行耗时：{st.PartTimeFormat()}");
-        }
-
-        DXService.Log($"开始写入新表，共：{ndDt.Rows.Count} 行");
-        switch (ndb.TDB)
-        {
-            case SharedEnum.TypeDB.SQLite:
-                ndDB.BulkBatchSQLite(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.MySQL:
-            case SharedEnum.TypeDB.MariaDB:
-                ndDB.BulkCopyMySQL(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.Oracle:
-                ndDB.BulkCopyOracle(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.SQLServer:
-                ndDB.BulkCopySQLServer(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.PostgreSQL:
-                ndDB.BulkCopyPostgreSQL(ndDt, cv.NdTableName);
-                break;
-        }
-
-        DXService.Log($"已写入新表，耗时：{st.PartTimeFormat()}");
-        DXService.Log($"总共耗时：{st.TotalTimeFormat()}");
+        DXService.Log($"执行结束，受影响行数：{er.Item2}，耗时：{st.PartTimeFormat()}");
 
         return true;
     }
 
-    [Display(Name = "相同表数据复制", GroupName = "4466")]
-    public static bool TableCopy()
+
+    [Display(Name = "转成 UTF8(请先备份)", GroupName = "66")]
+    public static void TextEncodingConversion()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        //配置
-        var co = new ConfigObj();
-
-        //选择原库
-        var odb = DXService.ConsoleReadDatabase(co, "设置原库：");
-
-        //选择新库
-        var ndb = DXService.ConsoleReadDatabase(co, "设置新库：");
-
-        DXService.Log($"{odb.TDB} => {ndb.TDB}");
-
-        //转换变量
-        var cv = new ConversionObj()
-        {
-            //原库表名
-            OdTableName = "",
-            //原库表数据查询SQL
-            OdQuerySql = "",
-            //新库表名
-            NdTableName = "",
-            //新库表数据清理（为空不清理）
-            NdClearTableSql = ""
-        };
-
-        Console.Write("输入原库表名：");
-        cv.OdTableName = Console.ReadLine();
-
-        //原表数据查询
-        var odQuerySql = $"SELECT * FROM {DbHelper.SqlQuote(odb.TDB, cv.OdTableName)}";
-        Console.Write($"原表数据查询 SQL（默认 {odQuerySql}）：");
-        cv.OdQuerySql = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(cv.OdQuerySql))
-        {
-            cv.OdQuerySql = odQuerySql;
-        }
-
-        Console.Write("输入新库表名：");
-        cv.NdTableName = Console.ReadLine();
-
-        //新表清空数据脚本（为空时不清空）
-        var ndClearTableSql = DbHelper.SqlQuote(ndb.TDB, cv.NdTableName);
-        ndClearTableSql = ndb.TDB == SharedEnum.TypeDB.SQLite ? $"DELETE FROM {ndClearTableSql}" : $"TRUNCATE TABLE {ndClearTableSql}";
-        Console.Write($"新表清空数据脚本 SQL，为空时不清空（如 {ndClearTableSql}）：");
-        cv.NdClearTableSql = Console.ReadLine();
-
-        //跑表
-        var st = new SharedTimingVM();
-
-        DbConnection odc = DataKitAidTo.DbConn(odb.TDB, odb.Conn);
-        DbConnection ndc = DataKitAidTo.DbConn(ndb.TDB, ndb.Conn);
-        //原数据库
-        var odDB = new DbHelper(odc);
-        //新数据库
-        var ndDB = new DbHelper(ndc);
-
-        DXService.Log($"开始查询原表，查询语句：{cv.OdQuerySql}");
-        //原表数据集
-        var odDs = odDB.SqlExecuteReader(cv.OdQuerySql);
-        var odDt = odDs.Item1.Tables[0];
-
-        DXService.Log($"原表数据共：{odDt.Rows.Count} 行，查询耗时：{st.PartTimeFormat()}");
-
-        //构建新表空数据
-        var ndDt = ndDB.SqlEmptyTable($"{DbHelper.SqlQuote(ndb.TDB, cv.NdTableName)}");
-        var ndColumnName = ndDt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
-
-        //原表列对应新表列
-        var columnMap = new Dictionary<string, string>();
-        foreach (DataColumn odDc in odDt.Columns)
-        {
-            var ndName = ndColumnName.FirstOrDefault(x => x.ToLower() == odDc.ColumnName.ToLower());
-            if (ndName != null)
-            {
-                columnMap.Add(odDc.ColumnName, ndName);
-            }
-        }
-
-        //遍历原表数据 填充到 新表
-        foreach (DataRow odDr in odDt.Rows)
-        {
-            //构建新表一行
-            var ndNewRow = ndDt.NewRow();
-
-            //根据原表列映射新表列填充单元格数据
-            foreach (var odName in columnMap.Keys)
-            {
-                //原表列值
-                var odValue = odDr[odName];
-                if (odValue is not DBNull)
-                {
-                    //原表列值 转换类型为 新表列值
-                    try
-                    {
-                        //新表列
-                        var ndName = columnMap[odName];
-                        //新表列类型
-                        var ndType = ndDt.Columns[ndName].DataType;
-                        //赋值原表列值
-                        ndNewRow[ndName] = Convert.ChangeType(odValue, ndType);
-                    }
-                    catch (Exception ex)
-                    {
-                        DXService.Log($"列值转换失败");
-                        DXService.Log(ex.ToJson());
-                    }
-                }
-            }
-
-            //新行添加到新表
-            ndDt.Rows.Add(ndNewRow.ItemArray);
-        }
-
-        DXService.Log($"原表数据填充到新表耗时：{st.PartTimeFormat()}");
-
-        if (!string.IsNullOrWhiteSpace(cv.NdClearTableSql))
-        {
-            DXService.Log($"开始清空新表，执行脚本：{cv.NdClearTableSql}");
-            var num = ndDB.SqlExecuteNonQuery(cv.NdClearTableSql);
-
-            DXService.Log($"返回受影响行数：{num}，执行耗时：{st.PartTimeFormat()}");
-        }
-
-        DXService.Log($"开始写入新表，共：{ndDt.Rows.Count} 行");
-        switch (ndb.TDB)
-        {
-            case SharedEnum.TypeDB.SQLite:
-                ndDB.BulkBatchSQLite(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.MySQL:
-            case SharedEnum.TypeDB.MariaDB:
-                ndDB.BulkCopyMySQL(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.Oracle:
-                ndDB.BulkCopyOracle(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.SQLServer:
-                ndDB.BulkCopySQLServer(ndDt, cv.NdTableName);
-                break;
-            case SharedEnum.TypeDB.PostgreSQL:
-                ndDB.BulkCopyPostgreSQL(ndDt, cv.NdTableName);
-                break;
-        }
-
-        DXService.Log($"已写入新表，耗时：{st.PartTimeFormat()}");
-        DXService.Log($"总共耗时：{st.TotalTimeFormat()}");
-
-        return true;
+        TextEncodingConversionService.Run();
     }
 
-    #endregion
-
-    #region 66
-
-    [Display(Name = "git pull（有 .git 文件夹）", GroupName = "66")]
-    public static void GitPull()
+    [Display(Name = "AES 加密解密(数据库连接字符串)", GroupName = "66")]
+    public static void AESEncryptDecrypt()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
+        var ed = DXService.ConsoleReadItem("请选择", "Encrypt 加密,Decrypt 解密".Split(','), 1);
+
+        Console.Write($"请输入内容: ");
+        var content = Console.ReadLine();
+        Console.Write($"请输入密码: ");
+        var password = Console.ReadLine();
 
         try
         {
+            var result = (ed) switch
+            {
+                2 => CalcTo.AESDecrypt(content, password),
+                _ => CalcTo.AESEncrypt(content, password)
+            };
+
+            DXService.Log(Environment.NewLine + result);
+        }
+        catch (Exception ex)
+        {
+            DXService.Log($"ERROR: {ex.Message}");
+        }
+    }
+
+    [Display(Name = "Git Pull(有 .git 文件夹)", GroupName = "66")]
+    public static void GitPull()
+    {
+        try
+        {
             var dp = Environment.CurrentDirectory.TrimEnd('/').TrimEnd('\\');
-            var rootPath = DXService.ConsoleReadPath("请输入目录：", 2, dp);
+            var rootPath = DXService.ConsoleReadPath("请输入目录", 2, dp);
 
             var dis = new DirectoryInfo(rootPath);
             var sdis = dis.GetDirectories().ToList();
@@ -981,78 +632,22 @@ public partial class MenuService
                 }
                 else
                 {
-                    DXService.Log($"已跳过 \"{sdi.FullName}\" ，未找到 .git\n");
+                    DXService.Log($"已跳过 \"{sdi.FullName}\", 未找到 .git\n");
                     c2++;
                 }
             });
 
-            DXService.Log($"Done!  Pull：{c1} ，Skip：{c2}");
+            DXService.Log($"Done!  Pull: {c1}, Skip: {c2}");
         }
         catch (Exception ex)
         {
-            DXService.Log($"ERROR：{ex.Message}");
+            DXService.Log($"ERROR: {ex.Message}");
         }
     }
 
-    [Display(Name = "AES 加密解密（数据库连接字符串）", GroupName = "66")]
-    public static void AESEncryptDecrypt()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        var ed = DXService.ConsoleReadItem("请选择：", "Encrypt 加密,Decrypt 解密".Split(','), 1);
-
-        Console.Write($"请输入内容：");
-        var content = Console.ReadLine();
-        Console.Write($"请输入密码：");
-        var password = Console.ReadLine();
-
-        try
-        {
-            var result = (ed) switch
-            {
-                2 => CalcTo.AESDecrypt(content, password),
-                _ => CalcTo.AESEncrypt(content, password)
-            };
-
-            DXService.Log(Environment.NewLine + result);
-        }
-        catch (Exception ex)
-        {
-            DXService.Log($"ERROR：{ex.Message}");
-        }
-    }
-
-    [Display(Name = "转成 UTF8（请先备份）", GroupName = "66")]
-    public static void TextEncodingConversion()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        TextEncodingConversionService.Run();
-    }
-
-    [Display(Name = "项目清理（bin、obj）", GroupName = "66")]
-    public static void ProjectCleanup()
-    {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
-        ProjectCleanupService.Run();
-    }
-
-    [Display(Name = "项目拷贝（替换 appsettings.json 密钥）", GroupName = "66")]
+    [Display(Name = "项目拷贝(替换 appsettings.json 密钥)", GroupName = "66")]
     public static void ProjectSafeCopy()
     {
-        //输出头
-        var mi = MethodBase.GetCurrentMethod();
-        DXService.ShowTitleInfo(mi);
-
         ProjectSafeCopyService.Run();
     }
-
-    #endregion
 }

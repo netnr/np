@@ -10,8 +10,8 @@ namespace Netnr.Test
             GlobalTo.Configuration = configuration;
             GlobalTo.HostEnvironment = env;
 
-            //±‡¬Î◊¢≤·
-            GlobalTo.EncodingReg();
+            SharedReady.ReadyTo.EncodingReg();
+            SharedReady.ReadyTo.LegacyTimestamp();
         }
 
         //≈‰÷√swagger

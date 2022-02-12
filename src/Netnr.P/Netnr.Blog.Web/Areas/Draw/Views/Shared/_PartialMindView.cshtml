@@ -15,41 +15,9 @@
 <link rel="stylesheet" href="https://npm.elemecdn.com/kityminder-core@1.4.50/dist/kityminder.core.css" />
 <link rel="stylesheet" href="@mindBaseServer/components/color-picker/dist/color-picker.css" />
 
-<link rel="stylesheet" href="@mindBaseServer/dist/kityminder.editor.css">
+<link rel="stylesheet" href="@mindBaseServer/dist/kityminder.editor.css?1">
 
-<style>
-    .eh {
-        padding: 2px;
-        display: none;
-        border-bottom: 1px solid #337ab7;
-    }
-
-        .eh ul li a {
-            padding: 10px 20px;
-        }
-</style>
-
-<div class="eh">
-    <div class="input-group">
-        <div class="input-group-btn">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                <b>≡</b> 菜单 <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" id="mmmenu">
-                <li><a data-mc="save" href="javascript:void(0)">保存 (Ctrl+S)</a></li>
-                <li class="divider"></li>
-                <li><a data-mc="export" href="javascript:void(0)">导出</a></li>
-                <li class="divider"></li>
-                <li><a data-mc="import" href="javascript:void(0)">导入</a></li>
-            </ul>
-        </div>
-        <input class="form-control" id="DrName" value="" placeholder="标题名称" maxlength="30" />
-        <div class="input-group-btn">
-            <a class="btn btn-default" href="/draw/discover">Discover</a>
-            <a class="btn btn-default" href="/">@GlobalTo.GetValue("Common:EnglishName")</a>
-        </div>
-    </div>
-
+<div>
     <!--导出-->
     <div class="modal fade" role="dialog" id="ehModalExport">
         <div class="modal-dialog modal-sm">
@@ -98,7 +66,7 @@
 
 <script src="/areas/draw/js/partial/km.js" asp-append-version="true"></script>
 
-<script src="https://npm.elemecdn.com/jquery@3.5.0/dist/jquery.min.js"></script>
+<script src="https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
 
 <script src="https://npm.elemecdn.com/angular@1.7.8/angular.min.js"></script>

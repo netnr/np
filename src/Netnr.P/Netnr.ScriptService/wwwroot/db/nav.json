@@ -112,7 +112,7 @@
         "url": "/pdm",
         "icon": "pdm",
         "title": "PDM 查看",
-        "remark": "PowerDesigner 解析、查看"
+        "remark": "PowerDesigner 查看"
       },
       {
         "url": "/dk",
@@ -282,6 +282,18 @@
         "remark": "Word、Excel、PPT"
       },
       {
+        "url": "/emoji",
+        "icon": "emoji",
+        "title": "Emoji 符号",
+        "remark": "Emoji 表情"
+      },
+      {
+        "url": "/symbol",
+        "icon": "symbol",
+        "title": "特殊符号",
+        "remark": "特殊符号"
+      },
+      {
         "url": "/tiny",
         "icon": "tiny",
         "title": "图片压缩"
@@ -291,18 +303,6 @@
         "icon": "seal",
         "title": "印",
         "remark": "添加水印、印章"
-      },
-      {
-        "url": "/symbol",
-        "icon": "symbol",
-        "title": "特殊符号",
-        "remark": "特殊符号"
-      },
-      {
-        "url": "/emoji",
-        "icon": "emoji",
-        "title": "Emoji 符号",
-        "remark": "Emoji 表情"
       },
       {
         "url": "/lottery",

@@ -1,6 +1,5 @@
 ﻿#if Full || Fast
 
-using System;
 using System.Reflection;
 using System.ComponentModel;
 using Microsoft.Extensions.Hosting;
@@ -55,7 +54,7 @@ namespace Netnr.SharedFast
         {
             get
             {
-                return System.IO.Path.Combine(ContentRootPath, "wwwroot");
+                return Path.Combine(ContentRootPath, "wwwroot");
             }
         }
 
@@ -120,14 +119,6 @@ namespace Netnr.SharedFast
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// 编码注册
-        /// </summary>
-        public static void EncodingReg()
-        {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         }
     }
 }

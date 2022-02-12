@@ -18,11 +18,10 @@ namespace Netnr.SharedAdo
         /// 表批量写入
         /// </summary>
         /// <param name="dt">数据表</param>
-        /// <param name="table">数据库表名</param>
         /// <param name="bulkCopy">设置表复制对象</param>
         /// <param name="openTransaction">开启事务，默认不开启</param>
         /// <returns></returns>
-        public int BulkCopyMySQL(DataTable dt, string table, Action<MySqlBulkCopy> bulkCopy = null, bool openTransaction = true)
+        public int BulkCopyMySQL(DataTable dt, Action<MySqlBulkCopy> bulkCopy = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
@@ -31,7 +30,7 @@ namespace Netnr.SharedAdo
 
                 var bulk = new MySqlBulkCopy(connection, transaction)
                 {
-                    DestinationTableName = table,
+                    DestinationTableName = dt.TableName,
                     BulkCopyTimeout = 3600
                 };
 
@@ -55,24 +54,26 @@ namespace Netnr.SharedAdo
         /// 根据行数据 RowState 状态新增、修改
         /// </summary>
         /// <param name="dt">数据表</param>
-        /// <param name="table">数据库表名</param>
+        /// <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
         /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
         /// <param name="openTransaction">开启事务，默认开启</param>
         /// <returns></returns>
-        public int BulkBatchMySQL(DataTable dt, string table, Action<MySqlDataAdapter> dataAdapter = null, bool openTransaction = true)
+        public int BulkBatchMySQL(DataTable dt, string sqlEmpty = null, Action<MySqlDataAdapter> dataAdapter = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
-                dt.TableName = table;
-
                 var connection = (MySqlConnection)Connection;
                 MySqlTransaction transaction = openTransaction ? (MySqlTransaction)(Transaction = connection.BeginTransaction()) : null;
 
                 var cb = new MySqlCommandBuilder();
-                var quoteTable = $"{cb.QuotePrefix}{table}{cb.QuoteSuffix}";
+                if (string.IsNullOrWhiteSpace(sqlEmpty))
+                {
+                    sqlEmpty = SqlEmpty(dt.TableName, cb);
+                }
+
                 cb.DataAdapter = new MySqlDataAdapter
                 {
-                    SelectCommand = new MySqlCommand($"select * from {quoteTable} where 0=1", connection, transaction)
+                    SelectCommand = new MySqlCommand(sqlEmpty, connection, transaction)
                 };
                 cb.ConflictOption = ConflictOption.OverwriteChanges;
 

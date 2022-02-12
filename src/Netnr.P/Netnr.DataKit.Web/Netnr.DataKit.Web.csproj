@@ -4,42 +4,41 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<UserSecretsId>3fee9518-afdb-4d75-8ef7-ac7c2075d2a8</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile>Netnr.DataKit.Web.xml</DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;DataKit;DKController;AdoFull</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Public;Fast;DataKit;DKController;AdoFull</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>Netnr.DataKit.Web.xml</DocumentationFile>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;DataKit;DKController;AdoFull</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Public;Fast;DataKit;DKController;AdoFull</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.1" />
-		<PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.46521.71" />
+	  <Compile Remove="ClientApp\**" />
+	  <Content Remove="ClientApp\**" />
+	  <EmbeddedResource Remove="ClientApp\**" />
+	  <None Remove="ClientApp\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0" />
-		<PackageReference Include="MySqlConnector" Version="2.1.2" />
-		<PackageReference Include="Npgsql" Version="6.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.2" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
+		<PackageReference Include="MySqlConnector" Version="2.1.6" />
+		<PackageReference Include="Npgsql" Version="6.0.3" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.50" />
-		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Content Update="wwwroot\lib\dk\dk.html">
-			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</Content>
 	</ItemGroup>
 
 	<ItemGroup>

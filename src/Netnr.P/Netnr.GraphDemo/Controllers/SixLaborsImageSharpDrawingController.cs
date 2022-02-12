@@ -20,7 +20,7 @@ public class SixLaborsImageSharpDrawingController : Controller
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                code = Guid.NewGuid().ToString("N").Substring(0, 4).ToUpper();
+                code = Guid.NewGuid().ToString("N")[..4].ToUpper();
             }
 
             byte[] bytes = CreateImg(code);

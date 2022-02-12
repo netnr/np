@@ -15,51 +15,6 @@
     }
 }
 
-/*卡片*/
-.card-pi {
-    overflow: hidden;
-}
-
-    .card-pi .card-tool {
-        position: absolute;
-        top: 5px;
-        z-index: 2;
-        right: 12px;
-        display: none;
-        cursor: pointer;
-        font-size: 1.2rem;
-        user-select: none;
-    }
-
-        .card-pi .card-tool a {
-            display: block;
-            line-height: 2rem;
-            text-decoration: none;
-        }
-
-    .card-pi .card-title {
-        position: sticky;
-        top: 0;
-        display: block;
-        min-width: 100%;
-        margin-bottom: 0;
-        padding-bottom: .5rem;
-        background-color: white;
-    }
-
-        .card-pi .card-title:hover {
-            color: orange;
-            text-decoration: none;
-        }
-
-    .card-pi:hover, .card-pi:focus {
-        overflow: auto;
-    }
-
-        .card-pi:hover .card-tool, .card-pi:focus .card-tool {
-            display: block;
-        }
-
 .ndnav a {
     text-decoration: none;
 }
