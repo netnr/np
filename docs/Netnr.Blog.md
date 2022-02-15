@@ -5,7 +5,7 @@
 - jQuery + Bootstrap4
 - .NET (latest)
 - EF + Linq
-- 支持：SQLServer、MySQL、PostgreSQL、SQLite、InMemory等
+- 支持：SQLServer、MySQL、PostgreSQL、SQLite等
 - ==========================================
 - FluentScheduler（定时任务）
 - MailKit（邮箱验证）

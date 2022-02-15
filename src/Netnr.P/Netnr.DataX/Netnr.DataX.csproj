@@ -30,14 +30,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="ud\hub\README.md">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
 	  <None Update="ud\config.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
-
-	<ProjectExtensions><VisualStudio><UserProperties ud_4config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

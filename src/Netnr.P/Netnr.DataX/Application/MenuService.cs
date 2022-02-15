@@ -158,11 +158,7 @@ public partial class MenuService
                                 {
                                     { "local_infile","是否允许加载本地数据，BulkCopy 需要开启"},
                                     { "innodb_lock_wait_timeout","innodb 的 dml 操作的行级锁的等待时间，事务等待获取资源等待的最长时间，BulkCopy 量大超时设置，单位：秒"},
-
-                                    { "max_allowed_packet","传输的 packet 大小限制，最大 1G，单位：B"},
-
-                                    { "information_schema_stats","缓存中统计信息过期时间，要直接从存储引擎获取统计信息，将其设置为 0，单位：秒"},
-                                    { "information_schema_stats_expiry","MySQL8，缓存中统计信息过期时间，要直接从存储引擎获取统计信息，将其设置为 0，单位：秒"}
+                                    { "max_allowed_packet","传输的 packet 大小限制，最大 1G，单位：B"}
                                 };
 
                                 var listBetterSql = new List<string>();
@@ -195,14 +191,6 @@ public partial class MenuService
                                                     listBetterSql.Add("SET GLOBAL max_allowed_packet = 1073741824");
                                                 }
                                                 break;
-                                            case "information_schema_stats":
-                                            case "information_schema_stats_expiry":
-                                                if (val != "0")
-                                                {
-                                                    //缓存统计信息实时
-                                                    listBetterSql.Add($"SET GLOBAL {key} = 0");
-                                                }
-                                                break;
                                         }
 
                                         DXService.Log($"\n{key} -> {val} （{dicVar1[key]}）");
@@ -213,6 +201,10 @@ public partial class MenuService
                                 {
                                     DXService.Log($"\n执行优化脚本：\n{string.Join(Environment.NewLine, listBetterSql)}");
                                     db.SqlExecuteNonQuery(listBetterSql);
+                                }
+                                else
+                                {
+                                    DXService.Log($"\n没有需要优化的参数");
                                 }
                             }
                             break;

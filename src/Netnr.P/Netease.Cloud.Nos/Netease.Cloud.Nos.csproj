@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Version>1.0.0.11</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>netnr</Authors>
+    <Company>Netease</Company>
+    <Description>网易云对象存储</Description>
+    <Copyright>Netease</Copyright>
+    <PackageProjectUrl>https://github.com/netnr/np</PackageProjectUrl>
+    <PackageTags>Netease.Cloud.Nos nos-dotnet-sdk</PackageTags>
+  </PropertyGroup>
+
+</Project>

@@ -313,6 +313,8 @@ OpenCover/
 .editorconfig
 src/Netnr.P/Netnr.Blog.Web/db/jieba/
 src/Netnr.P/Netnr.DataX/ud/hub/
+src/Netnr.P/Netnr.DataKit.Web/wwwroot/
+src/Netnr.P/Netnr.DataKit.Web/ClientApp/
 log.db
 yarn.lock
 ip2region.db

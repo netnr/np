@@ -209,7 +209,7 @@
             DataKit调用
             </summary>
         </member>
-        <member name="M:Netnr.SharedDataKit.DataKit.AidExecuteSql(System.Tuple{System.Data.DataSet,System.Int32,System.Data.DataSet},System.Collections.Generic.List{System.String},Netnr.SharedTimingVM)">
+        <member name="M:Netnr.SharedDataKit.DataKit.ExecuteUnity(System.Tuple{System.Data.DataSet,System.Int32,System.Data.DataSet},System.Collections.Generic.List{System.String},Netnr.SharedTimingVM)">
             <summary>
             执行结果统一输出
             </summary>
@@ -244,7 +244,7 @@
         </member>
         <member name="M:Netnr.SharedDataKit.DataKit.MigrateDataTable(Netnr.SharedDataKit.TransferVM.MigrateDataTable,System.Action{System.Collections.Specialized.NotifyCollectionChangedEventArgs})">
             <summary>
-            迁移数据表（全部读取到内存再写入）
+            迁移数据表
             </summary>
             <param name="mdt"></param>
             <param name="le">实时日志</param>
@@ -1791,6 +1791,13 @@
             <param name="openTransaction">开启事务，默认</param>
             <returns>返回 表数据、受影响行数、表结构</returns>
         </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteDataRow(System.String,System.Action{System.Data.DataRow})">
+            <summary>
+            查询 读取行
+            </summary>
+            <param name="sql"></param>
+            <param name="readRow"></param>
+        </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteScalar(System.String,System.Data.Common.DbParameter[])">
             <summary>
             执行
@@ -1938,12 +1945,19 @@
             扩展
             </summary>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand,System.Boolean,System.Action{System.Data.DataRow,System.Data.DataTable})">
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand,System.Boolean)">
             <summary>
             查询返回数据集
             </summary>
             <param name="dbCommand"></param>
             <param name="includeSchemaTable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataRow(System.Data.Common.DbCommand,System.Action{System.Data.DataRow})">
+            <summary>
+            查询返回数据集
+            </summary>
+            <param name="dbCommand"></param>
             <param name="readRow"></param>
             <returns></returns>
         </member>

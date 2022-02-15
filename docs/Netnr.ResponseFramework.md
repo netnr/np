@@ -1,21 +1,20 @@
 # Netnr.ResponseFramework 响应式框架（NRF）
-.NET Core 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
+.NET (latest) 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
 
 ### [文档说明](Netnr.ResponseFramework.Document.md)
 
 ### 架构
 - 前端采用 jQuery + Bootstrap + EasyUI + AceAdmin + fontAwesome
-- 后端采用 .NET Core + EF + SQL（SQLServer、MySQL、PostgreSQL、SQLite）
-    - 数据库脚本放置于 `wwwroot/scripts/`目录下
+- 后端采用 .NET (latest) + EF + SQL（SQLServer、MySQL、PostgreSQL、SQLite）
+    - 初始启动自动创建数据库
     - 数据库转换使用的工具：<https://fishcodelib.com/DBMigration.htm>
-    - 全部采用 LINQ，跨数据库、避免SQL注入
-- Visual Studio 2019 运行项目
+    - 全部采用 LINQ，跨数据库、避免 SQL 注入
 
 ### 项目结构
 - Netnr.ResponseFramework.Data 数据访问、仓储（Scaffold-DbContext 命令自动生成）
 - Netnr.ResponseFramework.Domain 实体（Scaffold-DbContext 命令自动生成）
 - Netnr.ResponseFramework.Application 应用层
-- Netnr.ResponseFramework Web站点
+- Netnr.ResponseFramework.Web 站点
 
 ### 数据表
 - 用户（SysUser）

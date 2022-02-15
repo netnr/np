@@ -90,7 +90,11 @@ const oConsole = Object.assign({
                 }
             } catch (_) { }
         }
-        item.innerText = oarr.join(' ');
+        var oval = oarr.join(' ');
+        if (oval.length > 999) {
+            oval = oval.substring(0, 999) + " ...";
+        }
+        item.innerText = oval;
 
         var echild = oConsole.oGui.children;
         if (echild.length == 0) {
