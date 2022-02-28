@@ -19,10 +19,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.2" />
-		<PackageReference Include="MySqlConnector" Version="2.1.6" />
+		<PackageReference Include="MySqlConnector" Version="2.1.7" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.50" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
-		<PackageReference Include="Npgsql" Version="6.0.3" />
+		<PackageReference Include="Npgsql" Version="7.0.0-preview.1" />
 	</ItemGroup>
 
 	<ItemGroup>

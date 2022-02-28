@@ -924,18 +924,35 @@
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlQuote(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
             <summary>
-            SQL引用符号
+            SQL引用符号，支持点分隔
             </summary>
             <param name="tdb">数据库类型</param>
             <param name="KeyWord">关键字</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.SqlEmpty(System.String,System.Data.Common.DbCommandBuilder,System.Nullable{Netnr.SharedEnum.TypeDB})">
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlSNTN(System.String,System.String,System.Nullable{Netnr.SharedEnum.TypeDB})">
+            <summary>
+            模式及表名
+            </summary>
+            <param name="tableName">表名</param>
+            <param name="schemaName">模式，可选</param>
+            <param name="tdb">类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlEqualSNTN(System.String,System.String,System.String)">
+            <summary>
+            判断 是否相等
+            </summary>
+            <param name="sntn"></param>
+            <param name="tableName"></param>
+            <param name="schemaName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlEmpty(System.String,System.Nullable{Netnr.SharedEnum.TypeDB})">
             <summary>
             构建查询空表脚本
             </summary>
             <param name="table">数据库表名</param>
-            <param name="cb">构建对象，取引用符号</param>
             <param name="tdb">数据库类型，取引用符号</param>
             <returns></returns>
         </member>
@@ -944,7 +961,7 @@
             构建清空表数据脚本
             </summary>
             <param name="tdb"></param>
-            <param name="table"></param>
+            <param name="sntn">模式名.表名</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlConnPreCheck(System.Nullable{Netnr.SharedEnum.TypeDB},System.String)">
@@ -985,12 +1002,12 @@
             <param name="sql"></param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.ReaderAdSchema(System.Data.Common.DbDataReader)">
+        <member name="M:Netnr.SharedAdo.DbHelper.ReaderTableSchema(System.Data.Common.DbDataReader)">
             <summary>
             获取空表结构、元信息
             </summary>
             <param name="reader"></param>
-            <returns>NULL 或 {dt、dtSchema}</returns>
+            <returns>NULL 或 {Table, Schema}</returns>
         </member>
         <member name="P:Netnr.SharedAdo.DbHelper.Connection">
             <summary>
@@ -1013,32 +1030,38 @@
             </summary>
             <param name="dbConnection">连接对象</param>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteReader(System.String,System.Data.Common.DbParameter[],System.Func{System.Data.Common.DbCommand,System.Data.Common.DbCommand},System.Boolean,System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteReader(System.String,System.Data.Common.DbParameter[],System.Func{System.Data.Common.DbCommand,System.Data.Common.DbCommand},System.Boolean)">
             <summary>
             执行（查询、新增、修改、删除等）
             </summary>
             <param name="sql">SQL语句，支持多条</param>
             <param name="parameters">带参</param>
             <param name="func">回调</param>
-            <param name="includeSchemaTable">包含表结构</param>
             <param name="openTransaction">开启事务，默认</param>
             <returns>返回 表数据、受影响行数、表结构</returns>
         </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteDataRow(System.String,System.Action{System.Data.DataRow})">
+            <summary>
+            查询 读取行
+            </summary>
+            <param name="sql"></param>
+            <param name="readRow"></param>
+        </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteScalar(System.String,System.Data.Common.DbParameter[])">
             <summary>
-            执行
+            执行 返回首行首列
             </summary>
             <param name="sql">SQL语句</param>
             <param name="parameters">带参</param>
-            <returns>返回受影响行数</returns>
+            <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteNonQuery(System.String,System.Data.Common.DbParameter[])">
             <summary>
-            执行
+            执行 返回受影响行数
             </summary>
             <param name="sql">SQL语句</param>
             <param name="parameters">带参</param>
-            <returns>返回受影响行数</returns>
+            <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.SqlExecuteNonQuery(System.Collections.Generic.List{System.String},System.Int32)">
             <summary>
@@ -1126,7 +1149,7 @@
             表批量写入（排除自增列）
             https://www.npgsql.org/doc/copy.html
             </summary>
-            <param name="dt">数据表</param>
+            <param name="dt">数据表（Namespace=SchemaName，TableName=TableName）</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelper.BulkBatchPostgreSQL(System.Data.DataTable,System.String,System.Action{Npgsql.NpgsqlDataAdapter},System.Boolean)">
@@ -1134,7 +1157,7 @@
             表批量写入（须手动处理自增列SQL）
             根据行数据 RowState 状态新增、修改
             </summary>
-            <param name="dt">数据表</param>
+            <param name="dt">数据表（Namespace=SchemaName，TableName=TableName）</param>
             <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
             <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
             <param name="openTransaction">开启事务，默认开启</param>
@@ -1151,7 +1174,7 @@
             <summary>
             表批量写入
             </summary>
-            <param name="dt">数据表</param>
+            <param name="dt">数据表（Namespace=SchemaName，TableName=TableName）</param>
             <param name="bulkCopy">设置表复制对象</param>
             <returns></returns>
         </member>
@@ -1160,7 +1183,7 @@
             表批量写入
             根据行数据 RowState 状态新增、修改
             </summary>
-            <param name="dt">数据表</param>
+            <param name="dt">数据表（Namespace=SchemaName，TableName=TableName）</param>
             <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
             <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
             <param name="openTransaction">开启事务，默认开启</param>
@@ -1171,20 +1194,28 @@
             扩展
             </summary>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand,System.Boolean,System.Action{System.Data.DataRow,System.Data.DataTable})">
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataSet(System.Data.Common.DbCommand,System.Boolean)">
             <summary>
             查询返回数据集
             </summary>
             <param name="dbCommand"></param>
-            <param name="includeSchemaTable"></param>
-            <param name="readRow"></param>
+            <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
+            <returns>表数据、受影响行数、表结构</returns>
+        </member>
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataOnly(System.Data.Common.DbCommand,System.Boolean)">
+            <summary>
+            查询返回数据集
+            </summary>
+            <param name="dbCommand"></param>
+            <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteData(System.Data.Common.DbCommand)">
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataRow(System.Data.Common.DbCommand,System.Action{System.Data.DataRow})">
             <summary>
-            查询返回数据集
+            查询读取数据行
             </summary>
             <param name="dbCommand"></param>
+            <param name="readRow">读取行，dt.Namespace = SchemaName，dt.TableName = TableName</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelperExtend.ToFix(System.Data.Common.DbCommand)">

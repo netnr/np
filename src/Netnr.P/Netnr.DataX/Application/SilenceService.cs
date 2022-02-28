@@ -50,6 +50,10 @@ namespace Netnr.DataX.Application
                                         if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
                                         {
                                             mo.ReadConnectionInfo = co.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                            if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
+                                            {
+                                                mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                            }
                                         }
 
                                         DataKit.ExportDatabase(mo, le => DXService.Log(le.NewItems[0].ToString()));
@@ -64,6 +68,10 @@ namespace Netnr.DataX.Application
                                         if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
                                         {
                                             mo.ReadConnectionInfo = co.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                            if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
+                                            {
+                                                mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                            }
                                         }
 
                                         DataKit.ExportDataTable(mo, le => DXService.Log(le.NewItems[0].ToString()));
@@ -77,10 +85,18 @@ namespace Netnr.DataX.Application
                                         if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
                                         {
                                             mo.ReadConnectionInfo = co.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                            if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
+                                            {
+                                                mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                            }
                                         }
                                         if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
                                         {
                                             mo.WriteConnectionInfo = co.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                            if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
+                                            {
+                                                mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                            }
                                         }
 
                                         DataKit.MigrateDataTable(mo.AsMigrateDataTable(), le => DXService.Log(le.NewItems[0].ToString()));
@@ -94,10 +110,18 @@ namespace Netnr.DataX.Application
                                         if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
                                         {
                                             mo.ReadConnectionInfo = co.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                            if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
+                                            {
+                                                mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                            }
                                         }
                                         if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
                                         {
                                             mo.WriteConnectionInfo = co.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                            if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
+                                            {
+                                                mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                            }
                                         }
 
                                         DataKit.MigrateDataTable(mo, le => DXService.Log(le.NewItems[0].ToString()));
@@ -112,6 +136,10 @@ namespace Netnr.DataX.Application
                                         if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
                                         {
                                             mo.WriteConnectionInfo = co.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                            if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
+                                            {
+                                                mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                            }
                                         }
 
                                         DataKit.ImportDatabase(mo, le => DXService.Log(le.NewItems[0].ToString()));

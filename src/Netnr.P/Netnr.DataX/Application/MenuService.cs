@@ -65,7 +65,7 @@ public partial class MenuService
         var ci = new ConfigInit();
         var co = ci.ConfigObj;
 
-        var cri = DXService.ConsoleReadItem("请选择", "Test connection,GC,数据库参数优化（MySQL）".Split(','));
+        var cri = DXService.ConsoleReadItem("请选择", "Test connection,GC,数据库参数优化（SQLite、MySQL）".Split(','));
 
         switch (cri)
         {
@@ -148,6 +148,10 @@ public partial class MenuService
                     switch (cdb.ConnectionType)
                     {
                         case SharedEnum.TypeDB.SQLite:
+                            {
+                                DXService.Log($"磁盘空间释放：VACUUM");
+                                db.SqlExecuteNonQuery("VACUUM");
+                            }
                             break;
                         case SharedEnum.TypeDB.MySQL:
                         case SharedEnum.TypeDB.MariaDB:
@@ -263,8 +267,8 @@ public partial class MenuService
         };
         var rwi = new TransferVM.ReadWriteItem();
 
-        Console.Write("读取表 SQL: ");
-        rwi.ReadSQL = Console.ReadLine();
+        Console.Write("读取表数据 SQL: ");
+        rwi.ReadDataSQL = Console.ReadLine();
 
         Console.Write("写入表名: ");
         rwi.WriteTableName = Console.ReadLine();
@@ -289,8 +293,8 @@ public partial class MenuService
 
         var mdb = new TransferVM.MigrateDatabase
         {
-            ReadConnectionInfo = DXService.ConsoleReadDatabase(co, "读取库："),
-            WriteConnectionInfo = DXService.ConsoleReadDatabase(co, "写入库："),
+            ReadConnectionInfo = DXService.ConsoleReadDatabase(co, "读取库"),
+            WriteConnectionInfo = DXService.ConsoleReadDatabase(co, "写入库"),
             WriteDeleteData = DXService.ConsoleReadItem("写入前清空表数据", "保留,清空".Split(',')) == 2
         };
 
@@ -314,13 +318,13 @@ public partial class MenuService
         };
 
         //读取表
-        Console.Write("读取表(SELECT * FROM Table1; SELECT * FROM Table2): ");
+        Console.Write("读取表(SELECT * FROM dbo.Table1; SELECT * FROM Table2): ");
         var tns = Console.ReadLine().Trim();
         if (!string.IsNullOrWhiteSpace(tns))
         {
-            et.ListReadSQL.AddRange(tns.Split(';'));
+            et.ListReadDataSQL.AddRange(tns.Split(';'));
         }
-        et.ListReadSQL = et.ListReadSQL.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        et.ListReadDataSQL = et.ListReadDataSQL.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
         et.ZipPath = PathTo.Combine(ci.DXHub, DXService.NewFileName(et.ReadConnectionInfo.ConnectionType, ".zip"));
         et.ZipPath = DXService.ConsoleReadPath("导出完整路径", 1, et.ZipPath, false);
@@ -343,7 +347,7 @@ public partial class MenuService
         };
 
         //指定表名
-        Console.Write("指定表名(默认所有表, 多个表逗号分隔): ");
+        Console.Write("指定表名(可带模式名 SchemaName，默认所有表, 多个表逗号分隔): ");
         var tns = Console.ReadLine().Trim();
         if (!string.IsNullOrWhiteSpace(tns))
         {
@@ -369,7 +373,7 @@ public partial class MenuService
         var idb = new TransferVM.ImportDatabase()
         {
             WriteConnectionInfo = DXService.ConsoleReadDatabase(co),
-            ZipPath = DXService.ConsoleReadPath("导入包(zip): ", 1),
+            ZipPath = DXService.ConsoleReadPath("导入包(zip)", 1),
             WriteDeleteData = DXService.ConsoleReadItem("写入前清空表数据", "保留,清空".Split(',')) == 2
         };
 
@@ -395,69 +399,66 @@ public partial class MenuService
         DXService.Log($"{ciRead.ConnectionType} => {ciWrite.ConnectionType}");
         DXService.Log($"正在读取表信息");
 
-        var vmRead = DataKit.GetTable(ciRead.ConnectionType, ciRead.ConnectionString);
-        var vmWrite = DataKit.GetTable(ciWrite.ConnectionType, ciWrite.ConnectionString);
+        var tableRead = DataKit.Init(ciRead).GetTable();
+        var tableWrite = DataKit.Init(ciWrite).GetTable();
 
-        if (vmRead.Code == 200 && vmWrite.Code == 200)
+        DXService.Log($"读取库 {tableRead.Count} 张表，写入库 {tableWrite.Count} 张表");
+
+        var rws = new List<TransferVM.ReadWriteItem>();
+
+        foreach (var itemRead in tableRead)
         {
-            var tableRead = vmRead.Data as List<TableVM>;
-            var tableWrite = vmWrite.Data as List<TableVM>;
-
-            DXService.Log($"读取库 {tableRead.Count} 张表，写入库 {tableWrite.Count} 张表");
-
-            var rws = new List<TransferVM.ReadWriteItem>();
-
-            foreach (var itemRead in tableRead)
+            var mo = new TransferVM.ReadWriteItem()
             {
-                var mo = new TransferVM.ReadWriteItem()
-                {
-                    ReadTableName = itemRead.TableName
-                };
+                ReadTableName = DbHelper.SqlSNTN(itemRead.TableName, itemRead.SchemaName)
+            };
 
-                //相同
-                if (tableWrite.Any(x => x.TableName == itemRead.TableName))
+            var listWrite = tableWrite.Where(x => x.TableName == itemRead.TableName).ToList();
+            //相同
+            if (listWrite.Count > 0)
+            {
+                //模式相同
+                var vmWrite = listWrite.FirstOrDefault(x => x.SchemaName == itemRead.SchemaName);
+                if (vmWrite == null)
                 {
-                    mo.WriteTableName = itemRead.TableName;
-                    DXService.Log($"Same Mapping {itemRead.TableName}");
+                    vmWrite = listWrite[0];
                 }
-                //相似
-                else if (co.MapingMatchPattern == "Similar")
+                mo.WriteTableName = DbHelper.SqlSNTN(vmWrite.TableName, vmWrite.SchemaName);
+                DXService.Log($"{co.MapingMatchPattern} Mapping {mo.ReadTableName} => {mo.WriteTableName}");
+            }
+            //相似
+            else if (co.MapingMatchPattern == "Similar")
+            {
+                foreach (var itemWrite in tableWrite)
                 {
-                    foreach (var itemWrite in tableWrite)
+                    if (DXService.SimilarMatch(itemWrite.TableName, itemRead.TableName))
                     {
-                        if (DXService.SimilarMatch(itemWrite.TableName, itemRead.TableName))
-                        {
-                            mo.WriteTableName = itemWrite.TableName;
-                            DXService.Log($"{co.MapingMatchPattern} Mapping {itemRead.TableName}:{mo.WriteTableName}");
-                            break;
-                        }
+                        mo.WriteTableName = DbHelper.SqlSNTN(itemWrite.TableName, itemWrite.SchemaName);
+                        DXService.Log($"{co.MapingMatchPattern} Mapping {mo.ReadTableName} => {mo.WriteTableName}");
+                        break;
                     }
                 }
-
-                mo.ReadSQL = $"SELECT * FROM {DbHelper.SqlQuote(ciRead.ConnectionType, itemRead.TableName)}";
-                if (string.IsNullOrEmpty(mo.WriteTableName))
-                {
-                    DXService.Log($"No Mapping {itemRead.TableName}");
-                }
-                else
-                {
-                    mo.WriteDeleteSQL = DbHelper.SqlClearTable(ciWrite.ConnectionType, mo.WriteTableName);
-                }
-
-                rws.Add(mo);
             }
 
-            //表映射文件名
-            var MappingTableName = DXService.NewFileName("MappingTable", ".json");
-            var MappingTablePath = PathTo.Combine(ci.DXHub, MappingTableName);
+            mo.ReadDataSQL = $"SELECT * FROM {DbHelper.SqlSNTN(itemRead.TableName, itemRead.SchemaName, ciRead.ConnectionType)}";
+            if (string.IsNullOrEmpty(mo.WriteTableName))
+            {
+                DXService.Log($"No Mapping {itemRead.TableName}");
+            }
+            else
+            {
+                mo.WriteDeleteSQL = DbHelper.SqlClearTable(ciWrite.ConnectionType, mo.WriteTableName);
+            }
 
-            DXService.Log($"写入表映射: {MappingTablePath}");
-            FileTo.WriteText(rws.ToJson(true), MappingTablePath, false);
+            rws.Add(mo);
         }
-        else
-        {
-            DXService.Log($"未获取到表信息");
-        }
+
+        //表映射文件名
+        var MappingTableName = DXService.NewFileName("MappingTable", ".json");
+        var MappingTablePath = PathTo.Combine(ci.DXHub, MappingTableName);
+
+        DXService.Log($"写入表映射: {MappingTablePath}");
+        FileTo.WriteText(rws.ToJson(true), MappingTablePath, false);
 
         return true;
     }
@@ -478,63 +479,54 @@ public partial class MenuService
         var rws = File.ReadAllText(tableMapPath).ToEntitys<TransferVM.ReadWriteItem>();
 
         DXService.Log($"正在读取列信息");
-        var vmRead = DataKit.GetColumn(ciRead.ConnectionType, ciRead.ConnectionString);
-        var vmWrite = DataKit.GetColumn(ciWrite.ConnectionType, ciWrite.ConnectionString);
 
-        if (vmRead.Code == 200 && vmWrite.Code == 200)
+        var columnRead = DataKit.Init(ciRead).GetColumn();
+        var columnWrite = DataKit.Init(ciWrite).GetColumn();
+
+        DXService.Log($"读取库 {columnRead.Count} 列, 写入库 {columnWrite.Count} 列");
+
+        foreach (var rw in rws)
         {
-            var columnRead = vmRead.Data as List<ColumnVM>;
-            var columnWrite = vmWrite.Data as List<ColumnVM>;
+            rw.ReadWriteColumnMap.Clear();
+            var igRead = columnRead.Where(x => DbHelper.SqlEqualSNTN(rw.ReadTableName, x.TableName, x.SchemaName));
+            var igWrite = columnWrite.Where(x => DbHelper.SqlEqualSNTN(rw.WriteTableName, x.TableName, x.SchemaName));
 
-            DXService.Log($"读取库 {columnRead.Count} 列, 写入库 {columnWrite.Count} 列");
-
-            foreach (var rw in rws)
+            foreach (var itemRead in igRead)
             {
-                rw.ReadWriteColumnMap.Clear();
-                var igRead = columnRead.Where(x => x.TableName == rw.ReadTableName);
-                var igWrite = columnWrite.Where(x => x.TableName == rw.WriteTableName);
+                var newField = string.Empty;
 
-                foreach (var itemRead in igRead)
+                //相同
+                if (igWrite.Any(x => x.ColumnName == itemRead.ColumnName))
                 {
-                    var newField = string.Empty;
-
-                    //相同
-                    if (igWrite.Any(x => x.ColumnName == itemRead.ColumnName))
+                    newField = itemRead.ColumnName;
+                    DXService.Log($"Same {itemRead.TableName}.{itemRead.ColumnName}");
+                }
+                //相似
+                else if (co.MapingMatchPattern == "Similar")
+                {
+                    foreach (var itemWrite in igWrite)
                     {
-                        newField = itemRead.ColumnName;
-                        DXService.Log($"Same {itemRead.TableName}.{itemRead.ColumnName}");
-                    }
-                    //相似
-                    else if (co.MapingMatchPattern == "Similar")
-                    {
-                        foreach (var itemWrite in igWrite)
+                        if (DXService.SimilarMatch(itemWrite.ColumnName, itemRead.ColumnName))
                         {
-                            if (DXService.SimilarMatch(itemWrite.ColumnName, itemRead.ColumnName))
-                            {
-                                newField = itemWrite.ColumnName;
-                                DXService.Log($"{co.MapingMatchPattern} Mapping {itemRead.TableName}.{itemRead.ColumnName}:{itemWrite.TableName}.{newField}");
-                                break;
-                            }
+                            newField = itemWrite.ColumnName;
+                            DXService.Log($"{co.MapingMatchPattern} Mapping {itemRead.TableName}.{itemRead.ColumnName}:{itemWrite.TableName}.{newField}");
+                            break;
                         }
                     }
-
-                    if (string.IsNullOrEmpty(newField))
-                    {
-                        DXService.Log($"No Mapping {itemRead.TableName}.{itemRead.ColumnName}");
-                    }
-
-                    rw.ReadWriteColumnMap.Add(itemRead.ColumnName, newField);
                 }
-            }
 
-            //更新列映射
-            DXService.Log($"写入列映射: {tableMapPath}");
-            FileTo.WriteText(rws.ToJson(true), tableMapPath, false);
+                if (string.IsNullOrEmpty(newField))
+                {
+                    DXService.Log($"No Mapping {itemRead.TableName}.{itemRead.ColumnName}");
+                }
+
+                rw.ReadWriteColumnMap.Add(itemRead.ColumnName, newField);
+            }
         }
-        else
-        {
-            DXService.Log($"未获取到表信息");
-        }
+
+        //更新列映射
+        DXService.Log($"写入列映射: {tableMapPath}");
+        FileTo.WriteText(rws.ToJson(true), tableMapPath, false);
 
         return true;
     }
@@ -550,7 +542,7 @@ public partial class MenuService
         //选择库
         var cdb = DXService.ConsoleReadDatabase(co);
 
-        var sqlPath = DXService.ConsoleReadPath("脚本路径(sql): ", 1);
+        var sqlPath = DXService.ConsoleReadPath("脚本路径(sql)", 1);
         DXService.Log($"开始执行脚本 {sqlPath}");
 
         //跑表

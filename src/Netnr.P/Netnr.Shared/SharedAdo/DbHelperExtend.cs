@@ -1,7 +1,5 @@
 ﻿#if Full || Ado || AdoFull
 
-using System.Data;
-using System.Data.Common;
 using System.Text.RegularExpressions;
 
 namespace Netnr.SharedAdo
@@ -23,52 +21,97 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// SQL引用符号
+        /// SQL引用符号，支持点分隔
         /// </summary>
         /// <param name="tdb">数据库类型</param>
         /// <param name="KeyWord">关键字</param>
         /// <returns></returns>
         public static string SqlQuote(SharedEnum.TypeDB? tdb, string KeyWord)
         {
+            if (string.IsNullOrWhiteSpace(KeyWord))
+            {
+                return KeyWord;
+            }
+
             return tdb switch
             {
-                SharedEnum.TypeDB.SQLite or SharedEnum.TypeDB.SQLServer => $"[{KeyWord}]",
-                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => $"`{KeyWord}`",
-                SharedEnum.TypeDB.Oracle or SharedEnum.TypeDB.PostgreSQL => $"\"{KeyWord}\"",
+                SharedEnum.TypeDB.SQLite or SharedEnum.TypeDB.SQLServer =>
+                string.Join('.', KeyWord.Replace("[", "").Replace("]", "").Split('.').Select(x => $"[{x}]")),
+
+                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB =>
+                string.Join('.', KeyWord.Replace("`", "").Split('.').Select(x => $"`{x}`")),
+
+                SharedEnum.TypeDB.Oracle or SharedEnum.TypeDB.PostgreSQL =>
+                string.Join('.', KeyWord.Replace("\"", "").Split('.').Select(x => $"\"{x}\"")),
+
                 _ => KeyWord,
             };
+        }
+
+        /// <summary>
+        /// 模式及表名
+        /// </summary>
+        /// <param name="tableName">表名</param>
+        /// <param name="schemaName">模式，可选</param>
+        /// <param name="tdb">类型</param>
+        /// <returns></returns>
+        public static string SqlSNTN(string tableName, string schemaName = null, SharedEnum.TypeDB? tdb = null)
+        {
+            var sntn = tableName;
+
+            if (!string.IsNullOrEmpty(schemaName))
+            {
+                sntn = $"{schemaName}.{tableName}";
+            }
+
+            if (tdb != null)
+            {
+                sntn = SqlQuote(tdb, sntn);
+            }
+
+            return sntn;
+        }
+
+        /// <summary>
+        /// 判断 是否相等
+        /// </summary>
+        /// <param name="sntn"></param>
+        /// <param name="tableName"></param>
+        /// <param name="schemaName"></param>
+        /// <returns></returns>
+        public static bool SqlEqualSNTN(string sntn, string tableName, string schemaName = null)
+        {
+            var sntnArray = sntn.Split('.');
+            if (sntnArray.Length == 2)
+            {
+                return schemaName == sntnArray[0] && tableName == sntnArray[1];
+            }
+            else
+            {
+                return tableName == sntnArray[0];
+            }
         }
 
         /// <summary>
         /// 构建查询空表脚本
         /// </summary>
         /// <param name="table">数据库表名</param>
-        /// <param name="cb">构建对象，取引用符号</param>
         /// <param name="tdb">数据库类型，取引用符号</param>
         /// <returns></returns>
-        public static string SqlEmpty(string table, DbCommandBuilder cb = null, SharedEnum.TypeDB? tdb = null)
+        public static string SqlEmpty(string table, SharedEnum.TypeDB? tdb = null)
         {
-            if (cb != null)
-            {
-                table = $"{cb?.QuotePrefix}{table}{cb?.QuoteSuffix}";
-            }
-            else if (tdb != null)
-            {
-                table = SqlQuote(tdb, table);
-            }
-
-            return $"SELECT * FROM {table} WHERE 0 = 1";
+            return $"SELECT * FROM {SqlQuote(tdb, table)} WHERE 0 = 1";
         }
 
         /// <summary>
         /// 构建清空表数据脚本
         /// </summary>
         /// <param name="tdb"></param>
-        /// <param name="table"></param>
+        /// <param name="sntn">模式名.表名</param>
         /// <returns></returns>
-        public static string SqlClearTable(SharedEnum.TypeDB tdb, string table)
+        public static string SqlClearTable(SharedEnum.TypeDB tdb, string sntn)
         {
-            var fullTableName = SqlQuote(tdb, table);
+            var fullTableName = SqlQuote(tdb, sntn);
 
             if (tdb == SharedEnum.TypeDB.SQLite)
             {
@@ -105,7 +148,7 @@ namespace Netnr.SharedAdo
             {
                 foreach (var key in citem.Keys)
                 {
-                    if (!connectionString.ToLower().Contains(key.ToLower()))
+                    if (!connectionString.ToLower().Replace(" ", "").Contains(key.ToLower()))
                     {
                         connectionString = connectionString.TrimEnd(';') + $";{key}={citem[key]}";
                     }
@@ -229,19 +272,24 @@ namespace Netnr.SharedAdo
         /// 获取空表结构、元信息
         /// </summary>
         /// <param name="reader"></param>
-        /// <returns>NULL 或 {dt、dtSchema}</returns>
-        public static Tuple<DataTable, DataTable> ReaderAdSchema(DbDataReader reader)
+        /// <returns>NULL 或 {Table, Schema}</returns>
+        public static Tuple<DataTable, DataTable> ReaderTableSchema(DbDataReader reader)
         {
             var hasField = reader.FieldCount > 0;
             if (hasField)
             {
                 var dtSchema = reader.GetSchemaTable();
-                var dt = new DataTable();
+                var dtTable = new DataTable();
 
+                if (dtSchema.Columns.Contains("BaseSchemaName"))
+                {
+                    dtTable.Namespace = dtSchema.Rows[0]["BaseSchemaName"].ToString();
+                    dtSchema.Namespace = dtTable.Namespace;
+                }
                 if (dtSchema.Columns.Contains("BaseTableName"))
                 {
-                    dt.TableName = dtSchema.Rows[0]["BaseTableName"].ToString();
-                    dtSchema.TableName = dt.TableName;
+                    dtTable.TableName = dtSchema.Rows[0]["BaseTableName"].ToString();
+                    dtSchema.TableName = dtTable.TableName;
                 }
 
                 var keyCols = new List<DataColumn>();
@@ -265,14 +313,14 @@ namespace Netnr.SharedAdo
                         keyCols.Add(column);
                     }
 
-                    dt.Columns.Add(column);
+                    dtTable.Columns.Add(column);
                 }
                 if (keyCols.Count > 0)
                 {
-                    dt.PrimaryKey = keyCols.ToArray();
+                    dtTable.PrimaryKey = keyCols.ToArray();
                 }
 
-                return new Tuple<DataTable, DataTable>(dt, dtSchema);
+                return new Tuple<DataTable, DataTable>(dtTable, dtSchema);
             }
 
             return null;
@@ -288,46 +336,103 @@ namespace Netnr.SharedAdo
         /// 查询返回数据集
         /// </summary>
         /// <param name="dbCommand"></param>
-        /// <param name="includeSchemaTable"></param>
-        /// <returns></returns>
-        public static Tuple<DataSet, int, DataSet> ExecuteDataSet(this DbCommand dbCommand, bool includeSchemaTable = false)
+        /// <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
+        /// <returns>表数据、受影响行数、表结构</returns>
+        public static Tuple<DataSet, int, DataSet> ExecuteDataSet(this DbCommand dbCommand, bool tableLoad = true)
         {
-            var ds = new DataSet();
+            var dsTable = new DataSet();
             var dsSchema = new DataSet();
 
             using var reader = dbCommand.ExecuteReader(CommandBehavior.KeyInfo);
             var recordsAffected = reader.RecordsAffected;
 
-            do
+            if (tableLoad)
             {
-                var dt = new DataTable
+                do
                 {
-                    TableName = $"table{ds.Tables.Count + 1}"
-                };
+                    var dt = new DataTable
+                    {
+                        TableName = $"table{dsTable.Tables.Count + 1}"
+                    };
 
-                var hasField = reader.FieldCount > 0;
-                if (includeSchemaTable && hasField)
+                    var hasField = reader.FieldCount > 0;
+                    if (hasField)
+                    {
+                        var st = reader.GetSchemaTable();
+                        st.TableName = dt.TableName;
+                        dsSchema.Tables.Add(st);
+                    }
+
+                    dt.Load(reader); // 就算没字段也需要执行，触发 Close
+
+                    if (hasField)
+                    {
+                        dsTable.Tables.Add(dt);
+                    }
+                } while (!reader.IsClosed);
+            }
+            else
+            {
+                do
                 {
-                    var st = reader.GetSchemaTable();
-                    st.TableName = dt.TableName;
-                    dsSchema.Tables.Add(st);
-                }
+                    var hasField = reader.FieldCount > 0;
+                    if (hasField)
+                    {
+                        var rs = DbHelper.ReaderTableSchema(reader);
 
-                dt.Load(reader);
-                if (hasField)
-                {
-                    ds.Tables.Add(dt);
-                }
-            } while (!reader.IsClosed);
+                        var dt = rs.Item1;
+                        dt.TableName = $"table{dsTable.Tables.Count + 1}";
 
-            return new Tuple<DataSet, int, DataSet>(ds, recordsAffected, dsSchema);
+                        var st = rs.Item2;
+                        st.TableName = dt.TableName;
+                        dsSchema.Tables.Add(st);
+
+                        while (reader.Read())
+                        {
+                            var dr = dt.NewRow();
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                var col = dt.Columns[i];
+                                var cellValue = reader[i];
+
+                                if (cellValue != DBNull.Value)
+                                {
+                                    dr[i] = cellValue;
+                                }
+                                else if (col.AllowDBNull == false)
+                                {
+                                    dr[i] = cellValue.ToString();
+                                }
+                            }
+
+                            dt.Rows.Add(dr.ItemArray);
+                        }
+
+                        dsTable.Tables.Add(dt);
+                    }
+
+                } while (reader.NextResult());
+            }
+
+            return new Tuple<DataSet, int, DataSet>(dsTable, recordsAffected, dsSchema);
         }
 
         /// <summary>
         /// 查询返回数据集
         /// </summary>
         /// <param name="dbCommand"></param>
-        /// <param name="readRow"></param>
+        /// <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
+        /// <returns></returns>
+        public static DataSet ExecuteDataOnly(this DbCommand dbCommand, bool tableLoad = true)
+        {
+            return ExecuteDataSet(dbCommand, tableLoad).Item1;
+        }
+
+        /// <summary>
+        /// 查询读取数据行
+        /// </summary>
+        /// <param name="dbCommand"></param>
+        /// <param name="readRow">读取行，dt.Namespace = SchemaName，dt.TableName = TableName</param>
         /// <returns></returns>
         public static void ExecuteDataRow(this DbCommand dbCommand, Action<DataRow> readRow)
         {
@@ -335,7 +440,7 @@ namespace Netnr.SharedAdo
 
             do
             {
-                var rs = DbHelper.ReaderAdSchema(reader);
+                var rs = DbHelper.ReaderTableSchema(reader);
                 if (rs != null)
                 {
                     var dt = rs.Item1;
@@ -347,13 +452,20 @@ namespace Netnr.SharedAdo
                         {
                             var col = dt.Columns[i];
                             var cellValue = reader[i];
+
                             if (cellValue != DBNull.Value)
                             {
                                 dr[i] = cellValue;
                             }
                             else if (col.AllowDBNull == false)
                             {
-                                col.AllowDBNull = true;
+                                dr[i] = cellValue.ToString();
+
+                                /*
+                                 * 目前遇到 Oracle 的两种情况：
+                                 * Oracle 的字段约束状态为 Disable
+                                 * Oracle 不为 Null 的 Empty CLOB
+                                 */
                             }
                         }
 
@@ -361,16 +473,6 @@ namespace Netnr.SharedAdo
                     }
                 }
             } while (reader.NextResult());
-        }
-
-        /// <summary>
-        /// 查询返回数据集
-        /// </summary>
-        /// <param name="dbCommand"></param>
-        /// <returns></returns>
-        public static DataSet ExecuteData(this DbCommand dbCommand)
-        {
-            return ExecuteDataSet(dbCommand).Item1;
         }
 
         /// <summary>

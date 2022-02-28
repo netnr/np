@@ -48,7 +48,7 @@ namespace Netnr.DataX.Application
         /// 输入数据库
         /// </summary>
         /// <param name="model"></param>
-        public static TransferVM.ConnectionInfo ConsoleReadDatabase(ConfigDomain model, string tip = "请选择数据库")
+        public static TransferVM.ConnectionInfo ConsoleReadDatabase(ConfigDomain model, string tip = "请选择数据库连接")
         {
             var mo = new TransferVM.ConnectionInfo();
 
@@ -80,7 +80,7 @@ namespace Netnr.DataX.Application
                     mo.ConnectionRemark = $"[TMP] {DateTime.Now:yyyy-MM-dd HH:mm:ss} {tdb}";
                     if (mo.ConnectionString.Length < 10)
                     {
-                        Log("连接字符串无效");
+                        Log("数据库连接字符串无效");
                         goto Flag2;
                     }
 
@@ -103,6 +103,28 @@ namespace Netnr.DataX.Application
             {
                 Log($"无效选择，请重新选择");
                 goto Flag1;
+            }
+
+            //选择数据库名
+            switch (mo.ConnectionType)
+            {
+                case SharedEnum.TypeDB.MySQL:
+                case SharedEnum.TypeDB.MariaDB:
+                case SharedEnum.TypeDB.SQLServer:
+                case SharedEnum.TypeDB.PostgreSQL:
+                    {
+                        var dk = DataKit.Init(mo.ConnectionType, mo.ConnectionString);
+                        var listDatabaseName = dk.GetDatabaseName();
+                        var dv = 1;
+                        if (!string.IsNullOrWhiteSpace(mo.DatabaseName))
+                        {
+                            dv = listDatabaseName.IndexOf(mo.DatabaseName) + 1;
+                        }
+
+                        var cri = ConsoleReadItem(TipSymbol($"选择数据库名"), listDatabaseName, dv);
+                        mo.DatabaseName = listDatabaseName[cri - 1];
+                    }
+                    break;
             }
 
             Log($"\n已选择 {mo.ConnectionType} => {mo.ConnectionString}\n");

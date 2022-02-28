@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:27
+2022-02-28 10:43:17
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -137,120 +135,12 @@ https://netnr.eu.org
     <div id="divweather" class="row"></div>
 </div>
 
-<script src="/js/weathercode.js?v=y7-jJWQii7AlqQoBRPkmraN4ALgpW3FLj3eG-zScFKg"></script>
 
-<script>
-    //请求天气预报信息
-    QueryWeather(101040100);
-    function QueryWeather(cityCode) {
-        ss.loading();
-        ss.ajax({
-            url: "http://wthrcdn.etouch.cn/weather_mini?citykey=" + cityCode,
-            dataType: "json",
-            success: function (data) {
-                data = ss.datalocation(data);
-                if (data.desc == "OK") {
-                    var jsons = data.data.forecast,
-                        htm = '<div class="col-sm-12"><em>' + data.data.city + '</em>实时温度：<b>' + data.data.wendu + '℃</b></div>';
-                    for (var i in jsons) {
-                        var lx = jsons[i].type,
-                            fx = jsons[i].fengxiang,
-                            fl = jsons[i].fengli,
-                            gw = jsons[i].high,
-                            dw = jsons[i].low,
-                            rq = jsons[i].date;
-                        i == 0 && (rq = '今日天气');
+                    <script src="/_assets/js/weathercode.js?v=y7-jJWQii7AlqQoBRPkmraN4ALgpW3FLj3eG-zScFKg"></script>
 
-                        htm += '<div class="col-md-4 col-sm-6">'
-                            + '<b>' + rq + '</b>'
-                            + '<strong>' + lx + '</strong><br/>'
-                            + '<span>' + fl + '</span>'
-                            + '<span>' + dw + '</span>'
-                            + '<span>' + gw + '</span>'
-                            + '</div>';
-                    }
-                    htm += '<div class="col-md-4 col-sm-6">' + data.data.ganmao + '</div>';
-                    $("#divweather").html(htm);
-                } else {
-                    bs.alert("<h4>查询失败</h4>")
-                }
-            },
-            error: function () {
-                ss.loading(0);
-                bs.msg("<h4>网络错误</h4>")
-            },
-            complete: function () {
-                ss.loading(0);
-            }
-        }, 0);
-    }
+            
+                    <script src="/_assets/js/weather.js?v=5jOkFNg0TfRgLTKRyYM1oNHLHhKTYEEROvyCd2hZ1tg"></script>
 
-    //城市联动查询
-    $('#txtSearch').on('input', function () {
-        AutoLoadWeatherCode(this.value);
-    }).focus(function () {
-        $('#divWeatherCode').show();
-        AutoLoadWeatherCode(this.value);
-    });
-    function AutoLoadWeatherCode(value) {
-        var htmls = [];
-        if (value == "") {
-            $(WeatherCode).each(function () {
-                htmls.push('<div class="card mb-3">');
-                htmls.push('<div class="card-body">');
-                htmls.push('<h5 class="card-title">' + this.city + '</h4>');
-                $(this.citys).each(function () {
-                    htmls.push('<a href="javascript:void(0)" data-code="' + this.code + '" >' + this.name + '</a>');
-                });
-                htmls.push('</div></div>');
-            });
-        } else {
-            $(WeatherCode).each(function () {
-                var children = [];
-                $(this.citys).each(function () {
-                    if (this.name.indexOf(value) >= 0 || this.py.indexOf(value.toUpperCase()) >= 0) {
-                        children.push('<a href="javascript:void(0)" data-code="' + this.code + '" >' + this.name + '</a>');
-                    }
-                });
-                if (children.length) {
-                    htmls.push('<div class="card mb-3">');
-                    htmls.push('<div class="card-body">');
-                    htmls.push('<h5 class="card-title">' + this.city + '</h4>');
-                    htmls.push(children.join(''));
-                    htmls.push('</div></div>');
-                }
-            });
-        }
-        if (htmls.length) {
-            $('#divWeatherCode').html(htmls.join(''));
-        } else {
-            $('#divWeatherCode').html('( ⊙ o ⊙ ) ， 没有相关城市信息');
-        }
-    }
-    //点击城市发起查询
-    $('#divWeatherCode').click(function (e) {
-        e = e || window.event;
-        var target = e.target || e.srcElement;
-        if (target.nodeName == "A") {
-            var code = target.getAttribute('data-code');
-            QueryWeather(code, target.innerHTML);
-            $('#divWeatherCode').hide();
-        }
-    }).css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 60 + "px");
-    //自适应高度
-    $(window).resize(function () {
-        $('#divWeatherCode').css('max-height', $(window).height() - $('#txtSearch')[0].getBoundingClientRect().top - 60 + "px");
-    });
-
-    //点击空白关闭城市浮动层
-    $(document).click(function (e) {
-        e = e || window.event;
-        var target = e.target || e.srcElement;
-        if (!$('#divWeatherCode')[0].contains(target) && target.id != "txtSearch") {
-            $('#divWeatherCode').hide();
-        }
-    });
-</script>
         </div>
 </body>
 </html>

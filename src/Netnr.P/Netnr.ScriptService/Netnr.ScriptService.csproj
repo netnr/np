@@ -22,10 +22,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Update="wwwroot\dk.html">
-			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</Content>
+	  <Folder Include="wwwroot\dk\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="wwwroot\_assets\js\bmi.js">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

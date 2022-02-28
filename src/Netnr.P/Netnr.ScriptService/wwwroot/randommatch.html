@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:28
+2022-02-28 10:43:17
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -123,108 +121,9 @@ https://netnr.eu.org
 
     </div>
 </div>
+            
+                    <script src="/_assets/js/randommatch.js?v=JMEhP0XGChYtsyYnJRJQAPGJ9XLGp5gQFsIVnnKa_-0"></script>
 
-<script>
-
-    var rm = {
-        random: function (r1, r2, num, isUnique, newLine) {
-            var vm = { err: [], data: [] };
-            try {
-                r1 = parseInt(r1);
-                r2 = parseInt(r2);
-                num = parseInt(num);
-                isUnique = parseInt(isUnique);
-                newLine = parseInt(newLine) || 0;
-
-                if (isNaN(r1) || isNaN(r2) || isNaN(num)) {
-                    vm.err.push("请输入有效的数字");
-                }
-                if (r1 > r2) {
-                    vm.err.push("随机范围有误");
-                }
-                if (r2 - r1 < (num - 1) && isUnique == 1) {
-                    vm.err.push("随机个数须小于等于范围数量");
-                }
-
-                if (!vm.err.length) {
-                    var rr = r2 - r1, rv = [];
-
-                    while (rv.length < num) {
-                        var ri = Math.floor(Math.random() * (rr + 1));
-                        ri = r1 + ri;
-                        if (isUnique == 1 && rv.indexOf(ri) >= 0) {
-                            continue;
-                        } else {
-                            rv.push(ri);
-                        }
-                    }
-
-                    var ni = 0, ci = 1;
-                    while (ni++ < rv.length) {
-                        if (ni == rv.length) {
-                            continue;
-                        }
-                        if (ci++ == newLine) {
-                            ci = 1;
-                            rv.splice(ni++, 0, "\r\n");
-                        } else {
-                            rv.splice(ni++, 0, "\t");
-                        }
-                    }
-                    vm.data = rv;
-
-                    var obj = {};
-                    $.each('.nrRange1 .nrRange2 .nrGetNum .nrRepeat .nrNewLine'.split(' '), function () {
-                        var jn = $('' + this), val = jn.val();
-                        obj[this.substr(1)] = val;
-                    });
-                    ss.ls.config = obj;
-                    ss.lsSave();
-                }
-            } catch (e) {
-                console.log(e);
-                vm.err.push("操作太骚，报错了")
-            }
-            return vm;
-        }
-    };
-
-    try {
-        var cg = ss.lsObj('config');
-        $.each('.nrRange1 .nrRange2 .nrGetNum .nrRepeat .nrNewLine'.split(' '), function () {
-            if (this.substr(1) in cg) {
-                var jn = $('' + this);
-                jn.val(cg[this.substr(1)])
-            }
-        });
-    } catch (e) { }
-
-    $('.nrRm').click(function () {
-        var vm = rm.random($('.nrRange1').val(), $('.nrRange2').val(), $('.nrGetNum').val(), $('.nrRepeat').val(), $('.nrNewLine').val());
-        console.log(vm);
-        if (vm.err.length) {
-            $('.nrRv').val(vm.err.join('\r\n'));
-        } else {
-            $('.nrRv').val(vm.data.join(''));
-        }
-    })[0].click();
-
-    $('.nrRange1,.nrRange2,.nrGetNum,.nrRepeat,.nrNewLine').on('input', function () {
-        $('.nrRm')[0].click();
-    })
-
-    $('.nrReset').click(function () {
-        $.each('.nrRange1 .nrRange2 .nrGetNum .nrRepeat .nrNewLine'.split(' '), function () {
-            var jn = $('' + this);
-            if (jn[0].type == "select-one") {
-                jn[0].selectedIndex = 0;
-            } else {
-                jn.val(jn[0].defaultValue);
-            }
-        });
-        $('.nrRm')[0].click();
-    });
-</script>
         </div>
 </body>
 </html>

@@ -1,15 +1,8 @@
 ﻿#if Full || DataKit
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Data;
-using System.Data.Common;
 using System.IO.Compression;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using MySqlConnector;
 using Microsoft.Data.Sqlite;
+using MySqlConnector;
 using Oracle.ManagedDataAccess.Client;
 using Microsoft.Data.SqlClient;
 using Npgsql;
@@ -24,36 +17,120 @@ namespace Netnr.SharedDataKit
     public partial class DataKit
     {
         /// <summary>
-        /// 执行结果统一输出
+        /// 初始化
         /// </summary>
-        /// <param name="er"></param>
-        /// <param name="listInfo"></param>
-        /// <param name="st"></param>
+        /// <param name="tdb"></param>
+        /// <param name="conn"></param>
+        /// <param name="databaseName"></param>
         /// <returns></returns>
-        public static Tuple<DataSet, DataSet, object> ExecuteUnity(Tuple<DataSet, int, DataSet> er, List<string> listInfo, SharedTimingVM st)
+        public static DataKit Init(SharedEnum.TypeDB tdb, string conn, string databaseName = null)
         {
-            st.sw.Stop();
-            listInfo.Add($"耗时: {st.PartTimeFormat()}");
+            DataKit dk = null;
 
-            if (er.Item2 != -1)
+            try
             {
-                listInfo.Insert(0, $"({er.Item2} 行受影响)");
+                //连接信息
+                DbConnection dbConnection = null;
+                //打印信息
+                var listInfo = new List<string>();
+
+                //额外处理 SQLite
+                if (tdb == SharedEnum.TypeDB.SQLite)
+                {
+                    //下载 SQLite 文件
+                    var ds = conn[12..].TrimEnd(';');
+                    //路径
+                    var dspath = Path.GetTempPath();
+                    //文件名
+                    var dsname = Path.GetFileName(ds);
+                    var fullPath = Path.Combine(dspath, dsname);
+
+                    //网络路径
+                    if (ds.ToLower().StartsWith("http"))
+                    {
+                        //不存在则下载
+                        if (!File.Exists(fullPath))
+                        {
+                            //下载
+                            HttpTo.DownloadSave(HttpTo.HWRequest(ds), fullPath);
+                        }
+
+                        conn = "Data Source=" + fullPath;
+                    }
+                    else
+                    {
+                        conn = "Data Source=" + ds;
+                    }
+                }
+
+                conn = DbHelper.SqlConnPreCheck(tdb, conn);
+                switch (tdb)
+                {
+                    case SharedEnum.TypeDB.SQLite:
+                        dbConnection = new SqliteConnection(conn);
+                        break;
+                    case SharedEnum.TypeDB.MySQL:
+                    case SharedEnum.TypeDB.MariaDB:
+                        {
+                            var csb = new MySqlConnectionStringBuilder(conn);
+                            if (!string.IsNullOrWhiteSpace(databaseName))
+                            {
+                                csb.Database = databaseName;
+                            }
+                            dbConnection = new MySqlConnection(csb.ConnectionString);
+                        }
+                        break;
+                    case SharedEnum.TypeDB.Oracle:
+                        {
+                            dbConnection = new OracleConnection(conn);
+                        }
+                        break;
+                    case SharedEnum.TypeDB.SQLServer:
+                        {
+                            var csb = new SqlConnectionStringBuilder(conn);
+                            if (!string.IsNullOrWhiteSpace(databaseName))
+                            {
+                                csb.InitialCatalog = databaseName;
+                            }
+                            dbConnection = new SqlConnection(csb.ConnectionString);
+                        }
+                        break;
+                    case SharedEnum.TypeDB.PostgreSQL:
+                        {
+                            var csb = new NpgsqlConnectionStringBuilder(conn);
+                            if (!string.IsNullOrWhiteSpace(databaseName))
+                            {
+                                csb.Database = databaseName;
+                            }
+                            dbConnection = new NpgsqlConnection(csb.ConnectionString);
+                        }
+                        break;
+                }
+
+                dk = new DataKit(tdb, dbConnection);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
 
-            var dtInfo = new DataTable();
-            dtInfo.Columns.Add(new DataColumn("message"));
-            listInfo.ForEach(info =>
-            {
-                var drInfo = dtInfo.NewRow();
-                drInfo[0] = info;
-                dtInfo.Rows.Add(drInfo.ItemArray);
-            });
-
-            return new Tuple<DataSet, DataSet, object>(er.Item1, er.Item3, new { info = dtInfo });
+            return dk;
         }
 
         /// <summary>
-        /// 构建数据库连接
+        /// 初始化
+        /// </summary>
+        /// <param name="connectionInfo">连接信息</param>
+        /// <returns></returns>
+        public static DataKit Init(TransferVM.ConnectionInfo connectionInfo)
+        {
+            DataKit dk = Init(connectionInfo.ConnectionType, connectionInfo.ConnectionString, connectionInfo.DatabaseName);
+
+            return dk;
+        }
+
+        /// <summary>
+        /// 数据库连接
         /// </summary>
         /// <param name="tdb"></param>
         /// <param name="conn"></param>
@@ -71,6 +148,33 @@ namespace Netnr.SharedDataKit
             };
         }
 
+        /// <summary>
+        /// 设置连接的数据库名（MySQL、SQLServer、PostgreSQL）
+        /// </summary>
+        /// <param name="tdb"></param>
+        /// <param name="conn"></param>
+        /// <param name="databaseName"></param>
+        /// <returns></returns>
+        public static string SetConnDatabase(SharedEnum.TypeDB tdb, string conn, string databaseName)
+        {
+            return tdb switch
+            {
+                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => new MySqlConnectionStringBuilder(conn)
+                {
+                    Database = databaseName
+                }.ConnectionString,
+                SharedEnum.TypeDB.SQLServer => new SqlConnectionStringBuilder(conn)
+                {
+                    InitialCatalog = databaseName
+                }.ConnectionString,
+                SharedEnum.TypeDB.PostgreSQL => new NpgsqlConnectionStringBuilder(conn)
+                {
+                    Database = databaseName
+                }.ConnectionString,
+                _ => conn,
+            };
+        }
+
         //分批最大行数
         public const int BatchMaxRows = 10000;
 
@@ -84,16 +188,17 @@ namespace Netnr.SharedDataKit
         {
             if (edb.ListReadTableName.Count == 0)
             {
-                edb.ListReadTableName = (GetTable(edb.ReadConnectionInfo.ConnectionType, edb.ReadConnectionInfo.ConnectionString).Data as List<TableVM>).Select(x => x.TableName).ToList();
+                var dk = Init(edb.ReadConnectionInfo);
+                edb.ListReadTableName = dk.GetTable().Select(x => DbHelper.SqlSNTN(x.TableName, x.SchemaName, edb.ReadConnectionInfo.ConnectionType)).ToList();
             }
 
             var edt = new TransferVM.ExportDataTable().ToRead(edb);
-            edt.ListReadSQL = new List<string>();
+            edt.ListReadDataSQL = new List<string>();
 
             foreach (var table in edb.ListReadTableName)
             {
-                var sql = $"SELECT * FROM {DbHelper.SqlQuote(edb.ReadConnectionInfo.ConnectionType, table)}";
-                edt.ListReadSQL.Add(sql);
+                var sql = $"SELECT * FROM {table}";
+                edt.ListReadDataSQL.Add(sql);
             }
 
             return ExportDataTable(edt, le);
@@ -124,9 +229,9 @@ namespace Netnr.SharedDataKit
             var isOldZip = File.Exists(edt.ZipPath);
             using ZipArchive zip = ZipFile.Open(edt.ZipPath, isOldZip ? ZipArchiveMode.Update : ZipArchiveMode.Create);
 
-            for (int i = 0; i < edt.ListReadSQL.Count; i++)
+            for (int i = 0; i < edt.ListReadDataSQL.Count; i++)
             {
-                var sql = edt.ListReadSQL[i];
+                var sql = edt.ListReadDataSQL[i];
 
                 vm.Log.Add($"读取表：{sql}");
 
@@ -134,6 +239,8 @@ namespace Netnr.SharedDataKit
                 var batchNo = 0;
 
                 var dt = new DataTable();
+                //模式名.表名
+                var sntn = string.Empty;
 
                 var sw = new Stopwatch();
                 sw.Start();
@@ -146,6 +253,7 @@ namespace Netnr.SharedDataKit
                     if (rowCount == 1)
                     {
                         dt = dr.Table.Clone();
+                        sntn = DbHelper.SqlSNTN(dt.TableName, dt.Namespace);
                     }
 
                     dt.Rows.Add(dr.ItemArray);
@@ -160,7 +268,7 @@ namespace Netnr.SharedDataKit
                     {
                         batchNo++;
 
-                        var xmlName = $"{dt.TableName}_{batchNo.ToString().PadLeft(7, '0')}.xml";
+                        var xmlName = $"{sntn}_{batchNo.ToString().PadLeft(7, '0')}.xml";
 
                         //xml 写入 zip
                         var zae = isOldZip
@@ -180,7 +288,7 @@ namespace Netnr.SharedDataKit
 
                 if (batchNo == 0 && dt.Rows.Count == 0)
                 {
-                    vm.Log.Add($"跳过空表，导表进度：{i + 1}/{edt.ListReadSQL.Count}\n");
+                    vm.Log.Add($"跳过空表，导表进度：{i + 1}/{edt.ListReadDataSQL.Count}\n");
                 }
                 else
                 {
@@ -189,7 +297,7 @@ namespace Netnr.SharedDataKit
                     {
                         batchNo++;
 
-                        var xmlName = $"{dt.TableName}_{batchNo.ToString().PadLeft(7, '0')}.xml";
+                        var xmlName = $"{sntn}_{batchNo.ToString().PadLeft(7, '0')}.xml";
 
                         //xml 写入 zip
                         var zae = isOldZip
@@ -200,10 +308,10 @@ namespace Netnr.SharedDataKit
                         dt.WriteXml(ceStream, XmlWriteMode.WriteSchema);
                         ceStream.Close();
 
-                        vm.Log.Add($"导出表（{dt.TableName}）第 {batchNo} 批（行：{dt.Rows.Count}/{rowCount}），耗时：{vm.PartTimeFormat()}");
+                        vm.Log.Add($"导出表（{sntn}）第 {batchNo} 批（行：{dt.Rows.Count}/{rowCount}），耗时：{vm.PartTimeFormat()}");
                     }
 
-                    vm.Log.Add($"导出表（{dt.TableName}）完成（行：{rowCount}），导表进度：{i + 1}/{edt.ListReadSQL.Count}\n");
+                    vm.Log.Add($"导出表（{sntn}）完成（行：{rowCount}），导表进度：{i + 1}/{edt.ListReadDataSQL.Count}\n");
                 }
 
                 //清理包历史分片
@@ -212,7 +320,7 @@ namespace Netnr.SharedDataKit
                     var hasOldData = false;
                     do
                     {
-                        var xmlName = $"{dt.TableName}_{(++batchNo).ToString().PadLeft(7, '0')}.xml";
+                        var xmlName = $"{sntn}_{(++batchNo).ToString().PadLeft(7, '0')}.xml";
                         var zae = zip.GetEntry(xmlName);
                         if (hasOldData = (zae != null))
                         {
@@ -260,14 +368,14 @@ namespace Netnr.SharedDataKit
                 //读取表的列 => 写入表的列
                 var rwMap = new Dictionary<string, string>();
 
-                vm.Log.Add($"读取表数据：{rw.ReadSQL}");
+                vm.Log.Add($"读取表数据 SQL：{rw.ReadDataSQL}");
 
                 var rowCount = 0;
                 var batchNo = 0;
                 var catchCount = 0;
 
                 //读取行
-                dbRead.SqlExecuteDataRow(rw.ReadSQL, drRead =>
+                dbRead.SqlExecuteDataRow(rw.ReadDataSQL, drRead =>
                 {
                     rowCount++;
 
@@ -446,6 +554,10 @@ namespace Netnr.SharedDataKit
             using var zipRead = ZipFile.OpenRead(idb.ZipPath);
             var zipList = zipRead.Entries.OrderBy(x => x.Name).ToList();
 
+            vm.Log.Add($"读取写入库表信息");
+            var dk = Init(idb.WriteConnectionInfo);
+            var writeTables = dk.GetTable();
+
             for (int i = 0; i < zipList.Count; i++)
             {
                 var dt = new DataTable();
@@ -454,22 +566,66 @@ namespace Netnr.SharedDataKit
                 dt.ReadXml(item.Open());
 
                 //指定导入表名
-                if (idb.ReadWriteTableMap.ContainsKey(dt.TableName))
+                var writeTableMap = string.Empty;
+                foreach (var key in idb.ReadWriteTableMap.Keys)
                 {
-                    dt.TableName = idb.ReadWriteTableMap[dt.TableName];
+                    var val = idb.ReadWriteTableMap[key];
+                    var sntnArray = key.Split('.');
+                    if (sntnArray.Length == 2)
+                    {
+                        if (dt.Namespace == sntnArray[0] && dt.TableName == sntnArray[1])
+                        {
+                            writeTableMap = val;
+                            break;
+                        }
+                    }
+                    else if (dt.TableName == key)
+                    {
+                        writeTableMap = val;
+                        break;
+                    }
+                }
+                //指定映射 且在 写入库
+                if (!string.IsNullOrWhiteSpace(writeTableMap) && writeTables.Any(x => DbHelper.SqlEqualSNTN(writeTableMap, x.TableName, x.SchemaName)))
+                {
+                    var sntnArray = writeTableMap.Split('.');
+                    if (sntnArray.Length == 2)
+                    {
+                        dt.Namespace = sntnArray[0];
+                        dt.TableName = sntnArray[1];
+                    }
+                    else
+                    {
+                        dt.Namespace = "";
+                        dt.TableName = sntnArray[0];
+                    }
+                }
+                //有模式名 但不在 写入库 清除模式名
+                else if (!string.IsNullOrWhiteSpace(dt.Namespace) && !writeTables.Any(x => x.SchemaName == dt.Namespace))
+                {
+                    dt.Namespace = "";
                 }
 
-                //清空表
-                if (hsName.Add(dt.TableName) && idb.WriteDeleteData)
+                if (!writeTables.Any(x => x.TableName == dt.TableName))
                 {
-                    var clearTableSql = DbHelper.SqlClearTable(idb.WriteConnectionInfo.ConnectionType, dt.TableName);
+                    vm.Log.Add($"写入库未找到表（{dt.TableName}），已跳过");
+                    continue;
+                }
+
+                //模式名.表名
+                var sntn = DbHelper.SqlSNTN(dt.TableName, dt.Namespace);
+
+                //清空表
+                if (hsName.Add(sntn) && idb.WriteDeleteData)
+                {
+                    var clearTableSql = DbHelper.SqlClearTable(idb.WriteConnectionInfo.ConnectionType, sntn);
 
                     vm.Log.Add($"清理写入表：{clearTableSql}");
                     var num = db.SqlExecuteReader(clearTableSql).Item2;
                     vm.Log.Add($"返回受影响行数：{num}，耗时：{vm.PartTimeFormat()}");
                 }
 
-                vm.Log.Add($"导入表（{dt.TableName}）分片：{item.Name}（大小：{ParsingTo.FormatByteSize(item.Length)}，行：{dt.Rows.Count}）");
+                vm.Log.Add($"导入表（{sntn}）分片：{item.Name}（大小：{ParsingTo.FormatByteSize(item.Length)}，行：{dt.Rows.Count}）");
 
                 switch (idb.WriteConnectionInfo.ConnectionType)
                 {
@@ -491,7 +647,7 @@ namespace Netnr.SharedDataKit
                         break;
                 }
 
-                vm.Log.Add($"导入表（{dt.TableName}）分片成功，耗时：{vm.PartTimeFormat()}，导入进度：{i + 1}/{zipList.Count}\n");
+                vm.Log.Add($"导入表（{sntn}）分片成功，耗时：{vm.PartTimeFormat()}，导入进度：{i + 1}/{zipList.Count}\n");
             }
 
             vm.Log.Add($"导入完成，共耗时：{vm.UseTimeFormat}\n");

@@ -179,15 +179,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 联系
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Contact()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 行政区划
         /// </summary>
         /// <returns></returns>
@@ -404,15 +395,6 @@ namespace Netnr.ScriptService.Controllers
         }
 
         /// <summary>
-        /// 存储
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Storage()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 文本转图片
         /// </summary>
         /// <returns></returns>
@@ -471,6 +453,24 @@ namespace Netnr.ScriptService.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Regex()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 流程图
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Graph()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 脑图
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Mind()
         {
             return View();
         }

@@ -26,7 +26,7 @@ namespace Netnr.SharedDataKit
             {
                 get
                 {
-                    var conn = SharedAdo.DbHelper.SqlConnPreCheck(ConnectionType, _connectionString);
+                    var conn = DbHelper.SqlConnPreCheck(ConnectionType, _connectionString);
                     return conn;
                 }
                 set
@@ -38,7 +38,35 @@ namespace Netnr.SharedDataKit
             /// 连接备注
             /// </summary>
             public string ConnectionRemark { get; set; }
+            private string _DatabaseName = null;
+            /// <summary>
+            /// 数据库名（未设置时获取默认数据库名）
+            /// </summary>
+            public string DatabaseName
+            {
+                get
+                {
+                    if (string.IsNullOrWhiteSpace(_DatabaseName))
+                    {
+                        //默认数据库名
+                        return DataKit.DbConn(ConnectionType, ConnectionString).Database;
+                    }
+                    else
+                    {
+                        return _DatabaseName;
+                    }
+                }
+                set
+                {
+                    ConnectionString = DataKit.SetConnDatabase(ConnectionType, ConnectionString, value);
+                    _DatabaseName = value;
+                }
+            }
 
+            /// <summary>
+            /// 新实例
+            /// </summary>
+            /// <returns></returns>
             public DbHelper NewDbHelper()
             {
                 var db = new DbHelper(DataKit.DbConn(ConnectionType, ConnectionString));
@@ -52,19 +80,19 @@ namespace Netnr.SharedDataKit
         public class ReadWriteItem
         {
             /// <summary>
-            /// 读取表
+            /// 读取表数据SQL（可带模式名 SchemaName）
             /// </summary>
-            public string ReadSQL { get; set; }
+            public string ReadDataSQL { get; set; }
             /// <summary>
-            /// 读取表名（用于生成列映射）
+            /// 读取表名（可带模式名 SchemaName，用于生成列映射）
             /// </summary>
             public string ReadTableName { get; set; }
             /// <summary>
-            /// 写入表名
+            /// 写入表名（可带模式名 SchemaName）
             /// </summary>
             public string WriteTableName { get; set; }
             /// <summary>
-            /// 清空写入表
+            /// 清空写入表SQL（可带模式名 SchemaName）
             /// </summary>
             public string WriteDeleteSQL { get; set; }
             /// <summary>
@@ -87,6 +115,10 @@ namespace Netnr.SharedDataKit
             /// </summary>
             public string RefReadConnectionInfo { get; set; }
             /// <summary>
+            /// 读取数据库名（读取配置，还需回填 WriteConnectionInfo）
+            /// </summary>
+            public string ReadDatabaseName { get; set; }
+            /// <summary>
             /// 写入连接信息
             /// </summary>
             public ConnectionInfo WriteConnectionInfo { get; set; }
@@ -94,6 +126,10 @@ namespace Netnr.SharedDataKit
             /// 写入连接信息（引用）
             /// </summary>
             public string RefWriteConnectionInfo { get; set; }
+            /// <summary>
+            /// 写入数据库名（读取配置，还需回填 WriteConnectionInfo）
+            /// </summary>
+            public string WriteDatabaseName { get; set; }
         }
 
         /// <summary>
@@ -125,28 +161,33 @@ namespace Netnr.SharedDataKit
                 var mdb = this;
                 var mdt = new MigrateDataTable().ToRead(mdb);
 
-                var readTables = DataKit.GetTable(mdt.ReadConnectionInfo.ConnectionType, mdb.ReadConnectionInfo.ConnectionString).Data as List<TableVM>;
-                var writeTables = DataKit.GetTable(mdt.WriteConnectionInfo.ConnectionType, mdb.WriteConnectionInfo.ConnectionString).Data as List<TableVM>;
+                var readTables = DataKit.Init(mdt.ReadConnectionInfo).GetTable();
+                var writeTables = DataKit.Init(mdt.WriteConnectionInfo).GetTable();
 
                 if (readTables?.Count > 0 && writeTables?.Count > 0)
                 {
-                    var readTableNames = readTables.Select(x => x.TableName).ToList();
-                    var writeTableNames = writeTables.Select(x => x.TableName).ToList();
-
-                    readTableNames.ForEach(readTableName =>
+                    readTables.ForEach(readTable =>
                     {
-                        //读取库 表名 在 写入库
-                        if (writeTableNames.Any(x => readTableName == x))
+                        //读取库的表名 在 写入库
+                        var listWriteTable = writeTables.Where(x => readTable.TableName == x.TableName).ToList();
+                        if (listWriteTable.Count > 0)
                         {
-                            var readQuoteTableName = SharedAdo.DbHelper.SqlQuote(mdt.ReadConnectionInfo.ConnectionType, readTableName);
+                            //尝试匹配模式名 或 取第一条
+                            var writeTable = listWriteTable.FirstOrDefault(x => x.SchemaName == readTable.SchemaName);
+                            if (writeTable == null)
+                            {
+                                writeTable = listWriteTable.First();
+                            }
 
-                            var writeQuoteTableName = SharedAdo.DbHelper.SqlQuote(mdt.WriteConnectionInfo.ConnectionType, readTableName);
-                            var clearTableSql = $"{(mdt.WriteConnectionInfo.ConnectionType == SharedEnum.TypeDB.SQLite ? "DELETE FROM" : "TRUNCATE TABLE")} {writeQuoteTableName}";
+                            var readSNTN = DbHelper.SqlSNTN(readTable.TableName, readTable.SchemaName, mdt.ReadConnectionInfo.ConnectionType);
+                            var writeSNTN = DbHelper.SqlSNTN(writeTable.TableName, writeTable.SchemaName, mdt.WriteConnectionInfo.ConnectionType);
+
+                            var clearTableSql = $"{(mdt.WriteConnectionInfo.ConnectionType == SharedEnum.TypeDB.SQLite ? "DELETE FROM" : "TRUNCATE TABLE")} {writeSNTN}";
 
                             mdt.ListReadWrite.Add(new ReadWriteItem
                             {
-                                ReadSQL = $"SELECT * FROM {readQuoteTableName}",
-                                WriteTableName = readTableName,
+                                ReadDataSQL = $"SELECT * FROM {readSNTN}",
+                                WriteTableName = DbHelper.SqlSNTN(writeTable.TableName, writeTable.SchemaName),
                                 WriteDeleteSQL = mdb.WriteDeleteData ? clearTableSql : null
                             });
                         }
@@ -171,6 +212,14 @@ namespace Netnr.SharedDataKit
             /// </summary>
             public string RefReadConnectionInfo { get; set; }
             /// <summary>
+            /// 读取数据库名（读取配置，还需回填 WriteConnectionInfo）
+            /// </summary>
+            public string ReadDatabaseName { get; set; }
+            /// <summary>
+            /// 读取模式名
+            /// </summary>
+            public List<string> ListReadSchemaName { get; set; } = new List<string>();
+            /// <summary>
             /// 导出 ZIP 包完整路径
             /// </summary>
             public string ZipPath { get; set; }
@@ -182,9 +231,9 @@ namespace Netnr.SharedDataKit
         public class ExportDataTable : ExportBase
         {
             /// <summary>
-            /// 读取数据表
+            /// 读取数据表（可带模式名 SchemaName）
             /// </summary>
-            public List<string> ListReadSQL { get; set; } = new List<string>();
+            public List<string> ListReadDataSQL { get; set; } = new List<string>();
         }
 
         /// <summary>
@@ -193,7 +242,7 @@ namespace Netnr.SharedDataKit
         public class ExportDatabase : ExportBase
         {
             /// <summary>
-            /// 读取表名
+            /// 读取表名（可带模式名 SchemaName）
             /// </summary>
             public List<string> ListReadTableName { get; set; } = new List<string>();
         }
@@ -212,6 +261,10 @@ namespace Netnr.SharedDataKit
             /// </summary>
             public string RefWriteConnectionInfo { get; set; }
             /// <summary>
+            /// 写入数据库名（读取配置，还需回填 WriteConnectionInfo）
+            /// </summary>
+            public string WriteDatabaseName { get; set; }
+            /// <summary>
             /// 导入 ZIP 包完整路径
             /// </summary>
             public string ZipPath { get; set; }
@@ -220,7 +273,7 @@ namespace Netnr.SharedDataKit
             /// </summary>
             public bool WriteDeleteData { get; set; }
             /// <summary>
-            /// 读取表 映射 写入表
+            /// 读取表 映射 写入表（可带模式名 SchemaName）
             /// </summary>
             public Dictionary<string, string> ReadWriteTableMap { get; set; } = new Dictionary<string, string>();
         }

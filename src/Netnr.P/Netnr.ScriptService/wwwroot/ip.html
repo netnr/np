@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:27
+2022-02-28 10:43:17
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -82,13 +80,13 @@ https://netnr.eu.org
                 <label class="form-label">
                     <a href="https://www.netnr.eu.org/api/v1/IP" target="_blank">https://www.netnr.eu.org/api/v1/IP</a>
                 </label>
-                <input class="form-control fs-3" id="txtZme" placeholder="Loading...">
+                <input class="form-control fs-3 nr-ip1" id="txtZme" placeholder="Loading...">
             </div>
             <div class="mb-3">
                 <label class="form-label">
                     <a href="https://pv.sohu.com/cityjson" target="_blank">搜狐</a>
                 </label>
-                <input class="form-control fs-3" id="txtSohu" placeholder="Loading...">
+                <input class="form-control fs-3 nr-ip2" id="txtSohu" placeholder="Loading...">
             </div>
             <div>
                 <label class="form-label">更多：</label>
@@ -106,12 +104,14 @@ https://netnr.eu.org
 <script>
     try {
         fetch(`${ss.apiServer}/api/v1/IP`).then(x => x.text()).then(res => {
-            $('#txtZme').val(res.split(',')[0]);
+            document.querySelector('.nr-ip1').value = res.split(',')[0];
         });
 
-        $('#txtSohu').val(returnCitySN.cip);
+        document.querySelector('.nr-ip2').value = returnCitySN.cip;
     } catch (e) { }
 </script>
+
+            
 
         </div>
 </body>

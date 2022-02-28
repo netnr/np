@@ -1,23 +1,19 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-auto mb-3">
-            <div class="input-group">
-                <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
-                <select class="form-select" id="seLang">
-                    <option value="javascript-babel">JS</option>
-                    <option value="typescript">TypeScript</option>
+        <div class="col-auto mb-3">
+            <button class="btn btn-warning" id="btnFormatter" title="Shift+Alt+F 快捷格式化">格式化</button>
+        </div>
+        <div class="col-auto mb-3">
+            <select class="form-select nr-lang">
+                <optgroup label="Language">
+                    <option value="javascript">JS</option>
                     <option value="html">HTML</option>
-                    <option value="html-vue">VUE</option>
-                    <option value="html-angular">Angular</option>
                     <option value="css">CSS</option>
-                    <option value="less">LESS</option>
-                    <option value="scss">SCSS</option>
-                    <option value="json">JSON</option>
-                    <option value="json-json5">JSON5</option>
-                    <option value="markdown">Markdown</option>
-                    <option value="yaml">YAML</option>
-                    <option value="graphql">GraphQL</option>
-                </select>
+                </optgroup>
+            </select>
+        </div>
+        <div class="col-auto mb-3">
+            <div class="input-group">
                 <span class="input-group-text">间隔</span>
                 <input type="number" class="form-control nr-tab-width" value="4" min="1" max="9" step="1" />
             </div>
@@ -30,96 +26,4 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("prettier,monaco-editor"))
-
-<script>
-    require(['vs/editor/editor.main'], function() {
-
-        var defaultContent = ss.lsStr("vscode-content") || '',
-            defaultLang = ss.lsStr("vscode-lang") || 'javascript',
-            formatterLang = ss.lsStr("formatter-lang") || 'javascript';
-
-        window.ee = monaco.editor.create(document.getElementById("editor"), ss.meConfig({
-            value: defaultContent,
-            language: defaultLang
-        }));
-
-        ee.onDidChangeModelContent(function(e) {
-            clearTimeout(window.defer1);
-            window.defer1 = setTimeout(function() {
-                var txt = ee.getValue();
-                ss.ls["vscode-content"] = txt;
-                ss.lsSave();
-            }, 1000 * 1)
-        });
-
-        //格式化
-        ee.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF, function () {
-            ss.keepSetValue(ee,codeFormatter(ee.getValue()))
-        })
-
-        //切换语言
-        $('#seLang').change(function() {
-            var lang = this.value.split('-')[0];
-
-            var oldModel = ee.getModel();
-            var newModel = monaco.editor.createModel(ee.getValue(), lang);
-            ee.setModel(newModel);
-            if (oldModel) {
-                oldModel.dispose();
-            }
-
-            ss.ls["formatter-lang"] = this.value;
-            ss.ls["vscode-lang"] = lang;
-            ss.lsSave();
-        }).val(formatterLang);
-
-        //格式化
-        $('#btnFormatter').click(function() {
-            ss.keepSetValue(ee,codeFormatter(ee.getValue()))
-        });
-        $('.nr-tab-width').on('input', function() {
-            $('#btnFormatter')[0].click();
-        });
-
-        $(window).on('load resize', function() {
-            var ch = $(window).height() - $('#editor').offset().top - 15;
-            $('#editor').css('height', Math.max(200, ch));
-        });
-
-        //接收文件
-        ss.receiveFiles(function(files) {
-            var file = files[0];
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                ee.setValue(e.target.result);
-            };
-            reader.readAsText(file);
-        });
-    });
-
-    //格式化
-    function codeFormatter(code) {
-        var vlang = document.getElementById('seLang').value,
-            fmlang = vlang.split('-').pop();
-        if (code != "") {
-            try {
-                var ops = {
-                    printWidth: 999,
-                    parser: fmlang,
-                    tabWidth: document.querySelector('.nr-tab-width').value * 1,
-                    plugins: prettierPlugins
-                };
-
-                if (vlang.includes("html")) {
-                    ops.htmlWhitespaceSensitivity = "ignore";
-                }
-
-                return prettier.format(code, ops)
-            } catch (e) {
-                console.log(e);
-                bs.msg("<h4>ERROR</h4>");
-            }
-        }
-    }
-</script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("js-beautify,monaco-editor"))

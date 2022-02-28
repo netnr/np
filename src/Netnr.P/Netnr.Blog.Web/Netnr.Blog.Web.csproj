@@ -24,10 +24,10 @@
 		<PackageReference Include="Qcloud.Shared.NetCore" Version="1.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.3" />
-		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.187">
+		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.209">
 		  <TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.187">
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.209">
 		  <TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.4.1" />

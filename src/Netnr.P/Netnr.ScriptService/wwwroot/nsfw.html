@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:26
+2022-02-28 10:43:17
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -159,151 +157,9 @@ https://netnr.eu.org
 <script src='https://npm.elemecdn.com/nsfwjs@2.4.1/dist/nsfwjs.min.js'></script>
 <script src='https://npm.elemecdn.com/highcharts@9.3.3/highcharts.js'></script>
 
+            
+                    <script src="/_assets/js/nsfw.js?v=C1lSTrD8Y10juGHysf78shgyGYuomO3eO5ankASuwLg"></script>
 
-<script>
-    var pg = {
-        isgif: false,
-        model: null,
-        rtorder: [],
-        init: function () {
-            $('.nrResultType').find('input').each(function () {
-                pg.rtorder.push({
-                    key: this.value.split('（')[0],
-                    name: this.value
-                });
-            });
-
-            //接收文件
-            ss.receiveFiles(function (files) {
-                var isImg = false;
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    pg.isgif = file.type == "image/gif";
-                    if (file.type.indexOf("image") != -1) {
-                        isImg = true;
-                        pg.iv.onload = function () {
-                            pg.scan();
-                        }
-                        pg.iv.src = URL.createObjectURL(file);
-                        break;
-                    }
-                }
-                if (!isImg) {
-                    bs.alert('<h4>不是图片哦</h4>');
-                    pg.iv.src = `${ss.apiServer}/v1/SVGPIG/400*200`;
-                }
-            }, "#txtFile");
-
-            pg.modelPath();
-        },
-        iv: document.getElementById('imgview'),
-
-        modelPath: function () {
-            if (!pg.modelVersion) {
-                var bhtm = document.body.innerHTML;
-                pg.modelVersion = bhtm.substr(bhtm.indexOf("/nsfwjs"), 20).substring(8).split('/')[0];
-            }
-            return `https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@${pg.modelVersion}/example/nsfw_demo/public/quant_nsfw_mobilenet/`
-        },
-
-        scan: function () {
-            $('.sbox-scanner').removeClass('d-none');
-            $('#txtResult').val("正在加载引擎...")
-            if (pg.model) {
-                pg.classify();
-            } else {
-                nsfwjs.load(pg.modelPath()).then(function (model) {
-                    pg.model = model;
-                    pg.classify();
-                })
-            }
-        },
-
-        classify: function () {
-            $('#txtResult').val("正在识别...")
-
-            var mf = pg.isgif ? "classifyGif" : "classify";
-            pg.model[mf](pg.iv).then(function (predictions) {
-                console.log(predictions);
-
-                if (pg.isgif) {
-                    var oarr = [];
-                    predictions.forEach(parr => {
-                        var ro = {};
-                        parr.forEach(p => {
-                            ro[p.className] = p.probability.toFixed(20);
-                        });
-                        oarr.push(ro);
-                    });
-                    $('#txtResult').val(JSON.stringify(oarr, null, 4))
-                    pg.chart(oarr);
-                } else {
-                    var ro = {};
-                    predictions.forEach(p => {
-                        ro[p.className] = p.probability.toFixed(20);
-                    });
-                    $('#txtResult').val(JSON.stringify(ro, null, 4))
-                    pg.chart([ro]);
-                }
-
-                $('.sbox-scanner').addClass('d-none');
-            })
-        },
-
-        chart: function (results) {
-            var nrc = $('.nrChart').empty()
-            for (var i = 0; i < results.length; i++) {
-                var ro = results[i], data = [];
-                for (var j = 0; j < pg.rtorder.length; j++) {
-                    var o = pg.rtorder[j];
-                    data.push({
-                        name: o.name,
-                        y: ro[o.key] * 1
-                    });
-                }
-
-                var colsize = results.length > 1 ? "col-md-6 col-xl-4" : "col-md-12";
-
-                $('<div style="height:360px;" class="' + colsize + ' px-3 mb-3"></div>').appendTo(nrc).highcharts({
-                    chart: {
-                        plotBackgroundColor: null,
-                        plotBorderWidth: null,
-                        plotShadow: false
-                    },
-                    title: {
-                        text: '识别结果占比' + (results.length > 1 ? '（' + (i + 1) + ' 帧）' : '')
-                    },
-                    colors: ['#28a745', '#17a2b8', '#ffc107', '#dc3545', '#343a40'],
-                    tooltip: {
-                        headerFormat: '{series.name}<br>',
-                        pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
-                    },
-                    plotOptions: {
-                        pie: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            dataLabels: {
-                                enabled: true,
-                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                                style: {
-                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                                }
-                            }
-                        }
-                    },
-                    series: [{
-                        type: 'pie',
-                        name: '识别结果占比',
-                        data: data
-                    }]
-                });
-            }
-
-        }
-    }
-
-    pg.init();
-</script>
         </div>
 </body>
 </html>

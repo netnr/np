@@ -49,7 +49,7 @@
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Runtime.Caching">
-			<Version>6.0.2-mauipre.1.22054.8</Version>
+			<Version>6.0.2-mauipre.1.22102.15</Version>
 		</PackageReference>
 	</ItemGroup>
 

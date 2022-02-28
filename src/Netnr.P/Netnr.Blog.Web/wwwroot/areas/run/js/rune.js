@@ -320,11 +320,10 @@ var jsd = {
 
 function cssFormatter(css, tabSize) {
     try {
-        return prettier.format(css, {
-            parser: 'css',
-            tabWidth: tabSize || 4,
-            plugins: prettierPlugins
-        }).trim()
+        return beautifier.css(css, {
+            indent_size: tabSize || 4,
+            "max-preserve-newlines": 2
+        });
     } catch (e) {
         console.log(e);
         return null;

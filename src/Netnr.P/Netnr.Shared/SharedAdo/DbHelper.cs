@@ -1,8 +1,5 @@
 ﻿#if Full || Ado || AdoFull
 
-using System.Text;
-using System.Data;
-using System.Data.Common;
 using System.ComponentModel;
 
 namespace Netnr.SharedAdo
@@ -42,16 +39,15 @@ namespace Netnr.SharedAdo
         /// <param name="sql">SQL语句，支持多条</param>
         /// <param name="parameters">带参</param>
         /// <param name="func">回调</param>
-        /// <param name="includeSchemaTable">包含表结构</param>
         /// <param name="openTransaction">开启事务，默认</param>
         /// <returns>返回 表数据、受影响行数、表结构</returns>
-        public Tuple<DataSet, int, DataSet> SqlExecuteReader(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null, bool includeSchemaTable = false, bool openTransaction = true)
+        public Tuple<DataSet, int, DataSet> SqlExecuteReader(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
                 Transaction = openTransaction ? Connection.BeginTransaction() : null;
 
-                var ds = new DataSet();
+                var dsTable = new DataSet();
                 var dsSchema = new DataSet();
                 int recordsAffected = -1;
 
@@ -80,7 +76,7 @@ namespace Netnr.SharedAdo
                         {
                             dbc = func(dbc);
                         }
-                        var eds = dbc.ExecuteDataSet(includeSchemaTable);
+                        var eds = dbc.ExecuteDataSet(tableLoad: false);
 
                         if (DicCommand.ContainsKey(dbc.Site.Name))
                         {
@@ -90,9 +86,9 @@ namespace Netnr.SharedAdo
                         while (eds.Item1.Tables.Count > 0)
                         {
                             var dt = eds.Item1.Tables[0];
-                            dt.TableName = $"table{ds.Tables.Count + 1}";
+                            dt.TableName = $"table{dsTable.Tables.Count + 1}";
                             eds.Item1.Tables.RemoveAt(0);
-                            ds.Tables.Add(dt);
+                            dsTable.Tables.Add(dt);
                         }
 
                         if (eds.Item2 != -1)
@@ -123,8 +119,8 @@ namespace Netnr.SharedAdo
                         cmd = func(cmd);
                     }
 
-                    var eds = cmd.ExecuteDataSet(includeSchemaTable);
-                    ds = eds.Item1;
+                    var eds = cmd.ExecuteDataSet();
+                    dsTable = eds.Item1;
                     recordsAffected = eds.Item2;
                     dsSchema = eds.Item3;
 
@@ -136,7 +132,7 @@ namespace Netnr.SharedAdo
 
                 Transaction?.Commit();
 
-                return new Tuple<DataSet, int, DataSet>(ds, recordsAffected, dsSchema);
+                return new Tuple<DataSet, int, DataSet>(dsTable, recordsAffected, dsSchema);
             });
         }
 
@@ -156,28 +152,23 @@ namespace Netnr.SharedAdo
                     isSplit = !SqlParserBeginEnd(sql);
                 }
 
+                var listSql =  new List<string>();
                 if (isOracle && isSplit)
                 {
-                    var listSql = sql.Split(';').ToList();
-
-                    foreach (var txt in listSql)
-                    {
-                        if (string.IsNullOrWhiteSpace(txt))
-                        {
-                            continue;
-                        }
-
-                        var cmd = GetCommand(sql, timeout: 600);
-                        cmd.ExecuteDataRow(readRow);
-
-                        if (DicCommand.ContainsKey(cmd.Site.Name))
-                        {
-                            DicCommand.Remove(cmd.Site.Name);
-                        }
-                    }
+                    listSql = sql.Split(';').ToList();
                 }
                 else
                 {
+                    listSql.Add(sql);
+                }
+
+                foreach (var txt in listSql)
+                {
+                    if (string.IsNullOrWhiteSpace(txt))
+                    {
+                        continue;
+                    }
+
                     var cmd = GetCommand(sql, timeout: 600);
                     cmd.ExecuteDataRow(readRow);
 
@@ -190,11 +181,11 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// 执行
+        /// 执行 返回首行首列
         /// </summary>
         /// <param name="sql">SQL语句</param>
         /// <param name="parameters">带参</param>
-        /// <returns>返回受影响行数</returns>
+        /// <returns></returns>
         public object SqlExecuteScalar(string sql, DbParameter[] parameters = null)
         {
             return SafeConn(() =>
@@ -211,11 +202,11 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// 执行
+        /// 执行 返回受影响行数
         /// </summary>
         /// <param name="sql">SQL语句</param>
         /// <param name="parameters">带参</param>
-        /// <returns>返回受影响行数</returns>
+        /// <returns></returns>
         public int SqlExecuteNonQuery(string sql, DbParameter[] parameters = null)
         {
             return SafeConn(() =>

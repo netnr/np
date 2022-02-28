@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:28
+2022-02-28 10:43:17
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -107,104 +105,9 @@ https://netnr.eu.org
 <script src='https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.bundle.js'></script>
 <script src='https://s1.netnr.com/libs/mix/identicon.min.js'></script>
 
+            
+                    <script src="/_assets/js/message.js?v=M1DFOdNjLtIRs-kJUwZQihS1fdr6iLhyy0zDuP3i314"></script>
 
-<script>
-    ss.bmobInit();
-    var mg = {
-        page: 1,
-        pageNumber: 999,
-        bquery: Bmob.Query("NetnrMessage"),
-        messageObjectSave: function () { return new mg.MessageObject() },
-        list: function () {
-            ss.loading();
-            var query = mg.bquery;
-            query.limit(mg.pageNumber);
-            query.skip((mg.page - 1) * mg.pageNumber);
-            query.find().then(res => {
-                ss.loading(0);
-                var htm = [];
-                $(res).each(function (i) {
-                    var id = 'mi' + (i + 1);
-                    var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
-                    var context = '<p><em class="badge bg-secondary" title="该信息已被屏蔽">block</em></p>'
-                    if (!this.IsBlock) {
-                        context = netnrmd.render(netnrmd.spacing(this.Content)).replace(/@\S+/g, function (n) {
-                            return '<span class="text-primary">' + n + '</span>'
-
-                        }).replace(/#\d+/g, function (n) {
-                            return '<a href="' + n.replace("#", "#mi") + '" class="text-warning">' + n + '</a>'
-                        });
-                    }
-
-                    var itemtmp = `
-                                    <div class="d-flex mb-2" id="${id}">
-                                        <div class="flex-shrink-0 pt-2">
-                                            ${iisvg({ value: nickname, size: 42 }).outerHTML}
-                                        </div>
-                                        <div class="flex-grow-1 ms-2">
-                                            <a class="text-primary text-decoration-none" role="button" onclick="mg.refTA(this)">${nickname}</a>
-                                            <small class="text-muted mx-3">${this.createdAt}</small>
-                                            <a class="text-warning" href="#${id}" role="button">#${i + 1}</a>
-                                            <div class="text-break mt-2">
-                                                ${context}
-                                            </div>
-                                        </div>
-                                    </div>`;
-
-                    htm.push(itemtmp);
-                });
-                if (htm.length) {
-                    $('.messagebox').html(htm.join(''));
-                } else {
-                    $('#messagebox').html('no message');
-                }
-            }).catch(err => {
-                bs.alert("<h4>查询失败</h4>");
-                console.log(err);
-                ss.loading(0);
-            });
-        },
-        refTA: function (that) {
-            var txt = $('textarea[name="Content"]');
-            txt.val("@" + that.innerHTML + " " + txt.val());
-        }
-    }
-
-    mg.list();
-    $('textarea[name="Content"]').keydown(function (e) {
-        e = e || window.event;
-        var keys = e.keyCode || e.which || e.charCode;
-        if (keys == 13 && e.ctrlKey) {
-            $('#btnSave')[0].click();
-        }
-    });
-    $('#btnSave').click(function () {
-        var un = $('input[name="UserNickname"]'), uc = $('textarea[name="Content"]'), objv = {};
-        objv.UserNickname = un.val().trim();
-        objv.Content = uc.val().substring(0, 9999);
-        if (objv.Content == "" || netnrmd.render(objv.Content) == "") {
-            bs.msg("<h4>请输入内容</h4>");
-        } else {
-            var query = mg.bquery;
-            for (var i in objv) {
-                query.set(i, objv[i]);
-            }
-            query.save().then(res => {
-                bs.msg("<h4>操作成功</h4>");
-                uc.val('');
-                mg.list();
-                ss.ls["nickname"] = objv.UserNickname;
-                ss.lsSave();
-            }).catch(err => {
-                bs.alert("<h4>查询失败</h4>");
-                console.log(err);
-                ss.loading(0);
-            });
-        }
-    });
-
-    $('input[name="UserNickname"]').val(ss.lsStr("nickname"));
-</script>
         </div>
 </body>
 </html>

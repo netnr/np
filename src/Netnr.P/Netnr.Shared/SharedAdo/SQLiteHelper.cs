@@ -1,8 +1,5 @@
 ﻿#if Full || AdoFull || AdoSQLite
 
-using System;
-using System.Data;
-
 namespace Netnr.SharedAdo
 {
     /// <summary>
@@ -20,11 +17,11 @@ namespace Netnr.SharedAdo
         /// <returns></returns>
         public int BulkBatchSQLite(DataTable dt, string sqlEmpty = null, bool openTransaction = true)
         {
-            var fullTableName = $"[{dt.TableName}]";
+            var sntn = $"[{dt.TableName}]";
 
             if (string.IsNullOrWhiteSpace(sqlEmpty))
             {
-                sqlEmpty = SqlEmpty(fullTableName);
+                sqlEmpty = SqlEmpty(sntn);
             }
 
             //空表（新增、更新的模板）
@@ -32,7 +29,7 @@ namespace Netnr.SharedAdo
 
             var listCols = dtEmpty.Columns.Cast<DataColumn>().ToList();
 
-            var sqlAdd = $"INSERT INTO {fullTableName}([{string.Join("], [", listCols)}]) VALUES (@{string.Join(", @", listCols)})";
+            var sqlAdd = $"INSERT INTO {sntn}([{string.Join("], [", listCols)}]) VALUES (@{string.Join(", @", listCols)})";
 
             var colKey = dtEmpty.PrimaryKey.ToList();
             if (colKey.Count == 0)
@@ -40,7 +37,7 @@ namespace Netnr.SharedAdo
                 colKey.Add(dtEmpty.Columns[0]);
             }
             var colMod = listCols.Where(x => !colKey.Contains(x));
-            var sqlMod = $"UPDATE {fullTableName} SET {string.Join(", ", colMod.Select(x => $"[{x.ColumnName}] = @{x.ColumnName}"))} WHERE {string.Join(", ", colKey.Select(x => $"[{x.ColumnName}] = @{x.ColumnName}"))}";
+            var sqlMod = $"UPDATE {sntn} SET {string.Join(", ", colMod.Select(x => $"[{x.ColumnName}] = @{x.ColumnName}"))} WHERE {string.Join(", ", colKey.Select(x => $"[{x.ColumnName}] = @{x.ColumnName}"))}";
 
             return SafeConn(() =>
             {

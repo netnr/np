@@ -1,9 +1,5 @@
 ﻿#if Full || AdoFull || AdoPostgreSQL
 
-using System;
-using System.Data;
-using System.Linq;
-using System.Collections.Generic;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -18,42 +14,20 @@ namespace Netnr.SharedAdo
         /// 表批量写入（排除自增列）
         /// https://www.npgsql.org/doc/copy.html
         /// </summary>
-        /// <param name="dt">数据表</param>
+        /// <param name="dt">数据表（Namespace=SchemaName，TableName=TableName）</param>
         /// <returns></returns>
         public int BulkCopyPostgreSQL(DataTable dt)
         {
-            var containsDate = false;
-            var dtNew = dt.Clone();
-
-            foreach (DataColumn dc in dtNew.Columns)
-            {
-                if (dc.DataType.FullName == "System.DateTime")
-                {
-                    dc.DateTimeMode = DataSetDateTime.Utc;
-                    containsDate = true;
-                }
-            }
-
-            if (containsDate)
-            {
-                foreach (DataRow row in dt.Rows)
-                {
-                    dtNew.ImportRow(row);
-                }
-
-                dt = dtNew;
-            }
-
             return SafeConn(() =>
             {
                 var connection = (NpgsqlConnection)Connection;
 
                 //提取表列类型与数据库类型
                 var cb = new NpgsqlCommandBuilder();
-                var quoteTable = $"{cb.QuotePrefix}{dt.TableName}{cb.QuoteSuffix}";
+                var sntn = SqlSNTN(dt.TableName, dt.Namespace, SharedEnum.TypeDB.PostgreSQL);
                 cb.DataAdapter = new NpgsqlDataAdapter
                 {
-                    SelectCommand = new NpgsqlCommand($"select * from {quoteTable} where 0=1", connection)
+                    SelectCommand = new NpgsqlCommand($"select * from {sntn} where 0=1", connection)
                 };
 
                 //获取列类型
@@ -79,7 +53,7 @@ namespace Netnr.SharedAdo
                 //排除自增
                 var columns = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
                 columns = columns.Except(autoIncrCol).ToList();
-                string copyString = $"COPY {quoteTable}(\"" + string.Join("\",\"", columns) + "\") FROM STDIN (FORMAT BINARY)";
+                string copyString = $"COPY {sntn}(\"" + string.Join("\",\"", columns) + "\") FROM STDIN (FORMAT BINARY)";
                 autoIncrCol.ForEach(x => dt.Columns.Remove(x));
 
                 var num = 0;
@@ -125,7 +99,7 @@ namespace Netnr.SharedAdo
         /// 表批量写入（须手动处理自增列SQL）
         /// 根据行数据 RowState 状态新增、修改
         /// </summary>
-        /// <param name="dt">数据表</param>
+        /// <param name="dt">数据表（Namespace=SchemaName，TableName=TableName）</param>
         /// <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
         /// <param name="dataAdapter">执行前修改（命令行脚本、超时等信息）</param>
         /// <param name="openTransaction">开启事务，默认开启</param>
@@ -140,7 +114,8 @@ namespace Netnr.SharedAdo
                 var cb = new NpgsqlCommandBuilder();
                 if (string.IsNullOrWhiteSpace(sqlEmpty))
                 {
-                    sqlEmpty = SqlEmpty(dt.TableName, cb);
+                    var sntn = SqlSNTN(dt.TableName, dt.Namespace, SharedEnum.TypeDB.PostgreSQL);
+                    sqlEmpty = SqlEmpty(sntn);
                 }
 
                 cb.DataAdapter = new NpgsqlDataAdapter

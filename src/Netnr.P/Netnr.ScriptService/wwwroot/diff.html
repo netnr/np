@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:26
+2022-02-28 10:43:16
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -117,96 +115,9 @@ https://netnr.eu.org
 </script>
                         
 
+            
+                    <script src="/_assets/js/diff.js?v=dSPMYYCO4rXt5elQj16ujr5-F6C3nOjuyk1QRNk2cEQ"></script>
 
-<script>
-    var de = {
-        editor: document.getElementById("editor"),
-        isHideMenu: location.hash == "#hide-menu",
-        init: function () {
-
-            if (de.isHideMenu) {
-                $('.mobile-offcanvas').hide();
-            }
-
-            de.resize();
-            $(window).on('resize', de.resize);
-
-            require(['vs/editor/editor.main'], function () {
-                de.originalModel = monaco.editor.createModel("just some text\n\nHello World\n\nSome more text", "text/plain");
-                de.modifiedModel = monaco.editor.createModel("just some Text\n\nHello World\n\nSome more changes", "text/plain");
-
-                de.diffEditor = monaco.editor.createDiffEditor(de.editor, ss.meConfig({
-                    originalEditable: true
-                }));
-
-                de.diffEditor.setModel({
-                    original: de.originalModel,
-                    modified: de.modifiedModel
-                });
-
-                de.den = monaco.editor.createDiffNavigator(de.diffEditor, {
-                    followsCaret: true,
-                    ignoreCharChanges: true
-                });
-
-                $('.nr-diff-inline').change(function () {
-                    de.diffEditor.updateOptions({
-                        renderSideBySide: this.value != 1
-                    });
-                });
-
-                $('.nr-diff-next').click(function () {
-                    de.den.next();
-                });
-
-                de.receiveMessage();
-            });
-        },
-        receiveMessage: function () {
-            window.addEventListener("message", function (event) {
-                try {
-                    var jsonData = JSON.parse(event.data);
-                    if (jsonData.origin != null && jsonData.vary != null) {
-                        de.diffEditor.getOriginalEditor().setValue(jsonData.origin);
-                        de.diffEditor.getModifiedEditor().setValue(jsonData.vary);
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            }, false);
-        },
-        resize: function () {
-            var ch = $(window).height() - $('#editor').offset().top - (de.isHideMenu ? 5 : 20);
-            $('#editor').height(Math.max(100, ch));
-        }
-    }
-
-    de.init();
-
-    //接收文件
-    ss.receiveFiles(function (files) {
-        bs.alert(`<div class="text-center"><button type="button" class="btn btn-danger me-3" data-cmd="left">左边 Left</button><button type="button" class="btn btn-info" data-cmd="right">右边 Right</button></div>`);
-        bs.obj.alert._dialog.querySelector('.modal-footer').remove();
-        bs.obj.alert._dialog.onclick = function (e) {
-            var target = e.target, cmd = target.getAttribute("data-cmd");
-            if (["left", "right"].includes(cmd)) {
-                var file = files[0];
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    if (cmd == "left") {
-                        de.diffEditor.getOriginalEditor().setValue(e.target.result);
-                    } else {
-                        de.diffEditor.getModifiedEditor().setValue(e.target.result);
-                    }
-                    $("#txtFile").val('');
-                };
-                reader.readAsText(file);
-
-                bs.obj.alert.hide();
-            }
-        }
-    }, "#txtFile");
-</script>
         </div>
 </body>
 </html>

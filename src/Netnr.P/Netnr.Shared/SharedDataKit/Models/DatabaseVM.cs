@@ -1,7 +1,5 @@
 ﻿#if Full || DataKit
 
-using System;
-
 namespace Netnr.SharedDataKit
 {
     /// <summary>

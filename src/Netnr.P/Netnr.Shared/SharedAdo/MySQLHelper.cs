@@ -1,10 +1,5 @@
 ﻿#if Full || AdoFull || AdoMySQL
 
-using System;
-using System.Linq;
-using System.Data;
-using System.Data.Common;
-using System.Collections.Generic;
 using MySqlConnector;
 
 namespace Netnr.SharedAdo
@@ -68,7 +63,8 @@ namespace Netnr.SharedAdo
                 var cb = new MySqlCommandBuilder();
                 if (string.IsNullOrWhiteSpace(sqlEmpty))
                 {
-                    sqlEmpty = SqlEmpty(dt.TableName, cb);
+                    var sntn = SqlSNTN(dt.TableName, dt.Namespace, SharedEnum.TypeDB.MySQL);
+                    sqlEmpty = SqlEmpty(sntn);
                 }
 
                 cb.DataAdapter = new MySqlDataAdapter

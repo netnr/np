@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using SkiaSharp.QrCode;
 
 namespace Netnr.GraphDemo.Controllers;
 
@@ -245,4 +246,44 @@ public class SkiaSharpController : Controller
         return data.ToArray();
     }
 
+    /// <summary>
+    /// 生成二维码（SkiaSharp.QrCode）
+    /// </summary>
+    /// <param name="text">文本</param>
+    /// <param name="icon">带 logo 图标</param>
+    /// <param name="size">大小，默认 200 </param>
+    /// <returns></returns>
+    [HttpPost]
+    public FileResult QrCode([FromForm] string text, IFormFile icon, [FromForm] int size = 200)
+    {
+        size = Math.Max(30, size);
+        size = Math.Min(99999, size);
+
+        var qr = new QRCodeGenerator().CreateQrCode(text, ECCLevel.H);
+        var info = new SKImageInfo(size, size);
+        var surface = SKSurface.Create(info);
+
+        if (icon == null)
+        {
+            surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse("000000"));
+        }
+        else
+        {
+            var fms = new MemoryStream();
+            icon.CopyTo(fms);
+            var icond = new SkiaSharp.QrCode.Models.IconData
+            {
+                Icon = SKBitmap.Decode(fms.ToArray()),
+                IconSizePercent = 20,
+            };
+            surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse("000000"), icond);
+        }
+
+        using var data = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100);
+        using var ms = new MemoryStream();
+        data.SaveTo(ms);
+        var bytes = ms.ToArray();
+
+        return File(bytes, "image/png");
+    }
 }

@@ -1,4 +1,4 @@
-# Netnr.ResponseFramework 响应式框架（NRF）
+# NRF (Netnr.ResponseFramework) 响应式框架
 .NET (latest) 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
 
 ### [文档说明](Netnr.ResponseFramework.Document.md)

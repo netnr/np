@@ -9,6 +9,9 @@
     <Import_RootNamespace>Netnr</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitScript.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TransferVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedImport\SharedImportVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedTimingVM.cs" />
@@ -25,24 +28,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\DownTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedCompile\CompileTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitExtend.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\MySQL.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\IDataKit.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\SqlMappingCsharpVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DatabaseVM.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\SQLServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\Oracle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\PostgreSQL.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Configs\SQLite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedFast\GlobalTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\ImageTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitMySQL.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitOracle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitPostgreSQL.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitSQLite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitSQLServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKit.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DEIVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\ColumnVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TableVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedPageVM.cs" />

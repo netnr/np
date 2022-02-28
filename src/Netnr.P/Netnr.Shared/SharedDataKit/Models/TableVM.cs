@@ -1,7 +1,5 @@
 ﻿#if Full || DataKit
 
-using System;
-
 namespace Netnr.SharedDataKit
 {
     /// <summary>
@@ -14,9 +12,9 @@ namespace Netnr.SharedDataKit
         /// </summary>
         public string TableName { get; set; }
         /// <summary>
-        /// 模式
+        /// 模式名
         /// </summary>
-        public string TableSchema { get; set; }
+        public string SchemaName { get; set; }
         /// <summary>
         /// 所属
         /// </summary>

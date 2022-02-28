@@ -69,7 +69,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             return SharedResultVM.Try(vm =>
             {
                 //是否覆盖备份，默认不覆盖，避免线上重置功能被破坏
-                var CoverBack = false;
+                var CoverBack = true;
 
                 if (CoverBack)
                 {

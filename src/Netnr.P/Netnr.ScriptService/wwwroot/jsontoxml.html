@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:28
+2022-02-28 10:43:17
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -114,15 +112,6 @@ https://netnr.eu.org
     </div>
 </div>
 
-<script>
-    function AutoHeight() {
-        var ch = $(window).height() - $('#txt1').offset().top - 15;
-        $('#txt1').height(Math.max(200, ch));
-        $('#txt2').height(Math.max(200, ch));
-    }
-    AutoHeight();
-</script>
-
 <script src='https://s1.netnr.com/libs/mix/fast-xml-parser.min.js'></script>
 <script src='https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs/loader.js'></script>
 
@@ -142,64 +131,9 @@ https://netnr.eu.org
 </script>
                         
 
+            
+                    <script src="/_assets/js/jsontoxml.js?v=9Kim2cA1mYeR6W6ch2lQMJ0wVKhRPdPKhEk16i68x9M"></script>
 
-<script>
-
-    var editor1, editor2;
-
-    require(['vs/editor/editor.main'], function () {
-        //xml formatter
-        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
-
-        var txt1 = document.getElementById('txt1');
-        var tv1 = txt1.innerHTML;
-        txt1.innerHTML = '';
-
-        editor1 = monaco.editor.create(txt1, ss.meConfig({
-            value: tv1,
-            language: 'json',
-            scrollBeyondLastLine: false
-        }));
-        $(txt1).removeClass('pme');
-
-        editor2 = monaco.editor.create($("#txt2")[0], ss.meConfig({
-            value: '',
-            language: 'xml',
-            scrollBeyondLastLine: false
-        }));
-    });
-
-    $(window).resize(AutoHeight);
-
-    $("#btnToJson").click(function (e) {
-        var xmlText = editor2.getValue();
-        if (xmlText == "") {
-            bs.msg('<h4>XML 不能为空</h4>');
-            return false;
-        }
-
-        try {
-            var jsonObj = new fastXmlParser.parse(xmlText);
-            editor1.setValue(JSON.stringify(jsonObj, null, 2));
-        } catch(err) {
-            bs.msg('<h4>转换错误</h4>');
-            console.log(err);
-        }
-    });
-
-    $("#btnToXml").click(function () {
-        var jsonText = editor1.getValue();
-        if (jsonText == "") {
-            bs.msg('<h4>JSON 不能为空</h4>');
-            return false;
-        }
-
-        var jsonObj = JSON.parse(jsonText);
-        var xml = new fastXmlParser.j2xParser().parse(jsonObj);
-        editor2.setValue(xml);
-        editor2.trigger('a', 'editor.action.formatDocument')
-    });
-</script>
         </div>
 </body>
 </html>

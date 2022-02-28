@@ -10,7 +10,7 @@ namespace Netnr.ScriptService.Application
         {
             get
             {
-                var fullPath = PathTo.Combine(GlobalTo.WebRootPath, "db/nav.json");
+                var fullPath = PathTo.Combine(GlobalTo.WebRootPath, "_assets/file/nav.json");
                 return FileTo.ReadText(fullPath).ToJArray();
             }
         }

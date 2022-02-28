@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="utf-8" />
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>NetnrMD 编辑器</title>
+
+    <meta name="keywords" content="netnr,NET牛人,markdown,NetnrMD,NetnrMD 编辑器" />
+    <meta name="description" content="NetnrMD 编辑器（Monaco Editor 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高亮 + pangu 间隙）" />
+</head>
+<body>
+    <div>
+        <div id="editor">Loading ...</div>
+    </div>
+
+    <link href="src/netnrmd.css?20211108" rel="stylesheet" />
+    <script src="src/netnrmd.bundle.js?20211108"></script>
+    <script src="src/netnrmd.extend.js?20220116"></script>
+
+    <script src="https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs/loader.js"></script>
+
+    <script>
+        require.config({
+            paths: {
+                vs: 'https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs'
+            },
+            'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+        });
+
+        require(['vs/editor/editor.main'], function () {
+
+            //初始化
+            window.nmd = new netnrmd('#editor', {
+
+                // 加载扩展功能（可选）
+
+                // 渲染前回调
+                viewbefore: function () {
+                    [].findIndex(x => x.class != null)
+                    this.items.push(netnrmd.extend.upload.button);
+                    this.items.push(netnrmd.extend.import.button);
+                    this.items.push(netnrmd.extend.about.button);
+                },
+                // 命令回调
+                cmdcallback: function (cmd) {
+                    switch (cmd) {
+                        case "about":
+                        case "upload":
+                        case "import":
+                            netnrmd.extend[cmd].action(this)
+                            break;
+                    }
+                }
+            });
+
+            var mdinit = {
+                init: function () {
+                    mdinit.autoSize();
+                    window.addEventListener('resize', function () {
+                        mdinit.autoSize();
+                    }, false);
+
+                    mdinit.loadValue();
+
+                    mdinit.dragOpen();
+                },
+                autoSize: function () {
+                    var vh = document.documentElement.clientHeight - nmd.obj.container.getBoundingClientRect().top - 10;
+                    nmd.height(Math.max(100, vh));
+                },
+                loadValue: function () {
+                    var lsmd = localStorage.getItem(location.pathname + "_netnrmd_markdown");
+                    if (!(lsmd && lsmd.trim() != "")) {
+                        fetch('README.md').then(x => x.text()).then(res => {
+                            nmd.setmd(res);
+                        })
+                    }
+                },
+                dragOpen: function () {
+                    "dragleave dragenter dragover drop".split(' ').forEach(en => {
+                        document.addEventListener(en, function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }, false)
+                    });
+                    document.addEventListener('drop', function (e) {
+                        var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
+                        if (files && files.length) {
+                            var file = files[0];
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                nmd.setmd(e.target.result);
+                            };
+                            reader.readAsText(file);
+                        }
+                    }, false)
+                }
+            }
+
+            mdinit.init();
+
+        });
+    </script>
+</body>
+</html>

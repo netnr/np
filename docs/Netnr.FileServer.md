@@ -1,4 +1,4 @@
-# Netnr.FileServer (NFS)
+# NFS (Netnr.FileServer)
 基于 .NET Core 的简单文件服务器，数据库为 SQLite
 
 > `appsettings.json` 为配置文件，设置直接生效不用重启服务

@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-cn" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>打包</title>
+    <script src="https://npm.elemecdn.com/terser@5.10.0/dist/bundle.min.js"></script>
+</head>
+<body>
+    <script>
+        var bd = {
+            bundle: [
+                {
+                    src: "/src/netnrmd.js",
+                    comment: "netnrmd @3.0.2 | MIT | Minified by Terser",
+                    compression: true
+                },
+                {
+                    src: "https://npm.elemecdn.com/marked@4.0.12/marked.min.js",
+                    comment: "marked @version",
+                    compression: true
+                },
+                {
+                    src: "https://npm.elemecdn.com/dompurify@2.3.5/dist/purify.js",
+                    comment: "DOMPurify @version",
+                    compression: true
+                },
+                {
+                    src: "https://npm.elemecdn.com/@highlightjs/cdn-assets@11.4.0/highlight.min.js",
+                    comment: "Highlight.js @version",
+                    compression: true
+                },
+                {
+                    src: "https://npm.elemecdn.com/pangu@4.0.7/dist/browser/pangu.js",
+                    comment: "pangu @version",
+                    compression: true
+                }
+            ],
+
+            handle: function (bi) {
+                return new Promise(function (resolve, reject) {
+                    fetch(bi.src).then(x => x.text()).then(res => {
+                        if (bi.compression) {
+                            bi.text = res;
+                            Terser.minify(res, {
+                                output: {
+                                    comments: false,
+                                }
+                            }).then(result => {
+                                bi.txt = result.code;
+                                resolve();
+                            }).catch(e => {
+                                console.log(e);
+                                bi.txt = e + "";
+                            })
+                        } else {
+                            bi.txt = res;
+                            resolve();
+                        }
+                    })
+                });
+            },
+
+            run: function () {
+                var phs = [];
+                bd.bundle.forEach(bi => {
+                    phs.push(bd.handle(bi))
+                });
+                Promise.all(phs).then(res => {
+                    console.log(bd.bundle);
+
+                    var code = [];
+                    bd.bundle.forEach(bi => {
+                        if (bi.comment) {
+                            var version = bi.src.match(/@\d+.\d+.\d+/);
+                            version = version ? version[0] : "";
+                            code.push("/*! " + bi.comment.replace("@version", version) + " */");
+                        }
+                        code.push(bi.txt);
+                        code.push("");
+                    });
+
+                    var aTag = document.createElement('a');
+                    var blob = new Blob([code.join('\r\n')]);
+                    aTag.download = "netnrmd.bundle.js";
+                    aTag.href = URL.createObjectURL(blob);
+                    document.body.appendChild(aTag);
+                    aTag.click();
+                    URL.revokeObjectURL(blob);
+                });
+            }
+        };
+
+        bd.run();
+    </script>
+</body>
+</html>

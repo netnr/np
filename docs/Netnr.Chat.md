@@ -5,7 +5,7 @@
 - .NET (latest)
 - SignalR
 - EF + Linq
-- 支持：SQLServer、MySQL、PostgreSQL、SQLite、InMemory等
+- 支持：SQLServer、MySQL、PostgreSQL、SQLite 等
 - ==========================================
 - Netnr.Core（公共类库）
 

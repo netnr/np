@@ -196,8 +196,22 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             var vm = new SharedResultVM();
 
-            var mo = db.SysMenu.Find(id);
-            db.SysMenu.Remove(mo);
+            var ids = new List<string> { id };
+            do
+            {
+                var listMo = db.SysMenu.Where(x => ids.Contains(x.SmId)).ToList();
+                if (listMo.Count > 0)
+                {
+                    db.SysMenu.RemoveRange(listMo);
+
+                    var childMo = db.SysMenu.Where(x => ids.Contains(x.SmPid)).ToList();
+                    ids = childMo.Select(x => x.SmId).ToList();
+                }
+                else
+                {
+                    ids.Clear();
+                }
+            } while (ids.Count > 0);
 
             int num = db.SaveChanges();
             vm.Set(num > 0);

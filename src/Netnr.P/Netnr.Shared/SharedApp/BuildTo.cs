@@ -1,11 +1,6 @@
 ﻿#if Full || App
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Netnr.Core;
 using Netnr.SharedFast;
 

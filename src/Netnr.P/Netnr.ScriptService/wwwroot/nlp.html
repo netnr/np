@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:27
+2022-02-28 10:43:16
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -94,54 +92,9 @@ https://netnr.eu.org
         </div>
     </div>
 </div>
+            
+                    <script src="/_assets/js/nlp.js?v=GR5rzw-7Yr1u4RdmBrg_IZZtoQxcBEdBTf_S3wViTSI"></script>
 
-<script>
-    $('#btnOk').click(function () {
-        if ($('#txt1').val() != "") {
-            $('#btnOk').html('稍等');
-            $('#btnOk')[0].disabled = true;
-            $.ajax({
-                url: `${ss.apiServer}/api/v1/Analysis`,
-                type: 'POST',
-                data: {
-                    ctype: $('#sem').val(),
-                    content: $('#txt1').val()
-                },
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    var result = '';
-                    if (data.code == 200) {
-                        switch ($('#sem').val()) {
-                            case "0":
-                                result = data.data.join('\n');
-                                break;
-                            case "1":
-                                {
-                                    var arr = [];
-                                    $.each(data.data, function () {
-                                        arr.push(this.Word + " ：" + this.Weight.toFixed(5));
-                                    })
-                                    result = arr.join('\n');
-                                }
-                                break;
-                        }
-                    } else {
-                        result = JSON.stringify(data, null, 4);
-                    }
-                    $('#txt2').val(result);
-                },
-                error: function () {
-                    $('#txt2').val("网络错误");
-                },
-                complete: function () {
-                    $('#btnOk').html('提交');
-                    $('#btnOk')[0].disabled = false;
-                }
-            })
-        }
-    })
-</script>
         </div>
 </body>
 </html>

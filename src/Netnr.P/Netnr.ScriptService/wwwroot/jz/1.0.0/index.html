@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,user-scalable=no, initial-scale=1, maximum-scale=1" />
+
+    <title>jz弹窗示例 v1.0.0 </title>
+    <style>
+        * {
+            color: #333;
+            outline: none;
+            font-size: 15px;
+            font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+        }
+
+        input {
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background-color: #f3f3f3;
+            border: 1px solid #c3c3c3;
+        }
+
+            input:hover {
+                color: white;
+                background-color: #099;
+            }
+
+        .divJz {
+            max-width: 1250px;
+            margin: 30px auto;
+        }
+
+            .divJz .pa {
+                float: left;
+                width: 100%;
+            }
+
+                .divJz .pa a {
+                    float: left;
+                    padding: 3px 5px;
+                    font-size: 1.4em;
+                    margin-right: 25px;
+                    text-decoration: none;
+                    border: 1px solid transparent;
+                }
+
+                    .divJz .pa a:hover {
+                        color: #099;
+                        border-bottom-color: #28a745;
+                    }
+
+        #divCode {
+            clear: both;
+        }
+
+        pre {
+            color: #333;
+            padding: 15px;
+            line-height: 1.4em;
+            border-radius: 5px;
+            margin: 50px 0 10px;
+            white-space: pre-wrap;
+            border: 1px solid #ddd;
+            background-color: #f3f3f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="divJz">
+        <h1 style="line-height:2em;font-size:2em;">jz弹窗插件 demo v1.0.0 （一个文件，约13KB）</h1>
+        <p class="pa">
+            <a href="https://github.com/netnr/np" style="color:#28a745;">GitHub</a>
+        </p>
+        <div id="divCode">
+            <pre id="pre1">
+j.msg({
+    content: "hello world " + (new Date()).valueOf()
+});
+</pre>
+            <input id="btn1" type="button" value="普通消息 运行" />
+
+            <pre id="pre1a">
+j.msg({
+    content: "hello world " + (new Date()).valueOf(),  //消息
+    time: 8,    //倒计时8秒 默认4秒 0为不关闭
+    single: false,  //允许弹窗多个 默认弹窗一个
+    drag: true  //可拖动
+});
+</pre>
+            <input id="btn1a" type="button" value="拖动、弹多个、时间 运行" />
+
+            <pre id="pre1b">
+j.msg({
+    content: "hello world " + (new Date()).valueOf() + " 请滑动滚轮",  //消息
+    fixed: true,    //绝对位置 position:fixed    
+    time: 0,        //不自动关闭
+    blank: true    //点击空白关闭
+});
+</pre>
+            <input id="btn1b" type="button" value="空白关闭、绝对定位 运行" />
+
+
+            <pre id="pre2">
+j.confirm({
+    content: "hello world " + (new Date()).valueOf(),
+    cancel: false
+});
+</pre>
+            <input id="btn2" type="button" value="有确定按钮消息 运行" />
+
+            <pre id="pre3">
+j.confirm({
+    content: "hello world " + (new Date()).valueOf()
+});
+</pre>
+            <input id="btn3" type="button" value="模拟confirm询问 运行" />
+
+            <pre id="pre2a">
+j.confirm({
+    content: "倒计时关闭，有遮罩层 ",
+    mask: true, //遮罩层
+    time: 4 //倒计时关闭
+});
+</pre>
+            <input id="btn2a" type="button" value="遮罩层、倒计时 运行" />
+
+            <pre id="pre4">
+j.confirm({
+    content: "hello world " + (new Date()).valueOf(),
+    ok: function(){ 
+        j.msg({ content: "你点击了确定,阻止关闭" })
+        return false;
+    },
+    cancel: function(){ 
+        j.msg({ content: "你点击了取消或关闭" })
+    }
+});
+</pre>
+            <input id="btn4" type="button" value="询问回调 阻止关闭 运行" />
+
+            <pre id="pre5">
+j.confirm({
+    title: "Message",
+    content: "hello world " + (new Date()).valueOf(),
+    cancelValue: "否",
+    okValue: "是"
+});
+</pre>
+            <input id="btn5" type="button" value="定义标题、按钮文本 运行" />
+
+            <pre id="pre6">
+j.iframe({
+    src: "iframe.html", //iframe src属性
+    close: function(){
+        j.tip({
+            target:"#txt6",
+            content:"弹窗返回的值，在这里！",
+            time:6,
+            focus:true
+        })
+    }
+});
+</pre>
+            <input id="btn6" type="button" value="iframe弹窗 传值 运行" />
+            <input id="txt6" type="text" value="接收iframe返回的值" />
+
+            <pre id="pre6a">
+j.iframe({
+    title: "新窗口",   //指定标题
+    src: "//ss.js.org",
+    width: 440, //指定宽度 
+    height: 600,    //指定高度
+    scrolling: true,    //滚动条自动
+    mask: true,  //遮罩层
+    close: function(){
+        j.msg({content:"你关闭了弹窗"});
+    }
+});
+</pre>
+            <input id="btn6a" type="button" value="iframe弹窗 运行" />
+
+
+            <pre>
+*  弹窗实现 参数列表：
+*  title：标题    text/html（j.msg默认无）
+*  content：文本信息    text/html（j.msg、j.confirm 显示的文本或html，j.iframe不传）
+*  time：倒计时关闭 单位：秒     number（j.msg默认4秒，j.confirm、j.iframe默认不关闭）
+*  blank：点击空白关闭    bool（默认false，此关闭不触发弹窗关闭事件 有遮罩层失效）    
+*  fixed：绝对位置  bool（position:fixed） 
+*  mask：遮罩层    bool（默认 false）                             
+*  center: 自动居中    bool（默认 false）
+*  single：只弹出一个    bool
+*  drag：拖动     bool（j.msg默认false，j.confirm、j.iframe 默认true）
+*  ok：确定回调     function（确定回调）
+*  okValue：确定按钮文本      text（默认“确定”，有确定按钮则生效）
+*  cancel：取消回调  function/bool（取消回调/不显示取消按钮）
+*  cancelValue：取消按钮文本      text（默认“取消”,有取消按钮则生效）
+*  close：窗口关闭回调    function/bool（关闭回调/不显示，j.confirm没有，合并为cancel事件）
+*  src：iframe弹窗地址  
+*  width：弹出层最小宽度或iframe宽度   number（iframe默认 600）
+*  height：iframe弹窗高度 单位 px      number（默认 200）
+*  scrolling：iframe弹窗滚动条    bool（默认false）
+</pre>
+            <br /><br /><br />
+            <pre id="pre41">
+j.tip({
+    target: "#select41", //下拉列表框的#id
+    content: "hello world", 
+    blank: true    //点击空白关闭
+})
+</pre>
+            <input id="btn41" type="button" name="name" value="小提示" />
+            <select id="select41">
+                <option value="">请选择方向</option>
+                <option value="top">上</option>
+                <option value="bottom">下</option>
+                <option value="left">左</option>
+                <option value="right">右</option>
+            </select>
+            <pre id="pre41a">
+j.tip({
+    target: "#select41",
+    content: "hello world " + (new Date()).valueOf(),
+    single: false,
+    time: 4,    //倒计时关闭
+    align: this.value   //指定提示方向 默认下方 top|right|left|bottom
+})
+</pre>
+            <pre>
+*  小提示 tip 参数列表：
+*  target：#id/Element（提示目标#id或对象）
+*  content：提示信息    text/html
+*  single：只弹出一个    bool（默认true）
+*  align：提示位置方向 默认下方 top|right|left|bottom
+*  time：倒计时关闭 单位 秒     number（默认不关闭）
+*  blank：点击空白关闭    bool（默认false）
+*  focus：焦点选中目标    bool（默认false）
+</pre>
+        </div>
+    </div>
+
+
+</body>
+</html>
+
+<script src="jz-1.0.0.min.js"></script>
+<script>
+    //事件委托
+    j("#divCode").click(function (e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        if (target.nodeName == "INPUT") {
+            eval(j('#' + target.id.replace('btn', 'pre'))[0].innerHTML);
+        }
+    })
+    j("#select41").change(function () { eval(j("#pre41a")[0].innerHTML); })
+</script>

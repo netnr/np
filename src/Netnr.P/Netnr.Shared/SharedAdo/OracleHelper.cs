@@ -1,9 +1,5 @@
 ﻿#if Full || AdoFull || AdoOracle
 
-using System;
-using System.Data;
-using System.Data.Common;
-using System.Collections.Generic;
 using Oracle.ManagedDataAccess.Client;
 
 namespace Netnr.SharedAdo
@@ -63,7 +59,8 @@ namespace Netnr.SharedAdo
                 var cb = new OracleCommandBuilder();
                 if (string.IsNullOrWhiteSpace(sqlEmpty))
                 {
-                    sqlEmpty = SqlEmpty(dt.TableName, cb);
+                    var sntn = SqlSNTN(dt.TableName, dt.Namespace, SharedEnum.TypeDB.Oracle);
+                    sqlEmpty = SqlEmpty(sntn);
                 }
 
                 cb.DataAdapter = new OracleDataAdapter

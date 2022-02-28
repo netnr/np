@@ -1,9 +1,5 @@
 ﻿#if Full || App
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace Netnr.SharedApp;
 /// <summary>
 /// 资源引用
@@ -246,8 +242,12 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js'></script>");
                     break;
 
+                case "js-beautify":
+                    vh.Add("<script src='https://npm.elemecdn.com/js-beautify@1.14.0/js/lib/beautifier.min.js'></script>");
+                    break;
+
                 case "prettier-css":
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/standalone.js'></script>"); ;
+                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/standalone.js'></script>");
                     vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-postcss.js'></script>");
                     break;
                 case "prettier":

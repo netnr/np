@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,user-scalable=no, initial-scale=1, maximum-scale=1" />
+
+    <title>jz弹窗示例 v1.0.1 </title>
+
+    <style>
+        .main {
+            margin: 0 auto;
+            max-width: 1024px;
+            box-sizing: border-box;
+            font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+        }
+
+        .pa a {
+            padding: 3px 5px;
+            font-size: 1.4em;
+            margin-right: 25px;
+            text-decoration: none;
+            border: 2px solid transparent;
+        }
+
+            .pa a:hover {
+                color: #099;
+                border-bottom-color: #28a745;
+            }
+
+        .citem {
+            margin: 1% auto;
+            position: relative;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+            .citem pre {
+                margin: 0;
+                color: #333;
+                font-size: 1.2em;
+                min-height: 20px;
+                line-height: 1.4;
+                font-weight: 400;
+                border-radius: 3px;
+                white-space: pre-wrap;
+                padding: 1em 1em 2.5em;
+                background-color: #eee;
+                border: 1px solid #17a2b8;
+                font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+            }
+
+                .citem pre:hover {
+                    border-color: #fe7300;
+                }
+
+            .citem button {
+                position: absolute;
+                right: 2px;
+                bottom: 2px;
+                color: white;
+                outline: none;
+                font-size: 15px;
+                cursor: pointer;
+                line-height: 1.5;
+                border-radius: 3px;
+                padding: 0.3em 0.85em;
+                background-color: #17a2b8;
+                border: 1px solid transparent;
+            }
+
+                .citem button:hover {
+                    background-color: #108294;
+                }
+    </style>
+</head>
+<body>
+    <div class="main" id="main">
+        <h1>
+            jz弹窗插件 demo v1.0.1 （一个文件，约15KB）
+        </h1>
+
+        <p class="pa">
+            <a href="https://github.com/netnr/np" style="color:#28a745;">GitHub</a>
+        </p>
+
+        <div class="citem" style="font-size:1.3em;padding:15px 0">
+            <a href="#popup-alert">j.alert</a>
+            &nbsp;
+            <a href="#popup-msg">j.msg</a>
+            &nbsp;
+            <a href="#popup-confirm">j.confirm</a>
+            &nbsp;
+            <a href="#popup-iframe">j.iframe</a>
+            &nbsp;
+            <a href="#popup-fn">弹窗返回的对象及方法</a>
+            &nbsp;
+            <a href="#popup-doc">文档</a>
+            &nbsp;
+            <a href="#popup-tip">j.tip</a>
+        </div>
+
+        <div class="citem" id="popup-alert">
+            <pre>j.alert("hello world");</pre>
+            <button>alert，普通消息</button>
+        </div>
+
+        <div class="citem">
+            <pre>
+j.alert({
+    content:"hello world " + (new Date()).valueOf(),
+    blank:true,
+
+    //1-9数字键盘的位置对应屏幕的位置，0不定位（仅初始化居中）
+    //1左下角，2底部居中，3右下角，
+    //4垂直居左，5水平垂直居中，6垂直居右，
+    //7左上角，8顶部居中，9右上角
+    align:Math.ceil(Math.random()*10)-1
+})
+</pre>
+            <button>alert 定位，0-9，重复点击看效果</button>
+        </div>
+
+        <div class="citem">
+            <pre>
+j.alert("hello world " + (new Date()).valueOf(),{
+    ok:function(){
+        j.alert("ok回调")    
+    },
+    close:function(){
+        j.alert('close回调')
+    },
+    remove:function(){
+        j.alert('remove回调')
+    }
+})
+</pre>
+            <button>alert 确定、关闭、移除回调</button>
+        </div>
+
+        <div class="citem">
+            <pre>
+j.alert({
+    title:"警告",
+    content:"hello world " + (new Date()).valueOf(),
+    time:9, //倒计时自动关闭
+    mask:.7, //启用遮罩层，0-1的不透明度
+    okValue:"OK", //按钮文字
+    ok:function(){
+        j.alert("不允许关闭",{align:8,time:2,blank:true});
+        return false;
+    },
+    close:false
+})
+</pre>
+            <button>alert 倒计时、不透明度、按钮文字、阻止关闭、不显示关闭按钮</button>
+        </div>
+
+        <div class="citem" id="popup-msg">
+            <pre>j.msg("hello world "+ (new Date()).valueOf())</pre>
+            <button>msg 普通消息</button>
+        </div>
+
+        <div class="citem">
+            <pre>
+j.msg({
+    content:"hello world " + (new Date()).valueOf(),
+    mask:.5, //遮罩层不透明度
+    align:8, //顶部居中
+    time:8, //倒计时
+    blank:true, //空白关闭
+    fixed:true, //绝对定位（固定顶部）
+    drag:true,   //拖拽
+    width:"50%" //宽度
+})
+</pre>
+            <button>msg 普通消息</button>
+        </div>
+
+        <div class="citem" id="popup-confirm">
+            <pre>
+j.confirm("hello world " + (new Date()).valueOf(),{
+    //确定
+    ok:function(){
+        j.alert("ok")
+    },
+    //取消
+    cancel:function(){
+        j.alert("cancel")
+    },
+    //关闭
+    close:function(){
+        j.alert("close")
+    }
+})
+</pre>
+            <button>confirm 确定，取消、关闭回调</button>
+        </div>
+
+        <div class="citem" id="popup-iframe">
+            <pre>
+j.iframe({
+    src:"https://ss.js.org/"
+})
+</pre>
+            <button>iframe</button>
+        </div>
+
+        <div class="citem">
+            <pre>
+j.iframe({
+    title:"站点标题",
+    src:"https://ss.js.org/",
+    width:"350px", //宽度，不带单位默认为PX
+    height:"90%", //高度，支持百分比
+    scrolling:true, //有滚动条
+    align:5, //定位方式
+    mask:.6, //不透明度
+    blank:true, //空白关闭
+    fixed:false //非绝对定位
+})
+</pre>
+            <button>iframe 滚动条、宽高，定位，遮罩层</button>
+        </div>
+
+        <div class="citem">
+            <pre>
+j.iframe({
+    title:false,
+    src:"https://ss.js.org/",
+    width:"100%",
+    height:"100%",
+    time:5, //倒计时关闭
+    scrolling:true //有滚动条
+})
+</pre>
+            <button>iframe 无标题、全屏</button>
+        </div>
+
+        <div class="citem">
+            <input type="text" id="txtPv" placeholder="此处接收弹窗返回的值" style="float:right;font-size:1.5em;width:40%;outline:none;" />
+            <pre>
+j.iframe({
+    src:"iframe.html"
+})
+</pre>
+            <button id="btnPv">iframe 传值、关闭</button>
+        </div>
+
+        <div class="citem" id="popup-fn">
+            <pre>
+var jzart = j.alert("hello world");
+
+//得到弹窗的所有信息：对象、方法，
+//如不支持console方法，请换浏览器查看，弹窗不影响使用
+console.log(jzart.fn);
+
+/*
+对象：
+jzart.fn.global：弹窗整个对象
+jzart.fn.obj：调用弹窗时传的参数
+jzart.fn.body：弹窗内容主体
+jzart.fn.zindex：Z轴层叠高度，构成弹窗ID的标识
+jzart.fn.mask：遮罩层，遮罩层的ID是jzart.fn.zindex-1，层叠顺序要低于弹窗对象
+
+思维拓展：
+给jzart.fn.body对象添加类样式，就实现了自定义样式
+
+方法：
+jzart.fn.hide()：隐藏弹窗
+jzart.fn.show()：显示弹窗
+jzart.fn.remove()：移除弹窗
+*/
+</pre>
+            <button>打开控制台看 Console</button>
+        </div>
+
+        <div class="citem" id="popup-doc">
+            <pre>
+    /*  jz弹窗
+
+     *  参数列表：
+    
+     *  title：标题    text/html/false     false不显示标题
+     *  content：文本信息    text/html（jz.iframe不传）
+     *  footer：底部按钮包    bool    false不显示
+     *  time：倒计时关闭 单位：秒     number（jz.msg默认4秒）
+     *  blank：点击空白关闭    bool（默认false）     
+     *  mask：遮罩层    true、false、0-1不透明度
+     *  fixed：绝对位置  bool（position:fixed）    即启用不受滚动条影响
+     *  align: 对齐方式 数字键盘1-9，默认5水平垂直，false、0忽略对齐（仅初始化居中）
+     *  single：只弹出一个    bool
+     *  drag：拖动     bool（jz.msg默认false）     
+     *  ok：确定回调     function/false（确定回调/不显示确定按钮）
+     *  okValue：确定按钮文本
+     *  cancel：取消回调  function/false（取消回调/不显示取消按钮）     
+     *  cancelValue：取消按钮文本
+     *  close：窗口关闭回调    function/bool（关闭回调/不显示，有标题时）
+     *  remove：移除回调  function
+     *  src：弹窗地址    text（jz.iframe用）
+     *  width：弹窗宽度 如"400px"、"40em"、"90%"，百分比或固定的单位值
+     *  height: 弹窗高度 如"400px"、"40em"、"90%"，百分比或固定的单位值
+     *  scrolling: iframe是否有滚动条    bool（默认false）
+
+     *  popup为基方法，msg、alert、confirm、iframe都基于popup提供支持，popup返回整个弹窗对象
+     *  popup.fn为拓展，涵盖对象、方法
+
+     */
+</pre>
+        </div>
+
+        <hr style="margin:30px auto" />
+
+        <div class="citem" id="popup-tip">
+            <select id="seTip" style="font-size:1.5em;">
+                <option value="">（请选择）</option>
+                <option value="top"> 上 </option>
+                <option value="right"> 右 </option>
+                <option value="bottom"> 下 </option>
+                <option value="left"> 左 </option>
+            </select>
+            <pre>
+j.tip({
+    target: "#seTip", //目标：#ID 或 Element
+    content: "hello world " + (new Date()).valueOf(), //内容
+    blank: true, //点击空白关闭
+    focus: true, //焦点选中target对象，即focus效果，方便输入框提示用
+    time: 8,  //倒计时关闭，单位：秒
+    align: "top" //方向 可选：top|right|bottom|left，默认bottom
+});
+</pre>
+            <button id="btnTip">tip 小提示</button>
+        </div>
+
+        <div class="citem">
+            <pre>
+    /*  tip小提示 
+     
+     *  参数列表：
+
+     *  target：#id/Element
+     *  content：提示信息    text/html
+     *  single：只弹出一个    bool
+     *  time：倒计时关闭 单位：秒     number（默认不关闭）
+     *  blank：点击空白关闭    bool（默认false）
+     *  focus：焦点选中目标    bool（默认false）
+
+     */
+</pre>
+        </div>
+
+    </div>
+    
+    <script src="jz-1.0.1.min.js"></script>
+
+    <script>
+
+        var mn = document.getElementById('main');
+        mn.onclick = function (e) {
+            e = e || window.event;
+            var target = e.target || e.srcElement;
+            if (target.nodeName == "BUTTON") {
+                var arr = [];
+                while (target && target.nodeType != 9 && arr.length == 0) {
+                    target = target.previousSibling;
+                    target.nodeType == 1 && arr.push(target);
+                }
+                if (arr.length) {
+                    var pe = arr[0].innerHTML;
+                    eval(pe);
+                }
+            }
+        }
+
+        document.getElementById("seTip").onchange = function () {
+            j.tip({
+                target: "#seTip",
+                content: new Date().valueOf(),
+                single: false,
+                time: 6,    //倒计时关闭
+                align: this.value
+            });
+        }
+    </script>
+</body>
+</html>

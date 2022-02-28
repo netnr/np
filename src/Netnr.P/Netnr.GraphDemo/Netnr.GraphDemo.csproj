@@ -18,9 +18,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
-		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.187" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.187" />
-		<PackageReference Include="System.Drawing.Common" Version="6.0.2-mauipre.1.22054.8" />
+		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.209" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.209" />
+		<PackageReference Include="SkiaSharp.QrCode" Version="0.4.1" />
+		<PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.1.22076.8" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.3" />
 	</ItemGroup>

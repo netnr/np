@@ -24,19 +24,16 @@ namespace Netnr.Test.Controllers
                 var conn = new SqliteConnection(c1);
                 conn.Open();
                 var sql1 = "PRAGMA database_list";
-                var cmd1 = new SqliteCommand(sql1, conn);
-                vm.Log.Add(cmd1.ExecuteDataSet(true).Item1);
+                var cmd1 = new SqliteCommand(sql1, conn);                
+                vm.Log.Add(cmd1.ExecuteDataOnly());
 
                 var sql2 = @"ATTACH DATABASE 'D:\tmp\netnrf.db' AS nr";
                 var cmd2 = new SqliteCommand(sql2, conn);
-                var v2 = cmd2.ExecuteDataSet(true);
-
-                vm.Log.Add(cmd1.ExecuteDataSet(true).Item1);
+                vm.Log.Add(cmd2.ExecuteNonQuery());
 
                 conn.Close();
                 conn.Open();
-                vm.Log.Add(cmd1.ExecuteDataSet(true).Item1);
-
+                vm.Log.Add(cmd1.ExecuteDataOnly());
 
                 return vm;
             });

@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>netnr</title>
+
+    <meta name="keywords" content="netnr,NET牛人" />
+    <meta name="description" content="netnr,NET牛人" />
+
+    <link href="css/style.css?v2" rel="stylesheet" />
+</head>
+<body>
+    <div class="wrap" id="wrap">
+        <div class="wrapper">
+            <div class="header">
+                <div class="head clearfix">
+                    <div class="logo_box">
+                        <h1 class="hidden">netnr</h1>
+                        <a href="https://www.netnr.com" class="logo_link"><img src="favicon.ico" alt="netnr"></a>
+                    </div>
+                    <div class="nav_box" id="nav_box">
+                        <ul>
+                            <li>
+                                <a href="https://www.netnr.com" target="_blank">home</a>
+                            </li>
+                            <li>
+                                <a href="javascript:audioPlaySwitch()" title="点击 暂停/播放 背景音乐">♪</a>
+                            </li>
+                        </ul>
+                        <span class="ic_line"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="page_wp" id="page_wp">
+                <div class="page page_1">
+                    <span class="page_bg scale_box"></span>
+                    <div class="img_box"><img alt=""></div>
+                    <div class="txt_box scale_box">
+                        <h2>黑夜给了我黑色的眼睛，我却用它寻找光明。</h2>
+                    </div>
+                </div>
+                <div class="page page_2">
+                    <span class="page_bg scale_box"></span>
+                    <div class="img_box"><img alt=""></div>
+                    <div class="txt_box scale_box">
+                        <h2>把你最好的一面留给你爱的人。</h2>
+                    </div>
+                </div>
+                <div class="page page_3">
+                    <span class="page_bg scale_box"></span>
+                    <div class="img_box"><img alt=""></div>
+                    <div class="txt_box scale_box">
+                        <h2>想念时，就看看窗外的天空，无论距离有多远，我们总在同一片天空下。</h2>
+                    </div>
+                </div>
+                <div class="page page_4">
+                    <span class="page_bg scale_box"></span>
+                    <div class="img_box"><img alt=""></div>
+                    <div class="light_wp scale_box">
+                        <span class="light_box">
+                            <i class="light_1"></i>
+                            <i class="light_2"></i>
+                            <i class="light_3"></i>
+                            <i class="light_4"></i>
+                            <i class="light_5"></i>
+                        </span>
+                    </div><span class="meteor_box scale_box"></span>
+                    <div class="txt_box scale_box">
+                        <h2>每朵乌云背后都有阳光。</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="star_wp scale_box" id="star_wp">
+                <span class="star_bg"></span>
+                <span class="star_box"></span>
+            </div>
+            <canvas id="canvas"></canvas>
+            <div class="btns_wp scale_box">
+                <a class="btn" href="https://www.netnr.com">Go Netnr</a>
+            </div>
+            <div class="btn_control" id="btn_control">
+                <a href=javascript:; class="cur"></a>
+                <a href=javascript:;></a>
+                <a href=javascript:;></a>
+                <a href=javascript:;></a>
+            </div>
+            <div class="footer">
+                <div class="foot">
+                    <small>© 2015 - Now &nbsp; <a href="https://beian.miit.gov.cn" target="_blank">渝ICP备15000995号-4</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/vendors.js"></script>
+    <script src="js/index.js"></script>
+
+    <audio src="audio/Alan_Walker_Intro.mp3" autoplay loop></audio>
+
+    <script>
+        let audio = document.getElementsByTagName('audio')[0], dv = .5;
+        audio.volume = dv;
+
+        function audioPlaySwitch() {
+            var volume = audio.volume * 100;
+            if (audio.paused) {
+                (function () {
+                    audio.play();
+                    if (volume++ < dv * 100) {
+                        audio.volume = volume / 100;
+                        var sfn = arguments.callee;
+                        setTimeout(function () {
+                            sfn()
+                        }, 8)
+                    }
+                })()
+            } else {
+                (function () {
+                    if (volume-- > 0) {
+                        audio.volume = volume / 100;
+                        var sfn = arguments.callee;
+                        setTimeout(function () {
+                            sfn()
+                        }, 8)
+                    } else {
+                        audio.pause()
+                    }
+                })()
+            }
+        }
+    </script>
+</body>
+</html>

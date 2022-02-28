@@ -7,23 +7,22 @@
     string icon = nav?["icon"].ToString();
 
     //仅body主体
-    var onlybody = "ps".Split(',');
+    var onlybody = "ps,graph,mind".Split(',');
 
     //无导航
     var nonav = "wallpaper,contact".Split(',');
 
     var isbh = CacheTo.Get(GlobalTo.GetValue("Common:BuildHtmlKey")) as bool? ?? false;
 
-    var icons = FileTo.ReadText(PathTo.Combine(GlobalTo.WebRootPath, "images/icon.svg"));
+    var icons = FileTo.ReadText(PathTo.Combine(GlobalTo.WebRootPath, "_assets/img/icon.svg"));
 }
 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon"))
 
     <title>@Html.Raw(title) 脚本服务</title>
@@ -36,12 +35,13 @@
     @if (onlybody.Contains(action))
     {
         @RenderBody()
+        <partial name="_PartialQuote" model="@("_own.js")" />
     }
     else
     {
         @Html.Raw(Netnr.SharedApp.QuoteTo.Html("bootstrap5.css,fa.css,jquery.js,bootstrap5.js"))
-        <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
-        <script src="/js/global.js" asp-append-version="true"></script>
+        <link href="/_assets/css/global.css" rel="stylesheet" asp-append-version="true" />
+        <script src="/_assets/js/global.js" asp-append-version="true"></script>
 
         @if (!nonav.Contains(action))
         {
@@ -89,14 +89,14 @@
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         }
 
         <div class="min300 mt-3">
             @RenderBody()
+            <partial name="_PartialQuote" model="@("_own.js")" />
         </div>
     }
 </body>

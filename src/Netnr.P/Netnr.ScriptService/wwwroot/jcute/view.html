@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>jCute JavaScript Library</title>
+
+    <style>
+        .markdown-body {
+            zoom: 1.5;
+        }
+    </style>
+
+    <link href="https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.css" rel="stylesheet" async>
+    <script src="https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.bundle.js"></script>
+</head>
+<body>
+    <h1><a href="./" id="tname"></a></h1>
+    <hr />
+    <div class="markdown-body" id="vc"></div>
+    <script src="src/jCute.all.js"></script>
+    <script>
+        var vurl = 'src/' + location.search.substring(1).replace('jcute', 'jCute');
+        jCute.ajax({
+            url: vurl,
+            success: function (data) {
+                var urs = vurl.split('/'), tn = document.getElementById('tname');
+                tn.innerHTML = urs[urs.length - 1];
+                tn.href = vurl;
+
+                document.getElementById('vc').innerHTML = netnrmd.render('```\r\n' + data + '\r\n```');
+            }
+        })
+
+    </script>
+</body>
+</html>

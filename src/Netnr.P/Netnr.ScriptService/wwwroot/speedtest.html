@@ -3,17 +3,16 @@
 https://github.com/netnr
 https://www.netnr.com
 https://netnr.eu.org
-2022-02-12 14:59:28
+2022-02-28 10:43:17
 -->
 
 
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
 
 
@@ -28,8 +27,8 @@ https://netnr.eu.org
 <link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />
 <script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>
 <script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
-        <link href="/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
-        <script src="/js/global.js?v=2HHkZ9yZQHtY1URycKVopsKxCN3kQI6tpkRSZCz-9Aw"></script>
+        <link href="/_assets/css/global.css?v=PuOZZznhZvJml_z4PbNV5XD7HEVTotc0zqwYET4QIo8" rel="stylesheet" />
+        <script src="/_assets/js/global.js?v=jWbC27Ntk8OUW6ESbJ_4AzSMIFgG9qeHr0KlquCoJmc"></script>
             <!-- 导航 -->
             <button class="bsnav-menu-toggle d-lg-none">
                 <span></span>
@@ -70,8 +69,7 @@ https://netnr.eu.org
                     </ul>
 
                     <!-- right -->
-                    <ul class="navbar-nav ms-auto">
-                    </ul>
+                    <ul class="navbar-nav ms-auto"></ul>
                 </div>
             </nav>
         <div class="min300 mt-3">
@@ -90,157 +88,9 @@ https://netnr.eu.org
         </div>
     </div>
 </div>
+            
+                    <script src="/_assets/js/speedtest.js?v=FGgyjCE7vnE8pYX4TBeKdcNA-VgcjqrME0YMc-3C-Wk"></script>
 
-<script>
-    var sp = {
-        //测试时长
-        time: 1000 * 12,
-        //开始时间
-        start: null,
-        //下载大小
-        downsize: 0,
-        //源索引
-        urindex: -1,
-        //源标识
-        urid: 0,
-        //连接数.
-        conn: 0,
-        //允许连接数
-        maxconn: 10,
-        //结果
-        result: [],
-        //数据项
-        data: [],
-        //压缩率（根据开发环境的测试结果计算所得）
-        cr: function () {
-            var ss = $('#seSpeedServer').val(), cr = 1;
-            $.each(sp.ss, function () {
-                var sp = this;
-                if (sp.link == ss) {
-                    cr = sp.cr;
-                }
-            })
-            return cr;
-        },
-        //测速节点
-        ss: [
-            {
-                name: "百度 CDN",
-                cr: 1331 / 10578,
-                link: "https://npm.elemecdn.com/sql.js@1.2.2/dist/sql-asm-debug.js"
-            },
-            {
-                name: "七牛 CDN",
-                cr: 1126 / 10578,
-                link: "https://cdn.staticfile.org/sql.js/1.2.2/dist/sql-asm-debug.js"
-            },
-            {
-                name: "字节跳动 CDN",
-                cr: 1126 / 10578,
-                link: "https://s1.pstatp.com/cdn/expire-1-M/sql.js/1.2.2/dist/sql-asm-debug.js"
-            }
-        ],
-        //绑定节点
-        bindSpeedServer: function () {
-            var htm = [];
-            $.each(sp.ss, function () {
-                var si = this;
-                htm.push('<option value="' + si.link + '">' + si.name + '</option>');
-            })
-            $('#seSpeedServer').find("optgroup").html(htm.join(''));
-        },
-        //获取请求的源
-        geturi: function () {
-            return $('#seSpeedServer').val() + "?" + Math.random();
-        },
-        addconn: function () {
-            var si1 = setInterval(function () {
-                if (sp.conn < sp.maxconn) {
-                    sp.conn++;
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', sp.geturi());
-                    var urid = sp.urid++;
-                    xhr.onprogress = function (event) {
-                        sp.result[urid] = event.loaded;
-                    };
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 4) {
-                            sp.conn--;
-                        }
-                    }
-                    window.setTimeout(function () {
-                        xhr.abort()
-                    }, sp.time);
-                    xhr.send();
-                }
-            }, 50);
-
-            //统计
-            var si2 = setInterval(function () {
-                var now = new Date().valueOf(), ds = 0;
-                for (var j = 0; j < sp.result.length; j++) {
-                    var ri = sp.result[j] * 1;
-                    ds += (ri || 0);
-                }
-                sp.downsize = ds;
-                var size = sp.downsize / 1024 / 1024 * sp.cr();
-                var time = (now - sp.start) / 1000;
-                var speed = (size / time).toFixed(2);
-                sp.data.push(speed);
-
-                //回调
-                sp.progress && sp.progress(speed);
-
-                //结束
-                if (now - sp.start > sp.time) {
-                    window.clearInterval(si1);
-                    window.clearInterval(si2);
-                    //完成
-                    sp.complete && sp.complete();
-                }
-            }, 900)
-        },
-        run: function () {
-            sp.downsize = 0;
-            sp.urindex = -1;
-            sp.urid = 0;
-            sp.conn = 0;
-            sp.result = [];
-            sp.start = new Date().valueOf();
-            $('#divresult').html('');
-            $('#seSpeedServer')[0].disabled = true;
-
-            sp.addconn();
-        }
-    }
-    sp.bindSpeedServer();
-
-    $('#btnRunSpeedTest').click(function () {
-        if (sp.start && new Date().valueOf() - sp.start <= sp.time) {
-            bs.msg('正在测速中');
-            return false;
-        }
-
-        var sps = [];
-        //过程
-        sp.progress = function (speed) {
-            $('#divresult').append('<div>' + speed + ' MiB/s</div>');
-            sps.push(speed);
-        };
-        //完成
-        sp.complete = function () {
-            var sum = 0;
-            $.each(sps, function () {
-                sum += this * 1;
-            });
-            var avg = (sum / sps.length).toFixed(2);
-            $('<h2>平均：' + avg + ' MiB/s</h2>').insertBefore($('#divresult').children().first())
-
-            $('#seSpeedServer')[0].disabled = false;
-        };
-        sp.run();
-    });
-</script>
         </div>
 </body>
 </html>

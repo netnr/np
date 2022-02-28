@@ -9,15 +9,48 @@ using Netnr.SharedDataKit;
 public class DataKitController : Controller
 {
     /// <summary>
+    /// 入口
+    /// </summary>
+    /// <param name="tdb"></param>
+    /// <param name="conn"></param>
+    /// <param name="databaseName"></param>
+    /// <param name="dkCall"></param>
+    /// <returns></returns>
+    static SharedResultVM Entry(SharedEnum.TypeDB tdb, string conn, string databaseName, Func<DataKit, object> dkCall)
+    {
+        var vm = new SharedResultVM();
+
+        try
+        {
+            var dk = DataKit.Init(tdb, conn, databaseName);
+            if (dk != null)
+            {
+                vm.Data = dkCall(dk);
+                vm.Set(SharedEnum.RTag.success);
+            }
+            else
+            {
+                vm.Set(SharedEnum.RTag.error);
+            }
+        }
+        catch (Exception ex)
+        {
+            vm.Set(ex);
+        }
+
+        return vm;
+    }
+
+    /// <summary>
     /// 获取库名
     /// </summary>
     /// <param name="tdb">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <returns></returns>
     [HttpGet]
-    public SharedResultVM GetdatabaseName(SharedEnum.TypeDB? tdb, string conn)
+    public SharedResultVM GetDatabaseName(SharedEnum.TypeDB tdb, string conn)
     {
-        return DataKit.GetDatabaseName(tdb, conn);
+        return Entry(tdb, conn, null, dk => dk.GetDatabaseName());
     }
 
     /// <summary>
@@ -28,9 +61,9 @@ public class DataKitController : Controller
     /// <param name="filterDatabaseName">数据库名</param>
     /// <returns></returns>
     [HttpGet]
-    public SharedResultVM GetDatabase(SharedEnum.TypeDB? tdb, string conn, string filterDatabaseName = null)
+    public SharedResultVM GetDatabase(SharedEnum.TypeDB tdb, string conn, string filterDatabaseName = null)
     {
-        return DataKit.GetDatabase(tdb, conn, filterDatabaseName);
+        return Entry(tdb, conn, null, dk => dk.GetDatabase(filterDatabaseName));
     }
 
     /// <summary>
@@ -38,12 +71,28 @@ public class DataKitController : Controller
     /// </summary>
     /// <param name="tdb">数据库类型</param>
     /// <param name="conn">连接字符串</param>
+    /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpGet]
-    public SharedResultVM GetTable(SharedEnum.TypeDB? tdb, string conn, string databaseName = null)
+    public SharedResultVM GetTable(SharedEnum.TypeDB tdb, string conn, string schemaName = null, string databaseName = null)
     {
-        return DataKit.GetTable(tdb, conn, databaseName);
+        return Entry(tdb, conn, databaseName, dk => dk.GetTable(schemaName, databaseName));
+    }
+
+    /// <summary>
+    /// 表DDL
+    /// </summary>
+    /// <param name="tdb">数据库类型</param>
+    /// <param name="conn">连接字符串</param>
+    /// <param name="tableName">表名</param>
+    /// <param name="schemaName">模式名</param>
+    /// <param name="databaseName">数据库名</param>
+    /// <returns></returns>
+    [HttpGet]
+    public SharedResultVM GetTableDDL(SharedEnum.TypeDB tdb, string conn, string tableName, string schemaName = null, string databaseName = null)
+    {
+        return Entry(tdb, conn, databaseName, dk => dk.GetTableDDL(tableName, schemaName, databaseName));
     }
 
     /// <summary>
@@ -51,13 +100,13 @@ public class DataKitController : Controller
     /// </summary>
     /// <param name="tdb">数据库类型</param>
     /// <param name="conn">连接字符串</param>
-    /// <param name="filterTableName">过滤表名，英文逗号分隔，为空时默认所有表</param>
+    /// <param name="filterSchemaNameTableName">过滤模式表名，逗号分隔</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public SharedResultVM GetColumn([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string filterTableName = "", [FromForm] string databaseName = null)
+    public SharedResultVM GetColumn([FromForm] SharedEnum.TypeDB tdb, [FromForm] string conn, [FromForm] string filterSchemaNameTableName = null, [FromForm] string databaseName = null)
     {
-        return DataKit.GetColumn(tdb, conn, filterTableName, databaseName);
+        return Entry(tdb, conn, databaseName, dk => dk.GetColumn(filterSchemaNameTableName, databaseName));
     }
 
     /// <summary>
@@ -67,12 +116,13 @@ public class DataKitController : Controller
     /// <param name="conn">连接字符串</param>
     /// <param name="tableName">表名</param>
     /// <param name="tableComment">表注释</param>
+    /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public SharedResultVM SetTableComment([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string tableComment, [FromForm] string databaseName = null)
+    public SharedResultVM SetTableComment([FromForm] SharedEnum.TypeDB tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string tableComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
     {
-        return DataKit.SetTableComment(tdb, conn, tableName, tableComment, databaseName);
+        return Entry(tdb, conn, databaseName, dk => dk.SetTableComment(tableName, tableComment, schemaName, databaseName));
     }
 
     /// <summary>
@@ -83,27 +133,13 @@ public class DataKitController : Controller
     /// <param name="tableName">表名</param>
     /// <param name="columnName">列名</param>
     /// <param name="columnComment">列注释</param>
+    /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public SharedResultVM SetColumnComment([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string columnName, [FromForm] string columnComment, [FromForm] string databaseName = null)
+    public SharedResultVM SetColumnComment([FromForm] SharedEnum.TypeDB tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string columnName, [FromForm] string columnComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
     {
-        return DataKit.SetColumnComment(tdb, conn, tableName, columnName, columnComment, databaseName);
-    }
-
-    /// <summary>
-    /// 获取表
-    /// </summary>
-    /// <param name="tdb">数据库类型</param>
-    /// <param name="conn">连接字符串</param>
-    /// <param name="tableName"></param>
-    /// <param name="tableSchema"></param>
-    /// <param name="databaseName">数据库名</param>
-    /// <returns></returns>
-    [HttpGet]
-    public SharedResultVM GetTableDDL(SharedEnum.TypeDB? tdb, string conn, string tableName, string tableSchema = null, string databaseName = null)
-    {
-        return DataKit.GetTableDDL(tdb, conn, tableName, tableSchema, databaseName);
+        return Entry(tdb, conn, databaseName, dk => dk.SetColumnComment(tableName, columnName, columnComment, schemaName, databaseName));
     }
 
     /// <summary>
@@ -115,41 +151,9 @@ public class DataKitController : Controller
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public SharedResultVM ExecuteSql([FromForm] SharedEnum.TypeDB? tdb, [FromForm] string conn, [FromForm] string sql, [FromForm] string databaseName = null)
+    public SharedResultVM ExecuteSql([FromForm] SharedEnum.TypeDB tdb, [FromForm] string conn, [FromForm] string sql, [FromForm] string databaseName = null)
     {
-        return DataKit.ExecuteSql(tdb, conn, sql, databaseName);
-    }
-
-    /// <summary>
-    /// 查询数据
-    /// </summary>
-    /// <param name="tdb">数据库类型</param>
-    /// <param name="conn">连接字符串</param>
-    /// <param name="tableName">表名</param>
-    /// <param name="page">页码</param>
-    /// <param name="rows">页量</param>
-    /// <param name="sort">排序字段</param>
-    /// <param name="order">排序方式</param>
-    /// <param name="listFieldName">查询列，默认为 *</param>
-    /// <param name="whereSql">条件</param>
-    /// <param name="databaseName">数据库名</param>
-    /// <returns></returns>
-    [HttpGet]
-    public SharedResultVM GetData(SharedEnum.TypeDB? tdb, string conn, string tableName, int page, int rows, string sort, string order, string listFieldName, string whereSql, string databaseName = null)
-    {
-        return DataKit.GetData(tdb, conn, tableName, page, rows, sort, order, listFieldName, whereSql, databaseName);
-    }
-
-    /// <summary>
-    /// 查询数据库环境信息
-    /// </summary>
-    /// <param name="tdb">数据库类型</param>
-    /// <param name="conn">连接字符串</param>
-    /// <returns></returns>
-    [HttpGet]
-    public SharedResultVM GetDEI(SharedEnum.TypeDB? tdb, string conn)
-    {
-        return DataKit.GetDEI(tdb, conn);
+        return Entry(tdb, conn, databaseName, dk => dk.ExecuteSql(sql));
     }
 }
 

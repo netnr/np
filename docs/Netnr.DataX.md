@@ -23,3 +23,6 @@
   - max_allowed_packet，设置 `SET GLOBAL max_allowed_packet = 1073741824` 传输大小
   - innodb_lock_wait_timeout，设置 `SET GLOBAL innodb_lock_wait_timeout = 600` 超时
   - 参数查询 `SHOW VARIABLES like 'local_infile'`
+- Linux 关闭全球化运行 System.Globalization.Invariant
+  - Couldn't find a valid ICU package installed on the system
+  - 设置环境变量 `export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1`
