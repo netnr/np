@@ -4,12 +4,12 @@
  * 
  */
 
+//初始化容器样式
+document.body.classList.add("geEditor");
+
 //容器ID、编辑器对象、服务源
 var vid = document.getElementById("vid").value, eui,
     mxBaseServer = document.getElementById("mxBaseServer").value;
-
-//初始化容器样式
-document.body.className += " geEditor";
 
 // Parses URL parameters. Supported parameters are:
 // - lang=xy: Specifies the language of the user interface.
@@ -52,7 +52,7 @@ window.EXPORT_URL = '/draw/code/export';
 window.SAVE_URL = '/draw/code/save/' + (vid || "");
 window.OPEN_URL = '/draw/code/open/' + (vid || "");
 window.RESOURCES_PATH = `${mxBaseServer}/examples/grapheditor/www/resources`;
-window.RESOURCE_BASE = '/areas/draw/resources/grapheditor_zh';
+window.RESOURCE_BASE = `${mxBaseServer}/examples/grapheditor/www/resources/grapheditor`;
 window.STENCIL_PATH = `${mxBaseServer}/examples/grapheditor/www/stencils`;
 window.IMAGE_PATH = `${mxBaseServer}/examples/grapheditor/www/images`;
 window.STYLE_PATH = `${mxBaseServer}/examples/grapheditor/www/styles`;
@@ -67,7 +67,7 @@ window.OPEN_FORM = `${mxBaseServer}/examples/grapheditor/www/open.html`;
 // save a GET request. This requires that all resources be present in
 // each properties file since only one file is loaded.
 window.mxBasePath = `${mxBaseServer}/src`;
-window.mxLanguage = urlParams['lang'];
+window.mxLanguage = urlParams['lang'] || "zh";
 window.mxLanguages = ['zh'];
 
 

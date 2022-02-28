@@ -197,7 +197,7 @@ var ss = {
     init: function () {
 
         //icon
-        ss.loadPath("/_assets/img/icon.svg", "20220228").then(res => {
+        ss.loadPath("/_assets/img/icon.svg", "2022022820").then(res => {
             $('body').append('<div class="d-none">' + res + '</div>');
         })
 
