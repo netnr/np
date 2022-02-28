@@ -1,27 +1,42 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-auto mb-3">
-            <button class="btn btn-success nrBtnSwaggerUI">SwaggerUI</button>
-        </div>
-        <div class="col-auto mb-3">
             <div class="btn-group">
-                <button class="btn btn-secondary nrBtnYamlToJson">Yaml</button>
-                <button class="btn btn-secondary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z" />
-                    </svg>
+                <button class="btn btn-success nrBtnSwaggerUI">SwaggerUI</button>
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-reference="parent">
+                    <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
-                <button class="btn btn-secondary nrBtnJsonToYaml">Json</button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <button class="dropdown-item nrBtnYamlToJson">
+                            YAML
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
+                            </svg>
+                            JSON
+                        </button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item nrBtnJsonToYaml">
+                            JSON
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
+                            </svg>
+                            YAML
+                        </button>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <button class="dropdown-item nrBtnSwaggerToOpenAPI">
+                            Swagger
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
+                            </svg>
+                            OpenAPI
+                        </button>
+                    </li>
+                </ul>
             </div>
-        </div>
-        <div class="col-auto mb-3">
-            <button class="btn btn-primary nrBtnSwaggerToOpenAPI">
-                Swagger
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
-                </svg>
-                OpenAPI
-            </button>
         </div>
         <div class="col-auto mb-3">
             <div class="input-group">
@@ -62,4 +77,4 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,esprima.js,js-yaml.js,api-spec-converter.js,swagger-ui-dist.css,swagger-ui-dist.js,xml2json.js,monaco-editor"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,js-yaml.js,api-spec-converter.js,swagger-ui-dist.css,swagger-ui-dist.js,xml2json.js,monaco-editor"))

@@ -5,6 +5,7 @@ npm install -g terser
 npm install -g npm-check-updates
 
 npm install svgo
+npm install js-yaml
 npm install clean-css
 npm install fast-xml-parser
 npm install device-detector-js
@@ -15,6 +16,10 @@ ncu -u # ¸üÐÂ°æ±¾
 browserify svgo/index.js -o svgo/svgo.js
 terser svgo/svgo.js -o svgo/svgo.min.js
 rm svgo/svgo.js
+
+browserify js-yaml/index.js -o js-yaml/js-yaml.js
+terser js-yaml/js-yaml.js -o js-yaml/js-yaml.min.js
+rm js-yaml/js-yaml.js
 
 browserify clean-css/index.js -o clean-css/clean-css.js
 terser clean-css/clean-css.js -o clean-css/clean-css.min.js

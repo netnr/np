@@ -12,7 +12,8 @@
   - 带参执行指定任务 `ndx Task_Demo Task_1`，多个任务空格分隔
   - 数据包参数 ZipPath 支持时间格式化 `{yyyyMMdd_HHmmss}`，`~` 指向 ud/hub 目录
 - 读写数据
-  - 读取表数据 ReadSQL 一般配置为 `select * from table`，如果表数据大内存不够，可以配置分页读取
+  - 读取表数据 ReadDataSQL 一般配置为 `select * from table`，如果表数据大内存不够，可以配置分页读取
+  - 表名可带模式名，如 dbo.UserInfo、public.UserInfo 等
   - 迁移数据可支持表列映射（可生成映射配置，并支持相似匹配）
   - 读写项配置 ListReadWrite 可以根据 GenerateTableMapping 生成
   - 读写列名映射 ReadWriteColumnMap 可以根据 GenerateColumnMapping 生成

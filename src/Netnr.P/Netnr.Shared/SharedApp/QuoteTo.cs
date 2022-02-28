@@ -80,10 +80,10 @@ public class QuoteTo
                     break;
 
                 case "swiper.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swiper@8.0.5/swiper-bundle.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swiper@8.0.6/swiper-bundle.min.css' rel='stylesheet' />");
                     break;
                 case "swiper.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swiper@8.0.5/swiper-bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swiper@8.0.6/swiper-bundle.min.js'></script>");
                     break;
 
                 case "jz.js":
@@ -102,7 +102,7 @@ public class QuoteTo
                     break;
 
                 case "tocbot.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.18.0/dist/tocbot.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.18.2/dist/tocbot.min.js'></script>");
                     break;
 
                 case "selectpage":
@@ -178,7 +178,7 @@ public class QuoteTo
                     break;
 
                 case "hls.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.1.4/dist/hls.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/hls.js@1.1.5/dist/hls.min.js'></script>");
                     break;
 
                 case "watermark.js":
@@ -196,7 +196,7 @@ public class QuoteTo
                     break;
 
                 case "terser.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.10.0/dist/bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.11.0/dist/bundle.min.js'></script>");
                     break;
 
                 case "clean-css.js":
@@ -222,12 +222,8 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/asciinema-player@2.6.1/resources/public/js/asciinema-player.js'></script>");
                     break;
 
-                case "esprima.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/esprima@4.0.1/dist/esprima.js'></script>");
-                    break;
-
                 case "js-yaml.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/js-yaml@3.14.1/dist/js-yaml.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/mix/js-yaml.min.js'></script>");
                     break;
 
                 case "api-spec-converter.js":
@@ -235,33 +231,15 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.5.0/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.5.2/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.2/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.2/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
                     vh.Add("<script src='https://npm.elemecdn.com/js-beautify@1.14.0/js/lib/beautifier.min.js'></script>");
-                    break;
-
-                case "prettier-css":
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/standalone.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-postcss.js'></script>");
-                    break;
-                case "prettier":
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/standalone.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-angular.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-babel.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-flow.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-glimmer.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-graphql.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-html.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-markdown.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-postcss.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-typescript.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/prettier@2.5.1/parser-yaml.js'></script>");
                     break;
 
                 case "lrz.js":

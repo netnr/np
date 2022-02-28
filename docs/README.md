@@ -53,10 +53,12 @@ netnr@netnr.com
 **NetnrMD**
 &nbsp; Markdown 编辑器
 &nbsp; https://md.js.org
+&nbsp; https://ss.netnr.com/md/
 
-**JSONEditor**
+**JSON Editor**
 &nbsp; JSON 编辑器
 &nbsp; https://je.js.org
+&nbsp; https://ss.netnr.com/je/
 
 **Guff**
 &nbsp; 尬服

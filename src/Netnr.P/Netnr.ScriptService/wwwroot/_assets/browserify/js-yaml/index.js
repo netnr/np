@@ -1,0 +1,1 @@
+global.jsyaml = require('js-yaml');

@@ -89,7 +89,7 @@ var st = {
                 st.setEditorLanguage(editor1, "json");
                 st.setEditorLanguage(editor2, "yaml");
                 try {
-                    var json = jsyaml.safeDump(JSON.parse(editor1.getValue()));
+                    var json = jsyaml.dump(JSON.parse(editor1.getValue()));
                     editor2.setValue(json);
                 } catch (e) {
                     editor2.setValue(e + "");

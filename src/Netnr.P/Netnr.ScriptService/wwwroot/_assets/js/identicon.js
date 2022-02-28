@@ -1,5 +1,4 @@
-﻿
-var ii = {
+﻿var ii = {
     init: function () {
         $('.nr-size').on('input', function () {
             ii.build();

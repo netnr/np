@@ -35,7 +35,7 @@
       },
       {
         "url": "/speedtest",
-        "icon": "speed",
+        "icon": "dashboard",
         "title": "网络测速",
         "remark": "资源下载速率"
       },
