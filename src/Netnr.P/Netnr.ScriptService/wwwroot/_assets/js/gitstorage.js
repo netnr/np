@@ -158,7 +158,7 @@ var gs = {
     getFileName: function (file) {
         var now = new Date();
         var ext = file.split('.').pop();
-        var filename = `${now.getFullYear()}/${gs.pad(now.getMonth() + 1)}/${gs.pad(now.getDate())}/${gs.pad(now.getHours())}${gs.pad(now.getMinutes())}${gs.pad(now.getSeconds())}${gs.pad(now.getMilliseconds(), 3)}.${ext}`
+        var filename = `${now.getFullYear()}/${gs.pad(now.getMonth() + 1)}/${gs.pad(now.getDate())}${gs.pad(now.getHours())}${gs.pad(now.getMinutes())}${gs.pad(now.getSeconds())}${gs.pad(now.getMilliseconds(), 3)}.${ext}`
         return filename;
     },
     add: function (file) {
@@ -172,7 +172,7 @@ var gs = {
                 }
 
                 var li = document.createElement('li');
-                li.innerHTML = `<img src='${cover}'><input class="nr-path" placeholder="yyyy/MM/dd/xx.ext" value="${gs.getFileName(file.name)}">`;
+                li.innerHTML = `<img src='${cover}'><input class="nr-path" placeholder="yyyy/MM/ddxx.ext" value="${gs.getFileName(file.name)}">`;
                 document.querySelector('.nr-list').insertBefore(li, document.querySelector('.nr-upload-choose'));
 
                 gs.files.push({

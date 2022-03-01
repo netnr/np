@@ -1053,7 +1053,7 @@
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.ServicesController.WebHook">
             <summary>
-            WebHook（已停用）
+            WebHook
             </summary>
             <returns></returns>
         </member>

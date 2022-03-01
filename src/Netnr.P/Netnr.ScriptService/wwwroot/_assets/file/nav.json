@@ -423,10 +423,24 @@
         "target": "_blank"
       },
       {
+        "url": "/je/",
+        "icon": "json",
+        "title": "JSON Editor",
+        "remark": "JSON 编辑器",
+        "target": "_blank"
+      },
+      {
         "url": "/jz/",
         "icon": "js",
         "title": "Jz",
         "remark": "JS 弹窗插件",
+        "target": "_blank"
+      },
+      {
+        "url": "/md/",
+        "icon": "markdown",
+        "title": "NetnrMD",
+        "remark": "Markdown 编辑器",
         "target": "_blank"
       },
       {

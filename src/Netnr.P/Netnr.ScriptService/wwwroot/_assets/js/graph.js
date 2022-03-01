@@ -1,23 +1,23 @@
 //载入资源
 const nd = {
-    baseServer: ["localhost", "netnr.com"].includes(location.hostname) ? "https://s1.netnr.com/mxgraph/javascript" : "https://s1.netnr.eu.org/mxgraph/javascript",
+    baseServer: ["localhost", "netnr.com"].includes(location.hostname) ? "https://s1.netnr.com/libs/mxgraph" : "https://s1.netnr.eu.org/libs/mxgraph",
     sourceList: [
-        "/examples/grapheditor/www/styles/grapheditor.css",
-        "/examples/grapheditor/www/deflate/pako.min.js",
-        "/examples/grapheditor/www/deflate/base64.js",
-        "/examples/grapheditor/www/jscolor/jscolor.js",
-        "/examples/grapheditor/www/sanitizer/sanitizer.min.js",
+        "/grapheditor/styles/grapheditor.css",
+        "/grapheditor/deflate/pako.min.js",
+        "/grapheditor/deflate/base64.js",
+        "/grapheditor/jscolor/jscolor.js",
+        "/grapheditor/sanitizer/sanitizer.min.js",
         "/mxClient.min.js",
-        "/examples/grapheditor/www/js/EditorUi.js",
-        "/examples/grapheditor/www/js/Editor.js",
-        "/examples/grapheditor/www/js/Sidebar.js",
-        "/examples/grapheditor/www/js/Graph.js",
-        "/examples/grapheditor/www/js/Format.js",
-        "/examples/grapheditor/www/js/Shapes.js",
-        "/examples/grapheditor/www/js/Actions.js",
-        "/examples/grapheditor/www/js/Menus.js",
-        "/examples/grapheditor/www/js/Toolbar.js",
-        "/examples/grapheditor/www/js/Dialogs.js"
+        "/grapheditor/js/EditorUi.js",
+        "/grapheditor/js/Editor.js",
+        "/grapheditor/js/Sidebar.js",
+        "/grapheditor/js/Graph.js",
+        "/grapheditor/js/Format.js",
+        "/grapheditor/js/Shapes.js",
+        "/grapheditor/js/Actions.js",
+        "/grapheditor/js/Menus.js",
+        "/grapheditor/js/Toolbar.js",
+        "/grapheditor/js/Dialogs.js"
     ],
     createNode: function (nn, html) {
         let em = document.createElement(nn);
@@ -86,12 +86,12 @@ window.mxBasePath = `${baseServer}/src`;
 window.mxLanguage = urlParams['lang'] || "zh";
 window.mxLanguages = ['zh'];
 
-window.RESOURCES_PATH = `${baseServer}/examples/grapheditor/www/resources`;
-window.RESOURCE_BASE = `${baseServer}/examples/grapheditor/www/resources/grapheditor`;
-window.STENCIL_PATH = `${baseServer}/examples/grapheditor/www/stencils`;
-window.IMAGE_PATH = `${baseServer}/examples/grapheditor/www/images`;
-window.STYLE_PATH = `${baseServer}/examples/grapheditor/www/styles`;
-window.CSS_PATH = `${baseServer}/examples/grapheditor/www/styles`;
+window.RESOURCES_PATH = `${baseServer}/grapheditor/resources`;
+window.RESOURCE_BASE = `${baseServer}/grapheditor/resources/grapheditor`;
+window.STENCIL_PATH = `${baseServer}/grapheditor/stencils`;
+window.IMAGE_PATH = `${baseServer}/grapheditor/images`;
+window.STYLE_PATH = `${baseServer}/grapheditor/styles`;
+window.CSS_PATH = `${baseServer}/grapheditor/styles`;
 
 //mxg
 var mxg = {

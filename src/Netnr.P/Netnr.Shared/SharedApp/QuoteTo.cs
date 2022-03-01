@@ -111,17 +111,17 @@ public class QuoteTo
                     break;
 
                 case "ace.css":
-                    vh.Add($"<link href='{srServer}/libs/acenav/20200108/ace.min.css' rel='stylesheet' />");
-                    vh.Add($"<link href='{srServer}/libs/acenav/20200108/ace-skins.min.css' rel='stylesheet' async />");
+                    vh.Add($"<link href='{srServer}/libs/acenav/ace.min.css' rel='stylesheet' />");
+                    vh.Add($"<link href='{srServer}/libs/acenav/ace-skins.min.css' rel='stylesheet' async />");
                     break;
 
                 case "ace.js":
-                    vh.Add($"<script src='{srServer}/libs/acenav/20200108/ace.min.js'></script>");
+                    vh.Add($"<script src='{srServer}/libs/acenav/ace.min.js'></script>");
                     break;
 
                 case "easyui":
-                    vh.Add($"<link href='{srServer}/libs/jquery-easyui/1.x/themes/metro/easyui.css' rel='stylesheet' />");
-                    vh.Add($"<script src='{srServer}/libs/jquery-easyui/1.x/jquery.easyui.min.js'></script>");
+                    vh.Add($"<link href='{srServer}/libs/jquery-easyui/themes/metro/easyui.css' rel='stylesheet' />");
+                    vh.Add($"<script src='{srServer}/libs/jquery-easyui/jquery.easyui.min.js'></script>");
                     break;
 
                 case "ag-grid-community.js":

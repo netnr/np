@@ -754,11 +754,11 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// WebHook（已停用）
+        /// WebHook
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM WebHook()
+        public async Task<SharedResultVM> WebHook()
         {
             var vm = new SharedResultVM();
 
@@ -767,12 +767,30 @@ namespace Netnr.Blog.Web.Controllers
                 if (Request.Method == "POST")
                 {
                     using var ms = new MemoryStream();
-                    Request.Body.CopyTo(ms);
+                    await Request.Body.CopyToAsync(ms);
                     string postStr = Encoding.UTF8.GetString(ms.ToArray());
+                    Console.WriteLine(postStr);
 
                     //TO DO
+                    var jo = postStr.ToJObject();
+                    var respName = jo["repository"]["name"].ToString();
+                    var projectPath = $"/package/site/{respName}";
+                    if (Directory.Exists(projectPath) && Directory.Exists(Path.Combine(projectPath, ".git")))
+                    {
+                        var arg = $"git -C \"{projectPath}\" pull --all";
+                        Console.WriteLine(arg);
+                        var cr = CmdTo.Execute(arg);
+                        var rt = cr.CrOutput + cr.CrError;
+                        Console.WriteLine(rt);
+                        vm.Log.AddRange(rt.Split('\n'));
+                    }
+                    else
+                    {
+                        var errorMsg = $"{projectPath} Not Exists(.git)";
+                        Console.WriteLine(errorMsg);
+                        vm.Log.Add(errorMsg);
+                    }
 
-                    vm.Data = postStr;
                     vm.Set(SharedEnum.RTag.success);
                 }
             }

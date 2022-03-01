@@ -51,21 +51,14 @@ window.MAX_AREA = 15000 * 15000;
 window.EXPORT_URL = '/draw/code/export';
 window.SAVE_URL = '/draw/code/save/' + (vid || "");
 window.OPEN_URL = '/draw/code/open/' + (vid || "");
-window.RESOURCES_PATH = `${mxBaseServer}/examples/grapheditor/www/resources`;
-window.RESOURCE_BASE = `${mxBaseServer}/examples/grapheditor/www/resources/grapheditor`;
-window.STENCIL_PATH = `${mxBaseServer}/examples/grapheditor/www/stencils`;
-window.IMAGE_PATH = `${mxBaseServer}/examples/grapheditor/www/images`;
-window.STYLE_PATH = `${mxBaseServer}/examples/grapheditor/www/styles`;
-window.CSS_PATH = `${mxBaseServer}/examples/grapheditor/www/styles`;
-window.OPEN_FORM = `${mxBaseServer}/examples/grapheditor/www/open.html`;
+window.RESOURCES_PATH = `${mxBaseServer}/grapheditor/resources`;
+window.RESOURCE_BASE = `${mxBaseServer}/grapheditor/resources/grapheditor`;
+window.STENCIL_PATH = `${mxBaseServer}/grapheditor/stencils`;
+window.IMAGE_PATH = `${mxBaseServer}/grapheditor/images`;
+window.STYLE_PATH = `${mxBaseServer}/grapheditor/styles`;
+window.CSS_PATH = `${mxBaseServer}/grapheditor/styles`;
+window.OPEN_FORM = `${mxBaseServer}/grapheditor/open.html`;
 
-// Sets the base path, the UI language via URL param and configures the
-// supported languages to avoid 404s. The loading of all core language
-// resources is disabled as all required resources are in grapheditor.
-// properties. Note that in this example the loading of two resource
-// files (the special bundle and the default bundle) is disabled to
-// save a GET request. This requires that all resources be present in
-// each properties file since only one file is loaded.
 window.mxBasePath = `${mxBaseServer}/src`;
 window.mxLanguage = urlParams['lang'] || "zh";
 window.mxLanguages = ['zh'];
