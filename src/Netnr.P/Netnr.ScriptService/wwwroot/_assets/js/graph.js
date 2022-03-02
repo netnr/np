@@ -1,6 +1,6 @@
 //载入资源
 const nd = {
-    baseServer: ["localhost", "netnr.com"].includes(location.hostname) ? "https://s1.netnr.com/libs/mxgraph" : "https://s1.netnr.eu.org/libs/mxgraph",
+    baseServer: ["localhost", "ss.netnr.com"].includes(location.hostname) ? "https://s1.netnr.com/libs/mxgraph" : "https://s1.netnr.eu.org/libs/mxgraph",
     sourceList: [
         "/grapheditor/styles/grapheditor.css",
         "/grapheditor/deflate/pako.min.js",

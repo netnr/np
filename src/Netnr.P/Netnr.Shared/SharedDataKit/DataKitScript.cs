@@ -152,7 +152,7 @@ ORDER BY
                     result = $@"
 SELECT
   t1.name AS DatabaseName,
-  suser_sname(t1.owner_sid) AS DatabaseOwner,
+  t4.name AS DatabaseOwner,
   t1.collation_name AS DatabaseCollation,
   t2.physical_name AS DatabasePath,
   t3.physical_name AS DatabaseLogPath,
@@ -179,6 +179,7 @@ FROM
   sys.databases t1
   LEFT JOIN sys.master_files t2 ON t2.database_id = t1.database_id
   LEFT JOIN sys.master_files t3 ON t3.database_id = t1.database_id
+  left join sys.server_principals t4 on t1.owner_sid = t4.sid
 WHERE
   t2.[type] = 0
   AND t3.[type] = 1 {where}
@@ -327,6 +328,15 @@ ORDER BY
 USE [{databaseName}];
 SELECT
   o.name AS TableName,
+  (
+    select
+      sp.name
+    from
+      sys.databases db
+      left join sys.server_principals sp on db.owner_sid = sp.sid
+    where
+      db.name = '{databaseName}'
+  ) AS TableOwner,
   SCHEMA_NAME(o.schema_id) AS SchemaName,
   CASE
     o.type
@@ -370,7 +380,7 @@ FROM
   ) m2 ON o.object_id = m2.object_id
 WHERE
   o.type IN ('U', 'V') {where}
-ORDER BY  
+ORDER BY
   SCHEMA_NAME(o.schema_id),
   o.name
             ";
