@@ -27,13 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="db\FileServer.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="db\README.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="logs\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Netnr.FileServer.xml">

@@ -1,8 +1,8 @@
 # Change Log
 
 ### 2022-02
-- 发布 NDK (Netnr.DataKit) v1.0.0
-- 发布 NDX (Netnr.DataX) v0.1.0
+- 发布 NDK (Netnr.DataKit)
+- 发布 NDX (Netnr.DataX)
 - https://github.com/netnr/np/releases
 
 ### 2021-06

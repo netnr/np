@@ -34,7 +34,7 @@ namespace Netnr.FileServer.Model
         /// <summary>
         /// 固定Token
         /// </summary>
-        public string FixToken { get; set; }
+        public string FixedToken { get; set; }
 
         /// <summary>
         /// Token过期时间

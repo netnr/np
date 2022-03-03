@@ -275,7 +275,7 @@ namespace Netnr.FileServer.Controllers
         }
 
         /// <summary>
-        /// 创建FixToken
+        /// 创建FixedToken
         /// </summary>
         /// <param name="AppId">分配的应用ID</param>
         /// <param name="AppKey">分配的应用密钥</param>
@@ -283,7 +283,7 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AuthMethod">授权接口名，多个用逗号分割，区分大小写</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM CreateFixToken(string AppId, string AppKey, string Name, string AuthMethod)
+        public SharedResultVM CreateFixedToken(string AppId, string AppKey, string Name, string AuthMethod)
         {
             var vm = new SharedResultVM();
 
@@ -304,7 +304,7 @@ namespace Netnr.FileServer.Controllers
                     }
                     else
                     {
-                        vm = FileServerService.CreateFixToken(AppId, AppKey, Name, AuthMethod);
+                        vm = FileServerService.CreateFixedToken(AppId, AppKey, Name, AuthMethod);
                     }
                 }
             }
@@ -318,27 +318,27 @@ namespace Netnr.FileServer.Controllers
         }
 
         /// <summary>
-        /// 删除FixToken
+        /// 删除FixedToken
         /// </summary>
         /// <param name="AppId">分配的应用ID</param>
         /// <param name="AppKey">分配的应用密钥</param>
-        /// <param name="FixToken">固定Token</param>
+        /// <param name="FixedToken">固定 Token</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM DelFixToken(string AppId, string AppKey, string FixToken)
+        public SharedResultVM DelFixedToken(string AppId, string AppKey, string FixedToken)
         {
             var vm = new SharedResultVM();
 
             try
             {
-                if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(FixToken))
+                if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(FixedToken))
                 {
                     vm.Set(SharedEnum.RTag.lack);
                     vm.Msg = "参数缺失";
                 }
                 else
                 {
-                    vm = FileServerService.DelFixToken(AppId, AppKey, FixToken);
+                    vm = FileServerService.DelFixedToken(AppId, AppKey, FixedToken);
                 }
             }
             catch (Exception ex)
@@ -418,7 +418,7 @@ namespace Netnr.FileServer.Controllers
                     }
                     else
                     {
-                        var vtjson = vt.Data as FixTokenJson;
+                        var vtjson = vt.Data as FixedTokenJson;
                         var now = DateTime.Now;
 
                         var listFr = new List<FileRecord>();
@@ -565,7 +565,7 @@ namespace Netnr.FileServer.Controllers
                             {
                                 var now = DateTime.Now;
 
-                                var vtjson = vt.Data as FixTokenJson;
+                                var vtjson = vt.Data as FixedTokenJson;
 
                                 //虚拟路径
                                 var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
@@ -701,7 +701,7 @@ namespace Netnr.FileServer.Controllers
                 }
                 else
                 {
-                    var vtjson = vt.Data as FixTokenJson;
+                    var vtjson = vt.Data as FixedTokenJson;
 
                     var qf = FileServerService.QueryFile(vtjson.Owner, path);
                     if (qf.Code != 200)
@@ -780,7 +780,7 @@ namespace Netnr.FileServer.Controllers
                     }
                     else
                     {
-                        var vtjson = vt.Data as FixTokenJson;
+                        var vtjson = vt.Data as FixedTokenJson;
 
                         var qf = FileServerService.QueryFile(vtjson.Owner, path);
 
@@ -851,7 +851,7 @@ namespace Netnr.FileServer.Controllers
                 }
                 else
                 {
-                    var vtjson = vt.Data as FixTokenJson;
+                    var vtjson = vt.Data as FixedTokenJson;
 
                     vm = FileServerService.DeleteFile(vtjson.Owner, path);
                 }

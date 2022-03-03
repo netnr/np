@@ -1,14 +1,7 @@
 namespace Netnr.FileServer
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class Program
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -27,12 +20,6 @@ namespace Netnr.FileServer
                     });
 
                     webBuilder.UseStartup<Startup>();
-
-                    //ÉèÖÃ¶Ë¿Ú
-                    if (args.Length > 0)
-                    {
-                        webBuilder.UseUrls(args[0]);
-                    }
                 });
     }
 }

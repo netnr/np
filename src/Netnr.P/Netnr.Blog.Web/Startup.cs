@@ -118,7 +118,7 @@ namespace Netnr.Blog.Web
                     Title = GlobalTo.HostEnvironment.ApplicationName,
                     Description = string.Join(" &nbsp; ", new List<string>
                     {
-                        "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>Source</b>：<a target='_blank' href='https://github.com/netnr'>https://github.com/netnr</a>",
                         "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>"
                     })
                 });

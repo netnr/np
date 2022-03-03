@@ -5,7 +5,7 @@
   "main": "src/netnrmd.bundle.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/netnr/netnrmd.git"
+    "url": "git+https://github.com/netnr/np.git"
   },
   "keywords": [
     "markdown",
@@ -14,9 +14,9 @@
   "author": "netnr",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/netnr/netnrmd/issues"
+    "url": "https://github.com/netnr/np/issues"
   },
-  "homepage": "https://github.com/netnr/netnrmd#readme",
+  "homepage": "https://github.com/netnr/np#readme",
   "files": [
     "src"
   ]

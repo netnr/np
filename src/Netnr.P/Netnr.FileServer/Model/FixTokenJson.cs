@@ -3,7 +3,7 @@
     /// <summary>
     /// 固定Token JSON实体
     /// </summary>
-    public class FixTokenJson
+    public class FixedTokenJson
     {
         /// <summary>
         /// 名称

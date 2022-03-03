@@ -12,8 +12,8 @@ netnrmd.extend = {
                 var htm = [];
                 htm.push("<h3>NetnrMD 编辑器</h3>");
                 htm.push("<p>Monaco Editor 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高亮 + pangu 间隙</p>");
-                htm.push("<p><a href='https://github.com/netnr/netnrmd'>https://github.com/netnr/netnrmd</a></p>");
-                htm.push("<p>&copy; <a href='https://www.netnr.com' target='_blank'>netnr</a> , The <b>MIT</b> License</p>");
+                htm.push("<p><a href='https://github.com/netnr'>https://github.com/netnr</a></p>");
+                htm.push("<p>&copy; <a href='https://www.netnr.com' target='_blank'>netnr</a></p>");
                 //弹出
                 that.aboutpopup = netnrmd.popup("关于", htm.join(''));
             }
@@ -150,20 +150,25 @@ netnrmd.extend = {
                                 }
                                 break;
                             case "pdf":
-                                require(['https://s1.netnr.eu.org/libs/mix/html2pdf.bundle.min.js'], function (module) {
-                                    var ch = that.obj.view.clientHeight;
-                                    that.obj.view.style.height = 'auto';
-                                    var vm = that.obj.viewmodel;
-                                    that.toggleView(3);
-                                    module(that.obj.view, {
-                                        margin: 3,
-                                        filename: 'nmd.pdf',
-                                        html2canvas: { scale: 1.5 }
-                                    }).then(function () {
-                                        that.obj.view.height = ch + 'px';
-                                        that.toggleView(vm);
+                                {
+                                    var uri = ["localhost", "ss.netnr.com"].includes(location.hostname)
+                                        ? "https://s1.netnr.com/libs/mix/html2pdf.bundle.min.js"
+                                        : "https://s1.netnr.eu.org/libs/mix/html2pdf.bundle.min.js";
+                                    require([uri], function (module) {
+                                        var ch = that.obj.view.clientHeight;
+                                        that.obj.view.style.height = 'auto';
+                                        var vm = that.obj.viewmodel;
+                                        that.toggleView(3);
+                                        module(that.obj.view, {
+                                            margin: 3,
+                                            filename: 'nmd.pdf',
+                                            html2canvas: { scale: 1.5 }
+                                        }).then(function () {
+                                            that.obj.view.height = ch + 'px';
+                                            that.toggleView(vm);
+                                        })
                                     })
-                                })
+                                }
                                 break;
                             case "png":
                                 {

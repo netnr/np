@@ -4,9 +4,6 @@ using Netnr.SharedFast;
 
 namespace Netnr.FileServer
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class Startup
     {
         public Startup(IConfiguration configuration, IHostEnvironment env)
@@ -41,7 +38,7 @@ namespace Netnr.FileServer
                     Title = GlobalTo.HostEnvironment.ApplicationName,
                     Description = string.Join(" &nbsp; ", new List<string>
                     {
-                        "<b>Source</b>：<a target='_blank' href='https://github.com/netnr/np'>https://github.com/netnr/np</a>",
+                        "<b>GitHub</b>：<a target='_blank' href='https://github.com/netnr'>https://github.com/netnr</a>",
                         "<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>",
                         $"文件上传大小限制：<b>{GlobalTo.GetValue<int>("StaticResource:MaxSize")}</b> MB",
                         "管理员默认密码：<b>nr</b>"

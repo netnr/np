@@ -2,7 +2,7 @@
 汉字、词语、成语查询接口
 
 ### 引言
-- 源码 <https://github.com/netnr/zidian> 源数据 <https://github.com/pwxcoo/chinese-xinhua>
+- 源数据 <https://github.com/pwxcoo/chinese-xinhua>
 - 源数据是一个 `JSON` 文件，大小超出 `20M`，不利于页面加载使用，所以拆分了文件
 - 提取字、词、成语为数组，根据数组索引分页生成详情，具体请看 `build.html` 的拆分脚本
 

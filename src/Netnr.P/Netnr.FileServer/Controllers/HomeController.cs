@@ -1,6 +1,4 @@
-﻿using Netnr.Core;
-
-namespace Netnr.FileServer.Controllers
+﻿namespace Netnr.FileServer.Controllers
 {
     /// <summary>
     /// 
@@ -14,20 +12,6 @@ namespace Netnr.FileServer.Controllers
         public IActionResult Index()
         {
             return Redirect("/swagger");
-        }
-
-        /// <summary>
-        /// 服务器状态
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Status()
-        {
-            if (CacheTo.Get("ss") is not SystemStatusTo ss)
-            {
-                ss = new SystemStatusTo();
-                CacheTo.Set("ss", ss, 10, false);
-            }
-            return Content(ss.ToView());
         }
 
         /// <summary>

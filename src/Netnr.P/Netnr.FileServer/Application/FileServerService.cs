@@ -153,14 +153,14 @@ namespace Netnr.FileServer.Application
         }
 
         /// <summary>
-        /// 创建FixToken
+        /// 创建固定 Token
         /// </summary>
         /// <param name="AppId">分配的应用ID</param>
         /// <param name="AppKey">分配的应用密钥</param>
         /// <param name="Name">名称</param>
         /// <param name="AuthMethod">授权接口</param>
         /// <returns></returns>
-        public static SharedResultVM CreateFixToken(string AppId, string AppKey, string Name, string AuthMethod)
+        public static SharedResultVM CreateFixedToken(string AppId, string AppKey, string Name, string AuthMethod)
         {
             var vm = new SharedResultVM();
 
@@ -170,21 +170,21 @@ namespace Netnr.FileServer.Application
                 var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
                 if (sk != null)
                 {
-                    var listmo = new List<FixTokenJson>();
-                    if (!string.IsNullOrWhiteSpace(sk.FixToken))
+                    var listmo = new List<FixedTokenJson>();
+                    if (!string.IsNullOrWhiteSpace(sk.FixedToken))
                     {
-                        listmo = sk.FixToken.ToEntitys<FixTokenJson>();
+                        listmo = sk.FixedToken.ToEntitys<FixedTokenJson>();
                     }
 
                     var fixToken = NewToken(true);
-                    listmo.Add(new FixTokenJson()
+                    listmo.Add(new FixedTokenJson()
                     {
                         Name = Name,
                         Token = fixToken,
                         AuthMethod = AuthMethod,
                         CreateTime = DateTime.Now
                     });
-                    sk.FixToken = listmo.ToJson();
+                    sk.FixedToken = listmo.ToJson();
 
                     int num = db.Update(sk);
                     vm.Data = new
@@ -208,13 +208,13 @@ namespace Netnr.FileServer.Application
         }
 
         /// <summary>
-        /// 删除FixToken
+        /// 删除固定Token
         /// </summary>
         /// <param name="AppId">分配的应用ID</param>
         /// <param name="AppKey">分配的应用密钥</param>
-        /// <param name="FixToken">固定Token</param>
+        /// <param name="FixedToken">固定Token</param>
         /// <returns></returns>
-        public static SharedResultVM DelFixToken(string AppId, string AppKey, string FixToken)
+        public static SharedResultVM DelFixedToken(string AppId, string AppKey, string FixedToken)
         {
             var vm = new SharedResultVM();
 
@@ -224,18 +224,18 @@ namespace Netnr.FileServer.Application
                 var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
                 if (sk != null)
                 {
-                    var listmo = sk.FixToken.ToEntitys<FixTokenJson>();
-                    if (listmo.Any(x => x.Token == FixToken))
+                    var listmo = sk.FixedToken.ToEntitys<FixedTokenJson>();
+                    if (listmo.Any(x => x.Token == FixedToken))
                     {
-                        listmo.Remove(listmo.FirstOrDefault(x => x.Token.Contains(FixToken)));
-                        sk.FixToken = listmo.ToJson();
+                        listmo.Remove(listmo.FirstOrDefault(x => x.Token.Contains(FixedToken)));
+                        sk.FixedToken = listmo.ToJson();
                         int num = db.Update(sk);
                         vm.Set(num > 0);
                     }
                     else
                     {
                         vm.Set(SharedEnum.RTag.invalid);
-                        vm.Msg = "FixToken 无效";
+                        vm.Msg = "FixedToken 无效";
                     }
                 }
                 else
@@ -271,14 +271,14 @@ namespace Netnr.FileServer.Application
                 {
                     using var db = new SQLiteConnection(SQLiteConn);
 
-                    //FixToken
-                    if (token.StartsWith(GlobalTo.GetValue("Safe:FixTokenPrefix")))
+                    //FixedToken
+                    if (token.StartsWith(GlobalTo.GetValue("Safe:FixedTokenPrefix")))
                     {
-                        var sk = db.Table<SysApp>().FirstOrDefault(x => x.FixToken.Contains(token));
+                        var sk = db.Table<SysApp>().FirstOrDefault(x => x.FixedToken.Contains(token));
 
                         if (sk != null)
                         {
-                            var mo = sk.FixToken.ToEntitys<FixTokenJson>().FirstOrDefault(x => x.Token == token);
+                            var mo = sk.FixedToken.ToEntitys<FixedTokenJson>().FirstOrDefault(x => x.Token == token);
                             if (mo.AuthMethod.Split(',').Contains(MethodName))
                             {
                                 vm.Set(SharedEnum.RTag.success);
@@ -289,7 +289,7 @@ namespace Netnr.FileServer.Application
                             else
                             {
                                 vm.Set(SharedEnum.RTag.unauthorized);
-                                vm.Msg = "FixToken 无权访问该接口";
+                                vm.Msg = "FixedToken 无权访问该接口";
                             }
                         }
                         else
@@ -306,7 +306,7 @@ namespace Netnr.FileServer.Application
                         {
                             vm.Set(SharedEnum.RTag.success);
 
-                            vm.Data = new FixTokenJson()
+                            vm.Data = new FixedTokenJson()
                             {
                                 Owner = sk.Owner
                             };
@@ -328,30 +328,30 @@ namespace Netnr.FileServer.Application
         }
 
         /// <summary>
-        /// 验证FixToken
+        /// 验证FixedToken
         /// </summary>
-        /// <param name="fixToken"></param>
+        /// <param name="fixedToken"></param>
         /// <returns></returns>
-        public static SharedResultVM ValidFixToken(string fixToken)
+        public static SharedResultVM ValidFixedToken(string fixedToken)
         {
             var vm = new SharedResultVM();
 
             try
             {
-                if (string.IsNullOrWhiteSpace(fixToken))
+                if (string.IsNullOrWhiteSpace(fixedToken))
                 {
                     vm.Set(SharedEnum.RTag.unauthorized);
                 }
                 else
                 {
                     using var db = new SQLiteConnection(SQLiteConn);
-                    var sk = db.Table<SysApp>().FirstOrDefault(x => x.FixToken.Contains(fixToken));
+                    var sk = db.Table<SysApp>().FirstOrDefault(x => x.FixedToken.Contains(fixedToken));
 
                     if (sk != null)
                     {
                         vm.Set(SharedEnum.RTag.success);
 
-                        var mo = sk.FixToken.ToEntitys<FixTokenJson>().FirstOrDefault(x => x.Token == fixToken);
+                        var mo = sk.FixedToken.ToEntitys<FixedTokenJson>().FirstOrDefault(x => x.Token == fixedToken);
                         mo.Owner = sk.Owner;
                         vm.Data = mo;
                     }
@@ -521,11 +521,11 @@ namespace Netnr.FileServer.Application
         /// <summary>
         /// 创建 Token
         /// </summary>
-        /// <param name="IsFixToken">是固定Token，默认否</param>
+        /// <param name="IsFixedToken">是固定Token，默认否</param>
         /// <returns></returns>
-        public static string NewToken(bool IsFixToken = false)
+        public static string NewToken(bool IsFixedToken = false)
         {
-            return (IsFixToken ? GlobalTo.GetValue("Safe:FixTokenPrefix") : "") + (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
+            return (IsFixedToken ? GlobalTo.GetValue("Safe:FixedTokenPrefix") : "") + (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
         }
 
         /// <summary>

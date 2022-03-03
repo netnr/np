@@ -45,9 +45,9 @@
             <param name="AppKey">分配的应用密钥</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.CreateFixToken(System.String,System.String,System.String,System.String)">
+        <member name="M:Netnr.FileServer.Application.FileServerService.CreateFixedToken(System.String,System.String,System.String,System.String)">
             <summary>
-            创建FixToken
+            创建固定 Token
             </summary>
             <param name="AppId">分配的应用ID</param>
             <param name="AppKey">分配的应用密钥</param>
@@ -55,13 +55,13 @@
             <param name="AuthMethod">授权接口</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.DelFixToken(System.String,System.String,System.String)">
+        <member name="M:Netnr.FileServer.Application.FileServerService.DelFixedToken(System.String,System.String,System.String)">
             <summary>
-            删除FixToken
+            删除固定Token
             </summary>
             <param name="AppId">分配的应用ID</param>
             <param name="AppKey">分配的应用密钥</param>
-            <param name="FixToken">固定Token</param>
+            <param name="FixedToken">固定Token</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.ValidToken(System.String,System.String)">
@@ -72,11 +72,11 @@
             <param name="MethodName">方法名</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Application.FileServerService.ValidFixToken(System.String)">
+        <member name="M:Netnr.FileServer.Application.FileServerService.ValidFixedToken(System.String)">
             <summary>
-            验证FixToken
+            验证FixedToken
             </summary>
-            <param name="fixToken"></param>
+            <param name="fixedToken"></param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.InsertFile(Netnr.FileServer.Model.FileRecord)">
@@ -115,7 +115,7 @@
             <summary>
             创建 Token
             </summary>
-            <param name="IsFixToken">是固定Token，默认否</param>
+            <param name="IsFixedToken">是固定Token，默认否</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Application.FileServerService.StaticVrPathAsPhysicalPath(System.String)">
@@ -200,9 +200,9 @@
             <param name="AppKey">分配的应用密钥</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.CreateFixToken(System.String,System.String,System.String,System.String)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.CreateFixedToken(System.String,System.String,System.String,System.String)">
             <summary>
-            创建FixToken
+            创建FixedToken
             </summary>
             <param name="AppId">分配的应用ID</param>
             <param name="AppKey">分配的应用密钥</param>
@@ -210,13 +210,13 @@
             <param name="AuthMethod">授权接口名，多个用逗号分割，区分大小写</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.APIController.DelFixToken(System.String,System.String,System.String)">
+        <member name="M:Netnr.FileServer.Controllers.APIController.DelFixedToken(System.String,System.String,System.String)">
             <summary>
-            删除FixToken
+            删除FixedToken
             </summary>
             <param name="AppId">分配的应用ID</param>
             <param name="AppKey">分配的应用密钥</param>
-            <param name="FixToken">固定Token</param>
+            <param name="FixedToken">固定 Token</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.FileServer.Controllers.APIController.AuthMethodList">
@@ -297,89 +297,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.FileServer.Controllers.HomeController.Status">
-            <summary>
-            服务器状态
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Netnr.FileServer.Controllers.HomeController.SwaggerCustomStyle">
             <summary>
             Swagger自定义样式
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.FileServer.Controllers.SliceController">
-            <summary>
-            切片
-            </summary>
-        </member>
-        <member name="T:Netnr.FileServer.Controllers.SliceController.Config">
-            <summary>
-            配置
-            </summary>
-        </member>
-        <member name="F:Netnr.FileServer.Controllers.SliceController.Config.RootDir">
-            <summary>
-            根目录
-            </summary>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.Config.AsPhysicalPath(System.String)">
-            <summary>
-            转为物理路径
-            </summary>
-            <param name="path"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.Index">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.Upload(System.Int32,System.Int32,System.String,Microsoft.AspNetCore.Http.IFormFile)">
-            <summary>
-            分片上传
-            </summary>
-            <param name="chunk"></param>
-            <param name="chunks"></param>
-            <param name="sole"></param>
-            <param name="file"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.FileList">
-            <summary>
-            文件列表
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.FileDelete">
-            <summary>
-            文件删除
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.VideoInfo">
-            <summary>
-            视频信息
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.Sliced">
-            <summary>
-            切片
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.VideoList">
-            <summary>
-            视频列表
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.FileServer.Controllers.SliceController.VideoDelete">
-            <summary>
-            视频删除
             </summary>
             <returns></returns>
         </member>
@@ -433,32 +353,32 @@
             备注
             </summary>
         </member>
-        <member name="T:Netnr.FileServer.Model.FixTokenJson">
+        <member name="T:Netnr.FileServer.Model.FixedTokenJson">
             <summary>
             固定Token JSON实体
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FixTokenJson.Name">
+        <member name="P:Netnr.FileServer.Model.FixedTokenJson.Name">
             <summary>
             名称
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FixTokenJson.Token">
+        <member name="P:Netnr.FileServer.Model.FixedTokenJson.Token">
             <summary>
             Token
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FixTokenJson.AuthMethod">
+        <member name="P:Netnr.FileServer.Model.FixedTokenJson.AuthMethod">
             <summary>
             授权方法名
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FixTokenJson.CreateTime">
+        <member name="P:Netnr.FileServer.Model.FixedTokenJson.CreateTime">
             <summary>
             创建时间
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.FixTokenJson.Owner">
+        <member name="P:Netnr.FileServer.Model.FixedTokenJson.Owner">
             <summary>
             所属用户
             </summary>
@@ -488,7 +408,7 @@
             生成的Token
             </summary>
         </member>
-        <member name="P:Netnr.FileServer.Model.SysApp.FixToken">
+        <member name="P:Netnr.FileServer.Model.SysApp.FixedToken">
             <summary>
             固定Token
             </summary>
@@ -528,24 +448,8 @@
             Token过期时间
             </summary>
         </member>
-        <member name="T:Netnr.FileServer.Program">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:Netnr.FileServer.Program.Main(System.String[])">
-            <summary>
-            
-            </summary>
-            <param name="args"></param>
-        </member>
         <member name="M:Netnr.FileServer.Program.CreateHostBuilder(System.String[])">
             dotnet Netnr.FileServer.dll --urls "https://*:55"
-        </member>
-        <member name="T:Netnr.FileServer.Startup">
-            <summary>
-            
-            </summary>
         </member>
         <member name="M:Netnr.FileServer.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             This method gets called by the runtime. Use this method to add services to the container.

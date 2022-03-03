@@ -56,9 +56,6 @@
         if ($('input[name="DsName"]').val().trim() == "") {
             err.push('名称 必填');
         }
-        if (sc.val().length < 4 || sc.val().length > 20) {
-            err.push('分享码为 4 - 20 位数字');
-        }
 
         if (err.length) {
             jz.alert(err.join('<br/>'));

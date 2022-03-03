@@ -19,7 +19,6 @@ if (console) {
 
     oi = fi();
     var vls = [
-        { name: "源码", link: "https://github.com/netnr/np" },
         { name: "GitHub", link: "https://github.com/netnr" }
     ];
     for (var i = 0; i < vls.length; i++) {

@@ -6,7 +6,7 @@
 
 ### 功能
 - [x] 获取 Token 授权操作（有效期内访问所有接口）
-- [x] 创建 FixToken 并配置允许访问的接口（永久有效访问授权的接口）
+- [x] 创建 FixedToken 并配置允许访问的接口（永久有效访问授权的接口）
 - [x] 上传文件和分块上传文件
 - [x] 复制已上传的文件
 - [x] 上传覆盖文件
@@ -22,8 +22,8 @@
 - `/API/ClearTmp` 清理临时目录
 - 以上为管理接口，需密码验证，设为空密码可关闭管理接口
 - `/API/GetToken` 根据AppId、AppKey请求Token
-- `/API/CreateFixToken` 创建FixToken
-- `/API/DelFixToken` 删除FixToken
+- `/API/CreateFixedToken` 创建FixedToken
+- `/API/DelFixedToken` 删除FixedToken
 - `/API/Upload` 上传文件
 - `/API/UploadChunk` 分块上传文件
 - `/API/Copy` 复制已上传的文件

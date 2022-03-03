@@ -4,14 +4,14 @@
 <head>
     <meta charset="utf-8" />
     <title>打包</title>
-    <script src="https://npm.elemecdn.com/terser@5.10.0/dist/bundle.min.js"></script>
+    <script src="https://npm.elemecdn.com/terser@5.12.0/dist/bundle.min.js"></script>
 </head>
 <body>
     <script>
         var bd = {
             bundle: [
                 {
-                    src: "/src/netnrmd.js",
+                    src: "src/netnrmd.js",
                     comment: "netnrmd @3.0.2 | MIT | Minified by Terser",
                     compression: true
                 },
@@ -21,7 +21,7 @@
                     compression: true
                 },
                 {
-                    src: "https://npm.elemecdn.com/dompurify@2.3.5/dist/purify.js",
+                    src: "https://npm.elemecdn.com/dompurify@2.3.6/dist/purify.js",
                     comment: "DOMPurify @version",
                     compression: true
                 },
@@ -38,7 +38,7 @@
             ],
 
             handle: function (bi) {
-                return new Promise(function (resolve, reject) {
+                return new Promise(function (resolve) {
                     fetch(bi.src).then(x => x.text()).then(res => {
                         if (bi.compression) {
                             bi.text = res;
