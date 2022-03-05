@@ -1,6 +1,5 @@
 ﻿#if Full || Logging
 
-using System.Data;
 using System.Collections.Concurrent;
 using Microsoft.Data.Sqlite;
 using DeviceDetectorNET;

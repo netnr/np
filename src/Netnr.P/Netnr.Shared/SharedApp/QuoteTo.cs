@@ -211,7 +211,7 @@ public class QuoteTo
                     break;
 
                 case "nsfwjs":
-                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.13.0/dist/tf.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.14.0/dist/tf.min.js'></script>");
                     vh.Add("<script src='https://npm.elemecdn.com/nsfwjs@2.4.1/dist/nsfwjs.min.js'></script>");
                     break;
 
@@ -221,7 +221,7 @@ public class QuoteTo
                     break;
 
                 case "terser.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.11.0/dist/bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.12.0/dist/bundle.min.js'></script>");
                     break;
 
                 case "html2canvas.js":
@@ -240,11 +240,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.5.2/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.6.1/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.2/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.5.2/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.1/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.1/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":

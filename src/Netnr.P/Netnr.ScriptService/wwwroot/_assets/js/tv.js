@@ -3,6 +3,7 @@
     init: function () {
         fetch('/_assets/file/m3u8.txt').then(x => x.text()).then(res => {
             var ds = res.split('#EXTINF:-1'), sehtm = [];
+            sehtm.push('<option value="">（选择源）</option>')
             ds.forEach(item => {
                 var matchm3u8 = /http(.*).m3u8/i.exec(item);
                 var namem3u8 = /,(.*)/.exec(item)
@@ -22,7 +23,9 @@
         }, false);
 
         document.querySelector('.nr-select-m3u8').addEventListener('change', function () {
-            vd.play(this.value, true);
+            if (this.value != "") {
+                vd.play(this.value, true);
+            }
         }, false);
 
         vd.autoSize();
