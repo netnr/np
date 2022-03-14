@@ -1075,11 +1075,21 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Netnr.Blog.Web.Controllers.StorageController.AccessCOS">
+            <summary>
+            秘钥
+            </summary>
+        </member>
         <member name="M:Netnr.Blog.Web.Controllers.StorageController.NetEasy">
             <summary>
             网易对象存储
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:Netnr.Blog.Web.Controllers.StorageController.AccessNOS">
+            <summary>
+            秘钥
+            </summary>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.StorageController.Qiniu">
             <summary>
@@ -1087,11 +1097,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.StorageController.UCloud">
+        <member name="T:Netnr.Blog.Web.Controllers.StorageController.AccessKODO">
             <summary>
-            优刻得对象存储
+            秘钥
             </summary>
-            <returns></returns>
         </member>
         <member name="T:Netnr.Blog.Web.Controllers.StoreController">
             <summary>
@@ -1179,12 +1188,6 @@
         <member name="M:Netnr.Blog.Web.Controllers.StoreController.QNAPI">
             <summary>
             Qiniu API
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.StoreController.Ufile">
-            <summary>
-            UCloud 对象存储
             </summary>
             <returns></returns>
         </member>

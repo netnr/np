@@ -1,93 +1,52 @@
 <style>
     body {
-        background-color: #ededed;
+        overflow-y: scroll;
     }
 
-    .divWP {
-        margin-top: 45px;
+    .position-sticky {
+        top: 1em;
+        z-index: 1;
     }
 
-        .divWP div img {
-            width: 100%;
-            height: 100%;
+    .nr-cell {
+        position: relative;
+    }
+
+        .nr-cell img {
+            max-width: 100%;
+            max-height: 100%;
             cursor: zoom-in;
+            border-radius: 6px;
         }
 
-        .divWP div.pu {
-            padding: 5px;
-            position: relative;
-        }
-
-            .divWP div.pu .list-group {
-                position: absolute;
-                top: 4px;
-                left: 4px;
-                width: 140px;
-                display: none;
-                opacity: .9;
-            }
-
-                .divWP div.pu .list-group a {
-                    color: #777;
-                    border-radius: 0;
-                    padding: 3px 0 3px 6px;
-                }
-
-                .divWP div.pu .list-group .list-group-item svg {
-                    width: 18px;
-                    height: 18px;
-                    margin-right: 5px;
-                }
-
-            .divWP div.pu:hover .list-group {
-                display: block;
-            }
-
-
-    /*全屏查看*/
-    .divFP {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 3333;
-        background-color: #ededed;
-    }
-
-        .divFP a {
-            position: fixed;
-            top: 0;
-            color: red;
-            z-index: 2;
-            right: 15px;
-            font-size: 2rem;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .divFP img {
+        .nr-cell .list-group {
             position: absolute;
-            z-index: 1;
-            cursor: move;
+            top: 0.25em;
+            left: 0.25em;
+            opacity: .8;
+            display: none;
+        }
+
+        .nr-cell:hover .list-group {
+            display: block;
         }
 </style>
 
-<div class="container-fluid position-fixed" style="top:10px;opacity:0.4; z-index:1">
-    <div class="row">
-        <div class="col-auto">
+<div class="container-fluid">
+    <div class="row position-sticky">
+        <div class="col-auto mb-2 px-1">
             <a href="/"><img src="/favicon.ico" style="height:30px" /></a>
         </div>
         <div class="col">
         </div>
-        <div class="col-auto">
-            <select class="form-select form-select-sm nrUseProxy">
-                <option value="0">（选择代理）</option>
-                <option value="1">代理线路一</option>
+        <div class="col-auto mb-2">
+            <select class="form-select form-select-sm nr-se-proxy">
+                <option value="0">不代理</option>
+                <option value="1">代理一</option>
             </select>
         </div>
-        <div class="col-auto">
-            <select class="form-select form-select-sm nrType">
+        <div class="col-auto mb-2">
+            <select class="form-select form-select-sm nr-se-type">
                 <option value="">最新壁纸</option>
                 <option disabled>---------</option>
                 <option value="36">4K专区</option>
@@ -101,16 +60,25 @@
                 <option value="5">游戏壁纸</option>
                 <option value="12">汽车天下</option>
                 <option value="10">炫酷时尚</option>
+                <option value="22">军事天地</option>
+                <option value="16">劲爆体育</option>
+                <option value="32">纹理</option>
+                <option value="35">文字控</option>
                 <option value="29">月历壁纸</option>
                 <option value="7">影视剧照</option>
                 <option value="13">节日美图</option>
-                <option value="22">军事天地</option>
-                <option value="16">劲爆体育</option>
                 <option value="18">BABY秀</option>
-                <option value="35">文字控</option>
             </select>
         </div>
+        <div class="col-auto mb-2 px-2">
+            <div class="input-group input-group-sm">
+                <input class="form-control nr-txt-search" placeholder="Search..." />
+                <button class="btn btn-outline-secondary nr-btn-search">搜索</button>
+            </div>
+        </div>
+    </div>
+    <div class="row nr-wallpaper">
     </div>
 </div>
 
-<div class="container-fluid divWP" id="divWP"></div>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("viewer.css,viewer.js"))

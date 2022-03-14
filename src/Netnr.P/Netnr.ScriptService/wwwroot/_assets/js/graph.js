@@ -24,7 +24,20 @@ const nd = {
         em.innerHTML = html;
         return em;
     },
+    loading: function (isShow) {
+        if (isShow) {
+            if (nd.domLoading == null) {
+                nd.domLoading = document.createElement('div');
+                nd.domLoading.innerHTML = 'Loading...';
+                document.body.appendChild(nd.domLoading);
+            }
+        } else {
+            document.body.removeChild(nd.domLoading);
+        }
+    },
     init: function (callback) {
+        nd.loading(1);
+
         let pas = [];
         nd.sourceList.forEach(u => {
             pas.push(fetch(nd.baseServer + u).then(x => x.text()));
@@ -40,6 +53,7 @@ const nd = {
                 head.appendChild(nd.createNode(suri.endsWith('.js') ? "SCRIPT" : "STYLE", text));
             }
 
+            nd.loading(0);
             callback();
         })
     }
@@ -257,7 +271,6 @@ var mxg = {
         return new Blob([uInt8Array], { type: contentType });
     }
 }
-
 
 /*
  * 初始化

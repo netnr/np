@@ -124,13 +124,6 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>");
                     break;
 
-                case "swiper.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swiper@8.0.6/swiper-bundle.min.css' rel='stylesheet' />");
-                    break;
-                case "swiper.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swiper@8.0.6/swiper-bundle.min.js'></script>");
-                    break;
-
                 case "jz.js":
                     vh.Add("<script src='https://npm.elemecdn.com/jzjs@2.0.2/2.0.2/jz.min.js'></script>");
                     break;
@@ -153,6 +146,21 @@ public class QuoteTo
                 case "selectpage":
                     vh.Add("<link href='https://npm.elemecdn.com/selectpage@2.20.0/selectpage.css' rel='stylesheet' />");
                     vh.Add("<script src='https://npm.elemecdn.com/selectpage@2.20.0/selectpage.min.js'></script>");
+                    break;
+
+                case "viewer.css":
+                    vh.Add("<link href='https://npm.elemecdn.com/viewerjs@1.10.4/dist/viewer.min.css' rel='stylesheet' />");
+                    break;
+                case "viewer.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/viewerjs@1.10.4/dist/viewer.min.js'></script>");
+                    break;
+
+                case "qiniu.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/qiniu-js@3.4.0/dist/qiniu.min.js'></script>");
+                    break;
+
+                case "cos-js-sdk-v5.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.5/dist/cos-js-sdk-v5.min.js'></script>");
                     break;
 
                 case "ag-grid-community.js":
@@ -199,7 +207,7 @@ public class QuoteTo
                     break;
 
                 case "highcharts.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@9.3.3/highcharts.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@10.0.0/highcharts.js'></script>");
                     break;
 
                 case "hls.js":
@@ -240,11 +248,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.6.1/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.6.2/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.1/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.1/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.2/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.2/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
@@ -268,7 +276,7 @@ public class QuoteTo
                     break;
 
                 case "monaco-editor":
-                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs/loader.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
                                 function htmlDecode(html) {
@@ -279,7 +287,7 @@ public class QuoteTo
 
                                 require.config({
                                     paths: {
-                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.32.1/min/vs'
+                                        vs: 'https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs'
                                     },
                                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                 });

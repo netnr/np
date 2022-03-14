@@ -1,9 +1,65 @@
 @{
-    ViewData["Title"] = "网易云NOS";
+    ViewData["Title"] = "网易数帆NOS";
 }
 
-<partial name="_StorePartialNav" />
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-auto">
+            <label class="btn btn-primary btn-sm">
+                Uploader
+                <input type="file" class="d-none nr-uploader-file" multiple />
+            </label>
+            <label class="btn btn-primary btn-sm">
+                Uploader(folder)
+                <input type="file" class="d-none nr-uploader-folder" webkitdirectory />
+            </label>
+        </div>
+        <div class="col-auto mb-2">
+            <button class="btn btn-sm btn-info" data-cmd="new-folder">New Folder</button>
+            <button class="btn btn-sm btn-danger" data-cmd="delete">Delete</button>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Bucket</span>
+                </div>
+                <select class="form-control nr-se-bucket"></select>
+                <div class="input-group-append">
+                    <span class="input-group-text">Domain</span>
+                </div>
+                <input type="text" class="form-control nr-txt-domain" placeholder="Domain">
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <button class="btn btn-primary nr-btn-search-prefix" type="button">Prefix</button>
+                </div>
+                <input type="text" class="form-control nr-txt-search-prefix" placeholder="path">
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Search</span>
+                </div>
+                <input type="text" class="form-control nr-txt-search-key" placeholder="key">
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <a href="/storage/tencent" class="text-decoration-none">
+                <img src="/images/storage/tencent.ico" style="height:25px" />
+            </a>
+            <a href="/storage/neteasy" class="text-decoration-none mx-2">
+                <img src="/images/storage/neteasy.ico" style="height:25px" />
+            </a>
+            <a href="/storage/qiniu" class="text-decoration-none">
+                <img src="/images/storage/qiniu.ico" style="height:25px" />
+            </a>
+        </div>
+        <div class="col-md-12 nr-storage"></div>
+    </div>
+</div>
 
-<script src="/js/store/ne/crypto-js-min.js" defer async asp-append-version="true"></script>
-<script src="/js/store/ne/nos-js-sdk.js" asp-append-version="true"></script>
-<script src="/js/store/ne.js" asp-append-version="true"></script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))
+<script src="/js/storage/neteasy.js" asp-append-version="true"></script>

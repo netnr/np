@@ -38,7 +38,7 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         public class AccessCOS
         {
-            public static int APPID => GlobalTo.GetValue<int>("ApiKey:AccessCOS:APPID");
+            public static int APPID => GlobalTo.GetValue<int>("ApiKey:AccessCOS:AppId");
             public static string SecretId => GlobalTo.GetValue("ApiKey:AccessCOS:SecretId");
             public static string SecretKey => GlobalTo.GetValue("ApiKey:AccessCOS:SecretKey");
         }
@@ -287,9 +287,9 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         public class AccessNOS
         {
-            public static string AccessKeyId => GlobalTo.GetValue("ApiKey:AccessNOS:accessKeyId");
-            public static string AccessKeySecret => GlobalTo.GetValue("ApiKey:AccessNOS:accessKeySecret");
-            public static string EndPoint => GlobalTo.GetValue("ApiKey:AccessNOS:endpoint");
+            public static string AccessKeyId => GlobalTo.GetValue("ApiKey:AccessNOS:AccessKeyId");
+            public static string AccessKeySecret => GlobalTo.GetValue("ApiKey:AccessNOS:AccessKeySecret");
+            public static string EndPoint => GlobalTo.GetValue("ApiKey:AccessNOS:Endpoint");
         }
 
         /// <summary>
@@ -411,8 +411,8 @@ namespace Netnr.Blog.Web.Controllers
 
         public class AccessQN
         {
-            public static string AK => GlobalTo.GetValue("ApiKey:AccessQN:AK");
-            public static string SK => GlobalTo.GetValue("ApiKey:AccessQN:SK");
+            public static string AK => GlobalTo.GetValue("ApiKey:AccessKODO:AccessKey");
+            public static string SK => GlobalTo.GetValue("ApiKey:AccessKODO:SecretKey");
         }
 
         /// <summary>
@@ -523,19 +523,5 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         #endregion
-
-        #region UCloud 对象存储
-
-        /// <summary>
-        /// UCloud 对象存储
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Ufile()
-        {
-            return View();
-        }
-
-        #endregion
-
     }
 }

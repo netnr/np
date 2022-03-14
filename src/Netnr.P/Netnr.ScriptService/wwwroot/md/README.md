@@ -2,7 +2,7 @@
 Monaco Editor 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高亮 + pangu 间隙
 
 > <https://md.js.org>  
-> <https://md.netnr.eu.org>
+> <https://ss.netnr.com/md/>
 
 ### Install 安装
 
@@ -16,12 +16,12 @@ Monaco Editor 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高
 <link href="https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.css" rel="stylesheet" />
 <script src="https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.bundle.js"></script>
 
-<script src="https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs/loader.js"></script>
+<script src="https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs/loader.js"></script>
 
 <script>
     require.config({
         paths: {
-            vs: 'https://npm.elemecdn.com/monaco-editor@0.31.1/min/vs'
+            vs: 'https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });

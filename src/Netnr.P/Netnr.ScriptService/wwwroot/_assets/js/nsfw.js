@@ -40,7 +40,7 @@
             var bhtm = document.body.innerHTML;
             pg.modelVersion = bhtm.substr(bhtm.indexOf("/nsfwjs"), 20).substring(8).split('/')[0];
         }
-        return `https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@@${pg.modelVersion}/example/nsfw_demo/public/quant_nsfw_mobilenet/`
+        return `https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@${pg.modelVersion}/example/nsfw_demo/public/quant_nsfw_mobilenet/`
     },
 
     scan: function () {

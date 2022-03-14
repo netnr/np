@@ -17,7 +17,7 @@ var mg = {
                 var nickname = ss.htmlEncode(this.UserNickname == "" ? "guest" : this.UserNickname);
                 var context = '<p><em class="badge bg-secondary" title="该信息已被屏蔽">block</em></p>'
                 if (!this.IsBlock) {
-                    context = netnrmd.render(netnrmd.spacing(this.Content)).replace(/@@\S+/g, function (n) {
+                    context = netnrmd.render(netnrmd.spacing(this.Content)).replace(/@\S+/g, function (n) {
                         return '<span class="text-primary">' + n + '</span>'
 
                     }).replace(/#\d+/g, function (n) {
@@ -26,19 +26,19 @@ var mg = {
                 }
 
                 var itemtmp = `
-                                    <div class="d-flex mb-2" id="${id}">
-                                        <div class="flex-shrink-0 pt-2">
-                                            ${iisvg({ value: nickname, size: 42 }).outerHTML}
+                                <div class="d-flex mb-2" id="${id}">
+                                    <div class="flex-shrink-0 pt-2">
+                                        ${iisvg({ value: nickname, size: 42 }).outerHTML}
+                                    </div>
+                                    <div class="flex-grow-1 ms-2">
+                                        <a class="text-primary text-decoration-none" role="button" onclick="mg.refTA(this)">${nickname}</a>
+                                        <small class="text-muted mx-3">${this.createdAt}</small>
+                                        <a class="text-warning" href="#${id}" role="button">#${i + 1}</a>
+                                        <div class="text-break mt-2">
+                                            ${context}
                                         </div>
-                                        <div class="flex-grow-1 ms-2">
-                                            <a class="text-primary text-decoration-none" role="button" onclick="mg.refTA(this)">${nickname}</a>
-                                            <small class="text-muted mx-3">${this.createdAt}</small>
-                                            <a class="text-warning" href="#${id}" role="button">#${i + 1}</a>
-                                            <div class="text-break mt-2">
-                                                ${context}
-                                            </div>
-                                        </div>
-                                    </div>`;
+                                    </div>
+                                </div>`;
 
                 htm.push(itemtmp);
             });
@@ -55,7 +55,7 @@ var mg = {
     },
     refTA: function (that) {
         var txt = $('textarea[name="Content"]');
-        txt.val("@@" + that.innerHTML + " " + txt.val());
+        txt.val("@" + that.innerHTML + " " + txt.val());
     }
 }
 

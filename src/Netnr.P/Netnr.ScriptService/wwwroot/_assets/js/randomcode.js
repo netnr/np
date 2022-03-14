@@ -3,15 +3,15 @@
         lower: 'abcdefghijklmnopqrstuvwxyz',
         upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
         number: '0123456789',
-        special: '~!@@#$%^&()_+-={}[];\',.'
+        special: '~!@#$%^&()_+-={}[];\',.'
     },
 
     /**
      * 生成
      * https://github.com/jonschlinkert/randomatic
-     * @@param {any} pattern 源
-     * @@param {any} length 长度
-     * @@param {any} options 选项
+     * @param {any} pattern 源
+     * @param {any} length 长度
+     * @param {any} options 选项
      */
     randomize: function (pattern, length, options) {
         var type = this.type;
@@ -106,7 +106,7 @@
             // 生成六位数的随机数（0123456789）
             rc.randomize('0', 6)
 
-            // 生成一位随机有效的非字母字符（\`〜！@@＃$％^＆（）_ +-= { } []
+            // 生成一位随机有效的非字母字符（\`〜！@＃$％^＆（）_ +-= { } []
             rc.randomize('!', 5)
 
             // 生成9位数的随机字符（以上任意一项）
