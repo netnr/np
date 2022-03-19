@@ -14,7 +14,7 @@
     domBtnSearch: document.querySelector('.nr-btn-search'),
     domWallpaper: document.querySelector('.nr-wallpaper'),
     domToolbar: document.querySelector('.position-sticky'),
-    init: () => {
+    init: function () {
 
         //点击代理
         wp.domSeProxy.addEventListener('change', function () {
@@ -39,17 +39,12 @@
         //点击分类
         wp.domSeType.addEventListener('change', function () {
             wp.clear();
+            wp.domTxtSearch.value = "";
+            wp.config.search = "";
+
             wp.config.cid = this.value;
             location.hash = this.value;
             wp.load();
-        }, false);
-
-        //点击列表
-        wp.domWallpaper.addEventListener('click', function (e) {
-            if (e.target.tagName === 'IMG') {
-                let url = e.target.src;
-
-            }
         }, false);
 
         //滚动加载
@@ -60,7 +55,7 @@
                     wp.load();
                 }
 
-                wp.domToolbar.style.opacity = document.documentElement.scrollTop < 15 ? 1 : 0.5;
+                wp.domToolbar.style.opacity = document.documentElement.scrollTop < 15 ? 1 : 0.4;
             }, false);
         });
 
@@ -75,7 +70,7 @@
         wp.config.cid = wp.domSeType.value;
         wp.load();
     },
-    hotKey: () => {
+    hotKey: function () {
         ss.ajax({
             url: "http://openbox.mobilem.360.cn/html/api/wallpaperhot.html",
             dataType: 'json',
@@ -91,8 +86,8 @@
         })
     },
     //载入
-    load: () => {
-        if (!wp.config.isLoading) {
+    load: function () {
+        if (!wp.config.isLoading && !wp.config.isEnd) {
             wp.config.isLoading = true;
             if (wp.config.search == "") {
                 document.title = `${wp.domSeType.options[wp.domSeType.selectedIndex].text} 在线壁纸 NET牛人`;
@@ -115,7 +110,7 @@
                 dataType: 'json',
                 success: function (data) {
                     data = ss.datalocation(data);
-                    if (!data.data.length) {
+                    if (data.data.length == 0 || wp.config.total == data.data.length) {
                         wp.config.isEnd = true;
                         wp.viewEnd();
                     } else {
@@ -132,13 +127,13 @@
             });
         }
     },
-    viewEnd: () => {
+    viewEnd: function () {
         var div = document.createElement('div');
         div.className = 'col-12 text-center h4 py-3 text-muted';
         div.innerHTML = '已经到底了';
         wp.domWallpaper.appendChild(div);
     },
-    viewList: (data) => {
+    viewList: function (data) {
         if (data.errno == "0") {
             data.data.forEach(item => {
                 var url = wp.urlProxy(item.url),
@@ -146,14 +141,14 @@
                     title = item.utag || item.tag.replaceAll('_category_', '').replaceAll('_', '');
 
                 //下载项
-                var downList = [`<a href='${url.replace("__85", "__100")}' target='_blank' class='list-group-item' download>${item.resolution}</a>`];
+                var downList = [`<a href='${url.replace("__85", "__100")}' target='_blank' class='list-group-item p-1' download>${item.resolution}</a>`];
                 Object.keys(item).filter(x => x.startsWith('img_')).forEach(k => {
-                    downList.push(`<a href='${wp.urlProxy(item[k].replace("_85", "_100"))}' target='_blank' class='list-group-item' download>${k.replace('img_', '')}</a>`);
+                    downList.push(`<a href='${wp.urlProxy(item[k].replace("_85", "_100"))}' target='_blank' class='list-group-item p-1' download>${k.replace('img_', '')}</a>`);
                 })
 
                 var col = document.createElement('div');
                 col.className = 'col-sm-12 col-md-6 p-1 nr-cell';
-                col.innerHTML = `<img data-url='${url}' title='${title}' alt='${title}' src='${minUrl}' /><div class='list-group'>${downList.join('')}</div>`;
+                col.innerHTML = `<img data-url='${url}' title='${title}' alt='${title}' src='${minUrl}' /><div class='list-group small'>${downList.join('')}</div>`;
                 wp.domWallpaper.appendChild(col);
             });
 
@@ -168,7 +163,7 @@
             console.log(json.errmsg);
         }
     },
-    clear: () => {
+    clear: function () {
         wp.config.start = 1;
         wp.config.isEnd = false;
         wp.config.isLoading = false;

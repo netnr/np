@@ -10,8 +10,8 @@ npm install clean-css
 npm install fast-xml-parser
 npm install device-detector-js
 
-ncu --loglevel verbose --packageFile package.json # 查看版本更新
-ncu -u # 更新版本
+ncu --loglevel verbose --packageFile package.json
+ncu -u
 
 browserify svgo/index.js -o svgo/svgo.js
 terser svgo/svgo.js -o svgo/svgo.min.js
