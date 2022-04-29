@@ -245,11 +245,6 @@ var ss = {
         })
     },
 
-    bmobInit: function () {
-        //比目初始化
-        window.Bmob && Bmob.initialize("59a522843b951532546934352166df80", "97fcbeae1457621def948aba1db01821");
-    },
-
     agg: {
         lk: function () {
             agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { };
