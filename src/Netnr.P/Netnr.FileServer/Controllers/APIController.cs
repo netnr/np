@@ -424,7 +424,7 @@ namespace Netnr.FileServer.Controllers
                         var listFr = new List<FileRecord>();
 
                         //虚拟路径
-                        var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
+                        var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
 
                         //物理路径
                         var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
@@ -568,7 +568,7 @@ namespace Netnr.FileServer.Controllers
                                 var vtjson = vt.Data as FixedTokenJson;
 
                                 //虚拟路径
-                                var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM'/'dd"));
+                                var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
 
                                 //物理路径
                                 var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);

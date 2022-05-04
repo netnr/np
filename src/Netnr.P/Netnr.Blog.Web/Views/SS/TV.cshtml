@@ -1,0 +1,17 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-auto mb-3">
+            <sl-select style="min-width:13em;" class="nr-se-m3u8">
+                <sl-menu-item value="">（选择源）</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-md mb-3">
+            <sl-input class="nr-txt-m3u8" placeholder="请粘贴 M3U8 播放源（http 协议播放源须允许）" />
+        </div>
+        <div class="col-12">
+            <video controls class="invisible rounded mw-100"></video>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("hls.js"))

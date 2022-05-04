@@ -1,0 +1,36 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md mb-3">
+            <sl-input type="number" size="large" class="nr-txt-number1" label="身高（单位：厘米/cm）" placeholder="身高" min="1" max="300" step="1" maxlength="3"></sl-input>
+        </div>
+        <div class="col-md mb-3">
+            <sl-input type="number" size="large" class="nr-txt-number2" label="体重（单位：千克/kg）" placeholder="体重" min="25" max="300" step="1" maxlength="3"></sl-input>
+        </div>
+        <div class="col-md mb-3">
+            <sl-input size="large" class="nr-txt-number3" label="BMI" placeholder="输出 BMI 值"></sl-input>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md mb-3">
+            <sl-button variant="neutral" outline class="w-100" title="低重：BMI < 18.5" style="width: 100%">低重：BMI < 18.5</sl-button>
+        </div>
+        <div class="col-md mb-3">
+            <sl-button variant="success" outline class="w-100" title="正常：18.5 ≤ BMI < 24.0" style="width: 100%">正常：18.5 ≤ BMI < 24.0</sl-button>
+        </div>
+        <div class="col-md mb-3">
+            <sl-button variant="warning" outline class="w-100" title="超重：24.0 ≤ BMI < 28.0" style="width: 100%">超重：24.0 ≤ BMI < 28.0</sl-button>
+        </div>
+        <div class="col-md mb-3">
+            <sl-button variant="danger" outline class="w-100" title="肥胖：BMI ≥ 28.0" style="width: 100%">肥胖：BMI ≥ 28.0</sl-button>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <p>计算公式： BMI = 体重 (KG) ÷ 身高 ²(M)</p>
+            <p>比如：小明是一个 60 公斤的人，身高是 1.7 米，则他的计算结果应该是：60÷1.7² =20.76</p>
+            <p>一个人的健康指数范围应该是在：18.5～24，指数在这之间是最好最正常的！</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+﻿<!--
+https://github.com/netnr
+2022-05-03 18:43:08
+-->
+
+<!DOCTYPE html>
+<html lang="zh-cn" class='sl-theme-light'>
+<head>
+    <title>&#x5728;&#x7EBF;&#x7535;&#x89C6; NET牛人</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+            <meta name='keywords' content='NET牛人,Netnr,在线电视' />
+            <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,m3u8 源播放' />
+
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' async />
+
+
+            <script src="/app/blog/dist/219.e2081d22f9484360448f.js"></script>
+            <script src="/app/blog/dist/371.3eb11d04884eda9c3dad.js"></script>
+            <script src="/app/blog/dist/50.c35c400e11c29edecfc1.js"></script>
+            <link href="/app/blog/dist/all.0f3abfe0c9f8017d71e5.css" rel="stylesheet" />
+            <script src="/app/blog/dist/all.9ebcbedd0691dd632bba.js"></script>
+</head>
+<body>
+        
+    <nav class="nr-navbar navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+            <a class='small d-block d-lg-none' href="/tv" title='&#x5728;&#x7EBF;&#x7535;&#x89C6;'>
+                <b style="color:var(--sl-color-warning-600)">&#x5728;&#x7EBF;&#x7535;&#x89C6;</b>
+            </a>
+
+            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
+                <sl-animation easing="ease-in-out" duration="1500" play>
+                    <span class="navbar-toggler-icon"></span>
+                </sl-animation>
+            </button>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item mx-2">
+                        <a class='nav-link active' href="/" title="ss.js.org">
+                            <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
+                                <div class="fw-bold">SS</div>
+                            </sl-animation>
+                        </a>
+                    </li>
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/tv" title='&#x5728;&#x7EBF;&#x7535;&#x89C6;'>
+                                <b style="color:var(--sl-color-warning-600)">&#x5728;&#x7EBF;&#x7535;&#x89C6;</b>
+                            </a>
+                        </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                    </li>
+                </ul>
+            </div>
+
+            <!--mobile-->
+            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
+                <sl-menu>
+                    <sl-menu-item data-href="/">SS</sl-menu-item>
+                    
+                        <sl-menu-item data-href="/tv">&#x5728;&#x7EBF;&#x7535;&#x89C6;</sl-menu-item>
+                    <sl-divider></sl-divider>
+                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
+                </sl-menu>
+            </sl-drawer>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-auto mb-3">
+            <sl-select style="min-width:13em;" class="nr-se-m3u8">
+                <sl-menu-item value="">（选择源）</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-md mb-3">
+            <sl-input class="nr-txt-m3u8" placeholder="请粘贴 M3U8 播放源（http 协议播放源须允许）" />
+        </div>
+        <div class="col-12">
+            <video controls class="invisible rounded mw-100"></video>
+        </div>
+    </div>
+</div>
+
+<script src='https://npm.elemecdn.com/hls.js@1.1.5/dist/hls.min.js'></script>
+
+            <script src="/js/ss/tv.js?v=Ci2A_yIeQv6Wvk9_mRkYhpw5Rh8dKz3npARhNVJgI1I"></script>
+</body>
+</html>

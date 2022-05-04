@@ -40,13 +40,14 @@ public class HomeController : Controller
 
         var code = Guid.NewGuid().ToString("N")[..4];
         var c1 = new SixLaborsImageSharpDrawingController();
+        var c2 = new NetVipsController(env);
         var c3 = new SkiaSharpController(env);
 
         var dicout = new Dictionary<string, object> { { "Loop", num } };
 
         var sw = new Stopwatch();
-        sw.Start();
 
+        sw.Start();
         try
         {
             for (int i = 0; i < num; i++)
@@ -62,9 +63,21 @@ public class HomeController : Controller
         }
 
         sw.Restart();
+        try
+        {
+            for (int i = 0; i < num; i++)
+            {
+                c2.CreateImg(code);
+            }
+            dicout.Add("NetVips", sw.ElapsedMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            dicout.Add("NetVips", ex.Message);
+        }
 
         sw.Restart();
-
         try
         {
             for (int i = 0; i < num; i++)

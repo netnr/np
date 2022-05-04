@@ -448,67 +448,23 @@
             Token过期时间
             </summary>
         </member>
-        <member name="M:Netnr.FileServer.Program.CreateHostBuilder(System.String[])">
-            dotnet Netnr.FileServer.dll --urls "https://*:55"
-        </member>
-        <member name="M:Netnr.FileServer.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            This method gets called by the runtime. Use this method to add services to the container.
-        </member>
-        <member name="M:Netnr.FileServer.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
-            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        </member>
-        <member name="T:Netnr.SharedTimingVM">
+        <member name="T:Netnr.SharedApp.LaunchTo">
             <summary>
-            计时
+            启动设定
             </summary>
         </member>
-        <member name="M:Netnr.SharedTimingVM.#ctor">
+        <member name="M:Netnr.SharedApp.LaunchTo.SetExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            构造
+            异常处理
             </summary>
+            <param name="options"></param>
         </member>
-        <member name="M:Netnr.SharedTimingVM.PartTime">
+        <member name="M:Netnr.SharedApp.LaunchTo.GetFilename(System.String,System.Boolean)">
             <summary>
-            片段耗时，毫秒
+            获取目录下文件名
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedTimingVM.PartTimeFormat(System.String)">
-            <summary>
-            片段耗时，毫秒，可视化
-            </summary>
-            <param name="format">格式化</param>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedTimingVM.TotalTime">
-            <summary>
-            总耗时，毫秒
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.SharedTimingVM.TotalTimeFormat(System.String)">
-            <summary>
-            总耗时，毫秒，可视化
-            </summary>
-            <param name="format">格式化</param>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.SharedApp.BuildTo">
-            <summary>
-            构建
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.BuildTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            构造
-            </summary>
-            <param name="httpContext"></param>
-        </member>
-        <member name="M:Netnr.SharedApp.BuildTo.Html``1">
-            <summary>
-            根据控制器构建静态页面
-            </summary>
-            <typeparam name="T"></typeparam>
+            <param name="path"></param>
+            <param name="readCache"></param>
             <returns></returns>
         </member>
         <member name="T:Netnr.SharedApp.QuoteTo">
@@ -581,6 +537,42 @@
             </summary>
             <param name="bytes"></param>
             <param name="fileName">下载文件名</param>
+        </member>
+        <member name="T:Netnr.SharedTimingVM">
+            <summary>
+            计时
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.PartTime">
+            <summary>
+            片段耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.PartTimeFormat(System.String)">
+            <summary>
+            片段耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.TotalTime">
+            <summary>
+            总耗时，毫秒
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.SharedTimingVM.TotalTimeFormat(System.String)">
+            <summary>
+            总耗时，毫秒，可视化
+            </summary>
+            <param name="format">格式化</param>
+            <returns></returns>
         </member>
         <member name="T:Netnr.SharedFast.GlobalTo">
             <summary>

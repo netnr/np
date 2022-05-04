@@ -1,0 +1,63 @@
+@model SharedPageVM
+
+<div class="container-fluid">
+
+    @if (Model.Other != null)
+    {
+        <!--列表-->
+        <div class="row mt-2">
+            <div class="col-12">
+                <sl-button size="small" href="/user/write" outline variant="primary">我的文章</sl-button>
+                @switch (Model.Other?.ToString().ToLower())
+                {
+                    case "laud":
+                        ViewData["title"] = "我的点赞";
+                        <sl-button size="small" variant="primary">我的点赞 @Model.Pag.Total</sl-button>
+                        <sl-button size="small" href="/user/write/mark" outline variant="primary">我的收藏</sl-button>
+                        break;
+                    case "mark":
+                        ViewData["title"] = "我的收藏";
+                        <sl-button size="small" href="/user/write/laud" outline variant="primary">我的点赞</sl-button>
+                        <sl-button size="small" variant="primary">我的收藏 @Model.Pag.Total</sl-button>
+                        break;
+                }
+            </div>
+            <partial name="_PartialWritingItem" model="Model.Rows" />
+        </div>
+
+        <!--分页-->
+        <div class="row">
+            <partial name="_PartialPaging" />
+        </div>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <!--标签分类-->
+            @if (Model.Temp != null)
+            {
+                var joabs = Model.Temp.ToString().ToJObject();
+
+                <div class="col-12 px-4 small">
+                    <partial name="_PartialTag" model="@joabs["tags"].ToJson()" />
+                    <span class="opacity-75">@joabs["abs"][0].ToString()</span>
+                    <a class="text-nowrap" href="@joabs["abs"][1].ToString()" target="_blank">[More]</a>
+                </div>
+            }
+            else
+            {
+                <partial name="_PartialTagStats" />
+            }
+        </div>
+
+        <!--列表-->
+        <div class="row my-4">
+            <partial name="_PartialWritingItem" model="Model.Rows" />
+        </div>
+
+        <!--分页-->
+        <div class="row">
+            <partial name="_PartialPaging" />
+        </div>
+    }
+</div>

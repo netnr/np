@@ -79,7 +79,7 @@ namespace Netnr.Blog.Application
                                 m.Key,
                                 total = m.Count()
                             };
-                var qs = query.Take(20).OrderByDescending(x => x.total).ToList();
+                var qs = query.Take(28).OrderByDescending(x => x.total).ToList();
 
                 var dic = new Dictionary<string, int>();
                 foreach (var item in qs)
@@ -109,7 +109,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 12
+                PageSize = 18
             };
 
             var dicQs = new Dictionary<string, string> { { "k", KeyWords } };
@@ -150,7 +150,6 @@ namespace Netnr.Blog.Application
                         kws.ForEach(k => inner.Or(x => x.UwTitle.Contains(k)));
                         break;
                 }
-
                 query = query.Where(inner);
             }
 
@@ -252,7 +251,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 20
+                PageSize = 18
             };
 
             using var db = ContextBaseFactory.CreateDbContext();
@@ -478,10 +477,10 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 10
+                PageSize = 18,
+                Total = query.Count()
             };
 
-            pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
             if (list.Count > 0)
@@ -516,21 +515,32 @@ namespace Netnr.Blog.Application
         /// <returns></returns>
         public static int NewMessageQuery(int UserId)
         {
-            if (SharedFast.GlobalTo.GetValue<bool>("ReadOnly"))
+            if (GlobalTo.GetValue<bool>("ReadOnly"))
             {
                 return 0;
             }
 
-            var ck = $"mq_{UserId}";
+            var ck = $"NewMessage_{UserId}";
             var num = CacheTo.Get(ck) as int?;
             if (num == null)
             {
-                using var db = ContextBaseFactory.CreateDbContext();
-                num = db.UserMessage.Where(x => x.Uid == UserId && x.UmStatus == 1).Count();
-                CacheTo.Set(ck, num, 10, false);
+                CacheTo.Set(ck, 0, 30, false);
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    try
+                    {
+                        using var db = ContextBaseFactory.CreateDbContext();
+                        var num2 = db.UserMessage.Where(x => x.Uid == UserId && x.UmStatus == 1).Count();
+                        CacheTo.Set(ck, num2, 30, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                });
             }
 
-            return num.Value;
+            return num ?? 0;
         }
 
         /// <summary>
@@ -735,7 +745,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 20
+                PageSize = 18
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
@@ -812,7 +822,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 24
+                PageSize = 18
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
@@ -892,7 +902,7 @@ namespace Netnr.Blog.Application
             var pag = new SharedPaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 20
+                PageSize = 18
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
@@ -1108,12 +1118,6 @@ namespace Netnr.Blog.Application
                 query = query.Where(x => x.GrTag.Contains(tag));
             }
 
-            //标签
-            if (!string.IsNullOrWhiteSpace(tag))
-            {
-                query = query.Where(x => x.GrTag.Contains(tag));
-            }
-
             //对象
             if (!string.IsNullOrWhiteSpace(obj))
             {
@@ -1124,9 +1128,9 @@ namespace Netnr.Blog.Application
             {
                 query = GlobalTo.TDB switch
                 {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.GrContent, $"%{q}%") || EF.Functions.Like(x.GrTag, $"%{q}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.GrContent, $"%{q}%") || EF.Functions.ILike(x.GrTag, $"%{q}%")),
-                    _ => query.Where(x => x.GrContent.Contains(q) || x.GrTag.Contains(q)),
+                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.GrContent, $"%{q}%") || EF.Functions.Like(x.GrRemark, $"%{q}%") || EF.Functions.Like(x.GrTag, $"%{q}%")),
+                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.GrContent, $"%{q}%") || EF.Functions.ILike(x.GrRemark, $"%{q}%") || EF.Functions.ILike(x.GrTag, $"%{q}%")),
+                    _ => query.Where(x => x.GrContent.Contains(q) || x.GrRemark.Contains(q) || x.GrTag.Contains(q)),
                 };
             }
 

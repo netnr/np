@@ -1,0 +1,56 @@
+<div class="container-fluid p-4">
+    <div class="row">
+
+        <div class="col-auto mb-3">
+            <sl-button-group>
+                <sl-dropdown class="nr-btn-convert" placement="top-start">
+                    <sl-button slot="trigger" variant="primary" caret>
+                        <sl-visually-hidden>More options</sl-visually-hidden>
+                    </sl-button>
+                    <sl-menu>
+                        <sl-menu-item>YAML → JSON</sl-menu-item>
+                        <sl-menu-item>JSON → YAML</sl-menu-item>
+                        <sl-divider></sl-divider>
+                        <sl-menu-item>Swagger → OpenAPI</sl-menu-item>
+                    </sl-menu>
+                </sl-dropdown>
+                <sl-button variant="primary">SwaggerUI</sl-button>
+            </sl-button-group>
+        </div>
+
+        <div class="col-auto mb-3">
+            <sl-button variant="warning">转文档</sl-button>
+            <sl-select class="nr-se-onlyjson d-inline-block" value="1" style="width:9em;">
+                <sl-menu-item value="1">仅JSON</sl-menu-item>
+                <sl-menu-item value="0">不处理</sl-menu-item>
+            </sl-select>
+            <sl-dropdown class="nr-btn-download">
+                <sl-button slot="trigger" caret>下载</sl-button>
+                <sl-menu>
+                    <sl-menu-item>Markdown</sl-menu-item>
+                    <sl-menu-item>HTML</sl-menu-item>
+                    <sl-menu-item>Word</sl-menu-item>
+                    <sl-menu-item>PDF</sl-menu-item>
+                    <sl-menu-item>PNG</sl-menu-item>
+                </sl-menu>
+            </sl-dropdown>
+        </div>
+
+        <div class="col-auto mb-3">
+            <sl-button class="nr-btn-demo" variant="neutral">Demo</sl-button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="nr-editor1"></div>
+        </div>
+        <div class="col-md-6">
+            <div class="nr-editor2 d-none"></div>
+            <div class="nr-swaggerui d-none overflow-auto"></div>
+            <div class="nr-markdown d-none"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/app/browserify/dist/js-yaml.min.js" asp-append-version="true"></script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,api-spec-converter.js,swagger-ui-dist.css,swagger-ui-dist.js,xml2json.js,monaco-editor"))

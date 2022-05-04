@@ -1,0 +1,21 @@
+<div class="nr-card-box invisible container-fluid p-4">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div>选择文件（支持拖拽、粘贴）</div>
+            <input class="nr-txt-file w-100" type="file" />
+        </div>
+        <div class="col-12">
+            <div class="nr-editor"></div>
+            <div class="nr-card-info mb-3 small"></div>
+            <sl-button class="nr-btn-tofile mb-3" variant="warning">Base64 转文件</sl-button>
+            <sl-input class="nr-txt-mime mb-3 d-inline-block me-4" placeholder="指定 MIME-Type"></sl-input>
+            <sl-button-group class="mb-3">
+                <sl-button class="nr-btn-decode" variant="success">解码</sl-button>
+                <sl-button class="nr-btn-encode" variant="primary">编码</sl-button>
+            </sl-button-group>
+            <div class="nr-card-result"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))

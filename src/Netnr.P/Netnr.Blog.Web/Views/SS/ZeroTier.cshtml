@@ -1,0 +1,21 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-sm-auto mb-3">
+            <sl-input class="nr-txt-token" label="Token" placeholder="请粘贴 API Token" maxlength="32"></sl-input>
+        </div>
+        <div class="col-sm-auto mb-3">
+            <sl-input class="nr-txt-networkid" label="NetworkID" placeholder="请粘贴 NetworkID" maxlength="16"></sl-input>
+        </div>
+        <div class="col-sm-auto mb-3">
+            <sl-input class="nr-txt-filter" label="Search" placeholder="Search..."></sl-input>
+        </div>
+        <div class="col-auto mb-3 d-flex align-items-end">
+            <sl-button target="_blank" href="https://my.zerotier.com">ZeroTier</sl-button>
+        </div>
+        <div class="col-12">
+            <div class="nr-grid"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))

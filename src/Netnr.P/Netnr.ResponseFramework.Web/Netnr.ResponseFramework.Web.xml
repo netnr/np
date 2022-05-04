@@ -9,11 +9,6 @@
             过滤器
             </summary>
         </member>
-        <member name="T:Netnr.ResponseFramework.Web.Apps.FilterConfigs.ErrorActionFilter">
-            <summary>
-            全局错误处理
-            </summary>
-        </member>
         <member name="P:Netnr.ResponseFramework.Web.Apps.FilterConfigs.DicDescription">
             <summary>
             提取 XML 注释为字典
@@ -646,8 +641,95 @@
             测试
             </summary>
         </member>
-        <member name="M:Netnr.ResponseFramework.Web.Program.CreateHostBuilder(System.String[])">
-            dotnet Netnr.ResponseFramework.Web.dll --urls "https://*:51"
+        <member name="T:Netnr.SharedApp.LaunchTo">
+            <summary>
+            启动设定
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.LaunchTo.SetExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            异常处理
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.LaunchTo.GetFilename(System.String,System.Boolean)">
+            <summary>
+            获取目录下文件名
+            </summary>
+            <param name="path"></param>
+            <param name="readCache"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.QuoteTo">
+            <summary>
+            资源引用
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.QuoteTo.Html(System.String)">
+            <summary>
+            得到html字符串
+            </summary>
+            <param name="quotes">引用项，逗号分割，按顺序</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.ClientTo">
+            <summary>
+            客户端信息
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.ClientTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            构造
+            </summary>
+            <param name="content"></param>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv4">
+            <summary>
+            IPv4
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv6">
+            <summary>
+            IPv6
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.UserAgent">
+            <summary>
+            UA
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Language">
+            <summary>
+            语言
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Referer">
+            <summary>
+            引荐
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedApp.DownTo">
+            <summary>
+            下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.#ctor(Microsoft.AspNetCore.Http.HttpResponse)">
+            <summary>
+            构造
+            </summary>
+            <param name="httpResponse"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.String,System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.Byte[],System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+            <param name="bytes"></param>
+            <param name="fileName">下载文件名</param>
         </member>
         <member name="T:Netnr.SharedDataKit.DataKitScript">
             <summary>
@@ -1298,95 +1380,6 @@
             <summary>
             表注释
             </summary>
-        </member>
-        <member name="T:Netnr.SharedApp.BuildTo">
-            <summary>
-            构建
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.BuildTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            构造
-            </summary>
-            <param name="httpContext"></param>
-        </member>
-        <member name="M:Netnr.SharedApp.BuildTo.Html``1">
-            <summary>
-            根据控制器构建静态页面
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.SharedApp.QuoteTo">
-            <summary>
-            资源引用
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.QuoteTo.Html(System.String)">
-            <summary>
-            得到html字符串
-            </summary>
-            <param name="quotes">引用项，逗号分割，按顺序</param>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.SharedApp.ClientTo">
-            <summary>
-            客户端信息
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.ClientTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            构造
-            </summary>
-            <param name="content"></param>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.IPv4">
-            <summary>
-            IPv4
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.IPv6">
-            <summary>
-            IPv6
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.UserAgent">
-            <summary>
-            UA
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.Language">
-            <summary>
-            语言
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.Referer">
-            <summary>
-            引荐
-            </summary>
-        </member>
-        <member name="T:Netnr.SharedApp.DownTo">
-            <summary>
-            下载
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.DownTo.#ctor(Microsoft.AspNetCore.Http.HttpResponse)">
-            <summary>
-            构造
-            </summary>
-            <param name="httpResponse"></param>
-        </member>
-        <member name="M:Netnr.SharedApp.DownTo.Stream(System.String,System.String)">
-            <summary>
-            流的方式下载
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.DownTo.Stream(System.Byte[],System.String)">
-            <summary>
-            流的方式下载
-            </summary>
-            <param name="bytes"></param>
-            <param name="fileName">下载文件名</param>
         </member>
         <member name="T:Netnr.SharedDrawing.ImageTo">
             <summary>

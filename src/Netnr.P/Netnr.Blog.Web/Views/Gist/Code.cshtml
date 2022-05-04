@@ -1,0 +1,111 @@
+@model Netnr.Blog.Domain.Gist
+@{
+    ViewData["Title"] = Model.GistRemark;
+
+    bool IsMe = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext).UserId == Model.Uid;
+    bool IsAdmin = GlobalTo.GetValue<int>("Common:AdminId") == Model.Uid;
+    var AdminGitHub = GlobalTo.GetValue("Common:AdminGitHub");
+    var AdminGitee = GlobalTo.GetValue("Common:AdminGitee");
+}
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col">
+            <div>
+                <a class="me-2" href="/gist/user/@Model.Uid">@Model.Spare3</a>/
+                <a class="ms-1 fw-bold" href="/gist/code/@Model.GistCode">@Model.GistFilename</a>
+                <small class="ms-3 opacity-75 d-none d-sm-inline-block">@Model.GistCreateTime.Value.ToString("yyyy-MM-dd HH:mm")</small>
+            </div>
+            <div class="opacity-75 mt-2">
+                <span>@Model.GistRemark</span>
+            </div>
+        </div>
+        <div class='col-auto d-none d-sm-inline-flex align-items-end'>
+            <div style="--sl-input-height-small:2em;">
+                <sl-button-group class='me-2 @(IsMe?"":"d-none")'>
+                    <sl-button variant="warning" outline size="small" href="/gist/code/@Model.GistCode/edit">
+                        <sl-icon slot="prefix" name="pencil-square"></sl-icon>Edit
+                    </sl-button>
+                    <sl-button variant="danger" outline size="small" href="/gist/code/@Model.GistCode/delete" onclick="return confirm('confirm delete?')">
+                        <sl-icon slot="prefix" name="trash"></sl-icon>Delete
+                    </sl-button>
+                </sl-button-group>
+                <sl-button-group>
+                    <sl-button size="small" href="/gist/raw/@Model.GistCode">Raw</sl-button>
+                    <sl-button size="small" href="/gist/raw/@Model.GistCode/download">Download</sl-button>
+                </sl-button-group>
+            </div>
+        </div>
+        <div class="col-12">
+            @if (Model.GistLanguage == "shell" && Model.GistFilename.EndsWith(".cast"))
+            {
+                @Html.Raw(Netnr.SharedApp.QuoteTo.Html("asciinema-player"))
+
+                <sl-divider></sl-divider>
+                <div style="height:75vh">
+                    <asciinema-player title="@Model.GistFilename"></asciinema-player>
+                </div>
+                <script>
+                    const player = AsciinemaPlayer.create('/gist/raw/@Model.GistCode/download', document.querySelector('asciinema-player'),{
+                        poster: "npt:0:44",
+                        fit: "height"
+                    });
+                </script>
+            }
+            else if (Model.GistLanguage == "markdown")
+            {
+                <sl-divider></sl-divider>
+                <div class="markdown-body position-relative"><pre>@Model.GistContent</pre></div>
+                <sl-divider></sl-divider>
+
+                @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js"))
+                <script>
+                    let mb = document.querySelector('.markdown-body');
+                    mb.innerHTML = netnrmd.render(mb.querySelector('pre').innerHTML);
+                </script>
+            }
+            else
+            {
+                <div class="markdown-body position-relative mt-2">
+                    <pre><code contenteditable language="@Model.GistLanguage">@Model.GistContent</code></pre>
+                </div>
+
+                @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js"))
+                <style>
+                    pre code::after {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        font-size: 80%;
+                        padding: 3px 6px;
+                        content: attr(language);
+                        color: var(--sl-color-warning-600);
+                    }
+                </style>
+                <script>hljs.highlightAll()</script>
+            }
+        </div>
+
+        <!--同步镜像-->
+        <div class="col-12 my-3">
+            @if (!string.IsNullOrWhiteSpace(Model.Spare1) && IsAdmin)
+            {
+                <p>
+                    <sl-icon class="align-middle" name="github"></sl-icon>
+                    <a title="GitHub 镜像" class="text-break small" href="https://gist.github.com/@AdminGitHub/@Model.Spare1">
+                        https://gist.github.com/@AdminGitHub/@Model.Spare1
+                    </a>
+                </p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Spare2) && IsAdmin)
+            {
+                <p>
+                    <sl-icon class="align-middle" name="git"></sl-icon>
+                    <a title="Gitee 镜像" class="text-break small" href="https://gitee.com/@AdminGitee/codes/@Model.Spare2">
+                        https://gitee.com/@AdminGitee/codes/@Model.Spare2
+                    </a>
+                </p>
+            }
+        </div>
+    </div>
+</div>

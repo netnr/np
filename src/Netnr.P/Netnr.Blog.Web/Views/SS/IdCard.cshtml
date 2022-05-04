@@ -1,0 +1,27 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-auto">
+            <sl-button class="nr-btn-query" variant="warning">查询</sl-button>
+        </div>
+        <div class="col">
+            <sl-input class="nr-txt-query" placeholder="请输入身份证号（15位 或 18位）" autofocus></sl-input>            
+        </div>
+        
+        <div class="col-12 mt-3">
+            <div class="nr-card-info d-none">
+                <p>号 码： <strong class="nr-node-code"></strong></p>
+                <p>地 区： <strong class="nr-node-diqu"></strong></p>
+                <p>生 日： <strong class="nr-node-shengri"></strong></p>
+                <p>性 别： <strong class="nr-node-xingbie"></strong></p>
+                <br>
+            </div>
+            <div class="nr-card-einfo d-none">
+                <p>你查询的是： <strong class="nr-node-ecodebad"></strong> <font class="text-danger">(最后一位校验码错误)</font></p>
+                <p>　正确号码： <strong class="nr-node-ecode"></strong></p>
+                <p>　　　地区： <strong class="nr-node-ediqu"></strong></p>
+                <p>　　　生日： <strong class="nr-node-eshengri"></strong></p>
+                <p>　　　性别： <strong class="nr-node-exingbie"></strong></p>
+            </div>
+        </div>
+    </div>
+</div>

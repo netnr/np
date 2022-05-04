@@ -1,0 +1,33 @@
+@model SharedPageVM
+@{
+    var Pag = Model.Pag;
+}
+
+@if (Pag.PageTotal > 1)
+{
+    <sl-button-group class="pagination justify-content-center my-3">
+        @if (Pag.PageNumber > 2)
+        {
+            <sl-button href="@Model.Page(1)">First</sl-button>
+            <a class="d-none" href="@Model.Page(1)">First</a>
+        }
+
+        @if (Pag.PageNumber - 1 > 0)
+        {
+            <sl-button href="@Model.Page(Pag.PageNumber - 1)">@(Pag.PageNumber - 1)</sl-button>
+            <a class="d-none" href="@Model.Page(Pag.PageNumber - 1)">@(Pag.PageNumber - 1)</a>
+        }
+        <sl-button variant="primary" href="@Model.Page(Pag.PageNumber)">@Pag.PageNumber</sl-button>
+        @if (Pag.PageNumber + 1 <= Pag.PageTotal)
+        {
+            <sl-button href="@Model.Page(Pag.PageNumber + 1)">@(Pag.PageNumber + 1)</sl-button>
+            <a class="d-none" href="@Model.Page(Pag.PageNumber + 1)">@(Pag.PageNumber + 1)</a>
+        }
+
+        @if (Pag.PageNumber + 1 < Pag.PageTotal)
+        {
+            <sl-button href="@Model.Page(Pag.PageTotal)" title="@Pag.PageTotal">Last</sl-button>
+            <a class="d-none" href="@Model.Page(Pag.PageNumber)" title="@Pag.PageTotal">Last</a>
+        }
+    </sl-button-group>
+}

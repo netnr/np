@@ -75,12 +75,12 @@ namespace Netnr.SharedLogging
         public string LogSystemName { get; set; }
 
         /// <summary>
-        /// 分组（1：默认；2：爬虫）
+        /// 分组（-1：异常；1：默认；2：爬虫；9：记录）
         /// </summary>
         public string LogGroup { get; set; }
 
         /// <summary>
-        /// 级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）
+        /// 级别（F： Fatal；E：Error；W：Warning；I：Info；D：Debug；T：Trace；A：All）
         /// </summary>
         public string LogLevel { get; set; }
 

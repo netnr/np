@@ -1,44 +1,111 @@
-﻿@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
+﻿@{
+    var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
+    var themeClass = theme == "dark" ? "sl-theme-dark" : "sl-theme-light";
+
+    var rdv = ViewContext.RouteData.Values;
+    var ctrl = rdv["controller"].ToString().ToLower();
+    var actionName = rdv["action"].ToString().ToLower();
+    var ca = ctrl + "/" + actionName;
+
+    var canav = "account/,mix/terms".Split(',');
+    var cafooter = "account/,admin/,home/completeinfo,home/write,storage/,ss/,user/write,user/message,user/verify,user/setting,mix/terms,note/,run/index,run/code,gist/index,gist/code,draw/index,draw/code,doc/index,doc/form,doc/item,doc/catalog,guff/code,guff/index".Split(',');
+
+    var distVpath = "/app/blog/dist";
+    var distPpath = LaunchTo.GetFilename(GlobalTo.WebRootPath + distVpath);
+
+    if (ctrl == "ss")
+    {
+        var navs = ScriptService.Nav;
+        var item = ScriptService.Find(actionName);
+        if (item != null)
+        {
+            ViewData["Title"] = $"{item["title"].ToString()}";
+        }
+    }
+}
+@Html.Raw(QuoteTo.Html("the"))
 <!DOCTYPE html>
-<html lang="zh-cn">
+<html lang="zh-cn" class='@themeClass'>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
     <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
 
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon,blog-seo,bootstrap.css,fa.css,jquery.js,bootstrap.js,jz.js"))
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    @if (ctrl == "run")
+    {
+        <meta name='keywords' content='NET牛人,Netnr,Run,在线javascript代码编辑器,js代码在线测试调试,js在线运行工具,html,css,jquery,runjs类似,jsrun类似,jsfiddle国内类似' />
+        <meta name='description' content='NET牛人,Netnr,在线编写、展示html、js、css代码，拥有实时预览、分享、代码高亮、自动完成等多项特性' />
+    }
+    else if (ctrl == "guff")
+    {
+        <meta name="referrer" content="never">
+        <meta name='keywords' content='NET牛人,Netnr,Guff,尬服,尬服乐天地' />
+        <meta name='description' content='NET牛人,Netnr,Guff,尬服,尬服乐天地' />
+    }
+    else if (ctrl == "ss")
+    {
+        var navs = ScriptService.Nav;
+        var item = ScriptService.Find(actionName);
+        if (item != null)
+        {
+            var title = item["title"].ToString();
+            var remark = item["remark"]?.ToString() ?? title;
+            ViewData["Title"] = title;
 
-    <link href="/css/global.css" rel="stylesheet" asp-append-version="true" />
+            <meta name='keywords' content='NET牛人,Netnr,@Html.Raw(title)' />
+            <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,@Html.Raw(remark)' />
+        }
+        else
+        {
+            ViewData["Title"] = "脚本服务";
 
+            <meta name='keywords' content='NET牛人,Netnr,脚本服务' />
+            <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱' />
+        }
+    }
+    else
+    {
+        <meta name='keywords' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
+        <meta name='description' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
+    }
+
+    @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css"))
+
+    @foreach (string filename in distPpath)
+    {
+        if (filename.EndsWith(".js"))
+        {
+            <script src="@distVpath/@filename"></script>
+        }
+        else
+        {
+            <link href="@distVpath/@filename" rel="stylesheet" />
+        }
+    }
 </head>
 <body>
-    @{
-        var vrv = ViewContext.RouteData.Values;
-        string ca = (vrv["controller"].ToString() + "/" + vrv["action"].ToString()).ToLower();
-
-        var canav = "account/login,account/register,home/auth,admin/write,admin/reply,admin/log,admin/logchart,mix/terms".Split(',');
-        var cafooter = "account/login,account/register,home/auth,home/completeinfo,home/write,storage/tencent,storage/qiniu,store/nenos,store/qqcos,store/qnkodo,services/keyvalues,user/write,user/message,user/verify,user/setting,admin/index,admin/write,admin/reply,admin/log,admin/logchart,mix/terms,mix/faq,note/index".Split(',');
-    }
-    
-    <partial name="_PartialQuote" model="@("MirrorReadOnly")" />
-
-    @if (!canav.Contains(ca))
+    @if (!canav.Any(x => ca.StartsWith(x)))
     {
+        if (GlobalTo.GetValue<bool>("ReadOnly"))
+        {
+            var myDomain = GlobalTo.GetValue("Common:Domain");
+
+            <div class="p-2 text-center">Mirror site is read only <a href="@myDomain">@(new Uri(myDomain).Host)</a></div>
+        }
         <partial name="_PartialNav" />
     }
-
-    <div class="min200">
-        @RenderBody()
-    </div>
-
-    @if (!cafooter.Contains(ca))
+    @RenderBody()
+    @if (ctrl == "ss")
+    {
+        var ownjs = $"/js/{ca}.js";
+        if (File.Exists(GlobalTo.WebRootPath + ownjs))
+        {
+            <script src="@ownjs" asp-append-version="true"></script>
+        }
+    }
+    @if (!cafooter.Any(x => ca.StartsWith(x)))
     {
         <partial name="_PartialFooter" />
     }
-
-    <partial name="_PartialQuote" model="@("fun.js")" />
 </body>
 </html>

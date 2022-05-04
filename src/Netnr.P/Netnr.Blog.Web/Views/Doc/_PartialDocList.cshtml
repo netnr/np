@@ -1,0 +1,64 @@
+@model SharedPageVM
+@{
+    var rows = Model.Rows as List<Netnr.Blog.Domain.DocSet>;
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+
+    var nickname = ViewData["Nickname"]?.ToString() ?? "Discover";
+    ViewData["Title"] = $"{nickname} docs";
+}
+
+@if (rows.Count == 0)
+{
+    <h1 class="text-center my-5 py-5">咣</h1>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 p-4 pb-2">
+                <span class="me-3 fs-4 align-middle"><b>@Model.Pag.Total.ToString("N0")</b> docs results</span>
+                <sl-animation name="jello" duration="5000" play>
+                    <sl-button href="/doc/form" size="small">Add doc</sl-button>
+                </sl-animation>
+            </div>
+
+            @foreach (var item in rows)
+            {
+                <div class="col-md-6 col-lg-4 my-4 px-4">
+                    @if (uinfo.UserId == item.Uid)
+                    {
+                        if (item.DsOpen != 1)
+                        {
+                            <sl-icon class="text-success" title="私有" name="lock-fill" ></sl-icon>
+                        }
+                        if (item.DsOpen != 1 && !string.IsNullOrWhiteSpace(item.Spare1))
+                        {
+                            <a class="mx-2 text-decoration-none" href="/doc/code/@(item.DsCode+"/?code="+item.Spare1)" title="分享码查看链接">
+                                <sl-icon name="share-fill"></sl-icon>
+                            </a>
+                        }
+                    }
+                    <a href="/doc/code/@item.DsCode/">@item.DsName</a>
+                    @if (item.Uid == uinfo.UserId)
+                    {
+                        <a class="mx-2 text-decoration-none" href="/doc/form/@item.DsCode" title="edit">
+                            <sl-icon name="pencil-square"></sl-icon>
+                        </a>
+                        <a class="text-danger text-decoration-none" href="/doc/delete/@item.DsCode" title="delete" onclick="return confirm('confirm delete?')">
+                            <sl-icon name="trash"></sl-icon>
+                        </a>
+                    }
+                    <p class="mt-1">@(string.IsNullOrWhiteSpace(item.DsRemark) ? "暂无备注" : item.DsRemark)</p>
+                    <div>
+                        <a class="me-2 small" href="/doc/user/@item.Uid">@item.Spare3</a>
+                        <small class="opacity-75">@item.DsCreateTime.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                    </div>
+                </div>
+            }
+
+            <div class="col-12">
+                <partial name="_PartialPaging" model="Model" />
+            </div>
+        </div>
+    </div>   
+}

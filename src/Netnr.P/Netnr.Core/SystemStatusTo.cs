@@ -91,7 +91,7 @@ namespace Netnr.Core
         /// <summary>
         /// 使用物理内存
         /// </summary>
-        public long UsePhysicalMemory { get; set; } = Environment.WorkingSet;
+        public long UseMemory { get; set; } = Environment.WorkingSet;
         /// <summary>
         /// 逻辑磁盘 B
         /// </summary>
@@ -563,7 +563,7 @@ namespace Netnr.Core
             {
                 { 0, "" },
                 { 1, $" Framework: {FrameworkDescription}" },
-                { 2, $" Use Physical Memory: {ParsingTo.FormatByteSize(UsePhysicalMemory)}" },
+                { 2, $" Memory: {ParsingTo.FormatByteSize(UseMemory)}" },
                 { 3, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
                 { 4, $" OSVersion: {OSVersion.VersionString}" },
                 { 5, $" User: {UserName}" },

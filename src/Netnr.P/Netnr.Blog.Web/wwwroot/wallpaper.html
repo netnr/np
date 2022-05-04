@@ -1,0 +1,164 @@
+﻿<!--
+https://github.com/netnr
+2022-05-03 18:43:07
+-->
+
+<!DOCTYPE html>
+<html lang="zh-cn" class='sl-theme-light'>
+<head>
+    <title>&#x58C1;&#x7EB8; NET牛人</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+            <meta name='keywords' content='NET牛人,Netnr,壁纸' />
+            <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,源于网络' />
+
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' async />
+
+
+            <script src="/app/blog/dist/219.e2081d22f9484360448f.js"></script>
+            <script src="/app/blog/dist/371.3eb11d04884eda9c3dad.js"></script>
+            <script src="/app/blog/dist/50.c35c400e11c29edecfc1.js"></script>
+            <link href="/app/blog/dist/all.0f3abfe0c9f8017d71e5.css" rel="stylesheet" />
+            <script src="/app/blog/dist/all.9ebcbedd0691dd632bba.js"></script>
+</head>
+<body>
+        
+    <nav class="nr-navbar navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+            <a class='small d-block d-lg-none' href="/wallpaper" title='&#x58C1;&#x7EB8;'>
+                <b style="color:var(--sl-color-warning-600)">&#x58C1;&#x7EB8;</b>
+            </a>
+
+            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
+                <sl-animation easing="ease-in-out" duration="1500" play>
+                    <span class="navbar-toggler-icon"></span>
+                </sl-animation>
+            </button>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item mx-2">
+                        <a class='nav-link active' href="/" title="ss.js.org">
+                            <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
+                                <div class="fw-bold">SS</div>
+                            </sl-animation>
+                        </a>
+                    </li>
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/wallpaper" title='&#x58C1;&#x7EB8;'>
+                                <b style="color:var(--sl-color-warning-600)">&#x58C1;&#x7EB8;</b>
+                            </a>
+                        </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                    </li>
+                </ul>
+            </div>
+
+            <!--mobile-->
+            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
+                <sl-menu>
+                    <sl-menu-item data-href="/">SS</sl-menu-item>
+                    
+                        <sl-menu-item data-href="/wallpaper">&#x58C1;&#x7EB8;</sl-menu-item>
+                    <sl-divider></sl-divider>
+                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
+                </sl-menu>
+            </sl-drawer>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-auto mb-3">
+            <sl-select class="nr-se-vender" value="360" title="提供商" style="width:10em;">
+                <sl-menu-item value="360">360壁纸</sl-menu-item>
+                <sl-divider></sl-divider>
+                <sl-menu-item value="adesk" title="adesk">手机壁纸</sl-menu-item>
+                <sl-divider></sl-divider>
+                <sl-menu-item value="bing">Bing壁纸</sl-menu-item>
+            </sl-select>
+        </div>
+
+        <!--360-->
+        <div class="col-auto mb-3 nr-vender-360">
+            <sl-select class="nr-se-type" style="width:10em;">
+                <sl-menu-item value="">最新壁纸</sl-menu-item>
+                <sl-divider></sl-divider>
+                <sl-menu-item value="36">4K专区</sl-menu-item>
+                <sl-menu-item value="6">美女模特</sl-menu-item>
+                <sl-menu-item value="30">爱情美图</sl-menu-item>
+                <sl-menu-item value="9">风景大片</sl-menu-item>
+                <sl-menu-item value="15">小清新</sl-menu-item>
+                <sl-menu-item value="26">动漫卡通</sl-menu-item>
+                <sl-menu-item value="11">明星风尚</sl-menu-item>
+                <sl-menu-item value="14">萌宠动物</sl-menu-item>
+                <sl-menu-item value="5">游戏壁纸</sl-menu-item>
+                <sl-menu-item value="12">汽车天下</sl-menu-item>
+                <sl-menu-item value="10">炫酷时尚</sl-menu-item>
+                <sl-menu-item value="22">军事天地</sl-menu-item>
+                <sl-menu-item value="16">劲爆体育</sl-menu-item>
+                <sl-menu-item value="32">纹理</sl-menu-item>
+                <sl-menu-item value="35">文字控</sl-menu-item>
+                <sl-menu-item value="29">月历壁纸</sl-menu-item>
+                <sl-menu-item value="7">影视剧照</sl-menu-item>
+                <sl-menu-item value="13">节日美图</sl-menu-item>
+                <sl-menu-item value="18">BABY秀</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-auto mb-3 nr-vender-360">
+            <sl-button class="nr-btn-query d-none d-sm-inline-block">搜索</sl-button>
+            <sl-input class="nr-txt-query d-inline-block" placeholder="Search..."></sl-input>
+        </div>
+        <div class="col-auto nr-vender-360">
+            <sl-select class="nr-se-proxy mb-3 d-none d-sm-inline-block" style="width:10em;">
+                <sl-menu-item value="0">不代理</sl-menu-item>
+                <sl-menu-item value="1">代理一</sl-menu-item>
+            </sl-select>
+        </div>
+
+        <!--adesk-->
+        <div class="col-auto mb-3 nr-vender-adesk d-none">
+            <sl-select class="nr-se-type-adesk" style="width:7em;">
+                <sl-menu-item value="">热门</sl-menu-item>
+                <sl-divider></sl-divider>
+                <sl-menu-item value="4e4d610cdf714d2966000000">美女</sl-menu-item>
+                <sl-menu-item value="4e4d610cdf714d2966000003">动漫</sl-menu-item>
+                <sl-menu-item value="4e4d610cdf714d2966000002">风景</sl-menu-item>
+                <sl-menu-item value="4e4d610cdf714d2966000007">游戏</sl-menu-item>
+                <sl-menu-item value="5109e04e48d5b9364ae9ac45">文字</sl-menu-item>
+                <sl-menu-item value="4fb479f75ba1c65561000027">视觉</sl-menu-item>
+                <sl-menu-item value="4ef0a35c0569795756000000">情感</sl-menu-item>
+                <sl-menu-item value="4fb47a195ba1c60ca5000222">设计</sl-menu-item>
+                <sl-menu-item value="5109e05248d5b9368bb559dc">明星</sl-menu-item>
+                <sl-menu-item value="4fb47a465ba1c65561000028">物语</sl-menu-item>
+                <sl-menu-item value="4e4d610cdf714d2966000006">男人</sl-menu-item>
+                <sl-menu-item value="4e4d610cdf714d2966000005">机械</sl-menu-item>
+                <sl-menu-item value="4fb47a305ba1c60ca5000223">城市</sl-menu-item>
+                <sl-menu-item value="4e4d610cdf714d2966000001">动物</sl-menu-item>
+            </sl-select>
+        </div>
+        
+        <!--bing-->
+        <div class="col-auto mb-3 nr-vender-bing d-none">
+            <sl-select class="nr-se-type-bing" value="random" style="width:7em;">
+                <sl-menu-item value="random">随机</sl-menu-item>
+                <sl-menu-item value="list">列表</sl-menu-item>
+            </sl-select>
+        </div>
+    </div>
+    <div class="row nr-wallpaper"></div>
+</div>
+
+<link href='https://npm.elemecdn.com/viewerjs@1.10.5/dist/viewer.min.css' rel='stylesheet' />
+<script src='https://npm.elemecdn.com/viewerjs@1.10.5/dist/viewer.min.js'></script>
+
+            <script src="/js/ss/wallpaper.js?v=70Dqp1KKWO_3Ge0BxhAg1yjmbhDqEjhD9wxtXMX-eCI"></script>
+</body>
+</html>

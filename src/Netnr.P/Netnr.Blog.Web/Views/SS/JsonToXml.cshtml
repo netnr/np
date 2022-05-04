@@ -1,0 +1,19 @@
+<div class="nr-card-box invisible container-fluid p-4">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="mb-3">
+                <sl-button class="nr-btn-build1" variant="warning">JSON To XML</sl-button>
+            </div>
+            <div class="nr-editor1"></div>
+        </div>
+        <div class="col-sm-6">
+            <div class="mb-3">
+                <sl-button class="nr-btn-build2" variant="warning">XML To JSON</sl-button>
+            </div>
+            <div class="nr-editor2"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/app/browserify/dist/fast-xml-parser.min.js" asp-append-version="true"></script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))

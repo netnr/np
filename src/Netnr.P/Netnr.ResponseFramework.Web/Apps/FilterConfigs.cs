@@ -13,24 +13,6 @@ namespace Netnr.ResponseFramework.Web.Apps
     /// </summary>
     public class FilterConfigs
     {
-        /// <summary>
-        /// 全局错误处理
-        /// </summary>
-        public class ErrorActionFilter : IExceptionFilter
-        {
-            public void OnException(ExceptionContext context)
-            {
-                try
-                {
-                    Core.ConsoleTo.Log(context.Exception);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"写入错误日志失败：{ex.Message}");
-                }
-            }
-        }
-
         private static Dictionary<string, string> _dicDescription;
         /// <summary>
         /// 提取 XML 注释为字典
@@ -114,7 +96,7 @@ namespace Netnr.ResponseFramework.Web.Apps
         /// </summary>
         public class GlobalActionAttribute : ActionFilterAttribute
         {
-            Stopwatch swAsync = new();
+            readonly Stopwatch swAsync = new();
 
             public override void OnActionExecuting(ActionExecutingContext context)
             {
@@ -184,8 +166,7 @@ namespace Netnr.ResponseFramework.Web.Apps
                         }
 
                         //记录查询SQL
-                        var ovm = (context.Result as ObjectResult)?.Value as QueryDataOutputVM;
-                        if (ovm != null)
+                        if ((context.Result as ObjectResult)?.Value is QueryDataOutputVM ovm)
                         {
                             mo.LogContent += Environment.NewLine + ovm.QuerySql;
                         }

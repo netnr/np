@@ -1,0 +1,17 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md mb-3">
+            <sl-input class="nr-txt-filter" placeholder="Search..."></sl-input>
+        </div>
+        <div class="col-md-auto mb-3">
+            <sl-button variant="success" title="100g 食物中含量">低嘌呤</sl-button>
+            <sl-button variant="warning" title="100g 食物中含量在 25mg-150mg">中嘌呤</sl-button>
+            <sl-button variant="danger" title="100g 食物中含量在 150-1000mg">高嘌呤</sl-button>
+        </div>
+        <div class="col-12">
+            <div class="nr-grid"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))

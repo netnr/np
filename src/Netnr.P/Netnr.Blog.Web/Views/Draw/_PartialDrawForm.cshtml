@@ -1,0 +1,33 @@
+@model Netnr.Blog.Domain.Draw
+@{
+    ViewData["Title"] = Model == null ? "Add draw" : "Editing draw";
+}
+
+<div class="container p-4">
+    <div class="row">
+        <div class="col-12">
+            <form method="post" action="/draw/code/saveform">
+                <sl-select class="mb-3" label="类型" size="large" required name="DrType" value='@(Model?.DrType=="mind"?"mind":"draw")' @(Model == null ? "" : "disabled")>
+                    <sl-menu-item value="draw">绘图（Graph）</sl-menu-item>
+                    <sl-menu-item value="mind">脑图（Mind）</sl-menu-item>
+                </sl-select>
+                <sl-input class="mb-3" label="标题" size="large" required name="DrName" value="@Model?.DrName" placeholder="标题名称" maxlength="50" autofocus></sl-input>
+                <sl-textarea class="mb-3" label="描述" name="DrRemark" placeholder="描述" maxlength="200" rows="5" value="@Model?.DrRemark"></sl-textarea>
+                <div class="row">
+                    <div class="col-md-6">
+                        <sl-select label="分享" required name="DrOpen" value='@(Model?.DrOpen==2?"2":"1")'>
+                            <sl-menu-item value="1">公开（只读）</sl-menu-item>
+                            <sl-menu-item value="2">私有（可分享码查看）</sl-menu-item>
+                        </sl-select>
+                    </div>
+                    <div class="col-md-6">
+                        <sl-input label="分享码" type="password" name="Spare1" value="@Model?.Spare1" placeholder="分享码，不需要分享可不填写" maxlength="20" toggle-password autocomplete="off"></sl-input>
+                    </div>
+                </div>
+                <p class="small opacity-75">私有时，可根据分享码 <b>查看</b>，4 - 20 位</p>
+                <input type="hidden" name="DrId" value="@Model?.DrId" />
+                <sl-button type="submit" variant="warning">Save draw</sl-button>
+            </form>
+        </div>
+    </div>
+</div>

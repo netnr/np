@@ -1,0 +1,126 @@
+/*navbar*/
+.nr-navbar-drawer sl-menu::part(base) {
+    border: none;
+}
+
+/*link*/
+a, .markdown-body a, .nav-link {
+    text-decoration: none;
+    color: var(--sl-color-primary-600);
+}
+
+    a:hover, .markdown-body a:hover, .nav-link:hover {
+        text-decoration: underline;
+        color: var(--sl-color-primary-700);
+    }
+
+/*sl*/
+sl-input::part(input), sl-textarea::part(textarea) {
+    width: inherit;
+}
+
+/*file input*/
+input[type=file] {
+    max-width: 100%;
+    color: var(--sl-input-color);
+    padding: 0 var(--sl-input-spacing-medium);
+    font-size: var(--sl-input-font-size-medium);
+    background-color: var(--sl-input-background-color);
+    border-radius: var(--sl-input-border-radius-medium);
+    border: solid var(--sl-input-border-width) var(--sl-input-border-color);
+}
+input[type=file]::file-selector-button {
+    border: none;
+    margin: 0 1em 0 0;
+    padding: 0.35em 0 0.5em;
+    color: var(--sl-input-color);
+    background-color: transparent;
+}
+input[type=file]:hover {
+    box-shadow: var(--sl-focus-ring);
+    border-color: var(--sl-input-border-color-focus);
+}
+
+/*Tag*/
+.tag {
+    background-color: var(--sl-color-primary-50);
+    border: 1px solid var(--sl-color-primary-400);
+    font-size: 85%;
+    padding: 0 .2em;
+    margin: 0 .3em 0 0;
+    border-radius: .3em;
+    white-space: nowrap;
+}
+
+    .tag:hover {
+        text-decoration: none;
+        color: var(--sl-color-primary-900);
+        background-color: var(--sl-color-primary-200);
+    }
+
+/*pre init*/
+.nr-pre-init pre {
+    font-size: 18px;
+    line-height: 24px;
+    padding: 0 0 0 75px;
+    font-family: Consolas, "Courier New", monospace;
+}
+
+/*jstree icon*/
+.fa-folder-open::before {
+    content: "📁";
+    font-style: normal;
+}
+
+.fa-file-text::before {
+    content: "📝";
+    font-style: normal;
+}
+
+/* Bootstrap */
+.modal-full {
+    width: auto;
+    max-width: initial;
+    margin: 3em 3em 0;
+}
+
+.modalscroll {
+    overflow-y: auto;
+}
+
+.custom-file-label::after {
+    content: "浏览"
+}
+
+.btn-min,
+.btn-min button {
+    padding: 0 .5rem;
+}
+
+/*nrc*/
+/*全屏*/
+.nrc-fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/*loading*/
+.nrc-loading {
+    border: 0.5em solid var(--sl-color-neutral-200);
+    border-top: 0.5em solid var(--sl-color-primary-600);
+    border-bottom: 0.5em solid var(--sl-color-primary-600);
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: 50%;
+    animation: nrc-spin 2s linear infinite;
+}
+@keyframes nrc-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

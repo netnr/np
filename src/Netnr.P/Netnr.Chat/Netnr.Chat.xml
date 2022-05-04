@@ -1202,12 +1202,11 @@
             <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
             <returns>表数据、受影响行数、表结构</returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataOnly(System.Data.Common.DbCommand,System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataOnly(System.Data.Common.DbCommand)">
             <summary>
             查询返回数据集
             </summary>
             <param name="dbCommand"></param>
-            <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataRow(System.Data.Common.DbCommand,System.Action{System.Data.DataRow})">

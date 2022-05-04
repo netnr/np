@@ -1,0 +1,101 @@
+﻿<!--
+https://github.com/netnr
+2022-05-03 18:43:10
+-->
+
+<!DOCTYPE html>
+<html lang="zh-cn" class='sl-theme-light'>
+<head>
+    <title>Office &#x6587;&#x6863;&#x67E5;&#x770B; NET牛人</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+            <meta name='keywords' content='NET牛人,Netnr,Office 文档查看' />
+            <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,Word、Excel、PPT' />
+
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' async />
+
+
+            <script src="/app/blog/dist/219.e2081d22f9484360448f.js"></script>
+            <script src="/app/blog/dist/371.3eb11d04884eda9c3dad.js"></script>
+            <script src="/app/blog/dist/50.c35c400e11c29edecfc1.js"></script>
+            <link href="/app/blog/dist/all.0f3abfe0c9f8017d71e5.css" rel="stylesheet" />
+            <script src="/app/blog/dist/all.9ebcbedd0691dd632bba.js"></script>
+</head>
+<body>
+        
+    <nav class="nr-navbar navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+            <a class='small d-block d-lg-none' href="/officeview" title='Office &#x6587;&#x6863;&#x67E5;&#x770B;'>
+                <b style="color:var(--sl-color-warning-600)">Office &#x6587;&#x6863;&#x67E5;&#x770B;</b>
+            </a>
+
+            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
+                <sl-animation easing="ease-in-out" duration="1500" play>
+                    <span class="navbar-toggler-icon"></span>
+                </sl-animation>
+            </button>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item mx-2">
+                        <a class='nav-link active' href="/" title="ss.js.org">
+                            <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
+                                <div class="fw-bold">SS</div>
+                            </sl-animation>
+                        </a>
+                    </li>
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/officeview" title='Office &#x6587;&#x6863;&#x67E5;&#x770B;'>
+                                <b style="color:var(--sl-color-warning-600)">Office &#x6587;&#x6863;&#x67E5;&#x770B;</b>
+                            </a>
+                        </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                    </li>
+                </ul>
+            </div>
+
+            <!--mobile-->
+            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
+                <sl-menu>
+                    <sl-menu-item data-href="/">SS</sl-menu-item>
+                    
+                        <sl-menu-item data-href="/officeview">Office &#x6587;&#x6863;&#x67E5;&#x770B;</sl-menu-item>
+                    <sl-divider></sl-divider>
+                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
+                </sl-menu>
+            </sl-drawer>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md mb-3">
+            <sl-input label="公网文档链接" class="nr-txt-url" placeholder="请粘贴公网文档链接地址"></sl-input>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-md mb-3">
+            <div>上传 Office 文档</div>
+            <div class="d-flex">
+                <input class="nr-txt-file w-100" type="file" />
+                <div class="nr-loading nrc-loading ms-3 d-none"></div>
+            </div>
+        </div>
+        <div class="col-12 invisible small">
+            <span>全屏完整链接：</span>
+            <a target="_blank" class="nr-aurl text-break" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
+        </div>
+        <div class="col-12">
+            <iframe src="about:blank" class="nr-iframe invisible w-100"></iframe>
+        </div>
+    </div>
+</div>
+            <script src="/js/ss/officeview.js?v=ObHXgpkxqqv0h6-9tpAoyaAyhpttGD8Td2vL2WuxM1Q"></script>
+</body>
+</html>

@@ -56,11 +56,11 @@ public class SixLaborsImageSharpDrawingController : Controller
 
         image.Mutate(ctx =>
         {
-                //背景设为白色
-                ctx.Fill(Color.White);
+            //背景设为白色
+            ctx.Fill(Color.White);
 
-                //在随机位置画背景点  
-                for (int i = 0; i < 200; i++)
+            //在随机位置画背景点  
+            for (int i = 0; i < 200; i++)
             {
                 var pen = new Pen(Colors[random.Next(Colors.Length)], 1);
 
@@ -70,11 +70,11 @@ public class SixLaborsImageSharpDrawingController : Controller
                 ctx.DrawLines(pen, p1, p2);
             }
 
-                //验证码绘制
-                for (int i = 0; i < code.Length; i++)
+            //验证码绘制
+            for (int i = 0; i < code.Length; i++)
             {
-                    //控制验证码不在同一高度
-                    int ii = random.Next(15) * (random.Next(1) % 2 == 0 ? -1 : 1) + 12;
+                //控制验证码不在同一高度
+                int ii = random.Next(15) * (random.Next(1) % 2 == 0 ? -1 : 1) + 12;
                 ctx.DrawText(code.Substring(i, 1), font, Colors[random.Next(Colors.Length)], new PointF(20 * i + 10, ii));
             }
         });

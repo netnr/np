@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
+using System.Collections.Concurrent;
 using Netnr.Blog.Data;
 using Netnr.SharedLogging;
 using Netnr.SharedFast;
+using AgGrid.InfiniteRowModel;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -42,14 +43,13 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 查询文章列表
+        /// 文章列表
         /// </summary>
-        /// <param name="ivm"></param>
+        /// <param name="grp"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QueryWriteList(QueryDataInputVM ivm)
+        [HttpGet]
+        public object WriteList(string grp)
         {
-            var ovm = new QueryDataOutputVM();
-
             var query = from a in db.UserWriting
                         join b in db.UserInfo on a.Uid equals b.UserId
                         select new
@@ -72,27 +72,16 @@ namespace Netnr.Blog.Web.Controllers
                             b.UserMail
                         };
 
-            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
-            {
-                query = GlobalTo.TDB switch
-                {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.UwTitle, $"%{ivm.Pe1}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.UwTitle, $"%{ivm.Pe1}%")),
-                    _ => query.Where(x => x.UwTitle.Contains(ivm.Pe1)),
-                };
-            }
-
-            Application.CommonService.QueryJoin(query, ivm, ref ovm);
-
-            return ovm;
+            return query.GetInfiniteRowModelBlock(grp);
         }
 
         /// <summary>
         /// 保存一篇文章（管理）
         /// </summary>
         /// <param name="mo"></param>
-        /// <returns></returns>        
-        public SharedResultVM WriteAdminSave(Domain.UserWriting mo)
+        /// <returns></returns>
+        [HttpPost]
+        public SharedResultVM WriteSave([FromForm] Domain.UserWriting mo)
         {
             var vm = new SharedResultVM();
 
@@ -102,6 +91,7 @@ namespace Netnr.Blog.Web.Controllers
 
             if (oldmo != null)
             {
+                oldmo.UwTitle = mo.UwTitle;
                 oldmo.UwStatus = mo.UwStatus;
                 oldmo.UwReplyNum = mo.UwReplyNum;
                 oldmo.UwReadNum = mo.UwReadNum;
@@ -133,14 +123,13 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 查询回复列表
+        /// 查询回复
         /// </summary>
-        /// <param name="ivm"></param>
+        /// <param name="grp"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QueryReplyList(QueryDataInputVM ivm)
+        [HttpGet]
+        public object ReplyList(string grp)
         {
-            var ovm = new QueryDataOutputVM();
-
             var query = from a in db.UserReply
                         join b1 in db.UserInfo on a.Uid equals b1.UserId into bg
                         from b in bg.DefaultIfEmpty()
@@ -168,19 +157,7 @@ namespace Netnr.Blog.Web.Controllers
                             UserMail = b == null ? null : b.UserMail
                         };
 
-            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
-            {
-                query = GlobalTo.TDB switch
-                {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.UrContent, $"%{ivm.Pe1}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.UrContent, $"%{ivm.Pe1}%")),
-                    _ => query.Where(x => x.UrContent.Contains(ivm.Pe1)),
-                };
-            }
-
-            Application.CommonService.QueryJoin(query, ivm, ref ovm);
-
-            return ovm;
+            return query.GetInfiniteRowModelBlock(grp);
         }
 
         /// <summary>
@@ -188,7 +165,8 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        public SharedResultVM ReplyAdminSave(Domain.UserReply mo)
+        [HttpPost]
+        public SharedResultVM ReplySave([FromForm] Domain.UserReply mo)
         {
             var vm = new SharedResultVM();
 
@@ -201,6 +179,9 @@ namespace Netnr.Blog.Web.Controllers
                 oldmo.UrAnonymousName = mo.UrAnonymousName;
                 oldmo.UrAnonymousMail = mo.UrAnonymousMail;
                 oldmo.UrAnonymousLink = mo.UrAnonymousLink;
+
+                oldmo.UrContent = mo.UrContent;
+                oldmo.UrContentMd = mo.UrContentMd;
 
                 oldmo.UrStatus = mo.UrStatus;
 
@@ -216,7 +197,7 @@ namespace Netnr.Blog.Web.Controllers
 
         #endregion
 
-        #region 日志
+        #region 日志管理
 
         /// <summary>
         /// 日志页面
@@ -230,46 +211,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 查询日志
         /// </summary>
-        /// <param name="page">页码</param>
-        /// <param name="rows">行数</param>
-        /// <param name="wheres">条件</param>
+        /// <param name="queryAllSql"></param>
+        /// <param name="queryLimitSql"></param>
         /// <returns></returns>
-        [ResponseCache(Duration = 10)]
-        public string QueryLog(int page, int rows, string wheres)
+        [ResponseCache(Duration = 10), HttpGet]
+        public LoggingResultVM QueryLog(string queryAllSql, string queryLimitSql)
         {
-            var now = DateTime.Now;
-            List<List<string>> listWhere = new();
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(wheres))
-                {
-                    var jws = JArray.Parse(wheres);
-                    foreach (var wi in jws)
-                    {
-                        var w1 = wi[0]?.ToString();
-                        var w2 = wi[1]?.ToString();
-                        var w3 = wi[2]?.ToString();
-                        if (!string.IsNullOrWhiteSpace(w2) && !string.IsNullOrWhiteSpace(w3))
-                        {
-                            listWhere.Add(new List<string> { w1, w2, w3 });
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                listWhere = null;
-            }
-
-            var vm = LoggingTo.Query(now.AddYears(-5), now, page, rows, listWhere);
-
-            return new
-            {
-                data = vm.Data,
-                total = vm.Total,
-                lost = vm.Lost
-            }.ToJson();
+            return LoggingTo.Query(queryAllSql, queryLimitSql);
         }
 
         /// <summary>
@@ -284,11 +232,11 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 查询日志流量
         /// </summary>
-        /// <param name="type">类型</param>
+        /// <param name="days">类型</param>
         /// <param name="LogGroup">分组</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 10)]
-        public LoggingResultVM QueryLogStatsPVUV(int? type, string LogGroup)
+        [ResponseCache(Duration = 10), HttpGet]
+        public LoggingResultVM QueryLogStatsPVUV(int? days, string LogGroup)
         {
             var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
@@ -299,19 +247,19 @@ namespace Netnr.Blog.Web.Controllers
                 };
             }
 
-            var vm = LoggingTo.StatsPVUV(type ?? 0, listWhere);
+            var vm = LoggingTo.StatsPVUV(days ?? 0, listWhere);
             return vm;
         }
 
         /// <summary>
         /// 查询日志Top
         /// </summary>
-        /// <param name="type">类型</param>
+        /// <param name="days">类型</param>
         /// <param name="field">属性字段</param>
         /// <param name="LogGroup">分组</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 10)]
-        public LoggingResultVM QueryLogReportTop(int? type, string field, string LogGroup)
+        [ResponseCache(Duration = 10), HttpGet]
+        public LoggingResultVM QueryLogStatsTop(int? days, string field, string LogGroup)
         {
             var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
@@ -322,13 +270,13 @@ namespace Netnr.Blog.Web.Controllers
                 };
             }
 
-            var vm = LoggingTo.StatsTop(type ?? 0, field, listWhere);
+            var vm = LoggingTo.StatsTop(days ?? 0, field, listWhere);
             return vm;
         }
 
         #endregion
 
-        #region 百科字典
+        #region 键值
 
         /// <summary>
         /// 字典
@@ -336,148 +284,287 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         public IActionResult KeyValues()
         {
-            string cmd = RouteData.Values["id"]?.ToString();
-            if (cmd != null)
-            {
-                string result = string.Empty;
-                var rt = new List<object>
-                {
-                    0,
-                    "fail"
-                };
-
-                try
-                {
-                    switch (cmd)
-                    {
-                        case "grab":
-                            {
-                                string key = Request.Form["Key"].ToString();
-                                string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToUrlEncode()}&bk_length=600";
-                                string apirt = Core.HttpTo.Get(api);
-                                if (apirt.Length > 100)
-                                {
-                                    var kvMo = db.KeyValues.FirstOrDefault(x => x.KeyName == key);
-                                    if (kvMo == null)
-                                    {
-                                        kvMo = new Domain.KeyValues
-                                        {
-                                            KeyId = Guid.NewGuid().ToString(),
-                                            KeyName = key.ToLower(),
-                                            KeyValue = apirt
-                                        };
-                                        db.KeyValues.Add(kvMo);
-                                    }
-                                    else
-                                    {
-                                        kvMo.KeyValue = apirt;
-                                        db.KeyValues.Update(kvMo);
-                                    }
-
-                                    rt[0] = db.SaveChanges();
-                                    rt[1] = kvMo;
-                                }
-                                else
-                                {
-                                    rt[0] = 0;
-                                    rt[1] = apirt;
-                                }
-                            }
-                            break;
-                        case "synonym":
-                            {
-                                var keys = Request.Form["keys"].ToString().Split(',').ToList();
-
-                                string mainKey = keys.First().ToLower();
-                                keys.RemoveAt(0);
-
-                                var listkvs = new List<Domain.KeyValueSynonym>();
-                                foreach (var key in keys)
-                                {
-                                    var kvs = new Domain.KeyValueSynonym
-                                    {
-                                        KsId = Guid.NewGuid().ToString(),
-                                        KeyName = mainKey,
-                                        KsName = key.ToLower()
-                                    };
-                                    listkvs.Add(kvs);
-                                }
-
-                                var mo = db.KeyValueSynonym.FirstOrDefault(x => x.KeyName == mainKey);
-                                if (mo != null)
-                                {
-                                    db.KeyValueSynonym.Remove(mo);
-                                }
-                                db.KeyValueSynonym.AddRange(listkvs);
-                                int oldrow = db.SaveChanges();
-                                rt[0] = 1;
-                                rt[1] = " 受影响 " + oldrow + " 行";
-                            }
-                            break;
-                        case "addtag":
-                            {
-                                var tags = Request.Form["tags"].ToString().ToLower().Split(',').ToList();
-
-                                if (tags.Count > 0)
-                                {
-                                    var mt = db.Tags.Where(x => tags.Contains(x.TagName)).ToList();
-                                    if (mt.Count == 0)
-                                    {
-                                        var listMo = new List<Domain.Tags>();
-                                        var tagHs = new HashSet<string>();
-                                        foreach (var tag in tags)
-                                        {
-                                            if (tagHs.Add(tag))
-                                            {
-                                                var mo = new Domain.Tags
-                                                {
-                                                    TagName = tag,
-                                                    TagCode = tag,
-                                                    TagStatus = 1,
-                                                    TagHot = 0,
-                                                    TagIcon = tag + ".svg"
-                                                };
-                                                listMo.Add(mo);
-                                            }
-                                        }
-                                        tagHs.Clear();
-
-                                        //新增&刷新缓存
-                                        db.Tags.AddRange(listMo);
-                                        rt[0] = db.SaveChanges();
-
-                                        Application.CommonService.TagsQuery(false);
-
-                                        rt[1] = "操作成功（已刷新缓存）";
-                                    }
-                                    else
-                                    {
-                                        rt[0] = 0;
-                                        rt[1] = "标签已存在：" + mt.ToJson();
-                                    }
-                                }
-                                else
-                                {
-                                    Application.CommonService.TagsQuery(false);
-
-                                    rt[0] = 0;
-                                    rt[1] = "新增标签不能为空（已刷新缓存）";
-                                }
-                            }
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    rt[1] = ex.Message;
-                    rt.Add(ex.StackTrace);
-                }
-
-                result = rt.ToJson();
-                return Content(result);
-            }
             return View();
+        }
+
+        /// <summary>
+        /// 键值 命令
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public SharedResultVM KeyVal([FromRoute] string id, string keys)
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var listKey = string.IsNullOrWhiteSpace(keys) ? new List<string>() : keys.Split(',').ToList();
+
+                switch (id?.ToLower())
+                {
+                    case "grab":
+                        {
+                            listKey.ForEach(key =>
+                            {
+                                string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToUrlEncode()}&bk_length=600";
+                                try
+                                {
+                                    var result = Core.HttpTo.Get(api);
+                                    if (result.Length > 100)
+                                    {
+                                        var mo = db.KeyValues.FirstOrDefault(x => x.KeyName == key);
+                                        if (mo == null)
+                                        {
+                                            mo = new Domain.KeyValues
+                                            {
+                                                KeyId = Guid.NewGuid().ToString(),
+                                                KeyName = key.ToLower(),
+                                                KeyValue = result
+                                            };
+                                            db.KeyValues.Add(mo);
+                                        }
+                                        else
+                                        {
+                                            mo.KeyValue = result;
+                                            db.KeyValues.Update(mo);
+                                        }
+
+                                        var num = db.SaveChanges();
+                                        vm.Log.Add($"Done {key} {num}");
+                                    }
+                                    else
+                                    {
+                                        vm.Log.Add($"Fatal {key} {result}");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex);
+                                    vm.Log.Add($"{key} Error {ex.Message}");
+                                }
+                            });
+                        }
+                        break;
+                    case "synonym":
+                        {
+                            string mainKey = listKey.First().ToLower();
+                            listKey.RemoveAt(0);
+
+                            var listkvs = new List<Domain.KeyValueSynonym>();
+                            listKey.ForEach(key =>
+                            {
+                                var kvs = new Domain.KeyValueSynonym
+                                {
+                                    KsId = Guid.NewGuid().ToString(),
+                                    KeyName = mainKey,
+                                    KsName = key.ToLower()
+                                };
+                                listkvs.Add(kvs);
+                            });
+
+                            var mo = db.KeyValueSynonym.FirstOrDefault(x => x.KeyName == mainKey);
+                            if (mo != null)
+                            {
+                                db.KeyValueSynonym.Remove(mo);
+                            }
+                            db.KeyValueSynonym.AddRange(listkvs);
+
+                            int num = db.SaveChanges();
+                            vm.Log.Add($"Done {mainKey} {num}");
+                        }
+                        break;
+                    case "tag":
+                        {
+                            if (listKey.Count > 0)
+                            {
+                                var mt = db.Tags.Where(x => listKey.Contains(x.TagName)).ToList();
+                                if (mt.Count == 0)
+                                {
+                                    var listMo = new List<Domain.Tags>();
+                                    var tagHs = new HashSet<string>();
+                                    foreach (var tag in listKey)
+                                    {
+                                        if (tagHs.Add(tag))
+                                        {
+                                            var mo = new Domain.Tags
+                                            {
+                                                TagName = tag,
+                                                TagCode = tag,
+                                                TagStatus = 1,
+                                                TagHot = 0,
+                                                TagIcon = tag + ".svg"
+                                            };
+                                            listMo.Add(mo);
+                                        }
+                                    }
+                                    tagHs.Clear();
+
+                                    //新增&刷新缓存
+                                    db.Tags.AddRange(listMo);
+                                    var num = db.SaveChanges();
+
+                                    Application.CommonService.TagsQuery(false);
+                                    vm.Log.Add($"Done 已刷新缓存 {num}");
+                                }
+                                else
+                                {
+                                    vm.Log.Add($"Done 标签已存在 {mt.ToJson()}");
+                                }
+                            }
+                            else
+                            {
+                                Application.CommonService.TagsQuery(false);
+                                vm.Log.Add($"Done 已刷新缓存");
+                            }
+                        }
+                        break;
+                }
+
+                vm.Set(SharedEnum.RTag.success);
+                return vm;
+            });
+        }
+
+        #endregion
+
+        #region 表管理
+
+        public IActionResult Table()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public SharedResultVM TableQuery(string queryAllSql, string queryLimitSql)
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var conn = db.Database.GetDbConnection();
+                if (conn.State != ConnectionState.Open)
+                {
+                    conn.Open();
+                }
+
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = queryLimitSql;
+                var reader = cmd.ExecuteReader();
+                var table = new DataTable();
+                table.Load(reader);
+
+                cmd.CommandText = queryAllSql;
+                var count = cmd.ExecuteScalar();
+
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                vm.Data = new { table, count };
+                vm.Set(SharedEnum.RTag.success);
+
+                return vm;
+            });
+        }
+
+        [HttpGet]
+        public SharedResultVM TableMeta(string name, string tableName)
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                var conn = db.Database.GetDbConnection();
+                var dk = new SharedDataKit.DataKit(GlobalTo.TDB, conn);
+
+                switch (name)
+                {
+                    case "table":
+                        vm.Data = dk.GetTable();
+                        vm.Log.Add(GlobalTo.TDB);
+                        break;
+                    case "column": vm.Data = dk.GetColumn(tableName); break;
+                }
+
+                vm.Set(SharedEnum.RTag.success);
+
+                return vm;
+            });
+        }
+
+        #endregion
+
+        #region 清理全局缓存
+
+        public IActionResult ClearCache()
+        {
+            Core.CacheTo.RemoveAll();
+            return Ok("Done!");
+        }
+
+        #endregion
+
+        #region 生成脚本服务
+
+
+        /// <summary>
+        /// 构建静态文件
+        /// </summary>
+        /// <returns></returns>
+        public SharedResultVM Build()
+        {
+            var vm = BuildHtml<SSController>();
+            return vm;
+        }
+
+        /// <summary>
+        /// 根据控制器构建静态页面
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        private SharedResultVM BuildHtml<T>() where T : Controller
+        {
+            var vm = new SharedResultVM();
+
+            try
+            {
+                Console.WriteLine("BuildHtml Start ...");
+                Core.CacheTo.RemoveAll();
+
+                AppContext.SetSwitch("Netnr.BuildHtml", true);
+
+                //反射 action
+                var type = typeof(T);
+                var methods = type.GetMethods().Where(x => x.DeclaringType == type).ToList();
+                var ctrlName = type.Name.Replace("Controller", "").ToLower();
+
+                //访问前缀
+                var urlPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ctrlName}/";
+
+                vm.Log.Add($"Build Count：{methods.Count}");
+
+                var cbs = new ConcurrentBag<string>();
+                //并行请求
+                Parallel.ForEach(methods, mh =>
+                {
+                    Console.WriteLine(mh.Name);
+
+                    cbs.Add(mh.Name);
+                    string html = Core.HttpTo.Get(urlPrefix + mh.Name);
+                    var savePath = $"{GlobalTo.WebRootPath}/{mh.Name.ToLower()}.html";
+                    Core.FileTo.WriteText(html, savePath, false);
+                });
+                vm.Log.AddRange(cbs);
+                Console.WriteLine("\nDone!\n");
+
+                vm.Set(SharedEnum.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+            finally
+            {
+                AppContext.SetSwitch("Netnr.BuildHtml", false);
+            }
+
+            return vm;
         }
 
         #endregion

@@ -421,11 +421,32 @@ namespace Netnr.SharedAdo
         /// 查询返回数据集
         /// </summary>
         /// <param name="dbCommand"></param>
-        /// <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
         /// <returns></returns>
-        public static DataSet ExecuteDataOnly(this DbCommand dbCommand, bool tableLoad = true)
+        public static Dictionary<string, List<Dictionary<string, object>>> ExecuteDataOnly(this DbCommand dbCommand)
         {
-            return ExecuteDataSet(dbCommand, tableLoad).Item1;
+            var dic = new Dictionary<string, List<Dictionary<string, object>>>();
+            using var reader = dbCommand.ExecuteReader();
+            do
+            {
+                var hasField = reader.FieldCount > 0;
+                if (hasField)
+                {
+                    var dicKey = $"table{dic.Keys.Count + 1}";
+                    var dicVal = new List<Dictionary<string, object>>();
+                    while (reader.Read())
+                    {
+                        var row = new Dictionary<string, object>();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            row.Add(reader.GetName(i), reader[i]);
+                        }
+                        dicVal.Add(row);
+                    }
+                    dic.Add(dicKey, dicVal);
+                }
+            } while (reader.NextResult());
+
+            return dic;
         }
 
         /// <summary>

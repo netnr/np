@@ -286,20 +286,21 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 第三方登录授权页面
         /// </summary>
+        /// <param name="id">登录类型</param>
         /// <returns></returns>
-        public IActionResult Auth()
+        public IActionResult Auth([FromRoute] string id)
         {
-            var authType = RouteData.Values["id"]?.ToString();
-            var url = Application.ThirdLoginService.LoginLink(authType);
+            var url = Application.ThirdLoginService.LoginLink(id);
             return Redirect(url);
         }
 
         /// <summary>
         /// 登录授权回调
         /// </summary>
+        /// <param name="id">登录类型</param>
         /// <param name="authorizeResult">获取授权码以及防伪标识</param>
         /// <returns></returns>
-        public IActionResult AuthCallback(LoginBase.AuthorizeResult authorizeResult)
+        public IActionResult AuthCallback([FromRoute] string id, LoginBase.AuthorizeResult authorizeResult)
         {
             var vm = new SharedResultVM();
 
@@ -323,8 +324,9 @@ namespace Netnr.Blog.Web.Controllers
                     //头像
                     string avatar = string.Empty;
 
-                    Enum.TryParse(RouteData.Values["id"]?.ToString(), true, out LoginBase.LoginType vtype);
+                    Enum.TryParse(id, true, out LoginBase.LoginType vtype);
 
+                    Console.WriteLine(vtype);
                     switch (vtype)
                     {
                         case LoginBase.LoginType.QQ:
@@ -416,26 +418,35 @@ namespace Netnr.Blog.Web.Controllers
                             break;
                         case LoginBase.LoginType.GitHub:
                             {
-                                //获取 access_token
-                                var tokenEntity = GitHub.AccessToken(new GitHub_AccessToken_RequestEntity()
+                                try
                                 {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
+                                    Console.WriteLine("获取 access_token");
+                                    //获取 access_token
+                                    var tokenEntity = GitHub.AccessToken(new GitHub_AccessToken_RequestEntity()
+                                    {
+                                        code = authorizeResult.code
+                                    });
+                                    Console.WriteLine(tokenEntity.ToJson());
 
-                                //获取 user
-                                var userEntity = GitHub.User(tokenEntity.access_token);
-                                Console.WriteLine(userEntity.ToJson());
+                                    //获取 user
+                                    var userEntity = GitHub.User(tokenEntity.access_token);
+                                    Console.WriteLine(userEntity.ToJson());
 
-                                openId = userEntity.id.ToString();
-                                mo.OpenId3 = openId;
+                                    openId = userEntity.id.ToString();
+                                    mo.OpenId3 = openId;
 
-                                mo.Nickname = userEntity.name;
-                                mo.UserSay = userEntity.bio;
-                                mo.UserUrl = userEntity.blog;
-                                mo.UserMail = userEntity.email;
+                                    mo.Nickname = userEntity.name;
+                                    mo.UserSay = userEntity.bio;
+                                    mo.UserUrl = userEntity.blog;
+                                    mo.UserMail = userEntity.email;
 
-                                avatar = userEntity.avatar_url;
+                                    avatar = userEntity.avatar_url;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("GitHub ERROR:");
+                                    Console.WriteLine(ex);
+                                }
                             }
                             break;
                         case LoginBase.LoginType.Gitee:
@@ -684,8 +695,8 @@ namespace Netnr.Blog.Web.Controllers
                                         try
                                         {
                                             //物理根路径
-                                            var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath").Replace("~", GlobalTo.ContentRootPath);
-                                            var ppath = PathTo.Combine(prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
+                                            var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath");
+                                            var ppath = PathTo.Combine(GlobalTo.WebRootPath, prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
                                             if (!Directory.Exists(ppath))
                                             {
@@ -715,7 +726,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             catch (Exception ex)
             {
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.LogWrite(HttpContext, ex);
                 Response.Headers["X-Output-Msg"] = ex.ToJson();
                 vm.Set(ex);
             }
@@ -735,7 +746,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                return Redirect("/home/error");
+                return Content(vm.ToJson());
             }
         }
 
@@ -745,11 +756,10 @@ namespace Netnr.Blog.Web.Controllers
         /// 注销
         /// </summary>
         /// <returns></returns>
-        public IActionResult Logout()
+        public IActionResult Logout([FromRoute] string id)
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
-            var action = RouteData.Values["id"]?.ToString();
-            return Redirect("/" + (action ?? ""));
+            return Redirect("/" + (id ?? ""));
         }
 
         /// <summary>

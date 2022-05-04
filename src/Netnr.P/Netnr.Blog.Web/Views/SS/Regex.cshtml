@@ -1,0 +1,18 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-sm mb-3">
+            <sl-input class="nr-txt-filter" placeholder="搜索正则" ></sl-input>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-button href="https://regex101.com/" target="_blank">regex101</sl-button>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-button href="https://tool.chinaz.com/regex" target="_blank">站长正则</sl-button>
+        </div>
+        <div class="col-md-12">
+            <div class="nr-grid"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))

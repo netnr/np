@@ -30,7 +30,7 @@ namespace Netnr.SharedDrawing
             //旋转角度
             int randAngle = 40;
 
-            using SKBitmap bitmap = new(code.Length * 22, 38);
+            using SKBitmap bitmap = new(code.Length * 20, 38);
             using SKCanvas canvas = new(bitmap);
             //背景设为白色
             canvas.Clear(SKColors.White);

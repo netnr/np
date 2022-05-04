@@ -1,0 +1,62 @@
+@{
+    Layout = null;
+
+    var dscode = ViewContext.RouteData.Values["id"]?.ToString();
+    var sid = ViewContext.RouteData.Values["sid"]?.ToString();
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] @GlobalTo.GetValue("Common:EnglishName") Doc</title>
+
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon,blog-seo"))
+</head>
+<body>
+
+    <!--Menu-->
+    <nav class="app-nav" style="display:none">
+        <ul>
+            <li>
+                @if (uinfo.UserId == 0)
+                {
+                    <a data-href="/doc/discover" title="Doc discover">Doc</a>
+                }
+                else
+                {
+                    <a data-href="/doc/user/@uinfo.UserId" title="Your doc">Doc</a>
+                }
+            </li>
+            <li>
+                Menu
+                <ul>
+                    @if (uinfo.UserId != 0)
+                    {
+                        <li><a data-href="/doc/item/@dscode" title="Add">Add</a></li>
+                        <li><a title="Edit">Edit</a></li>
+                        <li><a title="Delete">Delete</a></li>
+                        <li></li>
+                        <li><a data-href="/doc/catalog/@dscode" title="Menu">Catalog</a></li>
+                        <li></li>
+                    }
+                    <li><a title="Word">Word</a></li>
+                    <li><a title="Print">Print</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <!--Main-->
+    <div id="app">Loading ...</div>
+
+    <!--TOC-->
+    <div class="toc"></div>
+
+    <!--SEO-->
+    <div style="display:none">@Html.Raw(ViewData["DocSeo"])</div>
+
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("tocbot.js"))
+    <script src="/js/doc/code.js" asp-append-version="true"></script>
+</body>
+</html>

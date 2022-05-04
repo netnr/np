@@ -1,6 +1,5 @@
 ﻿using Netnr.Blog.Data;
 using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers.api
 {
@@ -206,7 +205,7 @@ namespace Netnr.Blog.Web.Controllers.api
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.LogWrite(HttpContext, ex);
             }
 
             return vm;
@@ -283,7 +282,7 @@ namespace Netnr.Blog.Web.Controllers.api
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.LogWrite(HttpContext, ex);
             }
 
             return vm;
@@ -466,7 +465,7 @@ namespace Netnr.Blog.Web.Controllers.api
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Apps.FilterConfigs.WriteLog(HttpContext, ex);
+                Apps.FilterConfigs.LogWrite(HttpContext, ex);
             }
 
             return vm;

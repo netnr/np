@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "表查询";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 col-lg-4 mt-3 mb-2">
+            <sl-select class="nr-se-table" placeholder="请选择表"></sl-select>
+        </div>
+        <div class="col-12">
+            <div class="nr-grid"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))
+<script src="/js/admin/table.js" asp-append-version="true"></script>

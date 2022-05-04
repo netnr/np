@@ -1,0 +1,76 @@
+@{
+    ViewData["Title"] = "脚本服务";
+
+    AppContext.TryGetSwitch("Netnr.BuildHtml", out bool isBuildHtml);
+    var ctrl = ViewContext.RouteData.Values["controller"].ToString().ToLower();
+
+    var navs = ScriptService.Nav;
+    var iconMD5 = CalcTo.MD5(File.ReadAllText(GlobalTo.WebRootPath + "/images/icon.svg"));
+}
+<input type="hidden" class="nr-hid-icon" value="/images/icon.svg?@iconMD5" />
+
+<style>
+    .nr-card-nav a:hover {
+        border-color: orange !important;
+    }
+</style>
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-auto">
+            <sl-select class="nr-se-group" style="width:7em">
+                <sl-menu-item value="">全部</sl-menu-item>
+                @foreach (var ng in navs)
+                {
+                    var group = ng["group"].ToString();
+                    <sl-menu-item value="@group">@group</sl-menu-item>
+                }
+            </sl-select>
+        </div>
+        <div class="col">
+            <sl-input class="nr-txt-filter" placeholder="Search..."></sl-input>
+        </div>
+    </div>
+
+    <div class="nr-card-nav">
+        @foreach (var ng in navs)
+        {
+            var group = ng["group"].ToString();
+            var items = ng["items"];
+
+            <div class="row">
+                <h4 class="mt-4">@group</h4>
+
+                @foreach (var item in items)
+                {
+                    var url = item["url"].ToString();
+                    var icon = item["icon"].ToString();
+                    var title = item["title"].ToString();
+                    var remark = item["remark"]?.ToString() ?? title;
+                    var target = item["target"]?.ToString();
+
+                    if (!isBuildHtml && url.StartsWith('/') && group != "子站")
+                    {
+                        url = $"/{ctrl}{url}";
+                    }
+                    if (!string.IsNullOrWhiteSpace(target) || url.StartsWith("http"))
+                    {
+                        target = $"target='{target}'";
+                    }
+
+                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="@url" @Html.Raw(target)>
+                            <div class="ms-1 me-2" style="height:3em;width:3em;">
+                                <svg class="w-100 h-100"><use xlink:href="#@item["icon"].ToString()"></use></svg>
+                            </div>
+                            <div class="w-75">
+                                <div class="fs-5 text-truncate">@Html.Raw(title)</div>
+                                <div class="opacity-75 text-truncate">@Html.Raw(remark)</div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

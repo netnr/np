@@ -9,6 +9,7 @@
     <Import_RootNamespace>Netnr</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)SharedApp\LaunchTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitBase.cs" />
@@ -19,7 +20,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\SQLiteHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\OracleHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedApp\BuildTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\QuoteTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\MySQLHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\PostgreSQLHelper.cs" />

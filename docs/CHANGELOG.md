@@ -1,5 +1,9 @@
 # Change Log
 
+### 2022-04
+- 升级 站点引入 shoelace-style 组件库，去 jquery、font-awesome
+- 发布 NDX (Netnr.FileServer)
+
 ### 2022-02
 - 发布 NDK (Netnr.DataKit)
 - 发布 NDX (Netnr.DataX)

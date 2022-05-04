@@ -14,25 +14,6 @@ namespace Netnr.Blog.Web.Apps
     /// </summary>
     public class FilterConfigs
     {
-        /// <summary>
-        /// 全局错误处理
-        /// </summary>
-        public class ErrorActionFilter : IExceptionFilter
-        {
-            public void OnException(ExceptionContext context)
-            {
-                try
-                {
-                    WriteLog(context.HttpContext, context.Exception);
-                    context.Result = new RedirectResult("/home/error");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"写入错误日志失败：{ex.Message}");
-                }
-            }
-        }
-
         private static Dictionary<string, string> _dicDescription;
 
         /// <summary>
@@ -108,7 +89,7 @@ namespace Netnr.Blog.Web.Apps
         }
 
         /// <summary>
-        /// 全局过滤器
+        /// 【过滤器】全局过滤器
         /// </summary>
         public class GlobalFilter : ActionFilterAttribute
         {
@@ -124,7 +105,7 @@ namespace Netnr.Blog.Web.Apps
                     string action = context.RouteData.Values["action"].ToString().ToLower();
 
                     //日志保存
-                    var mo = GetLog(context.HttpContext);
+                    var mo = LogBuild(context.HttpContext);
                     mo.LogAction = controller + "/" + action;
                     if (DicDescription.ContainsKey(mo.LogAction))
                     {
@@ -138,7 +119,12 @@ namespace Netnr.Blog.Web.Apps
             }
         }
 
-        public static LoggingModel GetLog(HttpContext context)
+        /// <summary>
+        /// 日志 构建实体
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static LoggingModel LogBuild(HttpContext context)
         {
             string reqPath = context.Request.Path.ToString();
             string reqQueryString = context.Request.QueryString.ToString();
@@ -174,9 +160,14 @@ namespace Netnr.Blog.Web.Apps
             return mo;
         }
 
-        public static void WriteLog(HttpContext context, Exception exception)
+        /// <summary>
+        /// 日志 写入异常
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="exception"></param>
+        public static void LogWrite(HttpContext context, Exception exception)
         {
-            var mo = GetLog(context);
+            var mo = LogBuild(context);
 
             mo.LogLevel = "E";
             mo.LogGroup = "-1";
@@ -186,7 +177,7 @@ namespace Netnr.Blog.Web.Apps
         }
 
         /// <summary>
-        /// 需要授权访问
+        /// 【过滤器】需要授权访问
         /// </summary>
         public class LoginSignValid : IAuthorizationFilter
         {
@@ -207,7 +198,7 @@ namespace Netnr.Blog.Web.Apps
         }
 
         /// <summary>
-        /// 允许跨域
+        /// 【注解】允许跨域
         /// </summary>
         public class AllowCors : Attribute, IActionFilter
         {
@@ -252,7 +243,7 @@ namespace Netnr.Blog.Web.Apps
         }
 
         /// <summary>
-        /// 是管理员
+        /// 【注解】是管理员
         /// </summary>
         public class IsAdmin : Attribute, IActionFilter
         {
@@ -283,7 +274,7 @@ namespace Netnr.Blog.Web.Apps
         }
 
         /// <summary>
-        /// 完善信息
+        /// 【注解】完善信息
         /// </summary>
         public class IsCompleteInfo : Attribute, IActionFilter
         {
@@ -303,7 +294,7 @@ namespace Netnr.Blog.Web.Apps
         }
 
         /// <summary>
-        /// 有效授权（Cookie、Token）
+        /// 【注解】有效授权（Cookie、Token）
         /// </summary>
         public class IsValidAuth : Attribute, IActionFilter
         {

@@ -82,7 +82,7 @@ namespace Netnr.Blog.Web.Controllers
                         //解密失败
                         if (ret != 0)
                         {
-                            Apps.FilterConfigs.WriteLog(HttpContext, new Exception("微信解密失败"));
+                            Apps.FilterConfigs.LogWrite(HttpContext, new Exception("微信解密失败"));
                         }
                     }
                     else
@@ -102,7 +102,7 @@ namespace Netnr.Blog.Web.Controllers
                     var ret = wxBizMsgCrypt.EncryptMsg(response, timestamp, nonce, ref result);
                     if (ret != 0)//加密失败
                     {
-                        Apps.FilterConfigs.WriteLog(HttpContext, new Exception("微信加密失败"));
+                        Apps.FilterConfigs.LogWrite(HttpContext, new Exception("微信加密失败"));
                     }
                 }
                 else
@@ -159,13 +159,9 @@ namespace Netnr.Blog.Web.Controllers
                             {
                                 repmsg = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                             }
-                            else if ("xh".Split(' ').ToList().Contains(Content))
-                            {
-                                repmsg = "笑话\nhttps://ss.netnr.com/qiushibaike";
-                            }
                             else if ("note".Split(' ').ToList().Contains(Content))
                             {
-                                repmsg = $"记事\n{myDomain}/tool/note";
+                                repmsg = $"记事\n{myDomain}/note";
                             }
                             else if ("gist".Split(' ').ToList().Contains(Content))
                             {
@@ -244,12 +240,19 @@ namespace Netnr.Blog.Web.Controllers
                 var createScript = db.Database.GenerateCreateScript();
 
                 //备份创建脚本
+                var b1 = Convert.ToBase64String(Encoding.UTF8.GetBytes(createScript));
+                var p1 = $"{database}/backup_{now}.sql";
                 try
                 {
-                    var b1 = Convert.ToBase64String(Encoding.UTF8.GetBytes(createScript));
-                    var p1 = $"{database}/backup_{now}.sql";
-
                     vm.Log.Add(PutGitee(b1, p1, now));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    vm.Log.Add(ex.Message);
+                }
+                try
+                {
                     vm.Log.Add(PutGitHub(b1, p1, now));
                 }
                 catch (Exception ex)
@@ -265,26 +268,28 @@ namespace Netnr.Blog.Web.Controllers
                 if (DatabaseExport(zipPath).Code == 200)
                 {
                     var ppath = PathTo.Combine(GlobalTo.ContentRootPath, zipPath);
-
+                    var b2 = Convert.ToBase64String(System.IO.File.ReadAllBytes(ppath));
+                    var p2 = $"{database}/backup_{now}.zip";
                     try
                     {
-                        var b2 = Convert.ToBase64String(System.IO.File.ReadAllBytes(ppath));
-                        var p2 = $"{database}/backup_{now}.zip";
-
                         vm.Log.Add(PutGitee(b2, p2, now));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        vm.Log.Add(ex.Message);
+                    }
+                    try
+                    {
                         vm.Log.Add(PutGitHub(b2, p2, now));
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex);
                         vm.Log.Add(ex.Message);
+                    }
 
-                        System.IO.File.Delete(ppath);
-                    }
-                    finally
-                    {
-                        System.IO.File.Delete(ppath);
-                    }
+                    System.IO.File.Delete(ppath);
                 }
 
                 return vm;
@@ -308,7 +313,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             if (string.IsNullOrWhiteSpace(or))
             {
-                or = GlobalTo.GetValue("Work:BackupToGit:or");
+                or = GlobalTo.GetValue("Common:AdminBackupToGit");
             }
 
             var put = $"https://api.github.com/repos/{or}/contents/{path}";
@@ -342,7 +347,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             if (string.IsNullOrWhiteSpace(or))
             {
-                or = GlobalTo.GetValue("Work:BackupToGit:or");
+                or = GlobalTo.GetValue("Common:AdminBackupToGit");
             }
 
             var listor = or.Split('/');
@@ -484,7 +489,7 @@ namespace Netnr.Blog.Web.Controllers
                 using var db = ContextBaseFactory.CreateDbContext();
 
                 //同步用户ID
-                int UserId = GlobalTo.GetValue<int>("Work:GistSync:UserId");
+                int UserId = GlobalTo.GetValue<int>("Common:AdminId");
 
                 //日志
                 var listLog = new List<object>() { "Gist代码片段同步" };

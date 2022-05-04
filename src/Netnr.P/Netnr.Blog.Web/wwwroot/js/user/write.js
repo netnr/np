@@ -1,144 +1,153 @@
-var gd1 = z.Grid();
-gd1.url = "/user/writelist";
-gd1.autosizePid = "#PGrid1";
-gd1.pageSize = 100;
-gd1.multiSort = true;
-gd1.sortName = "UwId";
-gd1.sortOrder = "desc";
-gd1.columns = [[
-    { title: "ID", field: "UwId", width: 60, sortable: true, align: "center" },
-    {
-        title: "标题", field: "UwTitle", width: 660, sortable: true, formatter: function (value, row) {
-            return '<a href="/home/list/' + row.UwId + '" target="_blank">' + value + '</a>';
-        }
-    },
-    { title: "创建时间", field: "UwCreateTime", width: 160, sortable: true, align: "center" },
-    { title: "更新时间", field: "UwUpdateTime", width: 160, sortable: true, align: "center" },
-    { title: "回复", field: "UwReplyNum", width: 60, sortable: true, align: "center" },
-    { title: "浏览", field: "UwReadNum", width: 60, sortable: true, align: "center" },
-    { title: "点赞", field: "UwLaud", width: 60, sortable: true, align: "center" },
-    { title: "收藏", field: "UwMark", width: 60, sortable: true, align: "center" },
-    {
-        title: "公开", field: "UwOpen", width: 90, sortable: true, align: "center", formatter: function (value) {
-            return value == 1 ? "✔" : "✘";
-        }
-    },
-    {
-        title: "状态", field: "UwStatus", width: 120, sortable: true, align: "center", formatter: function (value) {
-            switch (value) {
-                case 1: return "✔"; break;
-                case 2: return "BLOCK"; break;
-                case -1: return "LOCK"; break;
+var page = {
+    init: () => {
+        page.load();
+
+        //编辑
+        nr.domBtnEdit.addEventListener("click", function () {
+            var srow = page.gridOps.api.getSelectedRows();
+            if (srow.length == 0) {
+                nr.alert("请选择一条记录");
+            } else {
+                page.editGrid(srow[0].UwId);
             }
-            return value
-        }
-    }
-]];
-gd1.onDblClickRow = function () {
-    $('#btnEdit')[0].click();
-}
-gd1.onBeforeLoad = function (row, param) {
-    param.pe1 = $('#txtSearch').val().trim();
-}
-gd1.load();
+        }, false);
 
-//搜索
-$('#txtSearch').keydown(function (e) {
-    e = e || window.event;
-    if (e.keyCode == 13) {
-        $('#btnSearch')[0].click();
-    }
-})
-$('#btnSearch').click(function () {
-    gd1.pageNumber = 1;
-    gd1.load();
-});
-
-//编辑
-$('#btnEdit').click(function () {
-    var rowData = gd1.func('getSelected');
-    if (rowData) {
-        if (rowData.UwStatus == -1) {
-            jz.alert("文章已被锁定，不能操作");
-            return false;
-        }
-
-        $.ajax({
-            url: "/user/writeone?id=" + rowData.UwId,
-            dataType: 'json',
-            success: function (data) {
-                if (data.code == 200) {
-                    var tags = data.data.tags, data = data.data.item;
-                    $('#btnSaveEdit').attr('data-id', data.UwId);
-                    $('#wtitle').val(data.UwTitle);
-                    $('#wcategory').val(data.UwCategory);
-                    $('#tags').val(data.tags);
-                    nmd.setmd(data.UwContentMd);
-                    nmd.render();
-
-                    var tagids = [];
-                    $(tags).each(function () {
-                        tagids.push(this.TagId);
+        //删除
+        nr.domBtnDel.addEventListener("click", function () {
+            var srow = page.gridOps.api.getSelectedRows();
+            if (srow.length) {
+                if (confirm("确定要删除吗？")) {
+                    fetch(`/User/WriteDel?ids=${srow.map(x => x.UwId).join(',')}`).then(x => x.json()).then(res => {
+                        if (res.code == 200) {
+                            page.load();
+                        } else {
+                            nr.alert(res.msg);
+                        }
+                    }).catch(x => {
+                        nr.alert(x);
                     });
-                    $('#tags').val(tagids.join(','));
-                    $('#tags').selectPageRefresh()
+                }
+            } else {
+                nr.alert("请选择一行再操作");
+            }
+        }, false);
+    },
+    load: () => {
+        let gridOptions = {
+            defaultColDef: {
+                filter: 'agTextColumnFilter',
+                sortable: true,
+                resizable: true,
+            },
+            getRowId: event => event.data.UwId,
+            columnDefs: [
+                {
+                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
+                    checkboxSelection: true,
+                    sortable: false, filter: false, menuTabs: false
+                },
+                { headerName: "Id", field: "UwId", width: 120 },
+                {
+                    headerName: "标题", field: "UwTitle", width: 640, cellRenderer: (params) => {
+                        if (params.data) {
+                            return `<a href="/home/list/${params.data.UwId}">${params.value}</a>`;
+                        }
+                    }
+                },
+                { headerName: "创建时间", field: "UwCreateTime", width: 190, filter: 'agDateColumnFilter', },
+                { headerName: "修改时间", field: "UwUpdateTime", width: 190, filter: 'agDateColumnFilter', },
+                { headerName: "回复", field: "UwReplyNum", width: 100, filter: 'agNumberColumnFilter', },
+                { headerName: "浏览", field: "UwReadNum", width: 100, filter: 'agNumberColumnFilter', },
+                { headerName: "点赞", field: "UwLaud", width: 100, filter: 'agNumberColumnFilter', },
+                { headerName: "收藏", field: "UwMark", width: 100, filter: 'agNumberColumnFilter', },
+                {
+                    headerName: "公开", field: "UwOpen", width: 100, cellRenderer: params => {
+                        switch (params.value) {
+                            case 1: return "✔"; break;
+                            case 2: return "✘"; break;
+                        }
+                    }
+                },
+                {
+                    headerName: "状态", field: "UwStatus", width: 100, cellRenderer: function (params) {
+                        switch (params.value) {
+                            case 1: return "✔"; break;
+                            case 2: return "Block"; break;
+                            case -1: return "Lock"; break;
+                        }
+                    }
+                }
+            ],
+            suppressRowClickSelection: true,
+            rowSelection: 'multiple',
+            cacheBlockSize: 30, //请求行数
+            enableRangeSelection: true, //范围选择
+            animateRows: true, //动画
+            rowModelType: 'infinite', //无限行模式
+            //数据源
+            datasource: {
+                getRows: params => {
+                    //默认排序
+                    if (params.sortModel.length == 0) {
+                        params.sortModel.push({ colId: "UwCreateTime", sort: "desc" });
+                    }
 
-                    $('#ModalWrite').modal();
-                } else {
-                    jz.msg("获取文章出错");
+                    fetch(`/User/WriteList?grp=${encodeURIComponent(JSON.stringify(params))}`).then(x => x.json()).then(res => {
+                        if (res.code == 200) {
+                            params.successCallback(res.data.RowsThisBlock, res.data.LastRow)
+                        } else {
+                            params.failCallback();
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                        params.failCallback();
+                    })
                 }
             },
-            error: function () {
-                jz.msg("网络错误");
-            }
-        })
-    } else {
-        jz.msg("请选择一行再操作");
-    }
-});
+            onCellDoubleClicked: event => {
+                page.editGrid(event.data.UwId);
+            },
+            onGridReady: () => {
+                //自适应
+                nr.changeSize();
+            },
+            getContextMenuItems: (params) => {
+                var result = [
+                    { name: "Reload", icon: "🔄", action: page.load },
+                    'autoSizeAll',
+                    'resetColumns',
+                    'separator',
+                    'copy',
+                    'copyWithHeaders'
+                ];
 
-//删除
-$('#btnDel').click(function () {
-    var rowData = gd1.func('getSelected');
-    if (rowData) {
-        if (rowData.UwStatus == -1) {
-            jz.alert("文章已被锁定，不能操作");
-            return false;
+                return result;
+            },
+        };
+
+        if (page.gridOps) {
+            page.gridOps.api.destroy();
         }
+        page.gridOps = new agGrid.Grid(nr.domGrid, gridOptions).gridOptions;
+    },
+    editGrid: (id) => {
+        nr.keyId = id;
 
-        jz.confirm({
-            content: "确定删除该文章（含回复内容）？",
-            ok: function () {
-                $.ajax({
-                    url: "/user/writedel?id=" + rowData.UwId,
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.code == 200) {
-                            gd1.load();
-                        } else {
-                            jz.msg(data.msg);
-                        }
-                    },
-                    error: function () {
-                        jz.msg("网络错误");
-                    }
-                })
+        nr.domTxtTitle.value = "";
+        nr.nmd.setmd("Loading...");
+        nr.tomSelect.clear()
+
+        nr.domDialogForm.show()
+
+        fetch(`/User/WriteOne?id=${id}`).then(x => x.json()).then(res => {
+            if (res.code == 200) {
+                var item = res.data.item;
+                nr.domTxtTitle.value = item.UwTitle;
+                nr.tomSelect.setValue(res.data.tags.map(x => x.TagId));
+                nr.nmd.setmd(item.UwContentMd);
+            } else {
+                console.debug(res);
             }
         });
-    } else {
-        jz.msg("请选择一行再操作");
     }
-});
-
-$(window).on('load resize', function () {
-    mdautoheight();
-});
-
-$('#ModalWrite').on('shown.bs.modal', function () {
-    mdautoheight();
-})
-
-function mdautoheight() {
-    var vh = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 30;
-    nmd.height(Math.max(100, vh));
-}
+};

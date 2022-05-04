@@ -4,41 +4,44 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <a class="btn btn-outline-info btn-lg mr-4 my-3 py-3" href="/admin/write" target="_blank">
-                <i class="fa fa-fw fa-2x fa-pencil"></i><div>文章管理</div>
-            </a>
-            <a class="btn btn-outline-secondary btn-lg mr-4 my-3 py-3" href="/admin/reply" target="_blank">
-                <i class="fa fa-fw fa-2x fa-commenting-o"></i><div>回复管理</div>
-            </a>
-            <a class="btn btn-outline-primary btn-lg mr-4 my-3 py-3" href="/admin/log" target="_blank">
-                <i class="fa fa-fw fa-2x fa-list-alt"></i><div>日志列表</div>
-            </a>
-            <a class="btn btn-outline-success btn-lg mr-4 my-3 py-3" href="/admin/logchart" target="_blank">
-                <i class="fa fa-fw fa-2x fa-line-chart"></i><div>日志图表</div>
-            </a>
-            <a class="btn btn-outline-info btn-lg mr-4 my-3 py-3" href="/admin/keyvalues" target="_blank">
-                <i class="fa fa-fw fa-2x fa-tags"></i><div>键值标签</div>
-            </a>
+        <div class="col-12 mt-3">
+            <sl-button class="m-3" variant="primary" size="large" outline href="/admin/write">
+                文章管理
+            </sl-button>
+            <sl-button class="m-3" variant="primary" size="large" outline href="/admin/reply">
+                回复管理
+            </sl-button>
+            <sl-button class="m-3" variant="success" size="large" outline href="/admin/keyvalues">
+                键值标签
+            </sl-button>
+            <sl-button class="m-3" variant="neutral" size="large" outline href="/admin/log">
+                日志列表
+            </sl-button>
+            <sl-button class="m-3" variant="neutral" size="large" outline href="/admin/logchart">
+                日志图表
+            </sl-button>
+            <sl-button class="m-3" variant="warning" size="large" outline href="/admin/table">
+                表查询
+            </sl-button>
+            <sl-button class="m-3" variant="danger" size="large" outline href="/admin/clearcache">
+                清理全局缓存
+            </sl-button>
         </div>
-        <div class="col-md-12">
-            <a class="btn btn-outline-primary btn-lg mr-4 my-3 py-3" href="/storage/tencent" target="_blank" title="腾讯">
-                <i class="fa fa-fw fa-2x fa-qq"></i><div>COS(New)</div>
-            </a>
-            <a class="btn btn-outline-primary btn-lg mr-4 my-3 py-3" href="/store/qqcos" target="_blank" title="腾讯">
-                <i class="fa fa-fw fa-2x fa-qq"></i><div>COS</div>
-            </a>
-            <a class="btn btn-outline-primary btn-lg mr-4 my-3 py-3" href="/store/nenos" target="_blank" title="网易">
-                <i class="fa fa-fw fa-2x fa-server"></i><div>NOS</div>
-            </a>
-            <a class="btn btn-outline-primary btn-lg mr-4 my-3 py-3" href="/store/qnkodo" target="_blank" title="七牛">
-                <i class="fa fa-fw fa-2x fa-server"></i><div>KODO</div>
-            </a>
+        <div class="col-12">
+            <sl-button class="m-3" variant="primary" size="large" outline href="/storage/qiniu">
+                KODO
+            </sl-button>
+            <sl-button class="m-3" variant="primary" size="large" outline href="/storage/netease">
+                NOS
+            </sl-button>
+            <sl-button class="m-3" variant="primary" size="large" outline href="/storage/tencent">
+                COS
+            </sl-button>
         </div>
-        <div class="col-md-12">
-            <a class="btn btn-outline-success btn-lg mr-4 my-3 py-3" href="/swagger" target="_blank" title="接口">
-                <i class="fa fa-fw fa-2x fa-plug"></i><div>API</div>
-            </a>
+        <div class="col-12 mb-3">
+            <sl-button class="m-3" variant="primary" size="large" outline href="/swagger">
+                API
+            </sl-button>
         </div>
     </div>
 </div>

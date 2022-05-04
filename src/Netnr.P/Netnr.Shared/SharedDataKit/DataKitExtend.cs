@@ -360,7 +360,7 @@ namespace Netnr.SharedDataKit
             {
                 var rw = mdt.ListReadWrite[i];
 
-                vm.Log.Add($"读取表（{rw.WriteTableName}）结构");
+                vm.Log.Add($"获取写入表（{rw.WriteTableName}）结构");
                 var dtWrite = dbWrite.SqlExecuteReader(DbHelper.SqlEmpty(rw.WriteTableName, tdb: mdt.WriteConnectionInfo.ConnectionType)).Item1.Tables[0];
                 dtWrite.TableName = rw.WriteTableName;
                 var dtWriteColumnName = dtWrite.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
@@ -368,7 +368,7 @@ namespace Netnr.SharedDataKit
                 //读取表的列 => 写入表的列
                 var rwMap = new Dictionary<string, string>();
 
-                vm.Log.Add($"读取表数据 SQL：{rw.ReadDataSQL}");
+                vm.Log.Add($"获取读取表数据 SQL：{rw.ReadDataSQL}");
 
                 var rowCount = 0;
                 var batchNo = 0;

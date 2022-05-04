@@ -1,12 +1,15 @@
 @{
     ViewData["Title"] = "FAQ";
+    
+    var AdminGitHub = GlobalTo.GetValue("Common:AdminGitHub");
+    var Mirror = GlobalTo.GetValue("Common:Mirror");
 }
 
-<div class="container-fluid">
+<div class="container-fluid p-4">
     <div class="row">
         <div class="col-12">
-            <h4>源码</h4>
-            <p><a href="https://github.com/netnr">https://github.com/netnr</a></p>
+            <h4>GitHub</h4>
+            <p><a href="https://github.com/@AdminGitHub">https://github.com/@AdminGitHub</a></p>
             <h4>运营</h4>
             <p>
                 完善信息后才能发布内容<br />
@@ -17,7 +20,7 @@
             <h4>维护</h4>
             <p>
                 不定时备份到镜像只读站点
-                <a href="https://www.netnr.eu.org">https://www.netnr.eu.org</a>
+                <a href="@Mirror">@Mirror</a>
             </p>
         </div>
     </div>

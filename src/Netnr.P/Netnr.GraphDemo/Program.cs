@@ -1,13 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
-//ÅäÖÃswagger
-var swaggerVersion = "v1";
-var swaggerTitle = "Netnr.GraphDemo";
-
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddControllers().AddNewtonsoftJson(options =>
+builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
 {
     //ActionÔ­ÑùÊä³öJSON
     options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
@@ -15,15 +9,12 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
 });
 
+//ÅäÖÃswagger
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc(swaggerVersion, new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = swaggerTitle,
-        Version = swaggerVersion
-    });
-
-    c.IncludeXmlComments(AppContext.BaseDirectory + swaggerTitle + ".xml", true);
+    var name = builder.Environment.ApplicationName;
+    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
+    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
 });
 
 var app = builder.Build();
@@ -37,19 +28,16 @@ if (!app.Environment.IsDevelopment())
 //ÅäÖÃswagger
 app.UseSwagger().UseSwaggerUI(c =>
 {
-    c.DocumentTitle = swaggerTitle;
-    c.SwaggerEndpoint($"{swaggerVersion}/swagger.json", c.DocumentTitle);
+    c.DocumentTitle = builder.Environment.ApplicationName;
+    c.SwaggerEndpoint($"{c.DocumentTitle}/swagger.json", c.DocumentTitle);
 });
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

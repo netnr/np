@@ -1,0 +1,40 @@
+<div class="nr-card-box invisible container-fluid p-4">
+    <div class="row">
+        <div class="col-auto mb-3">
+            <sl-button class="nr-btn-format" variant="warning" title="Shift+Alt+F 快捷格式化">格式化</sl-button>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-select class="nr-se-language" value="sql" style="width:12em">
+                <sl-menu-item value="sql">SQL</sl-menu-item>
+                <sl-menu-item value="redshift">AWS Redshift</sl-menu-item>
+                <sl-menu-item value="db2">DB2</sl-menu-item>
+                <sl-menu-item value="mariadb">MariaDB</sl-menu-item>
+                <sl-menu-item value="mysql">MySQL</sl-menu-item>
+                <sl-menu-item value="n1ql">N1QL</sl-menu-item>
+                <sl-menu-item value="plsql">PL/SQL</sl-menu-item>
+                <sl-menu-item value="postgresql">PostgreSQL</sl-menu-item>
+                <sl-menu-item value="spark">Spark</sl-menu-item>
+                <sl-menu-item value="tsql">Transact-SQL</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-select class="nr-se-uppercase" value="1" style="width:8em">
+                <sl-menu-item value="1">大写</sl-menu-item>
+                <sl-menu-item value="0">不处理</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-auto mb-3">
+            <input class="nr-txt-file" type="file" />
+        </div>
+        <div class="col-auto mb-3">
+            <sl-button target="_blank" href="https://sqlformat.darold.net">pgFormatter</sl-button>
+            <sl-button target="_blank" href="http://sql-format.com">Devart For SQLServer</sl-button>
+            <sl-button target="_blank" href="https://www.red-gate.com/website/sql-formatter">Reg-Data For SQLServer</sl-button>
+        </div>
+        <div class="col-12">
+            <div class="nr-editor"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("sql-formatter.js,monaco-editor"))

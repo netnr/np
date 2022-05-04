@@ -1,216 +1,226 @@
-var gd1 = z.Grid();
-gd1.url = "/Note/QueryNoteList";
-gd1.autosizePid = "#PGrid1";
-gd1.pageSize = 100;
-gd1.multiSort = true;
-gd1.fitColumns = true;
-gd1.sortName = "NoteCreateTime";
-gd1.sortOrder = "desc";
-gd1.columns = [[
-    { title: "标题", field: "NoteTitle", width: 480, sortable: true },
-    {
-        title: "创建时间", field: "NoteCreateTime", width: 150, sortable: true, align: "center", formatter: function (value) {
-            return value.substr(0, 19);
-        }
-    },
-    {
-        title: "更新时间", field: "NoteUpdateTime", width: 150, sortable: true, align: "center", formatter: function (value) {
-            return value.substr(0, 19);
-        }
+//变动大小
+nr.onChangeSize = function (ch) {
+    if (page.gridOps) {
+        var vh = ch - nr.domGrid.getBoundingClientRect().top - 15;
+        nr.domGrid.style.height = vh + "px";
     }
-]];
-gd1.onDblClickRow = function () {
-    $('#btnEdit')[0].click();
+
+    if (nr.nmd) {
+        var vh = ch - 280;
+        nr.nmd.height(Math.max(100, vh));
+    }
 }
-gd1.onBeforeLoad = function (row, param) {
-    param.pe1 = $('#txtSearch').val().trim();
+
+nr.onReady = function () {
+    page.load();
+    page.init();
 }
-gd1.load();
 
-//搜索
-$('#txtSearch').keydown(function (e) {
-    e = e || window.event;
-    if (e.keyCode == 13) {
-        $('#btnSearch')[0].click();
-    }
-})
-$('#btnSearch').click(function () {
-    gd1.pageNumber = 1;
-    gd1.load();
-});
-
-require(['vs/editor/editor.main'], function () {
-    window.nmd = new netnrmd('#mdeditor', {
-        storekey: "md_autosave_note",
-        //执行命令前回调
-        cmdcallback: function (cmd) {
-            if (cmd == "full") {
-                if (nmd.obj.editor.hasClass('netnrmd-fullscreen')) {
-                    $('#ModalNote').addClass('modal');
-                } else {
-                    $('#ModalNote').removeClass('modal');
+var page = {
+    init: () => {
+        require(['vs/editor/editor.main'], function () {
+            nr.nmd = new netnrmd('.nr-editor', {
+                storekey: "md_autosave_note",
+                input: function () {
+                    nr.domWordCount.innerHTML = `共 <b>${this.getmd().length}</b> 个字`;
                 }
+            });
+
+            nr.changeTheme();
+            nr.changeSize();
+
+            //换行
+            nr.nmd.obj.me.updateOptions({
+                wordWrap: "on"
+            });
+
+            //快捷键
+            nr.nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
+                nr.domBtnSave.click();
+            })
+
+            //保存编辑器视图
+            var vm = parseInt(localStorage.getItem('note_md_viewmodel'));
+            if ([1, 2, 3].indexOf(vm) >= 0) {
+                nr.nmd.toggleView(vm);
             }
-        },
-        input: function () {
-            try {
-                $('#spwordcount').html("共 <b>" + nmd.getmd().length + "</b> 个字");
-            } catch (e) {
-                $('#spwordcount').html("共 <b>0</b> 个字");
-            }
-        }
-    });
-
-    //换行
-    nmd.obj.me.updateOptions({
-        wordWrap: "on"
-    });
-
-    //快捷键
-    nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
-        $('#btnSave')[0].click();
-    })
-
-    mdautoheight();
-
-    //保存编辑器视图
-    var vm = parseInt(localStorage.getItem('note_md_viewmodel'));
-    if ([1, 2, 3].indexOf(vm) >= 0) {
-        nmd.toggleView(vm);
-    }
-    window.onbeforeunload = function () {
-        localStorage.setItem('note_md_viewmodel', nmd.obj.viewmodel);
-    }
-});
-
-var noteid;
-
-//新增
-$('#btnAdd').click(function () {
-    noteid = 0;
-    $('#NoteTitle').val('');
-    nmd.setmd('');
-    $('#sptimeinfo').html('')
-    $('#ModalNote').modal();
-});
-
-//编辑
-$('#btnEdit').click(function () {
-    var rowData = gd1.func('getSelected');
-    noteid = rowData.NoteId;
-    if (rowData) {
-        $.ajax({
-            url: "/Note/QueryNoteOne?id=" + noteid,
-            dataType: 'json',
-            success: function (data) {
-                if (data.code == 200) {
-                    var item = data.data;
-                    $('#NoteTitle').val(item.NoteTitle);
-                    nmd.setmd(item.NoteContent);
-                    $('#sptimeinfo').html("创建时间：" + item.NoteCreateTime + " ， 更新时间：" + (item.NoteUpdateTime || item.NoteCreateTime))
-                    $('#ModalNote').modal();
-                } else {
-                    jz.msg(data.msg);
-                }
-            },
-            error: function () {
-                jz.msg("网络错误");
-            }
-        })
-    } else {
-        jz.msg("请选择一行再操作");
-    }
-});
-
-//保存
-$('#btnSave').click(function () {
-    var title = $('#NoteTitle').val().trim();
-    var md = nmd.getmd();
-    var errmsg = [];
-    if (title == "") {
-        errmsg.push("请输入 标题");
-    }
-    if (md.length < 2) {
-        errmsg.push("多写一点内容哦");
-    }
-    if (errmsg.length > 0) {
-        jz.alert(errmsg.join('<br/>'));
-        return false;
-    }
-
-    $('#btnSave')[0].disabled = true;
-
-    $.ajax({
-        url: "/note/savenote",
-        type: "post",
-        data: {
-            NoteTitle: title,
-            NoteContent: md,
-            NoteId: noteid
-        },
-        dataType: 'json',
-        success: function (data) {
-            if (data.code == 200) {
-                if (noteid == 0) {
-                    noteid = data.data;
-                }
-                gd1.load();
-            }
-            jz.msg(data.msg)
-        },
-        error: function (ex) {
-            if (ex.status == 401) {
-                jz.msg("请登录");
-            } else {
-                jz.msg("网络错误");
-            }
-        },
-        complete: function () {
-            $('#btnSave')[0].disabled = false;
-        }
-    });
-});
-
-//删除
-$('#btnDel').click(function () {
-    var rowData = gd1.func('getSelected');
-    if (rowData) {
-        jz.confirm({
-            content: "确定删除？",
-            ok: function () {
-                $.ajax({
-                    url: "/Note/DelNote?id=" + rowData.NoteId,
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.code == 200) {
-                            gd1.load();
-                        } else {
-                            jz.msg("操作失败");
-                        }
-                    },
-                    error: function () {
-                        jz.msg("网络错误");
-                    }
-                })
+            window.onbeforeunload = function () {
+                localStorage.setItem('note_md_viewmodel', nr.nmd.obj.viewmodel);
             }
         });
-    } else {
-        jz.msg("请选择一行再操作");
+
+        //新增
+        nr.domBtnAdd.addEventListener("click", function () {
+            nr.nmd.setmd('');
+            nr.keyId = 0;
+            nr.domTxtTitle.value = "";
+            nr.domTxtTitle.focus();
+            nr.domTimeInfo.innerHTML = "";
+
+            nr.domDialogForm.label = "新增记事";
+            nr.domDialogForm.show();
+        }, false);
+
+        //编辑
+        nr.domBtnEdit.addEventListener("click", function () {
+            var srow = page.gridOps.api.getSelectedRows();
+            if (srow.length == 0) {
+                nr.alert("请选择一条记录");
+            } else {
+                page.editGrid(srow[0].NoteId);
+            }
+        }, false);
+
+        //保存
+        nr.domBtnSave.addEventListener("click", function () {
+            var title = nr.domTxtTitle.value.trim();
+            var md = nr.nmd.getmd();
+            var errmsg = [];
+            if (title == "") {
+                errmsg.push("请输入 标题");
+            }
+            if (md.length < 2) {
+                errmsg.push("多写一点内容哦");
+            }
+            if (errmsg.length > 0) {
+                nr.alert(errmsg.join('<br/>'));
+                return false;
+            }
+
+            nr.domBtnSave.disabled = true;
+
+            var fd = new FormData();
+            fd.append("NoteId", nr.keyId);
+            fd.append("NoteTitle", title);
+            fd.append("NoteContent", md);
+
+            fetch('/Note/SaveNote', {
+                method: 'POST',
+                body: fd
+            }).then(x => x.json()).then(res => {
+                nr.domBtnSave.disabled = false;
+                if (res.code == 200) {
+                    page.load();
+                    nr.keyId = res.data;
+                    nr.domDialogForm.hide();
+                } else {
+                    nr.alert(res.msg);
+                }
+            }).catch(x => {
+                nr.domBtnSave.disabled = false;
+                nr.alert(x);
+            });
+        }, false);
+
+        //删除
+        nr.domBtnDel.addEventListener("click", function () {
+            var srow = page.gridOps.api.getSelectedRows();
+            if (srow.length) {
+                if (confirm("确定要删除吗？")) {
+                    fetch(`/Note/DelNote?ids=${srow.map(x => x.NoteId).join(',')}`).then(x => x.json()).then(res => {
+                        if (res.code == 200) {
+                            page.load();
+                        } else {
+                            nr.alert(res.msg);
+                        }
+                    }).catch(x => {
+                        nr.alert(x);
+                    });
+                }
+            } else {
+                nr.alert("请选择一行再操作");
+            }
+        }, false);
+    },
+    load: () => {
+        let gridOptions = {
+            defaultColDef: {
+                filter: 'agTextColumnFilter',
+                sortable: true,
+                resizable: true,
+            },
+            getRowId: event => event.data.NoteId,
+            columnDefs: [
+                {
+                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
+                    checkboxSelection: true,
+                    sortable: false, filter: false, menuTabs: false
+                },
+                { field: "NoteTitle", flex: 1, minWidth: 200 },
+                { field: "NoteCreateTime", width: 190 },
+                { field: "NoteUpdateTime", width: 190 },
+            ],
+            suppressRowClickSelection: true,
+            rowSelection: 'multiple',
+            cacheBlockSize: 30, //请求行数
+            enableRangeSelection: true, //范围选择
+            animateRows: true, //动画
+            rowModelType: 'infinite', //无限行模式
+            //数据源
+            datasource: {
+                getRows: params => {
+                    //默认排序
+                    if (params.sortModel.length == 0) {
+                        params.sortModel.push({ colId: "NoteCreateTime", sort: "desc" });
+                    }
+
+                    fetch(`/Note/NoteList?grp=${encodeURIComponent(JSON.stringify(params))}`).then(x => x.json()).then(res => {
+                        if (res.code == 200) {
+                            params.successCallback(res.data.RowsThisBlock, res.data.LastRow)
+                        } else {
+                            params.failCallback();
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                        params.failCallback();
+                    })
+                }
+            },
+            onCellDoubleClicked: event => {
+                page.editGrid(event.data.NoteId);
+            },
+            onGridReady: () => {
+                //自适应
+                nr.changeSize();
+            },
+            getContextMenuItems: (params) => {
+                var result = [
+                    { name: "Reload", icon: "🔄", action: page.load },
+                    'autoSizeAll',
+                    'resetColumns',
+                    'separator',
+                    'copy',
+                    'copyWithHeaders'
+                ];
+
+                return result;
+            },
+        };
+
+        if (page.gridOps) {
+            page.gridOps.api.destroy();
+        }
+        page.gridOps = new agGrid.Grid(nr.domGrid, gridOptions).gridOptions;
+    },
+    editGrid: (id) => {
+        nr.keyId = id;
+
+        nr.domTxtTitle.value = "";
+        nr.nmd.setmd("Loading...");
+        nr.domTimeInfo.innerHTML = '';
+
+        nr.domDialogForm.label = "编辑记事";
+        nr.domDialogForm.show();
+
+        fetch(`/Note/QueryNoteOne?id=${id}`).then(x => x.json()).then(res => {
+            if (res.code == 200) {
+                var item = res.data;
+                nr.domTxtTitle.value = item.NoteTitle;
+                nr.nmd.setmd(item.NoteContent);
+                nr.domTimeInfo.innerHTML = `创建时间：${item.NoteCreateTime} ，更新时间：${item.NoteUpdateTime || item.NoteCreateTime}`;
+            } else {
+                console.debug(res);
+            }
+        });
     }
-});
-
-$(window).on('resize', function () {
-    mdautoheight();
-});
-
-$('#ModalNote').on('shown.bs.modal', function () {
-    mdautoheight();
-    if (noteid == 0) {
-        $('#NoteTitle')[0].focus();
-    }
-})
-
-function mdautoheight() {
-    var vh = $(window).height() - 130;
-    nmd.height(Math.max(100, vh));
 }

@@ -1,0 +1,48 @@
+@model SharedPageVM
+@{
+    var rows = Model.Rows as List<Netnr.Blog.Domain.Run>;
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+
+    var nickname = ViewData["Nickname"]?.ToString() ?? "Discover";
+    ViewData["Title"] = $"{nickname} runs";
+}
+
+@if (rows.Count == 0)
+{
+    <h1 class="text-center my-5 py-5">咣</h1>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 p-4 pb-2">
+                <span class="me-3 fs-4 align-middle"><b>@Model.Pag.Total.ToString("N0")</b> runs results</span>
+                <sl-animation name="jello" duration="5000" play>
+                    <sl-button href="/run" size="small">Add run</sl-button>
+                </sl-animation>
+            </div>
+            @foreach (var item in rows)
+            {
+                <div class="col-md-6 col-lg-4 my-4 px-4">
+                    <a href="/run/code/@item.RunCode">@item.RunRemark</a>
+                    <a class="mx-2 text-decoration-none" href="/run/code/@item.RunCode/edit" title="edit">
+                        <sl-icon name="pencil-square"></sl-icon>
+                    </a>
+                    @if (item.Uid == uinfo.UserId)
+                    {
+                        <a class="text-danger text-decoration-none" href="/run/code/@item.RunCode/delete" title="delete" onclick="return confirm('confirm delete?')">
+                            <sl-icon name="trash"></sl-icon>
+                        </a>
+                    }
+                    <div class="mt-1">
+                        <a class="me-2 small" href="/run/user/@item.Uid">@item.Spare3</a>
+                        <small class="opacity-75">@item.RunCreateTime.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                    </div>
+                </div>
+            }
+            <div class="col-12">
+                <partial name="_PartialPaging" model="Model" />
+            </div>
+        </div>
+    </div>
+}

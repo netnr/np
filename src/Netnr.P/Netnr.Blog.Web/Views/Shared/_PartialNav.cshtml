@@ -1,73 +1,286 @@
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrnav.js"))
+@{
+    var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
+    var themeClass = theme == "dark" ? "navbar-dark bg-dark" : "navbar-light bg-light";
 
-<!--顶部导航-->
-@{ bool IsLogin = ViewContext.HttpContext.User.Identity.IsAuthenticated;}
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+    int num = uinfo.UserId == 0 ? 0 : Netnr.Blog.Application.CommonService.NewMessageQuery(uinfo.UserId);
 
-<button type="button" class="MenuToggle show-in-mobile btn btn-lg btn-warning ml-3 mt-3">
-    <span class="fa fa-align-justify"></span>
-</button>
-<div class="netnrnav horizontal">
-    <div class="netnrnav-wrapper">
-        <ul>
-            <li><a href="/" class="siteIcon"><img src="/favicon.ico" alt="@GlobalTo.GetValue("Common:EnglishName")" /> Netnr</a></li>
-            <li><a href="/gist/discover" title="代码片段"><span class="fa fa-fw fa-file-code-o"></span> Gist</a></li>
-            <li><a href="/run/discover" title="在线运行代码"><span class="fa fa-fw fa-play"></span> Run</a></li>
-            <li><a href="/doc/discover" title="文档管理"><span class="fa fa-fw fa-book"></span> Doc</a></li>
-            <li><a href="/draw/discover" title="绘制"><span class="fa fa-fw fa-paint-brush"></span> Draw</a></li>
-            <li><a href="https://ss.netnr.com" title="ss.js.org"><span class="fa fa-fw fa-wrench"></span> SS</a></li>
-            <li>
-                <a class="text-muted"><span class="fa fa-fw fa-ellipsis-h"></span></a>
-                <ul>
-                    <li><a target="_blank" rel="noopener norefferrer" title="GitHub" href="https://github.com/netnr"><i class="fa fa-fw fa-github"></i> GitHub <sup><i class="fa small fa-external-link"></i></sup></a></li>
+    var rdv = ViewContext.RouteData.Values;
+    var ctrl = rdv["controller"].ToString().ToLower();
+    var actionName = rdv["action"].ToString().ToLower();
+    var ca = ctrl + "/" + actionName;
+    var caSearch = "home/index,home/type,run/user,run/discover,gist/user,gist/discover,draw/user,draw/discover,doc/user,doc/discover,guff/user,guff/discover".Split(',');
+    var search = ViewContext.HttpContext.Request.Query["k"];
+
+    AppContext.TryGetSwitch("Netnr.BuildHtml", out bool isBuildHtml);
+}
+
+@if (isBuildHtml)
+{
+    <nav class="nr-navbar navbar navbar-expand-lg @themeClass">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+            <a class='small d-block d-lg-none' href="/@actionName" title='@ViewData["Title"]'>
+                <b style="color:var(--sl-color-warning-600)">@ViewData["Title"]</b>
+            </a>
+
+            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
+                <sl-animation easing="ease-in-out" duration="1500" play>
+                    <span class="navbar-toggler-icon"></span>
+                </sl-animation>
+            </button>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item mx-2">
+                        <a class='nav-link active' href="/" title="ss.js.org">
+                            <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
+                                <div class="fw-bold">SS</div>
+                            </sl-animation>
+                        </a>
+                    </li>
+                    @if (ctrl == "ss" && actionName != "index")
+                    {
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/@actionName" title='@ViewData["Title"]'>
+                                <b style="color:var(--sl-color-warning-600)">@ViewData["Title"]</b>
+                            </a>
+                        </li>
+                    }
                 </ul>
-            </li>
-        </ul>
-        <ul class="float-right">
-            @if (IsLogin)
-            {
-                var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
-                var num = CommonService.NewMessageQuery(uinfo.UserId);
 
-                <li>
-                    <a href="/user/message">
-                        @if (num > 0)
-                        {
-                            <span title="有新消息" class="fa fa-fw fa-bell text-info"></span><b class="text-danger">@num</b>
-                            <script>document.title = "【@num】条新消息";</script>
-                        }
-                        else
-                        {
-                            <span title="暂无消息" class="fa fa-fw fa-bell"></span>
-                        }
-                    </a>
-                </li>
-                <li>
-                    <a><span class="fa fa-fw fa-user-circle-o "></span><span class="indicator fa fa-sort-desc"></span></a>
-                    <ul>
-                        <li><a href="/user/id/@uinfo.UserId"><span class="fa fa-fw fa-user text-primary"></span> 我的主页</a></li>
-                        <li><a href="/user/setting"><span class="fa fa-fw fa-cog text-primary"></span> 个人设置</a></li>
-                        <li class="divider"></li>
-                        <li><a href="/home/write"><span class="fa fa-fw fa-pencil text-info"></span> 写</a></li>
-                        <li><a href="/user/write"><span class="fa fa-fw fa-file-text-o text-info"></span> 我的文章</a></li>
-                        <li><a href="/user/write/laud"><span class="fa fa-fw fa-thumbs-up text-success"></span> 我的点赞</a></li>
-                        <li><a href="/user/write/mark"><span class="fa fa-fw fa-cube text-info"></span> 我的收藏</a></li>
-                        <li class="divider"></li>
-                        <li><a href="/note"><i class="fa fa-fw fa-file-text-o"></i> 记事本</a></li>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                    </li>
+                </ul>
+            </div>
+
+            <!--mobile-->
+            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
+                <sl-menu>
+                    <sl-menu-item data-href="/">SS</sl-menu-item>
+                    
+                    @if (ctrl == "ss" && actionName != "index")
+                    {
+                        <sl-menu-item data-href="/@actionName">@ViewData["Title"]</sl-menu-item>
+                    }
+                    <sl-divider></sl-divider>
+                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
+                </sl-menu>
+            </sl-drawer>
+        </div>
+    </nav>
+}
+else
+{
+    <!--顶部导航-->
+    <nav class="nr-navbar navbar navbar-expand-lg @themeClass">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Netnr</a>
+            @if (ctrl == "ss" && actionName != "index")
+            {
+                <a class='small d-block d-lg-none' href="/ss/@actionName" title='@ViewData["Title"]'>
+                    <b style="color:var(--sl-color-warning-600)">@ViewData["Title"]</b>
+                </a>
+            }
+
+            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
+                <sl-animation easing="ease-in-out" duration="1500" play>
+                    <span class="navbar-toggler-icon"></span>
+                </sl-animation>
+            </button>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item mx-2">
+                        <a class='nav-link @(ctrl=="gist"?"active":"")' href="/gist/discover" title="代码片段">
+                            @if (ctrl == "gist")
+                            {
+                                <sl-animation name="tada" easing="ease-in-out" duration="10000" play>
+                                    <div class="fw-bold">Gist</div>
+                                </sl-animation>
+                            }
+                            else
+                            {
+                                <div>Gist</div>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class='nav-link @(ctrl=="run"?"active":"")' href="/run/discover" title="在线运行代码">
+                            @if (ctrl == "run")
+                            {
+                                <sl-animation name="tada" easing="ease-in-out" duration="10000" play>
+                                    <div class="fw-bold">Run</div>
+                                </sl-animation>
+                            }
+                            else
+                            {
+                                <div>Run</div>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class='nav-link @(ctrl=="doc"?"active":"")' href="/doc/discover" title="文档管理">
+                            @if (ctrl == "doc")
+                            {
+                                <sl-animation name="tada" easing="ease-in-out" duration="10000" play>
+                                    <div class="fw-bold">Doc</div>
+                                </sl-animation>
+                            }
+                            else
+                            {
+                                <div>Doc</div>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class='nav-link @(ctrl=="draw"?"active":"")' href="/draw/discover" title="绘图">
+                            @if (ctrl == "draw")
+                            {
+                                <sl-animation name="tada" easing="ease-in-out" duration="10000" play>
+                                    <div class="fw-bold">Draw</div>
+                                </sl-animation>
+                            }
+                            else
+                            {
+                                <div>Draw</div>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class='nav-link @(ctrl=="guff"?"active":"")' href="/guff/discover" title="尬服：分享有趣的任何">
+                            @if (ctrl == "guff")
+                            {
+                                <sl-animation name="tada" easing="ease-in-out" duration="10000" play>
+                                    <div class="fw-bold">Guff</div>
+                                </sl-animation>
+                            }
+                            else
+                            {
+                                <div>Guff</div>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class='nav-link @(ctrl=="ss"?"active":"")' href="/ss" title="ss.js.org">
+                            @if (ctrl == "ss")
+                            {
+                                <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
+                                    <div class="fw-bold">SS</div>
+                                </sl-animation>
+                            }
+                            else
+                            {
+                                <div>SS</div>
+                            }
+                        </a>
+                    </li>
+                    @if (ctrl == "ss" && actionName != "index")
+                    {
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/ss/@actionName" title='@ViewData["Title"]'>
+                                <b style="color:var(--sl-color-warning-600)">@ViewData["Title"]</b>
+                            </a>
+                        </li>
+                    }
+                    <!--搜索-->
+                    @if (caSearch.Contains(ca))
+                    {
+                        <li class="nav-item mx-2 pt-1">
+                            <form method="get">
+                                <sl-input placeholder="Search..." size="small" class="nr-txt-search" name="k" value='@search'></sl-input>
+                            </form>
+                        </li>
+                    }
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                    </li>
+                    @if (uinfo.UserId == 0)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/account/login">Sign in</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item mx-2">
+                            <a class="nav-link text-decoration-none" href="/user/message">
+                                @if (num > 0)
+                                {
+                                    <sl-badge variant="success" pill pulse>@num</sl-badge>
+                                }
+                                else
+                                {
+                                    <sl-icon class="mt-1" name="bell"></sl-icon>
+                                }
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <sl-dropdown class="nr-navbar-dropdown">
+                                <sl-icon-button class="mt-1" slot="trigger" name="person"></sl-icon-button>
+                                <sl-menu style="display: none;">
+                                    <sl-menu-item data-href="/user/id/@uinfo.UserId">我的主页</sl-menu-item>
+                                    <sl-menu-item data-href="/user/setting">个人设置</sl-menu-item>
+                                    <sl-divider></sl-divider>
+                                    <sl-menu-item data-href="/home/write">写文章</sl-menu-item>
+                                    <sl-menu-item data-href="/user/write">我的文章</sl-menu-item>
+                                    <sl-divider></sl-divider>
+                                    <sl-menu-item data-href="/note">记事本</sl-menu-item>
+                                    <sl-divider></sl-divider>
+                                    @if (uinfo.UserId == GlobalTo.GetValue<int>("Common:AdminId"))
+                                    {
+                                        <sl-menu-item data-href="/admin">后台管理</sl-menu-item>
+                                        <sl-divider></sl-divider>
+                                    }
+                                    <sl-menu-item data-href="/account/logout">退出</sl-menu-item>
+                                </sl-menu>
+                            </sl-dropdown>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <!--mobile-->
+            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
+                <sl-menu>
+                    <sl-menu-item data-href="/gist/discover">Gist</sl-menu-item>
+                    <sl-menu-item data-href="/run/discover">Run</sl-menu-item>
+                    <sl-menu-item data-href="/doc/discover">Doc</sl-menu-item>
+                    <sl-menu-item data-href="/draw/discover">Draw</sl-menu-item>
+                    <sl-menu-item data-href="/guff/discover">Guff</sl-menu-item>
+                    <sl-menu-item data-href="/ss">SS</sl-menu-item>
+                    <sl-divider></sl-divider>
+                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
+                    <sl-divider></sl-divider>
+                    @if (uinfo.UserId == 0)
+                    {
+                        <sl-menu-item data-href="/account/login">Sign in</sl-menu-item>
+                    }
+                    else
+                    {
+                        <sl-menu-item data-href="/user/message">消息</sl-menu-item>
+                        <sl-menu-item data-href="/user/id/@uinfo.UserId">我的主页</sl-menu-item>
+                        <sl-menu-item data-href="/user/setting">个人设置</sl-menu-item>
+                        <sl-divider></sl-divider>
+                        <sl-menu-item data-href="/home/write">写文章</sl-menu-item>
+                        <sl-menu-item data-href="/user/write">我的文章</sl-menu-item>
+                        <sl-divider></sl-divider>
+                        <sl-menu-item data-href="/note">记事本</sl-menu-item>
+                        <sl-divider></sl-divider>
                         @if (uinfo.UserId == GlobalTo.GetValue<int>("Common:AdminId"))
                         {
-                            <li class="divider"></li>
-                            <li><a href="/admin"><span class="fa fa-fw fa-cogs text-warning"></span> 后台管理</a></li>
+                            <sl-menu-item data-href="/admin">后台管理</sl-menu-item>
+                            <sl-divider></sl-divider>
                         }
-                        <li class="divider"></li>
-                        <li><a href="/account/logout"><span class="fa fa-fw fa-power-off text-danger"></span> 退出</a></li>
-                    </ul>
-                </li>
-            }
-            else
-            {
-                <li><a href="/account/login" class="text-primary">登录 / 注册</a></li>
-            }
-        </ul>
-    </div>
-</div>
-<div style="height:20px"></div>
+                        <sl-menu-item data-href="/account/logout">退出</sl-menu-item>
+                    }
+                </sl-menu>
+            </sl-drawer>
+        </div>
+    </nav>
+}

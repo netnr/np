@@ -13,7 +13,8 @@ public class QuoteTo
     /// <returns></returns>
     public static string Html(string quotes)
     {
-        var srServer = SharedFast.GlobalTo.GetValue("StaticResource:Server") ?? "https://s1.netnr.com";
+        var srServer = SharedFast.GlobalTo.GetValue("StaticResource:Server");
+        var adminGitHub = SharedFast.GlobalTo.GetValue("Common:AdminGitHub");
 
         var vh = new List<string>();
 
@@ -23,28 +24,11 @@ public class QuoteTo
             switch (item)
             {
                 case "the":
-                    vh.Add($@"
-                            <!--
-                            https://github.com/netnr
-                            https://www.netnr.com
-                            https://netnr.eu.org
-                            {DateTime.Now:yyyy-MM-dd HH:mm:ss}
-                            -->
-                            ");
+                    vh.Add($"<!--\r\nhttps://github.com/{adminGitHub}\r\n{DateTime.Now:yyyy-MM-dd HH:mm:ss}\r\n-->");
                     break;
 
                 case "favicon":
                     vh.Add("<link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />");
-                    break;
-
-                case "blog-seo":
-                    vh.Add("<meta name='keywords' content='NET牛人, Netnr, Gist, Run, Doc, Draw' />");
-                    vh.Add("<meta name='description' content='NET牛人, Netnr, Gist, Run, Doc, Draw' />");
-                    break;
-
-                case "guff-seo":
-                    vh.Add("<meta name='keywords' content='Guff,尬服,尬服乐天地' />");
-                    vh.Add("<meta name='description' content='Guff,尬服,尬服乐天地' />");
                     break;
 
                 case "ace.css":
@@ -58,10 +42,6 @@ public class QuoteTo
                 case "easyui":
                     vh.Add($"<link href='{srServer}/libs/jquery-easyui/themes/metro/easyui.css' rel='stylesheet' />");
                     vh.Add($"<script src='{srServer}/libs/jquery-easyui/jquery.easyui.min.js'></script>");
-                    break;
-
-                case "bmob.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/bmob.min.js?170'></script>");
                     break;
 
                 case "fast-xml-parser.js":
@@ -91,6 +71,16 @@ public class QuoteTo
                 case "text-to-image.js":
                     vh.Add($"<script src='{srServer}/libs/mix/text-to-image.js'></script>");
                     break;
+                    
+                case "leancloud-storage.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/leancloud-storage@4.12.2/dist/av-min.js'></script>");
+                    break;
+
+                case "shoelace":
+                    vh.Add("<link href='https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.73/dist/themes/light.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.73/dist/themes/dark.css' rel='stylesheet' async />");
+                    vh.Add("<script type='module' src='https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.73/dist/shoelace.js'></script>");
+                    break;
 
                 case "fa.css":
                     vh.Add("<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />");
@@ -118,10 +108,16 @@ public class QuoteTo
                     break;
 
                 case "bootstrap5.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' async />");
                     break;
                 case "bootstrap5.js":
                     vh.Add("<script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>");
+                    break;
+
+                case "jstree":
+                    vh.Add("<link href='https://npm.elemecdn.com/jstree@3.3.12/dist/themes/default/style.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/jstree@3.3.12/dist/themes/default-dark/style.min.css' rel='stylesheet' />");
+                    vh.Add("<script src='https://npm.elemecdn.com/jstree@3.3.12/dist/jstree.min.js'></script>");
                     break;
 
                 case "jz.js":
@@ -129,10 +125,10 @@ public class QuoteTo
                     break;
 
                 case "netnrmd.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.css' rel='stylesheet' />");
                     break;
                 case "netnrmd.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.bundle.js'></script>");
                     break;
 
                 case "netnrnav.js":
@@ -143,16 +139,16 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.18.2/dist/tocbot.min.js'></script>");
                     break;
 
-                case "selectpage":
-                    vh.Add("<link href='https://npm.elemecdn.com/selectpage@2.20.0/selectpage.css' rel='stylesheet' />");
-                    vh.Add("<script src='https://npm.elemecdn.com/selectpage@2.20.0/selectpage.min.js'></script>");
+                case "tom-select":
+                    vh.Add("<link href='https://npm.elemecdn.com/tom-select@2.0.1/dist/css/tom-select.bootstrap5.min.css' rel='stylesheet' />");
+                    vh.Add("<script src='https://npm.elemecdn.com/tom-select@2.0.1/dist/js/tom-select.complete.min.js'></script>");
                     break;
 
                 case "viewer.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/viewerjs@1.10.4/dist/viewer.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/viewerjs@1.10.5/dist/viewer.min.css' rel='stylesheet' />");
                     break;
                 case "viewer.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/viewerjs@1.10.4/dist/viewer.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/viewerjs@1.10.5/dist/viewer.min.js'></script>");
                     break;
 
                 case "qiniu.js":
@@ -160,15 +156,15 @@ public class QuoteTo
                     break;
 
                 case "cos-js-sdk-v5.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.5/dist/cos-js-sdk-v5.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.6/dist/cos-js-sdk-v5.min.js'></script>");
                     break;
 
                 case "ag-grid-community.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@27.0.1/dist/ag-grid-community.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@27.2.1/dist/ag-grid-community.min.js'></script>");
                     break;
 
                 case "ag-grid-enterprise.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@27.0.1/dist/ag-grid-enterprise.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@27.2.1/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
                     break;
 
@@ -219,7 +215,7 @@ public class QuoteTo
                     break;
 
                 case "nsfwjs":
-                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@3.14.0/dist/tf.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/@tensorflow/tfjs@2.8.6/dist/tf.min.js'></script>");
                     vh.Add("<script src='https://npm.elemecdn.com/nsfwjs@2.4.1/dist/nsfwjs.min.js'></script>");
                     break;
 
@@ -229,18 +225,16 @@ public class QuoteTo
                     break;
 
                 case "terser.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.12.0/dist/bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.12.1/dist/bundle.min.js'></script>");
                     break;
 
                 case "html2canvas.js":
                     vh.Add("<script src='https://npm.elemecdn.com/html2canvas@1.4.1/dist/html2canvas.min.js'></script>");
                     break;
 
-                case "asciinema-player.css":
-                    vh.Add($"<link href='https://npm.elemecdn.com/asciinema-player@2.6.1/resources/public/css/asciinema-player.css' rel='stylesheet' />");
-                    break;
-                case "asciinema-player.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/asciinema-player@2.6.1/resources/public/js/asciinema-player.js'></script>");
+                case "asciinema-player":
+                    vh.Add($"<link href='https://npm.elemecdn.com/asciinema-player@3.0.0-rc.3/dist/bundle/asciinema-player.css' rel='stylesheet' />");
+                    vh.Add("<script src='https://npm.elemecdn.com/asciinema-player@3.0.0-rc.3/dist/bundle/asciinema-player.min.js'></script>");
                     break;
 
                 case "api-spec-converter.js":
@@ -248,15 +242,15 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.6.2/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.10.3/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.2/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.6.2/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.10.3/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.10.3/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
-                    vh.Add("<script src='https://npm.elemecdn.com/js-beautify@1.14.0/js/lib/beautifier.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/js-beautify@1.14.3/js/lib/beautifier.min.js'></script>");
                     break;
 
                 case "lrz.js":
@@ -268,7 +262,11 @@ public class QuoteTo
                     break;
 
                 case "jszip.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/jszip@3.7.1/dist/jszip.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/jszip@3.9.1/dist/jszip.min.js'></script>");
+                    break;
+                    
+                case "pdf.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/pdfjs-dist@2.13.216/legacy/build/pdf.min.js'></script>");
                     break;
 
                 case "nginxbeautifier":
@@ -279,6 +277,8 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
+                                var meRequire = require;
+
                                 function htmlDecode(html) {
                                     var a = document.createElement('a');
                                     a.innerHTML = html;

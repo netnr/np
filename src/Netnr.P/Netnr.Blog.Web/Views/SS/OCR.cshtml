@@ -1,0 +1,25 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-auto mb-3">
+            <input class="nr-txt-file w-100" type="file" accept="image/*" />
+        </div>
+        <div class="col-md-auto mb-3">
+            <sl-button class="nr-btn-ocr" variant="warning">识别</sl-button>
+            <sl-button class="nr-btn-rotate-right" title="顺时针旋转 5°">
+                <sl-icon name="arrow-clockwise"></sl-icon>
+            </sl-button>
+            <sl-button class="nr-btn-rotate-left" title="逆时针旋转 5°">
+                <sl-icon name="arrow-counterclockwise"></sl-icon>
+            </sl-button>
+            <sl-button class="nr-btn-reset" title="重置">重置</sl-button>
+        </div>
+        <div class="col-12 mb-3">
+            <div class="nr-card-view img-container"></div>
+        </div>
+        <div class="col-12">
+            <sl-textarea class="nr-txt-result d-none" rows="9" label="识别结果" placeholder="输出结果"></sl-textarea>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("cropperjs"))

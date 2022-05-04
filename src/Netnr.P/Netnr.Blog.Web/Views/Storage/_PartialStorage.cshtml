@@ -1,0 +1,68 @@
+@{
+    var actionName = ViewContext.RouteData.Values["action"].ToString().ToLower();
+    switch (actionName)
+    {
+        case "qiniu":
+            ViewData["Title"] = $"七牛云 KODO";
+            break;
+        case "netease":
+            ViewData["Title"] = $"网易数帆 NOS";
+            break;
+        case "tencent":
+            ViewData["Title"] = $"腾讯云 COS";
+            break;
+    }
+}
+
+<div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col-auto mb-2">
+            <label class="nr-btn-uploader btn text-info invisible">
+                <sl-icon name="cloud-upload"></sl-icon>
+                <input type="file" class="nr-uploader-file d-none" multiple />
+            </label>
+        </div>
+        <div class="col-auto mb-2">
+            <sl-button-group>
+                <sl-button class="nr-btn-new" data-cmd="new-folder" size="small">
+                    <sl-icon class="pe-none" name="folder-plus"></sl-icon>
+                </sl-button>
+                <sl-button class="nr-btn-delete" data-cmd="delete" size="small">
+                    <sl-icon class="pe-none" name="trash"></sl-icon>
+                </sl-button>
+            </sl-button-group>
+        </div>
+        <div class="col-auto mb-2">
+            <sl-select class="nr-se-bucket" size="small" style="min-width:12em"></sl-select>
+        </div>
+        <div class="col-auto mb-2">
+            <sl-input class="nr-txt-domain" size="small" placeholder="Domain"></sl-input>
+        </div>
+        <div class="col-auto mb-2">
+            <sl-input class="nr-txt-search-prefix" size="small" placeholder="Prefix (Enter)"></sl-input>
+        </div>
+        <div class="col-auto mb-2">
+            <sl-input class="nr-txt-search-key" size="small" placeholder="Search">
+                <sl-icon name="search" slot="prefix"></sl-icon>
+            </sl-input>
+        </div>
+        <div class="col-auto mb-2">
+            <sl-button size="small" outline @(actionName=="qiniu"?"variant=primary":"") href="/storage/qiniu" title="七牛云">KODO</sl-button>
+            <sl-button size="small" outline @(actionName=="netease"?"variant=primary":"") href="/storage/netease" title="网易数帆">NOS</sl-button>
+            <sl-button size="small" outline @(actionName=="tencent"?"variant=primary":"") href="/storage/tencent" title="腾讯云">COS</sl-button>
+            <sl-button size="small" outline @(actionName=="tencent"?"variant=primary":"class=d-none") href="https://cosbrowser.cloud.tencent.com/web/bucket" target="_blank">🐧COSBrowser</sl-button>
+        </div>
+        <div class="col-12">
+            <div class="nr-grid"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))
+@switch (actionName)
+{
+    case "tencent":
+        @Html.Raw(Netnr.SharedApp.QuoteTo.Html("cos-js-sdk-v5.js"))
+        break;
+}
+<script src='/js/storage/storage.js' asp-append-version="true"></script>

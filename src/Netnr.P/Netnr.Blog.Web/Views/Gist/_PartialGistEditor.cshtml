@@ -1,0 +1,47 @@
+@model Netnr.Blog.Domain.Gist
+@{
+    var mo = Model ?? new Netnr.Blog.Domain.Gist();
+}
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-12 d-none d-sm-inline-block">
+            @if (Model != null)
+            {
+                ViewData["Title"] = "Editing " + mo.GistFilename;
+                <p>Editing <a href="/gist/code/@mo.GistCode">@mo.GistFilename</a></p>
+            }
+            else
+            {
+                ViewData["Title"] = "Create a new Gist";
+                <sl-animation name="headShake" duration="8000" play>
+                    <p class="text-center">Instantly share code, notes, and snippets.</p>
+                </sl-animation>
+            }
+        </div>
+        <div class="col-12 mb-2">
+            <sl-input class="nr-txt-remark" placeholder="Gist description" maxlength="200" value="@mo.GistRemark">
+                <sl-icon name="pencil-square" slot="prefix"></sl-icon>
+            </sl-input>
+        </div>
+        <div class="col-md-auto col-xs mb-2">
+            <sl-select class="nr-se-language" placeholder="Choose a language" style="min-width:15em" value="@mo.GistLanguage"></sl-select>
+        </div>
+        <div class="col mb-2">
+            <sl-input class="nr-txt-filename" title="支持终端录屏 asciinema-player 语言选择 shell 文件名格式为 *.cast" placeholder="Filename including extension" value="@mo.GistFilename" maxlength="50">
+                <sl-icon name="file-earmark-code" slot="prefix"></sl-icon>
+            </sl-input>
+        </div>
+        <div class="col-12">
+            <div class="nr-editor border rounded mb-2"></div>
+            <input type="hidden" class="nr-hid-content" value="@(string.IsNullOrWhiteSpace(mo.GistContent)?"console.log(\"Hello world!\");":mo.GistContent)" />
+            <input type="hidden" class="nr-hid-code" value="@mo.GistCode" />
+        </div>
+        <div class="col-auto mb-2">
+            <sl-button class="nr-btn-save d-none" variant="warning">Save gist</sl-button>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))
+<script src="/js/gist/edit.js" asp-append-version="true"></script>

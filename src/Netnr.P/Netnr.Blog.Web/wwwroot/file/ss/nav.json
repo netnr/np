@@ -1,0 +1,484 @@
+[
+  {
+    "group": "热门",
+    "items": [
+      {
+        "url": "/wallpaper",
+        "icon": "wallpaper",
+        "title": "壁纸",
+        "remark": "源于网络"
+      },
+      {
+        "url": "/free",
+        "icon": "free",
+        "title": "免费",
+        "remark": "免费的资源"
+      },
+      {
+        "url": "/ps",
+        "icon": "ps",
+        "title": "Photoshop",
+        "remark": "在线 PS",
+        "target": "_blank"
+      },
+      {
+        "url": "/tv",
+        "icon": "tv",
+        "title": "在线电视",
+        "remark": "m3u8 源播放"
+      },
+      {
+        "url": "/qrcode",
+        "icon": "qrcode",
+        "title": "生成二维码",
+        "remark": "识别二维码"
+      },
+      {
+        "url": "/speedtest",
+        "icon": "dashboard",
+        "title": "网络测速",
+        "remark": "资源下载速率"
+      },
+      {
+        "url": "/idcard",
+        "icon": "idcard",
+        "title": "身份证号码查询",
+        "remark": "查询地区、性别，纠正尾数"
+      },
+      {
+        "url": "/zoning",
+        "icon": "zoning",
+        "title": "行政区划",
+        "remark": "五级行政区划"
+      }
+    ]
+  },
+  {
+    "group": "开发",
+    "items": [
+      {
+        "url": "/code",
+        "icon": "lock",
+        "title": "加密转码",
+        "remark": "加密、解密、编码、转码"
+      },
+      {
+        "url": "/vscode",
+        "icon": "vsc",
+        "title": "VSCode 编辑器",
+        "remark": "Monaco Editor 编辑器"
+      },
+      {
+        "url": "/diff",
+        "icon": "diff",
+        "title": "文本对比",
+        "remark": "Monaco Editor 文件对比"
+      },
+      {
+        "url": "https://md.js.org",
+        "icon": "markdown",
+        "title": "Markdown 编辑器"
+      },
+      {
+        "url": "https://je.js.org",
+        "icon": "json",
+        "title": "JSON 编辑器"
+      },
+      {
+        "url": "/nginx",
+        "icon": "nginx",
+        "title": "Nginx 编辑器",
+        "remark": "Nginx 配置文件格式化"
+      },
+      {
+        "url": "/base64",
+        "icon": "code",
+        "title": "转 Base64",
+        "remark": "Base64 解码、编码"
+      },
+      {
+        "url": "/jsontocsharp",
+        "icon": "csharp",
+        "title": "JSON 生成 C# 实体类",
+        "remark": "根据 JSON 生成 Model"
+      },
+      {
+        "url": "/jsontoxml",
+        "icon": "xml",
+        "title": "JSON 转换 XML",
+        "remark": "JSON 与 XML 相互转换"
+      },
+      {
+        "url": "/pdm",
+        "icon": "pdm",
+        "title": "PDM 查看",
+        "remark": "PowerDesigner 查看"
+      },
+      {
+        "url": "/zerotier",
+        "icon": "p2p",
+        "title": "ZeroTier",
+        "remark": "ZeroTier 管理"
+      },
+      {
+        "url": "/jscss",
+        "icon": "js",
+        "title": "JS、CSS 工具",
+        "remark": "JS 压缩、CSS 压缩"
+      },
+      {
+        "url": "/formatter",
+        "icon": "formatter",
+        "title": "代码格式化",
+        "remark": "JS、CSS、HTML"
+      },
+      {
+        "url": "/sqlformatter",
+        "icon": "sql",
+        "title": "SQL 格式化",
+        "remark": "美化 SQL 语句"
+      },
+      {
+        "url": "https://zijian.aliyun.com",
+        "icon": "detect",
+        "title": "域名检测",
+        "remark": "检测域名状态、DNS、站点"
+      },
+      {
+        "url": "https://whois.aliyun.com",
+        "icon": "find",
+        "title": "Whois 查询",
+        "remark": "域名信息查询"
+      },
+      {
+        "url": "https://check-host.net",
+        "icon": "host",
+        "title": "检测主机",
+        "remark": "CHECK-HOST"
+      },
+      {
+        "url": "/ip",
+        "icon": "ip",
+        "title": "IP",
+        "remark": "客户端 IP 地址"
+      },
+      {
+        "url": "https://ping.pe",
+        "icon": "ping",
+        "title": "Ping",
+        "remark": "Ping 测试"
+      },
+      {
+        "url": "/pingcloud",
+        "icon": "ping",
+        "title": "Ping 云",
+        "remark": "Ping 各大云服务节点"
+      },
+      {
+        "url": "https://www.chinassl.net/ssltools/convert-ssl.html",
+        "icon": "safe",
+        "title": "SSL 证书转换",
+        "remark": "格式转换"
+      },
+      {
+        "url": "https://getman.cn",
+        "icon": "http",
+        "title": "HTTP 请求",
+        "remark": "在线 HTTP 请求"
+      },
+      {
+        "url": "/useragent",
+        "icon": "info",
+        "title": "UserAgent",
+        "remark": "客户端信息"
+      },
+      {
+        "url": "/icp",
+        "icon": "icp",
+        "title": "ICP 备案查询"
+      },
+      {
+        "url": "/regex",
+        "icon": "regex",
+        "title": "正则表达式"
+      },
+      {
+        "url": "https://www.iconfont.cn",
+        "icon": "vector",
+        "title": "阿里矢量图标",
+        "remark": "矢量图标库"
+      },
+      {
+        "url": "/svgo",
+        "icon": "chain",
+        "title": "SVG 雪碧图",
+        "remark": "优化合并 SVG"
+      },
+      {
+        "url": "/textoimage",
+        "icon": "textoimage",
+        "title": "文本转图片",
+        "remark": "图片转文本"
+      },
+      {
+        "url": "/swaggerto",
+        "icon": "swagger",
+        "title": "SwaggerTo",
+        "remark": "Swagger 转换生成"
+      },
+      {
+        "url": "/identicon",
+        "icon": "grid",
+        "title": "身份图标",
+        "remark": "生成哈希头像"
+      },
+      {
+        "url": "/bed",
+        "icon": "img",
+        "title": "图床",
+        "remark": "图床大集合"
+      },
+      {
+        "url": "/gitstorage",
+        "icon": "gitpush",
+        "title": "GitStorage",
+        "remark": "GitHub push"
+      },
+      {
+        "url": "/graph",
+        "icon": "graph",
+        "title": "Graph Editor",
+        "remark": "mxGraph 流程图",
+        "target": "_blank"
+      },
+      {
+        "url": "/mind",
+        "icon": "mind",
+        "title": "Mind Editor",
+        "remark": "kityminder 脑图",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "group": "生活",
+    "items": [
+      {
+        "url": "https://kms.netnr.eu.org",
+        "icon": "microsoft",
+        "title": "KMS 服务",
+        "remark": "激活 Windows 系统"
+      },
+      {
+        "url": "/officeview",
+        "icon": "office",
+        "title": "Office 文档查看",
+        "remark": "Word、Excel、PPT"
+      },
+      {
+        "url": "/pdf",
+        "icon": "pdf",
+        "title": "PDF",
+        "remark": "PDF 工具"
+      },
+      {
+        "url": "/emoji",
+        "icon": "emoji",
+        "title": "Emoji 符号",
+        "remark": "Emoji 表情"
+      },
+      {
+        "url": "/symbol",
+        "icon": "symbol",
+        "title": "特殊符号",
+        "remark": "特殊符号"
+      },
+      {
+        "url": "/brush",
+        "icon": "brush",
+        "title": "画笔",
+        "remark": "画板"
+      },
+      {
+        "url": "/tiny",
+        "icon": "tiny",
+        "title": "图片压缩"
+      },
+      {
+        "url": "/seal",
+        "icon": "seal",
+        "title": "印",
+        "remark": "添加水印、印章"
+      },
+      {
+        "url": "/lottery",
+        "icon": "lottery",
+        "title": "彩票查询"
+      },
+      {
+        "url": "https://v.netnr.eu.org",
+        "icon": "video",
+        "title": "VIP 视频解析",
+        "remark": "免费看会员视频"
+      },
+      {
+        "url": "/express",
+        "icon": "express",
+        "title": "快递查询",
+        "remark": "一键查询快递"
+      },
+      {
+        "url": "/weather",
+        "icon": "weather",
+        "title": "天气预报"
+      },
+      {
+        "url": "/rmb",
+        "icon": "rmb",
+        "title": "人民币转大写"
+      },
+      {
+        "url": "/randomcode",
+        "icon": "key",
+        "title": "生成随机密码"
+      },
+      {
+        "url": "/randommatch",
+        "icon": "dice",
+        "title": "随机匹配",
+        "remark": "随机数生成、随机分组"
+      },
+      {
+        "url": "/bmi",
+        "icon": "bmi",
+        "title": "BMI 体重标准",
+        "remark": "中国成人超重和肥胖标准"
+      },
+      {
+        "url": "/purine",
+        "icon": "food",
+        "title": "食物嘌呤含量"
+      },
+      {
+        "url": "/gc",
+        "icon": "gc",
+        "title": "垃圾分类",
+        "remark": "垃圾分类查询"
+      }
+    ]
+  },
+  {
+    "group": "AI",
+    "items": [
+      {
+        "url": "/ocr",
+        "icon": "ocr",
+        "title": "OCR",
+        "remark": "识别图片内容"
+      },
+      {
+        "url": "/nsfw",
+        "icon": "nsfw",
+        "title": "图片审查",
+        "remark": "绘画、变态、中立、色情、性感"
+      },
+      {
+        "url": "/nlp",
+        "icon": "nlp",
+        "title": "自然语言处理",
+        "remark": "分词、关键词"
+      }
+    ]
+  },
+  {
+    "group": "子站",
+    "items": [
+      {
+        "url": "/app/boot/index.html",
+        "icon": "boot",
+        "title": "站点引导",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/chat/index.html",
+        "icon": "message",
+        "title": "聊天",
+        "remark": "在线聊天",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/dk/index.html",
+        "icon": "db",
+        "title": "NDK",
+        "remark": "数据库工具及代码构建",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/fa/index.html",
+        "icon": "fa",
+        "title": "Font-Awesome",
+        "remark": "Font-Awesome 4 镜像",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/jcute/index.html",
+        "icon": "js",
+        "title": "jCute Library",
+        "remark": "JavaScript Library",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/je/index.html",
+        "icon": "json",
+        "title": "JSON Editor",
+        "remark": "JSON 编辑器",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/jz/index.html",
+        "icon": "js",
+        "title": "Jz",
+        "remark": "JS 弹窗插件",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/md/index.html",
+        "icon": "markdown",
+        "title": "NetnrMD",
+        "remark": "Markdown 编辑器",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/oldbrowser/index.html",
+        "icon": "browser",
+        "title": "旧浏览器",
+        "remark": "浏览器升级提示",
+        "target": "_blank"
+      },
+      {
+        "url": "/app/zidian/index.html",
+        "icon": "dictionary",
+        "title": "字典",
+        "remark": "字、词、成语",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "group": "关于",
+    "items": [
+      {
+        "url": "/message",
+        "icon": "message",
+        "title": "留言",
+        "remark": "匿名留言"
+      },
+      {
+        "url": "https://netnr.eu.org",
+        "icon": "love",
+        "title": "联系赞助",
+        "remark": "Sponsors"
+      }
+    ]
+  }
+]

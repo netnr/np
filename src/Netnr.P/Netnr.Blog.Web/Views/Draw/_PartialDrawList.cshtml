@@ -1,0 +1,72 @@
+@model SharedPageVM
+@{
+    var rows = Model.Rows as List<Netnr.Blog.Domain.Draw>;
+    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+
+    var nickname = ViewData["Nickname"]?.ToString() ?? "Discover";
+    ViewData["Title"] = $"{nickname} draws";
+}
+
+@if (rows.Count == 0)
+{
+    <h1 class="text-center my-5 py-5">咣</h1>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 p-4 pb-2">
+                <span class="me-3 fs-4 align-middle"><b>@Model.Pag.Total.ToString("N0")</b> draws results</span>
+                <sl-animation name="jello" duration="5000" play>
+                    <sl-button href="/draw/code/form" size="small">Add draw</sl-button>
+                </sl-animation>
+            </div>
+
+            @foreach (var item in rows)
+            {
+                <div class="col-md-6 col-lg-4 my-4 px-4">
+                    @if (uinfo.UserId == item.Uid)
+                    {
+                        if (item.DrOpen != 1)
+                        {
+                            <sl-icon class="text-success" title="私有" name="lock-fill" ></sl-icon>
+                        }
+                        if (item.DrOpen != 1 && !string.IsNullOrWhiteSpace(item.Spare1))
+                        {
+                            <a class="mx-2 text-decoration-none" href="/draw/code/@(item.DrId+"/?code="+item.Spare1)" title="分享码查看链接">
+                                <sl-icon name="share-fill"></sl-icon>
+                            </a>
+                        }
+                    }
+                    <a href="/draw/code/@item.DrId" target="_blank">@item.DrName</a>
+                    @if (item.Uid == uinfo.UserId)
+                    {
+                        <a class="mx-2 text-decoration-none" href="/draw/code/form/@item.DrId" title="edit">
+                            <sl-icon name="pencil-square"></sl-icon>
+                        </a>
+                        <a class="text-danger" href="/draw/code/delete/@item.DrId" title="delete" onclick="return confirm('confirm delete?')">
+                            <sl-icon name="trash"></sl-icon>
+                        </a>
+                    }
+                    <p class="mt-1">@(string.IsNullOrWhiteSpace(item.DrRemark) ? "暂无备注" : item.DrRemark)</p>
+                    <div>
+                        @if (item.DrType == "mind")
+                        {
+                            <sl-badge variant="primary" title="脑图">Mind</sl-badge>
+                        }
+                        else
+                        {
+                            <sl-badge variant="success" title="绘图">Graph</sl-badge>
+                        }
+                        <a class="mx-2 small" href="/draw/user/@item.Uid">@item.Spare3</a>
+                        <small class="opacity-75">@item.DrCreateTime.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                    </div>
+                </div>
+            }
+
+            <div class="col-12">
+                <partial name="_PartialPaging" model="Model" />
+            </div>
+        </div>
+    </div>
+}

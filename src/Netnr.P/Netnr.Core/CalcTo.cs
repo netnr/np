@@ -184,12 +184,34 @@ namespace Netnr.Core
         /// <summary>
         /// SHA 加密
         /// </summary>
-        /// <param name="ha"></param>
+        /// <param name="algorithm"></param>
         /// <param name="txt"></param>
         /// <returns></returns>
-        private static string GetHashString(HashAlgorithm ha, string txt)
+        private static byte[] GetHashByte(HashAlgorithm algorithm, string txt)
         {
-            return BitConverter.ToString(ha.ComputeHash(encoding.GetBytes(txt))).Replace("-", "");
+            return algorithm.ComputeHash(encoding.GetBytes(txt));
+        }
+
+        /// <summary>
+        /// SHA 加密
+        /// </summary>
+        /// <param name="algorithm"></param>
+        /// <param name="txt"></param>
+        /// <returns></returns>
+        private static string GetHashBase64(HashAlgorithm algorithm, string txt)
+        {
+            return Convert.ToBase64String(algorithm.ComputeHash(encoding.GetBytes(txt)));
+        }
+
+        /// <summary>
+        /// SHA 加密
+        /// </summary>
+        /// <param name="algorithm"></param>
+        /// <param name="txt"></param>
+        /// <returns></returns>
+        private static string GetHashString(HashAlgorithm algorithm, string txt)
+        {
+            return BitConverter.ToString(algorithm.ComputeHash(encoding.GetBytes(txt))).Replace("-", "");
         }
 
         /// <summary>

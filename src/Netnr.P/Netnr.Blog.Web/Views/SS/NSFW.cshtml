@@ -1,0 +1,36 @@
+<style>
+    .nr-loading {
+        border-top-color: var(--sl-color-success-600);
+        border-bottom-color: var(--sl-color-warning-600);
+        border-right-color: var(--sl-color-danger-600);
+    }
+</style>
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md mb-3">
+            <div class="d-flex mb-3">
+                <input class="nr-txt-file w-100" type="file" accept="image/*" />
+                <div class="nr-loading nrc-loading ms-3 d-none"></div>
+            </div>
+            <div class="nr-card-view text-center"></div>
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md mb-3 invisible">
+            <div>
+                <sl-button class="mb-1" variant="success" title="无害的艺术，或艺术绘画">Drawing（绘画）</sl-button>
+                <sl-button class="mb-1" variant="default" title="一般，无害的内容">Neutral（中立）</sl-button>
+                <sl-button class="mb-1" variant="warning" title="不合时宜的挑衅内容">Sexy（性感）</sl-button>
+                <sl-button class="mb-1" variant="danger" title="不雅的内容和行为，通常涉及生殖器">Porn（色情）</sl-button>
+                <sl-button class="mb-1" variant="neutral" title="色情艺术，不适合大多数工作环境">Hentai（变态）</sl-button>
+            </div>
+            <sl-textarea class="nr-txt-result" rows="14"></sl-textarea>
+        </div>
+        <div class="col-12">
+            <div class="nr-card-chart"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("nsfwjs,highcharts.js"))

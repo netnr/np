@@ -1,72 +1,32 @@
 @{
-    ViewData["Title"] = "抓取百科";
+    ViewData["Title"] = "键值标签";
 }
 
-<style>
-    .kvg .tab-pane {
-        padding-top: 15px;
-    }
-
-    .kvg textarea {
-        height: 360px;
-        overflow: auto;
-    }
-</style>
-
-<div class="container-fluid">
+<div class="container-fluid px-4">
     <div class="row">
-        <div class="col-sm-12">
-            <div>
-                <div class="nav nav-tabs" role="tablist">
-                    <a class=" nav-item nav-link active" href="#kv1" data-toggle="tab">KeyValues Grab（抓取百科）</a>
-                    <a class="nav-item nav-link" href="#kv2" data-toggle="tab">KeyValues Synonym（同义词处理）</a>
-                    <a class="nav-item nav-link" href="#kv3" data-toggle="tab">Tags（新增并刷新）</a>
-                </div>
+        <div class="col-12">
+            <sl-tab-group>
+                <sl-tab slot="nav" panel="nr-tab-panel1">KeyValues Grab（抓取百科）</sl-tab>
+                <sl-tab slot="nav" panel="nr-tab-panel2">KeyValues Synonym（同义词处理）</sl-tab>
+                <sl-tab slot="nav" panel="nr-tab-panel3">Tags（新增并刷新）</sl-tab>
 
-                <div class="tab-content kvg">
+                <sl-tab-panel name="nr-tab-panel1">
+                    <sl-button class="nr-btn-run1 mb-2">执行抓取 Grab</sl-button>
+                    <sl-textarea class="nr-txt1" placeholder="请输入 KeyNames；换行处理批量；无新增 有修改；"></sl-textarea>
+                </sl-tab-panel>
 
-                    <div class="tab-pane fade show active" id="kv1">
+                <sl-tab-panel name="nr-tab-panel2">
+                    <sl-button class="nr-btn-run2 mb-2">处理同义词 Synonym</sl-button>
+                    <sl-textarea class="nr-txt2" placeholder="请输入 主 KeyName；后面是同义词，主 key 在第一行，如：@(Environment.NewLine)javascript@(Environment.NewLine)js"></sl-textarea>
+                </sl-tab-panel>
 
-                        <button class="btn btn-primary" id="btnRun1">执行抓取 Grab</button>
-                        <hr />
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <textarea id="txt1" class="form-control" placeholder="请输入 KeyNames ；换行处理批量 ；无新增有修改；"></textarea>
-                            </div>
-                            <div class="col-sm-6">
-                                <textarea id="txtrt1" class="form-control" placeholder="输出处理结果" readonly="readonly"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="kv2">
-                        <button class="btn btn-primary" id="btnRun2">处理同义词 Synonym</button>
-                        <hr />
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <textarea id="txt2" class="form-control" placeholder="请输入 主KeyName ；后面是同义词，主key在第一行，如：@(Environment.NewLine)javascript@(Environment.NewLine)js"></textarea>
-                            </div>
-                            <div class="col-sm-6">
-                                <textarea id="txtrt2" class="form-control" placeholder="输出处理结果" readonly="readonly"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="kv3">
-                        <button class="btn btn-primary" id="btnRun3">新增标签 Tags</button>
-                        <hr />
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <textarea id="txt3" class="form-control" placeholder="请输入 TagName ；换行处理批量 ；存在不新增 ；"></textarea>
-                            </div>
-                            <div class="col-sm-6">
-                                <textarea id="txtrt3" class="form-control" placeholder="输出处理结果" readonly="readonly"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+                <sl-tab-panel name="nr-tab-panel3">
+                    <sl-button class="nr-btn-run3 mb-2">新增标签 Tags</sl-button>
+                    <sl-textarea class="nr-txt3" placeholder="请输入 TagName；换行处理批量；存在不新增；"></sl-textarea>
+                </sl-tab-panel>
+            </sl-tab-group>
+            
+            <sl-textarea label="处理结果" class="nr-txt-result" rows="5" readonly></sl-textarea>
         </div>
     </div>
 </div>

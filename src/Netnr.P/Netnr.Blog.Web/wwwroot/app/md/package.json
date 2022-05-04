@@ -1,0 +1,23 @@
+{
+  "name": "netnrmd",
+  "version": "3.0.3",
+  "description": "Markdown Combinatorial editor | 组合编辑器，Monaco-Editor 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高亮 + pangu 间隙",
+  "main": "src/netnrmd.bundle.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netnr/np.git"
+  },
+  "keywords": [
+    "markdown",
+    "marked"
+  ],
+  "author": "netnr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netnr/np/issues"
+  },
+  "homepage": "https://github.com/netnr/np#readme",
+  "files": [
+    "src"
+  ]
+}

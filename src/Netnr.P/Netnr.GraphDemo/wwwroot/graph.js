@@ -7,6 +7,11 @@
         watermarkForText: "/SkiaSharp/Watermark"
     },
     {
+        name: "NetVips",
+        link: "https://github.com/kleisauke/net-vips",
+        captcha: "/NetVips/Captcha",
+    },
+    {
         name: "SixLabors.ImageSharp.Drawing",
         link: "https://github.com/SixLabors/ImageSharp",
         captcha: "/SixLaborsImageSharpDrawing/Captcha",

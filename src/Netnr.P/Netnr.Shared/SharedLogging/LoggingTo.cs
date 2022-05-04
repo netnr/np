@@ -607,10 +607,57 @@ namespace Netnr.SharedLogging
 
                 db.SafeConn(() =>
                 {
-                    db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
+                    try
+                    {
+                        db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
 
-                    vm.Total = Convert.ToInt32(db.GetCommand(totalSql).ExecuteScalar());
-                    vm.Data = db.GetCommand(sql).ExecuteDataOnly().Tables[0];
+                    vm.RowCount = Convert.ToInt32(db.GetCommand(totalSql).ExecuteScalar());
+                    vm.RowData = db.GetCommand(sql).ExecuteDataOnly().First().Value;
+                });
+
+                vm.Lost = lost;
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 查询
+        /// </summary>
+        /// <param name="queryAllSql"></param>
+        /// <param name="queryLimitSql"></param>
+        /// <returns></returns>
+        public static LoggingResultVM Query(string queryAllSql, string queryLimitSql)
+        {
+            var vm = new LoggingResultVM();
+
+            var now = DateTime.Now;
+            var sql = GetSqlForQuery(now.AddYears(-5), now, out DbHelper db, out int lost, out List<string> listPreSql);
+            if (sql != null)
+            {
+                queryAllSql = queryAllSql.Replace("(TABLE)", "(" + sql + ") as t");
+                queryLimitSql = queryLimitSql.Replace("(TABLE)", "(" + sql + ") as t");
+
+                var totalSql = $"select count(1) as Total from ({queryAllSql}) as a";
+
+                db.SafeConn(() =>
+                {
+                    try
+                    {
+                        db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+
+                    vm.RowCount = Convert.ToInt32(db.GetCommand(totalSql).ExecuteScalar());
+                    vm.RowData = db.GetCommand(queryLimitSql).ExecuteDataOnly().First().Value;
                 });
 
                 vm.Lost = lost;
@@ -622,10 +669,10 @@ namespace Netnr.SharedLogging
         /// <summary>
         /// 统计PV/UV
         /// </summary>
-        /// <param name="type">类型（0：今天，-1：昨天，-7：最近7天，-30：最近30天）</param>
+        /// <param name="days">0：今天，-1：昨天，-7：最近7天，-30：最近30天</param>
         /// <param name="listWhere">条件：键、关系符、值1、值2</param>
         /// <returns></returns>
-        public static LoggingResultVM StatsPVUV(int type, List<List<string>> listWhere = null)
+        public static LoggingResultVM StatsPVUV(int days, List<List<string>> listWhere = null)
         {
             var vm = new LoggingResultVM();
 
@@ -633,22 +680,22 @@ namespace Netnr.SharedLogging
             var begin = now;
             var end = now;
 
-            switch (type)
+            switch (days)
             {
                 //今天
                 //昨天
                 case 0:
                 case -1:
                     {
-                        begin = now.AddDays(type).Date;
-                        end = DateTime.Parse(now.AddDays(type).ToString("yyyy-MM-dd 23:59:59.999"));
+                        begin = now.AddDays(days).Date;
+                        end = DateTime.Parse(now.AddDays(days).ToString("yyyy-MM-dd 23:59:59.999"));
                     }
                     break;
                 //最近
                 default:
                     {
-                        type++;
-                        begin = now.AddDays(type).Date;
+                        days++;
+                        begin = now.AddDays(days).Date;
                     }
                     break;
             }
@@ -665,19 +712,18 @@ namespace Netnr.SharedLogging
                 }
                 sql = $"select LogCreateTime,LogIp from ({sql}) where {whereSql} LogCreateTime>=" + begin.Date.Ticks + " and LogCreateTime<=" + end.Ticks;
 
-                var query =
-                db.SafeConn(() =>
+                var query = db.SafeConn(() =>
                 {
                     db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
-                    return db.GetCommand(sql).ExecuteDataOnly().Tables[0].Select();
+                    return db.GetCommand(sql).ExecuteDataOnly().First().Value;
                 });
 
-                switch (type)
+                switch (days)
                 {
                     case 0:
                     case -1:
                         {
-                            vm.Data = query.GroupBy(x => new DateTime(Convert.ToInt64(x["LogCreateTime"])).ToString("yyyy-MM-dd HH"))
+                            vm.RowData = query.GroupBy(x => new DateTime(Convert.ToInt64(x["LogCreateTime"])).ToString("yyyy-MM-dd HH"))
                                 .OrderByDescending(x => x.Key).Select(x => new
                                 {
                                     time = x.Key.Split(' ')[1] + ":00",
@@ -688,7 +734,7 @@ namespace Netnr.SharedLogging
                         break;
                     default:
                         {
-                            vm.Data = query.GroupBy(x => new DateTime(Convert.ToInt64(x["LogCreateTime"])).ToString("yyyy-MM-dd"))
+                            vm.RowData = query.GroupBy(x => new DateTime(Convert.ToInt64(x["LogCreateTime"])).ToString("yyyy-MM-dd"))
                                 .OrderByDescending(x => x.Key).Select(x => new
                                 {
                                     time = x.Key,
@@ -706,11 +752,11 @@ namespace Netnr.SharedLogging
         /// <summary>
         /// 统计属性排行
         /// </summary>
-        /// <param name="type">类型（0：今天，-1：昨天，-7：最近7天，-30：最近30天）</param>
+        /// <param name="days">0：今天，-1：昨天，-7：最近7天，-30：最近30天</param>
         /// <param name="field">字段列</param>
         /// <param name="listWhere">条件：键、关系符、值1、值2</param>
         /// <returns></returns>
-        public static LoggingResultVM StatsTop(int type, string field, List<List<string>> listWhere = null)
+        public static LoggingResultVM StatsTop(int days, string field, List<List<string>> listWhere = null)
         {
             var vm = new LoggingResultVM();
 
@@ -718,19 +764,19 @@ namespace Netnr.SharedLogging
             var end = now;
 
             DateTime begin;
-            switch (type)
+            switch (days)
             {
                 case 0:
                 case -1:
                     {
-                        begin = now.AddDays(type).Date;
-                        end = DateTime.Parse(now.AddDays(type).ToString("yyyy-MM-dd 23:59:59.999"));
+                        begin = now.AddDays(days).Date;
+                        end = DateTime.Parse(now.AddDays(days).ToString("yyyy-MM-dd 23:59:59.999"));
                     }
                     break;
                 default:
                     {
-                        type++;
-                        begin = now.AddDays(type).Date;
+                        days++;
+                        begin = now.AddDays(days).Date;
                     }
                     break;
             }
@@ -748,18 +794,17 @@ namespace Netnr.SharedLogging
                     }
                     sql = $"select {field} as field,count({field}) as total from ({sql}) where {whereSql} LogCreateTime>={begin.Date.Ticks} and LogCreateTime<={end.Ticks} group by {field} order by total desc";
 
-                    var dt =
-                    db.SafeConn(() =>
+                    var dt = db.SafeConn(() =>
                     {
-                        return db.GetCommand(sql).ExecuteDataOnly().Tables[0];
+                        return db.GetCommand(sql).ExecuteDataOnly().First().Value;
                     });
 
-                    while (dt.Rows.Count > 50)
+                    if(dt.Count > 50)
                     {
-                        dt.Rows.RemoveAt(dt.Rows.Count - 1);
+                        dt = dt.Take(50).ToList();
                     }
                     vm.Lost = lost;
-                    vm.Data = dt;
+                    vm.RowData = dt;
                 }
             }
 

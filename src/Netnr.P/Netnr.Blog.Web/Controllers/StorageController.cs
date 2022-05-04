@@ -1,4 +1,9 @@
-﻿using Netnr.SharedFast;
+﻿using Netease.Cloud.NOS;
+using Netnr.SharedFast;
+using Newtonsoft.Json.Linq;
+using Qiniu.Storage;
+using Qiniu.Util;
+using System.Security.Cryptography;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -9,82 +14,167 @@ namespace Netnr.Blog.Web.Controllers
     public class StorageController : Controller
     {
         /// <summary>
-        /// 腾讯对象存储
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Tencent()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 秘钥
-        /// </summary>
-        public class AccessCOS
-        {
-            public string Bucket => GlobalTo.GetValue("ApiKey:AccessCOS:Bucket");
-            public string AppId => GlobalTo.GetValue("ApiKey:AccessCOS:AppId");
-            public string Region => GlobalTo.GetValue("ApiKey:AccessCOS:Region");
-            public string SecretId => GlobalTo.GetValue("ApiKey:AccessCOS:SecretId");
-            public string SecretKey => GlobalTo.GetValue("ApiKey:AccessCOS:SecretKey");
-        }
-
-        [HttpGet, Apps.FilterConfigs.IsAdmin]
-        public AccessCOS TencentAPI()
-        {
-            return new AccessCOS();
-        }
-
-        /// <summary>
-        /// 网易对象存储
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult NetEasy()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 秘钥
-        /// </summary>
-        public class AccessNOS
-        {
-            public string Bucket => GlobalTo.GetValue("ApiKey:AccessNOS:Bucket");
-            public string AccessKeyId => GlobalTo.GetValue("ApiKey:AccessNOS:AccessKeyId");
-            public string AccessKeySecret => GlobalTo.GetValue("ApiKey:AccessNOS:AccessKeySecret");
-            public string Endpoint => GlobalTo.GetValue("ApiKey:AccessNOS:Endpoint");
-        }
-
-        [HttpGet, Apps.FilterConfigs.IsAdmin]
-        public AccessNOS NetEasyAPI()
-        {
-            return new AccessNOS();
-        }
-
-        /// <summary>
-        /// 七牛对象存储
+        /// 七牛云 对象存储 KODO
         /// </summary>
         /// <returns></returns>
         public IActionResult Qiniu()
         {
-            ViewData["DateUnix"] = DateTime.Now.AddHours(1).ToTimestamp();
-            return View();
+            return View("/Views/Storage/_PartialStorage.cshtml");
         }
 
         /// <summary>
-        /// 秘钥
+        /// 网易数帆 对象存储 NOS
         /// </summary>
-        public class AccessKODO
+        /// <returns></returns>
+        public IActionResult NetEase()
         {
-            public string Bucket => GlobalTo.GetValue("ApiKey:AccessKODO:Bucket");
-            public string AccessKey => GlobalTo.GetValue("ApiKey:AccessKODO:AccessKey");
-            public string SecretKey => GlobalTo.GetValue("ApiKey:AccessKODO:SecretKey");
+            return View("/Views/Storage/_PartialStorage.cshtml");
         }
 
-        [HttpGet, Apps.FilterConfigs.IsAdmin]
-        public AccessKODO QiniuAPI()
+        /// <summary>
+        /// 腾讯云 对象存储 COS
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Tencent()
         {
-            return new AccessKODO();
+            return View("/Views/Storage/_PartialStorage.cshtml");
+        }
+
+        /// <summary>
+        /// 对象存储接口
+        /// </summary>
+        /// <param name="id">服务商</param>
+        /// <param name="sid">命令</param>
+        /// <returns></returns>
+        public IActionResult API([FromRoute] string id, [FromRoute] string sid)
+        {
+            //参数
+            var bucket = Request.Query["Bucket"].ToString();
+            var endpoint = Request.Query["Endpoint"].ToString();
+            var prefix = Request.Query["Prefix"].ToString();
+            var marker = Request.Query["Marker"].ToString();
+            if (!int.TryParse(Request.Query["Limit"], out var limit))
+            {
+                limit = 1000;
+            }
+            var delimiter = Request.Query["Delimiter"].ToString();
+            var key = Request.Query["key"].ToString();
+            var keys = Request.Query["keys"].ToString();
+            var newKey = Request.Query["newKey"].ToString();
+
+            var secretId = GlobalTo.GetValue($"StorageKey:{id}:SecretId");
+            var secretKey = GlobalTo.GetValue($"StorageKey:{id}:SecretKey");
+
+            try
+            {
+                switch (id?.ToLower())
+                {
+                    case "key":
+                        {
+                            var result = System.IO.File.ReadAllText(GlobalTo.ContentRootPath + "/appsettings.json").ToJObject()["StorageKey"].ToJson();
+                            return Content(result);
+                        }
+                    case "qiniu":
+                        {
+                            // 设置存储区域
+                            Config config = new();
+                            config.Zone = Zone.ZONE_CN_East;
+                            Mac mac = new(secretId, secretKey);
+                            BucketManager bucketManager = new(mac, config);
+
+                            switch (sid)
+                            {
+                                case "upload-token":
+                                    {
+                                        PutPolicy putPolicy = new();
+                                        putPolicy.Scope = bucket;
+                                        putPolicy.SetExpires(3600 * 7);
+                                        string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+                                        return Content(token);
+                                    }
+                                case "list":
+                                    {
+                                        var result = bucketManager.ListFiles(bucket, prefix, marker, limit, delimiter);
+                                        return Content(result.ToJson());
+                                    }
+                                case "delete":
+                                    {
+                                        var result = new List<object>();
+                                        keys.ToString().Split(',').ToList().ForEach(x =>
+                                        {
+                                            var r = bucketManager.Delete(bucket, x);
+                                            result.Add(new
+                                            {
+                                                Key = x,
+                                                Result = r
+                                            });
+                                        });
+                                        return Content(result.ToJson());
+                                    }
+                                case "move":
+                                    {
+                                        var result = bucketManager.Move(bucket, key, bucket, newKey);
+                                        return Content(result.ToJson());
+                                    }
+                            }
+                        }
+                        break;
+                    case "netease":
+                        {
+                            var nosClient = new NosClient(endpoint, secretId, secretKey, new ClientConfiguration()
+                            {
+                                MaxErrorRetry = 2,
+                                MaxConnections = 200,
+                                ConnectionTimeout = 50000
+                            });
+
+                            switch (sid)
+                            {
+                                case "upload-token":
+                                    {
+                                        var putPolicy = new JObject
+                                        {
+                                            ["Bucket"] = bucket,
+                                            ["Object"] = key,
+                                            ["Expires"] = DateTime.Now.AddHours(7).ToTimestamp() // Unix时间，单位：秒
+                                        };
+                                        var encodedPutPolicy = putPolicy.ToJson().ToBase64Encode();
+                                        using var algorithm = new HMACSHA256();
+                                        algorithm.Key = secretKey.ToByte();
+                                        var encodedSign = Convert.ToBase64String(algorithm.ComputeHash(encodedPutPolicy.ToByte()));
+                                        var result = $"UPLOAD {secretId}:{encodedSign}:{encodedPutPolicy}";
+                                        return Content(result);
+                                    }
+                                case "list":
+                                    {
+                                        var result = nosClient.ListObjects(new ListObjectsRequest(bucket)
+                                        {
+                                            MaxKeys = limit,
+                                            Prefix = prefix,
+                                            Delimiter = delimiter
+                                        });
+                                        return Content(result.ToJson());
+                                    }
+                                case "delete":
+                                    {
+                                        keys.ToString().Split(',').ToList().ForEach(x =>
+                                        {
+                                            nosClient.DeleteObject(bucket, x);
+                                        });
+                                        return Ok();
+                                    }
+                            }
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex);
+                return BadRequest(ex.Message);
+            }
+
+            return Ok();
         }
     }
 }

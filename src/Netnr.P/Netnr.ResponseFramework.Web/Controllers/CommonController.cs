@@ -180,7 +180,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        vpath = PathTo.Combine(vpath, subdir, now.ToString("yyyy'/'MM'/'dd"));
+                        vpath = PathTo.Combine(vpath, subdir, now.ToString("yyyy'/'MM'"));
                     }
 
                     //物理路径
@@ -195,7 +195,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         var file = files[i];
                         var ext = Path.GetExtension(file.FileName);
-                        var filename = now.ToString("HHmmss") + RandomTo.NumCode() + ext;
+                        var filename = now.ToString("ddHHmmss") + RandomTo.NumCode() + ext;
 
                         using (var stream = new FileStream(PathTo.Combine(ppath, filename), FileMode.Create))
                         {

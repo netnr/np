@@ -1,0 +1,14 @@
+<div class="nr-card-box invisible container-fluid p-4">
+    <div class="row">
+        <div class="nr-card-message col-12"></div>
+        <div class="col-12 position-sticky bottom-0 py-3" style="background: var(--sl-panel-background-color);">
+            <div class="mb-3 d-flex">
+                <sl-button class="nr-btn-reply" variant="warning">回复</sl-button>
+                <sl-input class="nr-txt-nickname w-100 ms-2" placeholder="输入昵称（可选）" maxlength="50"></sl-input>
+            </div>
+            <sl-textarea class="nr-txt-message" rows="2" placeholder=" 写留言内容，文明点 ^_^ &#xD;&#xA; 快捷提交：Ctrl + Enter，支持 Markdown"></sl-textarea>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("leancloud-storage.js,netnrmd.js,identicon.js"))

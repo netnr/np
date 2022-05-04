@@ -1,0 +1,12 @@
+@{
+    var md = File.ReadAllText(GlobalTo.WebRootPath + "/file/ss/free.md");
+    var html = Markdig.Markdown.ToHtml(md);
+}
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-12 text-break">
+            @Html.Raw(html.Replace("<ul>","<ul class='ps-3'>"))
+        </div>
+    </div>
+</div>

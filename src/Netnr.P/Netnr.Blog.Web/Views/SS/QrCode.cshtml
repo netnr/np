@@ -1,0 +1,20 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md mb-4">
+            <div class="d-flex align-items-end mb-3">
+                <sl-textarea class="nr-txt-content w-100" rows="1" label="生成二维码" placeholder="内容：网址、邮箱等"></sl-textarea>
+                <sl-button class="nr-btn-config ms-1">配置</sl-button>
+            </div>
+            <sl-textarea class="nr-txt-config mb-3 d-none" rows="11" label="生成二维码配置"></sl-textarea>
+            <div class="nr-card-result1"></div>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md">
+            <div>识别二维码（支持拖拽、粘贴）</div>
+            <input type="file" class="nr-txt-file w-100 mb-3" accept="image/*" />
+            <sl-textarea class="nr-txt-result2 d-none" label="识别结果"></sl-textarea>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("qrcode.js,jsqr.js"))

@@ -1,0 +1,29 @@
+<div class="nr-card-box invisible container-fluid p-4">
+    <div class="row">
+        <div class="col-auto mb-3">
+            <sl-button class="nr-btn-build" variant="warning">生成实体</sl-button>
+        </div>
+        <div class="col-auto mb-3 d-none d-sm-inline-block">
+            <sl-select class="nr-se-comment" value="2">
+                <sl-menu-item value="1">带注释</sl-menu-item>
+                <sl-menu-item value="2">不带注释</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-auto mb-3 d-none d-sm-inline-block">
+            <sl-select class="nr-se-capital" value="2">
+                <sl-menu-item value="1">类名 强制大写</sl-menu-item>
+                <sl-menu-item value="2">类名 不强制大写</sl-menu-item>
+            </sl-select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="nr-editor1"></div>
+        </div>
+        <div class="col-sm-6">
+            <div class="nr-editor2"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))

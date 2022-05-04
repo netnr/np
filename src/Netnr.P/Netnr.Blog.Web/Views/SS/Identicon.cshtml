@@ -1,0 +1,30 @@
+﻿<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-auto mb-3">
+            <sl-input class="nr-txt-sign" label="标识" placeholder="身份（昵称、标识等）" autofocus autocomplete="off"></sl-input>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-input class="nr-txt-size" label="大小" type="number" value="240" min="2" max="99999" step="2"></sl-input>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-auto d-none mt-3 mb-3">
+            <div class="nr-card-view1 d-inline-block mb-3"></div>
+            <div>
+                <a href="javascript:void(0)" data-action="svg1">下载 SVG</a>
+                <a href="javascript:void(0)" data-action="image1" class="mx-2" >下载 JPG</a>
+                <a href="https://github.com/stewartlord/identicon.js" class="opacity-75" target="_blank">GitHub-style</a>
+            </div>
+        </div>
+        <div class="col-auto d-none mt-3">
+            <div class="nr-card-view2 d-inline-block mb-3"></div>
+            <div>
+                <a href="javascript:void(0)" data-action="svg2">下载 SVG</a>
+                <a href="javascript:void(0)" data-action="image2" class="mx-2" >下载 JPG</a>
+                <a href="https://github.com/dmester/jdenticon" class="opacity-75" target="_blank">jdenticon</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jdenticon.js,identicon.js,html2canvas.js"))

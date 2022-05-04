@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <title>Mind Editor NET牛人</title>
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="keywords" content="netnr NET牛人 Mind Editor" />
+    <meta name="description" content="Script Services kityminder 脑图" />
+</head>
+<body>
+    <link rel="stylesheet" href="https://npm.elemecdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://npm.elemecdn.com/codemirror@5.65.2/lib/codemirror.css" />
+    <link rel="stylesheet" href="https://npm.elemecdn.com/kityminder-core@1.4.50/dist/kityminder.core.css" />
+
+    <link rel="stylesheet" href="https://s1.netnr.com/libs/kityminder/hotbox.css" />
+    <link rel="stylesheet" href="https://s1.netnr.com/libs/kityminder/color-picker.min.css" />
+    <link rel="stylesheet" href="https://s1.netnr.com/libs/kityminder/kityminder.editor.min.css" />
+
+    <script src="https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://npm.elemecdn.com/angular@1.8.2/angular.min.js"></script>
+    <script src="https://npm.elemecdn.com/angular-bootstrap@0.12.2/ui-bootstrap-tpls.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/lib/codemirror.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/mode/xml/xml.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/mode/javascript/javascript.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/mode/css/css.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/mode/markdown/markdown.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/addon/mode/overlay.js"></script>
+    <script src="https://npm.elemecdn.com/codemirror@5.65.2/mode/gfm/gfm.js"></script>
+    <script src="https://npm.elemecdn.com/angular-ui-codemirror@0.3.0/src/ui-codemirror.js"></script>
+    <script src="https://npm.elemecdn.com/marked@3.0.8/lib/marked.js"></script>
+    <script src="https://npm.elemecdn.com/kity@2.0.4/dist/kity.min.js"></script>
+    <script src="https://npm.elemecdn.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script>
+
+    <script src="https://s1.netnr.com/libs/kityminder/hotbox.min.js"></script>
+    <script src="https://s1.netnr.com/libs/kityminder/json-diff.js"></script>
+    <script src="https://s1.netnr.com/libs/kityminder/color-picker.min.js"></script>
+    <script src="https://s1.netnr.com/libs/kityminder/kityminder.editor.min.js"></script>
+
+    <div>
+        <!--导出-->
+        <div class="modal fade" role="dialog" id="ehModalExport">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">导出</h4>
+                    </div>
+                    <div class="modal-body" id="mbef"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="btnExport">导出</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--导入-->
+        <div class="modal fade" role="dialog" id="ehModalImport">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">导入</h4>
+                    </div>
+                    <div class="modal-body" id="mbim">
+                        <label>选择文件（支持拖拽，格式：txt、md、json）</label>
+                        <input class="form-control" type="file" id="fileImport" />
+                        <hr />
+                        <label>导入的内容</label>
+                        <textarea class="form-control" id="txtImprot" rows="10" placeholder="导入的内容，可直接粘贴至此"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="btnImport">导入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <kityminder-editor on-init="initEditor(editor, minder)"></kityminder-editor>
+    
+    <script src="/js/ss/mind.js?v=z8kM0NUdW1DN0yhqKHNd9vGFuctkkkNiEQ3ERZvhFWM"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-auto mb-3">
+            <sl-button class="nr-btn-upload" variant="warning">Upload</sl-button>
+        </div>
+        <div class="col-auto mb-3">
+            <input type="file" class="nr-txt-file" multiple />
+        </div>
+        <div class="col-auto mb-3">
+            <sl-button>owner / repo</sl-button>
+            <sl-input class="nr-txt-or d-inline-block" placeholder="必填，用户/仓库，例：netnr/np"></sl-input>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-button href="https://github.com/settings/tokens" target="_blank">token</sl-button>
+            <sl-input class="nr-txt-token d-inline-block" placeholder="必填，访问仓库的 token，长度 40"></sl-input>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-select class="nr-se-proxy" style="width:12em">
+                <sl-menu-item value="">（选择代理）</sl-menu-item>
+                <sl-menu-item title="Cloudflare Workers" value="https://cors.eu.org/">cors.eu.org</sl-menu-item>
+                <sl-menu-item title="Cloudflare Pages Functions" value="https://seep.eu.org/">seep.eu.org</sl-menu-item>
+                <sl-menu-item title="Heroku + Cloudflare" value="https://www.netnr.eu.org/api/v1/Proxy/?url=">www.netnr.eu.org</sl-menu-item>
+            </sl-select>
+        </div>
+    </div>
+    <div class="nr-card-list row"></div>
+    <div class="nr-card-result row"></div>
+</div>

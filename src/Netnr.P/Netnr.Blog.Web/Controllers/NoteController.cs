@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Netnr.Blog.Data;
+using AgGrid.InfiniteRowModel;
 
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 记事本
     /// </summary>
+    [Authorize]
     public class NoteController : Controller
     {
         public ContextBase db;
@@ -19,47 +21,41 @@ namespace Netnr.Blog.Web.Controllers
         /// 记事本
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         public IActionResult Index()
         {
             return View();
         }
 
         /// <summary>
-        /// 查询记事本列表
+        /// 查询
         /// </summary>
-        /// <param name="ivm"></param>
+        /// <param name="grp"></param>
         /// <returns></returns>
-        [Authorize]
-        public QueryDataOutputVM QueryNoteList(QueryDataInputVM ivm)
+        [HttpGet]
+        public SharedResultVM NoteList(string grp)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var uinfo = Apps.LoginService.Get(HttpContext);
-
-            var query = from a in db.Notepad
-                        join b in db.UserInfo on a.Uid equals b.UserId
-                        orderby a.NoteCreateTime descending
-                        where a.Uid == uinfo.UserId
-                        select new Domain.Notepad
-                        {
-                            NoteId = a.NoteId,
-                            NoteTitle = a.NoteTitle,
-                            NoteCreateTime = a.NoteCreateTime,
-                            NoteUpdateTime = a.NoteUpdateTime,
-                            Uid = a.Uid,
-
-                            Spare3 = b.Nickname
-                        };
-
-            if (!string.IsNullOrWhiteSpace(ivm.Pe1))
+            return SharedResultVM.Try(vm =>
             {
-                query = query.Where(x => x.NoteTitle.Contains(ivm.Pe1));
-            }
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-            Application.CommonService.QueryJoin(query, ivm, ref ovm);
+                var query = from a in db.Notepad
+                            join b in db.UserInfo on a.Uid equals b.UserId
+                            orderby a.NoteCreateTime descending
+                            where a.Uid == uinfo.UserId
+                            select new Domain.Notepad
+                            {
+                                NoteId = a.NoteId,
+                                NoteTitle = a.NoteTitle,
+                                NoteCreateTime = a.NoteCreateTime,
+                                NoteUpdateTime = a.NoteUpdateTime,
+                                Uid = a.Uid,
+                            };
 
-            return ovm;
+                vm.Data = query.GetInfiniteRowModelBlock(grp);
+                vm.Set(SharedEnum.RTag.success);
+
+                return vm;
+            });
         }
 
         /// <summary>
@@ -67,8 +63,8 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM SaveNote(Domain.Notepad mo)
+        [HttpPost]
+        public SharedResultVM SaveNote([FromForm] Domain.Notepad mo)
         {
             var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
@@ -126,57 +122,60 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Authorize]
+        [HttpGet]
         public SharedResultVM QueryNoteOne(int id)
         {
-            var vm = new SharedResultVM();
-
-            var uinfo = Apps.LoginService.Get(HttpContext);
-
-            var mo = db.Notepad.Find(id);
-            if (mo == null)
+            return SharedResultVM.Try(vm =>
             {
-                vm.Set(SharedEnum.RTag.invalid);
-            }
-            else if (mo.Uid == uinfo.UserId)
-            {
-                vm.Set(SharedEnum.RTag.success);
-                vm.Data = mo;
-            }
-            else
-            {
-                vm.Set(SharedEnum.RTag.unauthorized);
-            }
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-            return vm;
+                var mo = db.Notepad.Find(id);
+                if (mo == null)
+                {
+                    vm.Set(SharedEnum.RTag.invalid);
+                }
+                else if (mo.Uid == uinfo.UserId)
+                {
+                    vm.Set(SharedEnum.RTag.success);
+                    vm.Data = mo;
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                }
+
+                return vm;
+            });
         }
 
         /// <summary>
-        /// 删除一条记事本
+        /// 删除记事本
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="ids">多个逗号分隔</param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM DelNote(int id)
+        [HttpGet]
+        public SharedResultVM DelNote(string ids)
         {
-            var vm = new SharedResultVM();
-
-            var uinfo = Apps.LoginService.Get(HttpContext);
-
-            var mo = db.Notepad.Find(id);
-            if (mo.Uid == uinfo.UserId)
+            return SharedResultVM.Try(vm =>
             {
-                db.Notepad.Remove(mo);
-                int num = db.SaveChanges();
+                var uinfo = Apps.LoginService.Get(HttpContext);
+                var listKeyId = ids.Split(',').Select(x => Convert.ToInt32(x)).ToList();
 
-                vm.Set(num > 0);
-            }
-            else
-            {
-                vm.Set(SharedEnum.RTag.unauthorized);
-            }
+                var listMo = db.Notepad.Where(x => listKeyId.Contains(x.NoteId) && x.Uid == uinfo.UserId).ToList();
+                if (listMo.Count > 0)
+                {
+                    db.Notepad.RemoveRange(listMo);
+                    int num = db.SaveChanges();
 
-            return vm;
+                    vm.Set(num > 0);
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                }
+
+                return vm;
+            });
         }
     }
 }

@@ -1,1 +1,1 @@
-公开访问（PublicAccess:True）上传文件根目录
+PublicAccess:True

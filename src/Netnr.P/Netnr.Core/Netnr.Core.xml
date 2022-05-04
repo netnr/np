@@ -146,11 +146,27 @@
             <param name="iv">默认为空</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Core.CalcTo.GetHashByte(System.Security.Cryptography.HashAlgorithm,System.String)">
+            <summary>
+            SHA 加密
+            </summary>
+            <param name="algorithm"></param>
+            <param name="txt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.GetHashBase64(System.Security.Cryptography.HashAlgorithm,System.String)">
+            <summary>
+            SHA 加密
+            </summary>
+            <param name="algorithm"></param>
+            <param name="txt"></param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Core.CalcTo.GetHashString(System.Security.Cryptography.HashAlgorithm,System.String)">
             <summary>
             SHA 加密
             </summary>
-            <param name="ha"></param>
+            <param name="algorithm"></param>
             <param name="txt"></param>
             <returns></returns>
         </member>
@@ -892,7 +908,7 @@
             可用交换空间（Linux）B
             </summary>
         </member>
-        <member name="P:Netnr.Core.SystemStatusTo.UsePhysicalMemory">
+        <member name="P:Netnr.Core.SystemStatusTo.UseMemory">
             <summary>
             使用物理内存
             </summary>

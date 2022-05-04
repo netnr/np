@@ -3,64 +3,65 @@
     ViewData["Title"] = "注册";
 }
 
-<style>
-    .vbox {
-        margin: auto;
-        max-width: 320px;
-    }
-</style>
-
-<div class="vbox">
-    <div class="mt-4 text-center d-none d-md-block">
-        <a href="/"><img src="/favicon.svg" alt="@GlobalTo.GetValue("Common:EnglishName")" /></a>
-    </div>
-    <div class="my-4 text-center">
-        <h4>Join @GlobalTo.GetValue("Common:EnglishName")</h4>
-    </div>
-    @if (!string.IsNullOrWhiteSpace(Model?.Msg))
-    {
-        <div class="alert @(Model.Code == 200?" alert-success":"alert-danger") alert-dismissible fade show">
-            <span>@Model?.Msg</span>
-            <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-            </button>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <div class="my-4">
+                <a href="/">
+                    <sl-animation name="swing" easing="ease-in-out" duration="5000" play>
+                        <img src="/favicon.svg" alt="@GlobalTo.GetValue("Common:EnglishName")" />
+                    </sl-animation>
+                </a>
+            </div>
+            <h4 class="my-3">Join @GlobalTo.GetValue("Common:EnglishName")</h4>
         </div>
-        if (Model.Code == 200)
-        {
-            <script>$(function () { $('input').val(''); setTimeout(function () { location.href = "/account/login" }, 1000 * 3) });</script>
-        }
-    }
-    <div class="card">
-        <div class="card-body">
-            <form action="/account/register" method="post">
-                @Html.AntiForgeryToken()
+        <div class="col-12">
+            <div class="border rounded mx-auto p-4" style="max-width:20em">
+                <form action="/account/register" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="remember" value="1" />
 
-                <div class="form-group">
-                    <label>Email <span class="text-danger">*</span></label>
-                    <input type="email" required class="form-control" name="UserName" maxlength="50" placeholder="netnr@@netnr.com" autocomplete="off" value='@ViewData["UserName"]' autofocus>
-                </div>
-                <div class="form-group">
-                    <label>Password <span class="text-danger">*</span></label>
-                    <input type="password" required class="form-control" name="UserPwd" maxlength="20" placeholder="******" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label>Verify <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <input type="text" required class="form-control" name="RegisterCode" maxlength="4" autocomplete="off">
-                        <div class="input-group-prepend">
-                            <img src="/account/registercode" onclick="this.src = '/account/registercode?' + new Date().valueOf()" />
+                    @if (!string.IsNullOrWhiteSpace(Model?.Msg))
+                    {
+                        <sl-alert class="mb-3" open variant="@(Model.Code == 200?"success":"danger")" duration="8000" closable>
+                            <sl-icon slot="icon" name="info-circle"></sl-icon>
+                            @Model?.Msg
+                        </sl-alert>
+
+                        if (Model.Code == 200)
+                        {
+                            <script>setTimeout(function () { location.href = "/account/login" }, 1000 * 3)</script>
+                        }
+                    }
+
+                    <sl-input class="mb-3" type="text" required label="Email" name="UserName" maxlength="50" placeholder="netnr@@netnr.com" value='@ViewData["UserName"]' autocomplete="off" clearable autofocus>
+                        <sl-icon name="envelope" slot="prefix"></sl-icon>
+                    </sl-input>
+                    <sl-input class="mb-3" type="password" required label="Password" name="UserPwd" maxlength="20" placeholder="******" toggle-password autocomplete="off">
+                        <sl-icon name="key" slot="prefix"></sl-icon>
+                    </sl-input>
+                    <div class="row m-0 mb-3">
+                        <div class="col-6 p-0">
+                            <sl-input style="width:100%" type="text" required label="Verify" name="RegisterCode" maxlength="4" autocomplete="off">
+                                <sl-icon name="robot" slot="prefix"></sl-icon>
+                            </sl-input>
+                        </div>
+                        <div class="col-6 p-0" style="display: flex;flex-direction: row-reverse;align-items: flex-end;">
+                            <img class="border rounded" src="/account/registercode" role="button" onclick="this.src = '/account/registercode?' + new Date().valueOf()" />
                         </div>
                     </div>
-                </div>
-                <button type="submit" class="btn btn-block btn-success">Create an account</button>
-            </form>
+
+                    <sl-button style="width:100%" type="submit" variant="warning">Create an account</sl-button>
+                </form>
+            </div>
+
+            <div class="mt-4 text-center pt-4">
+                <a class="mx-2" href="/mix/terms">Terms</a>
+                <a class="mx-2" href="https://netnr.eu.org">Contact</a>
+                |
+                <a class="mx-2" href="/">Home</a>
+                <a class="mx-2" href="/account/login">Sign in</a>
+            </div>
         </div>
-    </div>
-    <div class="mt-5 text-center pt-4">
-        <a class="mx-2" href="/mix/terms">条款</a>
-        <a class="mx-2" href="https://netnr.eu.org">联系</a>
-        |
-        <a class="mx-2" href="/">首页</a>
-        <a class="mx-2" href="/account/login">登录</a>
     </div>
 </div>

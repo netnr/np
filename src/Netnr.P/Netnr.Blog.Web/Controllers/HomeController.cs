@@ -37,29 +37,29 @@ namespace Netnr.Blog.Web.Controllers
                 }
             }
 
-            return View("_PartialViewWriting", vm);
+            return View("_PartialWritingList", vm);
         }
 
         /// <summary>
         /// 标签分类
         /// </summary>
+        /// <param name="id">标签</param>
         /// <param name="k">搜索</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
         [ResponseCache(Duration = 5)]
-        public IActionResult Type(string k, int page = 1)
+        public IActionResult Type([FromRoute] string id, string k, int page = 1)
         {
-            string tag = RouteData.Values["id"]?.ToString();
-            if (string.IsNullOrEmpty(tag))
+            if (string.IsNullOrEmpty(id))
             {
                 return new RedirectResult("/");
             }
             else
             {
-                var vm = Application.CommonService.UserWritingQuery(k, page, tag);
+                var vm = Application.CommonService.UserWritingQuery(k, page, id);
                 vm.Route = Request.Path;
 
-                return View("_PartialViewWriting", vm);
+                return View("_PartialWritingList", vm);
             }
         }
 
@@ -101,17 +101,15 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 保存文章
+        /// 新增文章
         /// </summary>
         /// <param name="mo">文章信息</param>
         /// <param name="TagIds">标签，多个逗号分割</param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM WriteSave(UserWriting mo, string TagIds)
+        [Authorize, HttpPost]
+        public SharedResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 vm = Apps.LoginService.CompleteInfoValid(HttpContext);
                 if (vm.Code == 200)
@@ -120,7 +118,6 @@ namespace Netnr.Blog.Web.Controllers
 
                     var lisTagId = new List<int>();
                     TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-
                     var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                     mo.Uid = uinfo.UserId;
@@ -163,27 +160,23 @@ namespace Netnr.Blog.Web.Controllers
                     vm.Data = mo.UwId;
                     vm.Set(num > 0);
                 }
-            }
-            catch (Exception ex)
-            {
-                ConsoleTo.Log(ex);
-                vm.Set(ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
         /// 一篇
         /// </summary>
         /// <param name="page">页码</param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [ResponseCache(Duration = 5)]
-        public IActionResult List(int page = 1)
+        public IActionResult List([FromRoute] int id, int page = 1)
         {
-            if (int.TryParse(RouteData.Values["Id"]?.ToString(), out int wid))
+            if (id > 0)
             {
-                var uwo = Application.CommonService.UserWritingOneQuery(wid);
+                var uwo = Application.CommonService.UserWritingOneQuery(id);
                 if (uwo == null)
                 {
                     return Redirect("/");
@@ -192,22 +185,22 @@ namespace Netnr.Blog.Web.Controllers
                 var pag = new SharedPaginationVM
                 {
                     PageNumber = Math.Max(page, 1),
-                    PageSize = 10
+                    PageSize = 20
                 };
 
                 var vm = new SharedPageVM()
                 {
-                    Rows = Application.CommonService.ReplyOneQuery(Application.EnumService.ReplyType.UserWriting, wid.ToString(), pag),
+                    Rows = Application.CommonService.ReplyOneQuery(Application.EnumService.ReplyType.UserWriting, id.ToString(), pag),
                     Pag = pag,
                     Temp = uwo,
-                    Route = "/home/list/" + wid.ToString()
+                    Route = $"/home/list/{id}"
                 };
 
 
                 if (User.Identity.IsAuthenticated)
                 {
                     var uinfo = Apps.LoginService.Get(HttpContext);
-                    var listuc = db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == Application.EnumService.ConnectionType.UserWriting.ToString() && x.UconnTargetId == wid.ToString()).ToList();
+                    var listuc = db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == Application.EnumService.ConnectionType.UserWriting.ToString() && x.UconnTargetId == id.ToString()).ToList();
 
                     ViewData["uca1"] = listuc.Any(x => x.UconnAction == 1) ? "yes" : "";
                     ViewData["uca2"] = listuc.Any(x => x.UconnAction == 2) ? "yes" : "";
@@ -222,13 +215,13 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 回复（关闭匿名回复）
+        /// 回复
         /// </summary>
         /// <param name="mo">回复信息</param>
         /// <param name="um">消息通知</param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM LsitReplySave(UserReply mo, UserMessage um)
+        [Authorize, HttpPost]
+        public SharedResultVM ReplySave([FromForm] UserReply mo, [FromForm] UserMessage um)
         {
             var vm = new SharedResultVM();
             vm = Apps.LoginService.CompleteInfoValid(HttpContext);
@@ -295,20 +288,19 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 点赞收藏
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="a">动作</param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM ListUserConn(int a)
+        [Authorize, HttpGet]
+        public SharedResultVM ConnSave([FromRoute] int id, int a)
         {
             var vm = new SharedResultVM();
 
-            int wid = Convert.ToInt32(RouteData.Values["id"]?.ToString());
-
             var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var uw = db.UserWriting.Find(wid);
+            var uw = db.UserWriting.Find(id);
 
-            var uc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == wid.ToString() && x.UconnAction == a);
+            var uc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == id.ToString() && x.UconnAction == a);
             if (uc == null)
             {
                 uc = new UserConnection()
@@ -316,7 +308,7 @@ namespace Netnr.Blog.Web.Controllers
                     UconnId = UniqueTo.LongId().ToString(),
                     UconnAction = a,
                     UconnCreateTime = DateTime.Now,
-                    UconnTargetId = wid.ToString(),
+                    UconnTargetId = id.ToString(),
                     UconnTargetType = Application.EnumService.ConnectionType.UserWriting.ToString(),
                     Uid = uinfo.UserId
                 };
@@ -358,16 +350,19 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 阅读追加
         /// </summary>
-        public void ListReadPlus()
+        /// <param name="id"></param>
+        [HttpGet]
+        public IActionResult ReadPlus([FromRoute] int id)
         {
-            int wid = Convert.ToInt32(RouteData.Values["id"]?.ToString());
-            var mo = db.UserWriting.Find(wid);
+            var mo = db.UserWriting.Find(id);
             if (mo != null)
             {
                 mo.UwReadNum += 1;
                 db.UserWriting.Update(mo);
                 db.SaveChanges();
             }
+
+            return Ok();
         }
 
         /// <summary>
@@ -375,15 +370,6 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult CompleteInfo()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 全局错误页面
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Error()
         {
             return View();
         }

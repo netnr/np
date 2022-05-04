@@ -1,89 +1,39 @@
-﻿var cmd = {
-    grab: function (arr, len, index) {
-        var ck = arr[index];
-        $.ajax({
-            url: "/admin/keyvalues/grab",
-            data: {
-                Key: ck
-            },
-            type: 'post',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-                var wm = ck + "：" + data[0] + " （ " + (data[1].KeyValue || data[1]).substring(0, 30) + " ）";
-                $('#txtrt1').val($('#txtrt1').val() + wm + "\n");
-                index++;
-                if (index < len) {
-                    cmd.grab(arr, len, index);
-                }
-            },
-            error: function (ex) {
-                console.log(ex);
-            }
-        })
+﻿nr.onReady = function () {
+    //Grab
+    nr.domBtnRun1.addEventListener('click', function () {
+        if (nr.domTxt1.value.trim() != "") {
+            page.run('Grab', nr.domTxt1.value.split('\n').join(','))
+        }
+    })
+
+    //Synonym
+    nr.domBtnRun2.addEventListener('click', function () {
+        if (nr.domTxt2.value.trim() != "") {
+            page.run('Synonym', nr.domTxt2.value.split('\n').join(','))
+        }
+    })
+
+    //Tag
+    nr.domBtnRun3.addEventListener('click', function () {
+        page.run('Tag', nr.domTxt3.value.split('\n').join(','))
+    })
+}
+
+var page = {
+    run: function (cmd, keys) {
+        page.setLoading(true)
+        fetch('/Admin/KeyVal/' + cmd + "?keys=" + encodeURIComponent(keys)).then(resp => resp.json()).then(res => {
+            page.setLoading(false)
+            nr.domTxtResult.value = res.log.join('\n');
+        }).catch(ex => {
+            console.debug(ex)
+            page.setLoading(false)
+            nr.alert(ex);
+        });
     },
-    synonym: function (arr) {
-        $.ajax({
-            url: "/admin/keyvalues/synonym",
-            data: {
-                keys: arr.join(',')
-            },
-            type: 'post',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-                var wm = data[0] + " （ " + data[1] + " ）";
-                $('#txtrt2').val(wm);
-            },
-            error: function (ex) {
-                console.log(ex);
-            }
-        })
-    },
-    addtag: function (arr) {
-        $.ajax({
-            url: "/admin/keyvalues/addtag",
-            data: {
-                tags: arr.join(',')
-            },
-            type: 'post',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-                var wm = data[0] + " （ " + data[1] + " ）";
-                $('#txtrt3').val(wm);
-            },
-            error: function (ex) {
-                console.log(ex);
-            }
-        })
+    setLoading: function (isLoading) {
+        nr.domBtnRun1.loading = isLoading;
+        nr.domBtnRun2.loading = isLoading;
+        nr.domBtnRun3.loading = isLoading;
     }
 };
-
-//Grab
-$('#btnRun1').click(function () {
-    var tgs = $.trim($('#txt1').val());
-    if (tgs != "") {
-        var listTag = tgs.split('\n'), len = listTag.length;
-        $('#txtrt1').val('');
-        cmd.grab(listTag, len, 0);
-    }
-});
-
-//Synonym
-$('#btnRun2').click(function () {
-    var tgs = $.trim($('#txt2').val());
-    if (tgs != "") {
-        var listTag = tgs.split('\n')
-        cmd.synonym(listTag);
-    }
-});
-
-//Tags
-$('#btnRun3').click(function () {
-    var tgs = $.trim($('#txt3').val());
-    if (tgs != "") {
-        var listTag = tgs.split('\n')
-        cmd.addtag(listTag);
-    }
-});

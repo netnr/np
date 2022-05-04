@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Netnr.Blog.Data;
 using Netnr.Core;
 using Netnr.Login;
+using Netnr.Blog.Data;
+using Netnr.Blog.Domain;
 using Netnr.SharedFast;
+using AgGrid.InfiniteRowModel;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -51,13 +53,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 删除消息
         /// </summary>
+        /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult DelMessage()
+        public IActionResult DelMessage([FromRoute] string id)
         {
             var vm = new SharedResultVM();
 
-            var id = RouteData.Values["id"]?.ToString();
             if (!string.IsNullOrWhiteSpace(id))
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
@@ -97,52 +99,55 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 我的主页
         /// </summary>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult Id()
+        public IActionResult Id([FromRoute] int id)
         {
-            if (int.TryParse(RouteData.Values["id"]?.ToString(), out int uid))
+            if (id > 0)
             {
-                var usermo = db.UserInfo.Find(uid);
+                var usermo = db.UserInfo.Find(id);
                 if (usermo != null)
                 {
-                    return View("_PartialU", usermo);
+                    return View(usermo);
                 }
             }
 
-            return Content("Invalid");
+            return NotFound();
         }
 
         /// <summary>
-        /// 更新说说
+        /// 更新 Say
         /// </summary>
-        /// <param name="mo"></param>
+        /// <param name="UserSay"></param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM UpdateUserSay(Domain.UserInfo mo)
+        [Authorize, HttpPost]
+        public SharedResultVM UpdateUserSay([FromForm] string UserSay)
         {
-            var vm = new SharedResultVM();
+            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
+            {
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+                var currmo = db.UserInfo.Find(uinfo.UserId);
+                currmo.UserSay = UserSay;
+                db.UserInfo.Update(currmo);
 
-            var currmo = db.UserInfo.Find(uinfo.UserId);
-            currmo.UserSay = mo.UserSay;
-            db.UserInfo.Update(currmo);
+                int num = db.SaveChanges();
 
-            int num = db.SaveChanges();
-
-            vm.Set(num > 0);
+                vm.Set(num > 0);
+            }
 
             return vm;
         }
 
         /// <summary>
-        /// 更新头像
+        /// 更新 avatar
         /// </summary>
         /// <param name="type"></param>
         /// <param name="source"></param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM UpdateUserPhoto(string type, string source)
+        [Authorize, HttpPost]
+        public SharedResultVM UpdateUserAvatar([FromForm] string type, [FromForm] string source)
         {
             var vm = new SharedResultVM();
 
@@ -154,8 +159,8 @@ namespace Netnr.Blog.Web.Controllers
                     var uinfo = Apps.LoginService.Get(HttpContext);
 
                     //物理根路径
-                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath").Replace("~", GlobalTo.ContentRootPath);
-                    var ppath = PathTo.Combine(prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
+                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath");
+                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
 
                     if (!Directory.Exists(ppath))
                     {
@@ -241,15 +246,33 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo"></param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM SaveUserInfo(Domain.UserInfo mo)
+        [Authorize, HttpPost]
+        public SharedResultVM SaveUserInfo([FromForm] UserInfo mo)
         {
             var vm = new SharedResultVM();
 
+            var errMsg = new List<string>();
+            if (string.IsNullOrWhiteSpace(mo.UserName))
+            {
+                errMsg.Add("账号不能为空");
+            }
             if (string.IsNullOrWhiteSpace(mo.Nickname))
             {
+                errMsg.Add("昵称不能为空");
+            }
+            if (string.IsNullOrWhiteSpace(mo.UserMail))
+            {
+                errMsg.Add("邮箱不能为空");
+            }
+            if (string.IsNullOrWhiteSpace(mo.UserPhone))
+            {
+                errMsg.Add("手机不能为空");
+            }
+
+            if (errMsg.Count > 0)
+            {
                 vm.Set(SharedEnum.RTag.refuse);
-                vm.Msg = "昵称不能为空";
+                vm.Msg = string.Join("<br/>", errMsg);
 
                 return vm;
             }
@@ -257,6 +280,7 @@ namespace Netnr.Blog.Web.Controllers
             var uinfo = Apps.LoginService.Get(HttpContext);
 
             var usermo = db.UserInfo.Find(uinfo.UserId);
+            var log = new List<object>() { new UserInfo().ToRead(usermo) };
 
             //变更账号
             if (!string.IsNullOrWhiteSpace(mo.UserName) && usermo.UserNameChange != 1 && usermo.UserName != mo.UserName)
@@ -291,15 +315,12 @@ namespace Netnr.Blog.Web.Controllers
 
                         return vm;
                     }
-                    else
+                    else if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
                     {
-                        if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
-                        {
-                            vm.Set(SharedEnum.RTag.exist);
-                            vm.Msg = "邮箱已经存在";
+                        vm.Set(SharedEnum.RTag.exist);
+                        vm.Msg = "邮箱已经存在";
 
-                            return vm;
-                        }
+                        return vm;
                     }
                 }
             }
@@ -308,6 +329,16 @@ namespace Netnr.Blog.Web.Controllers
             usermo.Nickname = mo.Nickname;
             usermo.UserPhone = mo.UserPhone;
             usermo.UserUrl = mo.UserUrl;
+
+            log.Add(usermo);
+
+            //留痕
+            var logModel = Apps.FilterConfigs.LogBuild(HttpContext);
+            logModel.LogLevel = "T";
+            logModel.LogGroup = "9";
+            logModel.LogContent = log.ToJson();
+            logModel.LogRemark = "修改个人信息";
+            SharedLogging.LoggingTo.Add(logModel);
 
             db.UserInfo.Update(usermo);
             var num = db.SaveChanges();
@@ -326,72 +357,71 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 绑定账号
         /// </summary>
+        /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult OAuth()
+        public IActionResult OAuth([FromRoute] string id)
         {
-            var authType = RouteData.Values["id"]?.ToString();
-            var url = Application.ThirdLoginService.LoginLink(authType, "bind");
+            var url = Application.ThirdLoginService.LoginLink(id, "bind");
             return Redirect(url);
         }
 
         /// <summary>
         /// 解绑账号
         /// </summary>
+        /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult RidOAuth()
+        public IActionResult RidOAuth([FromRoute] LoginBase.LoginType? id)
         {
-            if (Enum.TryParse(RouteData.Values["id"]?.ToString().ToLower(), true, out LoginBase.LoginType vtype))
+            var uinfo = Apps.LoginService.Get(HttpContext);
+            var mo = db.UserInfo.Find(uinfo.UserId);
+
+            switch (id)
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
-                var mo = db.UserInfo.Find(uinfo.UserId);
-
-                switch (vtype)
-                {
-                    case LoginBase.LoginType.QQ:
-                        mo.OpenId1 = "";
-                        break;
-                    case LoginBase.LoginType.WeiBo:
-                        mo.OpenId2 = "";
-                        break;
-                    case LoginBase.LoginType.GitHub:
-                        mo.OpenId3 = "";
-                        break;
-                    case LoginBase.LoginType.TaoBao:
-                        mo.OpenId4 = "";
-                        break;
-                    case LoginBase.LoginType.MicroSoft:
-                        mo.OpenId5 = "";
-                        break;
-                    case LoginBase.LoginType.DingTalk:
-                        mo.OpenId6 = "";
-                        break;
-                }
-
-                db.UserInfo.Update(mo);
-                db.SaveChanges();
+                case LoginBase.LoginType.QQ:
+                    mo.OpenId1 = "";
+                    break;
+                case LoginBase.LoginType.WeiBo:
+                    mo.OpenId2 = "";
+                    break;
+                case LoginBase.LoginType.GitHub:
+                    mo.OpenId3 = "";
+                    break;
+                case LoginBase.LoginType.TaoBao:
+                    mo.OpenId4 = "";
+                    break;
+                case LoginBase.LoginType.MicroSoft:
+                    mo.OpenId5 = "";
+                    break;
+                case LoginBase.LoginType.DingTalk:
+                    mo.OpenId6 = "";
+                    break;
             }
+
+            db.UserInfo.Update(mo);
+            db.SaveChanges();
+
             return Redirect("/user/setting");
         }
 
         /// <summary>
         /// 更新密码
         /// </summary>
-        /// <param name="oldpwd"></param>
-        /// <param name="newpwd"></param>
+        /// <param name="oldPassword"></param>
+        /// <param name="newPassword"></param>
         /// <returns></returns>
         [Authorize]
-        public SharedResultVM UpdatePassword(string oldpwd, string newpwd)
+        public SharedResultVM UpdatePassword(string oldPassword, string newPassword)
         {
             var vm = new SharedResultVM();
 
             var uinfo = Apps.LoginService.Get(HttpContext);
 
             var userinfo = db.UserInfo.Find(uinfo.UserId);
-            if (userinfo.UserPwd == CalcTo.MD5(oldpwd))
+            if (userinfo.UserPwd == CalcTo.MD5(oldPassword))
             {
-                userinfo.UserPwd = CalcTo.MD5(newpwd);
+                userinfo.UserPwd = CalcTo.MD5(newPassword);
                 db.UserInfo.Update(userinfo);
                 var num = db.SaveChanges();
 
@@ -400,6 +430,7 @@ namespace Netnr.Blog.Web.Controllers
             else
             {
                 vm.Set(SharedEnum.RTag.unauthorized);
+                vm.Msg = "原密码错误";
             }
 
             return vm;
@@ -412,12 +443,12 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 文章管理
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="page"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult Write(int? page)
+        public IActionResult Write([FromRoute] string id, int? page)
         {
-            var id = RouteData.Values["id"]?.ToString();
             if (!string.IsNullOrWhiteSpace(id))
             {
                 int action = 1;
@@ -431,7 +462,7 @@ namespace Netnr.Blog.Web.Controllers
                 vm.Route = Request.Path;
                 vm.Other = id;
 
-                return View("_PartialViewWriting", vm);
+                return View("_PartialWritingList", vm);
             }
 
             return View();
@@ -440,64 +471,38 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 文章列表
         /// </summary>
-        /// <param name="sort"></param>
-        /// <param name="order"></param>
-        /// <param name="page"></param>
-        /// <param name="rows"></param>
-        /// <param name="pe1"></param>
+        /// <param name="grp"></param>
         /// <returns></returns>
-        [Authorize]
-        public string WriteList(string sort, string order, int page = 1, int rows = 30, string pe1 = null)
+        [Authorize, HttpGet]
+        public SharedResultVM WriteList(string grp)
         {
-            string result = string.Empty;
-
-            var pag = new SharedPaginationVM
+            return SharedResultVM.Try(vm =>
             {
-                PageNumber = page,
-                PageSize = rows
-            };
+                var uinfo = Apps.LoginService.Get(HttpContext);
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+                var query = from a in db.UserWriting
+                            where a.Uid == uinfo.UserId
+                            orderby a.UwCreateTime descending
+                            select new
+                            {
+                                a.UwId,
+                                a.UwTitle,
+                                a.UwCreateTime,
+                                a.UwUpdateTime,
+                                a.UwReadNum,
+                                a.UwReplyNum,
+                                a.UwOpen,
+                                a.UwStatus,
+                                a.UwLaud,
+                                a.UwMark,
+                                a.UwCategory
+                            };
 
-            var query = from a in db.UserWriting
-                        where a.Uid == uinfo.UserId
-                        select new
-                        {
-                            a.UwId,
-                            a.UwTitle,
-                            a.UwCreateTime,
-                            a.UwUpdateTime,
-                            a.UwReadNum,
-                            a.UwReplyNum,
-                            a.UwOpen,
-                            a.UwStatus,
-                            a.UwLaud,
-                            a.UwMark,
-                            a.UwCategory
-                        };
+                vm.Data = query.GetInfiniteRowModelBlock(grp);
+                vm.Set(SharedEnum.RTag.success);
 
-            if (!string.IsNullOrWhiteSpace(pe1))
-            {
-                query = GlobalTo.TDB switch
-                {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.UwTitle, $"%{pe1}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.UwTitle, $"%{pe1}%")),
-                    _ => query.Where(x => x.UwTitle.Contains(pe1)),
-                };
-            }
-
-            query = QueryableTo.OrderBy(query, sort, order);
-
-            pag.Total = query.Count();
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
-
-            result = new
-            {
-                data = list,
-                total = pag.Total
-            }.ToJson();
-
-            return result;
+                return vm;
+            });
         }
 
         /// <summary>
@@ -529,26 +534,21 @@ namespace Netnr.Blog.Web.Controllers
         /// 保存一篇文章（编辑）
         /// </summary>
         /// <param name="mo"></param>
-        /// <param name="UwId"></param>
         /// <param name="TagIds"></param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM WriteEditSave(Domain.UserWriting mo, int UwId, string TagIds)
+        [Authorize, HttpPost]
+        public SharedResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
         {
-            var vm = new SharedResultVM();
-
-            try
+            return SharedResultVM.Try(vm =>
             {
                 var lisTagId = new List<int>();
                 TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-
                 var lisTagName = Application.CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
-                var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == UwId);
-
-                if (oldmo.UwStatus == -1)
+                var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == mo.UwId);
+                if (oldmo?.UwStatus == -1)
                 {
                     vm.Set(SharedEnum.RTag.unauthorized);
                 }
@@ -562,13 +562,13 @@ namespace Netnr.Blog.Web.Controllers
 
                     db.UserWriting.Update(oldmo);
 
-                    var wt = db.UserWritingTags.Where(x => x.UwId == UwId).ToList();
+                    var wt = db.UserWritingTags.Where(x => x.UwId == mo.UwId).ToList();
                     db.UserWritingTags.RemoveRange(wt);
 
-                    var listwt = new List<Domain.UserWritingTags>();
+                    var listwt = new List<UserWritingTags>();
                     foreach (var tag in lisTagId)
                     {
-                        var wtmo = new Domain.UserWritingTags
+                        var wtmo = new UserWritingTags
                         {
                             UwId = mo.UwId,
                             TagId = tag,
@@ -580,48 +580,41 @@ namespace Netnr.Blog.Web.Controllers
                     db.UserWritingTags.AddRange(listwt);
 
                     int num = db.SaveChanges();
-
                     vm.Set(num > 0);
                 }
-            }
-            catch (Exception ex)
-            {
-                ConsoleTo.Log(ex);
-                vm.Set(ex);
-            }
 
-            return vm;
+                return vm;
+            });
         }
 
         /// <summary>
         /// 删除 一篇文章
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="ids"></param>
         /// <returns></returns>
-        [Authorize]
-        public SharedResultVM WriteDel(int id)
+        [Authorize, HttpGet]
+        public SharedResultVM WriteDel(string ids)
         {
-            var vm = new SharedResultVM();
-
-            var uinfo = Apps.LoginService.Get(HttpContext);
-
-            var mo1 = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == id);
-            if (mo1.UwStatus == -1)
+            return SharedResultVM.Try(vm =>
             {
-                vm.Set(SharedEnum.RTag.unauthorized);
-            }
-            else
-            {
-                db.UserWriting.Remove(mo1);
-                var mo2 = db.UserWritingTags.Where(x => x.UwId == id).ToList();
+                var uinfo = Apps.LoginService.Get(HttpContext);
+                var listKeyId = ids.Split(',').Select(x => Convert.ToInt32(x)).ToList();
+                var listKeys = listKeyId.Select(x => x.ToString()).ToList();
+
+                var listMo = db.UserWriting.Where(x => x.Uid == uinfo.UserId && x.UwStatus != -1 && listKeyId.Contains(x.UwId)).ToList();
+                db.UserWriting.RemoveRange(listMo);
+
+                var mo2 = db.UserWritingTags.Where(x => listKeyId.Contains(x.UwId)).ToList();
                 db.UserWritingTags.RemoveRange(mo2);
-                var mo3 = db.UserReply.Where(x => x.UrTargetId == id.ToString()).ToList();
+
+                var mo3 = db.UserReply.Where(x => listKeys.Contains(x.UrTargetId)).ToList();
                 db.UserReply.RemoveRange(mo3);
 
-                vm.Set(db.SaveChanges() > 0);
-            }
+                var num = db.SaveChanges();
+                vm.Set(num > 0);
 
-            return vm;
+                return vm;
+            });
         }
 
         #endregion
@@ -631,12 +624,11 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 验证
         /// </summary>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult Verify()
+        public IActionResult Verify([FromRoute] string id)
         {
             var vm = new SharedResultVM();
-
-            var id = RouteData.Values["id"]?.ToString();
 
             if (!string.IsNullOrWhiteSpace(id))
             {
@@ -671,7 +663,7 @@ namespace Netnr.Blog.Web.Controllers
                                     }
                                     else
                                     {
-                                        var mcs = FileTo.ReadText(GlobalTo.WebRootPath + "/lib/mailchecker/list.txt").Split(Environment.NewLine);
+                                        var mcs = FileTo.ReadText(GlobalTo.WebRootPath + "/file/mailchecker/list.txt").Split(Environment.NewLine);
                                         if (mcs.Contains(usermo.UserMail.Split('@').LastOrDefault().ToLower()))
                                         {
                                             vm.Msg = "该邮箱已被屏蔽";
@@ -691,7 +683,7 @@ namespace Netnr.Blog.Web.Controllers
                                             var vcode = CalcTo.AESEncrypt(vjson, vckey).ToBase64Encode().ToUrlEncode();
                                             var VerifyLink = string.Format(vcurl, vcode);
 
-                                            var txt = FileTo.ReadText(GlobalTo.WebRootPath + "/template/sendmailverify.html");
+                                            var txt = FileTo.ReadText(GlobalTo.WebRootPath + "/file/template/sendmailverify.html");
                                             txt = txt.Replace("@ToMail@", ToMail).Replace("@VerifyLink@", VerifyLink);
 
                                             vm = Application.MailService.Send(ToMail, $"[{GlobalTo.GetValue("Common:EnglishName")}] 验证你的邮箱", txt);

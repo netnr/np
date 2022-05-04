@@ -119,6 +119,96 @@
             <param name="message"></param>
             <returns>已经打包成xml的用于回复用户的消息包</returns>
         </member>
+        <member name="T:Netnr.SharedApp.LaunchTo">
+            <summary>
+            启动设定
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.LaunchTo.SetExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            异常处理
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.LaunchTo.GetFilename(System.String,System.Boolean)">
+            <summary>
+            获取目录下文件名
+            </summary>
+            <param name="path"></param>
+            <param name="readCache"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.QuoteTo">
+            <summary>
+            资源引用
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.QuoteTo.Html(System.String)">
+            <summary>
+            得到html字符串
+            </summary>
+            <param name="quotes">引用项，逗号分割，按顺序</param>
+            <returns></returns>
+        </member>
+        <member name="T:Netnr.SharedApp.ClientTo">
+            <summary>
+            客户端信息
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.ClientTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            构造
+            </summary>
+            <param name="content"></param>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv4">
+            <summary>
+            IPv4
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.IPv6">
+            <summary>
+            IPv6
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.UserAgent">
+            <summary>
+            UA
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Language">
+            <summary>
+            语言
+            </summary>
+        </member>
+        <member name="P:Netnr.SharedApp.ClientTo.Referer">
+            <summary>
+            引荐
+            </summary>
+        </member>
+        <member name="T:Netnr.SharedApp.DownTo">
+            <summary>
+            下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.#ctor(Microsoft.AspNetCore.Http.HttpResponse)">
+            <summary>
+            构造
+            </summary>
+            <param name="httpResponse"></param>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.String,System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+        </member>
+        <member name="M:Netnr.SharedApp.DownTo.Stream(System.Byte[],System.String)">
+            <summary>
+            流的方式下载
+            </summary>
+            <param name="bytes"></param>
+            <param name="fileName">下载文件名</param>
+        </member>
         <member name="T:Netnr.SharedDataKit.DataKitScript">
             <summary>
             数据交互脚本
@@ -1115,12 +1205,11 @@
             <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
             <returns>表数据、受影响行数、表结构</returns>
         </member>
-        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataOnly(System.Data.Common.DbCommand,System.Boolean)">
+        <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataOnly(System.Data.Common.DbCommand)">
             <summary>
             查询返回数据集
             </summary>
             <param name="dbCommand"></param>
-            <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.SharedAdo.DbHelperExtend.ExecuteDataRow(System.Data.Common.DbCommand,System.Action{System.Data.DataRow})">
@@ -1138,95 +1227,6 @@
             ref: https://support.oracle.com/knowledge/Oracle%20Database%20Products/1050515_1.html
             </summary>
             <param name="cmd"></param>
-        </member>
-        <member name="T:Netnr.SharedApp.BuildTo">
-            <summary>
-            构建
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.BuildTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            构造
-            </summary>
-            <param name="httpContext"></param>
-        </member>
-        <member name="M:Netnr.SharedApp.BuildTo.Html``1">
-            <summary>
-            根据控制器构建静态页面
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.SharedApp.QuoteTo">
-            <summary>
-            资源引用
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.QuoteTo.Html(System.String)">
-            <summary>
-            得到html字符串
-            </summary>
-            <param name="quotes">引用项，逗号分割，按顺序</param>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.SharedApp.ClientTo">
-            <summary>
-            客户端信息
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.ClientTo.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            构造
-            </summary>
-            <param name="content"></param>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.IPv4">
-            <summary>
-            IPv4
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.IPv6">
-            <summary>
-            IPv6
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.UserAgent">
-            <summary>
-            UA
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.Language">
-            <summary>
-            语言
-            </summary>
-        </member>
-        <member name="P:Netnr.SharedApp.ClientTo.Referer">
-            <summary>
-            引荐
-            </summary>
-        </member>
-        <member name="T:Netnr.SharedApp.DownTo">
-            <summary>
-            下载
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.DownTo.#ctor(Microsoft.AspNetCore.Http.HttpResponse)">
-            <summary>
-            构造
-            </summary>
-            <param name="httpResponse"></param>
-        </member>
-        <member name="M:Netnr.SharedApp.DownTo.Stream(System.String,System.String)">
-            <summary>
-            流的方式下载
-            </summary>
-        </member>
-        <member name="M:Netnr.SharedApp.DownTo.Stream(System.Byte[],System.String)">
-            <summary>
-            流的方式下载
-            </summary>
-            <param name="bytes"></param>
-            <param name="fileName">下载文件名</param>
         </member>
         <member name="T:Netnr.SharedCompile.CompileTo">
             <summary>
@@ -1767,12 +1767,12 @@
         </member>
         <member name="P:Netnr.SharedLogging.LoggingModel.LogGroup">
             <summary>
-            分组（1：默认；2：爬虫）
+            分组（-1：异常；1：默认；2：爬虫；9：记录）
             </summary>
         </member>
         <member name="P:Netnr.SharedLogging.LoggingModel.LogLevel">
             <summary>
-            级别（F： Fatal；E：Error；W：Warn；I：Info；D：Debug；A：All）
+            级别（F： Fatal；E：Error；W：Warning；I：Info；D：Debug；T：Trace；A：All）
             </summary>
         </member>
         <member name="P:Netnr.SharedLogging.LoggingModel.LogCreateTime">
@@ -1805,7 +1805,7 @@
             查询返回
             </summary>
         </member>
-        <member name="P:Netnr.SharedLogging.LoggingResultVM.Total">
+        <member name="P:Netnr.SharedLogging.LoggingResultVM.RowCount">
             <summary>
             总条数（仅对分页查询时有效）
             </summary>
@@ -1815,7 +1815,7 @@
             丢失的库（附加库有上限会丢失数据库）
             </summary>
         </member>
-        <member name="P:Netnr.SharedLogging.LoggingResultVM.Data">
+        <member name="P:Netnr.SharedLogging.LoggingResultVM.RowData">
             <summary>
             数据体
             </summary>
@@ -1989,11 +1989,19 @@
             <param name="listWhere">条件：键、关系符、值1、值2</param>
             <returns></returns>
         </member>
+        <member name="M:Netnr.SharedLogging.LoggingTo.Query(System.String,System.String)">
+            <summary>
+            查询
+            </summary>
+            <param name="queryAllSql"></param>
+            <param name="queryLimitSql"></param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.SharedLogging.LoggingTo.StatsPVUV(System.Int32,System.Collections.Generic.List{System.Collections.Generic.List{System.String}})">
             <summary>
             统计PV/UV
             </summary>
-            <param name="type">类型（0：今天，-1：昨天，-7：最近7天，-30：最近30天）</param>
+            <param name="days">0：今天，-1：昨天，-7：最近7天，-30：最近30天</param>
             <param name="listWhere">条件：键、关系符、值1、值2</param>
             <returns></returns>
         </member>
@@ -2001,7 +2009,7 @@
             <summary>
             统计属性排行
             </summary>
-            <param name="type">类型（0：今天，-1：昨天，-7：最近7天，-30：最近30天）</param>
+            <param name="days">0：今天，-1：昨天，-7：最近7天，-30：最近30天</param>
             <param name="field">字段列</param>
             <param name="listWhere">条件：键、关系符、值1、值2</param>
             <returns></returns>

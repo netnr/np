@@ -1,0 +1,49 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <title>画笔 NET牛人</title>
+</head>
+
+<body>
+
+    <canvas id="xxx" width=300 height=300></canvas>
+
+    <div id=actions class="actions">
+        <svg id=pen class="active icon">
+            <use xlink:href="#icon-pen"></use>
+        </svg>
+        <svg id=eraser class="icon">
+            <use xlink:href="#icon-erase"></use>
+        </svg>
+        <svg id=clear class="icon">
+            <use xlink:href="#icon-clear"></use>
+        </svg>
+        <svg id=download class="icon">
+            <use xlink:href="#icon-save"></use>
+        </svg>
+    </div>
+
+    <ol class="colors">
+        <li id="red" class="red active"></li>
+        <li id="green" class="green"></li>
+        <li id="blue" class="blue"></li>
+    </ol>
+
+    <ol class="sizes">
+        <li id="thin" class="thin"></li>
+        <li id="thick" class="thick"></li>
+    </ol>
+
+    <script src="/js/ss/brush.js" asp-append-version="true"></script>
+    <script src="//at.alicdn.com/t/font_478967_6n4o5i5mnff4unmi.js"></script>
+
+    <!--Source: https://github.com/FrankFang/canvas-demo-2017-->
+</body>
+
+</html>

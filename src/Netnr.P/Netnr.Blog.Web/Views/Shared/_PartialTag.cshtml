@@ -1,0 +1,12 @@
+@model string
+@{
+    var tagJarray = Model.ToJArray();
+}
+@foreach (var tags in tagJarray)
+{
+    var TagName = tags["TagName"]?.ToString();
+    var TagIcon = tags["TagIcon"]?.ToString();
+    <a class="tag text-decoration-none opacity-75" href="/home/type/@System.Web.HttpUtility.UrlEncode(TagName)">
+        @TagName
+    </a>
+}

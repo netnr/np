@@ -1,143 +1,116 @@
 @model Netnr.Blog.Domain.UserInfo
 @{
     ViewData["Title"] = "个人设置";
-
     var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin(Model);
 }
 
-<div class="container-fluid">
+<div class="container-fluid p-4">
     <div class="row">
-        <div class="col-md-12">
-            <div class="mb-2">
-                <a href="javascript:void(0);" class="btn btn-light btn-sm float-right" data-toggle="modal" data-target="#ModalUserInfo">编辑</a>
+        <div class="col-md-7 mb-4">
+            <div>
                 <span class="h4">个人信息</span>
+                <sl-button class="nr-btn-edit-info float-end" size="small">编辑</sl-button>
             </div>
-            <table class="table">
-                <tr>
-                    <td>
-                        账号
-                        <i class="fa fa-fw text-muted fa-question-circle-o" data-toggle="tooltip" title="登录账号，个性网址，唯一"></i>
-                    </td>
-                    <td class="text-muted">@GlobalTo.GetValue("Common:Domain")/u/<b class="text-primary">@Model.UserName</b></td>
-                </tr>
-                <tr>
-                    <td>昵称</td>
-                    <td>@Model.Nickname</td>
-                </tr>
-                <tr>
-                    <td>
-                        邮箱
-                        <i class="fa fa-fw text-muted fa-question-circle-o" data-toggle="tooltip" title="登录邮箱，唯一"></i>
-                    </td>
-                    <td>
-                        <a class="mr-3" href="mailto:@Model.UserMail">@Model.UserMail</a>
+            <sl-divider></sl-divider>
+            <div>
+                <div class="row">
+                    <div class="col-auto">账号</div>
+                    <div class="col">@Model.UserName</div>
+                    <sl-divider></sl-divider>
+                    <div class="col-auto">昵称</div>
+                    <div class="col">@Model.Nickname</div>
+                    <sl-divider></sl-divider>
+                    <div class="col-auto">邮箱</div>
+                    <div class="col">
+                        <a class="me-2" href="mailto:@Model.UserMail">@Model.UserMail</a>
                         @if (Model.UserMailValid == 1)
                         {
-                            <span class="badge badge-success">已验证</span>
+                            <sl-badge variant="success">已验证</sl-badge>
                         }
                         else if (!string.IsNullOrWhiteSpace(Model.UserMail))
                         {
-                            <a href="/user/verify/send" class="btn-outline-info">点击发送验证信息</a>
+                            <sl-badge variant="neutral">未验证</sl-badge>
+                            <sl-button href="/user/verify/send" variant="text" size="small">立即发送验证邮件</sl-button>
                         }
-                    </td>
-                </tr>
-                <tr>
-                    <td>手机</td>
-                    <td><a href="tel:@Model.UserPhone">@Model.UserPhone</a></td>
-                </tr>
-                <tr>
-                    <td>网址</td>
-                    <td>
+                    </div>
+                    <sl-divider></sl-divider>
+                    <div class="col-auto">手机</div>
+                    <div class="col"><a href="tel:@Model.UserPhone">@Model.UserPhone</a></div>
+                    <sl-divider></sl-divider>
+                    <div class="col-auto">网址</div>
+                    <div class="col">
                         @if (!string.IsNullOrWhiteSpace(Model.UserUrl))
                         {
                             <a href='@(Model.UserUrl.Contains("//")?Model.UserUrl:"http://"+Model.UserUrl)'>@Model.UserUrl</a>
                         }
-                    </td>
-                </tr>
-            </table>
-
-            <div class="modal" id="ModalUserInfo">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">修改个人信息</h5>
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="FormUserInfo">
-                                <div class="form-group">
-                                    <label>
-                                        账号
-                                        @if (Model.UserNameChange != 1)
-                                        {
-                                            <small class="text-info">（你可以修改一次账号）</small>
-                                        }
-                                    </label>
-                                    <input class="form-control" name="UserName" value="@Model.UserName" maxlength="50" @(Model.UserNameChange == 1 ? "readonly" : "")>
-                                </div>
-                                <div class="form-group">
-                                    <label>昵称</label>
-                                    <input class="form-control" name="Nickname" value="@Model.Nickname" maxlength="50">
-                                </div>
-                                <div class="form-group">
-                                    <label>邮箱<small class="text-info">（更改邮箱需要重新验证）</small></label>
-                                    <input class="form-control" name="UserMail" value="@Model.UserMail" maxlength="50">
-                                </div>
-                                <div class="form-group">
-                                    <label>手机</label>
-                                    <input class="form-control" name="UserPhone" value="@Model.UserPhone" maxlength="20">
-                                </div>
-                                <div class="form-group">
-                                    <label>网址</label>
-                                    <input class="form-control" name="UserUrl" value="@Model.UserUrl" maxlength="100">
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-warning" id="btnSaveUserInfo">保存</button>
-                        </div>
                     </div>
+                    <sl-divider></sl-divider>
                 </div>
             </div>
 
-            <h4 class="mt-5">授权关联</h4>
-            <table class="table">
-                @foreach (var login in listQuickLogin)
-                {
-                    <tr>
-                        <td class="siteIcon"><img class="mr-2" src="@login.Icon" />@login.Name</td>
-                        <td>
+            <sl-dialog class="nr-dialog-form" label="编辑个人信息">
+                <form action="/User/SaveUserInfo" method="post">
+                    <sl-input class="mb-3" size="small" type="text" required label="账号@(Model.UserNameChange == 1?" （不能修改）":" （你可以修改一次账号）")" name="UserName" value="@Model.UserName" maxlength="50" @(Model.UserNameChange == 1 ? "readonly" : "")>
+                        <sl-icon name="person-circle" slot="prefix"></sl-icon>
+                    </sl-input>
+                    <sl-input class="mb-3" size="small" type="text" required label="昵称" name="Nickname" value="@Model.Nickname" maxlength="50">
+                        <sl-icon name="person-circle" slot="prefix"></sl-icon>
+                    </sl-input>
+                    <sl-input class="mb-3" size="small" type="email" required label="邮箱 （更改邮箱需要重新验证）" name="UserMail" value="@Model.UserMail" maxlength="50">
+                        <sl-icon name="envelope" slot="prefix"></sl-icon>
+                    </sl-input>
+                    <sl-input class="mb-3" size="small" type="tel" required label="手机" name="UserPhone" value="@Model.UserPhone" maxlength="20">
+                        <sl-icon name="phone" slot="prefix"></sl-icon>
+                    </sl-input>
+                    <sl-input class="mb-3" size="small" type="text" label="网址" name="UserUrl" value="@Model.UserUrl" maxlength="100">
+                        <sl-icon name="link-45deg" slot="prefix"></sl-icon>
+                    </sl-input>
+
+                    <sl-button class="nr-btn-save-info" type="submit" variant="warning">保存</sl-button>
+                </form>
+            </sl-dialog>
+
+        </div>
+
+        <div class="col-md-4 offset-md-1 mb-4">
+            <h4>更改密码</h4>
+            <sl-divider></sl-divider>
+            <sl-input class="nr-txt-pwd1 mb-3" type="password" size="small" label="当前密码" maxlength="20" placeholder="******" toggle-password>
+                <sl-icon name="key" slot="prefix"></sl-icon>
+            </sl-input>
+            <sl-input class="nr-txt-pwd2 mb-3" type="password" size="small" label="新的密码，至少 5 位数" maxlength="50" placeholder="******" toggle-password>
+                <sl-icon name="key" slot="prefix"></sl-icon>
+            </sl-input>
+            <sl-input class="nr-txt-pwd3 mb-3" type="password" size="small" label="确认新的密码" maxlength="50" placeholder="******" toggle-password>
+                <sl-icon name="key" slot="prefix"></sl-icon>
+            </sl-input>
+            <sl-button class="nr-btn-save-pwd mb-3" variant="warning" size="small">提交</sl-button>
+        </div>
+
+        <div class="col-12">
+            <h4>授权关联</h4>
+            <sl-divider></sl-divider>
+            <div>
+                <div class="row">
+                    @foreach (var login in listQuickLogin)
+                    {
+                        <div class="col-md-4 col-xl-3 col-xxl-2 mb-3">
+                            <span class="me-2">
+                                <img src="@login.Icon" style="height:1.3em" />&nbsp;@login.Name
+                            </span>
                             @if (login.Bind)
                             {
-                                <span class="text-success mr-3">已绑定</span><a href="/user/ridoauth/@login.Key">解除</a>
+                                <sl-badge variant="success">已绑定</sl-badge>
+                                <a href="/user/ridoauth/@login.Key">解除</a>
                             }
                             else
                             {
-                                <a href="/user/oauth/@login.Key">立即绑定账号</a>
+                                <a href="/user/oauth/@login.Key">绑定账号</a>
                             }
-                        </td>
-                    </tr>
-                }
-            </table>
-
-            <h4 class="mt-5">更改密码</h4>
-            <table class="table table-sm">
-                <colgroup><col style="width:30%" /></colgroup>
-                <tr>
-                    <td colspan="2"><input type="password" class="form-control" id="txtOldPwd" placeholder="现有的密码" /></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input type="password" class="form-control" id="txtNewPwd1" placeholder="新密码，至少5位数" /></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input type="password" class="form-control" id="txtNewPwd2" placeholder="确认新的密码" /></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button class="btn btn-warning" id="btnUpdatePwd">提交</button></td>
-                </tr>
-            </table>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>

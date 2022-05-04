@@ -44,7 +44,7 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
-        /// 上传检测
+        /// 上传检测（已登录）
         /// </summary>
         /// <param name="file">文件</param>
         /// <param name="content">文件内容</param>
@@ -52,7 +52,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="subdir">输出完整物理路径，用于存储</param>
         /// <returns></returns>
         [ApiExplorerSettings(IgnoreApi = true)]
-        private static SharedResultVM UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
+        public static SharedResultVM UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
         {
             var vm = new SharedResultVM();
 
@@ -69,7 +69,7 @@ namespace Netnr.Blog.Web.Controllers.api
             else
             {
                 var now = DateTime.Now;
-                string filename = now.ToString("HHmmss") + RandomTo.NumCode() + ext;
+                string filename = now.ToString("MMddHHmmss") + RandomTo.NumCode(3) + ext;
 
                 if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
                 {
@@ -78,12 +78,12 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    //虚拟路径
-                    var vpath = PathTo.Combine(subdir, now.ToString("yyyy'/'MM'/'dd"));
                     //物理根路径
-                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath").Replace("~", GlobalTo.ContentRootPath);
+                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath");
+                    //虚拟路径
+                    var vpath = PathTo.Combine(subdir, now.ToString("yyyy"));
                     //物理路径
-                    var ppath = PathTo.Combine(prp, vpath);
+                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, prp, vpath);
                     //创建物理目录
                     if (!Directory.Exists(ppath))
                     {
@@ -106,6 +106,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     vm.Data = new
                     {
                         server = GlobalTo.GetValue("StaticResource:Server"),
+                        prp = prp,
                         path = PathTo.Combine(vpath, filename)
                     };
                     vm.Set(SharedEnum.RTag.success);
@@ -128,6 +129,12 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return SharedResultVM.Try(vm =>
             {
+                if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                    return vm;
+                }
+
                 if (file != null)
                 {
                     vm = UploadCheck(file, null, "", subdir);
@@ -155,6 +162,12 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return SharedResultVM.Try(vm =>
             {
+                if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                    return vm;
+                }
+
                 if (content != null)
                 {
                     //删除 “,” 前面的字符串
@@ -186,6 +199,12 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return SharedResultVM.Try(vm =>
             {
+                if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                {
+                    vm.Set(SharedEnum.RTag.unauthorized);
+                    return vm;
+                }
+
                 if (content != null)
                 {
                     var bs = Encoding.UTF8.GetBytes(content);
@@ -679,11 +698,11 @@ namespace Netnr.Blog.Web.Controllers.api
                 try
                 {
                     var sc = "x";
-                    if (wh.Contains("*"))
+                    if (wh.Contains('*'))
                     {
                         sc = "*";
                     }
-                    else if (wh.Contains("_"))
+                    else if (wh.Contains('_'))
                     {
                         sc = "_";
                     }

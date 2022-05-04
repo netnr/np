@@ -2,30 +2,22 @@
     ViewBag.Title = "写文章";
 }
 
-<div class="container-fluid">
+<div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-lg-12">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <button class="btn btn-warning" id="btnSave" title="Ctrl + S 快捷保存">保存</button>
-                </div>
-                <input class="form-control" type="text" id="wtitle" placeholder=" 标题：简单的一句话 " maxlength="200" />
-            </div>
+        <div class="col-auto mb-2">
+            <sl-button class="nr-btn-save" variant="warning" title="Ctrl + S 快捷保存">保存</sl-button>
         </div>
-        <div class="col-lg-2 col-md-3 col-sm-4 mb-3">
-            <select class="form-control" id="wcategory" style="height:34px">
-                <option value="0" selected>默认分类</option>
-            </select>
+        <div class="col mb-2">
+            <sl-input class="nr-txt-title" maxlength="200" placeholder="标题：简单的一句话"></sl-input>
         </div>
-        <div class="col-lg-10 col-md-9 col-sm-8 mb-3">
-            <input type="text" name="tags" id="tags" style="height:34px" class="form-control" placeholder=" 标签，如：html " />
+        <div class="col-md-4 mb-2">
+            <select class="nr-tags form-control" placeholder="选择标签"></select>
         </div>
-        <div class="col-md-12">
-            <div id="mdeditor">Loading ...</div>
+        <div class="col-12">
+            <div class="nr-editor">Loading ...</div>
         </div>
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor,selectpage"))
-
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,tom-select,monaco-editor"))
 <script src="/js/home/write.js" asp-append-version="true"></script>

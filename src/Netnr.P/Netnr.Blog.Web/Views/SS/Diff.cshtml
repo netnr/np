@@ -1,0 +1,21 @@
+<div class="nr-card-box invisible container-fluid p-4">
+    <div class="row">
+        <div class="col-auto mb-3">
+            <sl-select class="nr-se-diff" style="min-width:6em" value="0">
+                <sl-menu-item value="0">左右</sl-menu-item>
+                <sl-menu-item value="1">内联</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-auto mb-3">
+            <sl-button class="nr-btn-next">Next</sl-button>
+        </div>
+        <div class="col-md mb-3">
+            <input class="nr-txt-file w-100" type="file" />
+        </div>
+        <div class="col-12">
+            <div class="nr-editor"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))

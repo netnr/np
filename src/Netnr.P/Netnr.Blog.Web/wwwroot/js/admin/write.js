@@ -1,113 +1,134 @@
-//状态
-z.DC["dataurl_uwstatus"] = {
-    data: [
-        { value: 1, text: "✔" },
-        //不在列表显示
-        { value: 2, text: "BLOCK" },
-        //不允许编辑、删除
-        { value: -1, text: "LOCK" }
-    ],
-    init: function () {
-        this.onHidePanel = function () {
-            gd1.func('endEdit', gd1.ei);
-        }
+nr.onChangeSize = function (ch) {
+    if (page.gridOps) {
+        var vh = ch - nr.domGrid.getBoundingClientRect().top - 15;
+        nr.domGrid.style.height = vh + "px";
     }
-};
-
-//公开
-z.DC["dataurl_uwopen"] = {
-    data: [
-        { value: 1, text: "✔" },
-        { value: 2, text: "Private" }
-    ],
-    init: function () {
-        this.onHidePanel = function () {
-            gd1.func('endEdit', gd1.ei);
-        }
-    }
-};
-
-var gd1 = z.Grid();
-gd1.url = "/admin/querywritelist";
-gd1.autosizePid = "#PGrid1";
-gd1.pageSize = 100;
-gd1.multiSort = true;
-gd1.sortName = "UwCreateTime";
-gd1.sortOrder = "desc";
-gd1.columns = [[
-    { title: "UID", field: "UserId", width: 60, sortable: true, align: "center" },
-    { title: "昵称", field: "Nickname", width: 150, sortable: true, align: "center" },
-    { title: "ID", field: "UwId", width: 60, sortable: true, align: "center" },
-    {
-        title: "标题", field: "UwTitle", width: 400, sortable: true, formatter: function (value, row) {
-            return '<a href="/home/list/' + row.UwId + '" target="_blank">' + value + '</a>';
-        }
-    },
-    {
-        title: "创建时间", field: "UwCreateTime", width: 160, sortable: true, align: "center", formatter: function (value) {
-            return value.substr(0, 19);
-        }
-    },
-    { title: "<b class='orange'>回复</b>", field: "UwReplyNum", width: 70, sortable: true, align: "center", FormType: "text" },
-    { title: "<b class='orange'>浏览</b>", field: "UwReadNum", width: 70, sortable: true, align: "center", FormType: "text" },
-    { title: "<b class='orange'>点赞</b>", field: "UwLaud", width: 70, sortable: true, align: "center", FormType: "text" },
-    { title: "<b class='orange'>收藏</b>", field: "UwMark", width: 70, sortable: true, align: "center", FormType: "text" },
-    {
-        title: "<b class='orange'>公开</b>", field: "UwOpen", width: 90, sortable: true, align: "center", FormType: "combobox", FormUrl: "dataurl_uwopen", formatter: function (value) {
-            switch (Number(value)) {
-                case 1: value = "✔"; break;
-                case 2: value = "Private"; break;
-            }
-            return value
-        }
-    },
-    {
-        title: "<b class='orange'>状态</b>", field: "UwStatus", width: 120, sortable: true, align: "center", FormType: "combobox", FormUrl: "dataurl_uwstatus", formatter: function (value) {
-            switch (Number(value)) {
-                case 1: value = "✔"; break;
-                case 2: value = "BLOCK"; break;
-                case -1: value = "ReadOnly"; break;
-            }
-            return value
-        }
-    }
-]];
-//编辑
-gd1.onClickCell = function (index, field, value) {
-    setTimeout(function () {
-        z.GridEditor(gd1, index, field);
-    }, 20)
 }
-gd1.onBeforeLoad = function (row, param) {
-    param.pe1 = $('#txtSearch').val().trim();
+
+nr.onReady = function () {
+    page.load()
 }
-//结束编辑保存
-gd1.onEndEdit = function (index, row, changes) {
-    if (JSON.stringify(changes) != "{}") {
-        $.ajax({
-            url: "/admin/WriteAdminSave",
-            type: "post",
-            data: row,
-            dataType: 'json',
-            success: function (data) {
-                if (data.code != 200) {
-                    gd1.load();
+
+var page = {
+    load: () => {
+        let gridOptions = {
+            defaultColDef: {
+                filter: 'agTextColumnFilter',
+                sortable: true,
+                resizable: true,
+            },
+            getRowId: event => event.data.UwId,
+            columnDefs: [
+                {
+                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
+                    sortable: false, filter: false, menuTabs: false
+                },
+                { field: "UserId", width: 120 },
+                { headerName: "昵称", field: "Nickname", width: 120 },
+                { headerName: "文章ID", field: "UwId", width: 100 },
+                {
+                    headerName: "💡标题", field: "UwTitle", width: 400, cellRenderer: (params) => {
+                        if (params.data != null) {
+                            return `<a href="/home/list/${params.data.UwId}">${params.value}</a>`;
+                        }
+                    }, editable: true, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 }
+                },
+                { headerName: "创建时间", field: "UwCreateTime", width: 200, },
+                { headerName: "修改时间", field: "UwUpdateTime", width: 200, },
+                { headerName: "💡回复", field: "UwReplyNum", width: 100, editable: true },
+                { headerName: "💡浏览", field: "UwReadNum", width: 100, editable: true },
+                { headerName: "💡点赞", field: "UwLaud", width: 100, editable: true },
+                { headerName: "💡收藏", field: "UwMark", width: 100, editable: true },
+                {
+                    headerName: "💡公开", field: "UwOpen", width: 100, cellRenderer: params => params.value == 1 ? "✔" : "✘",
+                    editable: true, cellEditor: 'agRichSelectCellEditor', cellEditorParams: {
+                        values: [1, 0], formatValue: fv => fv == 1 ? "✔" : "✘"
+                    }
+                },
+                {
+                    headerName: "💡状态", field: "UwStatus", width: 100, cellRenderer: function (params) {
+                        var km =
+                        {
+                            "1": "✔",
+                            "2": "Block",
+                            "-1": "Lock"
+                        };
+                        return km[params.value];
+                    }, editable: true, cellEditor: 'agRichSelectCellEditor', cellEditorParams: {
+                        values: [1, 2, -1], formatValue: fv => {
+                            var km =
+                            {
+                                "1": "✔",
+                                "2": "Block",
+                                "-1": "Lock"
+                            };
+                            return km[fv];
+                        }
+                    }
                 }
-                jz.msg("第 " + (index + 1) + " 行，" + data.msg);
-            }
-        })
-    }
-}
-gd1.load();
+            ],
+            cacheBlockSize: 30, //请求行数
+            enableRangeSelection: true, //范围选择
+            animateRows: true, //动画
+            rowModelType: 'infinite', //无限行模式
+            //数据源
+            datasource: {
+                getRows: params => {
+                    //默认排序
+                    if (params.sortModel.length == 0) {
+                        params.sortModel.push({ colId: "UwCreateTime", sort: "desc" });
+                    }
 
-//搜索
-$('#txtSearch').keydown(function (e) {
-    e = e || window.event;
-    if (e.keyCode == 13) {
-        $('#btnSearch')[0].click();
-    }
-})
-$('#btnSearch').click(function () {
-    gd1.pageNumber = 1;
-    gd1.load();
-});
+                    fetch(`/Admin/WriteList?grp=${encodeURIComponent(JSON.stringify(params))}`).then(x => x.json()).then(res => {
+                        params.successCallback(res.RowsThisBlock, res.LastRow)
+                    }).catch(err => {
+                        console.log(err);
+                        params.failCallback();
+                    })
+                }
+            },
+            // 单元格变动
+            onCellValueChanged: function (event) {
+                let data = event.data;
+
+                var fd = new FormData();
+                for (var i in data) {
+                    fd.append(i, data[i]);
+                }
+
+                fetch('/Admin/WriteSave', {
+                    method: 'POST',
+                    body: fd
+                }).then(x => x.json()).then(res => {
+                    if (res.code == 200) {
+                        page.gridOps.api.ensureIndexVisible(event.rowIndex); //滚动到行显示
+                        page.gridOps.api.flashCells({ rowNodes: [event.node], columns: [event.column.colId] }); //闪烁单元格
+                    } else {
+                        nr.alert(res.msg);
+                    }
+                });
+            },
+            onGridReady: () => {
+                //自适应
+                nr.changeSize();
+            },
+            getContextMenuItems: (params) => {
+                var result = [
+                    { name: "Reload", icon: "🔄", action: page.load },
+                    'autoSizeAll',
+                    'resetColumns',
+                    'separator',
+                    'copy',
+                    'copyWithHeaders'
+                ];
+
+                return result;
+            },
+        };
+
+        if (page.gridOps) {
+            page.gridOps.api.destroy();
+        }
+        page.gridOps = new agGrid.Grid(nr.domGrid, gridOptions).gridOptions;
+    },
+}

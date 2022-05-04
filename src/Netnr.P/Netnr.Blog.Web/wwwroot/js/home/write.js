@@ -1,188 +1,124 @@
-require(['vs/editor/editor.main'], function () {
-
-    window.nmd = new netnrmd('#mdeditor', {
-        //执行命令前回调
-        cmdcallback: function (cmd) {
-            if (cmd == "full") {
-                if (nmd.obj.editor.classList.contains('netnrmd-fullscreen')) {
-                    $('#ModalWrite').addClass('modal');
-                } else {
-                    $('#ModalWrite').removeClass('modal');
-                }
-            }
-        }
-    });
-
+//变动大小
+nr.onChangeSize = function (ch) {
+    //新增
     if (location.pathname == "/home/write") {
-        //高度沉底
-        $(window).on('load resize', function () {
-            var vh = $(window).height() - nmd.obj.container.getBoundingClientRect().top - 20;
-            nmd.height(Math.max(100, vh));
-        })
+        if (nr.nmd) {
+            var vh = ch - nr.nmd.obj.container.getBoundingClientRect().top - 20;
+            nr.nmd.height(Math.max(100, vh));
+        }
+    } else {
+        if (page.gridOps) {
+            var vh = ch - nr.domGrid.getBoundingClientRect().top - 15;
+            nr.domGrid.style.height = vh + "px";
+        }
+
+        if (nr.nmd) {
+            var vh = ch - 280;
+            nr.nmd.height(Math.max(100, vh));
+        }
+    }
+}
+
+nr.onReady = function () {
+    //标签
+    fetch("/Home/TagSelect").then(x => x.json()).then(res => {
+        nr.tomSelect = new TomSelect('.nr-tags', {
+            maxItems: 3,
+            maxOptions: 100,
+            valueField: 'TagId',
+            labelField: 'TagName',
+            searchField: 'TagName',
+            sortField: 'TagName',
+            options: res,
+            create: false
+        });
+    }).catch(err => {
+        console.log(err);
+        nr.alert(err)
+    });
+
+    require(['vs/editor/editor.main'], function () {
+        nr.nmd = new netnrmd('.nr-editor');
+
+        nr.changeTheme();
+        nr.changeSize();
+
+        //快捷键
+        nr.nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
+            domBtnSave.click();
+        });
+    });
+
+    //编辑
+    if (location.pathname == "/user/write") {
+        page.init();
     }
 
-    //快捷键
-    nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
-        if (document.getElementById("btnSave")) {
-            $('#btnSave')[0].click();
-        } else {
-            $('#btnSaveEdit')[0].click();
+    //保存
+    nr.domBtnSave.addEventListener("click", function () {
+        var obj = {
+            UwId: nr.keyId || 0,
+            UwTitle: nr.domTxtTitle.value,
+            UwCategory: 0,
+            UwContent: nr.nmd.gethtml(),
+            UwContentMd: nr.nmd.getmd(),
+            TagIds: nr.tomSelect.getValue().join(',')
         }
-    })
-});
 
-//标签
-$.ajax({
-    url: "/Home/TagSelect",
-    dataType: 'json',
-    success: function (data) {
-        $('#tags').selectPage({
-            showField: 'TagName',
-            keyField: 'TagId',
-            data: data,
-            eSelect: function () {
-                $('#tags').selectPageRefresh()
-            },
-            formatItem: function (node) {
-                var fi = node.TagName;
-                if (node.TagIcon) {
-                    fi = '<img style="height:18px;margin-right:5px" onerror="this.src=\'/favicon.svg\';" src="/gs/static/tag/' + node.TagIcon + '" />' + fi;
+        var errMsg = [];
+        if (obj.UwTitle == "") {
+            errMsg.push("请输入 标题");
+        }
+        if (obj.TagIds == "") {
+            errMsg.push("请选择 标签");
+        }
+        if (obj.UwContentMd.length < 20) {
+            errMsg.push("多写一点内容哦");
+        }
+        if (errMsg.length > 0) {
+            nr.alert(errMsg.join('<br/>'));
+            return false;
+        }
+
+        nr.domBtnSave.loading = true;
+
+        //新增
+        if (location.pathname == "/home/write") {
+            fetch("/Home/WriteSave", {
+                method: "POST",
+                body: nr.toFormData(obj)
+            }).then(x => x.json()).then(res => {
+                nr.domBtnSave.loading = false;
+                if (res.code == 200) {
+                    nr.nmd.setmd('');
+                    location.href = "/home/list/" + res.data;
+                } else {
+                    nr.alert(res.msg);
                 }
-                return fi;
-            },
-            multiple: true,
-            maxSelectLimit: 3,
-            selectToCloseList: false
-        });
-    },
-    error: function () {
-        jz.alert("初始化标签失败");
-    }
-})
-
-//保存（新增）
-$('#btnSave').click(function () {
-    var wtitle = $.trim($('#wtitle').val());
-    var wcategory = $('#wcategory').val();
-    var wcontentMd = nmd.getmd();
-    var wcontent = nmd.gethtml();
-    var tagids = $('#tags').val();
-    var errmsg = [];
-    if (wtitle == "") {
-        errmsg.push("请输入 标题");
-    }
-    if (wcategory == "") {
-        errmsg.push("请选择 分类");
-    }
-    if (tagids == "") {
-        errmsg.push("请选择 标签");
-    }
-    if (wcontentMd.length < 20) {
-        errmsg.push("多写一点内容哦");
-    }
-    if (errmsg.length > 0) {
-        jz.alert(errmsg.join('<br/>'));
-        return false;
-    }
-
-    $('#btnSave')[0].disabled = true;
-
-    $.ajax({
-        url: "/home/writesave",
-        type: "post",
-        data: {
-            UwTitle: wtitle,
-            UwCategory: wcategory,
-            UwContent: wcontent,
-            UwContentMd: wcontentMd,
-            TagIds: tagids
-        },
-        dataType: 'json',
-        success: function (data) {
-            if (data.code == 200) {
-                nmd.setmd('');
-                location.href = "/home/list/" + data.data;
-            } else {
-                jz.msg(data.msg);
-            }
-        },
-        error: function (ex) {
-            if (ex.status == 401) {
-                jz.msg("请登录");
-            } else {
-                jz.msg("网络错误");
-            }
-        },
-        complete: function () {
-            $('#btnSave')[0].disabled = false;
+            }).catch(err => {
+                nr.domBtnSave.loading = false;
+                console.log(err);
+                nr.alert(err);
+            })
+        } else {
+            //编辑
+            fetch("/User/WriteSave", {
+                method: "POST",
+                body: nr.toFormData(obj)
+            }).then(x => x.json()).then(res => {
+                nr.domBtnSave.loading = false;
+                if (res.code == 200) {
+                    nr.nmd.setmd('');
+                    nr.domDialogForm.hide();
+                    page.load();
+                } else {
+                    nr.alert(res.msg);
+                }
+            }).catch(err => {
+                nr.domBtnSave.loading = false;
+                console.log(err);
+                nr.alert(err);
+            })
         }
-    });
-});
-
-
-//保存（编辑）
-$('#btnSaveEdit').click(function () {
-    var wid = $(this).attr('data-id');
-    var wtitle = $('#wtitle').val();
-    var wcategory = $('#wcategory').val();
-    var wcontentMd = nmd.getmd();
-    var wcontent = nmd.gethtml();
-    var tagids = $('#tags').val();
-
-    var errmsg = [];
-    if (wtitle == "") {
-        errmsg.push("请输入 标题");
-    }
-    if (wcategory == "") {
-        errmsg.push("请选择 分类");
-    }
-    if (tagids == "") {
-        errmsg.push("请选择 标签");
-    }
-    if (wcontentMd.length < 20) {
-        errmsg.push("多写一点内容哦");
-    }
-    if (errmsg.length > 0) {
-        jz.confirm({
-            content: errmsg.join('<hr />'),
-            time: 12,
-            mask: true
-        });
-        return false;
-    }
-
-    $('#btnSaveEdit')[0].disabled = true;
-
-    $.ajax({
-        url: "/user/writeeditsave",
-        type: "post",
-        data: {
-            UwId: wid,
-            UwTitle: wtitle,
-            UwCategory: wcategory,
-            UwContent: wcontent,
-            UwContentMd: wcontentMd,
-            TagIds: tagids,
-        },
-        dataType: 'json',
-        success: function (data) {
-            if (data.code == 200) {
-                nmd.setmd('');
-                $('#ModalWrite').modal("hide");
-                gd1.load();
-            } else {
-                jz.msg(data.msg);
-            }
-        },
-        error: function (ex) {
-            if (ex.status == 401) {
-                jz.msg("请登录");
-            } else {
-                jz.msg("网络错误");
-            }
-        },
-        complete: function () {
-            $('#btnSaveEdit')[0].disabled = false;
-        }
-    });
-});
+    }, false);
+}

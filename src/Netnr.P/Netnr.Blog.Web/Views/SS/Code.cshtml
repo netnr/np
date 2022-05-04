@@ -1,0 +1,102 @@
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <sl-textarea class="nr-txt-code1" rows="9" autofocus label="内容" value="一二 12 ab &lt;&gt;"></sl-textarea>
+        </div>
+        <div class="col-md-6 mb-3">
+            <sl-textarea class="nr-txt-code2" rows="9" autofocus label="结果"></sl-textarea>
+        </div>
+    </div>
+
+    <div class="row my-4" title="散列/哈希">
+        <div class="col-auto">
+            <sl-button variant="success" class="mb-1">MD5</sl-button>
+        </div>
+        <div class="col-auto">
+            <sl-button variant="success" class="mb-1">SHA1</sl-button>
+            <sl-button class="mb-1">224</sl-button>
+            <sl-button class="mb-1">256</sl-button>
+            <sl-button class="mb-1">384</sl-button>
+            <sl-button class="mb-1">512</sl-button>
+            <sl-button class="mb-1">SHA3</sl-button>
+        </div>
+        <div class="col-auto">
+            <sl-button variant="success" class="mb-1">HmacSHA1</sl-button>
+            <sl-button class="mb-1">224</sl-button>
+            <sl-button class="mb-1">256</sl-button>
+            <sl-button class="mb-1">384</sl-button>
+            <sl-button class="mb-1">512</sl-button>
+            <sl-button class="mb-1">HmacMD5</sl-button>
+            <sl-input class="nr-txt-key1 d-inline-block" placeholder="密钥"></sl-input>
+        </div>
+        <div class="col-auto">
+            <input class="nr-txt-file" type='file' multiple />
+        </div>
+    </div>
+
+    <div class="row my-4" title="加密/解密">
+        <div class="col-auto">
+            <sl-button-group class="mb-1">
+                <sl-button variant="warning">AES</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="warning">DES</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="warning">RC4</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="warning">Rabbit</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="warning">TripleDES</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-input class="nr-txt-key2 d-inline-block mb-1" placeholder="密钥"></sl-input>
+        </div>
+    </div>
+
+    <div class="row my-4" title="编码转换">
+        <div class="col-auto">
+            <sl-button-group class="mb-1">
+                <sl-button variant="primary">Base64</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="primary">encodeURI</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="primary">encodeURIComponent</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="primary">Unicode</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="primary">ASCII</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+            <sl-button-group class="mb-1">
+                <sl-button variant="primary">HTMLEncode</sl-button>
+                <sl-button>↺</sl-button>
+            </sl-button-group>
+        </div>
+    </div>
+
+    <div class="row my-4" title="其他">
+        <div class="col-auto">
+            <sl-button variant="neutral" class="mb-1">UUID</sl-button>
+        </div>
+        <div class="col-auto">
+            <sl-input class="nr-txt-ascii d-inline-block mb-1" readonly placeholder="按键 输出对应 ASCII"></sl-input>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("crypto.js"))

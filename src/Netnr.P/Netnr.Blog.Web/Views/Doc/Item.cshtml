@@ -1,0 +1,38 @@
+@model Netnr.Blog.Domain.DocSetDetail
+@{
+    ViewData["Title"] = GlobalTo.GetValue("Common:EnglishName") + " Doc";
+}
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-auto mb-2 d-flex">
+            <sl-button variant="text">标题</sl-button>
+            <sl-input class="nr-txt-title w-100" style="min-width:30vw" placeholder="标题" name="DsdTitle" value="@Model.DsdTitle"></sl-input>
+        </div>
+        <div class="col-md-auto mb-2 d-flex">
+            <sl-button variant="text">目录</sl-button>
+            <sl-select class="nr-se-pid w-100" style="min-width:30vw;" placeholder="父级目录" name="DsdPid" value="@Model.DsdPid"></sl-select>
+        </div>
+        <div class="col-md-auto mb-2 d-flex">
+            <sl-button variant="text">序号</sl-button>
+            <sl-input type="number" class="nr-txt-order w-100" style="min-width:10vw" placeholder="序号" name="DsdOrder" value="@Model.DsdOrder"></sl-input>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-auto mb-2">
+            <input type="hidden" class="nr-hid-code" name="DsCode" value="@Model.DsCode" />
+            <input type="hidden" class="nr-hid-id" name="DsdId" value="@Model.DsdId" />
+
+            <sl-button class="nr-btn-save" variant="warning">保存</sl-button>
+            <sl-button class="nr-btn-template-api d-none d-sm-inline-block">插入 API 接口模版</sl-button>
+            <sl-button class="nr-btn-template-dic d-none d-sm-inline-block">插入数据字典模版</sl-button>
+            <sl-button href="/doc/code/@(Model.DsCode+"/"+Model.DsdId)">返回</sl-button>
+        </div>
+        <div class="col-12">
+            <div class="nr-editor" data-value="@Model.DsdContentMd"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,monaco-editor"))
+<script src="/js/doc/item.js" asp-append-version="true"></script>

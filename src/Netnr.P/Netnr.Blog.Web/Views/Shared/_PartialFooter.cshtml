@@ -1,32 +1,40 @@
-<div class="border-top mt-5">
-    <div class="container-fluid">
-        <div class="row my-4">
-            <div class="col-md-12">
-                <h5 class="text-muted">
-                    链接
-                    <a class="text-muted small float-right" href="javascript:document.documentElement.scrollTo(0,0)">返回顶部</a>
-                </h5>
-                <a class="mr-3 text-nowrap" href="https://netnr.top">netnr.top</a>
-                <a class="mr-3 text-nowrap" href="https://uuid.fun" title="一个基于Git的书签托管">书签</a>
-                <a class="mr-3 text-nowrap" href="https://guff.ltd" title="分享有趣的人或事">尬服</a>
-                <a class="mr-3 text-nowrap" rel="noopener norefferrer" target="_blank" href="https://www.jscss.cc" title="GitHub：svon">前端笔记</a>
-                <a class="mr-3 text-nowrap" href="https://ss.netnr.com/message" title="匿名留言">留言</a>
-                <a class="mr-3 text-nowrap" target="_blank" href="https://netnr.eu.org">联系打赏</a>
-                <a class="mr-3 text-nowrap" target="_blank" href="/swagger">API</a>
-            </div>
+@{
+    var adminGitHub = GlobalTo.GetValue("Common:AdminGitHub");
+    var mirror = GlobalTo.GetValue("Common:Mirror");
+    var links = GlobalTo.GetValue("Common:Links").Split(',');
+}
+<hr />
+
+<div class="container-fluid">
+    <div class="row my-5">
+        <div class="col-12 px-4">
+            <h5>
+                链接<a class="text-muted small float-end" data-action="back-to-top" href="javascript:void(0);">返回顶部</a>
+            </h5>
         </div>
-        <div class="mb-5 small text-muted">
+        <div class="col-md-6 px-4 mb-3">
+            <a class="me-3 lh-lg text-nowrap" href="https://github.com/@adminGitHub">GitHub</a>
+            @foreach (var item in links)
+            {
+                var list = item.Split(' ');
+                if (list.Length == 2)
+                {
+                    <a class="me-3 lh-lg text-nowrap" href="@list.First()">@list.Last()</a>
+                }
+            }
+            <a class="me-3 lh-lg text-nowrap" target="_blank" href="/swagger">API</a>
+        </div>
+        <div class="col-md-6 px-4 small">
             @{
                 var fd = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
                 var os = Netnr.Core.SystemStatusTo.GetOSPlatform();
             }
-            <a class="text-muted text-nowrap mr-3" href="//dot.net">Powered by @fd 🧡 @os</a>
-            <a class="text-muted text-nowrap mr-3" href="/mix/about">About</a>
-            <a class="text-muted text-nowrap mr-3" href="/mix/faq">FAQ</a>
-            <a class="text-muted text-nowrap mr-3" href="/mix/terms">Terms</a>
-            <a class="text-muted text-nowrap mr-3" href="https://www.netnr.eu.org" title="不定时备份到镜像只读站点">Mirror</a>
-            <a class="text-muted text-nowrap mr-3" href="https://beian.miit.gov.cn">渝ICP备15000995号-3</a>
-            <span>&copy; @GlobalTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
+            <a class="text-muted me-3 lh-lg" href="https://dot.net">Powered by @fd ❤ @os</a>
+            <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/about">About</a>
+            <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/faq">FAQ</a>
+            <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/terms">Terms</a>
+            <a class="text-muted text-nowrap me-3 lh-lg" href="@mirror" title="不定时备份到镜像只读站点">Mirror</a>
+            <span class="text-muted">&copy; @GlobalTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
         </div>
     </div>
 </div>
