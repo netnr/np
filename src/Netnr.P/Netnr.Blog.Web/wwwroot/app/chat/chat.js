@@ -526,7 +526,7 @@ netnrmd.extend = {
                                     console.log(xhr.responseText)
                                     var res = JSON.parse(xhr.responseText);
                                     if (res.code == 200) {
-                                        let url = "https://www.netnr.eu.org" + res.data.path;
+                                        let url = "https://www.netnr.eu.org" + `/${res.data.prp + res.data.path}`.replace("//", "/");
                                         //上传成功，插入链接
                                         netnrmd.insertAfterText(that.obj.me, '[' + file.name + '](' + url + ')');
                                         that.uploadpopup.style.display = "none";

@@ -57,7 +57,8 @@ var page = {
             }).then(resp => resp.json()).then(res => {
                 ss.loading(false);
                 if (res.code == 200) {
-                    page.view(`${ss.apiServer}/${res.data.prp}${res.data.path}`);
+                    let url = ss.apiServer + `/${res.data.prp + res.data.path}`.replace("//", "/");
+                    page.view(url);
                 } else {
                     nr.alert(res.msg);
                 }

@@ -776,26 +776,7 @@ namespace Netnr.Blog.Web.Controllers
                     string postStr = Encoding.UTF8.GetString(ms.ToArray());
                     Console.WriteLine(postStr);
 
-                    //TO DO
-                    var jo = postStr.ToJObject();
-                    var respName = jo["repository"]["name"].ToString();
-                    var projectPath = $"/package/site/{respName}";
-                    if (Directory.Exists(projectPath) && Directory.Exists(Path.Combine(projectPath, ".git")))
-                    {
-                        var arg = $"git -C \"{projectPath}\" pull --all";
-                        Console.WriteLine(arg);
-                        var cr = CmdTo.Execute(arg);
-                        var rt = cr.CrOutput + cr.CrError;
-                        Console.WriteLine(rt);
-                        vm.Log.AddRange(rt.Split('\n'));
-                    }
-                    else
-                    {
-                        var errorMsg = $"{projectPath} Not Exists(.git)";
-                        Console.WriteLine(errorMsg);
-                        vm.Log.Add(errorMsg);
-                    }
-
+                    vm.Data = postStr.ToJObject();
                     vm.Set(SharedEnum.RTag.success);
                 }
             }

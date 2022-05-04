@@ -72,7 +72,8 @@ netnrmd.extend = {
                                     console.log(xhr.responseText)
                                     var res = JSON.parse(xhr.responseText);
                                     if (res.code == 200) {
-                                        let iat = `[${file.name}](https://www.netnr.eu.org${res.data.path})`;
+                                        let url = "https://www.netnr.eu.org" + `/${res.data.prp + res.data.path}`.replace("//", "/");
+                                        let iat = `[${file.name}](${url})`;
                                         if (file.type.startsWith("image")) {
                                             iat = "!" + iat;
                                         }

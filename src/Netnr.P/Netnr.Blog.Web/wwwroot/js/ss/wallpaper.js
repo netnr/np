@@ -139,7 +139,7 @@ var wp = {
     //载入
     load: function () {
         if (!wp.config.isLoading && !wp.config.isEnd) {
-            wp.config.isLoading = true;
+
             if (wp.config.search == "") {
                 var domItem = wp.domSeType.querySelector('sl-menu-item[value="' + wp.domSeType.value + '"]');
                 document.title = `${domItem.innerText} 360壁纸 NET牛人`;
@@ -156,12 +156,9 @@ var wp = {
                 url += '&a=getAppsByOrder&order=create_time';
             }
 
-            ss.loading(true);
-            wp.domBtnQuery.loading = true;
+            wp.setLoading(true);
             ss.fetch({ url: url }).then(res => {
-                wp.config.isLoading = false;
-                ss.loading(false);
-                wp.domBtnQuery.loading = false;
+                wp.setLoading(false);
 
                 res = JSON.parse(res);
                 console.debug(res)
@@ -176,12 +173,21 @@ var wp = {
                 }
             }).catch(ex => {
                 console.debug(ex);
-                wp.config.isLoading = false;
-                ss.loading(false);
-                wp.domBtnQuery.loading = false;
+                wp.setLoading(false);
                 nr.alert("加载失败，请刷新重试！");
             })
         }
+    },
+    setLoading: function (isLoading) {
+        ss.loading(isLoading);
+        wp.config.isLoading = isLoading;
+        wpAdesk.config.isLoading = isLoading;
+        
+        nr.domBtnQuery.loading = isLoading;
+        nr.domSeVender.disabled = isLoading;
+        nr.domSeType.disabled = isLoading;
+        nr.domSeProxy.disabled = isLoading;
+        nr.domSeTypeAdesk.disabled = isLoading;
     },
     viewEnd: function () {
         var div = document.createElement('div');
@@ -318,8 +324,6 @@ var wpAdesk = {
     //载入
     load: function () {
         if (!wpAdesk.config.isLoading && !wpAdesk.config.isEnd) {
-            wpAdesk.config.isLoading = true;
-
             document.title = `手机壁纸 NET牛人`;
 
             var url = "http://service.picasso.adesk.com/v1/vertical/";
@@ -328,13 +332,10 @@ var wpAdesk = {
             } else {
                 url += `vertical?limit=${wpAdesk.config.count}&skip=${wpAdesk.config.start}&adult=false&first=0&order=hot`
             }
-
-            ss.loading(true);
-            wp.domBtnQuery.loading = true;
+            
+            wp.setLoading(true);
             ss.fetch({ url: url }).then(res => {
-                wpAdesk.config.isLoading = false;
-                ss.loading(false);
-                wp.domBtnQuery.loading = false;
+                wp.setLoading(false);
 
                 res = JSON.parse(res);
                 console.debug(res)
@@ -351,9 +352,7 @@ var wpAdesk = {
                 }
             }).catch(ex => {
                 console.debug(ex);
-                wpAdesk.config.isLoading = false;
-                ss.loading(false);
-                wp.domBtnQuery.loading = false;
+                wp.setLoading(false);
                 nr.alert("加载失败，请刷新重试！");
             })
         }
