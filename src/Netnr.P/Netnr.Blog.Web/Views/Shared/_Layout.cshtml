@@ -27,10 +27,8 @@
 <!DOCTYPE html>
 <html lang="zh-cn" class='@themeClass'>
 <head>
-    <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @if (ctrl == "run")
     {
         <meta name='keywords' content='NET牛人,Netnr,Run,在线javascript代码编辑器,js代码在线测试调试,js在线运行工具,html,css,jquery,runjs类似,jsrun类似,jsfiddle国内类似' />
@@ -68,7 +66,9 @@
         <meta name='keywords' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
         <meta name='description' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
     }
-
+    
+    <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
+    
     @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css"))
 
     @foreach (string filename in distPpath)

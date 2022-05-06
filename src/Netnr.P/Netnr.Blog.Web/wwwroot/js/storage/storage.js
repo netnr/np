@@ -415,24 +415,27 @@ var page = {
                     break;
                 case "download-url":
                     {
-                        var urls = [], btns = [], urlDomain, urlCNAME;
+                        var htm = [`<p class="text-break">${target.innerText}</p>`];
                         if (page.config.Domain != null && page.config.Domain != "") {
-                            urlDomain = `${page.config.Domain}/${target.innerText}`;
-                            urls.push(urlDomain);
-                            btns.push(`<sl-button class="me-2" variant="warning" href="${urlDomain}" target="_blank">Domain</sl-button>`);
+                            var urlDomain = `${page.config.Domain}/${target.innerText}`;
+                            htm.push(`<sl-input class="mb-2" label="Domain" value="${urlDomain}"></sl-input>
+                            <sl-qr-code value="${urlDomain}" fill="orange" background="transparent"></sl-qr-code>`);
                         }
                         if (page.config.CNAME != null && page.config.CNAME != "") {
-                            urlCNAME = `https://${page.config.CNAME}/${target.innerText}`;
-                            urls.push(urlCNAME);
-                            btns.push(`<sl-button class="me-2" variant="warning" href="${urlCNAME}" target="_blank">CNAME</sl-button>`);
+                            var urlCNAME = `https://${page.config.CNAME}/${target.innerText}`;
+                            htm.push(`<sl-input class="mb-2" label="CNAME" value="${urlCNAME}"></sl-input>
+                            <sl-qr-code value="${urlCNAME}" fill="orange" background="transparent"></sl-qr-code>`);
                         }
 
                         page.dialog({
                             title: "Download",
-                            body: `<p class="text-break">${target.innerText}</p>
-                            <sl-textarea class="mb-2" value="${urls.join('\r\n\r\n')}"></sl-textarea>
-                            ${btns.join("")}`,
-                        })
+                            body: htm.join("<sl-divider></sl-divider>"),
+                        });
+                        page.domDialog.querySelectorAll('sl-input').forEach(dom => {
+                            dom.addEventListener("input", function () {
+                                dom.nextElementSibling.value = dom.value;
+                            });
+                        });
                     }
                     break;
             }

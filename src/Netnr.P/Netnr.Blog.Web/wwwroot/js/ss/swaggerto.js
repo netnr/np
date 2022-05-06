@@ -163,7 +163,7 @@ nr.onReady = function () {
                     case "word":
                         {
                             var netnrmd_body = nmd.gethtml();
-                            fetch("https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.css").then(resp => resp.text()).then(netnrmd_style => {
+                            fetch("https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.css").then(resp => resp.text()).then(netnrmd_style => {
                                 var html = `<!DOCTYPE html>
                                 <html>
                                     <head>

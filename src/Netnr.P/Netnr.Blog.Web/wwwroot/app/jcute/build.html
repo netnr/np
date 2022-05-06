@@ -3,7 +3,9 @@
 <html lang="zh-cn">
 <head>
     <meta charset="utf-8" />
+    
     <title>生成</title>
+    
     <style>
         .tb {
             margin: 15px 0;
@@ -22,7 +24,7 @@
     </style>
 </head>
 <body>
-    <input type="file" id="txtFile" webkitdirectory directory multiple /><button id="btnBuilder">生成</button>
+    <input type="file" id="txtFile" webkitdirectory directory multiple title="选择或拖拽 src 文件夹" /><button id="btnBuilder">生成</button>
 
     <div id="dirinfo"></div>
 
@@ -60,7 +62,7 @@
         function pick(file) {
             var reader = new FileReader();
             reader.onload = function () {
-                txts.push('\r\n---\r\n');
+                txts.push('\r\n');
                 txts.push('### [' + file.name + '](view.html?' + file.name.toLowerCase() + ')');
                 txts.push('```js');
 

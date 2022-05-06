@@ -733,9 +733,10 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="text">文本</param>
         /// <param name="icon">带 logo 图标</param>
         /// <param name="size">大小，默认 200 </param>
+        /// <param name="fill">填充颜色</param>
         /// <returns></returns>
         [HttpPost]
-        public FileResult QRCode([FromForm] string text, IFormFile icon, [FromForm] int size = 200)
+        public FileResult QRCode([FromForm] string text, IFormFile icon, [FromForm] int size = 200, [FromForm] string fill = "000000")
         {
             size = Math.Max(30, size);
             size = Math.Min(99999, size);
@@ -746,7 +747,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
             if (icon == null)
             {
-                surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse("000000"));
+                surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse(fill));
             }
             else
             {
@@ -757,7 +758,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     Icon = SKBitmap.Decode(fms.ToArray()),
                     IconSizePercent = 20,
                 };
-                surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse("000000"), icond);
+                surface.Canvas.Render(qr, info.Width, info.Height, SKColor.Parse("FFFFFF"), SKColor.Parse(fill), icond);
             }
 
             using var data = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100);
@@ -773,11 +774,12 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <param name="text">文本</param>
         /// <param name="size">大小，默认 200 </param>
+        /// <param name="fill">填充颜色</param>
         /// <returns></returns>
         [HttpGet]
-        public FileResult QRCode(string text, int size = 200)
+        public FileResult QRCode(string text, int size = 200, string fill = "000000")
         {
-            return QRCode(text, null, size);
+            return QRCode(text, null, size, fill);
         }
 
         /// <summary>

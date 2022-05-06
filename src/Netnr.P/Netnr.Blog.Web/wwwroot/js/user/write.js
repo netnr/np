@@ -60,6 +60,8 @@ var page = {
                 { headerName: "浏览", field: "UwReadNum", width: 100, filter: 'agNumberColumnFilter', },
                 { headerName: "点赞", field: "UwLaud", width: 100, filter: 'agNumberColumnFilter', },
                 { headerName: "收藏", field: "UwMark", width: 100, filter: 'agNumberColumnFilter', },
+                // ag.agSetColumn({ headerName: "公开", field: "UwOpen", width: 100 }, { "1": "✔", "2": "✘" }),
+                // ag.agSetColumn({ headerName: "状态", field: "UwStatus", width: 100 }, { "1": "✔", "2": "Block", "-1": "Lock" }),
                 {
                     headerName: "公开", field: "UwOpen", width: 100, cellRenderer: params => {
                         switch (params.value) {

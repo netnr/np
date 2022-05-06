@@ -476,21 +476,23 @@
             <param name="wh">自定义宽高，如 500x309</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.QRCode(System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int32)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.QRCode(System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int32,System.String)">
             <summary>
             生成二维码（带 logo）
             </summary>
             <param name="text">文本</param>
             <param name="icon">带 logo 图标</param>
             <param name="size">大小，默认 200 </param>
+            <param name="fill">填充颜色</param>
             <returns></returns>
         </member>
-        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.QRCode(System.String,System.Int32)">
+        <member name="M:Netnr.Blog.Web.Controllers.api.APIController.QRCode(System.String,System.Int32,System.String)">
             <summary>
             生成二维码
             </summary>
             <param name="text">文本</param>
             <param name="size">大小，默认 200 </param>
+            <param name="fill">填充颜色</param>
             <returns></returns>
         </member>
         <member name="M:Netnr.Blog.Web.Controllers.api.APIController.Proxy(System.String,System.String)">

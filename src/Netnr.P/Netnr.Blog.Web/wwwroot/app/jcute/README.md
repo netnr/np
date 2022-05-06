@@ -5,7 +5,6 @@ JavaScript Library
 
 # Module
 
----
 
 ### [jCute.ajax.js](view.html?jcute.ajax.js)
 ```js
@@ -29,7 +28,6 @@ JavaScript Library
 jCute.ajax(settings)
 
 ```
----
 
 ### [jCute.convert.js](view.html?jcute.convert.js)
 ```js
@@ -58,7 +56,6 @@ jCute.toAscii(str)
 jCute.toAsciiUn(str)
 
 ```
----
 
 ### [jCute.cookie.js](view.html?jcute.cookie.js)
 ```js
@@ -71,7 +68,6 @@ jCute.toAsciiUn(str)
 jCute.cookie(key, value, time)
 
 ```
----
 
 ### [jCute.load.js](view.html?jcute.load.js)
 ```js
@@ -89,7 +85,6 @@ jCute.getScript(src, success)
 jCute.getStyle(href)
 
 ```
----
 
 ### [jCute.support.js](view.html?jcute.support.js)
 ```js
@@ -141,7 +136,6 @@ jCute.key(e)
 jCute.type(obj)
 
 ```
----
 
 ### [jCute.xml.js](view.html?jcute.xml.js)
 ```js

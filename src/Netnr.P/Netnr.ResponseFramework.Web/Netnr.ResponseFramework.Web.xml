@@ -423,7 +423,7 @@
         </member>
         <member name="M:Netnr.ResponseFramework.Web.Controllers.ServicesController.DatabaseExport(System.String)">
             <summary>
-            数据库导出
+            数据库导出（开发环境）
             </summary>
             <param name="zipName">文件名</param>
             <returns></returns>

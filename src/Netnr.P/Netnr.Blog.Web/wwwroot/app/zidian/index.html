@@ -3,20 +3,16 @@
 <html lang="zh-cn" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-    <title>字典</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="keywords" content="netnr,NET牛人,zidian,字典" />
     <meta name="description" content="netnr,NET牛人,zidian,字典" />
 
+    <title>字典</title>
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link href="https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://npm.elemecdn.com/netnrmd@3.0.2/src/netnrmd.css" rel="stylesheet" />
+    <link href="https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -114,13 +110,13 @@ zidian.<span class="hljs-property">likeIdiom</span> (<span class="hljs-string">"
 
         var res = document.getElementById('res');
 
-        document.getElementById('txt1').addEventListener('input', function() {
+        document.getElementById('txt1').addEventListener('input', function () {
             var key = this.value.trim();
             if (key == "") {
                 res.value = "";
             } else if (iszhcn(key[0])) {
                 res.value = "Loading ...";
-                zidian.equalWord(key[0]).then(function(info) {
+                zidian.equalWord(key[0]).then(function (info) {
                     if (info) {
                         var txts = [];
                         for (var i in info) {
@@ -141,13 +137,13 @@ zidian.<span class="hljs-property">likeIdiom</span> (<span class="hljs-string">"
             }
         }, false);
 
-        document.getElementById('txt2').addEventListener('input', function() {
+        document.getElementById('txt2').addEventListener('input', function () {
             var key = this.value.trim();
             if (key == "") {
                 res.value = "";
             } else if (iszhcn(key)) {
                 res.value = "Loading ...";
-                zidian.equalCi(key).then(function(info) {
+                zidian.equalCi(key).then(function (info) {
                     res.value = info ? info.explanation : "无记录";
                 })
             } else {
@@ -155,13 +151,13 @@ zidian.<span class="hljs-property">likeIdiom</span> (<span class="hljs-string">"
             }
         }, false);
 
-        document.getElementById('txt3').addEventListener('input', function() {
+        document.getElementById('txt3').addEventListener('input', function () {
             var key = this.value.trim();
             if (key == "") {
                 res.value = "";
             } else if (iszhcn(key)) {
                 res.value = "Loading ...";
-                zidian.equalIdiom(key).then(function(info) {
+                zidian.equalIdiom(key).then(function (info) {
                     if (info) {
                         var txts = [];
                         for (var i in info) {
@@ -182,13 +178,13 @@ zidian.<span class="hljs-property">likeIdiom</span> (<span class="hljs-string">"
             }
         }, false);
 
-        document.getElementById('txt4').addEventListener('input', function() {
+        document.getElementById('txt4').addEventListener('input', function () {
             var key = this.value.trim();
             if (key == "") {
                 res.value = "";
             } else if (iszhcn(key)) {
                 res.value = "Loading ...";
-                zidian.likeCi(key).then(function(info) {
+                zidian.likeCi(key).then(function (info) {
                     res.value = info.length ? info.join('\n') : "无记录";
                 })
             } else {
@@ -196,13 +192,13 @@ zidian.<span class="hljs-property">likeIdiom</span> (<span class="hljs-string">"
             }
         }, false);
 
-        document.getElementById('txt5').addEventListener('input', function() {
+        document.getElementById('txt5').addEventListener('input', function () {
             var key = this.value.trim();
             if (key == "") {
                 res.value = "";
             } else if (iszhcn(key)) {
                 res.value = "Loading ...";
-                zidian.likeIdiom(key).then(function(info) {
+                zidian.likeIdiom(key).then(function (info) {
                     res.value = info.length ? info.join('\n') : "无记录";
                 })
             } else {

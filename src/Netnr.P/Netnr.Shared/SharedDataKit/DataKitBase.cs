@@ -76,7 +76,6 @@ namespace Netnr.SharedDataKit
                     result.Add(dr[0].ToString());
                 }
             }
-
             return result;
         }
 

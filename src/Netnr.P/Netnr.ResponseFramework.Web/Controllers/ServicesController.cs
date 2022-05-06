@@ -58,7 +58,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         }
 
         /// <summary>
-        /// 数据库导出
+        /// 数据库导出（开发环境）
         /// </summary>
         /// <param name="zipName">文件名</param>
         /// <returns></returns>
@@ -68,10 +68,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             return SharedResultVM.Try(vm =>
             {
-                //是否覆盖备份，默认不覆盖，避免线上重置功能被破坏
-                var CoverBack = true;
-
-                if (CoverBack)
+                if (GlobalTo.HostEnvironment.IsDevelopment())
                 {
                     var edb = new SharedDataKit.TransferVM.ExportDatabase
                     {
@@ -88,7 +85,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 else
                 {
                     vm.Set(SharedEnum.RTag.refuse);
-                    vm.Msg = "已被限制导出覆盖";
+                    vm.Msg = "仅限开发环境使用";
                 }
 
                 return vm;
