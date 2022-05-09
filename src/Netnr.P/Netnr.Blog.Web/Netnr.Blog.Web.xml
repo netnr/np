@@ -1529,35 +1529,6 @@
             <param name="sid">命令</param>
             <returns></returns>
         </member>
-        <member name="T:Netnr.Blog.Web.Controllers.StoreController">
-            <summary>
-            存储
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.StoreController.Index">
-            <summary>
-            存储首页
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:Netnr.Blog.Web.Controllers.StoreController.AccessNOS">
-            <summary>
-            秘钥
-            </summary>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.StoreController.NENos">
-            <summary>
-            NOS 对象存储
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Netnr.Blog.Web.Controllers.StoreController.NEAPI(System.String)">
-            <summary>
-            NEAPI
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="T:Netnr.Blog.Web.Controllers.UserController">
             <summary>
             个人用户

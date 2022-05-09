@@ -295,14 +295,28 @@ namespace Netnr.SharedAdo
                 var keyCols = new List<DataColumn>();
                 foreach (DataRow dr in dtSchema.Rows)
                 {
+                    var columnName = dr["ColumnName"].ToString();
+                    var dataType = dr["DataType"];
+
+                    //处理相同的列
+                    int num = 0;
+                    while (dtTable.Columns.Contains(columnName))
+                    {
+                        columnName = $"{dr["ColumnName"]}{++num}";
+                    }
+
                     var column = new DataColumn()
                     {
-                        ColumnName = dr["ColumnName"].ToString(),
-                        DataType = (Type)dr["DataType"],
+                        ColumnName = columnName,
+                        DataType = (Type)dataType,
                         Unique = (bool)dr["IsUnique"],
                         AllowDBNull = dr["AllowDBNull"] == DBNull.Value || (bool)dr["AllowDBNull"],
                         AutoIncrement = (bool)dr["IsAutoIncrement"]
                     };
+                    if (dataType.ToString() == "System.DBNull")
+                    {
+                        column.DataType = typeof(object);
+                    }
 
                     if (column.DataType == typeof(string))
                     {

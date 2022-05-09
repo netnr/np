@@ -16,7 +16,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AgGrid.InfiniteRowModel" Version="1.5.0" />
+		<PackageReference Include="AgGrid.InfiniteRowModel" Version="1.6.0" />
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
 		<PackageReference Include="Markdig" Version="0.30.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.4" />
@@ -30,7 +30,7 @@
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.256">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.QrCode" Version="0.5.0" />
+		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />
 		<PackageReference Include="DeviceDetector.NET" Version="4.3.0" />

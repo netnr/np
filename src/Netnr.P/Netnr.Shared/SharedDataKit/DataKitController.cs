@@ -16,7 +16,7 @@ public class DataKitController : Controller
     /// <param name="databaseName"></param>
     /// <param name="dkCall"></param>
     /// <returns></returns>
-    static SharedResultVM Entry(SharedEnum.TypeDB tdb, string conn, string databaseName, Func<DataKit, object> dkCall)
+    private SharedResultVM Entry(SharedEnum.TypeDB tdb, string conn, string databaseName, Func<DataKit, object> dkCall)
     {
         var vm = new SharedResultVM();
 
@@ -25,6 +25,13 @@ public class DataKitController : Controller
             var dk = DataKit.Init(tdb, conn, databaseName);
             if (dk != null)
             {
+                //终止请求、终止执行
+                HttpContext.RequestAborted.Register(() =>
+                {
+                    dk.db.AbortCommand();
+                    Console.WriteLine("\rCancellation Requested\r");
+                });
+
                 vm.Data = dkCall(dk);
                 vm.Set(SharedEnum.RTag.success);
             }

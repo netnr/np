@@ -656,7 +656,6 @@ namespace Netnr.SharedDataKit
             vm.Set(SharedEnum.RTag.success);
             return vm;
         }
-
     }
 }
 

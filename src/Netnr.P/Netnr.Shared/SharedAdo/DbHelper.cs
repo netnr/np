@@ -25,6 +25,25 @@ namespace Netnr.SharedAdo
         public Dictionary<string, DbCommand> DicCommand { get; set; } = new Dictionary<string, DbCommand>();
 
         /// <summary>
+        /// 终止执行
+        /// </summary>
+        /// <param name="ACID">可选，默认当前</param>
+        /// <returns></returns>
+        public void AbortCommand(string ACID = null)
+        {
+            if (string.IsNullOrWhiteSpace(ACID))
+            {
+                ACID = Activity.Current.Id;
+            }
+
+            DicCommand.Keys.Where(k => k.StartsWith(ACID)).ToList().ForEach(key =>
+            {
+                var cmd = DicCommand[key];
+                cmd.Cancel();
+            });
+        }
+
+        /// <summary>
         /// 构造
         /// </summary>
         /// <param name="dbConnection">连接对象</param>
@@ -119,7 +138,7 @@ namespace Netnr.SharedAdo
                         cmd = func(cmd);
                     }
 
-                    var eds = cmd.ExecuteDataSet();
+                    var eds = cmd.ExecuteDataSet(tableLoad: false);
                     dsTable = eds.Item1;
                     recordsAffected = eds.Item2;
                     dsSchema = eds.Item3;
@@ -152,7 +171,7 @@ namespace Netnr.SharedAdo
                     isSplit = !SqlParserBeginEnd(sql);
                 }
 
-                var listSql =  new List<string>();
+                var listSql = new List<string>();
                 if (isOracle && isSplit)
                 {
                     listSql = sql.Split(';').ToList();
@@ -298,6 +317,12 @@ namespace Netnr.SharedAdo
                 cmd.Parameters.AddRange(parameters);
             }
 
+            var ACID = Activity.Current.Id;
+            if (DicCommand.ContainsKey(ACID))
+            {
+                ACID += "/" + Guid.NewGuid().ToString("N");
+            }
+            cmd.Site.Name = ACID;
             DicCommand.Add(cmd.Site.Name, cmd);
 
             return cmd;

@@ -182,6 +182,39 @@ namespace Netnr.Core
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public enum HashType
+        {
+            MD5, SHA1, SHA256, SHA384, SHA512, HMACSHA1, HMACSHA256, HMACSHA384, HMACSHA512, HMACMD5
+        }
+
+        /// <summary>
+        /// hash 加密
+        /// </summary>
+        /// <param name="hashType"></param>
+        /// <param name="txt"></param>
+        /// <param name="HmacKey"></param>
+        /// <returns></returns>
+        public static string HashBase64(HashType hashType, string txt, string HmacKey)
+        {
+            switch (hashType)
+            {
+                case HashType.MD5: return GetHashBase64(System.Security.Cryptography.MD5.Create(), txt);
+                case HashType.SHA1: return GetHashBase64(SHA1.Create(), txt);
+                case HashType.SHA256: return GetHashBase64(SHA256.Create(), txt);
+                case HashType.SHA384: return GetHashBase64(SHA384.Create(), txt);
+                case HashType.SHA512: return GetHashBase64(SHA512.Create(), txt);
+                case HashType.HMACSHA1: return GetHashBase64(new HMACSHA1(encoding.GetBytes(HmacKey)), txt);
+                case HashType.HMACSHA256: return GetHashBase64(new HMACSHA256(encoding.GetBytes(HmacKey)), txt);
+                case HashType.HMACSHA384: return GetHashBase64(new HMACSHA384(encoding.GetBytes(HmacKey)), txt);
+                case HashType.HMACSHA512: return GetHashBase64(new HMACSHA512(encoding.GetBytes(HmacKey)), txt);
+                case HashType.HMACMD5: return GetHashBase64(new HMACMD5(encoding.GetBytes(HmacKey)), txt);
+                default: throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
         /// SHA 加密
         /// </summary>
         /// <param name="algorithm"></param>

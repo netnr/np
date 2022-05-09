@@ -146,6 +146,20 @@
             <param name="iv">默认为空</param>
             <returns></returns>
         </member>
+        <member name="T:Netnr.Core.CalcTo.HashType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Netnr.Core.CalcTo.HashBase64(Netnr.Core.CalcTo.HashType,System.String,System.String)">
+            <summary>
+            hash 加密
+            </summary>
+            <param name="hashType"></param>
+            <param name="txt"></param>
+            <param name="HmacKey"></param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Core.CalcTo.GetHashByte(System.Security.Cryptography.HashAlgorithm,System.String)">
             <summary>
             SHA 加密
