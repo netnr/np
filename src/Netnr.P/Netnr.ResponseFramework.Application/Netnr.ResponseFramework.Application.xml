@@ -14,6 +14,14 @@
             数据库查询条件关系符
             </summary>
         </member>
+        <member name="M:Netnr.ResponseFramework.Application.CommonService.OrderBy``1(System.Linq.IQueryable{``0},System.String,System.String)">
+            <summary>
+            排序
+            </summary>
+            <param name="query"></param>
+            <param name="sorts">排序字段，支持多个，逗号分割</param>
+            <param name="orders">排序类型，支持多个，逗号分割</param>
+        </member>
         <member name="M:Netnr.ResponseFramework.Application.CommonService.QueryJoin``1(System.Linq.IQueryable{``0},QueryDataInputVM,Netnr.ResponseFramework.Data.ContextBase,QueryDataOutputVM@)">
             <summary>
             查询拼接

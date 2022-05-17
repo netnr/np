@@ -27,7 +27,7 @@
             <sl-input class="nr-txt-title" maxlength="200" placeholder="标题：简单的一句话"></sl-input>
         </div>
         <div class="col-md-4 mb-2">
-            <select class="nr-tags form-control" placeholder="选择标签"></select>
+            <div class="nr-tags"></div>
         </div>
         <div class="col-12">
             <div class="nr-editor">Loading ...</div>
@@ -35,7 +35,7 @@
     </div>
 </sl-dialog>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,ag-grid-enterprise.js,tom-select,monaco-editor"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,ag-grid-enterprise.js,xm-select.js,monaco-editor"))
 
 <script src="/js/home/write.js" asp-append-version="true"></script>
 <script src="/js/user/write.js" asp-append-version="true"></script>

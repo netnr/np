@@ -1,0 +1,25 @@
+﻿@model Dictionary<string, List<string>>
+@{
+    ViewData["Title"] = "Sample";
+}
+
+<ul>
+    @foreach (var c in Model.Keys)
+    {
+        var ctrl = c.Replace("Controller", "");
+
+        <li>
+            <a href="/@ctrl">@c</a>
+        </li>
+        <li>
+            <ul>
+                @foreach (var m in Model[c])
+                {
+                    <li>
+                        <a href="/@ctrl/@m">@m</a>
+                    </li>
+                }
+            </ul>
+        </li>
+    }
+</ul>

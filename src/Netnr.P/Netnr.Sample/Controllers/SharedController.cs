@@ -1,13 +1,8 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using Microsoft.Data.Sqlite;
-using Netnr.Core;
+﻿using Microsoft.Data.Sqlite;
 using Netnr.SharedAdo;
 using Netnr.SharedCompile;
-using Netnr.SharedDataKit;
-using System.Net;
-using System.Text.Json;
 
-namespace Netnr.Test.Controllers
+namespace Netnr.Sample.Controllers
 {
     /// <summary>
     /// Netnr.Shared

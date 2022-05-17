@@ -13,7 +13,7 @@ namespace Netnr.Core
         /// <summary>
         /// 创建打包
         /// </summary>
-        /// <param name="pathName">文件完整路径-（可选）包内文件名</param>
+        /// <param name="pathName">文件完整路径 : 包内文件名（可选）</param>
         /// <param name="zipPath">zip 完整路径，默认添加的第一个文件同目录下</param>
         public static string Create(Dictionary<string, string> pathName, string zipPath = null)
         {

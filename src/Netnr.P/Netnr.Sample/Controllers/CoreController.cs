@@ -1,7 +1,6 @@
 ﻿using Netnr.Core;
-using System.Security.Cryptography;
 
-namespace Netnr.Test.Controllers
+namespace Netnr.Sample.Controllers
 {
     /// <summary>
     /// Netnr.Core
@@ -75,7 +74,7 @@ namespace Netnr.Test.Controllers
         /// <param name="fileName">应用程序</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM ToCmd_2(string args = @"-i E:\package\video\cspk.mp4", string fileName = "ffmpeg")
+        public SharedResultVM ToCmd_2(string args = @"-i D:\tmp\npm-install.mp4", string fileName = "ffmpeg")
         {
             var vm = new SharedResultVM();
 

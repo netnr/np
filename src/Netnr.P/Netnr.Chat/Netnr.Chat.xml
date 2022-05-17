@@ -1024,6 +1024,13 @@
             记录
             </summary>
         </member>
+        <member name="M:Netnr.SharedAdo.DbHelper.AbortCommand(System.String)">
+            <summary>
+            终止执行
+            </summary>
+            <param name="ACID">可选，默认当前</param>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.SharedAdo.DbHelper.#ctor(System.Data.Common.DbConnection)">
             <summary>
             构造

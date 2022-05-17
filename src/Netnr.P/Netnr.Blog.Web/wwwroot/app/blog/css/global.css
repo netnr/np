@@ -97,6 +97,12 @@ input[type=file]:hover {
     padding: 0 .5rem;
 }
 
+/*xm-select*/
+.sl-theme-dark xm-select {
+    background-color: var(--sl-input-background-color) !important;
+    border: solid var(--sl-input-border-width) var(--sl-input-border-color) !important;
+}
+
 /*nrc*/
 /*全屏*/
 .nrc-fullscreen {

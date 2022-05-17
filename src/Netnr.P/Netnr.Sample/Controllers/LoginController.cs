@@ -1,6 +1,6 @@
 ﻿using Netnr.Login;
 
-namespace Netnr.Test.Controllers
+namespace Netnr.Sample.Controllers
 {
     /// <summary>
     /// Netnr.Login

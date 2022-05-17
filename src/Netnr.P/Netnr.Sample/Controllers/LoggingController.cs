@@ -1,7 +1,7 @@
 ﻿using Netnr.SharedLogging;
 using System.Collections.Concurrent;
 
-namespace Netnr.Test.Controllers
+namespace Netnr.Sample.Controllers
 {
     /// <summary>
     /// 日志

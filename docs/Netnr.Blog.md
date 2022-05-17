@@ -2,9 +2,8 @@
 个人站点
 
 ### 框架组件
-- jQuery + Bootstrap
-- .NET （latest）
-- EF + Linq
+- Bootstrap + shoelace + AG-Grid
+- .NET （latest） + EF + Linq
 - 支持：SQLServer、MySQL、PostgreSQL、SQLite 等
 - ==================================
 - Baidu-AI （OCR 免费额度）
@@ -12,9 +11,6 @@
 - FluentScheduler（定时任务）
 - IP2Region （IP 区域查询）
 - Markdig （markdown 解析）
-- Netease.Cloud.Nos（网易对象存储）
-- Qcloud.Shared.NetCore（腾讯对象存储）
-- Qiniu.Shared（七牛对象存储）
 - SkiaSharp （验证码）
 - SkiaSharp.QrCode （二维码）
 - Swashbuckle.AspNetCore（Swagger 生成接口）
@@ -27,16 +23,16 @@
 ### 功能模块
 - 登录、注册（第三方直接登录：QQ、微博、GitHub、淘宝、Microsoft）
 - 文章：发布文章（Markdown 编辑器）
-- 留言：文章留言，根据邮箱从 Gravatar 获取头像
-- 公众号：（玩具）
-- Gist：代码片段，自动同步 GitHub、Gitee
+- 留言：文章留言（Markdown 编辑器）
+- Gist：代码片段，可自动同步 GitHub、Gitee (配置管理员)
 - Run：在线运行 HTML 代码，写 demo 用
 - Doc：文档管理，API 说明文档
 - Draw：绘制，集成开源项目 mxGraph、百度脑图
+- Guff：尬服，分享有趣的任何
 - Note：记事本（Markdown 编辑器）
 - 存储：腾讯云 COS、网易云 NOS、七牛云 KODO
 - 备份：自动备份数据库到私有 GitHub、Gitee
-- 管理：文章、留言管理、日志记录、日志统计、新增标签等
+- 管理：文章、留言管理、日志记录、日志统计、键值标签等
 
 ### FQA
 - 先修改配置，appsettings.json 修改为自己对应的参数

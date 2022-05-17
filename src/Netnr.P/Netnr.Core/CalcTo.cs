@@ -103,7 +103,7 @@ namespace Netnr.Core
         }
 
         /// <summary>
-        /// AES 构建
+        /// DES 构建
         /// </summary>
         /// <param name="key">密钥，默认空</param>
         /// <param name="iv">固定8位，默认空</param>
@@ -186,7 +186,46 @@ namespace Netnr.Core
         /// </summary>
         public enum HashType
         {
-            MD5, SHA1, SHA256, SHA384, SHA512, HMACSHA1, HMACSHA256, HMACSHA384, HMACSHA512, HMACMD5
+            /// <summary>
+            /// 
+            /// </summary>
+            MD5,
+            /// <summary>
+            /// 
+            /// </summary>
+            SHA1,
+            /// <summary>
+            /// 
+            /// </summary>
+            SHA256,
+            /// <summary>
+            /// 
+            /// </summary>
+            SHA384,
+            /// <summary>
+            /// 
+            /// </summary>
+            SHA512,
+            /// <summary>
+            /// 
+            /// </summary>
+            HMACSHA1,
+            /// <summary>
+            /// 
+            /// </summary>
+            HMACSHA256,
+            /// <summary>
+            /// 
+            /// </summary>
+            HMACSHA384,
+            /// <summary>
+            /// 
+            /// </summary>
+            HMACSHA512,
+            /// <summary>
+            /// 
+            /// </summary>
+            HMACMD5
         }
 
         /// <summary>
@@ -196,33 +235,22 @@ namespace Netnr.Core
         /// <param name="txt"></param>
         /// <param name="HmacKey"></param>
         /// <returns></returns>
-        public static string HashBase64(HashType hashType, string txt, string HmacKey)
+        public static string HashBase64(HashType hashType, string txt, string HmacKey = "")
         {
-            switch (hashType)
+            return hashType switch
             {
-                case HashType.MD5: return GetHashBase64(System.Security.Cryptography.MD5.Create(), txt);
-                case HashType.SHA1: return GetHashBase64(SHA1.Create(), txt);
-                case HashType.SHA256: return GetHashBase64(SHA256.Create(), txt);
-                case HashType.SHA384: return GetHashBase64(SHA384.Create(), txt);
-                case HashType.SHA512: return GetHashBase64(SHA512.Create(), txt);
-                case HashType.HMACSHA1: return GetHashBase64(new HMACSHA1(encoding.GetBytes(HmacKey)), txt);
-                case HashType.HMACSHA256: return GetHashBase64(new HMACSHA256(encoding.GetBytes(HmacKey)), txt);
-                case HashType.HMACSHA384: return GetHashBase64(new HMACSHA384(encoding.GetBytes(HmacKey)), txt);
-                case HashType.HMACSHA512: return GetHashBase64(new HMACSHA512(encoding.GetBytes(HmacKey)), txt);
-                case HashType.HMACMD5: return GetHashBase64(new HMACMD5(encoding.GetBytes(HmacKey)), txt);
-                default: throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// SHA 加密
-        /// </summary>
-        /// <param name="algorithm"></param>
-        /// <param name="txt"></param>
-        /// <returns></returns>
-        private static byte[] GetHashByte(HashAlgorithm algorithm, string txt)
-        {
-            return algorithm.ComputeHash(encoding.GetBytes(txt));
+                HashType.MD5 => GetHashBase64(System.Security.Cryptography.MD5.Create(), txt),
+                HashType.SHA1 => GetHashBase64(SHA1.Create(), txt),
+                HashType.SHA256 => GetHashBase64(SHA256.Create(), txt),
+                HashType.SHA384 => GetHashBase64(SHA384.Create(), txt),
+                HashType.SHA512 => GetHashBase64(SHA512.Create(), txt),
+                HashType.HMACSHA1 => GetHashBase64(new HMACSHA1(encoding.GetBytes(HmacKey)), txt),
+                HashType.HMACSHA256 => GetHashBase64(new HMACSHA256(encoding.GetBytes(HmacKey)), txt),
+                HashType.HMACSHA384 => GetHashBase64(new HMACSHA384(encoding.GetBytes(HmacKey)), txt),
+                HashType.HMACSHA512 => GetHashBase64(new HMACSHA512(encoding.GetBytes(HmacKey)), txt),
+                HashType.HMACMD5 => GetHashBase64(new HMACMD5(encoding.GetBytes(HmacKey)), txt),
+                _ => throw new NotImplementedException(),
+            };
         }
 
         /// <summary>
@@ -237,14 +265,14 @@ namespace Netnr.Core
         }
 
         /// <summary>
-        /// SHA 加密
+        /// SHA 加密 小写
         /// </summary>
         /// <param name="algorithm"></param>
         /// <param name="txt"></param>
         /// <returns></returns>
         private static string GetHashString(HashAlgorithm algorithm, string txt)
         {
-            return BitConverter.ToString(algorithm.ComputeHash(encoding.GetBytes(txt))).Replace("-", "");
+            return BitConverter.ToString(algorithm.ComputeHash(encoding.GetBytes(txt))).ToLower().Replace("-", "");
         }
 
         /// <summary>
@@ -352,6 +380,75 @@ namespace Netnr.Core
         public static string HMAC_MD5(string txt, string key)
         {
             return GetHashString(new HMACMD5(encoding.GetBytes(key)), txt);
+        }
+
+        /// <summary>
+        /// 生成 私钥、公钥 
+        /// </summary>
+        /// <param name="xmlPrivateKey">私钥</param>
+        /// <param name="xmlPublicKey">公钥</param>
+        /// <param name="keySize"></param>
+        public static void RSAKey(out string xmlPrivateKey, out string xmlPublicKey, int? keySize = null)
+        {
+            using RSACryptoServiceProvider rsa = keySize == null ? new() : new(keySize.Value);
+            xmlPrivateKey = rsa.ToXmlString(true);
+            xmlPublicKey = rsa.ToXmlString(false);
+        }
+
+        /// <summary>
+        /// RSA 加密
+        /// </summary>
+        /// <param name="xmlPublicKey">公钥</param>
+        /// <param name="encryptContent">加密内容</param>
+        /// <returns></returns>
+        public static string RSAEncrypt(string xmlPublicKey, string encryptContent)
+        {
+            return RSAEncrypt(xmlPublicKey, encoding.GetBytes(encryptContent));
+        }
+
+        /// <summary>
+        /// RSA 加密
+        /// </summary>
+        /// <param name="xmlPublicKey">公钥</param>
+        /// <param name="encryptContent">加密内容</param>
+        /// <returns></returns>
+        public static string RSAEncrypt(string xmlPublicKey, byte[] encryptContent)
+        {
+            using RSACryptoServiceProvider rsa = new();
+            rsa.FromXmlString(xmlPublicKey);
+
+            var byteEncrypt = rsa.Encrypt(encryptContent, false);
+            var result = Convert.ToBase64String(byteEncrypt);
+
+            return result;
+        }
+
+        /// <summary>
+        /// RSA 解密
+        /// </summary>
+        /// <param name="xmlPrivateKey"></param>
+        /// <param name="decryptContent"></param>
+        /// <returns></returns>
+        public static string RSADecrypt(string xmlPrivateKey, string decryptContent)
+        {
+            return RSADecrypt(xmlPrivateKey, Convert.FromBase64String(decryptContent));
+        }
+
+        /// <summary>
+        /// RSA 解密
+        /// </summary>
+        /// <param name="xmlPrivateKey">私钥</param>
+        /// <param name="decryptContent">解密内容</param>
+        /// <returns></returns>
+        public static string RSADecrypt(string xmlPrivateKey, byte[] decryptContent)
+        {
+            using RSACryptoServiceProvider rsa = new();
+            rsa.FromXmlString(xmlPrivateKey);
+
+            var byteDecrypt = rsa.Decrypt(decryptContent, false);
+            var result = encoding.GetString(byteDecrypt);
+
+            return result;
         }
     }
 }

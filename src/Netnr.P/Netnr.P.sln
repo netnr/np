@@ -37,8 +37,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.ResponseFramework.App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.ResponseFramework.Web", "Netnr.ResponseFramework.Web\Netnr.ResponseFramework.Web.csproj", "{C8137A02-02D6-4765-8AEA-F9B352CD15D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.DataKit.Web", "Netnr.DataKit.Web\Netnr.DataKit.Web.csproj", "{962F1F29-4DDC-48C6-8043-915240872570}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Netnr.Shared", "Netnr.Shared\Netnr.Shared.shproj", "{37A82AE4-A2F0-40C8-A084-237E256E543F}"
@@ -51,47 +49,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.GraphDemo", "Netnr.Gr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00 Shared", "00 Shared", "{7721F8EB-3645-4BE6-AE02-2E7F3A034D80}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "..\..\docs\", "{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_60778"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\docs\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60778\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_60778"
-		Release.AspNetCompiler.PhysicalPath = "..\..\docs\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60778\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "60778"
-		SlnRelativePath = "..\..\docs\"
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Send", "Netnr.Send\Netnr.Send.csproj", "{67ED48A4-EACE-4F16-90FF-D340F33E8B80}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{2220E974-7461-4AFE-9BAA-25BD12BA8430}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netnr.Sample", "Netnr.Sample\Netnr.Sample.csproj", "{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Netnr.Shared\Netnr.Shared.projitems*{0d99d943-8dd0-4458-9910-27b300b0d569}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{37a82ae4-a2f0-40c8-a084-237e256e543f}*SharedItemsImports = 13
-		Netnr.Shared\Netnr.Shared.projitems*{4a8ce4ee-2ca6-4414-a0c0-aff8084b5ed1}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{6294172a-81f8-4286-be0b-495bdb872438}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{7bca6cdb-6e14-41e9-986d-0390582e2dab}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{962f1f29-4ddc-48c6-8043-915240872570}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{9a7be0e5-e753-42ec-8b26-2835b9407bbb}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{ab17b140-0696-4e64-aa2d-57b1c33618b5}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{b1dfb9d5-857f-44a0-9e95-6f59ecb29caf}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{c3e1dc11-4331-48bf-9e8b-df32b2c053d0}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{c7dade7c-5fc1-437a-8157-0529ea35a88e}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{c8137a02-02d6-4765-8aea-f9b352cd15d5}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{e46fa4e1-44e6-48a8-a5b8-3f98000ae7bf}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{e6561193-b387-404e-ac3a-0ce9d267bf26}*SharedItemsImports = 5
-		Netnr.Shared\Netnr.Shared.projitems*{f500586b-5ae0-4283-b959-2654a3e21b6b}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -145,10 +109,6 @@ Global
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8137A02-02D6-4765-8AEA-F9B352CD15D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A8CE4EE-2CA6-4414-A0C0-AFF8084B5ED1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{962F1F29-4DDC-48C6-8043-915240872570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{962F1F29-4DDC-48C6-8043-915240872570}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{962F1F29-4DDC-48C6-8043-915240872570}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -165,14 +125,18 @@ Global
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCAAE9A4-54B4-42C7-9D7B-EB9179D9AF39}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{67ED48A4-EACE-4F16-90FF-D340F33E8B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67ED48A4-EACE-4F16-90FF-D340F33E8B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67ED48A4-EACE-4F16-90FF-D340F33E8B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67ED48A4-EACE-4F16-90FF-D340F33E8B80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2220E974-7461-4AFE-9BAA-25BD12BA8430}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2220E974-7461-4AFE-9BAA-25BD12BA8430}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2220E974-7461-4AFE-9BAA-25BD12BA8430}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2220E974-7461-4AFE-9BAA-25BD12BA8430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -199,5 +163,23 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B748ADB4-97F0-4295-BA4D-ACC3AB5DA0B2}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Netnr.Shared\Netnr.Shared.projitems*{0d99d943-8dd0-4458-9910-27b300b0d569}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{2220e974-7461-4afe-9baa-25bd12ba8430}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{37a82ae4-a2f0-40c8-a084-237e256e543f}*SharedItemsImports = 13
+		Netnr.Shared\Netnr.Shared.projitems*{6294172a-81f8-4286-be0b-495bdb872438}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{7bca6cdb-6e14-41e9-986d-0390582e2dab}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{962f1f29-4ddc-48c6-8043-915240872570}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{9a7be0e5-e753-42ec-8b26-2835b9407bbb}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{ab17b140-0696-4e64-aa2d-57b1c33618b5}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{b1dfb9d5-857f-44a0-9e95-6f59ecb29caf}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{c3e1dc11-4331-48bf-9e8b-df32b2c053d0}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{c7dade7c-5fc1-437a-8157-0529ea35a88e}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{c8137a02-02d6-4765-8aea-f9b352cd15d5}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{d9d95ed7-0452-4e1b-a4e1-bcaf52229f14}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{e46fa4e1-44e6-48a8-a5b8-3f98000ae7bf}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{e6561193-b387-404e-ac3a-0ce9d267bf26}*SharedItemsImports = 5
+		Netnr.Shared\Netnr.Shared.projitems*{f500586b-5ae0-4283-b959-2654a3e21b6b}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

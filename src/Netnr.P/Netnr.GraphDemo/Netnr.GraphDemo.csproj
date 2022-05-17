@@ -21,10 +21,9 @@
 		<PackageReference Include="NetVips.Native.linux-x64" Version="8.12.2" />
 		<PackageReference Include="NetVips.Native.win-x64" Version="8.12.2" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
-		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.256" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.256" />
+		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.266" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.266" />
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
-		<PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.3.22175.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.1" />
 	</ItemGroup>

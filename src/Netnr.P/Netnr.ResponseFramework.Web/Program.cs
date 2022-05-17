@@ -78,7 +78,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-//Òì³£´¦Àí
+//ERROR
 app.UseExceptionHandler(options => options.SetExceptionHandler());
 
 // Configure the HTTP request pipeline.

@@ -9,7 +9,7 @@
 ### 使用
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/zidian@0.0.3/dist/zidian.js"></script>
+<script src="https://npm.elemecdn.com/zidian@0.0.3/dist/zidian.js"></script>
 ```
 
 查看 <https://unpkg.com/zidian/>  

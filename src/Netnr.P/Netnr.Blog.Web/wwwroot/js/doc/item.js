@@ -81,6 +81,7 @@ var page = {
         var obj = {
             DsdContentMd: nr.nmd.getmd(),
             DsdContentHtml: nr.nmd.gethtml(),
+            DsdPid: nr.domSePid.value
         }
 
         document.querySelectorAll('input,sl-input').forEach(dom => {

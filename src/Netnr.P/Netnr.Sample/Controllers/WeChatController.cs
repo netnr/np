@@ -2,7 +2,7 @@
 using Netnr.WeChat;
 using Netnr.WeChat.Entities;
 
-namespace Netnr.Test.Controllers
+namespace Netnr.Sample.Controllers
 {
     /// <summary>
     /// Netnr.WeChat

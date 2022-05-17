@@ -65,7 +65,7 @@ var page = {
             })
             page.modelVersion = 'nsfwjs@2.4.0';
         }
-        return `https://cdn.jsdelivr.net/gh/infinitered/${page.modelVersion}/example/nsfw_demo/public/quant_nsfw_mobilenet/`
+        return 'https://cdn.staticaly.com/gh/infinitered/nsfwjs/master/example/nsfw_demo/public/quant_nsfw_mobilenet/';
     },
 
     scan: () => new Promise(() => {

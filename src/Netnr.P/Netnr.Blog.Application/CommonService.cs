@@ -14,38 +14,6 @@ namespace Netnr.Blog.Application
     public class CommonService
     {
         /// <summary>
-        /// 查询拼接
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="ivm"></param>
-        /// <param name="ovm"></param>
-        public static void QueryJoin<T>(IQueryable<T> query, QueryDataInputVM ivm, ref QueryDataOutputVM ovm)
-        {
-            //总条数
-            ovm.Total = query.Count();
-
-            //排序
-            if (!string.IsNullOrWhiteSpace(ivm.Sort))
-            {
-                query = QueryableTo.OrderBy(query, ivm.Sort, ivm.Order);
-            }
-
-            //分页
-            if (ivm.Pagination == 1)
-            {
-                query = query.Skip((ivm.Page - 1) * ivm.Rows).Take(ivm.Rows);
-            }
-
-            var sql = query.ToQueryString();
-            Console.WriteLine(sql);
-
-            //数据
-            var data = query.ToList();
-            ovm.Data = data;
-        }
-
-        /// <summary>
         /// 获取所有标签
         /// </summary>
         /// <param name="FirtCache">默认取缓存</param>

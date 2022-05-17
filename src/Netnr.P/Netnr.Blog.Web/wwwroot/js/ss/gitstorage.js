@@ -145,13 +145,11 @@ var page = {
                             fobj.result = res;
                             page.setStatus(fobj, 'ok');
 
-                            var key_github = res.content.download_url,
-                                key_jsdelivr = "https://cdn.jsdelivr.net/gh/" + or + "/" + res.content.path;
+                            var key_github = res.content.download_url;
 
                             fobj.node.readonly = true;
                             fobj.node.filled = true;
                             fobj.node.value = key_github;
-                            fobj.node.title = key_jsdelivr;
 
                             resolve();
                         }

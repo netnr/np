@@ -146,7 +146,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-//错误页面
+//ERROR
 app.UseExceptionHandler(options => options.SetExceptionHandler());
 
 // Configure the HTTP request pipeline.
@@ -205,6 +205,14 @@ app.UseAuthorization();
 
 //session
 app.UseSession();
+
+//app.Map("/{xid:int}", (int xid) => Results.Ok(xid));
+app.Map("/generate_200", () => Results.Ok());
+app.Map("/generate_204", () => Results.NoContent());
+app.Map("/generate_400", () => Results.BadRequest());
+app.Map("/generate_401", () => Results.Unauthorized());
+app.Map("/generate_404", () => Results.NotFound());
+app.Map("/generate_418", () => Results.StatusCode(418));
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(name: "sid", pattern: "{controller=Home}/{action=Index}/{id?}/{sid?}");

@@ -563,7 +563,7 @@ namespace Netnr.Core
             {
                 { 0, "" },
                 { 1, $" Framework: {FrameworkDescription}" },
-                { 2, $" Memory: {ParsingTo.FormatByteSize(UseMemory)}" },
+                { 2, $" Memory: {ParsingTo.FormatByteSize(size:UseMemory,space:"")}" },
                 { 3, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
                 { 4, $" OSVersion: {OSVersion.VersionString}" },
                 { 5, $" User: {UserName}" },

@@ -22,16 +22,20 @@ nr.onChangeSize = function (ch) {
 nr.onReady = function () {
     //标签
     fetch("/Home/TagSelect").then(x => x.json()).then(res => {
-        nr.tomSelect = new TomSelect('.nr-tags', {
-            maxItems: 3,
-            maxOptions: 100,
-            valueField: 'TagId',
-            labelField: 'TagName',
-            searchField: 'TagName',
-            sortField: 'TagName',
-            options: res,
-            create: false
-        });
+        var data = res.map(x => {
+            return { name: x.TagName, value: x.TagId }
+        })
+        nr.domSelect = xmSelect.render({
+            el: '.nr-tags',
+            style: {
+                height: '38px',
+                borderRadius: '3px',
+            },
+            filterable: true,
+            paging: true,
+            max: 3,
+            data: data
+        })
     }).catch(err => {
         console.log(err);
         nr.alert(err)
@@ -62,7 +66,7 @@ nr.onReady = function () {
             UwCategory: 0,
             UwContent: nr.nmd.gethtml(),
             UwContentMd: nr.nmd.getmd(),
-            TagIds: nr.tomSelect.getValue().join(',')
+            TagIds: nr.domSelect.getValue().map(x => x.value).join(',')
         }
 
         var errMsg = [];

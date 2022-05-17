@@ -67,5 +67,5 @@ Install-Package Netnr.Login
 </table>
 
 ### 使用
-参考：`Netnr.Test/Controllers/LoginController.cs`  
+参考：`Netnr.Sample/Controllers/LoginController.cs`  
 提醒：一般第三方登录都有一个 **state** 参数，用于防止CSRF攻击（防伪），可以利用该参数添加 登录、注册、解绑等标注前缀

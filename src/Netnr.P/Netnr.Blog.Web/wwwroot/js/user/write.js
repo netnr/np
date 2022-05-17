@@ -137,7 +137,7 @@ var page = {
 
         nr.domTxtTitle.value = "";
         nr.nmd.setmd("Loading...");
-        nr.tomSelect.clear()
+        nr.domSelect.setValue([]);
 
         nr.domDialogForm.show()
 
@@ -145,7 +145,7 @@ var page = {
             if (res.code == 200) {
                 var item = res.data.item;
                 nr.domTxtTitle.value = item.UwTitle;
-                nr.tomSelect.setValue(res.data.tags.map(x => x.TagId));
+                nr.domSelect.setValue(res.data.tags.map(x => x.TagId));
                 nr.nmd.setmd(item.UwContentMd);
             } else {
                 console.debug(res);

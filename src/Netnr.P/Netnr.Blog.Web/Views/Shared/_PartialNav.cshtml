@@ -19,7 +19,10 @@
 {
     <nav class="nr-navbar navbar navbar-expand-lg @themeClass">
         <div class="container-fluid">
-            <a class="navbar-brand" href="https://www.netnr.com">Netnr</a>
+            <a class="navbar-brand" href="https://www.netnr.com">
+                <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
+                <span class="d-none d-sm-inline-block">Netnr</span>
+            </a>
             <a class='small d-block d-lg-none' href="/@actionName" title='@ViewData["Title"]'>
                 <b style="color:var(--sl-color-warning-600)">@ViewData["Title"]</b>
             </a>
@@ -60,7 +63,7 @@
             <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
                 <sl-menu>
                     <sl-menu-item data-href="/">SS</sl-menu-item>
-                    
+
                     @if (ctrl == "ss" && actionName != "index")
                     {
                         <sl-menu-item data-href="/@actionName">@ViewData["Title"]</sl-menu-item>
@@ -77,7 +80,10 @@ else
     <!--顶部导航-->
     <nav class="nr-navbar navbar navbar-expand-lg @themeClass">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Netnr</a>
+            <a class="navbar-brand text-decoration-none" href="/">
+                <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
+                <span class="d-none d-sm-inline-block">Netnr</span>
+            </a>
             @if (ctrl == "ss" && actionName != "index")
             {
                 <a class='small d-block d-lg-none' href="/ss/@actionName" title='@ViewData["Title"]'>

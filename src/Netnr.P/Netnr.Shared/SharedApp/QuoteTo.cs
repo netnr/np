@@ -131,17 +131,12 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.bundle.js'></script>");
                     break;
 
-                case "netnrnav.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/netnrnav@1.1.2/src/netnrnav.bundle.min.js' ></script>");
-                    break;
-
                 case "tocbot.js":
                     vh.Add("<script src='https://npm.elemecdn.com/tocbot@4.18.2/dist/tocbot.min.js'></script>");
                     break;
 
-                case "tom-select":
-                    vh.Add("<link href='https://npm.elemecdn.com/tom-select@2.0.1/dist/css/tom-select.bootstrap5.min.css' rel='stylesheet' />");
-                    vh.Add("<script src='https://npm.elemecdn.com/tom-select@2.0.1/dist/js/tom-select.complete.min.js'></script>");
+                case "xm-select.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/xm-select@1.2.4/dist/xm-select.js'></script>");
                     break;
 
                 case "viewer.css":
@@ -156,7 +151,7 @@ public class QuoteTo
                     break;
 
                 case "cos-js-sdk-v5.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.6/dist/cos-js-sdk-v5.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.7/dist/cos-js-sdk-v5.min.js'></script>");
                     break;
 
                 case "ag-grid-community.js":
@@ -199,11 +194,11 @@ public class QuoteTo
                     break;
 
                 case "sql-formatter.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@4.0.2/dist/sql-formatter.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@6.1.0/dist/sql-formatter.min.js'></script>");
                     break;
 
                 case "highcharts.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@10.0.0/highcharts.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/highcharts@10.1.0/highcharts.js'></script>");
                     break;
 
                 case "hls.js":
@@ -225,7 +220,7 @@ public class QuoteTo
                     break;
 
                 case "terser.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.12.1/dist/bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.13.1/dist/bundle.min.js'></script>");
                     break;
 
                 case "html2canvas.js":
@@ -242,11 +237,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.10.3/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.11.1/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.10.3/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.10.3/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.11.1/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.11.1/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
@@ -266,7 +261,7 @@ public class QuoteTo
                     break;
                     
                 case "pdf.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/pdfjs-dist@2.13.216/legacy/build/pdf.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/pdfjs-dist@2.14.305/legacy/build/pdf.min.js'></script>");
                     break;
 
                 case "nginxbeautifier":

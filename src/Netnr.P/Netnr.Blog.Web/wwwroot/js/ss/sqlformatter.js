@@ -1,17 +1,15 @@
 ﻿nr.onChangeSize = function (ch) {
     var vh = ch - nr.domEditor.getBoundingClientRect().top - 30;
-    nr.domEditor.style.height = vh + "px";
+    nr.domEditor.style.height = Math.max(300, vh) + "px";
 }
 
 nr.onReady = function () {
     ss.loading(true);
 
     var dv = nr.lsStr('txt') || 'SELECT * FROM table1 表名',
-        scLanguage = nr.lsStr('sql-config-language') || 'sql',
-        scUpperCase = nr.lsStr('sql-config-uppercase') || "1";
-        
+        scLanguage = nr.lsStr('sql-config-language') || 'sql';
+
     nr.domSeLanguage.value = scLanguage;
-    nr.domSeUppercase.value = scUpperCase;
 
     me.init().then(() => {
 
@@ -44,7 +42,18 @@ nr.onReady = function () {
         });
         nr.domSeUppercase.addEventListener('sl-change', function () {
             codeFormatter()
-            nr.ls['sql-config-uppercase'] = this.value;
+            nr.lsSave();
+        });
+        nr.domSeColumnwrap.addEventListener('sl-change', function () {
+            codeFormatter()
+            nr.lsSave();
+        });
+        nr.domSeColumnalignment.addEventListener('sl-change', function () {
+            codeFormatter()
+            nr.lsSave();
+        });
+        nr.domSeIndentation.addEventListener('sl-change', function () {
+            codeFormatter()
             nr.lsSave();
         });
 
@@ -68,7 +77,10 @@ function codeFormatter() {
         try {
             var result = sqlFormatter.format(code, {
                 language: nr.domSeLanguage.value,
-                uppercase: nr.domSeUppercase.value == "1"
+                keywordCase: nr.domSeUppercase.value,
+                multilineLists: nr.domSeColumnwrap.value,
+                tabulateAlias: nr.domSeColumnalignment.value == "true",
+                indentStyle: nr.domSeIndentation.value,
             });
             me.keepSetValue(me.editor, result);
         } catch (ex) {

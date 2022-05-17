@@ -355,7 +355,7 @@ var slib = {
             case "file":
                 {
                     var dir = item.getAttribute('data-dir');
-                    var text = `https://cdn.jsdelivr.net/npm/${slib.key}/${dir}`;
+                    var text = `https://npm.elemecdn.com/${slib.key}/${dir}`;
                     switch (dir.split('.').pop()) {
                         case "js":
                             text = `<script src="${text}"></script>`

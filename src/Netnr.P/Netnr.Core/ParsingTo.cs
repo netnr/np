@@ -83,18 +83,31 @@ namespace Netnr.Core
         /// </summary>
         /// <param name="size">字节大小</param>
         /// <param name="keep">保留</param>
+        /// <param name="rate"></param>
+        /// <param name="space">间隔</param>
         /// <returns></returns>
-        public static string FormatByteSize(double size, int keep = 2)
+        public static string FormatByteSize(double size, int keep = 2, int rate = 1024, string space = " ")
         {
-            string[] suffixes = new[] { " B", " KB", " MB", " GB", " TB", " PB" };
-            const double unit = 1024;
-            int i = 0;
-            while (size > unit)
+            if (Math.Abs(size) < rate)
             {
-                size /= unit;
-                i++;
+                return $"{size}{space}B";
             }
-            return Math.Round(size, keep) + suffixes[i];
+
+            string[] units = rate == 1000
+                ? new[] { "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" }
+                : new[] { "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB" };
+
+            var u = -1;
+            var r = Math.Pow(10, keep);
+
+            do
+            {
+                size /= rate;
+                ++u;
+            } while (Math.Round(Math.Abs(size) * r) / r >= rate && u < units.Length - 1);
+
+            var result = $"{Math.Round(size, keep)}{space}{units[u]}";
+            return result;
         }
 
         /// <summary>

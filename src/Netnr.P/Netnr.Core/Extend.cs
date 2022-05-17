@@ -312,7 +312,7 @@ namespace Netnr
                     if (targetPi.Name == sourcePi.Name)
                     {
                         var sourcePiVal = sourcePi.GetValue(source, null);
-                        if (targetPi.PropertyType.IsAssignableFrom(sourcePi.PropertyType))
+                        if (targetPi.PropertyType.IsAssignableFrom(sourcePi.PropertyType) && sourcePi.SetMethod != null)
                         {
                             targetPi.SetValue(target, sourcePiVal, null);
                         }
