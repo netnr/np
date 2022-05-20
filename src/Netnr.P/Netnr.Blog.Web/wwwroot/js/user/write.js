@@ -34,19 +34,15 @@ var page = {
     },
     load: () => {
         let gridOptions = {
+            localeText: ag.localeText, //语言
             defaultColDef: {
-                filter: 'agTextColumnFilter',
-                sortable: true,
-                resizable: true,
+                filter: 'agTextColumnFilter', floatingFilter: true,
+                sortable: true, resizable: true, width: 200
             },
             getRowId: event => event.data.UwId,
             columnDefs: [
-                {
-                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
-                    checkboxSelection: true,
-                    sortable: false, filter: false, menuTabs: false
-                },
-                { headerName: "Id", field: "UwId", width: 120 },
+                ag.numberCol({ checkboxSelection: false }),
+                { headerName: "Id", field: "UwId", filter: 'agNumberColumnFilter', },
                 {
                     headerName: "标题", field: "UwTitle", width: 640, cellRenderer: (params) => {
                         if (params.data) {
@@ -54,16 +50,16 @@ var page = {
                         }
                     }
                 },
-                { headerName: "创建时间", field: "UwCreateTime", width: 190, filter: 'agDateColumnFilter', },
-                { headerName: "修改时间", field: "UwUpdateTime", width: 190, filter: 'agDateColumnFilter', },
-                { headerName: "回复", field: "UwReplyNum", width: 100, filter: 'agNumberColumnFilter', },
-                { headerName: "浏览", field: "UwReadNum", width: 100, filter: 'agNumberColumnFilter', },
-                { headerName: "点赞", field: "UwLaud", width: 100, filter: 'agNumberColumnFilter', },
-                { headerName: "收藏", field: "UwMark", width: 100, filter: 'agNumberColumnFilter', },
-                // ag.agSetColumn({ headerName: "公开", field: "UwOpen", width: 100 }, { "1": "✔", "2": "✘" }),
-                // ag.agSetColumn({ headerName: "状态", field: "UwStatus", width: 100 }, { "1": "✔", "2": "Block", "-1": "Lock" }),
+                { headerName: "创建时间", field: "UwCreateTime", filter: 'agDateColumnFilter', },
+                { headerName: "修改时间", field: "UwUpdateTime", filter: 'agDateColumnFilter', },
+                { headerName: "回复", field: "UwReplyNum", filter: 'agNumberColumnFilter', },
+                { headerName: "浏览", field: "UwReadNum", filter: 'agNumberColumnFilter', },
+                { headerName: "点赞", field: "UwLaud", filter: 'agNumberColumnFilter', },
+                { headerName: "收藏", field: "UwMark", filter: 'agNumberColumnFilter', },
+                // ag.agSetColumn({ headerName: "公开", field: "UwOpen", }, { "1": "✔", "2": "✘" }),
+                // ag.agSetColumn({ headerName: "状态", field: "UwStatus", }, { "1": "✔", "2": "Block", "-1": "Lock" }),
                 {
-                    headerName: "公开", field: "UwOpen", width: 100, cellRenderer: params => {
+                    headerName: "公开", field: "UwOpen", filter: 'agNumberColumnFilter', cellRenderer: params => {
                         switch (params.value) {
                             case 1: return "✔"; break;
                             case 2: return "✘"; break;
@@ -71,7 +67,7 @@ var page = {
                     }
                 },
                 {
-                    headerName: "状态", field: "UwStatus", width: 100, cellRenderer: function (params) {
+                    headerName: "状态", field: "UwStatus", filter: 'agNumberColumnFilter', cellRenderer: function (params) {
                         switch (params.value) {
                             case 1: return "✔"; break;
                             case 2: return "Block"; break;

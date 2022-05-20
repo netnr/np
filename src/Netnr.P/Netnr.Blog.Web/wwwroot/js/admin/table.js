@@ -306,11 +306,10 @@ var page = {
     load: () => {
 
         var gridOptions = {
-            //默认列属性配置
+            localeText: ag.localeText, //语言
             defaultColDef: {
-                width: 320,
-                resizable: true, sortable: true, filter: 'agTextColumnFilter',
-                menuTabs: ['generalMenuTab', 'filterMenuTab', 'columnsMenuTab']
+                filter: 'agTextColumnFilter', floatingFilter: true,
+                sortable: true, resizable: true, width: 320
             },
             rowGroupPanelShow: 'always',
             //列

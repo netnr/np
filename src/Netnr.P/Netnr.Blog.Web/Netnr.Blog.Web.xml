@@ -1486,6 +1486,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Blog.Web.Controllers.SSController.BPMN">
+            <summary>
+            流程图
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Blog.Web.Controllers.SSController.Graph">
             <summary>
             流程图

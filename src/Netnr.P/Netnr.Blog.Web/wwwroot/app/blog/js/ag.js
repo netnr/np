@@ -80,6 +80,8 @@ var ag = {
         filterOoo: '搜索...',
         equals: '等于',
         notEqual: '不等于',
+        blank: '空',
+        notBlank: '非空',
         empty: '选择一项',
 
         // Number Filter
@@ -131,6 +133,8 @@ var ag = {
 
         // Header of the Default Group Column
         group: '分组',
+        // Row Drag
+        rowDragRows: '行',
 
         // Other
         loadingOoo: '加载中...',
@@ -146,19 +150,23 @@ var ag = {
         autosizeThiscolumn: '当前列大小自适应',
         autosizeAllColumns: '所有列大小自适应',
         groupBy: '分组',
-        ungroupBy: '取消分组',
+        ungroupBy: '不分组',
+        addToValues: '添加值 ${variable}',
+        removeFromValues: '移除值 ${variable}',
+        addToLabels: '添加到标签 ${variable}',
+        removeFromLabels: '移除标签 ${variable}',
         resetColumns: '重置列',
         expandAll: '展开全部',
         collapseAll: '折叠全部',
         copy: '复制',
         ctrlC: 'Ctrl+C',
         copyWithHeaders: '复制（带标题）',
+        copyWithHeaderGroups: '复制（带分组）',
         paste: '粘贴',
         ctrlV: 'Ctrl+V',
         export: '内置保存',
-        csvExport: '保存为 CSV',
-        excelExport: '保存为 Excel',
-        excelXmlExport: '保存为 XML',
+        csvExport: 'CSV 导出',
+        excelExport: 'Excel 导出',
 
         // Enterprise Menu Aggregation and Status Bar
         sum: '求和',
@@ -179,6 +187,8 @@ var ag = {
         lastPage: '尾页',
         firstPage: '首页',
         previousPage: '上一页',
+        // Pivoting
+        pivotColumnGroupTotals: '总',
 
         // Enterprise Menu (Charts)
         pivotChartAndPivotMode: '图表枢轴 & 枢轴模式',
@@ -187,17 +197,17 @@ var ag = {
 
         columnChart: '柱状图',
         groupedColumn: '分组',
-        stackedColumn: 'Stacked',
-        normalizedColumn: '100% Stacked',
+        stackedColumn: '堆叠柱形图',
+        normalizedColumn: '100% 堆叠柱形图',
 
         barChart: '条形图',
         groupedBar: '分组',
-        stackedBar: 'Stacked',
-        normalizedBar: '100% Stacked',
+        stackedBar: '堆叠柱形图',
+        normalizedBar: '100% 堆叠柱形图',
 
         pieChart: '饼形图',
-        pie: 'Pie',
-        doughnut: 'Doughnut',
+        pie: '饼图',
+        doughnut: '环形图',
 
         line: '线图',
 
@@ -310,30 +320,6 @@ var ag = {
         chartLinkToolbarTooltip: 'Linked to Grid',
         chartUnlinkToolbarTooltip: 'Unlinked from Grid',
         chartDownloadToolbarTooltip: 'Download Chart',
-
-        // ARIA
-        ariaHidden: 'hidden',
-        ariaVisible: 'visible',
-        ariaChecked: 'checked',
-        ariaUnchecked: 'unchecked',
-        ariaIndeterminate: 'indeterminate',
-        ariaColumnSelectAll: 'Toggle Select All Columns',
-        ariaInputEditor: 'Input Editor',
-        ariaDateFilterInput: 'Date Filter Input',
-        ariaFilterInput: 'Filter Input',
-        ariaFilterColumnsInput: 'Filter Columns Input',
-        ariaFilterValue: 'Filter Value',
-        ariaFilterFromValue: 'Filter from value',
-        ariaFilterToValue: 'Filter to value',
-        ariaFilteringOperator: 'Filtering Operator',
-        ariaColumnToggleVisibility: 'column toggle visibility',
-        ariaColumnGroupToggleVisibility: 'column group toggle visibility',
-        ariaRowSelect: 'Press SPACE to select this row',
-        ariaRowDeselect: 'Press SPACE to deselect this row',
-        ariaRowToggleSelection: 'Press Space to toggle row selection',
-        ariaRowSelectAll: 'Press Space to toggle all rows selection',
-        ariaSearch: 'Search',
-        ariaSearchFilterValues: 'Search filter values'
     }
 }
 

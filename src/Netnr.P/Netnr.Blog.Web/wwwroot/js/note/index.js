@@ -134,21 +134,17 @@ var page = {
     },
     load: () => {
         let gridOptions = {
+            localeText: ag.localeText, //语言
             defaultColDef: {
-                filter: 'agTextColumnFilter',
-                sortable: true,
-                resizable: true,
+                filter: 'agTextColumnFilter', floatingFilter: true,
+                sortable: true, resizable: true, width: 200
             },
             getRowId: event => event.data.NoteId,
             columnDefs: [
-                {
-                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
-                    checkboxSelection: true,
-                    sortable: false, filter: false, menuTabs: false
-                },
+                ag.numberCol({ checkboxSelection: false }),
                 { field: "NoteTitle", flex: 1, minWidth: 200 },
-                { field: "NoteCreateTime", width: 190 },
-                { field: "NoteUpdateTime", width: 190 },
+                { field: "NoteCreateTime", filter: 'agDateColumnFilter', },
+                { field: "NoteUpdateTime", filter: 'agDateColumnFilter', },
             ],
             suppressRowClickSelection: true,
             rowSelection: 'multiple',

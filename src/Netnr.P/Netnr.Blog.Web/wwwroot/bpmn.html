@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <title>BPMN Editor NET牛人</title>
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="keywords" content="netnr NET牛人 Graph Editor" />
+    <meta name="description" content="Script Services BPMN 流程图" />
+
+    <style>
+        html, body, .nr-bpmn {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bjs-powered-by {
+            display: none;
+        }
+
+        .bjs-tool {
+            position: fixed;
+            top: 1em;
+            right: 1em;
+            z-index: 1;
+        }
+
+            .bjs-tool span {
+                cursor: pointer;
+                margin-right: 0.5em;
+            }
+    </style>
+</head>
+<body>
+    <div class="bjs-tool">
+        <span data-action="new">新建</span>
+        <span data-action="import">导入</span>
+        <span data-action="export">导出</span>
+        <span data-action="svg">SVG</span>
+    </div>
+    <link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/diagram-js.css' rel='stylesheet' async />
+<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/bpmn-js.css' rel='stylesheet' async />
+<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />
+<script src='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/bpmn-modeler.production.min.js'></script>
+
+    <script src="/js/ss/bpmn.js?v=T_M0eN48m-z7D2ii1xDmFkrEluDtCkoIHeVp4taRFro"></script>
+</body>
+</html>

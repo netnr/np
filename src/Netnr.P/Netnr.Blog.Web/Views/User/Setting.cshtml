@@ -6,7 +6,7 @@
 
 <div class="container-fluid p-4">
     <div class="row">
-        <div class="col-md-7 mb-4">
+        <div class="col-lg-5 mb-4 pe-lg-5">
             <div>
                 <span class="h4">个人信息</span>
                 <sl-button class="nr-btn-edit-info float-end" size="small">编辑</sl-button>
@@ -72,7 +72,7 @@
 
         </div>
 
-        <div class="col-md-4 offset-md-1 mb-4">
+        <div class="col-lg-4 mb-4 pe-lg-5">
             <h4>更改密码</h4>
             <sl-divider></sl-divider>
             <sl-input class="nr-txt-pwd1 mb-3" type="password" size="small" label="当前密码" maxlength="20" placeholder="******" toggle-password>
@@ -87,30 +87,26 @@
             <sl-button class="nr-btn-save-pwd mb-3" variant="warning" size="small">提交</sl-button>
         </div>
 
-        <div class="col-12">
+        <div class="col-lg-3 mb-4">
             <h4>授权关联</h4>
             <sl-divider></sl-divider>
-            <div>
-                <div class="row">
-                    @foreach (var login in listQuickLogin)
+            @foreach (var login in listQuickLogin)
+            {
+                <div class="mb-3">
+                    <span class="me-2">
+                        <img src="@login.Icon" style="height:1.3em" />&nbsp;@login.Name
+                    </span>
+                    @if (login.Bind)
                     {
-                        <div class="col-md-4 col-xl-3 col-xxl-2 mb-3">
-                            <span class="me-2">
-                                <img src="@login.Icon" style="height:1.3em" />&nbsp;@login.Name
-                            </span>
-                            @if (login.Bind)
-                            {
-                                <sl-badge variant="success">已绑定</sl-badge>
-                                <a href="/user/ridoauth/@login.Key">解除</a>
-                            }
-                            else
-                            {
-                                <a href="/user/oauth/@login.Key">绑定账号</a>
-                            }
-                        </div>
+                        <sl-badge variant="success">已绑定</sl-badge>
+                        <a href="/user/ridoauth/@login.Key">解除</a>
+                    }
+                    else
+                    {
+                        <a href="/user/oauth/@login.Key">绑定账号</a>
                     }
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>

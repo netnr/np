@@ -256,19 +256,15 @@ var page = {
     load: () => {
 
         var gridOptions = {
-            //默认列属性配置
+            localeText: ag.localeText, //语言
             defaultColDef: {
-                width: 200,
-                resizable: true, sortable: true, filter: 'agTextColumnFilter',
-                menuTabs: ['generalMenuTab', 'filterMenuTab', 'columnsMenuTab']
+                filter: 'agTextColumnFilter', floatingFilter: true,
+                sortable: true, resizable: true, width: 200
             },
             rowGroupPanelShow: 'always',
             //列
             columnDefs: [
-                {
-                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
-                    sortable: false, filter: false, menuTabs: false
-                },
+                ag.numberCol({ checkboxSelection: false }),
                 { field: "LogUid", enableRowGroup: true, },
                 { field: "LogNickname", },
                 {
@@ -304,11 +300,11 @@ var page = {
                     }, filter: 'agDateColumnFilter'
                 },
                 ag.agSetColumn(
-                    { field: "LogGroup", width: 120, enableRowGroup: true },
+                    { field: "LogGroup", filter: 'agNumberColumnFilter', enableRowGroup: true },
                     { "1": "用户", "2": "爬虫", "-1": "异常", "9": "记录" }
                 ),
                 ag.agSetColumn(
-                    { field: "LogLevel", width: 120, enableRowGroup: true },
+                    { field: "LogLevel", enableRowGroup: true },
                     { "F": "Fatal", "E": "Error", "W": "Warning", "I": "Info", "D": "Debug", "T": "Trace", "A": "All" }
                 ),
                 { field: "LogBrowserName", width: 250, enableRowGroup: true, },

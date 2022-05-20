@@ -12,23 +12,18 @@ nr.onReady = function () {
 var page = {
     load: () => {
         let gridOptions = {
-            //默认列属性配置
+            localeText: ag.localeText, //语言
             defaultColDef: {
-                width: 200,
-                filter: 'agTextColumnFilter',
-                sortable: true,
-                resizable: true,
+                filter: 'agTextColumnFilter', floatingFilter: true,
+                sortable: true, resizable: true, width: 200,
                 menuTabs: ['generalMenuTab', 'filterMenuTab', 'columnsMenuTab']
             },
             getRowId: event => event.data.UrId, //指定行标识列
             //列
             columnDefs: [
-                {
-                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
-                    sortable: false, filter: false, menuTabs: false
-                },
-                { field: "UserId", },
-                { field: "Nickname" },
+                ag.numberCol({ checkboxSelection: false }),
+                { field: "UserId", filter: 'agNumberColumnFilter', },
+                { field: "Nickname", },
                 { field: "UrAnonymousName", headerName: "💡匿名昵称", editable: true },
                 { field: "UrAnonymousMail", headerName: "💡匿名邮箱", editable: true },
                 { field: "UrAnonymousLink", headerName: "💡匿名链接", editable: true },
@@ -52,10 +47,10 @@ var page = {
                     }, editable: true, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 99999 }
                 },
                 {
-                    field: "UrCreateTime",
+                    field: "UrCreateTime", filter: 'agDateColumnFilter',
                 },
                 {
-                    field: "UrStatus", headerName: "💡状态", cellRenderer: params => {
+                    field: "UrStatus", headerName: "💡状态", filter: 'agNumberColumnFilter', cellRenderer: params => {
                         switch (Number(params.value)) {
                             case 1: return "✔";
                             case 2: return "Block";
@@ -85,7 +80,7 @@ var page = {
                     if (params.sortModel.length == 0) {
                         params.sortModel.push({ colId: "UrCreateTime", sort: "desc" });
                     }
-                    
+
                     fetch(`/Admin/ReplyList?grp=${encodeURIComponent(JSON.stringify(params))}`).then(x => x.json()).then(res => {
                         params.successCallback(res.RowsThisBlock, res.LastRow)
                     }).catch(err => {

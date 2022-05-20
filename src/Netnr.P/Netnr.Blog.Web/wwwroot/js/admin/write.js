@@ -12,20 +12,17 @@ nr.onReady = function () {
 var page = {
     load: () => {
         let gridOptions = {
+            localeText: ag.localeText, //语言
             defaultColDef: {
-                filter: 'agTextColumnFilter',
-                sortable: true,
-                resizable: true,
+                filter: 'agTextColumnFilter', floatingFilter: true,
+                sortable: true, resizable: true, width: 200
             },
             getRowId: event => event.data.UwId,
             columnDefs: [
-                {
-                    headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 120, maxWidth: 150,
-                    sortable: false, filter: false, menuTabs: false
-                },
-                { field: "UserId", width: 120 },
-                { headerName: "昵称", field: "Nickname", width: 120 },
-                { headerName: "文章ID", field: "UwId", width: 100 },
+                ag.numberCol({ checkboxSelection: false }),
+                { field: "UserId", filter: 'agNumberColumnFilter', },
+                { headerName: "昵称", field: "Nickname", },
+                { headerName: "文章ID", field: "UwId", filter: 'agNumberColumnFilter', },
                 {
                     headerName: "💡标题", field: "UwTitle", width: 400, cellRenderer: (params) => {
                         if (params.data != null) {
@@ -33,20 +30,20 @@ var page = {
                         }
                     }, editable: true, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 }
                 },
-                { headerName: "创建时间", field: "UwCreateTime", width: 200, },
-                { headerName: "修改时间", field: "UwUpdateTime", width: 200, },
-                { headerName: "💡回复", field: "UwReplyNum", width: 100, editable: true },
-                { headerName: "💡浏览", field: "UwReadNum", width: 100, editable: true },
-                { headerName: "💡点赞", field: "UwLaud", width: 100, editable: true },
-                { headerName: "💡收藏", field: "UwMark", width: 100, editable: true },
+                { headerName: "创建时间", field: "UwCreateTime", filter: 'agDateColumnFilter', },
+                { headerName: "修改时间", field: "UwUpdateTime", filter: 'agDateColumnFilter', },
+                { headerName: "💡回复", field: "UwReplyNum", filter: 'agNumberColumnFilter', editable: true },
+                { headerName: "💡浏览", field: "UwReadNum", filter: 'agNumberColumnFilter', editable: true },
+                { headerName: "💡点赞", field: "UwLaud", filter: 'agNumberColumnFilter', editable: true },
+                { headerName: "💡收藏", field: "UwMark", filter: 'agNumberColumnFilter', editable: true },
                 {
-                    headerName: "💡公开", field: "UwOpen", width: 100, cellRenderer: params => params.value == 1 ? "✔" : "✘",
+                    headerName: "💡公开", field: "UwOpen", filter: 'agNumberColumnFilter', cellRenderer: params => params.value == 1 ? "✔" : "✘",
                     editable: true, cellEditor: 'agRichSelectCellEditor', cellEditorParams: {
                         values: [1, 0], formatValue: fv => fv == 1 ? "✔" : "✘"
                     }
                 },
                 {
-                    headerName: "💡状态", field: "UwStatus", width: 100, cellRenderer: function (params) {
+                    headerName: "💡状态", field: "UwStatus", filter: 'agNumberColumnFilter', cellRenderer: function (params) {
                         var km =
                         {
                             "1": "✔",

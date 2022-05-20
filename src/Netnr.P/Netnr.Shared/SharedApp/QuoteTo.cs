@@ -72,6 +72,13 @@ public class QuoteTo
                     vh.Add($"<script src='{srServer}/libs/mix/text-to-image.js'></script>");
                     break;
                     
+                case "bpmn-js":
+                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/diagram-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/bpmn-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />");
+                    vh.Add("<script src='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/bpmn-modeler.production.min.js'></script>");
+                    break;
+
                 case "leancloud-storage.js":
                     vh.Add("<script src='https://npm.elemecdn.com/leancloud-storage@4.12.2/dist/av-min.js'></script>");
                     break;
@@ -155,11 +162,11 @@ public class QuoteTo
                     break;
 
                 case "ag-grid-community.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@27.2.1/dist/ag-grid-community.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-community@27.3.0/dist/ag-grid-community.min.js'></script>");
                     break;
 
                 case "ag-grid-enterprise.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@27.2.1/dist/ag-grid-enterprise.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@27.3.0/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
                     break;
 

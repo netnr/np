@@ -295,6 +295,12 @@ namespace Netnr.SharedAdo
                 var keyCols = new List<DataColumn>();
                 foreach (DataRow dr in dtSchema.Rows)
                 {
+                    //跳过隐藏列（针对配置 CommandBehavior.KeyInfo 添加了额外的列）
+                    if (Convert.ToBoolean(dr["IsHidden"] == DBNull.Value ? false : dr["IsHidden"]))
+                    {
+                        continue;
+                    }
+
                     var columnName = dr["ColumnName"].ToString();
                     var dataType = dr["DataType"];
 
@@ -309,9 +315,9 @@ namespace Netnr.SharedAdo
                     {
                         ColumnName = columnName,
                         DataType = (Type)dataType,
-                        Unique = (bool)dr["IsUnique"],
-                        AllowDBNull = dr["AllowDBNull"] == DBNull.Value || (bool)dr["AllowDBNull"],
-                        AutoIncrement = (bool)dr["IsAutoIncrement"]
+                        Unique = Convert.ToBoolean(dr["IsUnique"] == DBNull.Value ? false : dr["IsUnique"]),
+                        AllowDBNull = Convert.ToBoolean(dr["AllowDBNull"] == DBNull.Value ? true : dr["AllowDBNull"]),
+                        AutoIncrement = Convert.ToBoolean(dr["IsAutoIncrement"] == DBNull.Value ? false : dr["IsAutoIncrement"])
                     };
                     if (dataType.ToString() == "System.DBNull")
                     {
@@ -322,7 +328,7 @@ namespace Netnr.SharedAdo
                     {
                         column.MaxLength = (int)dr["ColumnSize"];
                     }
-                    if ((bool)dr["IsKey"])
+                    if (Convert.ToBoolean(dr["IsKey"] == DBNull.Value ? false : dr["IsKey"]))
                     {
                         keyCols.Add(column);
                     }
@@ -415,7 +421,8 @@ namespace Netnr.SharedAdo
                                 }
                                 else if (col.AllowDBNull == false)
                                 {
-                                    dr[i] = cellValue.ToString();
+                                    Console.WriteLine($"{col.ColumnName}:Column does not allow null but value is Null !!!");
+                                    dr[i] = Convert.ChangeType("0", col.DataType);
                                 }
                             }
 

@@ -471,6 +471,15 @@ namespace Netnr.Blog.Web.Controllers
         /// 流程图
         /// </summary>
         /// <returns></returns>
+        public IActionResult BPMN()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 流程图
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Graph()
         {
             return View();

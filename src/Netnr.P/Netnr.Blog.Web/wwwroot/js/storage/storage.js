@@ -149,7 +149,8 @@ var page = {
 
             //配置
             page.vender.gridOptions = {
-                defaultColDef: { filter: true, sortable: true, resizable: true, width: 180 },
+                localeText: ag.localeText, //语言
+                defaultColDef: { filter: true, sortable: true, resizable: true, width: 180, },
                 suppressRowClickSelection: true,
                 rowSelection: 'multiple',
                 columnDefs: columnDefs,
