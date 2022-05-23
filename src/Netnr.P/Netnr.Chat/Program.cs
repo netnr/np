@@ -46,9 +46,29 @@ builder.Services.AddDbContextPool<Netnr.Chat.Data.ContextBase>(options =>
 {
     Netnr.Chat.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
 }, 10);
-//数据库初始化
-builder.Services.Configure<Netnr.Chat.Data.ContextBase>(db =>
+
+//配置swagger
+builder.Services.AddSwaggerGen(c =>
 {
+    var name = builder.Environment.ApplicationName;
+    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
+    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+//数据库初始化
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<Netnr.Chat.Data.ContextBase>();
+
     //数据库不存在则创建，创建后返回true
     if (db.Database.EnsureCreated())
     {
@@ -81,23 +101,6 @@ builder.Services.Configure<Netnr.Chat.Data.ContextBase>(db =>
 
         db.SaveChanges();
     }
-});
-
-//配置swagger
-builder.Services.AddSwaggerGen(c =>
-{
-    var name = builder.Environment.ApplicationName;
-    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
-    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
-});
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
 }
 
 //配置swagger

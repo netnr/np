@@ -111,24 +111,6 @@ builder.Services.AddDbContextPool<Netnr.Blog.Data.ContextBase>(options =>
 {
     Netnr.Blog.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
 }, 10);
-//数据库初始化
-builder.Services.Configure<Netnr.Blog.Data.ContextBase>(db =>
-{
-    var createScript = db.Database.GenerateCreateScript();
-    if (GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
-    {
-        createScript = createScript.Replace(" datetime ", " timestamp ");
-    }
-    Console.WriteLine(createScript);
-
-    //数据库不存在则创建，创建后返回true
-    if (db.Database.EnsureCreated())
-    {
-        //导入数据库示例数据
-        var vm = new Netnr.Blog.Web.Controllers.ServicesController().DatabaseImport("db/backup_demo.zip");
-        Console.WriteLine(vm.ToJson(true));
-    }
-});
 
 //定时任务
 if (!GlobalTo.GetValue<bool>("ReadOnly"))
@@ -154,6 +136,27 @@ if (!app.Environment.IsDevelopment())
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+
+//数据库初始化
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<Netnr.Blog.Data.ContextBase>();
+
+    var createScript = db.Database.GenerateCreateScript();
+    if (GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
+    {
+        createScript = createScript.Replace(" datetime ", " timestamp ");
+    }
+    Console.WriteLine(createScript);
+
+    //数据库不存在则创建，创建后返回true
+    if (db.Database.EnsureCreated())
+    {
+        //导入数据库示例数据
+        var vm = new Netnr.Blog.Web.Controllers.ServicesController().DatabaseImport("db/backup_demo.zip");
+        Console.WriteLine(vm.ToJson(true));
+    }
 }
 
 //配置swagger

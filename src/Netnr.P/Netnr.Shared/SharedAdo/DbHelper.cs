@@ -317,11 +317,12 @@ namespace Netnr.SharedAdo
                 cmd.Parameters.AddRange(parameters);
             }
 
-            var ACID = Activity.Current.Id;
+            var ACID = Activity.Current?.Id ?? Guid.NewGuid().ToString("N");
             if (DicCommand.ContainsKey(ACID))
             {
                 ACID += "/" + Guid.NewGuid().ToString("N");
             }
+
             cmd.Site.Name = ACID;
             DicCommand.Add(cmd.Site.Name, cmd);
 

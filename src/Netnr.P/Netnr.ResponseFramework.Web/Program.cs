@@ -45,24 +45,6 @@ builder.Services.AddDbContextPool<Netnr.ResponseFramework.Data.ContextBase>(opti
 {
     Netnr.ResponseFramework.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
 }, 10);
-//数据库初始化
-builder.Services.Configure<Netnr.ResponseFramework.Data.ContextBase>(db =>
-{
-    var createScript = db.Database.GenerateCreateScript();
-    if (Netnr.SharedFast.GlobalTo.TDB == Netnr.SharedEnum.TypeDB.PostgreSQL)
-    {
-        createScript = createScript.Replace(" datetime ", " timestamp ");
-    }
-    Console.WriteLine(createScript);
-
-    //数据库不存在则创建，创建后返回true
-    if (db.Database.EnsureCreated())
-    {
-        //重置数据库
-        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController().DatabaseReset();
-        Console.WriteLine(vm.ToJson(true));
-    }
-});
 
 //定时任务
 FluentScheduler.JobManager.Initialize(new Netnr.ResponseFramework.Web.Apps.TaskService.Reg());
@@ -86,6 +68,27 @@ if (!app.Environment.IsDevelopment())
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+
+//数据库初始化
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<Netnr.ResponseFramework.Data.ContextBase>();
+
+    var createScript = db.Database.GenerateCreateScript();
+    if (Netnr.SharedFast.GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
+    {
+        createScript = createScript.Replace(" datetime ", " timestamp ");
+    }
+    Console.WriteLine(createScript);
+
+    //数据库不存在则创建，创建后返回true
+    if (db.Database.EnsureCreated())
+    {
+        //重置数据库
+        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController().DatabaseReset();
+        Console.WriteLine(vm.ToJson(true));
+    }
 }
 
 //配置swagger

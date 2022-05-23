@@ -29,7 +29,7 @@ else
                     {
                         if (item.DrOpen != 1)
                         {
-                            <sl-icon class="text-success" title="私有" name="lock-fill" ></sl-icon>
+                            <sl-icon class="text-success" title="私有" name="lock-fill"></sl-icon>
                         }
                         if (item.DrOpen != 1 && !string.IsNullOrWhiteSpace(item.Spare1))
                         {
@@ -50,13 +50,17 @@ else
                     }
                     <p class="mt-1">@(string.IsNullOrWhiteSpace(item.DrRemark) ? "暂无备注" : item.DrRemark)</p>
                     <div>
-                        @if (item.DrType == "mind")
+                        @switch (item.DrType)
                         {
-                            <sl-badge variant="primary" title="脑图">Mind</sl-badge>
-                        }
-                        else
-                        {
-                            <sl-badge variant="success" title="绘图">Graph</sl-badge>
+                            case "mind":
+                                <sl-badge variant="primary" title="脑图">Mind</sl-badge>
+                                break;
+                            case "bpmn":
+                                <sl-badge variant="success" title="绘图">BPMN</sl-badge>
+                                break;
+                            default:
+                                <sl-badge variant="success" title="绘图">Graph</sl-badge>
+                                break;
                         }
                         <a class="mx-2 small" href="/draw/user/@item.Uid">@item.Spare3</a>
                         <small class="opacity-75">@item.DrCreateTime.Value.ToString("yyyy-MM-dd HH:mm")</small>

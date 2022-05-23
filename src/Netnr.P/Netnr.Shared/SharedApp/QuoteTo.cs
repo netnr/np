@@ -201,7 +201,7 @@ public class QuoteTo
                     break;
 
                 case "sql-formatter.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@6.1.0/dist/sql-formatter.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@6.1.1/dist/sql-formatter.min.js'></script>");
                     break;
 
                 case "highcharts.js":
@@ -264,7 +264,7 @@ public class QuoteTo
                     break;
 
                 case "jszip.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/jszip@3.9.1/dist/jszip.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/jszip@3.10.0/dist/jszip.min.js'></script>");
                     break;
                     
                 case "pdf.js":

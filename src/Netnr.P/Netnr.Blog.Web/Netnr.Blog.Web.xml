@@ -733,6 +733,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Netnr.Blog.Web.Controllers.DrawController.BPMN">
+            <summary>
+            Draw 脑图
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Netnr.Blog.Web.Controllers.DrawController.Mind">
             <summary>
             Draw 脑图

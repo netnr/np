@@ -24,10 +24,10 @@
 		<PackageReference Include="Qiniu" Version="8.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.1" />
-		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.266">
+		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.1">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0-preview.266">
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.1">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />

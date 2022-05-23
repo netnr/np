@@ -29,6 +29,15 @@ namespace Netnr.Blog.Web.Controllers
         /// Draw 脑图
         /// </summary>
         /// <returns></returns>
+        public IActionResult BPMN()
+        {
+            return View("/Views/Draw/_PartialBPMNEditor.cshtml");
+        }
+
+        /// <summary>
+        /// Draw 脑图
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Mind()
         {
             return View("/Views/Draw/_PartialMindEditor.cshtml");
@@ -294,8 +303,14 @@ namespace Netnr.Blog.Web.Controllers
 
             ViewData["vid"] = id;
 
-            var vname = string.Format("/Views/Draw/_Partial{0}Editor.cshtml", id.StartsWith('m') ? "Mind" : "Graph");
-            return View(vname);
+            var idAsType = "Graph";
+            switch (id[0])
+            {
+                case 'm': idAsType = "Mind"; break;
+                case 'b': idAsType = "BPMN"; break;
+            }
+
+            return View($"/Views/Draw/_Partial{idAsType}Editor.cshtml");
         }
 
         /// <summary>

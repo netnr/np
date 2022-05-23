@@ -7,8 +7,9 @@
     <div class="row">
         <div class="col-12">
             <form method="post" action="/draw/code/saveform">
-                <sl-select class="mb-3" label="类型" size="large" required name="DrType" value='@(Model?.DrType=="mind"?"mind":"draw")' @(Model == null ? "" : "disabled")>
+                <sl-select class="mb-3" label="类型" size="large" required name="DrType" value='@(string.IsNullOrWhiteSpace(Model?.DrType)?"draw":Model.DrType)' @(Model == null ? "" : "disabled")>
                     <sl-menu-item value="draw">绘图（Graph）</sl-menu-item>
+                    <sl-menu-item value="bpmn">绘图（BPMN）</sl-menu-item>
                     <sl-menu-item value="mind">脑图（Mind）</sl-menu-item>
                 </sl-select>
                 <sl-input class="mb-3" label="标题" size="large" required name="DrName" value="@Model?.DrName" placeholder="标题名称" maxlength="50" autofocus></sl-input>
