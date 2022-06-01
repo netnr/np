@@ -1,11 +1,7 @@
 @{
     Layout = null;
-
-    var host1 = string.Join('.', ViewContext.HttpContext.Request.Headers.Host.ToString().Split('.').Reverse().Take(2));
-    var host2 = string.Join('.', GlobalTo.GetValue("Common:Mirror").Split('.').Reverse().Take(2));
-    var server = GlobalTo.GetValue("StaticResource:Server");
-    var i18nServer = GlobalTo.GetValue("StaticResource:i18nServer");
-    var baseServer = $"{(host1 == host2 ? i18nServer : server)}/libs/kityminder";
+    
+    var baseServer = "/app/kityminder";
 }
 
 

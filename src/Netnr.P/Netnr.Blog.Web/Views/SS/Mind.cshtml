@@ -1,9 +1,7 @@
 @{
     Layout = null;
 
-    var hostName = ViewContext.HttpContext.Request.Host.Host.ToString();
-    var fastHost = new List<string> { "localhost", "ss.netnr.com", "www.netnr.com" };
-    var baseServer = fastHost.Contains(hostName) ? "https://s1.netnr.com/libs/kityminder" : "https://s1.netnr.eu.org/libs/kityminder";
+    var baseServer = "/app/kityminder";
 }
 <!DOCTYPE html>
 <html lang="zh-cn">
@@ -90,7 +88,7 @@
     </div>
 
     <kityminder-editor on-init="initEditor(editor, minder)"></kityminder-editor>
-    
+
     <script src="/js/ss/mind.js" asp-append-version="true"></script>
 </body>
 </html>

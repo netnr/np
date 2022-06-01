@@ -23,7 +23,12 @@ var page = {
                 domItem.value = language;
                 domItem.innerHTML = language;
                 nr.domSeLanguage.appendChild(domItem);
-            })
+            });
+
+            //新增，恢复
+            if (location.pathname == "/gist") {
+                nr.domHidContent.value = nr.lsStr("content");
+            }
 
             page.editor = me.create(nr.domEditor, {
                 value: nr.domHidContent.value,
@@ -36,6 +41,17 @@ var page = {
                     enabled: true
                 }
             });
+
+            //新增，自动保存
+            if (location.pathname == "/gist") {
+                page.editor.onDidChangeModelContent(function (e) {
+                    clearTimeout(window.defer1);
+                    window.defer1 = setTimeout(function () {
+                        nr.ls["content"] = page.editor.getValue();
+                        nr.lsSave();
+                    }, 1000 * 1)
+                });
+            }
 
             nr.domBtnSave.classList.remove('d-none');
             nr.changeSize();
@@ -50,9 +66,6 @@ var page = {
             page.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
                 nr.domBtnSave.click();
             })
-        });
-        require(['vs/editor/editor.main'], function () {
-
         });
     },
     save: function () {
@@ -104,6 +117,9 @@ var page = {
                 }
             }).then(res => {
                 if (res.code == 200) {
+                    nr.ls["content"] = "";
+                    nr.lsSave();
+
                     location.href = "/gist/code/" + res.data;
                 } else {
                     nr.alert(res.msg);

@@ -23,4 +23,5 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("text-to-image.js,monaco-editor"))
+<script src="/app/txt2img/text-to-image.js" asp-append-version="true"></script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("monaco-editor"))

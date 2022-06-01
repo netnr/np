@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Netnr.Test
@@ -454,7 +452,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void ZipTo()
+        public void ZipTo_1()
         {
             var pathName1 = Path.GetTempFileName();
             var pathName2 = Path.GetTempFileName();
@@ -480,6 +478,27 @@ namespace Netnr.Test
             File.Delete(pathName1);
             File.Delete(pathName2);
             Directory.Delete(dirPath, true);
+        }
+
+        [Fact]
+        public void ZipTo_2()
+        {
+            var text = "’‚ «testƒ⁄»›£¨2022-05-27";
+            for (int i = 0; i < 999; i++)
+            {
+                text += text;
+            }
+
+            var savePath = Path.Combine(Path.GetTempPath(), "text2zip.zip");
+
+            var zipBuffer = Core.ZipTo.TextToZip(text);
+            var text1 = Core.ZipTo.ZipToText(zipBuffer);
+            Assert.Equal(text, text1);
+
+            Core.ZipTo.TextToZip(text, savePath: savePath);
+            Assert.True(File.Exists(savePath));
+
+            File.Delete(savePath);
         }
     }
 }

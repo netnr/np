@@ -141,7 +141,7 @@ var page = {
             },
             getRowId: event => event.data.NoteId,
             columnDefs: [
-                ag.numberCol({ checkboxSelection: false }),
+                ag.numberCol(),
                 { field: "NoteTitle", flex: 1, minWidth: 200 },
                 { field: "NoteCreateTime", filter: 'agDateColumnFilter', },
                 { field: "NoteUpdateTime", filter: 'agDateColumnFilter', },

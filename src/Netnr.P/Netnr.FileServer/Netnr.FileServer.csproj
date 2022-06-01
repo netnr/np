@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>be59f0e1-ec32-4814-99f6-99085b992efb</UserSecretsId>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>Netnr.FileServer.xml</DocumentationFile>
     <DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Public;Fast;App</DefineConstants>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
@@ -28,9 +28,6 @@
 
   <ItemGroup>
     <None Update="db\README.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Netnr.FileServer.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="static\README.md">

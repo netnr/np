@@ -152,6 +152,9 @@ namespace Netnr.Blog.Web.Controllers
 
                         db.Draw.Add(mof);
                         num = db.SaveChanges();
+
+                        //推送通知
+                        Application.PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
                     }
                     else
                     {

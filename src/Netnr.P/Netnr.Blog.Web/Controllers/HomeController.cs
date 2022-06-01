@@ -278,6 +278,9 @@ namespace Netnr.Blog.Web.Controllers
 
                     int num = db.SaveChanges();
 
+                    //推送通知
+                    Application.PushService.PushAsync("网站消息（留言）", $"类别：{mo.UrTargetType}\r\n{mo.UrContentMd}");
+
                     vm.Set(num > 0);
                 }
             }

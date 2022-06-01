@@ -1,12 +1,12 @@
 ﻿using System.Net;
-using Netnr.Core;
-using Netnr.SharedFast;
+using System.Globalization;
 using JiebaNet.Segmenter;
 using JiebaNet.Analyser;
 using JiebaNet.Segmenter.PosSeg;
-using System.Globalization;
-using SkiaSharp.QrCode;
 using SkiaSharp;
+using SkiaSharp.QrCode;
+using Netnr.Core;
+using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers.api
 {

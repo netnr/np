@@ -1,6 +1,6 @@
-using Netnr.SharedUserAgent;
 using Netnr.SharedApp;
 using Netnr.SharedFast;
+using Netnr.SharedLogging;
 using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Web.Controllers
@@ -32,7 +32,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             return SharedResultVM.Try(vm =>
             {
-                if (HttpContext != null && new UserAgentTo(new ClientTo(HttpContext).UserAgent).IsBot)
+                if (HttpContext != null && new UAParser.Parsers(new ClientTo(HttpContext).UserAgent).GetBot() != null)
                 {
                     vm.Set(SharedEnum.RTag.refuse);
                     vm.Msg = "are you human？";

@@ -7,6 +7,11 @@ namespace Netnr.SharedApp;
 /// </summary>
 public static class LaunchTo
 {
+    /// <summary>
+    /// 全局变量
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
     public static WebApplicationBuilder SetGlobal(this WebApplicationBuilder builder)
     {
         SharedFast.GlobalTo.Configuration = builder.Configuration;
@@ -18,6 +23,10 @@ public static class LaunchTo
         return builder;
     }
 
+    /// <summary>
+    /// JSON 统一配置
+    /// </summary>
+    /// <param name="builder"></param>
     public static void SetJson(this IMvcBuilder builder)
     {
         builder.AddNewtonsoftJson(options =>

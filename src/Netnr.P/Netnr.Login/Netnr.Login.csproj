@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net48;netstandard2;netstandard2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>netnr</Authors>
@@ -13,14 +13,15 @@
     <Version>4.0.1</Version>
     <PackageReleaseNotes>升级依赖版本和更改图标</PackageReleaseNotes>
     <PackageTags>oauth2.0 login</PackageTags>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <DocumentationFile>Netnr.Login.xml</DocumentationFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>    <DocumentationFile></DocumentationFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>favicon.png</PackageIcon>
     <OutputType>Library</OutputType>
     <StartupObject />
     <RepositoryUrl>https://github.com/netnr</RepositoryUrl>
     <Copyright>netnr</Copyright>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageReadmeFile>Netnr.Login.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
@@ -29,6 +30,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\docs\Netnr.Login.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="favicon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

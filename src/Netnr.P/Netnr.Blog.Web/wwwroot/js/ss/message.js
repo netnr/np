@@ -91,6 +91,7 @@ var page = {
                 ss.loading(false);
                 nr.domBtnReply.loading = false;
                 nr.alert("保存成功");
+                page.notice(obj.nickname, obj.message);
                 nr.domTxtMessage.value = "";
                 page.list(true);
 
@@ -103,6 +104,12 @@ var page = {
                 nr.alert("保存失败");
             });
         }
+    },
+    notice: function (nickname, message) {
+        var fd = new FormData();
+        fd.append("title", "留言（SS）");
+        fd.append("msg", `${nickname}\r\n${message}`);
+        fetch("https://www.netnr.com/api/v1/Push", { method: 'POST', body: fd });
     },
     refTA: function (that) {
         nr.domTxtMessage.value = `@${that.innerText} ${nr.domTxtMessage.value}`;

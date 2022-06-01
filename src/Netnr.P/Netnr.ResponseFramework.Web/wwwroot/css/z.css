@@ -488,6 +488,7 @@ button.close {
 .formui .form-group label.checkbox {
     padding: 0;
     height: 34px;
+    border: none;
     line-height: 34px;
     padding-left: 20px;
 }

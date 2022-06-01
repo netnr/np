@@ -6,6 +6,19 @@
 {
     switch (item)
     {
+        case "ace.css":
+            <link href='/libs/ace/ace.min.css' rel='stylesheet' asp-append-version="true" />
+            <link href='/libs/ace/ace-skins.min.css' rel='stylesheet' async asp-append-version="true" />
+            break;
+        case "ace.js":
+            <script src='/libs/ace/ace.min.js' asp-append-version="true"></script>
+            break;
+
+        case "easyui":
+            <link href='/libs/jquery-easyui/themes/metro/easyui.css' rel='stylesheet' asp-append-version="true" />
+            <script src='/libs/jquery-easyui/jquery.easyui.min.js' asp-append-version="true"></script>
+            break;
+
         case "z.css":
             <link href="/css/z.css" rel="stylesheet" asp-append-version="true" />
             break;

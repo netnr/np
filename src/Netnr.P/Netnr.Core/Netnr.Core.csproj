@@ -15,45 +15,25 @@
 		</PackageReleaseNotes>
 		<Authors>netnr</Authors>
 		<Version>1.5.0</Version>
-		<DocumentationFile>Netnr.Core.xml</DocumentationFile>
+		<DocumentationFile></DocumentationFile>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>favicon.png</PackageIcon>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
-		<DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
-		<PlatformTarget>AnyCPU</PlatformTarget>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
-	  <PlatformTarget>AnyCPU</PlatformTarget>
-	  <NoWarn>1701;1702</NoWarn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
-	  <PlatformTarget>AnyCPU</PlatformTarget>
-	  <NoWarn>1701;1702</NoWarn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
-	  <PlatformTarget>AnyCPU</PlatformTarget>
-	  <NoWarn>1701;1702</NoWarn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
-	  <PlatformTarget>AnyCPU</PlatformTarget>
-	  <NoWarn>1701;1702</NoWarn>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>Netnr.Core.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
 		<PackageReference Include="System.Runtime.Caching">
-			<Version>6.0.2-mauipre.1.22102.15</Version>
+			<Version>6.0.0</Version>
 		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="..\..\..\docs\Netnr.Core.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
 		<None Include="favicon.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>

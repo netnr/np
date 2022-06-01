@@ -15,7 +15,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0-preview.4.22229.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.2-mauipre.1.22102.15" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
 		<PackageReference Include="MySqlConnector" Version="2.1.9" />
 		<PackageReference Include="Npgsql" Version="7.0.0-preview.4" />

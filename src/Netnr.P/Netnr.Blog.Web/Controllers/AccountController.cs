@@ -115,6 +115,9 @@ namespace Netnr.Blog.Web.Controllers
                 db.UserInfo.Add(mo);
                 int num = db.SaveChanges();
                 vm.Set(num > 0);
+
+                //推送通知
+                Application.PushService.PushAsync("网站消息（注册）", $"{mo.UserId}");
             }
 
             return vm;
@@ -167,8 +170,6 @@ namespace Netnr.Blog.Web.Controllers
                 return View(vm);
             }
         }
-
-
 
         /// <summary>
         /// 公共登录验证

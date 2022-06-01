@@ -16,6 +16,10 @@ namespace Netnr.Blog.Web.Controllers
     {
         public ContextBase db;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cb"></param>
         public UserController(ContextBase cb)
         {
             db = cb;

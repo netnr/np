@@ -14,8 +14,8 @@
 </head>
 
 <body class="no-skin">
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading,bootstrap3.css,fa.css,ace.css"))
-    <partial name="_QuotePartial" model="@("z.css")" />
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading,bootstrap3.css,fa4.css"))
+    <partial name="_QuotePartial" model="@("ace.css,z.css")" />
 
     <!--顶部-->
     <div id="navbar" class="navbar navbar-default navbar-fixed-top">
@@ -226,9 +226,9 @@
             <div class="tab-content" id="mtabox"></div>
         </div>
     </div>
-
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("jquery.js,bootstrap3.js,ace.js,z.js,init.js"))
-    <partial name="_QuotePartial" model="@("z.js,init.js")" />
+    
+    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("jquery3.js,bootstrap3.js"))
+    <partial name="_QuotePartial" model="@("ace.js,z.js,init.js")" />
 
 </body>
 </html>

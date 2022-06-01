@@ -2,8 +2,6 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Data.Sqlite;
-using DeviceDetectorNET;
-using DeviceDetectorNET.Parser;
 using Netnr.SharedAdo;
 
 namespace Netnr.SharedLogging
@@ -317,9 +315,9 @@ namespace Netnr.SharedLogging
                 //解析User-Agent
                 if (!string.IsNullOrWhiteSpace(item.LogUserAgent))
                 {
-                    UserAgentParse(item.LogUserAgent, out string bn, out string sn, out bool isBot);
-                    item.LogBrowserName = bn;
-                    item.LogSystemName = sn;
+                    UserAgentParser(item.LogUserAgent, out string browserName, out string systemName, out bool isBot);
+                    item.LogBrowserName = browserName;
+                    item.LogSystemName = systemName;
                     if (isBot)
                     {
                         item.LogGroup = "2";
@@ -328,6 +326,29 @@ namespace Netnr.SharedLogging
             });
 
             ipds?.Dispose();
+        }
+
+        /// <summary>
+        /// User-Agent 解析
+        /// </summary>
+        /// <param name="userAgent"></param>
+        /// <param name="browserName"></param>
+        /// <param name="systemName"></param>
+        /// <param name="isBot"></param>
+        public static void UserAgentParser(string userAgent, out string browserName, out string systemName, out bool isBot)
+        {
+            var uap = new UAParser.Parsers(userAgent);
+            var clientEntity = uap.GetClient();
+            var osEntity = uap.GetOS();
+            var botEntity = uap.GetBot();
+
+            browserName = clientEntity != null
+                ? $"{clientEntity.Name} {clientEntity.Version}"
+                : "";
+            systemName = osEntity != null
+                ? $"{osEntity.Name} {osEntity.Version}"
+                : "";
+            isBot = botEntity != null;
         }
 
         /// <summary>
@@ -373,55 +394,6 @@ namespace Netnr.SharedLogging
             }
 
             return new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecuteNonQuery(listSql);
-        }
-
-        /// <summary>
-        /// 解析 User-Agent
-        /// </summary>
-        /// <param name="ua"></param>
-        /// <param name="browserName"></param>
-        /// <param name="systemName"></param>
-        /// <param name="isBot"></param>
-        public static void UserAgentParse(string ua, out string browserName, out string systemName, out bool isBot)
-        {
-            isBot = false;
-
-            DeviceDetector.SetVersionTruncation(VersionTruncation.VERSION_TRUNCATION_NONE);
-
-            var bn = "Unknown";
-            var sn = "Unknown";
-
-            if (ua != null)
-            {
-                var dd = new DeviceDetector(ua);
-                dd.DiscardBotInformation();
-
-                dd.Parse();
-                if (isBot = dd.IsBot())
-                {
-                    var botInfo = dd.GetBot();
-                    if (botInfo.Success)
-                    {
-                        bn = botInfo.Match.Name;
-                    }
-                }
-                else
-                {
-                    var clientInfo = dd.GetClient();
-                    if (clientInfo.Success)
-                    {
-                        bn = clientInfo.Match.Name + " " + clientInfo.Match.Version;
-                    }
-                    var osInfo = dd.GetOs();
-                    if (osInfo.Success)
-                    {
-                        sn = osInfo.Match.Name + " " + osInfo.Match.Version;
-                    }
-                }
-            }
-
-            browserName = bn;
-            systemName = sn;
         }
 
         /// <summary>
@@ -799,7 +771,7 @@ namespace Netnr.SharedLogging
                         return db.GetCommand(sql).ExecuteDataOnly().First().Value;
                     });
 
-                    if(dt.Count > 50)
+                    if (dt.Count > 50)
                     {
                         dt = dt.Take(50).ToList();
                     }

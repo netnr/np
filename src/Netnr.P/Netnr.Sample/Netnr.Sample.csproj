@@ -21,7 +21,6 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
 		<PackageReference Include="NPOI" Version="2.5.6" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
-		<PackageReference Include="DeviceDetector.NET" Version="4.3.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.3.0-1.final" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
 		<PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
@@ -34,6 +33,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
 		<ProjectReference Include="..\Netnr.Login\Netnr.Login.csproj" />
+		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 		<ProjectReference Include="..\Netnr.WeChat\Netnr.WeChat.csproj" />
 	</ItemGroup>
 

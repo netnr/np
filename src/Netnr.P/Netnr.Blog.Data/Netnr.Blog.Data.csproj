@@ -14,7 +14,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0-preview.4.22229.2" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.2-mauipre.1.22102.15" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
 		<PackageReference Include="MySqlConnector" Version="2.1.9" />

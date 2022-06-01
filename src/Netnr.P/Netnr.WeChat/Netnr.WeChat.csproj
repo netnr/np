@@ -11,12 +11,14 @@
     <PackageIconUrl></PackageIconUrl>
     <PackageTags>netnr wechat weixin 微信 公众号</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <DocumentationFile>Netnr.WeChat.xml</DocumentationFile>
     <Version>1.1.1</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>favicon.png</PackageIcon>
     <Copyright>netnr</Copyright>
     <RepositoryUrl>https://github.com/netnr</RepositoryUrl>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageReadmeFile>Netnr.WeChat.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
@@ -29,6 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\docs\Netnr.WeChat.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="favicon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

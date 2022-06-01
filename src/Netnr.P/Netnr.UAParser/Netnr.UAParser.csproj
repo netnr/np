@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net48;netstandard2;netstandard2.1</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<Version>1.0.1</Version>
+		<Authors>netnr</Authors>
+		<Description>提取浏览器名称、浏览器版本号、系统名称、系统版本号、是否为爬虫
+
+### 使用 (Usage)
+```
+var uap = new UAParser.Parsers(userAgent);
+
+var clientEntity = uap.GetClient();
+var deviceEntity = uap.GetDevice();
+var osEntity = uap.GetOS();
+var botEntity = uap.GetBot();
+```  
+
+### 附
+正则来源：&lt;https://github.com/matomo-org/device-detector&gt;  
+对比：&lt;https://github.com/totpero/DeviceDetector.NET&gt;  
+去除详细型号检测，包精简，轻依赖，预加载正则，相对缓存热数据  
+不命中缓存时，一个耗时 300ms 左右，而 DeviceDetector.NET 需要 3s 左右</Description>
+		<Copyright>netnr</Copyright>
+		<PackageProjectUrl>https://github.com/netnr</PackageProjectUrl>
+		<PackageIcon>favicon.png</PackageIcon>
+		<RepositoryUrl>https://github.com/netnr</RepositoryUrl>
+		<PackageTags>netnr;UserAgent;user-agent;device-detector;bot-detector</PackageTags>
+		<PackageReleaseNotes>device-detector mini</PackageReleaseNotes>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>Netnr.UAParser.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\..\docs\Netnr.UAParser.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
+		<None Include="favicon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+</Project>

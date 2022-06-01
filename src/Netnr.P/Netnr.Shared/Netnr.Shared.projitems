@@ -45,7 +45,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedNpoi\NpoiTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedPinyin\PinyinTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedReady\ReadyTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedUserAgent\UserAgentTo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)SharedImport\" />

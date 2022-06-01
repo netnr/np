@@ -161,6 +161,9 @@ namespace Netnr.Blog.Web.Controllers
 
                     vm.Data = mo.RunCode;
                     vm.Set(num > 0);
+
+                    //推送通知
+                    Application.PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
                 }
                 else
                 {

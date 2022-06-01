@@ -54,7 +54,7 @@ namespace Netnr.Sample.Controllers
                 case SharedEnum.TypeDB.MariaDB:
                     {
                         var dbc = new MySqlConnector.MySqlConnection(conn);
-                        dbc.InfoMessage += (s, e) => vm.Log.Add(e.Errors.FirstOrDefault()?.Message);
+                        dbc.InfoMessage += (s, e) => vm.Log.Add(e.Errors[0].Message);
                         dbConn = dbc;
                     }
                     break;
@@ -76,33 +76,6 @@ namespace Netnr.Sample.Controllers
 
             var db = new DbHelper(dbConn);
             db.SqlExecuteReader(sql);
-
-            return vm;
-        }
-
-        /// <summary>
-        /// User-Agent
-        /// </summary>
-        /// <param name="ua">User-Agent</param>
-        /// <param name="loop">循环</param>
-        /// <returns></returns>
-        [HttpGet]
-        public SharedResultVM To_UserAgent(string ua = "", int loop = 1)
-        {
-            var vm = new SharedResultVM();
-
-            if (string.IsNullOrWhiteSpace(ua))
-            {
-                ua = Request.HttpContext.Request.Headers["User-Agent"].ToString();
-            }
-
-            Parallel.For(0, loop, i =>
-            {
-                _ = new SharedUserAgent.UserAgentTo(ua);
-            });
-
-            var uainfo = new SharedUserAgent.UserAgentTo(ua);
-            vm.Data = uainfo;
 
             return vm;
         }

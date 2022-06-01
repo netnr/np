@@ -3,16 +3,18 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DocumentationFile>Netnr.ResponseFramework.Web.xml</DocumentationFile>
+		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;App;DataKit;DKController;IpArea;UserAgent;Drawing</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;App;DataKit;DKController;IpArea;Logging;Drawing</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;App;DataKit;DKController;IpArea;UserAgent;Drawing</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;App;DataKit;DKController;IpArea;Logging;Drawing</DefineConstants>
+		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,7 +28,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.1" />
-		<PackageReference Include="DeviceDetector.NET" Version="4.3.0" />
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
@@ -35,6 +36,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.ResponseFramework.Application\Netnr.ResponseFramework.Application.csproj" />
+		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -45,9 +47,6 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="logs\README.md">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Netnr.ResponseFramework.Web.xml">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

@@ -296,7 +296,7 @@ namespace Netnr.SharedAdo
                 foreach (DataRow dr in dtSchema.Rows)
                 {
                     //跳过隐藏列（针对配置 CommandBehavior.KeyInfo 添加了额外的列）
-                    if (Convert.ToBoolean(dr["IsHidden"] == DBNull.Value ? false : dr["IsHidden"]))
+                    if (dtSchema.Columns.Contains("IsHidden") && Convert.ToBoolean(dr["IsHidden"] == DBNull.Value ? false : dr["IsHidden"]))
                     {
                         continue;
                     }

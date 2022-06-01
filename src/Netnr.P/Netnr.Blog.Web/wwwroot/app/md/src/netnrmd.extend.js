@@ -152,10 +152,7 @@ netnrmd.extend = {
                                 break;
                             case "pdf":
                                 {
-                                    var uri = ["localhost", "ss.netnr.com"].includes(location.hostname)
-                                        ? "https://s1.netnr.com/libs/mix/html2pdf.bundle.min.js"
-                                        : "https://s1.netnr.eu.org/libs/mix/html2pdf.bundle.min.js";
-                                    require([uri], function (module) {
+                                    require(["https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/html2pdf.js/0.9.3/html2pdf.bundle.min.js"], function (module) {
                                         var ch = that.obj.view.clientHeight;
                                         that.obj.view.style.height = 'auto';
                                         var vm = that.obj.viewmodel;

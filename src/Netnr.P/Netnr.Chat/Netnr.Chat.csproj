@@ -2,10 +2,11 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DocumentationFile>Netnr.Chat.xml</DocumentationFile>
+		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
 		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
 	</PropertyGroup>
@@ -31,12 +32,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="Netnr.Chat.xml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

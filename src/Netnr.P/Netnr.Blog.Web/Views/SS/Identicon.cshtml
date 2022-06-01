@@ -27,4 +27,5 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jdenticon.js,identicon.js,html2canvas.js"))
+<script src="/app/identicon/identicon.min.js" asp-append-version="true"></script>
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("jdenticon.js,html2canvas.js"))

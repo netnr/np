@@ -76,6 +76,9 @@ namespace Netnr.Blog.Web.Controllers
                     int num = db.SaveChanges();
                     if (num > 0)
                     {
+                        //推送通知
+                        Application.PushService.PushAsync("网站消息（Guff）", $"a new record");
+
                         return Redirect($"/guff/code/{mo.GrId}");
                     }
                     else

@@ -121,6 +121,9 @@ namespace Netnr.Blog.Web.Controllers
                 db.DocSet.Add(mo);
 
                 num = db.SaveChanges();
+
+                //推送通知
+                Application.PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
             }
             else
             {

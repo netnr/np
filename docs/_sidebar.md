@@ -3,6 +3,7 @@
 - [Change Log](CHANGELOG.md)
 - [Netnr.Core](Netnr.Core.md)
 - [Netnr.Login](Netnr.Login.md)
+- [Netnr.UAParser](Netnr.UAParser.md)
 - [Netnr.Blog](Netnr.Blog.md) 
 - [Netnr.ResponseFramework](Netnr.ResponseFramework.md)
 - [Netnr.DataKit](Netnr.DataKit.md)

@@ -175,7 +175,9 @@ namespace Netnr.SharedDataKit
             };
         }
 
-        //分批最大行数
+        /// <summary>
+        /// 分批最大行数
+        /// </summary>
         public const int BatchMaxRows = 10000;
 
         /// <summary>

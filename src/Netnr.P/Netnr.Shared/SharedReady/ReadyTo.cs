@@ -2,6 +2,9 @@
 
 namespace Netnr.SharedReady
 {
+    /// <summary>
+    /// 准备
+    /// </summary>
     public class ReadyTo
     {
         /// <summary>

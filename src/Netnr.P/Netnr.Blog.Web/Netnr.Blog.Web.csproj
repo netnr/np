@@ -3,16 +3,18 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DocumentationFile>Netnr.Blog.Web.xml</DocumentationFile>
+		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Drawing;DataKit;DKController;App;UserAgent;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Drawing;DataKit;DKController;App;Logging</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Drawing;DataKit;DKController;App;UserAgent;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Drawing;DataKit;DKController;App;Logging</DefineConstants>
+		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -33,18 +35,12 @@
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />
-		<PackageReference Include="DeviceDetector.NET" Version="4.3.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Blog.Application\Netnr.Blog.Application.csproj" />
+		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 		<ProjectReference Include="..\Netnr.WeChat\Netnr.WeChat.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="Netnr.Blog.Web.xml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

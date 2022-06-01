@@ -1,7 +1,7 @@
 ﻿using System.Xml;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Netnr.SharedUserAgent;
+using Netnr.SharedLogging;
 using Netnr.SharedIpArea;
 using Netnr.SharedFast;
 using Netnr.SharedApp;
@@ -191,7 +191,7 @@ namespace Netnr.ResponseFramework.Web.Apps
                         if (CurrentCacheLog.Count > cacheLogCount || DateTime.Now.ToTimestamp() - cacheLogWrite.Value.ToTimestamp() > cacheLogTime)
                         {
                             //异步写入日志
-                            System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+                            ThreadPool.QueueUserWorkItem(_ =>
                             {
                                 try
                                 {
@@ -205,10 +205,10 @@ namespace Netnr.ResponseFramework.Web.Apps
                                         deobj.LogId = Core.UniqueTo.LongId().ToString();
                                         deobj.LogArea = ipto.Parse(deobj.LogIp);
 
-                                        var uato = new UserAgentTo(deobj.LogUserAgent);
-                                        deobj.LogBrowserName = uato.BrowserName + " " + uato.BrowserVersion;
-                                        deobj.LogSystemName = uato.SystemName + " " + uato.SystemVersion;
-                                        if (uato.IsBot)
+                                        LoggingTo.UserAgentParser(deobj.LogUserAgent, out string browserName, out string systemName, out bool isBot);
+                                        deobj.LogBrowserName = browserName;
+                                        deobj.LogSystemName = systemName;
+                                        if (isBot)
                                         {
                                             deobj.LogGroup = 2;
                                         }

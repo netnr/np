@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Data;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -99,6 +101,21 @@ namespace Netnr
             {
                 return "";
             }
+        }
+
+        /// <summary>
+        /// 转成 XML
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string ToXml(this object obj)
+        {
+            if (obj == null) return null;
+
+            using var sw = new StringWriter();
+            var serializer = new XmlSerializer(obj.GetType());
+            serializer.Serialize(sw, obj);
+            return sw.ToString();
         }
 
         /// <summary>

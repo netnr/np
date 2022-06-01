@@ -141,6 +141,9 @@ namespace Netnr.Blog.Web.Controllers
 
                     vm.Data = mo.GistCode;
                     vm.Set(SharedEnum.RTag.success);
+
+                    //推送通知
+                    Application.PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
                 }
                 else
                 {

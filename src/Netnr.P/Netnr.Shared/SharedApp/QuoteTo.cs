@@ -1,6 +1,7 @@
 ﻿#if Full || App
 
 namespace Netnr.SharedApp;
+
 /// <summary>
 /// 资源引用
 /// </summary>
@@ -13,7 +14,6 @@ public class QuoteTo
     /// <returns></returns>
     public static string Html(string quotes)
     {
-        var srServer = SharedFast.GlobalTo.GetValue("StaticResource:Server");
         var adminGitHub = SharedFast.GlobalTo.GetValue("Common:AdminGitHub");
 
         var vh = new List<string>();
@@ -27,51 +27,36 @@ public class QuoteTo
                     vh.Add($"<!--\r\nhttps://github.com/{adminGitHub}\r\n{DateTime.Now:yyyy-MM-dd HH:mm:ss}\r\n-->");
                     break;
 
+                case "loading":
+                    vh.Add("<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url(\"/images/loading.svg\");background-repeat:no-repeat;background-position:48% 45%'></div>");
+                    break;
+
                 case "favicon":
                     vh.Add("<link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />");
                     break;
 
-                case "ace.css":
-                    vh.Add($"<link href='{srServer}/libs/acenav/ace.min.css' rel='stylesheet' />");
-                    vh.Add($"<link href='{srServer}/libs/acenav/ace-skins.min.css' rel='stylesheet' async />");
-                    break;
-                case "ace.js":
-                    vh.Add($"<script src='{srServer}/libs/acenav/ace.min.js'></script>");
+                case "fa4.css":
+                    vh.Add("<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />");
                     break;
 
-                case "easyui":
-                    vh.Add($"<link href='{srServer}/libs/jquery-easyui/themes/metro/easyui.css' rel='stylesheet' />");
-                    vh.Add($"<script src='{srServer}/libs/jquery-easyui/jquery.easyui.min.js'></script>");
+                case "jquery3.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>");
                     break;
 
-                case "fast-xml-parser.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/fast-xml-parser.min.js'></script>");
+                case "bootstrap3.css":
+                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css' rel='stylesheet' />");
+                    break;
+                case "bootstrap3.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js'></script>");
                     break;
 
-                case "clean-css.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/clean-css.min.js'></script>");
+                case "bootstrap5.css":
+                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' async />");
+                    break;
+                case "bootstrap5.js":
+                    vh.Add("<script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>");
                     break;
 
-                case "svgo.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/svgo.min.js'></script>");
-                    break;
-
-                case "device-detector-js.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/device-detector-js.min.js'></script>");
-                    break;
-
-                case "js-yaml.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/js-yaml.min.js'></script>");
-                    break;
-
-                case "identicon.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/identicon.min.js'></script>");
-                    break;
-
-                case "text-to-image.js":
-                    vh.Add($"<script src='{srServer}/libs/mix/text-to-image.js'></script>");
-                    break;
-                    
                 case "bpmn-js":
                     vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/diagram-js.css' rel='stylesheet' async />");
                     vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/bpmn-js.css' rel='stylesheet' async />");
@@ -89,46 +74,10 @@ public class QuoteTo
                     vh.Add("<script type='module' src='https://npm.elemecdn.com/@shoelace-style/shoelace@2.0.0-beta.73/dist/shoelace.js'></script>");
                     break;
 
-                case "fa.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css' rel='stylesheet' async />");
-                    break;
-
-                case "jquery.js":
-                case "jquery3.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js'></script>");
-                    break;
-
-                case "bootstrap3.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css' rel='stylesheet' />");
-                    break;
-                case "bootstrap3.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js'></script>");
-                    break;
-
-                case "bootstrap.css":
-                case "bootstrap4.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@4.6.0/dist/css/bootstrap.min.css' rel='stylesheet' />");
-                    break;
-                case "bootstrap.js":
-                case "bootstrap4.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js'></script>");
-                    break;
-
-                case "bootstrap5.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' async />");
-                    break;
-                case "bootstrap5.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>");
-                    break;
-
                 case "jstree":
                     vh.Add("<link href='https://npm.elemecdn.com/jstree@3.3.12/dist/themes/default/style.min.css' rel='stylesheet' />");
                     vh.Add("<link href='https://npm.elemecdn.com/jstree@3.3.12/dist/themes/default-dark/style.min.css' rel='stylesheet' />");
                     vh.Add("<script src='https://npm.elemecdn.com/jstree@3.3.12/dist/jstree.min.js'></script>");
-                    break;
-
-                case "jz.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/jzjs@2.0.2/2.0.2/jz.min.js'></script>");
                     break;
 
                 case "netnrmd.css":
@@ -158,7 +107,7 @@ public class QuoteTo
                     break;
 
                 case "cos-js-sdk-v5.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.7/dist/cos-js-sdk-v5.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.8/dist/cos-js-sdk-v5.min.js'></script>");
                     break;
 
                 case "ag-grid-community.js":
@@ -168,10 +117,6 @@ public class QuoteTo
                 case "ag-grid-enterprise.js":
                     vh.Add("<script src='https://npm.elemecdn.com/ag-grid-enterprise@27.3.0/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
-                    break;
-
-                case "webuploader.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/webuploader@0.1.8/dist/webuploader.html5only.min.js'></script>");
                     break;
 
                 case "ckeditor.js":
@@ -186,10 +131,6 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/blueimp-md5@2.19.0/js/md5.min.js'></script>");
                     break;
 
-                case "uuid4.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/uuid@8.3.2/dist/umd/uuidv4.min.js'></script>");
-                    break;
-
                 //生成二维码
                 case "qrcode.js":
                     vh.Add("<script src='https://npm.elemecdn.com/qrcode@1.5.0/build/qrcode.js'></script>");
@@ -201,7 +142,7 @@ public class QuoteTo
                     break;
 
                 case "sql-formatter.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@6.1.1/dist/sql-formatter.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@6.1.2/dist/sql-formatter.min.js'></script>");
                     break;
 
                 case "highcharts.js":
@@ -255,10 +196,6 @@ public class QuoteTo
                     vh.Add("<script src='https://npm.elemecdn.com/js-beautify@1.14.3/js/lib/beautifier.min.js'></script>");
                     break;
 
-                case "lrz.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/lrz@4.9.41/dist/lrz.all.bundle.js'></script>");
-                    break;
-
                 case "jdenticon.js":
                     vh.Add("<script src='https://npm.elemecdn.com/jdenticon@3.1.1/dist/jdenticon.min.js'></script>");
                     break;
@@ -266,7 +203,7 @@ public class QuoteTo
                 case "jszip.js":
                     vh.Add("<script src='https://npm.elemecdn.com/jszip@3.10.0/dist/jszip.min.js'></script>");
                     break;
-                    
+
                 case "pdf.js":
                     vh.Add("<script src='https://npm.elemecdn.com/pdfjs-dist@2.14.305/legacy/build/pdf.min.js'></script>");
                     break;
@@ -295,10 +232,6 @@ public class QuoteTo
                                 });
                             </script>
                         ");
-                    break;
-
-                case "loading":
-                    vh.Add("<div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url(\"/images/loading.svg\");background-repeat:no-repeat;background-position:48% 45%'></div>");
                     break;
             }
         }

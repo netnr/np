@@ -53,7 +53,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Send", "Netnr.Send\Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Test", "Netnr.Test\Netnr.Test.csproj", "{2220E974-7461-4AFE-9BAA-25BD12BA8430}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netnr.Sample", "Netnr.Sample\Netnr.Sample.csproj", "{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Sample", "Netnr.Sample\Netnr.Sample.csproj", "{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.UAParser", "Netnr.UAParser\Netnr.UAParser.csproj", "{9257191E-EAB9-4592-BD87-D720EA65FE2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -137,6 +139,10 @@ Global
 		{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9D95ED7-0452-4E1B-A4E1-BCAF52229F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9257191E-EAB9-4592-BD87-D720EA65FE2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9257191E-EAB9-4592-BD87-D720EA65FE2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9257191E-EAB9-4592-BD87-D720EA65FE2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9257191E-EAB9-4592-BD87-D720EA65FE2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -160,6 +166,7 @@ Global
 		{9A7BE0E5-E753-42EC-8B26-2835B9407BBB} = {0668834E-BA3C-4AFA-B222-820234F53CD2}
 		{B1DFB9D5-857F-44A0-9E95-6F59ECB29CAF} = {AE055777-515F-4806-8880-DC63EC7669BC}
 		{67ED48A4-EACE-4F16-90FF-D340F33E8B80} = {AE055777-515F-4806-8880-DC63EC7669BC}
+		{9257191E-EAB9-4592-BD87-D720EA65FE2D} = {CF271090-3211-4C57-A076-C8D5D696E479}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B748ADB4-97F0-4295-BA4D-ACC3AB5DA0B2}

@@ -8,8 +8,7 @@
 document.body.classList.add("geEditor");
 
 //容器ID、编辑器对象、服务源
-var vid = document.getElementById("vid").value, eui,
-    mxBaseServer = document.getElementById("mxBaseServer").value;
+var vid = document.getElementById("vid").value, eui, mxBaseServer = "/app/mxgraph";
 
 // Parses URL parameters. Supported parameters are:
 // - lang=xy: Specifies the language of the user interface.
