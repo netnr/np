@@ -117,17 +117,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
             return vm;
         }
 
-        /// <summary>
-        /// 导出下载
-        /// </summary>
-        /// <param name="path">下载文件路径</param>
-        [HttpGet]
-        public void ExportDown(string path)
-        {
-            path = GlobalTo.ContentRootPath + path;
-            new DownTo(Response).Stream(path, "");
-        }
-
         #endregion
     }
 }

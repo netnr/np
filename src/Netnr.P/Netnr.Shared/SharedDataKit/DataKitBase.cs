@@ -184,7 +184,6 @@ namespace Netnr.SharedDataKit
             }
 
             var sql = DataKitScript.GetTableDDL(tdb, databaseName, schemaName, tableName);
-            Console.WriteLine(sql);
             switch (tdb)
             {
                 case SharedEnum.TypeDB.SQLite:

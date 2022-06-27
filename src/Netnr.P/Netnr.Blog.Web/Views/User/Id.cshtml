@@ -4,9 +4,12 @@
 
     var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
     var isme = uinfo.UserId == Model.UserId;
+
+    var avatarUrl = GlobalTo.GetValue("Common:Gravatar");
 }
 
 <input type="hidden" class="nr-hid-isme" value='@(isme?1:0)' />
+<input type="hidden" class="nr-hid-gravatar-url" value='@avatarUrl' />
 
 <div class="container-fluid p-4">
     <div class="row">
@@ -63,7 +66,7 @@
 
 <sl-dialog label="编辑头像" class="nr-dialog-form">
     <label>根据邮箱从 <a href="https://gravatar.com" target="_blank" title="全球公认的头像">gravatar</a> 获得头像</label>
-    <sl-input class="nr-txt-email mb-3" type="email" maxlength="50" placeholder="@Model.UserMail" autocomplete="off" clearable>
+    <sl-input class="nr-txt-email mb-3" type="email" maxlength="50" placeholder="@Model.UserMail" value="@Model.UserMail" autocomplete="off" clearable>
         <sl-icon name="envelope" slot="prefix"></sl-icon>
     </sl-input>
     <sl-button class="nr-btn-get-avatar">获取头像</sl-button>

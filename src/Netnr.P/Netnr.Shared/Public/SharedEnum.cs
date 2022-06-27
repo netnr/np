@@ -3,7 +3,7 @@
 namespace Netnr
 {
     /// <summary>
-    /// 共享枚举
+    /// 枚举
     /// </summary>
     public class SharedEnum
     {

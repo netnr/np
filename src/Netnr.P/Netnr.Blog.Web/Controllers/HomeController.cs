@@ -157,6 +157,9 @@ namespace Netnr.Blog.Web.Controllers
 
                     int num = db.SaveChanges();
 
+                    //推送通知
+                    Application.PushService.PushAsync("网站消息（文章）", $"文章ID：{mo.UwId}\r\n{mo.UwTitle}");
+
                     vm.Data = mo.UwId;
                     vm.Set(num > 0);
                 }

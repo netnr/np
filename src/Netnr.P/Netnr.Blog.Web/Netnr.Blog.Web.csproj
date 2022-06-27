@@ -9,11 +9,11 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Drawing;DataKit;DKController;App;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Drawing;DataKit;DKController;App;Logging</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Drawing;DataKit;DKController;App;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Drawing;DataKit;DKController;App;Logging</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
@@ -21,15 +21,15 @@
 		<PackageReference Include="AgGrid.InfiniteRowModel" Version="1.6.0" />
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
 		<PackageReference Include="Markdig" Version="0.30.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.6" />
 		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
-		<PackageReference Include="Qiniu" Version="8.0.0" />
+		<PackageReference Include="Qiniu" Version="8.2.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.1" />
-		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.1">
+		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.71">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.1">
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.71">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />

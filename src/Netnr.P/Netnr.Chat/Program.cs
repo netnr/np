@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 Netnr.SharedFast.GlobalTo.Configuration = builder.Configuration;
 Netnr.SharedFast.GlobalTo.HostEnvironment = builder.Environment;
 
-Netnr.SharedReady.ReadyTo.EncodingReg();
+Netnr.ReadyTo.EncodingReg();
 
 //（上传）主体大小限制
 var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");

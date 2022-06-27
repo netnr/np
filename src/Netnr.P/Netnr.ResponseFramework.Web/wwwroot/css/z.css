@@ -488,7 +488,6 @@ button.close {
 .formui .form-group label.checkbox {
     padding: 0;
     height: 34px;
-    border: none;
     line-height: 34px;
     padding-left: 20px;
 }
@@ -497,6 +496,10 @@ button.close {
         width: 18px;
         height: 28px;
     }
+
+.checkbox {
+    border: none !important;
+}
 
 /*combo 调整*/
 .form-group span.combo, span.combo {

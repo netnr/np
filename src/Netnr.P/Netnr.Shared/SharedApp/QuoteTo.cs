@@ -58,14 +58,14 @@ public class QuoteTo
                     break;
 
                 case "bpmn-js":
-                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/diagram-js.css' rel='stylesheet' async />");
-                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/bpmn-js.css' rel='stylesheet' async />");
-                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />");
-                    vh.Add("<script src='https://npm.elemecdn.com/bpmn-js@9.1.0/dist/bpmn-modeler.production.min.js'></script>");
+                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.2.2/dist/assets/diagram-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.2.2/dist/assets/bpmn-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://npm.elemecdn.com/bpmn-js@9.2.2/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />");
+                    vh.Add("<script src='https://npm.elemecdn.com/bpmn-js@9.2.2/dist/bpmn-modeler.production.min.js'></script>");
                     break;
 
                 case "leancloud-storage.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/leancloud-storage@4.12.2/dist/av-min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/leancloud-storage@4.12.3/dist/av-min.js'></script>");
                     break;
 
                 case "shoelace":
@@ -103,11 +103,11 @@ public class QuoteTo
                     break;
 
                 case "qiniu.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/qiniu-js@3.4.0/dist/qiniu.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/qiniu-js@3.4.1/dist/qiniu.min.js'></script>");
                     break;
 
                 case "cos-js-sdk-v5.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.8/dist/cos-js-sdk-v5.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/cos-js-sdk-v5@1.3.9/dist/cos-js-sdk-v5.min.js'></script>");
                     break;
 
                 case "ag-grid-community.js":
@@ -142,7 +142,7 @@ public class QuoteTo
                     break;
 
                 case "sql-formatter.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@6.1.2/dist/sql-formatter.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/sql-formatter@7.0.2/dist/sql-formatter.min.js'></script>");
                     break;
 
                 case "highcharts.js":
@@ -168,7 +168,7 @@ public class QuoteTo
                     break;
 
                 case "terser.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.13.1/dist/bundle.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/terser@5.14.1/dist/bundle.min.js'></script>");
                     break;
 
                 case "html2canvas.js":
@@ -185,15 +185,15 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.11.1/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npm.elemecdn.com/swagger-ui-dist@4.12.0/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.11.1/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.11.1/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.12.0/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/swagger-ui-dist@4.12.0/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
-                    vh.Add("<script src='https://npm.elemecdn.com/js-beautify@1.14.3/js/lib/beautifier.min.js'></script>");
+                    vh.Add("<script src='https://npm.elemecdn.com/js-beautify@1.14.4/js/lib/beautifier.min.js'></script>");
                     break;
 
                 case "jdenticon.js":
@@ -217,12 +217,6 @@ public class QuoteTo
                     vh.Add(@"
                             <script>
                                 var meRequire = require;
-
-                                function htmlDecode(html) {
-                                    var a = document.createElement('a');
-                                    a.innerHTML = html;
-                                    return a.innerText;
-                                }
 
                                 require.config({
                                     paths: {

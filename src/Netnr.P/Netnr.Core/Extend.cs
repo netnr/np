@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
+using System.ComponentModel;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -53,23 +55,11 @@ namespace Netnr
         }
 
         /// <summary>
-        /// JSON字符串 转 类型
-        /// </summary>
-        /// <param name="json">JSON字符串</param>
-        /// <param name="type">类型</param>
-        /// <returns></returns>
-        public static object ToType(this string json, Type type)
-        {
-            var mo = JsonConvert.DeserializeObject(json, type);
-            return mo;
-        }
-
-        /// <summary>
         /// JSON字符串 转 实体
         /// </summary>
         /// <typeparam name="T">实体泛型</typeparam>
         /// <param name="json">JSON字符串</param>
-        public static T ToEntity<T>(this string json)
+        public static T ToModel<T>(this string json)
         {
             var mo = JsonConvert.DeserializeObject<T>(json);
             return mo;
@@ -80,7 +70,7 @@ namespace Netnr
         /// </summary>
         /// <typeparam name="T">实体泛型</typeparam>
         /// <param name="json">JSON字符串</param>
-        public static List<T> ToEntitys<T>(this string json)
+        public static List<T> ToModels<T>(this string json)
         {
             var list = JsonConvert.DeserializeObject<List<T>>(json);
             return list;
@@ -289,6 +279,29 @@ namespace Netnr
         }
 
         /// <summary>
+        /// 文本转流（默认位置0）
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Stream ToStream(this string value)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(value);
+            writer.Flush();
+            stream.Position = 0;
+
+            return stream;
+        }
+
+        /// <summary>
+        /// Byte 转流（默认位置0）
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static Stream ToStream(this byte[] bytes) => new MemoryStream(bytes) { Position = 0 };
+
+        /// <summary>
         /// Base64 编码
         /// </summary>
         /// <param name="value">内容</param>
@@ -343,6 +356,45 @@ namespace Netnr
             }
 
             return target;
+        }
+
+        /// <summary>
+        /// 值类型转换
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="value">值</param>
+        /// <returns></returns>
+        public static T ToConvert<T>(this string value) => (T)ToConvert(value, typeof(T));
+
+        /// <summary>
+        /// 值类型转换
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <param name="value">值</param>
+        /// <returns></returns>
+        public static object ToConvert(this string value, Type type)
+        {
+            if (type == typeof(object))
+            {
+                return value;
+            }
+
+            if (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    return value;
+                }
+                return ToConvert(value, Nullable.GetUnderlyingType(type));
+            }
+
+            var converter = TypeDescriptor.GetConverter(type);
+            if (converter.CanConvertFrom(typeof(string)))
+            {
+                return converter.ConvertFromInvariantString(value);
+            }
+
+            return null;
         }
 
         /// <summary>

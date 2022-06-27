@@ -103,55 +103,5 @@ namespace Netnr.Core
 
             Interlocked.Exchange(ref WriteN, 0);
         }
-
-        /// <summary>
-        /// 调用菜单
-        /// </summary>
-        /// <param name="ctype"></param>
-        public static void InvokeMenu(Type ctype)
-        {
-            var cms = ctype.GetMethods().ToList();
-            var mm = cms.First().Module;
-            cms = cms.Where(x => x.Module == mm).ToList();
-
-            Console.WriteLine(Environment.NewLine);
-            var prevGroupName = string.Empty;
-            for (int i = 0; i < cms.Count; i++)
-            {
-                var mi = cms[i];
-                var disps = mi.CustomAttributes.LastOrDefault()?.NamedArguments;
-                var dispName = disps.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value.ToString();
-                var dispGroupName = disps.FirstOrDefault(x => x.MemberName == "GroupName").TypedValue.Value.ToString();
-                var nl = string.Empty;
-                if (i > 0 && dispGroupName != prevGroupName)
-                {
-                    nl = "\n";
-                }
-
-                if (!string.IsNullOrWhiteSpace(dispName))
-                {
-                    Console.WriteLine($"{nl}{i,5}. {mi.Name} -> {dispName}");
-                }
-
-                prevGroupName = dispGroupName;
-            }
-
-            bool isMenumNum;
-            do
-            {
-                Console.Write("\nPlease enter the number: ");
-                isMenumNum = int.TryParse(Console.ReadLine(), out int num) && num >= 0 && num < cms.Count;
-                if (isMenumNum)
-                {
-                    var mi = cms[num];
-
-                    var desc = mi.CustomAttributes.LastOrDefault()?.NamedArguments.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value.ToString();
-                    Console.WriteLine($"\nSelected {num}. {mi.Name} -> {desc} ({DateTime.Now:yyyy-MM-dd HH:mm:ss})\n");
-
-                    mi.Invoke(ctype, null);
-                    InvokeMenu(ctype);
-                }
-            } while (!isMenumNum);
-        }
     }
 }

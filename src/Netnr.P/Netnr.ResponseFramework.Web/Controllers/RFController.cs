@@ -252,7 +252,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = new SharedResultVM();
 
             //明细反序列化为对象
-            var listDetail = rows.ToEntitys<TempInvoiceDetail>();
+            var listDetail = rows.ToModels<TempInvoiceDetail>();
 
             //新增，补齐主表信息
             var isadd = string.IsNullOrWhiteSpace(moMain.TimId);

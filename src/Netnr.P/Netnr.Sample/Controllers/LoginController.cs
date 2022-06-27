@@ -1,4 +1,5 @@
-﻿using Netnr.Login;
+﻿using Microsoft.AspNetCore.Mvc;
+using Netnr.Login;
 
 namespace Netnr.Sample.Controllers
 {

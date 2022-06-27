@@ -83,7 +83,7 @@ namespace Netnr.Blog.Web.Apps
 
                     if (DateTime.Now.ToTimestamp() < long.Parse(jo["expired"].ToString()))
                     {
-                        mo = jo["mo"].ToString().ToEntity<Domain.UserInfo>();
+                        mo = jo["mo"].ToString().ToModel<Domain.UserInfo>();
                     }
                 }
             }

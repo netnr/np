@@ -4,8 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 GlobalTo.Configuration = builder.Configuration;
 GlobalTo.HostEnvironment = builder.Environment;
-
-Netnr.SharedReady.ReadyTo.EncodingReg();
+Netnr.ReadyTo.EncodingReg();
 
 //（上传）主体大小限制
 var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");
@@ -68,8 +67,8 @@ app.UseSwagger().UseSwaggerUI(c =>
 
 //初始化库
 using var db = new SQLite.SQLiteConnection(Netnr.FileServer.Application.FileServerService.SQLiteConn);
-db.CreateTable<Netnr.FileServer.Model.SysApp>();
-db.CreateTable<Netnr.FileServer.Model.FileRecord>();
+db.CreateTable<Netnr.FileServer.Domain.SysApp>();
+db.CreateTable<Netnr.FileServer.Domain.FileRecord>();
 
 //静态资源
 app.UseStaticFiles(new StaticFileOptions()

@@ -1,10 +1,6 @@
 ﻿#if Full || IpArea
 
-using System;
-using System.IO;
-using System.Linq;
 using Netnr.Core;
-using System.Collections.Generic;
 
 namespace Netnr.SharedIpArea
 {

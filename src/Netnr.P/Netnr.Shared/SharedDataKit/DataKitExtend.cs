@@ -31,8 +31,6 @@ namespace Netnr.SharedDataKit
             {
                 //连接信息
                 DbConnection dbConnection = null;
-                //打印信息
-                var listInfo = new List<string>();
 
                 //额外处理 SQLite
                 if (tdb == SharedEnum.TypeDB.SQLite)
@@ -125,54 +123,7 @@ namespace Netnr.SharedDataKit
         public static DataKit Init(TransferVM.ConnectionInfo connectionInfo)
         {
             DataKit dk = Init(connectionInfo.ConnectionType, connectionInfo.ConnectionString, connectionInfo.DatabaseName);
-
             return dk;
-        }
-
-        /// <summary>
-        /// 数据库连接
-        /// </summary>
-        /// <param name="tdb"></param>
-        /// <param name="conn"></param>
-        /// <returns></returns>
-        public static DbConnection DbConn(SharedEnum.TypeDB tdb, string conn)
-        {
-            return tdb switch
-            {
-                SharedEnum.TypeDB.SQLite => new SqliteConnection(conn),
-                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => new MySqlConnection(conn),
-                SharedEnum.TypeDB.Oracle => new OracleConnection(conn),
-                SharedEnum.TypeDB.SQLServer => new SqlConnection(conn),
-                SharedEnum.TypeDB.PostgreSQL => new NpgsqlConnection(conn),
-                _ => null,
-            };
-        }
-
-        /// <summary>
-        /// 设置连接的数据库名（MySQL、SQLServer、PostgreSQL）
-        /// </summary>
-        /// <param name="tdb"></param>
-        /// <param name="conn"></param>
-        /// <param name="databaseName"></param>
-        /// <returns></returns>
-        public static string SetConnDatabase(SharedEnum.TypeDB tdb, string conn, string databaseName)
-        {
-            return tdb switch
-            {
-                SharedEnum.TypeDB.MySQL or SharedEnum.TypeDB.MariaDB => new MySqlConnectionStringBuilder(conn)
-                {
-                    Database = databaseName
-                }.ConnectionString,
-                SharedEnum.TypeDB.SQLServer => new SqlConnectionStringBuilder(conn)
-                {
-                    InitialCatalog = databaseName
-                }.ConnectionString,
-                SharedEnum.TypeDB.PostgreSQL => new NpgsqlConnectionStringBuilder(conn)
-                {
-                    Database = databaseName
-                }.ConnectionString,
-                _ => conn,
-            };
         }
 
         /// <summary>
@@ -181,12 +132,11 @@ namespace Netnr.SharedDataKit
         public const int BatchMaxRows = 10000;
 
         /// <summary>
-        /// 导出数据库
+        /// 转换，导出数据库对象转换为导出数据表对象
         /// </summary>
         /// <param name="edb"></param>
-        /// <param name="le">日志事件</param>
         /// <returns></returns>
-        public static SharedResultVM ExportDatabase(TransferVM.ExportDatabase edb, Action<NotifyCollectionChangedEventArgs> le = null)
+        public static TransferVM.ExportDataTable ConvertTransferVM(TransferVM.ExportDatabase edb)
         {
             if (edb.ListReadTableName.Count == 0)
             {
@@ -203,6 +153,18 @@ namespace Netnr.SharedDataKit
                 edt.ListReadDataSQL.Add(sql);
             }
 
+            return edt;
+        }
+
+        /// <summary>
+        /// 导出数据库
+        /// </summary>
+        /// <param name="edb"></param>
+        /// <param name="le">日志事件</param>
+        /// <returns></returns>
+        public static SharedResultVM ExportDatabase(TransferVM.ExportDatabase edb, Action<NotifyCollectionChangedEventArgs> le = null)
+        {
+            var edt = ConvertTransferVM(edb);
             return ExportDataTable(edt, le);
         }
 
@@ -223,13 +185,13 @@ namespace Netnr.SharedDataKit
             var db = edt.ReadConnectionInfo.NewDbHelper();
 
             //打包
-            var zipFolder = Path.GetDirectoryName(edt.ZipPath);
+            var zipFolder = Path.GetDirectoryName(edt.PackagePath);
             if (!Directory.Exists(zipFolder))
             {
                 Directory.CreateDirectory(zipFolder);
             }
-            var isOldZip = File.Exists(edt.ZipPath);
-            using ZipArchive zip = ZipFile.Open(edt.ZipPath, isOldZip ? ZipArchiveMode.Update : ZipArchiveMode.Create);
+            var isOldZip = File.Exists(edt.PackagePath);
+            using ZipArchive zip = ZipFile.Open(edt.PackagePath, isOldZip ? ZipArchiveMode.Update : ZipArchiveMode.Create);
 
             for (int i = 0; i < edt.ListReadDataSQL.Count; i++)
             {
@@ -332,7 +294,7 @@ namespace Netnr.SharedDataKit
                 }
             }
 
-            vm.Log.Add($"导出完成：{edt.ZipPath}，共耗时：{vm.TotalTimeFormat()}\n");
+            vm.Log.Add($"导出完成：{edt.PackagePath}，共耗时：{vm.TotalTimeFormat()}\n");
             GC.Collect();
 
             vm.Set(SharedEnum.RTag.success);
@@ -364,7 +326,7 @@ namespace Netnr.SharedDataKit
 
                 vm.Log.Add($"获取写入表（{rw.WriteTableName}）结构");
                 var dtWrite = dbWrite.SqlExecuteReader(DbHelper.SqlEmpty(rw.WriteTableName, tdb: mdt.WriteConnectionInfo.ConnectionType)).Item1.Tables[0];
-                dtWrite.TableName = rw.WriteTableName;
+                dtWrite.TableName = rw.WriteTableName.Split('.').Last();
                 var dtWriteColumnName = dtWrite.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
 
                 //读取表的列 => 写入表的列
@@ -451,26 +413,8 @@ namespace Netnr.SharedDataKit
 
                         //分批写入
                         vm.Log.Add($"写入表（{rw.WriteTableName}）第 {batchNo} 批（行：{dtWrite.Rows.Count}/{rowCount}）");
-
-                        switch (mdt.WriteConnectionInfo.ConnectionType)
-                        {
-                            case SharedEnum.TypeDB.SQLite:
-                                dbWrite.BulkBatchSQLite(dtWrite);
-                                break;
-                            case SharedEnum.TypeDB.MySQL:
-                            case SharedEnum.TypeDB.MariaDB:
-                                dbWrite.BulkCopyMySQL(dtWrite);
-                                break;
-                            case SharedEnum.TypeDB.Oracle:
-                                dbWrite.BulkCopyOracle(dtWrite);
-                                break;
-                            case SharedEnum.TypeDB.SQLServer:
-                                dbWrite.BulkCopySQLServer(dtWrite);
-                                break;
-                            case SharedEnum.TypeDB.PostgreSQL:
-                                dbWrite.BulkKeepIdentityPostgreSQL(dtWrite);
-                                break;
-                        }
+                        
+                        dbWrite.BulkCopy(mdt.WriteConnectionInfo.ConnectionType, dtWrite);
 
                         //清理
                         dtWrite.Clear();
@@ -496,25 +440,7 @@ namespace Netnr.SharedDataKit
                     //分批写入
                     vm.Log.Add($"写入表（{rw.WriteTableName}）第 {batchNo} 批（行：{dtWrite.Rows.Count}/{rowCount}）");
 
-                    switch (mdt.WriteConnectionInfo.ConnectionType)
-                    {
-                        case SharedEnum.TypeDB.SQLite:
-                            dbWrite.BulkBatchSQLite(dtWrite);
-                            break;
-                        case SharedEnum.TypeDB.MySQL:
-                        case SharedEnum.TypeDB.MariaDB:
-                            dbWrite.BulkCopyMySQL(dtWrite);
-                            break;
-                        case SharedEnum.TypeDB.Oracle:
-                            dbWrite.BulkCopyOracle(dtWrite);
-                            break;
-                        case SharedEnum.TypeDB.SQLServer:
-                            dbWrite.BulkCopySQLServer(dtWrite);
-                            break;
-                        case SharedEnum.TypeDB.PostgreSQL:
-                            dbWrite.BulkKeepIdentityPostgreSQL(dtWrite);
-                            break;
-                    }
+                    dbWrite.BulkCopy(mdt.WriteConnectionInfo.ConnectionType, dtWrite);
 
                     //清理
                     dtWrite.Clear();
@@ -551,9 +477,9 @@ namespace Netnr.SharedDataKit
 
             var hsName = new HashSet<string>();
 
-            vm.Log.Add($"读取数据源：{idb.ZipPath}\n");
+            vm.Log.Add($"读取数据源：{idb.PackagePath}\n");
 
-            using var zipRead = ZipFile.OpenRead(idb.ZipPath);
+            using var zipRead = ZipFile.OpenRead(idb.PackagePath);
             var zipList = zipRead.Entries.OrderBy(x => x.Name).ToList();
 
             vm.Log.Add($"读取写入库表信息");
@@ -629,25 +555,7 @@ namespace Netnr.SharedDataKit
 
                 vm.Log.Add($"导入表（{sntn}）分片：{item.Name}（大小：{ParsingTo.FormatByteSize(item.Length)}，行：{dt.Rows.Count}）");
 
-                switch (idb.WriteConnectionInfo.ConnectionType)
-                {
-                    case SharedEnum.TypeDB.SQLite:
-                        db.BulkBatchSQLite(dt);
-                        break;
-                    case SharedEnum.TypeDB.MySQL:
-                    case SharedEnum.TypeDB.MariaDB:
-                        db.BulkCopyMySQL(dt);
-                        break;
-                    case SharedEnum.TypeDB.Oracle:
-                        db.BulkCopyOracle(dt);
-                        break;
-                    case SharedEnum.TypeDB.SQLServer:
-                        db.BulkCopySQLServer(dt);
-                        break;
-                    case SharedEnum.TypeDB.PostgreSQL:
-                        db.BulkKeepIdentityPostgreSQL(dt);
-                        break;
-                }
+                db.BulkCopy(idb.WriteConnectionInfo.ConnectionType, dt);
 
                 vm.Log.Add($"导入表（{sntn}）分片成功，耗时：{vm.PartTimeFormat()}，导入进度：{i + 1}/{zipList.Count}\n");
             }

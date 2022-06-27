@@ -1129,17 +1129,20 @@ namespace Netnr.Blog.Application
             }
 
             //查询记录
-            var ormo = new OperationRecord()
+            if (!GlobalTo.GetValue<bool>("ReadOnly"))
             {
-                OrId = UniqueTo.LongId().ToString(),
-                OrType = ctype,
-                OrAction = "query",
-                OrSource = string.Join(",", listid),
-                OrCreateTime = DateTime.Now,
-                OrMark = "default"
-            };
-            db.OperationRecord.Add(ormo);
-            db.SaveChanges();
+                var ormo = new OperationRecord()
+                {
+                    OrId = UniqueTo.LongId().ToString(),
+                    OrType = ctype,
+                    OrAction = "query",
+                    OrSource = string.Join(",", listid),
+                    OrCreateTime = DateTime.Now,
+                    OrMark = "default"
+                };
+                db.OperationRecord.Add(ormo);
+                db.SaveChanges();
+            }
 
             SharedPageVM pageSet = new()
             {

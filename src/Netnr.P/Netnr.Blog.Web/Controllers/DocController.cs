@@ -121,9 +121,6 @@ namespace Netnr.Blog.Web.Controllers
                 db.DocSet.Add(mo);
 
                 num = db.SaveChanges();
-
-                //推送通知
-                Application.PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
             }
             else
             {
@@ -144,6 +141,9 @@ namespace Netnr.Blog.Web.Controllers
                     num = db.SaveChanges();
                 }
             }
+
+            //推送通知
+            Application.PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
 
             if (num > 0)
             {
@@ -469,6 +469,9 @@ namespace Netnr.Blog.Web.Controllers
                         }
                     }
 
+                    //推送通知
+                    Application.PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
+
                     int num = db.SaveChanges();
                     vm.Set(num > 0);
                     vm.Data = mo.DsdId;
@@ -545,7 +548,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     var listTree = string.IsNullOrWhiteSpace(rows)
                     ? new List<DocTreeVM>()
-                    : rows.ToEntitys<DocTreeVM>();
+                    : rows.ToModels<DocTreeVM>();
 
                     var uinfo = Apps.LoginService.Get(HttpContext);
                     if (db.DocSet.Find(id)?.Uid != uinfo.UserId)

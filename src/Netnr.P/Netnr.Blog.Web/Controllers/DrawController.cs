@@ -152,9 +152,6 @@ namespace Netnr.Blog.Web.Controllers
 
                         db.Draw.Add(mof);
                         num = db.SaveChanges();
-
-                        //推送通知
-                        Application.PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
                     }
                     else
                     {
@@ -174,6 +171,10 @@ namespace Netnr.Blog.Web.Controllers
                             num = db.SaveChanges();
                         }
                     }
+
+                    //推送通知
+                    Application.PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
+
                     vm.Set(num > 0);
                 }
 
@@ -292,6 +293,9 @@ namespace Netnr.Blog.Web.Controllers
                     errno = 0;
                     msg = "ok";
                 }
+
+                //推送通知
+                Application.PushService.PushAsync("网站消息（Upload）", $"{url}");
 
                 return Content(new
                 {

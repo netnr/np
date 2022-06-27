@@ -94,7 +94,7 @@ namespace Netnr.ResponseFramework.Web.Apps
 
                     if (DateTime.Now.ToTimestamp() < long.Parse(jo["expired"].ToString()))
                     {
-                        mo = jo["mo"].ToString().ToEntity<LoginUserVM>();
+                        mo = jo["mo"].ToString().ToModel<LoginUserVM>();
                     }
                 }
             }

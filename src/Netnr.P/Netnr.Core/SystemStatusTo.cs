@@ -1,9 +1,12 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
+using System.Net.NetworkInformation;
+using System.Globalization;
 
 namespace Netnr.Core
 {
@@ -35,7 +38,7 @@ namespace Netnr.Core
         /// <summary>
         /// 处理器使用率
         /// </summary>
-        public decimal ProcessorUsage { get; set; }
+        public decimal ProcessorUsed { get; set; } = 0;
         /// <summary>
         /// 获取系统目录的标准路径
         /// </summary>
@@ -47,7 +50,7 @@ namespace Netnr.Core
         /// <summary>
         /// 获取自系统启动以来经过的毫秒数
         /// </summary>
-        public long TickCount { get; set; }
+        public long TickCount { get; set; } = Environment.TickCount;
         /// <summary>
         /// 获取与当前用户关联的网络域名
         /// </summary>
@@ -75,19 +78,19 @@ namespace Netnr.Core
         /// <summary>
         /// 总物理内存 B
         /// </summary>
-        public long TotalPhysicalMemory { get; set; }
+        public long TotalPhysicalMemory { get; set; } = 0;
         /// <summary>
         /// 可用物理内存 B
         /// </summary>
-        public long FreePhysicalMemory { get; set; }
+        public long FreePhysicalMemory { get; set; } = 0;
         /// <summary>
         /// 总交换空间（Linux）B
         /// </summary>
-        public long SwapTotal { get; set; }
+        public long SwapTotal { get; set; } = 0;
         /// <summary>
         /// 可用交换空间（Linux）B
         /// </summary>
-        public long SwapFree { get; set; }
+        public long SwapFree { get; set; } = 0;
         /// <summary>
         /// 使用物理内存
         /// </summary>
@@ -115,38 +118,234 @@ namespace Netnr.Core
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                TotalPhysicalMemory = PlatformForWindows.TotalPhysicalMemory();
-                FreePhysicalMemory = PlatformForWindows.FreePhysicalMemory();
+                LogicalDisk = GetLogicalDisk();
 
-                LogicalDisk = PlatformForWindows.LogicalDisk();
+                //系统名称、开机时间、可用物理内存、总内存
+                var cmd_os = "wmic os get Caption,LastBootUpTime,FreePhysicalMemory,TotalVisibleMemorySize /value";
+                try
+                {
+                    var items = CmdTo.Execute(cmd_os).CrOutput.Split('\n').ToList();
+                    foreach (var item in items)
+                    {
+                        if (item.StartsWith("Caption="))
+                        {
+                            var val = item.Split('=')[1].Trim();
+                            OperatingSystem = val;
+                        }
+                        else if (item.StartsWith("LastBootUpTime"))
+                        {
+                            var val = item.Split('=')[1].Split('.')[0];
+                            if (DateTime.TryParseExact(val, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime time))
+                            {
+                                TickCount = Convert.ToInt64((DateTime.Now - time).TotalMilliseconds);
+                            }
+                        }
+                        else if (item.StartsWith("FreePhysicalMemory"))
+                        {
+                            var val = item.Split('=')[1].Trim();
+                            FreePhysicalMemory = 1024 * long.Parse(val);
+                        }
+                        else if (item.StartsWith("TotalVisibleMemorySize"))
+                        {
+                            var val = item.Split('=')[1].Trim();
+                            TotalPhysicalMemory = 1024 * long.Parse(val);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(cmd_os);
+                    Console.WriteLine(ex);
+                }
 
-                ProcessorName = PlatformForWindows.ProcessorName();
-                ProcessorUsage = PlatformForWindows.CPUUsage();
+                //CPU name
+                var cmd_cpu_name = "wmic cpu get Name /value";
+                try
+                {
+                    var items = CmdTo.Execute(cmd_cpu_name).CrOutput.Split('\n').ToList();
+                    var val = items.FirstOrDefault(x => x.StartsWith("Name=")).Split('=').LastOrDefault().Trim();
 
-                TickCount = PlatformForWindows.RunTime();
+                    ProcessorName = val;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(cmd_cpu_name);
+                    Console.WriteLine(ex);
+                }
 
-                Model = PlatformForWindows.Model();
+                //CPU used
+                var cmd_cpu_used = "PowerShell \"Get-Counter '\\Processor(_Total)\\% Processor Time'\"";
+                try
+                {
+                    var list = CmdTo.Execute(cmd_cpu_used).CrOutput.Trim().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    var val = Math.Ceiling(Convert.ToDecimal(list.LastOrDefault().ToString().Trim()));
 
-                OperatingSystem = PlatformForWindows.OperatingSystem();
+                    ProcessorUsed = val;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(cmd_cpu_used);
+                    Console.WriteLine(ex);
+                }
+
+                //Model
+                var cmd_model = "wmic csproduct get name /value";
+                try
+                {
+                    var items = CmdTo.Execute(cmd_model).CrOutput.Split('\n');
+                    var val = items.FirstOrDefault(x => x.StartsWith("Name=")).Split('=').LastOrDefault().Trim();
+
+                    Model = val;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(cmd_model);
+                    Console.WriteLine(ex);
+                }
             }
             else
             {
-                TotalPhysicalMemory = PlatformForLinux.MemInfo("MemTotal:");
-                FreePhysicalMemory = PlatformForLinux.MemInfo("MemAvailable:");
+                //logical disk
+                var listLogicalDisk = new List<object>();
+                try
+                {
+                    var items = CmdTo.Execute("df").CrOutput.Split('\n').ToList();
+                    foreach (var item in items)
+                    {
+                        if (item.StartsWith("/dev/"))
+                        {
+                            var dis = item.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                            var size = long.Parse(dis[1]) * 1024;
+                            //大于 1GB
+                            if (size > 1073741824)
+                            {
+                                listLogicalDisk.Add(new
+                                {
+                                    Name = dis[0],
+                                    Size = size,
+                                    FreeSpace = long.Parse(dis[3]) * 1024
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("df");
+                    Console.WriteLine(ex);
+                }
+                LogicalDisk = listLogicalDisk;
 
-                SwapFree = PlatformForLinux.MemInfo("SwapFree:");
-                SwapTotal = PlatformForLinux.MemInfo("SwapTotal:");
+                //内存
+                try
+                {
+                    var items = File.ReadAllText("/proc/meminfo").Split('\n').ToList();
+                    foreach (var item in items)
+                    {
+                        if (item.StartsWith("MemTotal:"))
+                        {
+                            var val = 1024 * long.Parse(item.ToLower().Replace("kb", "").Split(':')[1].Trim());
+                            TotalPhysicalMemory = val;
+                        }
+                        else if (item.StartsWith("MemAvailable:"))
+                        {
+                            var val = 1024 * long.Parse(item.ToLower().Replace("kb", "").Split(':')[1].Trim());
+                            FreePhysicalMemory = val;
+                        }
+                        else if (item.StartsWith("SwapFree:"))
+                        {
+                            var val = 1024 * long.Parse(item.ToLower().Replace("kb", "").Split(':')[1].Trim());
+                            SwapFree = val;
+                        }
+                        else if (item.StartsWith("SwapTotal:"))
+                        {
+                            var val = 1024 * long.Parse(item.ToLower().Replace("kb", "").Split(':')[1].Trim());
+                            SwapTotal = val;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("/proc/meminfo");
+                    Console.WriteLine(ex);
+                }
 
-                LogicalDisk = PlatformForLinux.LogicalDisk();
+                //cpu name
+                try
+                {
+                    //lscpu
+                    var items = File.ReadAllText("/proc/cpuinfo").Split('\n').ToList();
+                    var val = items.FirstOrDefault(x => x.StartsWith("model name")).Split(':').LastOrDefault().Trim();
+                    ProcessorName = val;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("/proc/cpuinfo");
+                    Console.WriteLine(ex);
+                }
 
-                ProcessorName = PlatformForLinux.CpuInfo("model name");
-                ProcessorUsage = PlatformForLinux.CPUUsage();
+                //cpu used
+                try
+                {
+                    var br = CmdTo.Execute("vmstat 1 2").CrOutput;
+                    var cpuitems = br.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).LastOrDefault().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                    var usi = cpuitems.Count - 5;
+                    var val = decimal.Parse(cpuitems[usi]);
+                    ProcessorUsed = val;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("vmstat 1 2");
+                    Console.WriteLine(ex);
+                }
 
-                TickCount = PlatformForLinux.RunTime();
+                //uptime
+                try
+                {
+                    var uptime = File.ReadAllText("/proc/uptime");
+                    var val = Convert.ToInt64(Convert.ToDouble(uptime.Split(' ')[0]) * 1000);
+                    TickCount = val;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("/proc/uptime");
+                    Console.WriteLine(ex);
+                }
 
-                Model = PlatformForLinux.Model();
+                //model name
+                try
+                {
+                    var val = File.ReadAllText("/sys/class/dmi/id/product_name")?.Trim();
+                    Model = val;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("/sys/class/dmi/id/product_name");
+                    Console.WriteLine(ex);
+                }
 
-                OperatingSystem = PlatformForLinux.OperatingSystem();
+                //os name
+                try
+                {
+                    if (File.Exists("/etc/os-release"))
+                    {
+                        var items = File.ReadAllText("/etc/os-release").Split('\n').ToList();
+                        OperatingSystem = items.FirstOrDefault(x => x.Contains("PRETTY_NAME")).Split('"')[1];
+                    }
+                    else if (File.Exists("/etc/redhat-release"))
+                    {
+                        OperatingSystem = File.ReadAllText("/etc/redhat-release");
+                    }
+                    else if (File.Exists("/etc/lsb-release"))
+                    {
+                        var items = File.ReadAllText("/etc/lsb-release").Split('\n').ToList();
+                        OperatingSystem = items.FirstOrDefault(x => x.Contains("DESCRIPTION")).Split('"')[1];
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
 
@@ -175,400 +374,146 @@ namespace Netnr.Core
         }
 
         /// <summary>
-        /// WINDOWS
+        /// 获取磁盘信息（Linux建议使用df命令）
         /// </summary>
-        public class PlatformForWindows
+        /// <returns></returns>
+        public static List<object> GetLogicalDisk()
         {
-            /// <summary>
-            /// 获取物理内存 B
-            /// </summary>
-            /// <returns></returns>
-            public static long TotalPhysicalMemory()
-            {
-                var cmd = "wmic os get TotalVisibleMemorySize /value";
-                try
-                {
-                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=').LastOrDefault().Trim().Split('.').First();
-                    long TotalPhysicalMemory = 1024 * long.Parse(cr);
+            var listld = new List<object>();
+            var allDrives = DriveInfo.GetDrives();
 
-                    return TotalPhysicalMemory;
-                }
-                catch (Exception ex)
+            foreach (var di in allDrives)
+            {
+                listld.Add(new
                 {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return 0;
+                    Name = di.Name,
+                    VolumeName = di.VolumeLabel,
+                    Size = di.TotalSize,
+                    FreeSpace = di.TotalFreeSpace,
+                });
             }
+            return listld;
+        }
 
-            /// <summary>
-            /// 获取可用内存 B
-            /// </summary>
-            public static long FreePhysicalMemory()
+        /// <summary>
+        /// 系统监控
+        /// </summary>
+        /// <param name="isStop">是否停止</param>
+        public static void SystemMonitor(ref bool isStop)
+        {
+            var nis = NetworkInterface.GetAllNetworkInterfaces();
+
+            //last
+            var brLast = new Dictionary<NetworkInterface, double>();
+            var bsLast = new Dictionary<NetworkInterface, double>();
+            foreach (var ni in nis)
             {
-                var cmd = "wmic os get FreePhysicalMemory /value";
-                try
-                {
-                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=').LastOrDefault().Trim().Split('.').First();
-                    long FreePhysicalMemory = 1024 * long.Parse(cr);
+                var stats = ni.GetIPStatistics();
 
-                    return FreePhysicalMemory;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return 0;
+                var br = stats.BytesReceived;
+                var bs = stats.BytesSent;
+
+                brLast.Add(ni, br);
+                bsLast.Add(ni, bs);
             }
+            var brRead = new Dictionary<NetworkInterface, IEnumerable<double>>();
+            var bsRead = new Dictionary<NetworkInterface, IEnumerable<double>>();
 
-            /// <summary>
-            /// 获取磁盘信息
-            /// </summary>
-            /// <returns></returns>
-            public static List<object> LogicalDisk()
+            var sw = new Stopwatch();
+            var index = 0;
+
+            while (!isStop)
             {
-                var listld = new List<object>();
-                var cmd = "wmic logicaldisk where DriveType=3 get FreeSpace,Name,Size,VolumeName";
-                try
+                index++;
+                sw.Restart();
+                Thread.Sleep(100);
+                var elapsed = sw.Elapsed.TotalSeconds;
+
+                foreach (var ni in nis)
                 {
-                    var cr = CmdTo.Execute(cmd).CrOutput.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
-                    foreach (var item in cr)
+                    var stats = ni.GetIPStatistics();
+
+                    var br = stats.BytesReceived;
+                    var bs = stats.BytesSent;
+
+                    var brLocal = (br - brLast[ni]) / elapsed;
+                    var bsLocal = (bs - bsLast[ni]) / elapsed;
+
+                    brLast[ni] = br;
+                    bsLast[ni] = bs;
+
+                    // Keep last 20
+                    var brReads = brRead.ContainsKey(ni) ? brRead[ni] : Enumerable.Empty<double>();
+                    brReads = new[] { brLocal }.Concat(brReads).Take(20);
+                    brRead[ni] = brReads;
+
+                    var bsReads = bsRead.ContainsKey(ni) ? bsRead[ni] : Enumerable.Empty<double>();
+                    bsReads = new[] { bsLocal }.Concat(bsReads).Take(20);
+                    bsRead[ni] = bsReads;
+                }
+
+                //total
+                if (index % 10 == 0)
+                {
+                    var outSpeedBr = 0.0; //总接收
+                    var outSpeedBs = 0.0; //总发送
+                    var outSpeedDicBr = new Dictionary<NetworkInterface, double>(); //接收明细
+                    var outSpeedDicBs = new Dictionary<NetworkInterface, double>(); //发送明细
+                    foreach (var key in brRead.Keys)
                     {
-                        var mr = Regex.Match(item, @"(\d+)\s+(\w:)\s+(\d+)\s+(.*)");
-                        if (mr.Success)
-                        {
-                            listld.Add(new
-                            {
-                                Name = mr.Groups[2].ToString(),
-                                VolumeName = mr.Groups[4].ToString().Trim(),
-                                Size = long.Parse(mr.Groups[3].ToString()),
-                                FreeSpace = long.Parse(mr.Groups[1].ToString()),
-                            });
-                        }
+                        var reads = brRead[key];
+                        var speed = reads.Sum() / reads.Count();
+                        outSpeedBr += speed;
+                        outSpeedDicBr[key] = speed;
                     }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return listld;
-            }
 
-            /// <summary>
-            /// 获取处理器名称
-            /// </summary>
-            /// <returns></returns>
-            public static string ProcessorName()
-            {
-                var cmd = "wmic cpu get Name /value";
-                try
-                {
-                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                    foreach (var key in bsRead.Keys)
+                    {
+                        var reads = bsRead[key];
+                        var speed = reads.Sum() / reads.Count();
+                        outSpeedBs += speed;
+                        outSpeedDicBs[key] = speed;
+                    }
 
-                    return cr;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return null;
-            }
+                    //callback
 
-            /// <summary>
-            /// 获取CPU使用率 %
-            /// </summary>
-            /// <returns></returns>
-            public static decimal CPUUsage()
-            {
-                var cmd = "PowerShell \"Get-Counter '\\Processor(_Total)\\% Processor Time'\"";
-                try
-                {
-                    var list = CmdTo.Execute(cmd).CrOutput.Trim().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    var cu = Math.Ceiling(Convert.ToDecimal(list.LastOrDefault().ToString().Trim()));
-
-                    return cu;
+                    var ss = new SystemStatusTo();
+                    Console.Clear();
+                    Console.Write($"\r\n Received Speed: {ParsingTo.FormatByteSize(outSpeedBr)}/s  ");
+                    Console.Write($"Sent Speed: {ParsingTo.FormatByteSize(outSpeedBr)}/s  ");
+                    Console.WriteLine(ss.ToView(true));
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return 0;
-            }
-
-            /// <summary>
-            /// 运行时长
-            /// </summary>
-            /// <returns></returns>
-            public static long RunTime()
-            {
-                var cmd = "wmic os get LastBootUpTime /value";
-                try
-                {
-                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=').LastOrDefault().Trim().Split('.').First();
-                    cr = cr.Insert(12, ":").Insert(10, ":").Insert(8, " ").Insert(6, "-").Insert(4, "-");
-                    _ = DateTime.TryParse(cr, out DateTime startTime);
-                    var rt = Convert.ToInt64((DateTime.Now - startTime).TotalMilliseconds);
-
-                    return rt;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return 0;
-            }
-
-            /// <summary>
-            /// 获取型号
-            /// </summary>
-            /// <returns></returns>
-            public static string Model()
-            {
-                var cmd = "wmic csproduct get name /value";
-                try
-                {
-                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
-
-                    return cr;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return null;
-            }
-
-            /// <summary>
-            /// 获取操作系统
-            /// </summary>
-            /// <returns></returns>
-            public static string OperatingSystem()
-            {
-                var cmd = "wmic os get Caption /value";
-                try
-                {
-                    var cr = CmdTo.Execute(cmd).CrOutput.Split('=')[1].Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0].Trim();
-
-                    return cr;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(cmd);
-                    Console.WriteLine(ex);
-                }
-                return null;
             }
         }
 
         /// <summary>
-        /// Linux系统
+        /// 清空当前行
         /// </summary>
-        public class PlatformForLinux
+        public static void ClearCurrentConsoleLine()
         {
-            /// <summary>
-            /// 获取 /proc/meminfo
-            /// </summary>
-            /// <param name="pkey"></param>
-            /// <returns></returns>
-            public static long MemInfo(string pkey)
-            {
-                try
-                {
-                    var meminfo = FileTo.ReadText("/proc/meminfo");
-                    var pitem = meminfo.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).FirstOrDefault(x => x.StartsWith(pkey));
-
-                    var pvalue = 1024 * long.Parse(pitem.Replace(pkey, "").ToLower().Replace("kb", "").Trim());
-
-                    return pvalue;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("/proc/meminfo");
-                    Console.WriteLine(ex);
-                }
-                return 0;
-            }
-
-            /// <summary>
-            /// 获取 /proc/cpuinfo
-            /// </summary>
-            /// <param name="pkey"></param>
-            /// <returns></returns>
-            public static string CpuInfo(string pkey)
-            {
-                try
-                {
-                    var meminfo = FileTo.ReadText("/proc/cpuinfo") + Environment.NewLine + CmdTo.Execute("lscpu").CrOutput;
-                    var pitem = meminfo.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).FirstOrDefault(x => x.StartsWith(pkey, StringComparison.OrdinalIgnoreCase));
-
-                    var pvalue = pitem.Split(':')[1].Trim();
-
-                    return pvalue;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("/proc/cpuinfo");
-                    Console.WriteLine("lscpu");
-                    Console.WriteLine(ex);
-                }
-                return null;
-            }
-
-            /// <summary>
-            /// 获取磁盘信息
-            /// </summary>
-            /// <returns></returns>
-            public static List<object> LogicalDisk()
-            {
-                var listld = new List<object>();
-                try
-                {
-                    var dfresult = CmdTo.Execute("df").CrOutput;
-                    var listdev = dfresult.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => x.StartsWith("/dev/"));
-                    foreach (var devitem in listdev)
-                    {
-                        var dis = devitem.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-                        var size = long.Parse(dis[1]) * 1024;
-                        //大于 1GB
-                        if (size > 1073741824)
-                        {
-                            listld.Add(new
-                            {
-                                Name = dis[0],
-                                Size = size,
-                                FreeSpace = long.Parse(dis[3]) * 1024
-                            });
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("df");
-                    Console.WriteLine(ex);
-                }
-                return listld;
-            }
-
-            /// <summary>
-            /// 获取CPU使用率 %
-            /// </summary>
-            /// <returns></returns>
-            public static decimal CPUUsage()
-            {
-                try
-                {
-                    var br = CmdTo.Execute("vmstat 1 2").CrOutput;
-                    var cpuitems = br.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).LastOrDefault().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-                    var usi = cpuitems.Count - 5;
-                    var us = cpuitems[usi];
-
-                    return decimal.Parse(us);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("vmstat 1 2");
-                    Console.WriteLine(ex);
-                }
-                return 0;
-            }
-
-            /// <summary>
-            /// 运行时长
-            /// </summary>
-            /// <returns></returns>
-            public static long RunTime()
-            {
-                try
-                {
-                    var uptime = FileTo.ReadText("/proc/uptime");
-                    var pitem = Convert.ToDouble(uptime.Split(' ')[0]);
-
-                    var pvalue = Convert.ToInt64(pitem * 1000); ;
-
-                    return pvalue;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("/proc/uptime");
-                    Console.WriteLine(ex);
-                }
-                return 0;
-            }
-
-            /// <summary>
-            /// 获取型号
-            /// </summary>
-            /// <returns></returns>
-            public static string Model()
-            {
-                try
-                {
-                    var model = FileTo.ReadText("/sys/class/dmi/id/product_name")?.Trim();
-
-                    return model;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("/sys/class/dmi/id/product_name");
-                    Console.WriteLine(ex);
-                }
-                return null;
-            }
-
-            /// <summary>
-            /// 获取操作系统
-            /// </summary>
-            /// <returns></returns>
-            public static string OperatingSystem()
-            {
-                string os = null;
-                try
-                {
-                    if (File.Exists("/etc/os-release"))
-                    {
-                        var list = FileTo.ReadText("/etc/os-release").Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                        os = list.FirstOrDefault(x => x.Contains("PRETTY_NAME")).Split('"')[1];
-                    }
-                    else if (File.Exists("/etc/redhat-release"))
-                    {
-                        os = FileTo.ReadText("/etc/redhat-release");
-                    }
-                    else if (File.Exists("/etc/lsb-release"))
-                    {
-                        var list = FileTo.ReadText("/etc/lsb-release").Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                        os = list.FirstOrDefault(x => x.Contains("DESCRIPTION")).Split('"')[1];
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-                return os.Trim(Environment.NewLine.ToCharArray());
-            }
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, Console.CursorTop);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, currentLineCursor);
         }
 
         /// <summary>
         /// 可视化输出
         /// </summary>
+        /// <param name="isRealTime">实时</param>
         /// <returns></returns>
-        public string ToView()
+        public string ToView(bool isRealTime = false)
         {
             var dic = new Dictionary<int, string>
             {
                 { 0, "" },
                 { 1, $" Framework: {FrameworkDescription}" },
-                { 2, $" Memory: {ParsingTo.FormatByteSize(size:UseMemory,space:"")}" },
+                { 2, $" Memory: {ParsingTo.FormatByteSize(size:UseMemory)}" },
                 { 3, $" System: {(string.IsNullOrWhiteSpace(OperatingSystem) ? OS : OperatingSystem)}{(Is64BitOperatingSystem ? " , 64Bit" : "")}" },
                 { 4, $" OSVersion: {OSVersion.VersionString}" },
                 { 5, $" User: {UserName}" },
-                { 6, $" Boot: {Math.Round(TickCount*1.0/1000/24/3600,2)} Days" },
-                { 7, $" CPU: {ProcessorName} , {ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsage*100), 10000, false)}" },
+                { 6, $" Uptime: {Math.Round(TickCount*1.0/1000/24/3600,2)} Days" },
+                { 7, $" CPU: {ProcessorName} , {ProcessorCount} Core{ProgressBar(Convert.ToInt64(ProcessorUsed*100), 10000, false)}" },
                 { 8, $" RAM: {ProgressBar(TotalPhysicalMemory-FreePhysicalMemory,TotalPhysicalMemory)}" }
             };
             if (SwapTotal > 0)
@@ -588,6 +533,11 @@ namespace Netnr.Core
                 listlgd.Add(ProgressBar(size - fs, size, true, name));
             }
             dic.Add(10, $" Disk: {string.Join(" ", listlgd)}");
+
+            if (isRealTime)
+            {
+                new[] { 1, 2, 3, 4, 5 }.ToList().ForEach(key => dic.Remove(key));
+            }
 
             //排序
             var list = dic.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value).Values.ToList();

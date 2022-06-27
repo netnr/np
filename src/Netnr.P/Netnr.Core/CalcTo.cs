@@ -231,37 +231,50 @@ namespace Netnr.Core
         /// <summary>
         /// hash 加密
         /// </summary>
-        /// <param name="hashType"></param>
-        /// <param name="txt"></param>
-        /// <param name="HmacKey"></param>
+        /// <param name="hashType">类型</param>
+        /// <param name="stream">流（注意流从开始读取，已使用的流对象需重置读取位置，so#43791043）</param>
+        /// <param name="hmacKey">HMAC 密钥</param>
         /// <returns></returns>
-        public static string HashBase64(HashType hashType, string txt, string HmacKey = "")
+        public static string HashBase64(HashType hashType, Stream stream, string hmacKey = "")
         {
-            return hashType switch
-            {
-                HashType.MD5 => GetHashBase64(System.Security.Cryptography.MD5.Create(), txt),
-                HashType.SHA1 => GetHashBase64(SHA1.Create(), txt),
-                HashType.SHA256 => GetHashBase64(SHA256.Create(), txt),
-                HashType.SHA384 => GetHashBase64(SHA384.Create(), txt),
-                HashType.SHA512 => GetHashBase64(SHA512.Create(), txt),
-                HashType.HMACSHA1 => GetHashBase64(new HMACSHA1(encoding.GetBytes(HmacKey)), txt),
-                HashType.HMACSHA256 => GetHashBase64(new HMACSHA256(encoding.GetBytes(HmacKey)), txt),
-                HashType.HMACSHA384 => GetHashBase64(new HMACSHA384(encoding.GetBytes(HmacKey)), txt),
-                HashType.HMACSHA512 => GetHashBase64(new HMACSHA512(encoding.GetBytes(HmacKey)), txt),
-                HashType.HMACMD5 => GetHashBase64(new HMACMD5(encoding.GetBytes(HmacKey)), txt),
-                _ => throw new NotImplementedException(),
-            };
+            return Convert.ToBase64String(HashByte(hashType, stream, hmacKey));
         }
 
         /// <summary>
-        /// SHA 加密
+        /// hash 加密
         /// </summary>
-        /// <param name="algorithm"></param>
-        /// <param name="txt"></param>
+        /// <param name="hashType">类型</param>
+        /// <param name="stream">流（注意流从开始读取，已使用的流对象需重置读取位置，so#43791043）</param>
+        /// <param name="hmacKey">HMAC 密钥</param>
         /// <returns></returns>
-        private static string GetHashBase64(HashAlgorithm algorithm, string txt)
+        public static string HashString(HashType hashType, Stream stream, string hmacKey = "")
         {
-            return Convert.ToBase64String(algorithm.ComputeHash(encoding.GetBytes(txt)));
+            return BitConverter.ToString(HashByte(hashType, stream, hmacKey)).ToLower().Replace("-", "");
+        }
+
+        /// <summary>
+        /// hash 加密
+        /// </summary>
+        /// <param name="hashType">类型</param>
+        /// <param name="stream">流（注意流从开始读取，已使用的流对象需重置读取位置，so#43791043）</param>
+        /// <param name="hmacKey">HMAC 密钥</param>
+        /// <returns></returns>
+        public static byte[] HashByte(HashType hashType, Stream stream, string hmacKey = "")
+        {
+            return hashType switch
+            {
+                HashType.MD5 => System.Security.Cryptography.MD5.Create().ComputeHash(stream),
+                HashType.SHA1 => SHA1.Create().ComputeHash(stream),
+                HashType.SHA256 => SHA256.Create().ComputeHash(stream),
+                HashType.SHA384 => SHA384.Create().ComputeHash(stream),
+                HashType.SHA512 => SHA512.Create().ComputeHash(stream),
+                HashType.HMACSHA1 => new HMACSHA1(encoding.GetBytes(hmacKey)).ComputeHash(stream),
+                HashType.HMACSHA256 => new HMACSHA256(encoding.GetBytes(hmacKey)).ComputeHash(stream),
+                HashType.HMACSHA384 => new HMACSHA384(encoding.GetBytes(hmacKey)).ComputeHash(stream),
+                HashType.HMACSHA512 => new HMACSHA512(encoding.GetBytes(hmacKey)).ComputeHash(stream),
+                HashType.HMACMD5 => new HMACMD5(encoding.GetBytes(hmacKey)).ComputeHash(stream),
+                _ => throw new NotImplementedException(),
+            };
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace Netnr.Sample.Controllers
 {
@@ -16,11 +17,6 @@ namespace Netnr.Sample.Controllers
             });
 
             return View(dicTree);
-        }
-
-        public IActionResult Swagger()
-        {
-            return Redirect("/swagger");
         }
     }
 }

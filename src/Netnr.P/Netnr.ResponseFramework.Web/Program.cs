@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Netnr;
+using Netnr.Core;
 using Netnr.SharedApp;
 
 var builder = WebApplication.CreateBuilder(args).SetGlobal();
@@ -46,8 +47,32 @@ builder.Services.AddDbContextPool<Netnr.ResponseFramework.Data.ContextBase>(opti
     Netnr.ResponseFramework.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
 }, 10);
 
-//定时任务
-FluentScheduler.JobManager.Initialize(new Netnr.ResponseFramework.Web.Apps.TaskService.Reg());
+//定时任务 https://github.com/fluentscheduler/FluentScheduler
+{
+    FluentScheduler.JobManager.Initialize();
+
+    var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController();
+
+    //每2天在2:2 重置数据库
+    FluentScheduler.JobManager.AddJob(() =>
+    {
+        var vm = sc.DatabaseReset();
+        Console.WriteLine(vm.ToJson(true));
+        ConsoleTo.Log(vm);
+    }, s =>
+    {
+        s.WithName("Job_DatabaseReset");
+        s.ToRunEvery(2).Days().At(2, 2);
+    });
+
+    //每2天在3:3 清理临时目录
+    FluentScheduler.JobManager.AddJob(() =>
+    {
+        var vm = sc.ClearTmp();
+        Console.WriteLine(vm.ToJson(true));
+        ConsoleTo.Log(vm);
+    }, s => s.ToRunEvery(2).Days().At(3, 3));
+}
 
 //配置swagger
 builder.Services.AddSwaggerGen(c =>

@@ -11,20 +11,21 @@ namespace Netnr.UAParser
     /// </summary>
     public class Parsers
     {
-        private static Entitys _Regexes;
+        private static Entities _Regexes;
         /// <summary>
         /// 正则
         /// </summary>
-        public static Entitys Regexes
+        public static Entities Regexes
         {
             get
             {
                 if (_Regexes == null)
                 {
                     var xmlContent = NodeConvert(Properties.Resources.regexes, false);
-                    _Regexes = ToEntity<Entitys>(xmlContent);
+                    _Regexes = ToEntity<Entities>(xmlContent);
                 }
 
+                //正则预处理
                 _Regexes.ListClient.ForEach(x => x.R = new Regex(x.Regex, RegexOptions.IgnoreCase));
                 _Regexes.ListDevice.ForEach(x => x.R = new Regex(x.Regex, RegexOptions.IgnoreCase));
                 _Regexes.ListOS.ForEach(x => x.R = new Regex(x.Regex, RegexOptions.IgnoreCase));
@@ -115,15 +116,15 @@ namespace Netnr.UAParser
         /// 客户端
         /// </summary>
         /// <returns></returns>
-        public Entitys.ClientEntity GetClient()
+        public Entities.ClientEntity GetClient()
         {
             var ckey = $"ua:client:{UserAgent.GetHashCode()}";
             if (memoryCache.Contains(ckey))
             {
-                return memoryCache.Get(ckey) as Entitys.ClientEntity;
+                return memoryCache.Get(ckey) as Entities.ClientEntity;
             }
 
-            Entitys.ClientEntity result = null;
+            Entities.ClientEntity result = null;
             foreach (var item in Regexes.ListClient)
             {
                 var match = item.R.Match(UserAgent);
@@ -150,15 +151,15 @@ namespace Netnr.UAParser
         /// 设备
         /// </summary>
         /// <returns></returns>
-        public Entitys.DeviceEntity GetDevice()
+        public Entities.DeviceEntity GetDevice()
         {
             var ckey = $"ua:device:{UserAgent.GetHashCode()}";
             if (memoryCache.Contains(ckey))
             {
-                return memoryCache.Get(ckey) as Entitys.DeviceEntity;
+                return memoryCache.Get(ckey) as Entities.DeviceEntity;
             }
 
-            Entitys.DeviceEntity result = null;
+            Entities.DeviceEntity result = null;
             foreach (var item in Regexes.ListDevice)
             {
                 var match = item.R.Match(UserAgent);
@@ -177,15 +178,15 @@ namespace Netnr.UAParser
         /// 系统
         /// </summary>
         /// <returns></returns>
-        public Entitys.OSEntity GetOS()
+        public Entities.OSEntity GetOS()
         {
             var ckey = $"ua:os:{UserAgent.GetHashCode()}";
             if (memoryCache.Contains(ckey))
             {
-                return memoryCache.Get(ckey) as Entitys.OSEntity;
+                return memoryCache.Get(ckey) as Entities.OSEntity;
             }
 
-            Entitys.OSEntity result = null;
+            Entities.OSEntity result = null;
             foreach (var item in Regexes.ListOS)
             {
                 var match = item.R.Match(UserAgent);
@@ -223,15 +224,15 @@ namespace Netnr.UAParser
         /// 爬虫
         /// </summary>
         /// <returns></returns>
-        public Entitys.BotEntity GetBot()
+        public Entities.BotEntity GetBot()
         {
             var ckey = $"ua:bot:{UserAgent.GetHashCode()}";
             if (memoryCache.Contains(ckey))
             {
-                return memoryCache.Get(ckey) as Entitys.BotEntity;
+                return memoryCache.Get(ckey) as Entities.BotEntity;
             }
 
-            Entitys.BotEntity result = null;
+            Entities.BotEntity result = null;
             foreach (var item in Regexes.ListBot)
             {
                 var match = item.R.Match(UserAgent);

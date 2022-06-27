@@ -1,5 +1,5 @@
 ﻿using Netnr.FileServer.Application;
-using Netnr.FileServer.Model;
+using Netnr.FileServer.Domain;
 using Netnr.Core;
 using Netnr.SharedFast;
 using Microsoft.AspNetCore.StaticFiles;

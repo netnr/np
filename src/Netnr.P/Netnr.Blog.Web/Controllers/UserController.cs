@@ -201,7 +201,7 @@ namespace Netnr.Blog.Web.Controllers
                             break;
                         case "link":
                             {
-                                HttpTo.DownloadSave(HttpTo.HWRequest(source), PathTo.Combine(ppath, upname));
+                                HttpTo.DownloadSave(source, PathTo.Combine(ppath, upname));
 
                                 var usermo = db.UserInfo.Find(uinfo.UserId);
                                 usermo.UserPhoto = npnew;

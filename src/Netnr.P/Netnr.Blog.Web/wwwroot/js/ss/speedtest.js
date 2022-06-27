@@ -54,8 +54,8 @@ var sp = {
     //测速节点
     ss: [
         {
-            name: "百度 CDN",
-            cr: 1331 / 10578,
+            name: "饿了么 CDN",
+            cr: 1126 / 10578,
             link: "https://npm.elemecdn.com/sql.js@1.2.2/dist/sql-asm-debug.js"
         },
         {
@@ -67,6 +67,11 @@ var sp = {
             name: "字节跳动 CDN",
             cr: 1126 / 10578,
             link: "https://s1.pstatp.com/cdn/expire-1-M/sql.js/1.2.2/dist/sql-asm-debug.js"
+        },
+        {
+            name: "百度 CDN",
+            cr: 1536 / 10578,
+            link: "https://code.bdstatic.com/npm/sql.js@1.2.2/dist/sql-asm-debug.js"
         }
     ],
     //绑定节点

@@ -20,27 +20,52 @@ namespace Netnr.SharedAdo
         public DbTransaction Transaction { get; set; }
 
         /// <summary>
-        /// 记录
+        /// 执行记录
         /// </summary>
-        public Dictionary<string, DbCommand> DicCommand { get; set; } = new Dictionary<string, DbCommand>();
+        public List<DbCommand> CommandRecord { get; set; } = new List<DbCommand>();
 
         /// <summary>
-        /// 终止执行
+        /// 执行终止
         /// </summary>
         /// <param name="ACID">可选，默认当前</param>
         /// <returns></returns>
-        public void AbortCommand(string ACID = null)
+        public void CommandAbort(string ACID = null)
         {
             if (string.IsNullOrWhiteSpace(ACID))
             {
                 ACID = Activity.Current.Id;
             }
 
-            DicCommand.Keys.Where(k => k.StartsWith(ACID)).ToList().ForEach(key =>
+            for (int i = CommandRecord.Count - 1; i >= 0; i--)
             {
-                var cmd = DicCommand[key];
-                cmd.Cancel();
-            });
+                var cmd = CommandRecord[i];
+                if (cmd.Site.Name.StartsWith(ACID))
+                {
+                    cmd.Cancel();
+                    CommandRecord.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 执行添加
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
+        public void CommandAdd(DbCommand cmd)
+        {
+            var ACID = Activity.Current?.Id ?? Guid.NewGuid().ToString("N");
+            if (CommandRecord.Any(x => x.Site.Name == ACID))
+            {
+                ACID += "/" + Guid.NewGuid().ToString("N");
+            }
+
+            cmd.Site = new DBCSite
+            {
+                Name = ACID
+            };
+
+            CommandRecord.Add(cmd);
         }
 
         /// <summary>
@@ -50,6 +75,11 @@ namespace Netnr.SharedAdo
         public DbHelper(DbConnection dbConnection)
         {
             Connection = dbConnection;
+
+            dbConnection.StateChange += (s, e) =>
+            {
+
+            };
         }
 
         /// <summary>
@@ -97,11 +127,6 @@ namespace Netnr.SharedAdo
                         }
                         var eds = dbc.ExecuteDataSet(tableLoad: false);
 
-                        if (DicCommand.ContainsKey(dbc.Site.Name))
-                        {
-                            DicCommand.Remove(dbc.Site.Name);
-                        }
-
                         while (eds.Item1.Tables.Count > 0)
                         {
                             var dt = eds.Item1.Tables[0];
@@ -142,11 +167,6 @@ namespace Netnr.SharedAdo
                     dsTable = eds.Item1;
                     recordsAffected = eds.Item2;
                     dsSchema = eds.Item3;
-
-                    if (DicCommand.ContainsKey(cmd.Site.Name))
-                    {
-                        DicCommand.Remove(cmd.Site.Name);
-                    }
                 }
 
                 Transaction?.Commit();
@@ -190,11 +210,6 @@ namespace Netnr.SharedAdo
 
                     var cmd = GetCommand(sql, timeout: 600);
                     cmd.ExecuteDataRow(readRow);
-
-                    if (DicCommand.ContainsKey(cmd.Site.Name))
-                    {
-                        DicCommand.Remove(cmd.Site.Name);
-                    }
                 }
             });
         }
@@ -211,11 +226,6 @@ namespace Netnr.SharedAdo
             {
                 var dbc = GetCommand(sql, parameters);
                 var obj = dbc.ExecuteScalar();
-
-                if (DicCommand.ContainsKey(dbc.Site.Name))
-                {
-                    DicCommand.Remove(dbc.Site.Name);
-                }
                 return obj;
             });
         }
@@ -232,11 +242,6 @@ namespace Netnr.SharedAdo
             {
                 var dbc = GetCommand(sql, parameters);
                 var num = dbc.ExecuteNonQuery();
-
-                if (DicCommand.ContainsKey(dbc.Site.Name))
-                {
-                    DicCommand.Remove(dbc.Site.Name);
-                }
                 return num;
             });
         }
@@ -277,11 +282,6 @@ namespace Netnr.SharedAdo
                 {
                     var dbc = GetCommand(bs);
                     num += dbc.ExecuteNonQuery();
-
-                    if (DicCommand.ContainsKey(dbc.Site.Name))
-                    {
-                        DicCommand.Remove(dbc.Site.Name);
-                    }
                 }
 
                 Transaction.Commit();
@@ -306,8 +306,6 @@ namespace Netnr.SharedAdo
                 cmd.Transaction = Transaction;
             }
 
-            cmd.Site = new DBCSite();
-
             cmd.CommandTimeout = timeout;
             cmd.CommandType = commandType;
             cmd.CommandText = sql;
@@ -317,14 +315,8 @@ namespace Netnr.SharedAdo
                 cmd.Parameters.AddRange(parameters);
             }
 
-            var ACID = Activity.Current?.Id ?? Guid.NewGuid().ToString("N");
-            if (DicCommand.ContainsKey(ACID))
-            {
-                ACID += "/" + Guid.NewGuid().ToString("N");
-            }
-
-            cmd.Site.Name = ACID;
-            DicCommand.Add(cmd.Site.Name, cmd);
+            //记录添加
+            CommandAdd(cmd);
 
             return cmd;
         }

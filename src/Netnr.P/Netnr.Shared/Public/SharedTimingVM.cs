@@ -35,7 +35,7 @@ namespace Netnr
         /// </summary>
         /// <param name="format">格式化</param>
         /// <returns></returns>
-        public string PartTimeFormat(string format = @"hh\:mm\:ss\:fff")
+        public string PartTimeFormat(string format = @"hh\:mm\:ss\.fff")
         {
             var pt = sw.Elapsed.TotalMilliseconds - et;
             et = sw.Elapsed.TotalMilliseconds;
@@ -56,7 +56,7 @@ namespace Netnr
         /// </summary>
         /// <param name="format">格式化</param>
         /// <returns></returns>
-        public string TotalTimeFormat(string format = @"hh\:mm\:ss\:fff")
+        public string TotalTimeFormat(string format = @"hh\:mm\:ss\.fff")
         {
             return TimeSpan.FromMilliseconds(sw.Elapsed.TotalMilliseconds).ToString(format);
         }

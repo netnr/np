@@ -1,39 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <DocumentationFile>Netnr.GraphDemo.xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1591;1416</NoWarn>
-    <DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1591;1416</NoWarn>
+		<DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;1591;1416</NoWarn>
-    <DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<NoWarn>1701;1702;1591;1416</NoWarn>
+		<DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;</DefineConstants>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="NetVips" Version="2.1.0" />
 		<PackageReference Include="NetVips.Native.linux-x64" Version="8.12.2" />
 		<PackageReference Include="NetVips.Native.win-x64" Version="8.12.2" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
-		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.1" />
+		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.71" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.71" />
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.1" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Update="Netnr.GraphDemo.xml">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
-
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
-	
+
 </Project>

@@ -1,6 +1,6 @@
 ﻿<!--
 https://github.com/netnr
-2022-06-01 15:00:55
+2022-06-26 09:51:20
 -->
 
 <!DOCTYPE html>
@@ -125,17 +125,11 @@ https://github.com/netnr
     </div>
 </div>
 
-<script src='https://npm.elemecdn.com/sql-formatter@6.1.2/dist/sql-formatter.min.js'></script>
+<script src='https://npm.elemecdn.com/sql-formatter@7.0.2/dist/sql-formatter.min.js'></script>
 <script src='https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs/loader.js'></script>
 
 <script>
     var meRequire = require;
-
-    function htmlDecode(html) {
-        var a = document.createElement('a');
-        a.innerHTML = html;
-        return a.innerText;
-    }
 
     require.config({
         paths: {

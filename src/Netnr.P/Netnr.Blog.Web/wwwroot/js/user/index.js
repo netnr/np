@@ -63,7 +63,7 @@
                     nr.domBtnSaveAvatar.disabled = true;
                     nr.alert("获取头像失败");
                 }
-                img.src = "https://sdn.geekzu.org/avatar/" + md5(nr.domTxtEmail.value.trim()) + "?s=400";
+                img.src = nr.domHidGravatarUrl.value + md5(nr.domTxtEmail.value.trim()) + "?s=400";
             }
         })
 

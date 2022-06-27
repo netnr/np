@@ -1,8 +1,6 @@
 ﻿#if Full || App
 
-using System.IO;
 using System.Web;
-using Microsoft.AspNetCore.Http;
 
 namespace Netnr.SharedApp
 {

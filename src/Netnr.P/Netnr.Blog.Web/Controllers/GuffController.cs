@@ -46,6 +46,9 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
+                //推送通知
+                Application.PushService.PushAsync("网站消息（Guff）", $"新增或修改");
+
                 var now = DateTime.Now;
 
                 //add
@@ -76,9 +79,6 @@ namespace Netnr.Blog.Web.Controllers
                     int num = db.SaveChanges();
                     if (num > 0)
                     {
-                        //推送通知
-                        Application.PushService.PushAsync("网站消息（Guff）", $"a new record");
-
                         return Redirect($"/guff/code/{mo.GrId}");
                     }
                     else

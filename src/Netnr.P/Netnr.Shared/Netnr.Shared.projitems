@@ -9,11 +9,13 @@
     <Import_RootNamespace>Netnr</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelperFast.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\LaunchTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TransferVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\ViewModel\TransferVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedServe\ServeTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedImport\SharedImportVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedTimingVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedAdo\DbHelperExtend.cs" />
@@ -28,11 +30,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedApp\DownTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedCompile\CompileTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\DataKitExtend.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\DatabaseVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\ViewModel\DatabaseVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedFast\GlobalTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedDrawing\ImageTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\ColumnVM.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\Models\TableVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\ViewModel\ColumnVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SharedDataKit\ViewModel\TableVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedPageVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedPaginationVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Public\SharedResultVM.cs" />
@@ -44,7 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedLogging\LoggingTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedNpoi\NpoiTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedPinyin\PinyinTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedReady\ReadyTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Public\ReadyTo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)SharedImport\" />

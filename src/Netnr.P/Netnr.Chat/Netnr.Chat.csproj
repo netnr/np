@@ -8,25 +8,25 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Ready;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Public;Fast;Ado;AdoMySQL;AdoOracle;AdoPostgreSQL;AdoSQLServer;AdoSQLite;DbContext;DbContextSQLServer</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0-preview.4.22229.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.6">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
-		<PackageReference Include="MySqlConnector" Version="2.1.9" />
-		<PackageReference Include="Npgsql" Version="7.0.0-preview.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.6" />
+		<PackageReference Include="MySqlConnector" Version="2.1.10" />
+		<PackageReference Include="Npgsql" Version="6.0.5" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.61" />
 	</ItemGroup>
 

@@ -1,5 +1,5 @@
 using SQLite;
-using Netnr.FileServer.Model;
+using Netnr.FileServer.Domain;
 using Netnr.Core;
 using Netnr.SharedFast;
 
@@ -173,7 +173,7 @@ namespace Netnr.FileServer.Application
                     var listmo = new List<FixedTokenJson>();
                     if (!string.IsNullOrWhiteSpace(sk.FixedToken))
                     {
-                        listmo = sk.FixedToken.ToEntitys<FixedTokenJson>();
+                        listmo = sk.FixedToken.ToModels<FixedTokenJson>();
                     }
 
                     var fixToken = NewToken(true);
@@ -224,7 +224,7 @@ namespace Netnr.FileServer.Application
                 var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
                 if (sk != null)
                 {
-                    var listmo = sk.FixedToken.ToEntitys<FixedTokenJson>();
+                    var listmo = sk.FixedToken.ToModels<FixedTokenJson>();
                     if (listmo.Any(x => x.Token == FixedToken))
                     {
                         listmo.Remove(listmo.FirstOrDefault(x => x.Token.Contains(FixedToken)));
@@ -278,7 +278,7 @@ namespace Netnr.FileServer.Application
 
                         if (sk != null)
                         {
-                            var mo = sk.FixedToken.ToEntitys<FixedTokenJson>().FirstOrDefault(x => x.Token == token);
+                            var mo = sk.FixedToken.ToModels<FixedTokenJson>().FirstOrDefault(x => x.Token == token);
                             if (mo.AuthMethod.Split(',').Contains(MethodName))
                             {
                                 vm.Set(SharedEnum.RTag.success);
@@ -351,7 +351,7 @@ namespace Netnr.FileServer.Application
                     {
                         vm.Set(SharedEnum.RTag.success);
 
-                        var mo = sk.FixedToken.ToEntitys<FixedTokenJson>().FirstOrDefault(x => x.Token == fixedToken);
+                        var mo = sk.FixedToken.ToModels<FixedTokenJson>().FirstOrDefault(x => x.Token == fixedToken);
                         mo.Owner = sk.Owner;
                         vm.Data = mo;
                     }

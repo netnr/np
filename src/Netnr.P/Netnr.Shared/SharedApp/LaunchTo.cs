@@ -17,8 +17,8 @@ public static class LaunchTo
         SharedFast.GlobalTo.Configuration = builder.Configuration;
         SharedFast.GlobalTo.HostEnvironment = builder.Environment;
 
-        SharedReady.ReadyTo.EncodingReg();
-        SharedReady.ReadyTo.LegacyTimestamp();
+        ReadyTo.EncodingReg();
+        ReadyTo.LegacyTimestamp();
 
         return builder;
     }

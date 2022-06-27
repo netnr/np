@@ -1,0 +1,50 @@
+{
+  "Aliyun": {
+    "RegionId": "cn-hangzhou",
+    "AccessKeyId": "",
+    "Secret": "",
+    "Domain": "dysmsapi.aliyuncs.com",
+    "Version": "2017-05-25"
+  },
+
+  //连接字符串
+  "ConnectionStrings": {
+    "MySQL": "Server=localhost;uid=root;pwd=123;database=netnr;",
+    "SQLite": "Filename=~/data/netnr.db",
+    "Oracle": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=【IP】)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=orcl)));User Id=【UID】;Password=【PWD】;",
+    "SQLServer": "Server=192.168.3.177;uid=sa;pwd=123;database=netnr;",
+    "PostgreSQL": "Host=localhost;Username=postgres;Password=123;Database=netnr;"
+  },
+
+  //设置数据库，取上面连接字符串的键名，忽略大小写
+  "TypeDB": "Oracle",
+
+  //作业
+  "Work": {
+    //启动，false为暂停
+    "Enable": true,
+
+    //等待时间，单位：秒
+    "WaitSeconds": 20,
+
+    //表列
+    "TableColumn": {
+      //主键，PrimaryKey，用于发送成功修改记录状态
+      "PrimaryKey": "ID_",
+
+      //手机，接收者
+      "PhoneNumber": "PHONE_",
+      //签名，阿里通过审核的签名
+      "SignName": "SIGNATURE_",
+      //模版CODE，阿里通过审核模版的CODE
+      "TemplateCode": "TEMPLATE_",
+      //模版参数，阿里通过审核模版的参数
+      "TemplateParam": "CONTENT_"
+    },
+
+    //查询未发送脚本，注意：查询数别超短信批量发送一次允许的数量
+    "QuerySql": "select * from SYS_SMS where STATUS_=0 AND rownum<=100",
+    //成功后更新状态为发送成功，{0}为主键字符串参数
+    "UpdateSql": "update SYS_SMS set STATUS_=1,NUMBER_=NUMBER_+1 where ID_ in({0})"
+  }
+}

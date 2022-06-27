@@ -44,6 +44,20 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
+        /// 推送消息
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Apps.FilterConfigs.AllowCors]
+        public IActionResult PushAsync([FromForm] string title = "", [FromForm] string content = "")
+        {
+            Application.PushService.PushAsync(title, content);
+            return NoContent();
+        }
+
+        /// <summary>
         /// 上传检测（已登录）
         /// </summary>
         /// <param name="file">文件</param>

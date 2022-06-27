@@ -112,10 +112,30 @@ builder.Services.AddDbContextPool<Netnr.Blog.Data.ContextBase>(options =>
     Netnr.Blog.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
 }, 10);
 
-//定时任务
+//定时任务 https://github.com/fluentscheduler/FluentScheduler
 if (!GlobalTo.GetValue<bool>("ReadOnly"))
 {
-    FluentScheduler.JobManager.Initialize(new Netnr.Blog.Web.Apps.TaskService.Reg());
+    FluentScheduler.JobManager.Initialize();
+
+    var sc = new Netnr.Blog.Web.Controllers.ServicesController();
+
+    //Gist 同步任务
+    FluentScheduler.JobManager.AddJob(() => sc.GistSync(), s =>
+    {
+        s.WithName("Job_GistSync");
+        s.ToRunEvery(8).Hours();
+    });
+
+    //处理操作记录
+    FluentScheduler.JobManager.AddJob(() => sc.HandleOperationRecord(), s => s.ToRunEvery(6).Hours());
+
+    //数据库备份到 Git
+    FluentScheduler.JobManager.AddJob(() => sc.DatabaseBackupToGit(), s => s.ToRunEvery(7).Days().At(16, 16));
+
+    //监控
+    FluentScheduler.JobManager.AddJob(() => sc.Monitor("http"), s => s.ToRunEvery(90).Seconds());
+    FluentScheduler.JobManager.AddJob(() => sc.Monitor("tcp"), s => s.ToRunEvery(120).Seconds());
+    FluentScheduler.JobManager.AddJob(() => sc.Monitor("ssl"), s => s.ToRunEvery(1).Days().At(10, 10));
 }
 
 //配置swagger

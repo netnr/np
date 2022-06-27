@@ -10,17 +10,6 @@ namespace Netnr.SharedAdo
     public partial class DbHelper
     {
         /// <summary>
-        /// 类型转换
-        /// </summary>
-        /// <param name="typeDB"></param>
-        /// <returns></returns>
-        public static SharedEnum.TypeDB GetTypeDB(string typeDB)
-        {
-            Enum.TryParse(typeDB, true, out SharedEnum.TypeDB tdb);
-            return tdb;
-        }
-
-        /// <summary>
         /// SQL引用符号，支持点分隔
         /// </summary>
         /// <param name="tdb">数据库类型</param>
@@ -398,12 +387,12 @@ namespace Netnr.SharedAdo
                     var hasField = reader.FieldCount > 0;
                     if (hasField)
                     {
-                        var rs = DbHelper.ReaderTableSchema(reader);
+                        var rts = DbHelper.ReaderTableSchema(reader);
 
-                        var dt = rs.Item1;
+                        var dt = rts.Item1;
                         dt.TableName = $"table{dsTable.Tables.Count + 1}";
 
-                        var st = rs.Item2;
+                        var st = rts.Item2;
                         st.TableName = dt.TableName;
                         dsSchema.Tables.Add(st);
 
@@ -482,10 +471,10 @@ namespace Netnr.SharedAdo
 
             do
             {
-                var rs = DbHelper.ReaderTableSchema(reader);
-                if (rs != null)
+                var rts = DbHelper.ReaderTableSchema(reader);
+                if (rts != null)
                 {
-                    var dt = rs.Item1;
+                    var dt = rts.Item1;
 
                     while (reader.Read())
                     {

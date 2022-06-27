@@ -1,4 +1,8 @@
 using System.Net;
+using System.Net.Http;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Netnr.Core;
@@ -190,7 +194,7 @@ namespace Netnr.Blog.Web.Controllers
         #endregion
 
         /// <summary>
-        /// 数据库导出
+        /// 数据库导出（管理员）
         /// </summary>
         /// <param name="zipName">文件名</param>
         /// <returns></returns>
@@ -202,7 +206,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 var edb = new SharedDataKit.TransferVM.ExportDatabase
                 {
-                    ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                    PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
                     ReadConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo()
                     {
                         ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source="),
@@ -217,7 +221,7 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 数据库备份到Git
+        /// 数据库备份到 Git（管理员）
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -292,6 +296,10 @@ namespace Netnr.Blog.Web.Controllers
                     System.IO.File.Delete(ppath);
                 }
 
+                var vmj = vm.ToJson(true);
+                Console.WriteLine(vmj);
+                ConsoleTo.Log(vmj);
+
                 return vm;
             });
         }
@@ -364,7 +372,7 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 数据库导出（示例数据）
+        /// 数据库导出（示例数据）（管理员）
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -446,7 +454,7 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 数据库导入
+        /// 数据库导入（管理员）
         /// </summary>
         /// <param name="zipName">文件名</param>
         /// <param name="clearTable">清空表，默认 false</param>
@@ -464,7 +472,7 @@ namespace Netnr.Blog.Web.Controllers
                         ConnectionType = GlobalTo.TDB,
                         ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=")
                     },
-                    ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                    PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
                     WriteDeleteData = clearTable
                 };
 
@@ -475,7 +483,7 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// Gist 代码片段，同步到 GitHub、Gitee
+        /// Gist 代码片段，同步到 GitHub、Gitee（管理员）
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -706,11 +714,15 @@ namespace Netnr.Blog.Web.Controllers
                 ConsoleTo.Log(ex);
             }
 
+            var vmj = vm.ToJson(true);
+            Console.WriteLine(vmj);
+            ConsoleTo.Log(vmj);
+
             return vm;
         }
 
         /// <summary>
-        /// 处理操作记录
+        /// 处理操作记录（管理员）
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -755,7 +767,185 @@ namespace Netnr.Blog.Web.Controllers
                 vm.Set(ex);
             }
 
+            var vmj = vm.ToJson(true);
+            Console.WriteLine(vmj);
+            ConsoleTo.Log(vmj);
+
             return vm;
+        }
+
+        /// <summary>
+        /// 监控（管理员）
+        /// </summary>
+        /// <param name="type">类型，http tcp ssl</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Apps.FilterConfigs.IsAdmin]
+        public SharedResultVM Monitor(string type)
+        {
+            return SharedResultVM.Try(vm =>
+            {
+                if (GlobalTo.GetValue<bool>("Monitor:enable"))
+                {
+                    var items = GlobalTo.GetValue($"Monitor:{type}").Split(',');
+                    foreach (var item in items)
+                    {
+                        if (!string.IsNullOrWhiteSpace(item))
+                        {
+                            Thread.Sleep(3000);
+
+                            try
+                            {
+                                switch (type)
+                                {
+                                    case "http":
+                                        {
+                                            var ckey = $"monitor:{type}:{item}";
+                                            var lm = item.Split(' ');
+
+                                            var client = new HttpClient();
+                                            var request = new HttpRequestMessage
+                                            {
+                                                RequestUri = new Uri(lm.First().ToString()),
+                                                Method = lm.Last().ToLower() == "post" ? HttpMethod.Post : HttpMethod.Get
+                                            };
+
+                                            var num = CacheTo.Get(ckey) as int? ?? 0;
+                                            try
+                                            {
+                                                if (client.Send(request).StatusCode == HttpStatusCode.OK)
+                                                {
+                                                    if (num > 2)
+                                                    {
+                                                        PushService.PushAsync("HTTP 监控通知（正常）", item);
+                                                    }
+                                                    num = 0;
+                                                }
+                                                else
+                                                {
+                                                    throw new Exception("error");
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                num++;
+                                                if (num == 2)
+                                                {
+                                                    PushService.PushAsync("HTTP 监控通知（异常）", item);
+                                                }
+                                            }
+                                            CacheTo.Set(ckey, num);
+                                        }
+                                        break;
+                                    case "tcp":
+                                        {
+                                            var ckey = $"monitor:{type}:{item}";
+
+                                            var hp = item.Split(' ');
+                                            var client = new TcpClient();
+
+                                            var num = CacheTo.Get(ckey) as int? ?? 0;
+                                            try
+                                            {
+                                                if (client.ConnectAsync(Dns.GetHostAddresses(hp.First()).First(), Convert.ToInt32(hp.Last())).Wait(2000))
+                                                {
+                                                    if (num > 2)
+                                                    {
+                                                        PushService.PushAsync("TCP 监控通知（正常）", item);
+                                                    }
+                                                    num = 0;
+                                                }
+                                                else
+                                                {
+                                                    throw new Exception("error");
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                num++;
+                                                if (num == 2)
+                                                {
+                                                    PushService.PushAsync("TCP 监控通知（异常）", item);
+                                                }
+                                            }
+                                            CacheTo.Set(ckey, num);
+                                        }
+                                        break;
+                                    case "ssl":
+                                        {
+                                            var hnp = item.Split(':');
+                                            var hostname = hnp[0];
+                                            var port = hnp.Length > 1 ? Convert.ToInt32(hnp[1]) : 443;
+
+                                            var client = new TcpClient(hostname, port);
+                                            var sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) =>
+                                            {
+                                                var outMsg = new List<string>();
+                                                if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateNotAvailable)
+                                                {
+                                                    outMsg.Add($"{sslPolicyErrors} 证书不可用");
+                                                }
+                                                else if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateNameMismatch)
+                                                {
+                                                    outMsg.Add($"{sslPolicyErrors} 证书名称不匹配");
+                                                }
+                                                else if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+                                                {
+                                                    outMsg.Add($"{sslPolicyErrors}");
+                                                }
+
+                                                var now = DateTime.Now;
+                                                var co = ((X509Certificate2)certificate);
+
+                                                var lastDay = (int)((co.NotAfter - now).TotalDays);
+                                                var sslAlertDay = GlobalTo.GetValue<int>("Monitor:sslAlertDay"); //报警天数
+                                                if (lastDay <= sslAlertDay)
+                                                {
+                                                    outMsg.Add($"有效期: {lastDay} 天\r\n{co.NotBefore:yyyy-MM-dd HH:mm} 至 {co.NotAfter:yyyy-MM-dd HH:mm}");
+                                                }
+
+                                                if (outMsg.Count > 0)
+                                                {
+                                                    outMsg.Insert(0, item);
+                                                    PushService.PushAsync("SSL 监控通知", string.Join("\r\n", outMsg));
+                                                }
+
+                                                return true;
+                                            }), null);
+
+                                            try
+                                            {
+                                                sslStream.AuthenticateAsClient(hostname);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Console.WriteLine(ex);
+                                                client.Close();
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex);
+                                ConsoleTo.Log(ex);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Msg = "未启用";
+                }
+
+                var vmj = vm.ToJson(true);
+                Console.WriteLine(vmj);
+                ConsoleTo.Log(vmj);
+
+                return vm;
+            });
         }
 
         /// <summary>

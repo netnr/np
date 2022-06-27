@@ -28,7 +28,7 @@ public class DataKitController : Controller
                 //终止请求、终止执行
                 HttpContext.RequestAborted.Register(() =>
                 {
-                    dk.db.AbortCommand();
+                    dk.db.CommandAbort();
                     Console.WriteLine("\rCancellation Requested\r");
                 });
 

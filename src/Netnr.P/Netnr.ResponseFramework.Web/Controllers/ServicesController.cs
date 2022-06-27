@@ -46,7 +46,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                             ConnectionType = GlobalTo.TDB,
                             ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=")
                         },
-                        ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                        PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
                         WriteDeleteData = true
                     };
 
@@ -72,7 +72,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 {
                     var edb = new SharedDataKit.TransferVM.ExportDatabase
                     {
-                        ZipPath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                        PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
                         ReadConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo()
                         {
                             ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source="),

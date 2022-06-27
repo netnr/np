@@ -86,11 +86,11 @@ namespace Netnr.Core
         /// <param name="rate"></param>
         /// <param name="space">间隔</param>
         /// <returns></returns>
-        public static string FormatByteSize(double size, int keep = 2, int rate = 1024, string space = " ")
+        public static string FormatByteSize(double size, int keep = 2, int rate = 1024, string space = "")
         {
             if (Math.Abs(size) < rate)
             {
-                return $"{size}{space}B";
+                return $"{Math.Round(size, keep)}{space}B";
             }
 
             string[] units = rate == 1000
@@ -116,7 +116,7 @@ namespace Netnr.Core
         /// <param name="ms">秒</param>
         /// <param name="format">格式化</param>
         /// <returns></returns>
-        public static string FormatMillisecondsSize(double ms, string format = @"hh\:mm\:ss\:fff")
+        public static string FormatMillisecondsSize(double ms, string format = @"hh\:mm\:ss\.fff")
         {
             TimeSpan time = TimeSpan.FromMilliseconds(ms);
             return time.ToString(format);

@@ -124,5 +124,58 @@ namespace Netnr.Core
 
             CopyDirectory(diSource, diTarget, ignoreFolder);
         }
+
+        /// <summary>
+        /// 是二进制（非文本）
+        /// </summary>
+        /// <param name="filePath">路径</param>
+        /// <param name="consecutiveNul">连续Nul数量，默认1</param>
+        /// <returns></returns>
+        public static bool IsBinary(string filePath, int consecutiveNul = 1)
+        {
+            const int charsToCheck = 8000;
+            const char nulChar = '\0';
+
+            int nulCount = 0;
+
+            using (var streamReader = new StreamReader(filePath))
+            {
+                for (var i = 0; i < charsToCheck; i++)
+                {
+                    if (streamReader.EndOfStream)
+                        return false;
+
+                    if ((char)streamReader.Read() == nulChar)
+                    {
+                        if (++nulCount >= consecutiveNul)
+                            return true;
+                    }
+                    else
+                    {
+                        nulCount = 0;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 删除乱码
+        /// </summary>
+        /// <param name="content">内容</param>
+        /// <returns></returns>
+        public static string RemoveSpecialCharacters(string content)
+        {
+            var sb = new StringBuilder();
+            foreach (char c in content)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
     }
 }

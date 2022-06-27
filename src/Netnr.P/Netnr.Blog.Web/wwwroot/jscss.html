@@ -1,6 +1,6 @@
 ﻿<!--
 https://github.com/netnr
-2022-06-01 15:00:55
+2022-06-26 09:51:20
 -->
 
 <!DOCTYPE html>
@@ -96,17 +96,11 @@ https://github.com/netnr
 </div>
 
 <script src="/app/browserify/dist/clean-css.min.js?v=G9z93W2dkzz6nyVPx9x7O0tVQFY-B5ChZxwg7w73-n8"></script>
-<script src='https://npm.elemecdn.com/terser@5.13.1/dist/bundle.min.js'></script>
+<script src='https://npm.elemecdn.com/terser@5.14.1/dist/bundle.min.js'></script>
 <script src='https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs/loader.js'></script>
 
 <script>
     var meRequire = require;
-
-    function htmlDecode(html) {
-        var a = document.createElement('a');
-        a.innerHTML = html;
-        return a.innerText;
-    }
 
     require.config({
         paths: {

@@ -1,7 +1,5 @@
 ﻿#if Full || App
 
-using Microsoft.AspNetCore.Http;
-
 namespace Netnr.SharedApp
 {
     /// <summary>

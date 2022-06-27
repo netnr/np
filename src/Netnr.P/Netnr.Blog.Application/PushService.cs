@@ -5,22 +5,23 @@ using Newtonsoft.Json.Linq;
 namespace Netnr.Blog.Application
 {
     /// <summary>
-    /// 推送服务
+    /// 企业微信推送
     /// </summary>
     public class PushService
     {
         /// <summary>
         /// 获取 access_token
+        /// https://developer.work.weixin.qq.com/document/path/91039
         /// </summary>
         /// <returns></returns>
-        private static string Get_access_token()
+        public static string GetAccessToken()
         {
-            var atkey = "test_access_token";
+            var atkey = "e_access_token";
             if (CacheTo.Get(atkey) is not JObject ato)
             {
-                var appID = GlobalTo.GetValue("ApiKey:TestWeChatMP:AppID");
-                var appsecret = GlobalTo.GetValue("ApiKey:TestWeChatMP:AppSecret");
-                var access_token_url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appID}&secret={appsecret}";
+                var corpid = GlobalTo.GetValue("ApiKey:EWeChatApp:CorpID");
+                var corpsecret = GlobalTo.GetValue("ApiKey:EWeChatApp:CorpSecret");
+                var access_token_url = $"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corpid}&corpsecret={corpsecret}";
                 Console.WriteLine(access_token_url);
                 var access_token_result = HttpTo.Get(access_token_url);
                 Console.WriteLine(access_token_result);
@@ -33,51 +34,54 @@ namespace Netnr.Blog.Application
         }
 
         /// <summary>
-        /// 推送测试公众号
-        /// https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
+        /// 发送应用消息
+        /// https://developer.work.weixin.qq.com/document/path/90236
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="msg"></param>
-        /// <param name="url"></param>
+        /// <param name="content"></param>
+        /// <param name="msgtype">默认 text,可选 markdown</param>
         /// <returns></returns>
-        public static SharedResultVM Push(string title = "", string msg = "", string url = "")
+        public static SharedResultVM SendAppMessage(string content = "", string msgtype = "text")
         {
             return SharedResultVM.Try(vm =>
             {
-                var access_token = Get_access_token();
-
-                var template_id = GlobalTo.GetValue("ApiKey:TestWeChatMP:Template_Id");
-                var tousers = GlobalTo.GetValue("ApiKey:TestWeChatMP:ToUser");
-
-                var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                vm.Set(SharedEnum.RTag.success);
-                tousers.Split(',').ToList().ForEach(touser =>
+                if (GlobalTo.GetValue<bool>("ApiKey:EWeChatApp:enable"))
                 {
-                    var post_data = new
+                    vm.Set(SharedEnum.RTag.success);
+
+                    var access_token = GetAccessToken();
+                    var touser = GlobalTo.GetValue("ApiKey:EWeChatApp:ToUser");
+                    var agentid = GlobalTo.GetValue<int>("ApiKey:EWeChatApp:AgentID");
+
+                    var post_data = new JObject
                     {
-                        touser,
-                        template_id,
-                        url,
-                        data = new
+                        ["touser"] = touser,
+                        ["msgtype"] = msgtype,
+                        ["agentid"] = agentid,
+                        [msgtype] = new JObject
                         {
-                            title = new { value = title, color = "#000" },
-                            time = new { value = now, color = "#f00" },
-                            msg = new { value = msg, color = "#173177" }
+                            ["content"] = content
                         }
                     };
-                    var post_url = $"https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}";
+
+                    var post_url = $"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}";
                     var post_result = HttpTo.Post(post_url, post_data.ToJson());
                     Console.WriteLine(post_result);
+
                     if (post_result.ToJObject()["errcode"].ToString() == "0")
                     {
-                        vm.Log.Add($"Push successfully {touser}");
+                        vm.Log.Add($"successfully");
                     }
                     else
                     {
-                        vm.Log.Add($"Push failed {touser}");
+                        vm.Log.Add($"failed {touser}");
                         vm.Set(SharedEnum.RTag.fail);
                     }
-                });
+                }
+                else
+                {
+                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Msg = "未启用";
+                }
 
                 return vm;
             });
@@ -87,49 +91,21 @@ namespace Netnr.Blog.Application
         /// 推送（异步）
         /// </summary>
         /// <param name="title"></param>
-        /// <param name="msg"></param>
-        /// <param name="url"></param>
-        public static void PushAsync(string title = "", string msg = "", string url = "")
+        /// <param name="content"></param>
+        public async static void PushAsync(string title, string content = "")
         {
-            ThreadPool.QueueUserWorkItem(_ =>
+            var list = new List<string>();
+            if (!string.IsNullOrWhiteSpace(title))
             {
-                Push(title, msg, url);
-            });
-        }
-
-        /// <summary>
-        /// 推送菜单（管理员）
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="access_token"></param>
-        /// <returns></returns>
-        public static SharedResultVM PushMenu(string json = "", string access_token = "")
-        {
-            return SharedResultVM.Try(vm =>
+                list.Add(title);
+            }
+            list.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            if (!string.IsNullOrWhiteSpace(content))
             {
-                if (string.IsNullOrWhiteSpace(access_token))
-                {
-                    access_token = Get_access_token();
-                }
+                list.Add("\r\n" + content);
+            }
 
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    json = new
-                    {
-                        button = new[]
-                        {
-                            new {name="NET牛人",type="view",url="https://www.netnr.com" },
-                            new {name="留言",type="view",url="https://ss.netnr.com/message" }
-                        }
-                    }.ToJson();
-                }
-                var post_url = $"https://api.weixin.qq.com/cgi-bin/menu/create?access_token={access_token}";
-                var post_result = HttpTo.Post(post_url, json);
-                vm.Set(SharedEnum.RTag.success);
-                vm.Data = post_result;
-
-                return vm;
-            });
+            await Task.Run(() => SendAppMessage(string.Join("\r\n", list)));
         }
     }
 }

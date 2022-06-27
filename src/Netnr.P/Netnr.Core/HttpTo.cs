@@ -63,20 +63,32 @@ namespace Netnr.Core
         /// </summary>
         /// <param name="request">HttpWebRequest对象</param>
         /// <param name="fullFilePath">存储完整路径</param>
-        /// <param name="charset">编码，默认utf-8</param>
         /// <returns></returns>
-        public static void DownloadSave(HttpWebRequest request, string fullFilePath, string charset = "utf-8")
+        public static void DownloadSave(HttpWebRequest request, string fullFilePath)
         {
             HttpWebResponse response = null;
-            var stream = Stream(request, ref response, charset);
+            var stream = Stream(request, ref response, null);
 
-            using MemoryStream ms = new();
-            stream.BaseStream.CopyTo(ms);
-            var bytes = ms.ToArray();
+            var fileDir = Path.GetDirectoryName(fullFilePath);
+            if (!Directory.Exists(fileDir))
+            {
+                Directory.CreateDirectory(fileDir);
+            }
 
-            using var fs = new FileStream(fullFilePath, FileMode.Create);
-            fs.Write(bytes, 0, bytes.Length);
+            using var fs = File.Create(fullFilePath);
+            stream.BaseStream.CopyTo(fs);
             fs.Flush();
+        }
+
+        /// <summary>
+        /// HTTP请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="fullFilePath">存储完整路径</param>
+        /// <returns></returns>
+        public static void DownloadSave(string url, string fullFilePath)
+        {
+            DownloadSave(HWRequest(url), fullFilePath);
         }
 
         /// <summary>
