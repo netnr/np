@@ -1,6 +1,6 @@
 nr.onChangeSize = function (ch) {
     if (nr.nmd) {
-        var vh = ch - nr.nmd.obj.container.getBoundingClientRect().top - 30;
+        var vh = ch - nr.nmd.domEditor.getBoundingClientRect().top - 30;
         nr.nmd.height(Math.max(100, vh));
     }
 }
@@ -23,20 +23,16 @@ nr.onReady = function () {
 
 var page = {
     initEditor: function () {
-        require(['vs/editor/editor.main'], function () {
-            var code = nr.domEditor.getAttribute("data-value");
-            nr.nmd = new netnrmd('.nr-editor', { autosave: false });
+        var code = nr.domEditor.getAttribute("data-value");
+        nr.nmd = netnrmd.init(".nr-editor", { autosave: false });
 
-            nr.changeTheme();
-            nr.changeSize();
+        nr.changeTheme();
+        nr.changeSize();
 
-            nr.nmd.setmd(code);
+        nr.nmd.setmd(code);
 
-            //快捷键
-            nr.nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
-                nr.domBtnSave.click();
-            })
-        });
+        //快捷键
+        nr.nmd.addCommand("Ctrl+S", () => nr.domBtnSave.click());
     },
     initMenuTree: function (code) {
         fetch(`/Doc/MenuTree/${code}`).then(resp => resp.json()).then(res => {
@@ -126,7 +122,7 @@ var page = {
     insertTemplate: function (name) {
         fetch(`/file/template/doc_${name}.md`).then(resp => resp.text()).then(res => {
             if (nr.nmd) {
-                netnrmd.insertAfterText(nr.nmd.obj.me, res);
+                nr.nmd.insert(res);
             }
         })
     }

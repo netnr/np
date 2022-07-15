@@ -250,7 +250,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 var ct = new List<string>
                     {
-                        "# " + ds.DsName,
+                        "## " + ds.DsName,
                         string.IsNullOrWhiteSpace(ds.DsRemark)? "" : $"#### {ds.DsRemark}",
                         "",
                         ds.DsCreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss")
@@ -306,7 +306,7 @@ namespace Netnr.Blog.Web.Controllers
                 uptime += " &nbsp; <span><i class='fa fa-sort-amount-asc'></i> 排序号：" + mdmo.DsdOrder + "</span>";
                 var mdtitle = string.Join(Environment.NewLine, new List<string>()
                     {
-                        "<h1>"+mdmo.DsdTitle+"</h1>",
+                        "<h2>"+mdmo.DsdTitle+"</h2>",
                         uptime,
                         "<hr/>",
                         "",
@@ -452,6 +452,9 @@ namespace Netnr.Blog.Web.Controllers
                         mo.DsdCreateTime = mo.DsdUpdateTime;
 
                         db.DocSetDetail.Add(mo);
+
+                        //推送通知
+                        Application.PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
                     }
                     else
                     {
@@ -468,9 +471,6 @@ namespace Netnr.Blog.Web.Controllers
                             db.DocSetDetail.Update(currmo);
                         }
                     }
-
-                    //推送通知
-                    Application.PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
 
                     int num = db.SaveChanges();
                     vm.Set(num > 0);
@@ -669,7 +669,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="listNo"></param>
         /// <param name="deep"></param>
         /// <returns></returns>
-        private string ListTreeEach<T>(List<T> list, string pidField, string idField, List<string> startPid, List<int> listNo = null, int deep = 1)
+        private string ListTreeEach<T>(List<T> list, string pidField, string idField, List<string> startPid, List<int> listNo = null, int deep = 2)
         {
             StringBuilder sbTree = new();
 

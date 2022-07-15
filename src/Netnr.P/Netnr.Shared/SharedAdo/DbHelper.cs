@@ -75,11 +75,6 @@ namespace Netnr.SharedAdo
         public DbHelper(DbConnection dbConnection)
         {
             Connection = dbConnection;
-
-            dbConnection.StateChange += (s, e) =>
-            {
-
-            };
         }
 
         /// <summary>

@@ -19,6 +19,7 @@ HttpTo.cs | HTTP 请求（GET、POST 等，可设置 `HttpWebRequest` 对象）
 ParsingTo.cs | 解析（正则相关）
 PathTo.cs | 路径
 RandomTo.cs | 生成随机码（验证码）
+SnowflakeTo.cs | 雪花 ID
 SystemStatusTo.cs | 系统状态信息
 TreeTo.cs | Tree 常用方法（List 数据集生成 JSON tree，菜单多级导航）
 UniqueTo.cs | 生成唯一的标识（GUID 转成 long）

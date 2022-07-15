@@ -41,7 +41,7 @@ var page = {
             },
             getRowId: event => event.data.UwId,
             columnDefs: [
-                ag.numberCol({ checkboxSelection: false }),
+                ag.numberCol({ headerCheckboxSelection: false }),
                 { headerName: "Id", field: "UwId", filter: 'agNumberColumnFilter', },
                 {
                     headerName: "标题", field: "UwTitle", width: 640, cellRenderer: (params) => {

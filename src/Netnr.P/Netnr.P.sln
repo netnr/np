@@ -57,7 +57,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.UAParser", "Netnr.UAP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Serve", "Netnr.Serve\Netnr.Serve.csproj", "{FF952B0A-0938-4358-9D65-0C7D1AAF6481}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netnr.SMS", "Netnr.SMS\Netnr.SMS.csproj", "{BBE3826A-43B2-42E0-8679-09DDEC6880F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.SMS", "Netnr.SMS\Netnr.SMS.csproj", "{BBE3826A-43B2-42E0-8679-09DDEC6880F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

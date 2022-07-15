@@ -321,6 +321,18 @@ namespace Netnr.Test
         }
 
         [Fact]
+        public void Extend_6_Add()
+        {
+            var v1 = new string[3] { "a", "b", "c" };
+            var v2 = v1.Add("d");
+            foreach (var item in v2)
+            {
+                Debug.WriteLine(item);
+            }
+            Assert.True(v2.Count() == 4);
+        }
+
+        [Fact]
         public void FileTo()
         {
             var txt1 = "test1";

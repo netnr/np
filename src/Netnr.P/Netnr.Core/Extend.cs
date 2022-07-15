@@ -422,6 +422,22 @@ namespace Netnr
         }
 
         /// <summary>
+        /// 集合添加项（返回新的集合）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="newItem"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Add<T>(this IEnumerable<T> items, T newItem)
+        {
+            foreach (var item in items)
+            {
+                yield return item;
+            }
+            yield return newItem;
+        }
+
+        /// <summary>
         /// 拓展批量添加
         /// </summary>
         /// <param name="oc"></param>

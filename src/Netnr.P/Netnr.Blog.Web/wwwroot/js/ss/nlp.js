@@ -5,15 +5,13 @@
             nr.domTxtResult.value = "";
         } else {
             nr.domBtnQuery.loading = true;
-            ss.fetch({
-                url: `${ss.apiServer}/api/v1/Analysis`,
-                method: "POST",
+            fetch(`${ss.apiServer}/api/v1/Analysis`, {
+                method: 'POST',
                 body: nr.toFormData({
                     content: val,
                     ctype: nr.domSeType.value,
                 })
-            }).then(res => {
-                res = JSON.parse(res);
+            }).then(resp => resp.json()).then(res => {
                 nr.domBtnQuery.loading = false;
                 if (res.code == 200) {
                     nr.domTxtResult.value = JSON.stringify(res.data, null, 2);

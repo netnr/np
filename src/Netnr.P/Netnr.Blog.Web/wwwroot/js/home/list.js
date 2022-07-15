@@ -1,39 +1,6 @@
 nr.onReady = function () {
     //目录
-    var toc = {
-        index: 1,
-        init: function () {
-            var mb = document.querySelector('.markdown-body');
-            var nas = mb.getElementsByTagName('*'), hasHeader = false;
-            for (var i = 0; i < nas.length; i++) {
-                var na = nas[i];
-                switch (na.nodeName) {
-                    case "H1":
-                    case "H2":
-                    case "H3":
-                    case "H4":
-                    case "H5":
-                    case "H6":
-                        na.id = "toc_" + toc.index++;
-                        hasHeader = true;
-                        break;
-                }
-            }
-
-            if (hasHeader) {
-                mb.parentElement.classList.add('nr-toc');
-
-                tocbot.init({
-                    tocSelector: '.toc',
-                    contentSelector: '.markdown-body',
-                    headingSelector: 'h1, h2, h3, h4, h5, h6',
-                    hasInnerContainers: true,
-                });
-
-            }
-        }
-    }
-    toc.init();
+    netnrmd.toc();
 
     //保存
     if (nr.domBtnReply) {

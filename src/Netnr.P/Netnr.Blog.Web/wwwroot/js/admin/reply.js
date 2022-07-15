@@ -21,7 +21,7 @@ var page = {
             getRowId: event => event.data.UrId, //指定行标识列
             //列
             columnDefs: [
-                ag.numberCol({ checkboxSelection: false }),
+                ag.numberCol({ checkboxSelection: false, headerCheckboxSelection: false }),
                 { field: "UserId", filter: 'agNumberColumnFilter', },
                 { field: "Nickname", },
                 { field: "UrAnonymousName", headerName: "💡匿名昵称", editable: true },

@@ -16,8 +16,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
 		<PackageReference Include="IP2Region" Version="1.2.0" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.6" />
-		<PackageReference Include="MySqlConnector" Version="2.1.10" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.7" />
+		<PackageReference Include="MySqlConnector" Version="2.1.11" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.61" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
 		<PackageReference Include="Npgsql" Version="6.0.5" />

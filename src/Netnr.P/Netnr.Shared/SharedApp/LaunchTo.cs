@@ -71,31 +71,5 @@ public static class LaunchTo
             await context.Response.WriteAsync(errBody);
         });
     }
-
-    /// <summary>
-    /// 获取目录下文件名
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="readCache"></param>
-    /// <returns></returns>
-    public static List<string> GetFilename(string path, bool readCache = true)
-    {
-        var ck = $"filename_{path}";
-        if (Core.CacheTo.Get(ck) is not List<string> list || !readCache)
-        {
-            list = new List<string>();
-            if (Directory.Exists(path))
-            {
-                var files = Directory.GetFiles(path);
-                foreach (var item in files)
-                {
-                    list.Add(Path.GetFileName(item));
-                }
-                list = list.OrderBy(x => x).ToList();
-            }
-            Core.CacheTo.Set(ck, list, 300, false);
-        }
-        return list;
-    }
 }
 #endif

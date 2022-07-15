@@ -13,6 +13,8 @@
 <input class="nr-hid-write-id" type="hidden" value="@uw.UwId" />
 <input class="nr-hid-user-id" type="hidden" value="@uw.Uid" />
 
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css"))
+
 <div class="container-fluid px-4">
 
     <!--标题-->
@@ -80,9 +82,6 @@
         </div>
 
         <div class="col-12 mb-5">
-            <!--目录-->
-            <div class="toc"></div>
-
             <div class="markdown-body">
                 @Html.Raw(uw.UwContent)
             </div>
@@ -177,5 +176,5 @@
 
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js,tocbot.js"))
+@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.js"))
 <script src="/js/home/list.js" asp-append-version="true"></script>

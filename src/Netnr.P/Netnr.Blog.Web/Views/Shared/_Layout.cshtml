@@ -1,6 +1,6 @@
 ﻿@{
     var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
-    var themeClass = theme == "dark" ? "sl-theme-dark" : "sl-theme-light";
+    var themeClass = theme == "dark" ? "sl-theme-dark netnrmd-dark" : "sl-theme-light netnrmd-light";
 
     var rdv = ViewContext.RouteData.Values;
     var ctrl = rdv["controller"].ToString().ToLower();
@@ -9,9 +9,6 @@
 
     var canav = "account/,mix/terms".Split(',');
     var cafooter = "account/,admin/,home/completeinfo,home/write,storage/,ss/,user/write,user/message,user/verify,user/setting,mix/terms,note/,run/index,run/code,gist/index,gist/code,draw/index,draw/code,doc/index,doc/form,doc/item,doc/catalog,guff/code,guff/index".Split(',');
-
-    var distVpath = "/app/blog/dist";
-    var distPpath = LaunchTo.GetFilename(GlobalTo.WebRootPath + distVpath);
 
     if (ctrl == "ss")
     {
@@ -66,22 +63,12 @@
         <meta name='keywords' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
         <meta name='description' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
     }
-    
-    <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
-    
-    @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css"))
 
-    @foreach (string filename in distPpath)
-    {
-        if (filename.EndsWith(".js"))
-        {
-            <script src="@distVpath/@filename"></script>
-        }
-        else
-        {
-            <link href="@distVpath/@filename" rel="stylesheet" />
-        }
-    }
+    <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
+
+    @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css"))
+    <link href="/app/blog/dist/all.css" rel="stylesheet" asp-append-version="true" />
+    <script src="/app/blog/dist/all.js" asp-append-version="true"></script>
 </head>
 <body>
     @if (!canav.Any(x => ca.StartsWith(x)))

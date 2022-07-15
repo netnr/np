@@ -9,7 +9,7 @@
     <title>jCute JavaScript Library</title>
 
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <link href="https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.css" rel="stylesheet" async>
+    <link href="/app/md/dist/netnrmd.css" rel="stylesheet" />
 
     <style>
         .markdown-body {
@@ -21,13 +21,12 @@
 </head>
 <body>
     <div class="markdown-body">
-        
-        <h1>jCute</h1>
+        <h1 id="toc_0">jCute</h1>
         <p>JavaScript Library</p>
-        <h3><a href="view.html?jcute.all.js">jCute.all.js</a></h3>
-        <h1>Module</h1>
-        <h3><a href="view.html?jcute.ajax.js">jCute.ajax.js</a></h3>
-<pre><code class="language-js"><span class="hljs-comment">/**
+        <h3 id="toc_1"><a href="view.html?jcute.all.js">jCute.all.js</a></h3>
+        <h1 id="toc_2">Module</h1>
+        <h3 id="toc_3"><a href="view.html?jcute.ajax.js">jCute.ajax.js</a></h3>
+<pre><code class="hljs language-js"><span class="hljs-comment">/**
  * ajax请求
  * <span class="hljs-doctag">@param</span> {<span class="hljs-type">JQuery.AjaxSettings</span>} settings 类似于jQuery传参
  * 
@@ -46,8 +45,8 @@
  */</span>
 jCute.<span class="hljs-title function_">ajax</span>(settings)
 </code></pre>
-        <h3><a href="view.html?jcute.convert.js">jCute.convert.js</a></h3>
-<pre><code class="language-js"><span class="hljs-comment">/**
+        <h3 id="toc_4"><a href="view.html?jcute.convert.js">jCute.convert.js</a></h3>
+<pre><code class="hljs language-js"><span class="hljs-comment">/**
  * Unicode编码
  * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} str 字符串
  */</span>
@@ -71,8 +70,8 @@ jCute.<span class="hljs-title function_">toAscii</span>(str)
  */</span>
 jCute.<span class="hljs-title function_">toAsciiUn</span>(str)
 </code></pre>
-        <h3><a href="view.html?jcute.cookie.js">jCute.cookie.js</a></h3>
-<pre><code class="language-js"><span class="hljs-comment">/**
+        <h3 id="toc_5"><a href="view.html?jcute.cookie.js">jCute.cookie.js</a></h3>
+<pre><code class="hljs language-js"><span class="hljs-comment">/**
  * Cookie获取、设置、删除
  * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} key 键
  * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} value 值
@@ -80,8 +79,8 @@ jCute.<span class="hljs-title function_">toAsciiUn</span>(str)
  */</span>
 jCute.<span class="hljs-title function_">cookie</span>(key, value, time)
 </code></pre>
-        <h3><a href="view.html?jcute.load.js">jCute.load.js</a></h3>
-<pre><code class="language-js"><span class="hljs-comment">/**
+        <h3 id="toc_6"><a href="view.html?jcute.load.js">jCute.load.js</a></h3>
+<pre><code class="hljs language-js"><span class="hljs-comment">/**
  * 载入js脚本，并回调
  * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} src js脚本路径
  * <span class="hljs-doctag">@param</span> {<span class="hljs-type">function</span>} success 载入成功回调方法
@@ -94,8 +93,8 @@ jCute.<span class="hljs-title function_">getScript</span>(src, success)
  */</span>
 jCute.<span class="hljs-title function_">getStyle</span>(href)
 </code></pre>
-        <h3><a href="view.html?jcute.support.js">jCute.support.js</a></h3>
-<pre><code class="language-js"><span class="hljs-comment">/** 
+        <h3 id="toc_7"><a href="view.html?jcute.support.js">jCute.support.js</a></h3>
+<pre><code class="hljs language-js"><span class="hljs-comment">/** 
  * IE8- 
  */</span>
 jCute.<span class="hljs-title function_">oldIE</span>()
@@ -142,8 +141,8 @@ jCute.<span class="hljs-title function_">key</span>(e)
  */</span>
 jCute.<span class="hljs-title function_">type</span>(obj)
 </code></pre>
-        <h3><a href="view.html?jcute.xml.js">jCute.xml.js</a></h3>
-<pre><code class="language-js"><span class="hljs-comment">/**
+        <h3 id="toc_8"><a href="view.html?jcute.xml.js">jCute.xml.js</a></h3>
+<pre><code class="hljs language-js"><span class="hljs-comment">/**
  * 解析字符串为xml
  * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} data 字符串
  */</span>
@@ -155,8 +154,22 @@ jCute.<span class="hljs-title function_">parseXML</span>(data)
  */</span>
 jCute.<span class="hljs-title class_">XMLSerializer</span>(xmlDoc)
 </code></pre>
-
     </div>
     <script src="src/jCute.all.js"></script>
+
+    <script>
+        //浏览器变更主题
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('netnrmd-dark')
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            document.documentElement.classList.remove('netnrmd-light', 'netnrmd-dark')
+            if (e.matches) {
+                document.documentElement.classList.add('netnrmd-dark')
+            } else {
+                document.documentElement.classList.add('netnrmd-light')
+            }
+        });
+    </script>
 </body>
 </html>

@@ -19,7 +19,7 @@ var page = {
             },
             getRowId: event => event.data.UwId,
             columnDefs: [
-                ag.numberCol({ checkboxSelection: false }),
+                ag.numberCol({ checkboxSelection: false, headerCheckboxSelection: false }),
                 { field: "UserId", filter: 'agNumberColumnFilter', },
                 { headerName: "昵称", field: "Nickname", },
                 { headerName: "文章ID", field: "UwId", filter: 'agNumberColumnFilter', },

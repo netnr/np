@@ -3,7 +3,7 @@ nr.onChangeSize = function (ch) {
     //新增
     if (location.pathname == "/home/write") {
         if (nr.nmd) {
-            var vh = ch - nr.nmd.obj.container.getBoundingClientRect().top - 20;
+            var vh = ch - nr.nmd.domEditor.getBoundingClientRect().top - 20;
             nr.nmd.height(Math.max(100, vh));
         }
     } else {
@@ -41,17 +41,14 @@ nr.onReady = function () {
         nr.alert(err)
     });
 
-    require(['vs/editor/editor.main'], function () {
-        nr.nmd = new netnrmd('.nr-editor');
+    //编辑器
+    nr.nmd = netnrmd.init('.nr-editor');
 
-        nr.changeTheme();
-        nr.changeSize();
+    nr.changeTheme();
+    nr.changeSize();
 
-        //快捷键
-        nr.nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
-            domBtnSave.click();
-        });
-    });
+    //快捷键
+    nr.nmd.addCommand("Ctrl+S", () => nr.domBtnSave.click());
 
     //编辑
     if (location.pathname == "/user/write") {

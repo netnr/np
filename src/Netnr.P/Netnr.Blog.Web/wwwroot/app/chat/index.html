@@ -10,12 +10,12 @@
     <title>Netnrs Chat</title>
 
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <link href="https://npm.elemecdn.com/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://npm.elemecdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="chat.css?v2" rel="stylesheet" />
     
-    <script src="https://npm.elemecdn.com/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://npm.elemecdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="container" id="wrap">
@@ -145,19 +145,10 @@
 
     <script src="mimc-min_1_0_3.js"></script>
 
-    <link href="https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.css" rel="stylesheet" />
-    <script src="https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.bundle.js"></script>
+    <link href="/app/md/dist/netnrmd.css" rel="stylesheet" />
+    <script src="/app/md/dist/ace.js"></script>
+    <script src="/app/md/dist/netnrmd.js"></script>
 
-    <script src="https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs/loader.js"></script>
-    <script>
-        require.config({
-            paths: {
-                vs: 'https://npm.elemecdn.com/monaco-editor@0.33.0/min/vs'
-            },
-            'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
-        });
-    </script>
-    <script src="chat.js?v3"></script>
-
+    <script src="chat.js?v4"></script>
 </body>
 </html>

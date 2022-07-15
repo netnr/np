@@ -12,12 +12,7 @@ netnr@netnr.com
 **Blog**
 &nbsp; 个站
 &nbsp; https://www.netnr.com
-&nbsp; https://www.netnr.eu.org
-
-**NRF (Netnr.ResponseFramework)**
-&nbsp; 框架
-&nbsp; https://rf.netnr.com
-&nbsp; https://netnr-rf.herokuapp.com
+&nbsp; https://netnr.zme.ink
 
 **Proxy**
 &nbsp; 跨域请求
@@ -46,14 +41,13 @@ netnr@netnr.com
 &nbsp; JSON 编辑器
 &nbsp; https://je.js.org
 
-**NFS (Netnr.FileServer)**
-&nbsp; 上传文件服务器
-&nbsp; https://netnr-fs.herokuapp.com
-
+更多发布应用
+&nbsp; https://github.com/netnr/np/releases
 ---
 
 ### Sponsors
-<img src="static/donate/alipay.jpg" alt="支付宝" title="支付宝" width="300" />
-<img src="static/donate/wechat.jpg" alt="微信" title="微信" width="300" />
+支付宝 微信  
+<img src="static/donate/alipay.svg" title="支付宝" height="240" />
+<img src="static/donate/wechat.svg" title="微信" height="240" />
 
 [Sponsor list](SPONSORS.md)

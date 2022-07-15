@@ -21,15 +21,15 @@
 		<PackageReference Include="AgGrid.InfiniteRowModel" Version="1.6.0" />
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
 		<PackageReference Include="Markdig" Version="0.30.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.7" />
 		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
 		<PackageReference Include="Qiniu" Version="8.2.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.1" />
-		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.71">
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.2" />
+		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.91">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.71">
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.91">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />

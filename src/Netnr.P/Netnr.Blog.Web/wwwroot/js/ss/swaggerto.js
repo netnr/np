@@ -3,9 +3,9 @@ nr.onChangeSize = function (ch) {
     nr.domEditor1.style.height = vh + 'px';
     nr.domEditor2.style.height = vh + 'px';
     nr.domSwaggerui.style.height = vh + 'px';
-    if (window["nmd"]) {
-        vh = ch - nmd.obj.container.getBoundingClientRect().top - 30;
-        nmd.height(Math.max(200, vh));
+    if (nr.nmd) {
+        vh = ch - nr.nmd.domEditor.getBoundingClientRect().top - 30;
+        nr.nmd.height(Math.max(200, vh));
     }
 }
 
@@ -124,8 +124,10 @@ nr.onReady = function () {
                         {
                             page.viewToggle("markdown");
 
-                            if (!("nmd" in window)) {
-                                window.nmd = new netnrmd(".nr-markdown", { autosave: false });
+                            if (nr.nmd == null) {
+                                nr.nmd = netnrmd.init(".nr-markdown", { autosave: false });
+                                window.nmd = nr.nmd;
+                                nr.changeTheme();
                                 nr.changeSize()
                             }
 
@@ -133,10 +135,10 @@ nr.onReady = function () {
                             page.convertOpenAPI(me.editor1.getValue()).then(res => {
                                 ss.loading(false);
                                 page.swaggerJson = res.data;
-                                nmd.setmd(page.jsonToMarkdown(page.swaggerJson))
+                                nr.nmd.setmd(page.jsonToMarkdown(page.swaggerJson))
                             }).catch(err => {
                                 ss.loading(false);
-                                nmd.setmd(err + "");
+                                nr.nmd.setmd(err + "");
                             })
                         }
                         break;
@@ -155,82 +157,7 @@ nr.onReady = function () {
                 nr.alert("请先点击 转文档 再下载");
             } else {
                 var action = e.detail.item.innerText.toLowerCase();
-                switch (action) {
-                    case "markdown":
-                        nr.download(nmd.getmd(), "swagger.md");
-                        break;
-                    case "html":
-                    case "word":
-                        {
-                            var netnrmd_body = nmd.gethtml();
-                            fetch("https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.css").then(resp => resp.text()).then(netnrmd_style => {
-                                var html = `<!DOCTYPE html>
-                                <html>
-                                    <head>
-                                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-                                    <style type="text/css">
-                                        ${netnrmd_style}
-                                    </style>
-                                    </head>
-                                    <body>
-                                    <div class="markdown-body">${netnrmd_body}</div>
-                                    </body>
-                                </html>`;
-
-                                if (action == "html") {
-                                    nr.download(html, "swagger.html");
-                                } else if (action == "word") {
-                                    require(['https://npm.elemecdn.com/html-docx-js@0.3.1/dist/html-docx.js'], function (module) {
-                                        nr.download(module.asBlob(html), "swagger.docx");
-                                    });
-                                }
-                            })
-                        }
-                        break;
-                    case "pdf":
-                        {
-                            require(["https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/html2pdf.js/0.9.3/html2pdf.bundle.min.js"], function (module) {
-                                var ch = nmd.obj.view.clientHeight;
-                                nmd.obj.view.style.height = 'auto';
-                                var vm = nmd.obj.viewmodel;
-                                nmd.toggleView(3);
-                                module(nmd.obj.view, {
-                                    margin: 3,
-                                    filename: 'swagger.pdf',
-                                    html2canvas: { scale: 1 }
-                                }).then(function () {
-                                    nmd.obj.view.style.height = ch + 'px';
-                                    nmd.toggleView(vm);
-                                })
-                            })
-                        }
-                        break;
-                    case "png":
-                        {
-                            var backvm = false;
-                            if (nmd.obj.viewmodel == 1) {
-                                nmd.toggleView(2);
-                                backvm = true;
-                            }
-
-                            require(['https://npm.elemecdn.com/html2canvas@1.4.1/dist/html2canvas.min.js'], function (module) {
-                                var ch = nmd.obj.view.clientHeight;
-                                nmd.obj.view.style.height = 'auto';
-                                module(nmd.obj.view, {
-                                    scale: 1,
-                                    margin: 15
-                                }).then(function (canvas) {
-                                    nmd.obj.view.style.height = ch + 'px';
-                                    nr.download(canvas, "swagger.png");
-
-                                    if (backvm) {
-                                        nmd.toggleView(1);
-                                    }
-                                })
-                            })
-                        }
-                        break;
-                }
+                nr.nmd.save(action)
             }
         });
     });

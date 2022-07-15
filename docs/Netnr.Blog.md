@@ -1,5 +1,8 @@
-## Netnr.Blog
+# Netnr.Blog
 个人站点
+
+> https://www.netnr.com  
+> https://netnr.zme.ink 镜像站点
 
 ### 框架组件
 - Bootstrap + shoelace + AG-Grid

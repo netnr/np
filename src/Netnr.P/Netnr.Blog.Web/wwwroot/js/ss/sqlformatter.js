@@ -44,10 +44,6 @@ nr.onReady = function () {
             codeFormatter()
             nr.lsSave();
         });
-        nr.domSeColumnwrap.addEventListener('sl-change', function () {
-            codeFormatter()
-            nr.lsSave();
-        });
         nr.domSeColumnalignment.addEventListener('sl-change', function () {
             codeFormatter()
             nr.lsSave();
@@ -78,7 +74,6 @@ function codeFormatter() {
             var result = sqlFormatter.format(code, {
                 language: nr.domSeLanguage.value,
                 keywordCase: nr.domSeUppercase.value,
-                multilineLists: nr.domSeColumnwrap.value,
                 tabulateAlias: nr.domSeColumnalignment.value == "true",
                 indentStyle: nr.domSeIndentation.value,
             });

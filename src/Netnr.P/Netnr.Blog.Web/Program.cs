@@ -133,8 +133,8 @@ if (!GlobalTo.GetValue<bool>("ReadOnly"))
     FluentScheduler.JobManager.AddJob(() => sc.DatabaseBackupToGit(), s => s.ToRunEvery(7).Days().At(16, 16));
 
     //监控
-    FluentScheduler.JobManager.AddJob(() => sc.Monitor("http"), s => s.ToRunEvery(90).Seconds());
-    FluentScheduler.JobManager.AddJob(() => sc.Monitor("tcp"), s => s.ToRunEvery(120).Seconds());
+    FluentScheduler.JobManager.AddJob(() => sc.Monitor("http"), s => s.ToRunEvery(1).Minutes());
+    FluentScheduler.JobManager.AddJob(() => sc.Monitor("tcp"), s => s.ToRunEvery(1).Minutes());
     FluentScheduler.JobManager.AddJob(() => sc.Monitor("ssl"), s => s.ToRunEvery(1).Days().At(10, 10));
 }
 
@@ -195,6 +195,10 @@ app.UseStaticFiles(new StaticFileOptions()
     ServeUnknownFileTypes = true,
     OnPrepareResponse = (resp) =>
     {
+        if (!resp.File.IsDirectory && (resp.File.Name.EndsWith(".js") || resp.File.Name.EndsWith(".css")))
+        {
+            resp.Context.Response.Headers["Content-Type"] += "; charset=utf-8";
+        }
         resp.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
         resp.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
     }
@@ -210,6 +214,10 @@ if (GlobalTo.GetValue<bool>("ReadOnly"))
     fso.StaticFileOptions.ServeUnknownFileTypes = true;
     fso.StaticFileOptions.OnPrepareResponse = (resp) =>
     {
+        if (!resp.File.IsDirectory && (resp.File.Name.EndsWith(".js") || resp.File.Name.EndsWith(".css")))
+        {
+            resp.Context.Response.Headers["Content-Type"] += "; charset=utf-8";
+        }
         resp.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
         resp.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
     };

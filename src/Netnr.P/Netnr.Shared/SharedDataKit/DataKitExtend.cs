@@ -318,6 +318,11 @@ namespace Netnr.SharedDataKit
             var dbRead = mdt.ReadConnectionInfo.NewDbHelper();
             //写入数据库
             var dbWrite = mdt.WriteConnectionInfo.NewDbHelper();
+            //写入预检
+            if ((new[] { SharedEnum.TypeDB.MySQL, SharedEnum.TypeDB.MariaDB }).Contains(mdt.WriteConnectionInfo.ConnectionType))
+            {
+                dbWrite.PreCheckMySQL();
+            }
 
             //遍历
             for (int i = 0; i < mdt.ListReadWrite.Count; i++)
@@ -413,7 +418,7 @@ namespace Netnr.SharedDataKit
 
                         //分批写入
                         vm.Log.Add($"写入表（{rw.WriteTableName}）第 {batchNo} 批（行：{dtWrite.Rows.Count}/{rowCount}）");
-                        
+
                         dbWrite.BulkCopy(mdt.WriteConnectionInfo.ConnectionType, dtWrite);
 
                         //清理
@@ -485,6 +490,12 @@ namespace Netnr.SharedDataKit
             vm.Log.Add($"读取写入库表信息");
             var dk = Init(idb.WriteConnectionInfo);
             var writeTables = dk.GetTable();
+
+            //写入预检
+            if ((new[] { SharedEnum.TypeDB.MySQL, SharedEnum.TypeDB.MariaDB }).Contains(idb.WriteConnectionInfo.ConnectionType))
+            {
+                dk.db.PreCheckMySQL();
+            }
 
             for (int i = 0; i < zipList.Count; i++)
             {

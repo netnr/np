@@ -1,4 +1,4 @@
-﻿var npmsrc = "https://npm.elemecdn.com/zoningjs@2.2021.0/";
+﻿var npmsrc = "https://unpkg.com/zoningjs@2.2021.0/";
 
 function requestJson(json) {
     return new Promise((resolve, reject) => {

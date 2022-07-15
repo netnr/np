@@ -258,11 +258,11 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// 获取空表结构、元信息
+        /// 获取空表结构、元信息、主键列（先填充数据再设置主键列，修复 SQLServer）
         /// </summary>
         /// <param name="reader"></param>
-        /// <returns>NULL 或 {Table, Schema}</returns>
-        public static Tuple<DataTable, DataTable> ReaderTableSchema(DbDataReader reader)
+        /// <returns>NULL 或 {Table, Schema, PrimaryKey}</returns>
+        public static Tuple<DataTable, DataTable, List<DataColumn>> ReaderTableSchema(DbDataReader reader)
         {
             var hasField = reader.FieldCount > 0;
             if (hasField)
@@ -326,10 +326,12 @@ namespace Netnr.SharedAdo
                 }
                 if (keyCols.Count > 0)
                 {
-                    dtTable.PrimaryKey = keyCols.ToArray();
+                    // SQLServer 查询 SELECT * from sys.columns; 列 column_id 架构信息 IsKey=True
+                    // 修复方法：先填充数据，再设置主键（即使是出错）
+                    //dtTable.PrimaryKey = keyCols.ToArray();
                 }
 
-                return new Tuple<DataTable, DataTable>(dtTable, dtSchema);
+                return new Tuple<DataTable, DataTable, List<DataColumn>>(dtTable, dtSchema, keyCols);
             }
 
             return null;
@@ -416,6 +418,19 @@ namespace Netnr.SharedAdo
                             }
 
                             dt.Rows.Add(dr.ItemArray);
+                        }
+
+                        //填充数据后设置主键列
+                        try
+                        {
+                            if (rts.Item3.Count > 0)
+                            {
+                                dt.PrimaryKey = rts.Item3.ToArray();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
                         }
 
                         dsTable.Tables.Add(dt);

@@ -46,7 +46,7 @@
                     <asciinema-player title="@Model.GistFilename"></asciinema-player>
                 </div>
                 <script>
-                    const player = AsciinemaPlayer.create('/gist/raw/@Model.GistCode/download', document.querySelector('asciinema-player'),{
+                    const player = AsciinemaPlayer.create('/gist/raw/@Model.GistCode/download', document.querySelector('asciinema-player'), {
                         poster: "npt:0:44",
                         fit: "height"
                     });
@@ -69,7 +69,7 @@
                 <div class="markdown-body position-relative mt-2">
                     <pre><code contenteditable language="@Model.GistLanguage">@Model.GistContent</code></pre>
                 </div>
-
+                
                 @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js"))
                 <style>
                     pre code::after {
@@ -82,7 +82,7 @@
                         color: var(--sl-color-warning-600);
                     }
                 </style>
-                <script>hljs.highlightAll()</script>
+                <script>netnrmd.hljs.highlightAll()</script>
             }
         </div>
 

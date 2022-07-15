@@ -8,32 +8,39 @@
     <title>jCute JavaScript Library</title>
 
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <link href="https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.css" rel="stylesheet" async>
-    <script src="https://npm.elemecdn.com/netnrmd@3.0.3/src/netnrmd.bundle.js"></script>
-    
+    <link href="/app/md/dist/netnrmd.css" rel="stylesheet" />
+    <script src="/app/md/dist/netnrmd.js"></script>
+
     <style>
         .markdown-body {
             zoom: 1.2;
+            padding: 1em;
         }
     </style>
 </head>
 <body>
-    <h1><a href="./" id="tname"></a></h1>
-    <div class="markdown-body" id="vc"></div>
-    <script src="src/jCute.all.js"></script>
+    <div class="markdown-body"></div>
+
     <script>
         var vurl = 'src/' + location.search.substring(1).replace('jcute', 'jCute');
-        jCute.ajax({
-            url: vurl,
-            success: function (data) {
-                var urs = vurl.split('/'), tn = document.getElementById('tname');
-                tn.innerHTML = urs[urs.length - 1];
-                tn.href = vurl;
-
-                document.getElementById('vc').innerHTML = netnrmd.render('```\r\n' + data + '\r\n```');
-            }
+        fetch(vurl).then(resp => resp.text()).then(res => {
+            var urs = vurl.split('/');
+            var title = `### [${urs[urs.length - 1]}](${vurl})`;
+            document.querySelector('.markdown-body').innerHTML = netnrmd.render(title + '\r\n```js\r\n' + res + '\r\n```');
         })
 
+        //浏览器变更主题
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('netnrmd-dark')
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            document.documentElement.classList.remove('netnrmd-light', 'netnrmd-dark')
+            if (e.matches) {
+                document.documentElement.classList.add('netnrmd-dark')
+            } else {
+                document.documentElement.classList.add('netnrmd-light')
+            }
+        });
     </script>
 </body>
 </html>

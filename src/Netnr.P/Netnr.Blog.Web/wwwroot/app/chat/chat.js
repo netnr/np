@@ -472,15 +472,12 @@ c.init = function () {
 }
 
 //NetnrMD编辑器 功能扩展
-
-netnrmd.extend = {
+Object.assign(netnrmd, {
     //上传
-    upload: {
-        //按钮
-        button: { title: '上传', cmd: 'upload', svg: '<path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/><path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>' },
-        //动作
+    uploadExtend: {
+        title: '上传', cmd: 'upload', svg: '<path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/><path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>',
         action: function (that) {
-            if (!that.uploadpopup) {
+            if (!that.domUpload) {
                 //构建弹出内容
                 var htm = [];
                 htm.push('<div style="height:100px;margin:15px;border:3px dashed #ddd">');
@@ -488,15 +485,15 @@ netnrmd.extend = {
                 htm.push('</div>');
 
                 //保存创建的上传弹出
-                that.uploadpopup = netnrmd.popup("上传", htm.join(''));
-                var ptitle = that.uploadpopup.querySelector('.np-header').querySelector('span');
+                that.domUpload = netnrmd.popup("上传", htm.join(''));
+                var ptitle = that.domUpload.querySelector('.np-header').querySelector('span');
 
                 //选择文件上传，该上传接口仅为演示使用，仅支持图片格式的附件
-                that.uploadpopup.querySelector('input').addEventListener('change', function () {
+                that.domUpload.querySelector('input').addEventListener('change', function () {
                     var file = this.files[0];
                     if (file) {
-                        if (file.size > 1024 * 1024 * 10) {
-                            alert('文件过大 （MAX 10 MB）')
+                        if (file.size > 1024 * 1024 * 5) {
+                            alert('文件过大 （MAX 5 MB）')
                             this.value = "";
                             return;
                         }
@@ -511,14 +508,14 @@ netnrmd.extend = {
                                 //上传百分比
                                 var per = ((event.loaded / event.total) * 100).toFixed(2);
                                 if (per < 100) {
-                                    ptitle.innerHTML = netnrmd.extend.upload.button.title + " （" + per + "%）";
+                                    ptitle.innerHTML = netnrmd.uploadExtend.title + " （" + per + "%）";
                                 } else {
-                                    ptitle.innerHTML = netnrmd.extend.upload.button.title;
+                                    ptitle.innerHTML = netnrmd.uploadExtend.title;
                                 }
                             }
                         };
 
-                        xhr.open("POST", "https://www.netnr.eu.org/api/v1/Upload", true);
+                        xhr.open("POST", "https://netnr.zme.ink/api/v1/Upload", true);
                         xhr.send(fd);
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState == 4) {
@@ -526,10 +523,14 @@ netnrmd.extend = {
                                     console.log(xhr.responseText)
                                     var res = JSON.parse(xhr.responseText);
                                     if (res.code == 200) {
-                                        let url = "https://www.netnr.eu.org" + `/${res.data.prp + res.data.path}`.replace("//", "/");
+                                        let url = "https://netnr.zme.ink" + `/${res.data.prp + res.data.path}`.replace("//", "/");
+                                        let iat = `[${file.name}](${url})`;
+                                        if (file.type.startsWith("image")) {
+                                            iat = "!" + iat;
+                                        }
                                         //上传成功，插入链接
-                                        netnrmd.insertAfterText(that.obj.me, '[' + file.name + '](' + url + ')');
-                                        that.uploadpopup.style.display = "none";
+                                        that.insert(iat);
+                                        that.domUpload.style.display = "none";
                                     } else {
                                         alert('上传失败');
                                     }
@@ -541,50 +542,38 @@ netnrmd.extend = {
                     }
                 }, false)
             }
-            that.uploadpopup.style.display = "";
-            that.uploadpopup.querySelector('input').value = '';
+            that.domUpload.style.display = "";
+            that.domUpload.querySelector('input').value = '';
         }
     }
-}
+})
 
-require(['vs/editor/editor.main'], function () {
+//初始化
+var nmd = netnrmd.init('#editor', {
+    height: 150,
+    theme: 'light',
 
-    //初始化
-    window.nmd = new netnrmd('#editor', {
-        height: 150,
-
-        //渲染前回调
-        viewbefore: function () {
-            this.items.forEach(item => {
-                if (!["emoji", "fullscreen", "splitscreen"].includes(item.cmd)) {
-                    item.class = item.class == null ? "hidden" : item.class + " hidden";
-                }
-            })
-            this.items.push(netnrmd.extend.upload.button);
-        },
-
-        //命令回调
-        cmdcallback: function (cmd) {
-            switch (cmd) {
-                case "upload":
-                    netnrmd.extend[cmd].action(this)
-                    break;
+    //渲染前回调
+    viewbefore: function () {
+        this.objToolbarIcons.forEach(item => {
+            if (!["emoji", "fullscreen", "splitscreen"].includes(item.cmd)) {
+                item.class = item.class == null ? "hidden" : item.class + " hidden";
             }
-        }
-    });
-
-    //快捷键
-    nmd.obj.me.addCommand(monaco.KeyCode.Enter | monaco.KeyMod.CtrlCmd, function () {
-        $('#btnPush')[0].click();
-    })
-
+        })
+        this.objToolbarIcons.push(netnrmd.uploadExtend);
+    }
 });
+
+//快捷键
+nmd.addCommand("Ctrl+Enter", function () {
+    $('#btnPush')[0].click();
+})
 
 c.init();
 
 //@TA
 c.toTA = function (that) {
-    netnrmd.insertAfterText(nmd.obj.me, '@' + $(that).text() + " ");
+    nmd.insert('@' + $(that).text() + " ");
 }
 
 function sendTypeMsg(msg, type) {

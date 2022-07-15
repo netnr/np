@@ -18,36 +18,27 @@ nr.onReady = function () {
 
 var page = {
     init: () => {
-        require(['vs/editor/editor.main'], function () {
-            nr.nmd = new netnrmd('.nr-editor', {
-                storekey: "md_autosave_note",
-                input: function () {
-                    nr.domWordCount.innerHTML = `共 <b>${this.getmd().length}</b> 个字`;
-                }
-            });
-
-            nr.changeTheme();
-            nr.changeSize();
-
-            //换行
-            nr.nmd.obj.me.updateOptions({
-                wordWrap: "on"
-            });
-
-            //快捷键
-            nr.nmd.obj.me.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
-                nr.domBtnSave.click();
-            })
-
-            //保存编辑器视图
-            var vm = parseInt(localStorage.getItem('note_md_viewmodel'));
-            if ([1, 2, 3].indexOf(vm) >= 0) {
-                nr.nmd.toggleView(vm);
-            }
-            window.onbeforeunload = function () {
-                localStorage.setItem('note_md_viewmodel', nr.nmd.obj.viewmodel);
+        nr.nmd = netnrmd.init('.nr-editor', {
+            storekey: "md_autosave_note",
+            input: function () {
+                nr.domWordCount.innerHTML = `共 <b>${this.getmd().length}</b> 个字`;
             }
         });
+
+        nr.changeTheme();
+        nr.changeSize();
+
+        //快捷键
+        nr.nmd.addCommand("Ctrl+S", () => nr.domBtnSave.click());
+
+        //保存编辑器视图
+        var vm = parseInt(localStorage.getItem('note_md_viewmodel'));
+        if ([1, 2, 3].indexOf(vm) >= 0) {
+            nr.nmd.toggleView(vm);
+        }
+        window.onbeforeunload = function () {
+            localStorage.setItem('note_md_viewmodel', nr.nmd.objOptions.viewmodel);
+        }
 
         //新增
         nr.domBtnAdd.addEventListener("click", function () {
@@ -141,7 +132,7 @@ var page = {
             },
             getRowId: event => event.data.NoteId,
             columnDefs: [
-                ag.numberCol(),
+                ag.numberCol({ headerCheckboxSelection: false }),
                 { field: "NoteTitle", flex: 1, minWidth: 200 },
                 { field: "NoteCreateTime", filter: 'agDateColumnFilter', },
                 { field: "NoteUpdateTime", filter: 'agDateColumnFilter', },

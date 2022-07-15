@@ -264,7 +264,7 @@ var page = {
             rowGroupPanelShow: 'always',
             //列
             columnDefs: [
-                ag.numberCol({ checkboxSelection: false }),
+                ag.numberCol({ checkboxSelection: false, headerCheckboxSelection: false }),
                 { field: "LogUid", enableRowGroup: true, },
                 { field: "LogNickname", },
                 {
@@ -317,7 +317,7 @@ var page = {
             cacheBlockSize: 30, //请求行数
             enableRangeSelection: true, //范围选择
             animateRows: true, //动画
-            serverSideStoreType: 'partial',
+            serverSideInfiniteScroll: true, //启用无限滚动
             rowModelType: 'serverSide', //服务器模式
             //数据源
             serverSideDatasource: {

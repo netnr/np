@@ -100,7 +100,7 @@ var nr = {
     setTheme: function (theme) {
         var oldTheme = theme == "dark" ? "light" : "dark";
 
-        document.documentElement.className = document.documentElement.className.replace(oldTheme, theme);
+        document.documentElement.className = document.documentElement.className.replaceAll(oldTheme, theme);
         nr.domNavbar.className = nr.domNavbar.className.replaceAll(oldTheme, theme);
 
         nr.cookie('.theme', theme, 1000 * 3600 * 24 * 365);
@@ -128,6 +128,7 @@ var nr = {
             }
         }
 
+        //编辑器
         if (window["monaco"]) {
             if (nr.isDark()) {
                 monaco.editor.setTheme('vs-dark');
@@ -136,6 +137,7 @@ var nr = {
             }
         }
 
+        //编辑器
         if (nr.nmd) {
             nr.nmd.toggleTheme(nr.isDark() ? "dark" : "light");
         }

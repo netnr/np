@@ -1,0 +1,127 @@
+﻿/* light */
+:root {
+    --nmd-editor-border: #d8dee4;
+    --nmd-editor-color: #000000;
+    --nmd-editor-bg: #ffffff;
+}
+
+/* dark */
+.netnrmd-dark {
+    --nmd-editor-border: #585b60;
+    --nmd-editor-color: #d4d4d4;
+    --nmd-editor-bg: #0d1117;
+}
+
+/*编辑器预览时*/
+.netnrmd-toc {
+    position: sticky;
+    top: 0;
+    display: none;
+    max-width: 20em;
+    max-height: 72%;
+    overflow-y: auto;
+    margin-left: 1em;
+}
+
+    .netnrmd-toc .is-active-link {
+        color: currentColor;
+    }
+
+        .netnrmd-toc .is-active-link::before {
+            background-color: var(--nmd-editor-border);
+        }
+
+/*页面查看时*/
+.markdown-toc {
+    display: none;
+}
+
+@media screen and (min-width: 1361px) {
+    .markdown-container {
+        display: flex;
+    }
+
+        .markdown-container .markdown-body {
+            width: 70%;
+            flex: 1;
+        }
+
+        .markdown-container .markdown-toc {
+            position: sticky;
+            top: 1em;
+            display: block;
+            max-width: 20em;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin-left: 1em;
+        }
+}
+
+/* 目录样式 */
+.toc-list {
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    padding-left: 15px;
+}
+
+    .toc-list li {
+        list-style: none;
+        line-height: 2rem;
+    }
+
+.toc-link {
+    display: block;
+    color: currentColor;
+    overflow: hidden;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 100%;
+}
+
+.is-collapsible {
+    max-height: 1000px;
+    overflow: hidden;
+    transition: all 300ms ease-in-out;
+}
+
+.is-collapsed {
+    max-height: 0;
+}
+
+.is-active-link, .toc-link:hover {
+    color: orange;
+}
+
+.toc-link::before {
+    background-color: var(--nmd-editor-border);
+    content: " ";
+    display: inline-block;
+    height: inherit;
+    left: 0;
+    margin-top: -1px;
+    position: absolute;
+    width: 3px;
+}
+
+.is-active-link::before {
+    background-color: orange;
+}
+
+.netnrmd-toc::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.netnrmd-toc::-webkit-scrollbar-corner {
+    background-color: inherit;
+}
+
+.netnrmd-toc::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.12);
+    border: 1px solid transparent;
+    background-clip: content-box;
+    border-radius: 5px;
+    height: 140px;
+}

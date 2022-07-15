@@ -17,7 +17,7 @@ var botEntity = uap.GetBot();
 ```  
 
 ### 附
-正则来源：<https://github.com/matomo-org/device-detector>  
+正则：<https://github.com/matomo-org/device-detector>  
 对比：<https://github.com/totpero/DeviceDetector.NET>  
 去除详细型号检测，包精简，轻依赖，预加载正则，相对缓存热数据  
 不命中缓存时，一个耗时 300ms 左右，而 DeviceDetector.NET 需要 3s 左右

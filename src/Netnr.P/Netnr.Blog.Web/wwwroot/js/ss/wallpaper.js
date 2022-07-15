@@ -286,7 +286,7 @@ var wpBing = {
                 var vd = item.split('/');
                 var ver = vd[0], day = vd[1];
                 var npmPath = `ushio-api-img-wallpaper@${ver}/img_${day}_1920x1080_96_background_normal.jpg`;
-                var url = `https://npm.elemecdn.com/${npmPath}`;
+                var url = `https://unpkg.com/${npmPath}`;
 
                 var col = document.createElement('div');
                 col.className = 'col-12 mb-3 mt-1';

@@ -379,7 +379,7 @@ FROM
       object_id
   ) m2 ON o.object_id = m2.object_id
 WHERE
-  o.type IN ('U', 'V') {where}
+  o.type = 'U' {where}
 ORDER BY
   SCHEMA_NAME(o.schema_id),
   o.name

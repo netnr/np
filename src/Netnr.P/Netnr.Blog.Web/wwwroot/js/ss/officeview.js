@@ -38,8 +38,8 @@ var page = {
         if (file.size > 1024 * 1024 * 20) {
             err.push('文档大小限制 20MB')
         }
-        if (file.type.indexOf('application') == -1 || ".doc docx .xls xlsx .ppt pptx".indexOf(file.name.slice(-4).toLowerCase()) == -1) {
-            err.push('请选择 Office文档')
+        if (".doc docx .xls xlsx .ppt pptx".indexOf(file.name.slice(-4).toLowerCase()) == -1) {
+            err.push('请选择 Office 文档')
         }
         nr.domTxtFile.value = '';
 
@@ -47,18 +47,18 @@ var page = {
             nr.alert(err.join('<br/>'));
         } else {
             //上传
-            var formData = new FormData();
-            formData.append("file", file);
+            var fd = new FormData();
+            fd.append("file", file);
+            fd.append('datetime', "1mo");
 
             ss.loading(true);
-            fetch(`${ss.apiServer}/api/v1/Upload`, {
+            fetch('https://tempfile.site/api/files', {
                 method: 'POST',
-                body: formData
+                body: fd
             }).then(resp => resp.json()).then(res => {
                 ss.loading(false);
-                if (res.code == 200) {
-                    let url = ss.apiServer + `/${res.data.prp + res.data.path}`.replace("//", "/");
-                    page.view(url);
+                if (res.ok) {
+                    page.view(res.link);
                 } else {
                     nr.alert(res.msg);
                 }

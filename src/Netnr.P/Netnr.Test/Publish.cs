@@ -1,6 +1,5 @@
 ﻿using System.IO.Compression;
 using System.Net;
-using System.Net.Sockets;
 using Xunit;
 
 namespace Netnr.Test

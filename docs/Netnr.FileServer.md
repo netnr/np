@@ -1,8 +1,9 @@
 # NFS (Netnr.FileServer)
 基于 .NET (Latest) 的简单文件服务器，数据库为 SQLite
 
-> `appsettings.json` 为配置文件  
-> 文件数据库 和 上传目录 赋予读写权限
+> https://github.com/netnr/np/releases  
+> https://netnr-fs.herokuapp.com  
+> `appsettings.json` 为配置文件，文件数据库 和 上传目录 赋予读写权限
 
 ### 功能
 - [x] 获取 Token 授权操作（有效期内访问所有接口）
@@ -40,7 +41,7 @@ Token 可根据配置设置有效期，默认 30 分钟有效，缓存 20 分钟
 为了更好的维护或数据的安全，需要分离文件数据库和上传的静态目录，  
 可以用 `软链接` 的方式来做，`非` Windows 的快捷方式  
 
-```sh
+```bash
 # Windows 软链接
 mklink /d 软链接目录 物理目录 # 命令格式
 mklink /d static D:\static # 示例 在当前创建 static 目录 指向 D 盘的 static 目录

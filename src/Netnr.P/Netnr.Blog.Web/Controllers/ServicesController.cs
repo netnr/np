@@ -815,7 +815,7 @@ namespace Netnr.Blog.Web.Controllers
                                             {
                                                 if (client.Send(request).StatusCode == HttpStatusCode.OK)
                                                 {
-                                                    if (num > 2)
+                                                    if (num >= 3)
                                                     {
                                                         PushService.PushAsync("HTTP 监控通知（正常）", item);
                                                     }
@@ -829,7 +829,7 @@ namespace Netnr.Blog.Web.Controllers
                                             catch (Exception)
                                             {
                                                 num++;
-                                                if (num == 2)
+                                                if (num == 3)
                                                 {
                                                     PushService.PushAsync("HTTP 监控通知（异常）", item);
                                                 }
@@ -847,9 +847,9 @@ namespace Netnr.Blog.Web.Controllers
                                             var num = CacheTo.Get(ckey) as int? ?? 0;
                                             try
                                             {
-                                                if (client.ConnectAsync(Dns.GetHostAddresses(hp.First()).First(), Convert.ToInt32(hp.Last())).Wait(2000))
+                                                if (client.ConnectAsync(Dns.GetHostAddresses(hp.First()).First(), Convert.ToInt32(hp.Last())).Wait(5000))
                                                 {
-                                                    if (num > 2)
+                                                    if (num >= 3)
                                                     {
                                                         PushService.PushAsync("TCP 监控通知（正常）", item);
                                                     }
@@ -863,7 +863,7 @@ namespace Netnr.Blog.Web.Controllers
                                             catch (Exception)
                                             {
                                                 num++;
-                                                if (num == 2)
+                                                if (num == 3)
                                                 {
                                                     PushService.PushAsync("TCP 监控通知（异常）", item);
                                                 }
@@ -940,9 +940,12 @@ namespace Netnr.Blog.Web.Controllers
                     vm.Msg = "未启用";
                 }
 
-                var vmj = vm.ToJson(true);
-                Console.WriteLine(vmj);
-                ConsoleTo.Log(vmj);
+                if (vm.Code != 0)
+                {
+                    var vmj = vm.ToJson(true);
+                    Console.WriteLine(vmj);
+                    ConsoleTo.Log(vmj);
+                }
 
                 return vm;
             });

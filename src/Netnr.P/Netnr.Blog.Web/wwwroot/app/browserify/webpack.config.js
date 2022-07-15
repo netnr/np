@@ -7,7 +7,7 @@ var config = {
     entry: {
         'device-detector-js': './libs/device-detector-js.js',
         'fast-xml-parser': './libs/fast-xml-parser.js',
-        'js-yaml': './libs/js-yaml.js',
+        'js-yaml': './libs/js-yaml.js'
     },
     output: {
         filename: "[name].min.js",

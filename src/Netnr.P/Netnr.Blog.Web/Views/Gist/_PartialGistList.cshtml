@@ -20,7 +20,6 @@
 else
 {
     @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js"))
-    
     <style>
         /*代码块显示语言*/
         pre code::after {
@@ -45,7 +44,7 @@ else
             @foreach (var item in rows)
             {
                 <div class="col my-4 px-4">
-                    <div>
+                    <div class="text-nowrap">
                         <a class="me-2" href="/gist/user/@item.Uid">@item.Spare3</a>/
                         <a class="ms-1 fw-bold" href="/gist/code/@item.GistCode">@item.GistFilename</a>
                         <small class="ms-3 opacity-75 d-none d-sm-inline-block">@item.GistCreateTime.Value.ToString("yyyy-MM-dd HH:mm")</small>
@@ -55,7 +54,7 @@ else
                     </div>
 
                     <div class="markdown-body position-relative">
-                        <pre class="mb-0"><code contenteditable language="@item.GistLanguage" style="min-height:17.1em">@item.GistContentPreview.TrimEnd(Environment.NewLine.ToCharArray()).TrimEnd('\r')</code></pre>
+                        <pre class="mb-0"><code class="d-block" contenteditable language="@item.GistLanguage" style="min-height:14.5em">@item.GistContentPreview.TrimEnd(Environment.NewLine.ToCharArray()).TrimEnd('\r')</code></pre>
                         <a href="/gist/code/@item.GistCode" class="d-block text-center p-2">查看详情</a>
                     </div>
                 </div>
@@ -66,5 +65,5 @@ else
         </div>
     </div>
 
-    <script>hljs.highlightAll()</script>
+    <script>netnrmd.hljs.highlightAll()</script>
 }

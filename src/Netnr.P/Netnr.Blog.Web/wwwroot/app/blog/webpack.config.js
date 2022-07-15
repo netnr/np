@@ -8,7 +8,7 @@ var config = {
         all: './js/index.js'
     },
     output: {
-        filename: '[name].[contenthash].js',
+        filename: '[name].js',
         chunkFilename: '[name].[contenthash].js',
         path: path.join(__dirname, './dist'),
         clean: true
@@ -65,7 +65,7 @@ var config = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css",
+            filename: "[name].css",
             experimentalUseImportModule: true,
         })
     ]
@@ -73,6 +73,8 @@ var config = {
 
 module.exports = (env, argv) => {
     console.log(env, argv);
+
+    delete config.optimization.splitChunks; //删除分片
 
     if (argv.mode == 'development') {
         config.mode = 'development';
