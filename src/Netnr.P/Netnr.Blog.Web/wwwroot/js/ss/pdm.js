@@ -444,7 +444,7 @@ nr.onReady = function () {
     page.openUrl();
 
     nr.domBtnDemo.addEventListener('click', function () {
-        location.hash = "https://s1.netnr.eu.org/2021/07/02/125049306.pdm";
+        location.hash = "https://gs.zme.ink/2021/07/02/125049306.pdm";
     });
 
     nr.receiveFiles(function (files) {

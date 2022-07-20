@@ -25,7 +25,7 @@
 - whois (Whois) -> Whois查询
 - ip (IP) -> IP查询
 - icp (ICP) -> ICP查询
-- sci (Server Certificate Information) -> 服务器证书信息
+- ssl (SSL) -> 证书信息
 - dni (Domain Name Information) -> 域名信息查询（合集）
 - serve (Serve) -> 启动服务 # Netnr.Serve
 - ss (System Information) -> 系统信息

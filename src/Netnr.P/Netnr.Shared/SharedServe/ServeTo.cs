@@ -34,7 +34,7 @@ public class ServeTo
         return null;
     }
 
-    const string version = "1.0.0";
+    const string version = "1.0.1"; // 2022-07-17
     public HttpListener Listener;
     public ServeOptions so;
 
@@ -70,9 +70,9 @@ public class ServeTo
         /// <summary>
         /// 缺省后缀
         /// </summary>
-        public string DefaultSuffix = ".html";
+        public string Suffix = ".html";
         /// <summary>
-        /// 添加头部（跨域等）多个单引号 ' 分隔，例：access-control-allow-headers:*'access-control-allow-origin:*
+        /// 添加头部（跨域等）多个 || 分隔，例：access-control-allow-headers:*||access-control-allow-origin:*
         /// </summary>
         public string Headers;
         /// <summary>
@@ -87,6 +87,36 @@ public class ServeTo
         /// 认证码（自动）
         /// </summary>
         public string AuthCode;
+
+        /// <summary>
+        /// 输出文件
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="file"></param>
+        public void OutputFile(HttpListenerResponse response, FileInfo file)
+        {
+            response.ContentType = GetMIMEType(file.Extension);
+
+            // charset
+            if (response.ContentType.StartsWith("text/")
+                || response.ContentType.EndsWith("/json")
+                || response.ContentType.EndsWith("/javascript")
+                || response.ContentType.EndsWith("/xml"))
+            {
+                response.ContentType = $"{response.ContentType}; charset={Charset}";
+            }
+
+            //output stream
+            using var fs = File.OpenRead(file.FullName);
+            fs.Position = 0;
+            byte[] buffer = new byte[2048];
+            int bytesRead;
+            while ((bytesRead = fs.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                response.OutputStream.Write(buffer, 0, bytesRead);
+            }
+        }
+
     }
 
     /// <summary>
@@ -121,11 +151,16 @@ public class ServeTo
             options.Error404 = "404.html";
         }
 
+        if (string.IsNullOrWhiteSpace(options.Suffix))
+        {
+            options.Suffix = ".html";
+        }
+
         Console.WriteLine(string.Join("\r\n", Args));
         if (!string.IsNullOrWhiteSpace(options.Headers))
         {
             Console.WriteLine(options.Headers);
-            options.Headers.Split("'").ToList().ForEach(item =>
+            options.Headers.Split("||").ToList().ForEach(item =>
             {
                 Console.WriteLine(item);
                 var kv = item.Split(':');
@@ -221,11 +256,9 @@ public class ServeTo
                             var isDir = pathname.EndsWith("/");
 
                             //index
-                            var isIndex = false;
-                            if (isDir && so.Index != "none" && !string.IsNullOrWhiteSpace(so.Index))
+                            if (isDir && !string.IsNullOrWhiteSpace(so.Index))
                             {
-                                isIndex = so.RootDir.GetFiles(Path.Combine(path, so.Index)).Length > 0;
-                                if (isIndex)
+                                if (so.RootDir.GetFiles(Path.Combine(path, so.Index)).Any())
                                 {
                                     path = Path.Combine(path, so.Index);
                                     isDir = false;
@@ -295,7 +328,7 @@ public class ServeTo
                                     listOut.Add($"</table></body></html>");
                                 }
 
-                                WriteText(response, string.Join("\r\n", listOut));
+                                OutputText(response, string.Join("\r\n", listOut));
                             }
                             else
                             {
@@ -304,7 +337,7 @@ public class ServeTo
                                 var file = so.RootDir.GetFiles(path).FirstOrDefault();
                                 if (file != null)
                                 {
-                                    OutputFile(response, file);
+                                    so.OutputFile(response, file);
                                 }
                                 else if (so.RootDir.GetDirectories(path).Any())
                                 {
@@ -312,18 +345,6 @@ public class ServeTo
 
                                     response.StatusCode = (int)HttpStatusCode.Redirect;
                                     response.Redirect($"/{path}/");
-                                }
-                                else if (!string.IsNullOrWhiteSpace(so.Error404))
-                                {
-                                    file = so.RootDir.GetFiles(so.Error404).FirstOrDefault();
-                                    if (file != null)
-                                    {
-                                        OutputFile(response, file);
-                                    }
-                                    else
-                                    {
-                                        response.StatusCode = (int)HttpStatusCode.NotFound;
-                                    }
                                 }
                                 else
                                 {
@@ -356,7 +377,7 @@ public class ServeTo
                                 fs.Flush();
 
                                 var origin = request.Url.AbsoluteUri.TrimEnd(request.Url.AbsolutePath.ToCharArray());
-                                WriteText(response, $"\r\nSaved {origin}/{saveFile}");
+                                OutputText(response, $"\r\nSaved {origin}/{saveFile}");
                             }
                         }
                         break;
@@ -383,7 +404,7 @@ public class ServeTo
                                     {
                                         File.Delete(delPath);
 
-                                        WriteText(response, $"\r\nDeleted {request.Url}");
+                                        OutputText(response, $"\r\nDeleted {request.Url}");
                                     }
                                     else
                                     {
@@ -393,6 +414,27 @@ public class ServeTo
                             }
                         }
                         break;
+                }
+
+                //404
+                if (response.StatusCode == 404)
+                {
+                    FileInfo file = null;
+
+                    if (!string.IsNullOrEmpty(so.Suffix) && !path.EndsWith(so.Suffix))
+                    {
+                        file = so.RootDir.GetFiles(path + so.Suffix).FirstOrDefault();
+                    }
+
+                    if (file == null && !string.IsNullOrWhiteSpace(so.Error404))
+                    {
+                        file = so.RootDir.GetFiles(so.Error404).FirstOrDefault();
+                    }
+
+                    if (file != null)
+                    {
+                        so.OutputFile(response, file);
+                    }
                 }
             }
             else
@@ -406,7 +448,7 @@ public class ServeTo
             Console.WriteLine(ex);
             Console.ForegroundColor = ConsoleColor.White;
 
-            WriteText(response, "404 Not Found", HttpStatusCode.NotFound);
+            OutputText(response, "404 Not Found", HttpStatusCode.NotFound);
         }
         catch (Exception ex)
         {
@@ -414,37 +456,13 @@ public class ServeTo
             Console.WriteLine(ex);
             Console.ForegroundColor = ConsoleColor.White;
 
-            WriteText(response, ex.Message, HttpStatusCode.ServiceUnavailable);
+            OutputText(response, ex.Message, HttpStatusCode.ServiceUnavailable);
         }
 
         //response.OutputStream.Write(Array.Empty<byte>(), 0, 0);
         response.OutputStream.Close();
 
         Receive();
-    }
-
-    private void OutputFile(HttpListenerResponse response, FileInfo file)
-    {
-        response.ContentType = GetMIMEType(file.Extension);
-
-        // charset
-        if (response.ContentType.StartsWith("text/")
-            || response.ContentType.EndsWith("/json")
-            || response.ContentType.EndsWith("/javascript")
-            || response.ContentType.EndsWith("/xml"))
-        {
-            response.ContentType = $"{response.ContentType}; charset={so.Charset}";
-        }
-
-        //output stream
-        using var fs = File.OpenRead(file.FullName);
-        fs.Position = 0;
-        byte[] buffer = new byte[2048];
-        int bytesRead;
-        while ((bytesRead = fs.Read(buffer, 0, buffer.Length)) > 0)
-        {
-            response.OutputStream.Write(buffer, 0, bytesRead);
-        }
     }
 
     /// <summary>
@@ -467,6 +485,7 @@ public class ServeTo
             options.Root = GetArgsVal("--root");
             options.Index = GetArgsVal("--index");
             options.Error404 = GetArgsVal("--404");
+            options.Suffix = GetArgsVal("--suffix");
             options.Charset = GetArgsVal("--charset");
             options.Headers = GetArgsVal("--headers");
             options.Auth = GetArgsVal("--auth");
@@ -484,6 +503,9 @@ public class ServeTo
 
             Console.Write($"404(default: {options.Error404}): ");
             options.Error404 = Console.ReadLine().Trim();
+
+            Console.Write($"suffix(default: {options.Suffix}): ");
+            options.Suffix = Console.ReadLine().Trim();
 
             Console.Write($"charset(default: {options.Charset}): ");
             options.Charset = Console.ReadLine().Trim();
@@ -512,7 +534,7 @@ public class ServeTo
                 default:
                     {
                         Console.WriteLine($"{title}\r\n");
-                        Console.WriteLine($"Silent start\r\n--urls {options.Urls} --root {options.Root} --index {options.Index} --404 {options.Error404} --charset {options.Charset} --headers access-control-allow-headers:*'access-control-allow-origin:* --auth user:pass\r\n");
+                        Console.WriteLine($"Silent start\r\n--urls {options.Urls} --root {options.Root} --index {options.Index} --404 {options.Error404} --suffix {options.Suffix} --charset {options.Charset} --headers access-control-allow-headers:*||access-control-allow-origin:* --auth user:pass\r\n");
                         Console.WriteLine($"List\r\ncurl {url}\r\ncurl {url} -u user:pass\r\n(iwr {url}).content\r\n");
                         Console.WriteLine($"Download\r\ncurl {url}/file.exe -O\r\niwr {url}/file.exe -outfile file.exe\r\n");
                         Console.WriteLine($"Upload\r\ncurl {url} -T file.ext\r\ncurl {url}dir/rename.ext -T file.ext\r\n");
@@ -558,13 +580,13 @@ public class ServeTo
     }
 
     /// <summary>
-    /// 写入文本
+    /// 输出文本
     /// </summary>
     /// <param name="response"></param>
     /// <param name="text"></param>
     /// <param name="statusCode"></param>
     /// <param name="contentType"></param>
-    public static void WriteText(HttpListenerResponse response, string text, HttpStatusCode statusCode = HttpStatusCode.OK, string contentType = "text/html; charset=utf-8")
+    public static void OutputText(HttpListenerResponse response, string text, HttpStatusCode statusCode = HttpStatusCode.OK, string contentType = "text/html; charset=utf-8")
     {
         response.StatusCode = (int)statusCode;
         response.ContentType = contentType;

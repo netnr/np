@@ -115,7 +115,7 @@ namespace Netnr.Chat.Application
                     {
                         var key = GlobalTo.GetValue("TokenManagement:Secret");
 
-                        var model = CalcTo.AESDecrypt(token, key).ToModel<ChatUserConnVM>();
+                        var model = CalcTo.AESDecrypt(token, key).DeJson<ChatUserConnVM>();
                         if (DateTime.Now.ToTimestamp() < model.ExpireDate)
                         {
                             vm = model;

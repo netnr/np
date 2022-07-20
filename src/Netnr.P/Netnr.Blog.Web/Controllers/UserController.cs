@@ -284,7 +284,7 @@ namespace Netnr.Blog.Web.Controllers
             var uinfo = Apps.LoginService.Get(HttpContext);
 
             var usermo = db.UserInfo.Find(uinfo.UserId);
-            var log = new List<object>() { new UserInfo().ToRead(usermo) };
+            var log = new List<object>() { new UserInfo().ToCopy(usermo) };
 
             //变更账号
             if (!string.IsNullOrWhiteSpace(mo.UserName) && usermo.UserNameChange != 1 && usermo.UserName != mo.UserName)

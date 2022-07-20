@@ -22,7 +22,7 @@ namespace Netnr.UAParser
                 if (_Regexes == null)
                 {
                     var xmlContent = NodeConvert(Properties.Resources.regexes, false);
-                    _Regexes = ToEntity<Entities>(xmlContent);
+                    _Regexes = DeXml<Entities>(xmlContent);
                 }
 
                 //正则预处理
@@ -248,7 +248,7 @@ namespace Netnr.UAParser
         }
 
         /// <summary>
-        /// 生成 XML
+        /// 生成 XML（序列化）
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -263,12 +263,12 @@ namespace Netnr.UAParser
         }
 
         /// <summary>
-        /// XML 序列化
+        /// XML 反序列化
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="xml"></param>
         /// <returns></returns>
-        public static T ToEntity<T>(string xml)
+        public static T DeXml<T>(string xml)
         {
             if (string.IsNullOrWhiteSpace(xml)) return default;
 

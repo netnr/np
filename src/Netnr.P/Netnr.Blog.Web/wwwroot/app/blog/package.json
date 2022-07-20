@@ -2,7 +2,7 @@
   "name": "netnr-blog",
   "description": "netnr-blog bundle",
   "dependencies": {
-    "@shoelace-style/shoelace": "^2.0.0-beta.77"
+    "@shoelace-style/shoelace": "^2.0.0-beta.78"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",

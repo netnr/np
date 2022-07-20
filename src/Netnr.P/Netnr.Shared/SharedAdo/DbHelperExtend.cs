@@ -182,12 +182,12 @@ namespace Netnr.SharedAdo
         }
 
         /// <summary>
-        /// 解析 Heroku 环境变量的连接字符串
+        /// URL 连接字符串转换
         /// 遵循规则：postgres://{username}:{password}@{host}:{port}/{dbname}
         /// </summary>
         /// <param name="ev"></param>
         /// <returns></returns>
-        public static string SqlConnFromHeroku(string ev)
+        public static string SqlConnFromURL(string ev)
         {
             string conn = string.Empty;
 

@@ -277,7 +277,7 @@
     "group": "生活",
     "items": [
       {
-        "url": "https://kms.netnr.eu.org",
+        "url": "https://kms.zme.ink",
         "icon": "microsoft",
         "title": "KMS 服务",
         "remark": "激活 Windows 系统"
@@ -323,7 +323,7 @@
         "title": "彩票查询"
       },
       {
-        "url": "https://v.netnr.eu.org",
+        "url": "https://v.zme.ink",
         "icon": "video",
         "title": "VIP 视频解析",
         "remark": "免费看会员视频"
@@ -401,69 +401,69 @@
     "group": "子站",
     "items": [
       {
-        "url": "/app/boot/index.html",
+        "url": "/app/boot/",
         "icon": "boot",
         "title": "站点引导",
         "target": "_blank"
       },
       {
-        "url": "/app/chat/index.html",
+        "url": "/app/chat/",
         "icon": "message",
         "title": "聊天",
         "remark": "在线聊天",
         "target": "_blank"
       },
       {
-        "url": "/app/dk/index.html",
+        "url": "/app/dk/",
         "icon": "db",
         "title": "NDK",
         "remark": "数据库工具及代码构建",
         "target": "_blank"
       },
       {
-        "url": "/app/fa/index.html",
+        "url": "/app/fa/",
         "icon": "fa",
         "title": "Font-Awesome",
         "remark": "Font-Awesome 4 镜像",
         "target": "_blank"
       },
       {
-        "url": "/app/jcute/index.html",
+        "url": "/app/jcute/",
         "icon": "js",
         "title": "jCute Library",
         "remark": "JavaScript Library",
         "target": "_blank"
       },
       {
-        "url": "/app/je/index.html",
+        "url": "/app/je/",
         "icon": "json",
         "title": "JSON Editor",
         "remark": "JSON 编辑器",
         "target": "_blank"
       },
       {
-        "url": "/app/jz/index.html",
+        "url": "/app/jz/",
         "icon": "js",
         "title": "Jz",
         "remark": "JS 弹窗插件",
         "target": "_blank"
       },
       {
-        "url": "/app/md/index.html",
+        "url": "/app/md/",
         "icon": "markdown",
         "title": "NetnrMD",
         "remark": "Markdown 编辑器",
         "target": "_blank"
       },
       {
-        "url": "/app/oldbrowser/index.html",
+        "url": "/app/oldbrowser/",
         "icon": "browser",
         "title": "旧浏览器",
         "remark": "浏览器升级提示",
         "target": "_blank"
       },
       {
-        "url": "/app/zidian/index.html",
+        "url": "/app/zidian/",
         "icon": "dictionary",
         "title": "字典",
         "remark": "字、词、成语",
@@ -481,7 +481,7 @@
         "remark": "匿名留言"
       },
       {
-        "url": "https://netnr.eu.org",
+        "url": "https://zme.ink",
         "icon": "love",
         "title": "联系赞助",
         "remark": "Sponsors"

@@ -23,10 +23,17 @@ window.$docsify = {
     },
     plugins: [
         function (hook) {
-            hook.doneEach(function () {
+            // 每次开始解析 Markdown 内容时调用
+            hook.beforeEach(function (content) {
                 var domMain = document.getElementById("main");
                 domMain.classList.add("markdown-body");
 
+                return content;
+            });
+
+            // 每次路由切换时数据全部加载完成后调用
+            hook.doneEach(function () {
+                var domMain = document.getElementById("main");
                 var domContent = domMain.parentNode;
                 var domToc = domContent.querySelector(".toc");
                 if (!domToc) {

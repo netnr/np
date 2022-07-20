@@ -51,10 +51,10 @@ public class QuoteTo
                     break;
 
                 case "bootstrap5.css":
-                    vh.Add("<link href='https://unpkg.com/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://unpkg.com/bootstrap@5.2.0/dist/css/bootstrap.min.css' rel='stylesheet' async />");
                     break;
                 case "bootstrap5.js":
-                    vh.Add("<script src='https://unpkg.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>");
+                    vh.Add("<script src='https://unpkg.com/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js'></script>");
                     break;
 
                 case "bpmn-js":
@@ -65,7 +65,7 @@ public class QuoteTo
                     break;
 
                 case "leancloud-storage.js":
-                    vh.Add("<script src='https://unpkg.com/leancloud-storage@4.13.0/dist/av-min.js'></script>");
+                    vh.Add("<script src='https://unpkg.com/leancloud-storage@4.13.1/dist/av-min.js'></script>");
                     break;
 
                 case "shoelace":
@@ -184,11 +184,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://unpkg.com/swagger-ui-dist@4.12.0/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://unpkg.com/swagger-ui-dist@4.13.0/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://unpkg.com/swagger-ui-dist@4.12.0/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://unpkg.com/swagger-ui-dist@4.12.0/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://unpkg.com/swagger-ui-dist@4.13.0/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://unpkg.com/swagger-ui-dist@4.13.0/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":

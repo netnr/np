@@ -2,7 +2,7 @@
   "name": "netnr",
   "description": "browser bundle",
   "dependencies": {
-    "clean-css": "^5.3.0",
+    "clean-css": "^5.3.1",
     "device-detector-js": "^3.0.3",
     "fast-xml-parser": "^4.0.9",
     "js-yaml": "^4.1.0",

@@ -262,8 +262,8 @@ namespace Netnr.Test
             Assert.NotNull(ja1);
             Assert.True(string.IsNullOrEmpty(jo1["null"].ToStringOrEmpty()));
 
-            var jo2 = val1.ToModel<SharedResultVM>();
-            var jo3 = val2.ToModels<SharedResultVM>();
+            var jo2 = val1.DeJson<SharedResultVM>();
+            var jo3 = val2.DeJsons<SharedResultVM>();
             Assert.IsType<SharedResultVM>(jo2);
             Assert.Equal(2, jo3.Count);
 
@@ -307,7 +307,7 @@ namespace Netnr.Test
                 Code = 2,
                 Msg = "msg"
             };
-            var vm2 = new SharedResultVM().ToRead(vm1);
+            var vm2 = new SharedResultVM().ToCopy(vm1);
             Assert.Equal(vm1.Code, vm2.Code);
             Assert.Equal(vm1.Msg, vm2.Msg);
         }

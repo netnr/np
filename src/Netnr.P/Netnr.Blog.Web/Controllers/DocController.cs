@@ -548,7 +548,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     var listTree = string.IsNullOrWhiteSpace(rows)
                     ? new List<DocTreeVM>()
-                    : rows.ToModels<DocTreeVM>();
+                    : rows.DeJsons<DocTreeVM>();
 
                     var uinfo = Apps.LoginService.Get(HttpContext);
                     if (db.DocSet.Find(id)?.Uid != uinfo.UserId)

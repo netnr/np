@@ -19,7 +19,7 @@ namespace Netnr
     public static class Extend
     {
         /// <summary>
-        /// object 转 JSON 字符串
+        /// object 转 JSON 字符串（序列化）
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="isSpace">缩进输出</param>
@@ -35,7 +35,7 @@ namespace Netnr
         }
 
         /// <summary>
-        /// 解析 JSON字符串 为JObject对象
+        /// 解析 JSON字符串 为JObject对象（反序列化）
         /// </summary>
         /// <param name="json">JSON字符串</param>
         /// <returns>JObject对象</returns>
@@ -45,7 +45,7 @@ namespace Netnr
         }
 
         /// <summary>
-        /// 解析 JSON字符串 为JArray对象
+        /// 解析 JSON字符串 为JArray对象（反序列化）
         /// </summary>
         /// <param name="json">JSON字符串</param>
         /// <returns>JArray对象</returns>
@@ -55,22 +55,22 @@ namespace Netnr
         }
 
         /// <summary>
-        /// JSON字符串 转 实体
+        /// JSON字符串 转 实体（反序列化）
         /// </summary>
         /// <typeparam name="T">实体泛型</typeparam>
         /// <param name="json">JSON字符串</param>
-        public static T ToModel<T>(this string json)
+        public static T DeJson<T>(this string json)
         {
             var mo = JsonConvert.DeserializeObject<T>(json);
             return mo;
         }
 
         /// <summary>
-        /// JSON字符串 转 实体
+        /// JSON字符串 转 实体（反序列化）
         /// </summary>
         /// <typeparam name="T">实体泛型</typeparam>
         /// <param name="json">JSON字符串</param>
-        public static List<T> ToModels<T>(this string json)
+        public static List<T> DeJsons<T>(this string json)
         {
             var list = JsonConvert.DeserializeObject<List<T>>(json);
             return list;
@@ -94,7 +94,7 @@ namespace Netnr
         }
 
         /// <summary>
-        /// 转成 XML
+        /// 转成 XML（序列化）
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -106,6 +106,21 @@ namespace Netnr
             var serializer = new XmlSerializer(obj.GetType());
             serializer.Serialize(sw, obj);
             return sw.ToString();
+        }
+
+        /// <summary>
+        /// XML 反序列化
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        public static T DeXml<T>(string xml)
+        {
+            if (string.IsNullOrWhiteSpace(xml)) return default;
+
+            using var sr = new StringReader(xml);
+            var serializer = new XmlSerializer(typeof(T));
+            return (T)serializer.Deserialize(sr);
         }
 
         /// <summary>
@@ -326,11 +341,11 @@ namespace Netnr
         }
 
         /// <summary>
-        /// 对象值读取源
+        /// 对象拷贝
         /// </summary>
         /// <param name="target">需要赋值的对象</param>
-        /// <param name="source">源对象</param>
-        public static T ToRead<T>(this T target, object source) where T : class
+        /// <param name="source">（读取）源对象</param>
+        public static T ToCopy<T>(this T target, object source) where T : class
         {
             var targetPis = target.GetType().GetProperties();
             var sourcePis = source.GetType().GetProperties();
@@ -348,7 +363,7 @@ namespace Netnr
                         }
                         else
                         {
-                            targetPi.ToRead(sourcePiVal);
+                            targetPi.ToCopy(sourcePiVal);
                         }
                         break;
                     }

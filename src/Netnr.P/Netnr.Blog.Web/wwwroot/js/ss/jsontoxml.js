@@ -16,7 +16,7 @@ nr.onReady = function () {
                 "site": {
                     "title": "NET牛人",
                     "domain": "https://www.netnr.com",
-                    "mirror": "https://www.netnr.eu.org",
+                    "mirror": "https://netnr.zme.ink",
                     "createtime": "2014.01.01"
                 },
                 "about": {
@@ -36,7 +36,7 @@ nr.onReady = function () {
                         }
                     ]
                 },
-                "updaet": "2022.04.21",
+                "update": "2022.07.16",
                 "version": "v.1.0.0"
             }, null, 2),
             language: 'json',

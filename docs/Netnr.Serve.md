@@ -8,10 +8,11 @@
 --urls http://*:713/ #服务端口号
 --root D:\site\npp\docs #根目录，默认当前
 --index index.html #默认首页
---404 404.html #支持 history 模式
+--404 404.html #支持 history 
+--suffix .html #默认后缀
 --charset utf-8 #编码
 --auth user:pass #Basic 授权
---headers access-control-allow-headers:*'access-control-allow-origin:* #添加跨域头
+--headers access-control-allow-headers:*||access-control-allow-origin:* #添加跨域头
 ```
 ### List (列表)
 ```bash

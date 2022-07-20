@@ -59,6 +59,32 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Serve", "Netnr.Serve\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.SMS", "Netnr.SMS\Netnr.SMS.csproj", "{BBE3826A-43B2-42E0-8679-09DDEC6880F4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".docs", ".docs", "{8293C6B6-FC94-4D78-9619-D37A507F42CB}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\docs\.nojekyll = ..\..\docs\.nojekyll
+		..\..\docs\404.html = ..\..\docs\404.html
+		..\..\docs\CHANGELOG.md = ..\..\docs\CHANGELOG.md
+		..\..\docs\favicon.ico = ..\..\docs\favicon.ico
+		..\..\docs\favicon.svg = ..\..\docs\favicon.svg
+		..\..\docs\GUIDE.md = ..\..\docs\GUIDE.md
+		..\..\docs\index.html = ..\..\docs\index.html
+		..\..\docs\Netnr.Blog.md = ..\..\docs\Netnr.Blog.md
+		..\..\docs\Netnr.CaptchaDemo.md = ..\..\docs\Netnr.CaptchaDemo.md
+		..\..\docs\Netnr.Core.md = ..\..\docs\Netnr.Core.md
+		..\..\docs\Netnr.DataKit.md = ..\..\docs\Netnr.DataKit.md
+		..\..\docs\Netnr.DataX.md = ..\..\docs\Netnr.DataX.md
+		..\..\docs\Netnr.FileServer.md = ..\..\docs\Netnr.FileServer.md
+		..\..\docs\Netnr.Login.md = ..\..\docs\Netnr.Login.md
+		..\..\docs\Netnr.ResponseFramework.Document.md = ..\..\docs\Netnr.ResponseFramework.Document.md
+		..\..\docs\Netnr.ResponseFramework.md = ..\..\docs\Netnr.ResponseFramework.md
+		..\..\docs\Netnr.Serve.md = ..\..\docs\Netnr.Serve.md
+		..\..\docs\Netnr.UAParser.md = ..\..\docs\Netnr.UAParser.md
+		..\..\docs\Netnr.WeChat.md = ..\..\docs\Netnr.WeChat.md
+		..\..\docs\README.md = ..\..\docs\README.md
+		..\..\docs\SPONSORS.md = ..\..\docs\SPONSORS.md
+		..\..\docs\_sidebar.md = ..\..\docs\_sidebar.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

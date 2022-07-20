@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace Netnr.UAParser
 {
@@ -37,6 +38,7 @@ namespace Netnr.UAParser
             /// <summary>
             /// 正则
             /// </summary>
+            [XmlIgnore]
             public Regex R { get; set; }
             /// <summary>
             /// 正则
@@ -68,6 +70,7 @@ namespace Netnr.UAParser
             /// <summary>
             /// 正则
             /// </summary>
+            [XmlIgnore]
             public Regex R { get; set; }
             /// <summary>
             /// 正则
@@ -95,6 +98,7 @@ namespace Netnr.UAParser
             /// <summary>
             /// 正则
             /// </summary>
+            [XmlIgnore]
             public Regex R { get; set; }
             /// <summary>
             /// 正则
@@ -118,6 +122,7 @@ namespace Netnr.UAParser
             /// <summary>
             /// 正则
             /// </summary>
+            [XmlIgnore]
             public Regex R { get; set; }
             /// <summary>
             /// 正则

@@ -144,7 +144,7 @@ namespace Netnr.SharedDataKit
                 edb.ListReadTableName = dk.GetTable().Select(x => DbHelper.SqlSNTN(x.TableName, x.SchemaName, edb.ReadConnectionInfo.ConnectionType)).ToList();
             }
 
-            var edt = new TransferVM.ExportDataTable().ToRead(edb);
+            var edt = new TransferVM.ExportDataTable().ToCopy(edb);
             edt.ListReadDataSQL = new List<string>();
 
             foreach (var table in edb.ListReadTableName)

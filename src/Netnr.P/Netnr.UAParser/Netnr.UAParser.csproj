@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net48;netstandard2;netstandard2.1</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<Authors>netnr</Authors>
 		<Description>提取浏览器名称、浏览器版本号、系统名称、系统版本号、是否为爬虫
 
@@ -18,7 +18,7 @@ var botEntity = uap.GetBot();
 ```  
 
 ### 附
-正则来源：&lt;https://github.com/matomo-org/device-detector&gt;  
+正则：&lt;https://github.com/matomo-org/device-detector&gt;  
 对比：&lt;https://github.com/totpero/DeviceDetector.NET&gt;  
 去除详细型号检测，包精简，轻依赖，预加载正则，相对缓存热数据  
 不命中缓存时，一个耗时 300ms 左右，而 DeviceDetector.NET 需要 3s 左右</Description>

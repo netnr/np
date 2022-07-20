@@ -155,7 +155,7 @@ namespace Netnr.SharedDataKit
             public MigrateDataTable AsMigrateDataTable()
             {
                 var mdb = this;
-                var mdt = new MigrateDataTable().ToRead(mdb);
+                var mdt = new MigrateDataTable().ToCopy(mdb);
 
                 var readTables = DataKit.Init(mdt.ReadConnectionInfo).GetTable();
                 var writeTables = DataKit.Init(mdt.WriteConnectionInfo).GetTable();

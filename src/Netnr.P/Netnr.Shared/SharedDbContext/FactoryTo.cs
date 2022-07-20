@@ -95,24 +95,15 @@ namespace Netnr.SharedDbContext
             var conn = GlobalTo.Configuration.GetConnectionString(tdb.ToString());
             if (tdb != SharedEnum.TypeDB.InMemory)
             {
-                //环境变量，如：$DATABASE_URL
-                if (conn.StartsWith("$"))
-                {
-                    conn = SharedAdo.DbHelper.SqlConnFromHeroku(conn[1..]);
-                }
-                else
-                {
-                    var pwd = GlobalTo.GetValue("ConnectionStrings:Password");
-                    conn = SharedAdo.DbHelper.SqlConnEncryptOrDecrypt(conn, pwd);
+                var pwd = GlobalTo.GetValue("ConnectionStrings:Password");
+                conn = SharedAdo.DbHelper.SqlConnEncryptOrDecrypt(conn, pwd);
 
-                    if (tdb == SharedEnum.TypeDB.SQLite)
-                    {
-                        conn = conn.Replace("~", GlobalTo.ContentRootPath);
-                    }
-
-                    conn = SharedAdo.DbHelper.SqlConnPreCheck(tdb, conn);
+                if (tdb == SharedEnum.TypeDB.SQLite)
+                {
+                    conn = conn.Replace("~", GlobalTo.ContentRootPath);
                 }
 
+                conn = SharedAdo.DbHelper.SqlConnPreCheck(tdb, conn);
                 return conn;
             }
             return null;

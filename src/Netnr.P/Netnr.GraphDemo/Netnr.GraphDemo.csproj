@@ -23,8 +23,8 @@
 		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.91" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.91" />
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.2" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.4.0" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

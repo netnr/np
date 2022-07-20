@@ -13,8 +13,8 @@
   ],
   "dependencies": {
     "ace-builds": "^1.7.1",
-    "dompurify": "^2.3.9",
-    "highlight.js": "^11.5.1",
+    "dompurify": "^2.3.10",
+    "highlight.js": "^11.6.0",
     "marked": "^4.0.18",
     "pangu": "^4.0.7",
     "tocbot": "^4.18.2"

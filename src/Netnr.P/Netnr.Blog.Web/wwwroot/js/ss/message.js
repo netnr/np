@@ -35,7 +35,7 @@ var page = {
                 var nickname = nr.htmlEncode(row.nickname == "" ? "guest" : row.nickname);
                 var context = '<p><em title="该信息已被屏蔽">Block</em></p>'
                 if (!row.block) {
-                    context = netnrmd.render(netnrmd.spacing(row.message)).replace(/@\S+/g, function (n) {
+                    context = netnrmd.render(netnrmd.pangu.spacing(row.message)).replace(/@\S+/g, function (n) {
                         return '<a class="text-decoration-none">' + n + '</a>'
                     }).replace(/#\d+/g, function (n) {
                         return '<a href="' + n.replace("#", "#mi") + '" class="text-warning">' + n + '</a>'

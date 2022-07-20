@@ -22,7 +22,7 @@ netnr@netnr.com
 
 **KMS**
 &nbsp; KMS 激活服务，slmgr 命令激活 Windows 系统、Office
-&nbsp; https://kms.netnr.eu.org
+&nbsp; https://kms.zme.ink
 
 **uuid**
 &nbsp; 一个基于 Git 托管去中心化的收藏夹，书签

@@ -20,8 +20,8 @@ Object.assign(netnrmd, {
                     var file = this.files[0];
                     if (file) {
                         var fd = new FormData();
+                        fd.append('json', 'true');
                         fd.append('file', file);
-                        fd.append('datetime', "1mo");
 
                         //发起上传
                         var xhr = new XMLHttpRequest();
@@ -37,16 +37,16 @@ Object.assign(netnrmd, {
                             }
                         };
 
-                        xhr.open("POST", "https://tempfile.site/api/files", true);
+                        xhr.open("POST", "https://bashupload.com/", true);
                         xhr.send(fd);
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState == 4) {
                                 if (xhr.status == 200) {
                                     console.log(xhr.responseText)
                                     var res = JSON.parse(xhr.responseText);
-                                    if (res.ok) {
+                                    if (res.file) {
                                         //上传成功，插入链接
-                                        var link = `[${file.name}](${res.link})`;
+                                        var link = `[${file.name}](${res.file.url}?download=1)`;
                                         if (file.type.startsWith("image")) {
                                             link = "!" + link;
                                         }

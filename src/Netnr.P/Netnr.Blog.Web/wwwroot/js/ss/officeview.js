@@ -48,17 +48,17 @@ var page = {
         } else {
             //上传
             var fd = new FormData();
+            fd.append('json', 'true');
             fd.append("file", file);
-            fd.append('datetime', "1mo");
 
             ss.loading(true);
-            fetch('https://tempfile.site/api/files', {
+            fetch('https://bashupload.com/', {
                 method: 'POST',
                 body: fd
             }).then(resp => resp.json()).then(res => {
                 ss.loading(false);
-                if (res.ok) {
-                    page.view(res.link);
+                if (res.file) {
+                    page.view(res.file.url);
                 } else {
                     nr.alert(res.msg);
                 }

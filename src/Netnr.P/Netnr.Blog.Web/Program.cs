@@ -237,6 +237,9 @@ app.UseAuthorization();
 //session
 app.UseSession();
 
+//https://docs.microsoft.com/en-us/aspnet/core/tutorials/min-web-api
+app.Map("/app/{appName}/", (string appName) => Results.File($"{GlobalTo.WebRootPath}/app/{appName}/index.html", "text/html; charset=utf-8"));
+
 //app.Map("/{xid:int}", (int xid) => Results.Ok(xid));
 app.Map("/generate_200", () => Results.Ok());
 app.Map("/generate_204", () => Results.NoContent());
