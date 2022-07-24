@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Netnr.Chat.Application.ViewModel;
-using Netnr.SharedFast;
 using Netnr.Core;
 using chs = Netnr.Chat.Application.ChatHubService;
 
@@ -27,9 +26,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="access_token">授权Token</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM UserAuthInfo(string access_token)
+        public ResultVM UserAuthInfo(string access_token)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua != null)
@@ -40,7 +39,7 @@ namespace Netnr.Chat.Controllers
                     }
 
                     vm.Data = ua;
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
 
                 return vm;
@@ -53,9 +52,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="chatLogin">登录信息</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM Token([FromBody] ChatLoginVM chatLogin)
+        public ResultVM Token([FromBody] ChatLoginVM chatLogin)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var isOk = true;
 
@@ -85,7 +84,7 @@ namespace Netnr.Chat.Controllers
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Set(EnumTo.RTag.unauthorized);
                         vm.Msg = "账号或密码错误";
                         isOk = false;
                     }
@@ -108,7 +107,7 @@ namespace Netnr.Chat.Controllers
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                     vm.Msg = "账号或密码不能为空";
                     isOk = false;
                 }
@@ -118,7 +117,7 @@ namespace Netnr.Chat.Controllers
                     SetAuth(mo, ed);
 
                     vm.Data = mo;
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
 
                 return vm;
@@ -131,14 +130,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="access_token">授权Token</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM RefreshToken(string access_token)
+        public ResultVM RefreshToken(string access_token)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null)
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                 }
                 else
                 {
@@ -165,11 +164,11 @@ namespace Netnr.Chat.Controllers
                         SetAuth(mo, ed);
 
                         vm.Data = mo;
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.refuse);
+                        vm.Set(EnumTo.RTag.refuse);
                         vm.Msg = $"{atime - reSeconds} 秒以后才能刷新";
                     }
                 }

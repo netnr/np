@@ -16,8 +16,8 @@
 
 <div class="container-fluid">
     <div class="row mt-3">
-        <div class="col-auto mb-2">
-            <label class="nr-btn-uploader btn text-info invisible">
+        <div class="col-auto">
+            <label class="nr-btn-uploader btn btn-sm text-info invisible">
                 <sl-icon name="cloud-upload"></sl-icon>
                 <input type="file" class="nr-uploader-file d-none" multiple />
             </label>
@@ -58,11 +58,11 @@
     </div>
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("ag-grid-enterprise.js"))
+@Html.Raw(Netnr.QuoteTo.Html("ag-grid-enterprise.js"))
 @switch (actionName)
 {
     case "tencent":
-        @Html.Raw(Netnr.SharedApp.QuoteTo.Html("cos-js-sdk-v5.js"))
+        @Html.Raw(Netnr.QuoteTo.Html("cos-js-sdk-v5.js"))
         break;
 }
 <script src='/js/storage/storage.js' asp-append-version="true"></script>

@@ -355,7 +355,7 @@ var slib = {
             case "file":
                 {
                     var dir = item.getAttribute('data-dir');
-                    var text = `https://unpkg.com/${slib.key}/${dir}`;
+                    var text = `https://fastly.jsdelivr.net/npm/${slib.key}/${dir}`;
                     switch (dir.split('.').pop()) {
                         case "js":
                             text = `<script src="${text}"></script>`

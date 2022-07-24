@@ -4,8 +4,6 @@ using Netnr.Blog.Data;
 using Netnr.Login;
 using System.Security.Claims;
 using Netnr.Core;
-using Netnr.SharedFast;
-using Netnr.SharedDrawing;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -42,7 +40,7 @@ namespace Netnr.Blog.Web.Controllers
         [HttpPost]
         public IActionResult Register(Domain.UserInfo mo, string RegisterCode)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
             if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
             {
                 vm.Msg = "验证码错误或已过期";
@@ -88,9 +86,9 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo">个人用户信息</param>
         /// <returns></returns>
-        private SharedResultVM RegisterUser(Domain.UserInfo mo)
+        private ResultVM RegisterUser(Domain.UserInfo mo)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var isok = true;
 
@@ -99,14 +97,14 @@ namespace Netnr.Blog.Web.Controllers
             {
                 isok = !db.UserInfo.Any(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail);
 
-                vm.Set(SharedEnum.RTag.exist);
+                vm.Set(EnumTo.RTag.exist);
                 vm.Msg = "该邮箱已经注册";
             }
             else
             {
                 isok = !db.UserInfo.Any(x => x.UserName == mo.UserName);
 
-                vm.Set(SharedEnum.RTag.exist);
+                vm.Set(EnumTo.RTag.exist);
                 vm.Msg = "该账号已经注册";
             }
 
@@ -176,11 +174,11 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="vt">登录类型</param>
         /// <param name="mo">用户信息</param>
-        /// <param name="isremember">记住账号</param>
+        /// <param name="isRemember">记住账号</param>
         /// <returns></returns>
-        private SharedResultVM ValidateLogin(LoginBase.LoginType? vt, Domain.UserInfo mo, bool isremember = true)
+        private ResultVM ValidateLogin(LoginBase.LoginType? vt, Domain.UserInfo mo, bool isRemember = true)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             string sql = string.Empty;
 
@@ -242,17 +240,13 @@ namespace Netnr.Blog.Web.Controllers
                 return vm;
             }
 
-            try
+            //刷新登录标记
+            if (!GlobalTo.GetValue<bool>("ReadOnly"))
             {
-                //刷新登录标记
                 outMo.UserLoginTime = DateTime.Now;
                 outMo.UserSign = outMo.UserLoginTime.Value.ToTimestamp().ToString();
                 uiR.Update(outMo);
                 db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
             }
 
             try
@@ -265,12 +259,13 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 //写入授权
-                SetAuth(HttpContext, outMo, isremember);
+                var siObj = BuildSignIn(outMo, isRemember);
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
 
                 //生成Token
                 vm.Data = Apps.LoginService.TokenMake(outMo);
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
             }
             catch (Exception ex)
             {
@@ -303,13 +298,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         public IActionResult AuthCallback([FromRoute] string id, LoginBase.AuthorizeResult authorizeResult)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(authorizeResult.code))
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -592,7 +587,7 @@ namespace Netnr.Blog.Web.Controllers
 
                     if (string.IsNullOrWhiteSpace(openId))
                     {
-                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Set(EnumTo.RTag.unauthorized);
                         vm.Msg = "身份验证失败";
                     }
                     else
@@ -696,15 +691,13 @@ namespace Netnr.Blog.Web.Controllers
                                         try
                                         {
                                             //物理根路径
-                                            var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath");
-                                            var ppath = PathTo.Combine(GlobalTo.WebRootPath, prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
-
+                                            var ppath = Application.CommonService.StaticResourcePath("AvatarPath");
                                             if (!Directory.Exists(ppath))
                                             {
                                                 Directory.CreateDirectory(ppath);
                                             }
 
-                                            HttpTo.DownloadSave(HttpTo.HWRequest(avatar), PathTo.Combine(ppath, mo.UserPhoto));
+                                            HttpTo.DownloadSave(avatar, PathTo.Combine(ppath, mo.UserPhoto));
                                         }
                                         catch (Exception ex)
                                         {
@@ -757,19 +750,23 @@ namespace Netnr.Blog.Web.Controllers
         /// 注销
         /// </summary>
         /// <returns></returns>
-        public IActionResult Logout([FromRoute] string id)
+        public async Task<IActionResult> Logout([FromRoute] string id)
         {
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            //清空全局缓存
+            Core.CacheTo.RemoveAll();
+
             return Redirect("/" + (id ?? ""));
         }
 
         /// <summary>
-        /// 写入授权
+        /// 构建写入授权信息
         /// </summary>
-        /// <param name="context">当前上下文</param>
-        /// <param name="user">用户信息</param>
-        /// <param name="isremember">是否记住账号</param>
-        public void SetAuth(HttpContext context, Domain.UserInfo user, bool isremember = true)
+        /// <param name="user"></param>
+        /// <param name="isremember"></param>
+        /// <returns></returns>
+        public static Tuple<ClaimsPrincipal, AuthenticationProperties> BuildSignIn(Domain.UserInfo user, bool isremember = true)
         {
             var claims = new List<Claim>
             {
@@ -782,16 +779,18 @@ namespace Netnr.Blog.Web.Controllers
 
             var cp = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
 
-            var authProperties = new AuthenticationProperties();
+            var ap = new AuthenticationProperties();
             if (isremember)
             {
                 //记住
-                authProperties.IsPersistent = true;
-                authProperties.ExpiresUtc = DateTimeOffset.Now.AddDays(10);
+                ap.IsPersistent = true;
+                ap.ExpiresUtc = DateTimeOffset.Now.AddDays(10);
             }
 
+            return new Tuple<ClaimsPrincipal, AuthenticationProperties>(cp, ap);
+
             //写入授权
-            context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, cp, authProperties).Wait();
+            //await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, cp, ap);
         }
     }
 }

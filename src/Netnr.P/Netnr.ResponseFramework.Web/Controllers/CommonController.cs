@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Netnr.ResponseFramework.Data;
 using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -162,9 +161,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="subdir">自定义子目录，如：doc</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<SharedResultVM> Upload(IFormFileCollection files, int? temp, string subdir)
+        public async Task<ResultVM> Upload(IFormFileCollection files, int? temp, string subdir)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -213,7 +212,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         vm.Data = listPath;
                     }
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
             }
             catch (Exception ex)

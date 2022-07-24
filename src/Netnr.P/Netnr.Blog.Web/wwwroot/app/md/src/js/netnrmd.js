@@ -134,9 +134,9 @@ var netnrmd = {
     },
 
     resource: {
-        htmlDocx: "https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js",
-        html2canvas: "https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js",
-        html2pdf: "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
+        htmlDocx: "https://fastly.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js",
+        html2canvas: "https://fastly.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+        html2pdf: "https://lib.baomitu.com/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
     },
 
     /**

@@ -1,10 +1,6 @@
 ﻿using System.Xml;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Netnr.SharedLogging;
-using Netnr.SharedIpArea;
-using Netnr.SharedFast;
-using Netnr.SharedApp;
 
 namespace Netnr.ResponseFramework.Web.Apps
 {
@@ -195,15 +191,12 @@ namespace Netnr.ResponseFramework.Web.Apps
                             {
                                 try
                                 {
-                                    var ipto = new IpAreaTo();
-
                                     //写入日志前
                                     var listMo = new List<Domain.SysLog>();
 
                                     while (CurrentCacheLog.TryDequeue(out Domain.SysLog deobj))
                                     {
                                         deobj.LogId = Core.UniqueTo.LongId().ToString();
-                                        deobj.LogArea = ipto.Parse(deobj.LogIp);
 
                                         LoggingTo.UserAgentParser(deobj.LogUserAgent, out string browserName, out string systemName, out bool isBot);
                                         deobj.LogBrowserName = browserName;
@@ -254,7 +247,7 @@ namespace Netnr.ResponseFramework.Web.Apps
 
             public void OnActionExecuting(ActionExecutingContext context)
             {
-                var an = GlobalTo.GetValue("AdminName");
+                var an = GlobalTo.GetValue("Common:AdminName");
 
                 bool isv;
                 //cookie 授权已登录

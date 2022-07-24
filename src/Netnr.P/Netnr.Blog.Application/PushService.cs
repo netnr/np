@@ -1,5 +1,4 @@
 ﻿using Netnr.Core;
-using Netnr.SharedFast;
 using Newtonsoft.Json.Linq;
 
 namespace Netnr.Blog.Application
@@ -40,13 +39,13 @@ namespace Netnr.Blog.Application
         /// <param name="content"></param>
         /// <param name="msgtype">默认 text,可选 markdown</param>
         /// <returns></returns>
-        public static SharedResultVM SendAppMessage(string content = "", string msgtype = "text")
+        public static ResultVM SendAppMessage(string content = "", string msgtype = "text")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (GlobalTo.GetValue<bool>("ApiKey:EWeChatApp:enable"))
                 {
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
 
                     var access_token = GetAccessToken();
                     var touser = GlobalTo.GetValue("ApiKey:EWeChatApp:ToUser");
@@ -74,12 +73,12 @@ namespace Netnr.Blog.Application
                     else
                     {
                         vm.Log.Add($"failed {touser}");
-                        vm.Set(SharedEnum.RTag.fail);
+                        vm.Set(EnumTo.RTag.fail);
                     }
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Set(EnumTo.RTag.refuse);
                     vm.Msg = "未启用";
                 }
 

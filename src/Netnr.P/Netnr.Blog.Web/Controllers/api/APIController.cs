@@ -6,7 +6,6 @@ using JiebaNet.Segmenter.PosSeg;
 using SkiaSharp;
 using SkiaSharp.QrCode;
 using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Controllers.api
 {
@@ -22,9 +21,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM UserInfo()
+        public ResultVM UserInfo()
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -32,11 +31,11 @@ namespace Netnr.Blog.Web.Controllers.api
                 {
                     vm.Data = uinfo;
 
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
 
                 return vm;
@@ -66,9 +65,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="subdir">输出完整物理路径，用于存储</param>
         /// <returns></returns>
         [ApiExplorerSettings(IgnoreApi = true)]
-        public static SharedResultVM UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
+        public static ResultVM UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             if (file != null)
             {
@@ -77,7 +76,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
             if (string.IsNullOrWhiteSpace(ext) || !ext.Contains('.') || ext.EndsWith("exe"))
             {
-                vm.Set(SharedEnum.RTag.refuse);
+                vm.Set(EnumTo.RTag.refuse);
                 vm.Msg = "Invalid extension";
             }
             else
@@ -87,7 +86,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
                 if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                     vm.Msg = "subdir 仅为字母、数字";
                 }
                 else
@@ -123,7 +122,7 @@ namespace Netnr.Blog.Web.Controllers.api
                         prp = prp,
                         path = PathTo.Combine(vpath, filename)
                     };
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
             }
 
@@ -139,13 +138,13 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost]
         [HttpOptions]
         [Apps.FilterConfigs.AllowCors]
-        public SharedResultVM Upload(IFormFile file, [FromForm] string subdir = "/static")
+        public ResultVM Upload(IFormFile file, [FromForm] string subdir = "/static")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                     return vm;
                 }
 
@@ -155,7 +154,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
 
                 return vm;
@@ -172,13 +171,13 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost]
         [HttpOptions]
         [Apps.FilterConfigs.AllowCors]
-        public SharedResultVM UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
+        public ResultVM UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                     return vm;
                 }
 
@@ -192,7 +191,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
 
                 return vm;
@@ -209,13 +208,13 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost]
         [HttpOptions]
         [Apps.FilterConfigs.AllowCors]
-        public SharedResultVM UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
+        public ResultVM UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                     return vm;
                 }
 
@@ -227,7 +226,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
 
                 return vm;
@@ -241,9 +240,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="content">内容</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM Analysis([FromForm] int ctype, [FromForm] string content = "结过婚的和尚未结过婚的")
+        public ResultVM Analysis([FromForm] int ctype, [FromForm] string content = "结过婚的和尚未结过婚的")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var jb = new JiebaSegmenter();
 
@@ -263,7 +262,7 @@ namespace Netnr.Blog.Web.Controllers.api
                         break;
                 }
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
 
                 return vm;
             });
@@ -275,9 +274,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="timezone">东1 ~ 12区、西-1 ~ -12区</param>
         /// <returns></returns>
         [HttpGet, Route(""), Route("{timezone}")]
-        public SharedResultVM Clock([FromRoute] int? timezone = 8)
+        public ResultVM Clock([FromRoute] int? timezone = 8)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var header = Request.HttpContext.Request.Headers;
                 var client_ip = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -319,7 +318,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     //IP
                     client_ip,
                 };
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
 
                 return vm;
             });
@@ -408,9 +407,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="SECRET_KEY">百度AI接口：SECRET_KEY（可选，用自己申请的授权信息更稳定不受限制）</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM OCR(IFormFile file, [FromForm] string url, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
+        public ResultVM OCR(IFormFile file, [FromForm] string url, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var bytes = AipCheck(file, ref API_KEY, ref SECRET_KEY);
                 var ocr = new Baidu.Aip.Ocr.Ocr(API_KEY, SECRET_KEY);
@@ -418,16 +417,16 @@ namespace Netnr.Blog.Web.Controllers.api
                 if (bytes != null)
                 {
                     vm.Data = ocr.GeneralBasic(bytes);
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else if (!string.IsNullOrWhiteSpace(url))
                 {
                     vm.Data = ocr.GeneralBasicUrl(url);
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
 
                 vm.Log.Add("通用文字识别(百度接口,50000次/天免费,用自己申请的授权信息更稳定不受限制)");
@@ -441,9 +440,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM OCRType()
+        public ResultVM OCRType()
         {
-            var vm = new SharedResultVM
+            var vm = new ResultVM
             {
                 Data = new Dictionary<string, string>
                 {
@@ -466,7 +465,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     { "Seal", "印章识别 100次/天" }
                 }
             };
-            vm.Set(SharedEnum.RTag.success);
+            vm.Set(EnumTo.RTag.success);
 
             return vm;
         }
@@ -481,9 +480,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="SECRET_KEY">百度AI接口：SECRET_KEY（可选，用自己申请的授权信息更稳定不受限制）</param>
         /// <returns></returns>
         [HttpPost, Route("{type}")]
-        public SharedResultVM OCR([FromRoute] string type, IFormFile file, [FromForm] string side, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
+        public ResultVM OCR([FromRoute] string type, IFormFile file, [FromForm] string side, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 type = type?.ToLower();
 
@@ -495,90 +494,90 @@ namespace Netnr.Blog.Web.Controllers.api
                     case "general":
                         vm.Log.Add("通用文字识别（标准含位置版） 500次/天");
                         vm.Data = ocr.General(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "accuratebasic":
                         vm.Log.Add("通用文字识别（高精度版） 500次/天");
                         vm.Data = ocr.AccurateBasic(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "accurate":
                         vm.Log.Add("通用文字识别（高精度含位置版） 50次/天");
                         vm.Data = ocr.Accurate(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "numbers":
                         vm.Log.Add("数字识别 200次/天");
                         vm.Data = ocr.Numbers(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "webimage":
                         vm.Log.Add("网络图片文字识别 500次/天");
                         vm.Data = ocr.WebImage(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "handwriting":
                         vm.Log.Add("手写文字识别 50次/天");
                         vm.Data = ocr.Handwriting(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "idcard":
                         vm.Log.Add("身份证识别 500次/天");
                         vm.Data = ocr.Idcard(bytes, side == "avatar" ? "front" : "back");
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "bankcard":
                         vm.Log.Add("银行卡识别 500次/天");
                         vm.Data = ocr.Bankcard(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "businesslicense":
                         vm.Log.Add("营业执照识别 200次/天");
                         vm.Data = ocr.BusinessLicense(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "vatinvoice":
                         vm.Log.Add("增值税发票识别 500次/天");
                         vm.Data = ocr.VatInvoice(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "trainticket":
                         vm.Log.Add("火车票识别 50次/天");
                         vm.Data = ocr.TrainTicket(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "taxireceipt":
                         vm.Log.Add("出租车票识别 50次/天");
                         vm.Data = ocr.TaxiReceipt(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "receipt":
                         vm.Log.Add("通用票据识别 200次/天");
                         vm.Data = ocr.Receipt(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "vehiclelicense":
                         vm.Log.Add("行驶证识别 200次/天");
                         vm.Data = ocr.VehicleLicense(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "drivinglicense":
                         vm.Log.Add("驾驶证识别 200次/天");
                         vm.Data = ocr.DrivingLicense(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "licenseplate":
                         vm.Log.Add("车牌识别 200次/天");
                         vm.Data = ocr.LicensePlate(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     case "seal":
                         vm.Log.Add("印章识别 100次/天");
                         vm.Data = ocr.Seal(bytes);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         break;
                     default:
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(EnumTo.RTag.invalid);
                         break;
                 }
 
@@ -591,9 +590,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM NLPType()
+        public ResultVM NLPType()
         {
-            var vm = new SharedResultVM
+            var vm = new ResultVM
             {
                 Data = new Dictionary<string, string>
                 {
@@ -605,7 +604,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
             };
 
-            vm.Set(SharedEnum.RTag.success);
+            vm.Set(EnumTo.RTag.success);
 
             return vm;
         }
@@ -621,9 +620,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="SECRET_KEY">百度AI接口：SECRET_KEY（可选，用自己申请的授权信息更稳定不受限制）</param>
         /// <returns></returns>
         [HttpPost, Route("{type}")]
-        public SharedResultVM NLP([FromRoute] string type, [FromForm] string title, [FromForm] string content, [FromForm] int maxSummaryLen, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
+        public ResultVM NLP([FromRoute] string type, [FromForm] string title, [FromForm] string content, [FromForm] int maxSummaryLen, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 type = type?.ToLower();
 
@@ -632,7 +631,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    vm.Set(SharedEnum.RTag.fail);
+                    vm.Set(EnumTo.RTag.fail);
                     vm.Msg = "content 不能为空";
                 }
                 else
@@ -642,32 +641,32 @@ namespace Netnr.Blog.Web.Controllers.api
                         case "commenttag":
                             vm.Log.Add("评论观点抽取");
                             vm.Data = nlp.CommentTag(content);
-                            vm.Set(SharedEnum.RTag.success);
+                            vm.Set(EnumTo.RTag.success);
                             break;
                         case "sentimentclassify":
                             vm.Log.Add("情感倾向分析");
                             vm.Data = nlp.SentimentClassify(content);
-                            vm.Set(SharedEnum.RTag.success);
+                            vm.Set(EnumTo.RTag.success);
                             break;
                         case "keyword":
                             {
                                 vm.Log.Add("文章标签");
                                 if (string.IsNullOrWhiteSpace(title))
                                 {
-                                    vm.Set(SharedEnum.RTag.fail);
+                                    vm.Set(EnumTo.RTag.fail);
                                     vm.Msg = "title 不能为空";
                                 }
                                 else
                                 {
                                     vm.Data = nlp.Keyword(title, content);
-                                    vm.Set(SharedEnum.RTag.success);
+                                    vm.Set(EnumTo.RTag.success);
                                 }
                             }
                             break;
                         case "ecnet":
                             vm.Log.Add("文本纠错");
                             vm.Data = nlp.Ecnet(content);
-                            vm.Set(SharedEnum.RTag.success);
+                            vm.Set(EnumTo.RTag.success);
                             break;
                         case "newssummary":
                             {
@@ -818,7 +817,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
             try
             {
-                var ci = new SharedApp.ClientTo(HttpContext);
+                var ci = new ClientTo(HttpContext);
                 Console.WriteLine($"PROXY | {Request.Method} | {ci.IPv4} | {url} | {ci.UserAgent}");
 
                 if (!GlobalTo.GetValue<bool>("ReadOnly"))
@@ -949,9 +948,9 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM CommandLine(string arguments, string fileName)
+        public ResultVM CommandLine(string arguments, string fileName)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (GlobalTo.GetValue<bool>("ReadOnly"))
                 {
@@ -960,11 +959,11 @@ namespace Netnr.Blog.Web.Controllers.api
 
                     vm.Log.AddRange(cr.CrError?.Split(Environment.NewLine));
 
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Set(EnumTo.RTag.refuse);
                 }
 
                 return vm;

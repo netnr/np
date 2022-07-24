@@ -26,7 +26,7 @@ namespace Netnr.Blog.Web.Controllers
         public IActionResult Index(string k, int page = 1)
         {
             var ckey = $"Writing-{page}";
-            if (!string.IsNullOrWhiteSpace(k) || CacheTo.Get(ckey) is not SharedPageVM vm)
+            if (!string.IsNullOrWhiteSpace(k) || CacheTo.Get(ckey) is not PageVM vm)
             {
                 vm = Application.CommonService.UserWritingQuery(k, page);
                 vm.Route = Request.Path;
@@ -107,9 +107,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="TagIds">标签，多个逗号分割</param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
+        public ResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 vm = Apps.LoginService.CompleteInfoValid(HttpContext);
                 if (vm.Code == 200)
@@ -185,13 +185,13 @@ namespace Netnr.Blog.Web.Controllers
                     return Redirect("/");
                 }
 
-                var pag = new SharedPaginationVM
+                var pag = new PaginationVM
                 {
                     PageNumber = Math.Max(page, 1),
                     PageSize = 20
                 };
 
-                var vm = new SharedPageVM()
+                var vm = new PageVM()
                 {
                     Rows = Application.CommonService.ReplyOneQuery(Application.EnumService.ReplyType.UserWriting, id.ToString(), pag),
                     Pag = pag,
@@ -224,15 +224,15 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="um">消息通知</param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM ReplySave([FromForm] UserReply mo, [FromForm] UserMessage um)
+        public ResultVM ReplySave([FromForm] UserReply mo, [FromForm] UserMessage um)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
             vm = Apps.LoginService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
             {
                 if (!mo.Uid.HasValue || string.IsNullOrWhiteSpace(mo.UrContent) || string.IsNullOrWhiteSpace(mo.UrTargetId))
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
                 else
                 {
@@ -298,9 +298,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="a">动作</param>
         /// <returns></returns>
         [Authorize, HttpGet]
-        public SharedResultVM ConnSave([FromRoute] int id, int a)
+        public ResultVM ConnSave([FromRoute] int id, int a)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var uinfo = Apps.LoginService.Get(HttpContext);
 

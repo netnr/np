@@ -284,19 +284,19 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id">ID</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM ReplyAdd([FromForm] Domain.UserReply mo, [FromForm] string id)
+        public ResultVM ReplyAdd([FromForm] Domain.UserReply mo, [FromForm] string id)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                 }
                 else if (string.IsNullOrWhiteSpace(mo.UrContent))
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                     vm.Msg = "回复内容不能为空";
                 }
                 else
@@ -309,7 +309,7 @@ namespace Netnr.Blog.Web.Controllers
                         var guffmo = db.GuffRecord.Find(id);
                         if (guffmo == null)
                         {
-                            vm.Set(SharedEnum.RTag.invalid);
+                            vm.Set(EnumTo.RTag.invalid);
                         }
                         else
                         {
@@ -349,13 +349,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM ReplyList(string id, int page = 1)
+        public ResultVM ReplyList(string id, int page = 1)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
-                var pag = new SharedPaginationVM
+                var pag = new PaginationVM
                 {
                     PageNumber = Math.Max(page, 1),
                     PageSize = 10
@@ -371,14 +371,14 @@ namespace Netnr.Blog.Web.Controllers
                     }
                 }
 
-                var pvm = new SharedPageVM()
+                var pvm = new PageVM()
                 {
                     Rows = list,
                     Pag = pag
                 };
                 vm.Data = pvm;
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
 
                 return vm;
             });

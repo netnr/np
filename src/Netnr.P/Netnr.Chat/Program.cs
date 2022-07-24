@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Netnr;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Netnr.SharedFast.GlobalTo.Configuration = builder.Configuration;
-Netnr.SharedFast.GlobalTo.HostEnvironment = builder.Environment;
-
-Netnr.ReadyTo.EncodingReg();
+ReadyTo.EncodingReg();
+ReadyTo.LegacyTimestamp();
 
 //（上传）主体大小限制
 var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");

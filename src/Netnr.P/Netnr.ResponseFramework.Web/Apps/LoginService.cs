@@ -2,7 +2,6 @@
 using Netnr.ResponseFramework.Domain;
 using Netnr.ResponseFramework.Application.ViewModel;
 using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.ResponseFramework.Web.Apps
 {
@@ -64,7 +63,7 @@ namespace Netnr.ResponseFramework.Web.Apps
         /// <returns></returns>
         public static string TokenMake(LoginUserVM mo)
         {
-            var key = GlobalTo.GetValue("VerifyCode:Key");
+            var key = GlobalTo.GetValue("Common:GlobalKey");
 
             var token = CalcTo.AESEncrypt(new
             {
@@ -88,7 +87,7 @@ namespace Netnr.ResponseFramework.Web.Apps
             {
                 if (!string.IsNullOrWhiteSpace(token))
                 {
-                    var key = GlobalTo.GetValue("VerifyCode:Key");
+                    var key = GlobalTo.GetValue("Common:GlobalKey");
 
                     var jo = CalcTo.AESDecrypt(token, key).ToJObject();
 

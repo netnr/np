@@ -23,9 +23,9 @@ namespace Netnr.Blog.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 10)]
-        public SharedResultVM AboutServerStatus()
+        public ResultVM AboutServerStatus()
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -38,7 +38,7 @@ namespace Netnr.Blog.Web.Controllers
 
                 vm.Log.Add(ss);
                 vm.Data = ss.ToView();
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
             }
             catch (Exception ex)
             {

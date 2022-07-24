@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using Netnr.Chat.Application.ViewModel;
 using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.Chat.Application
 {

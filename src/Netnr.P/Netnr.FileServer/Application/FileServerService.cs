@@ -1,7 +1,6 @@
 using SQLite;
 using Netnr.FileServer.Domain;
 using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.FileServer.Application
 {
@@ -13,16 +12,16 @@ namespace Netnr.FileServer.Application
         /// <summary>
         /// 连接字符串
         /// </summary>
-        public static string SQLiteConn = GlobalTo.Configuration.GetConnectionString("SQLite").Replace("~", GlobalTo.ContentRootPath);
+        public static string SQLiteConn { get; set; } = GlobalTo.Configuration.GetConnectionString("SQLite").Replace("~", GlobalTo.ContentRootPath);
 
         /// <summary>
         /// 创建App
         /// </summary>
         /// <param name="owner">用户，唯一，文件夹名</param>
         /// <returns></returns>
-        public static SharedResultVM CreateApp(string owner)
+        public static ResultVM CreateApp(string owner)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -58,9 +57,9 @@ namespace Netnr.FileServer.Application
         /// <param name="pageNumber">页码，默认1</param>
         /// <param name="pageSize">页量，默认20</param>
         /// <returns></returns>
-        public static SharedResultVM GetAppList(int pageNumber = 1, int pageSize = 20)
+        public static ResultVM GetAppList(int pageNumber = 1, int pageSize = 20)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -69,7 +68,7 @@ namespace Netnr.FileServer.Application
 
                 vm.Data = sk;
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
             }
             catch (Exception ex)
             {
@@ -85,9 +84,9 @@ namespace Netnr.FileServer.Application
         /// <param name="AppId">分配的应用ID</param>
         /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
-        public static SharedResultVM GetAppInfo(string AppId, string AppKey)
+        public static ResultVM GetAppInfo(string AppId, string AppKey)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -96,12 +95,12 @@ namespace Netnr.FileServer.Application
 
                 if (sk == null)
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                 }
                 else
                 {
                     vm.Data = sk;
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
             }
             catch (Exception ex)
@@ -118,9 +117,9 @@ namespace Netnr.FileServer.Application
         /// <param name="AppId">分配的应用ID</param>
         /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
-        public static SharedResultVM GetToken(string AppId, string AppKey)
+        public static ResultVM GetToken(string AppId, string AppKey)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -141,7 +140,7 @@ namespace Netnr.FileServer.Application
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
             }
             catch (Exception ex)
@@ -160,9 +159,9 @@ namespace Netnr.FileServer.Application
         /// <param name="Name">名称</param>
         /// <param name="AuthMethod">授权接口</param>
         /// <returns></returns>
-        public static SharedResultVM CreateFixedToken(string AppId, string AppKey, string Name, string AuthMethod)
+        public static ResultVM CreateFixedToken(string AppId, string AppKey, string Name, string AuthMethod)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -196,7 +195,7 @@ namespace Netnr.FileServer.Application
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
             }
             catch (Exception ex)
@@ -214,9 +213,9 @@ namespace Netnr.FileServer.Application
         /// <param name="AppKey">分配的应用密钥</param>
         /// <param name="FixedToken">固定Token</param>
         /// <returns></returns>
-        public static SharedResultVM DelFixedToken(string AppId, string AppKey, string FixedToken)
+        public static ResultVM DelFixedToken(string AppId, string AppKey, string FixedToken)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -234,13 +233,13 @@ namespace Netnr.FileServer.Application
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(EnumTo.RTag.invalid);
                         vm.Msg = "FixedToken 无效";
                     }
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
             }
             catch (Exception ex)
@@ -257,15 +256,15 @@ namespace Netnr.FileServer.Application
         /// <param name="token"></param>
         /// <param name="MethodName">方法名</param>
         /// <returns></returns>
-        public static SharedResultVM ValidToken(string token, string MethodName)
+        public static ResultVM ValidToken(string token, string MethodName)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(token))
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -281,20 +280,20 @@ namespace Netnr.FileServer.Application
                             var mo = sk.FixedToken.DeJsons<FixedTokenJson>().FirstOrDefault(x => x.Token == token);
                             if (mo.AuthMethod.Split(',').Contains(MethodName))
                             {
-                                vm.Set(SharedEnum.RTag.success);
+                                vm.Set(EnumTo.RTag.success);
 
                                 mo.Owner = sk.Owner;
                                 vm.Data = mo;
                             }
                             else
                             {
-                                vm.Set(SharedEnum.RTag.unauthorized);
+                                vm.Set(EnumTo.RTag.unauthorized);
                                 vm.Msg = "FixedToken 无权访问该接口";
                             }
                         }
                         else
                         {
-                            vm.Set(SharedEnum.RTag.unauthorized);
+                            vm.Set(EnumTo.RTag.unauthorized);
                             vm.Msg = "token 无效或已过期";
                         }
                     }
@@ -304,7 +303,7 @@ namespace Netnr.FileServer.Application
 
                         if (sk?.TokenExpireTime > DateTime.Now)
                         {
-                            vm.Set(SharedEnum.RTag.success);
+                            vm.Set(EnumTo.RTag.success);
 
                             vm.Data = new FixedTokenJson()
                             {
@@ -313,7 +312,7 @@ namespace Netnr.FileServer.Application
                         }
                         else
                         {
-                            vm.Set(SharedEnum.RTag.unauthorized);
+                            vm.Set(EnumTo.RTag.unauthorized);
                             vm.Msg = "token 无效或已过期";
                         }
                     }
@@ -332,15 +331,15 @@ namespace Netnr.FileServer.Application
         /// </summary>
         /// <param name="fixedToken"></param>
         /// <returns></returns>
-        public static SharedResultVM ValidFixedToken(string fixedToken)
+        public static ResultVM ValidFixedToken(string fixedToken)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(fixedToken))
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -349,7 +348,7 @@ namespace Netnr.FileServer.Application
 
                     if (sk != null)
                     {
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
 
                         var mo = sk.FixedToken.DeJsons<FixedTokenJson>().FirstOrDefault(x => x.Token == fixedToken);
                         mo.Owner = sk.Owner;
@@ -357,7 +356,7 @@ namespace Netnr.FileServer.Application
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Set(EnumTo.RTag.unauthorized);
                         vm.Msg = "token 无效或已过期";
                     }
                 }
@@ -374,9 +373,9 @@ namespace Netnr.FileServer.Application
         /// 新增
         /// </summary>
         /// <param name="model"></param>
-        public static SharedResultVM InsertFile(FileRecord model)
+        public static ResultVM InsertFile(FileRecord model)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -397,9 +396,9 @@ namespace Netnr.FileServer.Application
         /// 新增
         /// </summary>
         /// <param name="list"></param>
-        public static SharedResultVM InsertFile(List<FileRecord> list)
+        public static ResultVM InsertFile(List<FileRecord> list)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -421,9 +420,9 @@ namespace Netnr.FileServer.Application
         /// </summary>
         /// <param name="owner">所属</param>
         /// <param name="IdOrPath">文件ID或路径</param>
-        public static SharedResultVM QueryFile(string owner, string IdOrPath)
+        public static ResultVM QueryFile(string owner, string IdOrPath)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -432,15 +431,15 @@ namespace Netnr.FileServer.Application
                 var fr = db.Table<FileRecord>().FirstOrDefault(x => x.Id == IdOrPath || x.Path == IdOrPath);
                 if (fr == null)
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
                 else if (fr.OwnerUser != owner)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                     vm.Data = fr;
                 }
             }
@@ -456,9 +455,9 @@ namespace Netnr.FileServer.Application
         /// 更新
         /// </summary>
         /// <param name="model">实体</param>
-        public static SharedResultVM UpdateFile(FileRecord model)
+        public static ResultVM UpdateFile(FileRecord model)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -480,9 +479,9 @@ namespace Netnr.FileServer.Application
         /// </summary>
         /// <param name="owner">所属</param>
         /// <param name="IdOrPath">文件ID或路径</param>
-        public static SharedResultVM DeleteFile(string owner, string IdOrPath)
+        public static ResultVM DeleteFile(string owner, string IdOrPath)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -491,18 +490,18 @@ namespace Netnr.FileServer.Application
                 var fr = db.Table<FileRecord>().FirstOrDefault(x => x.Id == IdOrPath || x.Path == IdOrPath);
                 if (fr == null)
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
                 else if (fr.OwnerUser != owner)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
-                    var fp = PathTo.Combine(GlobalTo.WebRootPath, fr.Path);
-                    if (System.IO.File.Exists(fp))
+                    var fp = Path.Combine(GlobalTo.WebRootPath, fr.Path);
+                    if (File.Exists(fp))
                     {
-                        System.IO.File.Delete(fp);
+                        File.Delete(fp);
                     }
 
                     int num = db.Delete(fr);

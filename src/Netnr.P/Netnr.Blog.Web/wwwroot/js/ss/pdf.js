@@ -63,7 +63,7 @@
 
     //demo
     nr.domBtnDemo.addEventListener('click', function () {
-        page.loadUrl('https://s1.netnr.com/2019/07/06/181724f50f.pdf')
+        page.loadUrl('https://gs.zme.ink/2019/07/06/181724f50f.pdf')
     });
 
     //导出图片

@@ -31,10 +31,6 @@
         /// </summary>
         public string LogIp { get; set; }
         /// <summary>
-        /// IP归属地
-        /// </summary>
-        public string LogArea { get; set; }
-        /// <summary>
         /// User-Agent
         /// </summary>
         public string LogUserAgent { get; set; }

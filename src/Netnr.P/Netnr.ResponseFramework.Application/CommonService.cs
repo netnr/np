@@ -299,16 +299,6 @@ namespace Netnr.ResponseFramework.Application
             public const string SysButton = "GlobalSysButton";
         }
 
-        /// <summary>
-        /// 清空全局缓存
-        /// </summary>
-        public static void GlobalCacheRmove()
-        {
-            CacheTo.Remove(GlobalCacheKey.SysMenu);
-            CacheTo.Remove(GlobalCacheKey.SysRole);
-            CacheTo.Remove(GlobalCacheKey.SysButton);
-        }
-
         #endregion
 
         #region 查询

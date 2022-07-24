@@ -175,7 +175,7 @@ namespace Netnr.Test
             };
 
             var listMsg = new List<string>();
-            var st = new SharedTimingVM();
+            var st = new TimingVM();
 
             listUserAgent.ForEach(userAgent =>
             {

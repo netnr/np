@@ -139,7 +139,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM Save([FromForm] Domain.Run mo)
+        public ResultVM Save([FromForm] Domain.Run mo)
         {
             var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
@@ -181,7 +181,7 @@ namespace Netnr.Blog.Web.Controllers
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.fail);
+                        vm.Set(EnumTo.RTag.fail);
                     }
                 }
 

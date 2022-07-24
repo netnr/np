@@ -1,4 +1,4 @@
-@model SharedPageVM
+@model PageVM
 @{
     var uw = Model.Temp as UserWriting;
     var tt = JArray.Parse(uw.Spare1);
@@ -13,7 +13,7 @@
 <input class="nr-hid-write-id" type="hidden" value="@uw.UwId" />
 <input class="nr-hid-user-id" type="hidden" value="@uw.Uid" />
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css"))
+@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css"))
 
 <div class="container-fluid px-4">
 
@@ -114,13 +114,13 @@
                     }
                     else
                     {
-                        var avatarpath = "/favicon.svg";
+                        var avatarPath = "/favicon.svg";
                         if (!string.IsNullOrWhiteSpace(item.Spare2))
                         {
-                            avatarpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), item.Spare2);
+                            avatarPath = CommonService.StaticResourceLink("AvatarPath", item.Spare2);
                         }
 
-                        <img class="rounded" width="40" src="@avatarpath" alt="头像" onerror="this.src = '/favicon.svg'; this.onerror = null;">
+                        <img class="rounded" width="40" src="@avatarPath" alt="头像" onerror="this.src = '/favicon.svg'; this.onerror = null;">
                     }
                 </div>
 
@@ -165,7 +165,7 @@
     {
         <div class="row my-5">
             <!--回复帖子-->
-        <div class="col-md-12">
+            <div class="col-md-12">
                 <h4>回复<sl-button size="small" class="nr-btn-preview ms-2">预览</sl-button></h4>
                 <sl-textarea class="nr-editor mb-3" placeholder="支持 Markdown 语法"></sl-textarea>
                 <div class="nr-preview mb-3"></div>
@@ -176,5 +176,5 @@
 
 </div>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.js"))
+@Html.Raw(Netnr.QuoteTo.Html("netnrmd.js"))
 <script src="/js/home/list.js" asp-append-version="true"></script>

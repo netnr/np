@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Netnr.SharedFast;
 
 namespace Netnr.Blog.Web.Apps
 {
@@ -46,7 +45,7 @@ namespace Netnr.Blog.Web.Apps
         /// <returns></returns>
         public static string TokenMake(Domain.UserInfo mo)
         {
-            var key = GlobalTo.GetValue("VerifyCode:Key");
+            var key = GlobalTo.GetValue("Common:GlobalKey");
 
             var token = Core.CalcTo.AESEncrypt(new
             {
@@ -77,7 +76,7 @@ namespace Netnr.Blog.Web.Apps
             {
                 if (!string.IsNullOrWhiteSpace(token))
                 {
-                    var key = GlobalTo.GetValue("VerifyCode:Key");
+                    var key = GlobalTo.GetValue("Common:GlobalKey");
 
                     var jo = Core.CalcTo.AESDecrypt(token, key).ToJObject();
 
@@ -100,9 +99,9 @@ namespace Netnr.Blog.Web.Apps
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static SharedResultVM CompleteInfoValid(HttpContext context)
+        public static ResultVM CompleteInfoValid(HttpContext context)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             if (!context.User.Identity.IsAuthenticated)
             {

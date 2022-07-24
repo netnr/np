@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Domain;
-using Netnr.SharedDrawing;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -54,9 +53,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="remember">1记住登录状态</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<SharedResultVM> LoginValidation(SysUser mo, string captcha, int remember)
+        public async Task<ResultVM> LoginValidation(SysUser mo, string captcha, int remember)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var outMo = new SysUser();
 
@@ -72,14 +71,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                 if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != Core.CalcTo.MD5(captcha.ToLower()))
                 {
-                    vm.Set(SharedEnum.RTag.fail);
+                    vm.Set(EnumTo.RTag.fail);
                     vm.Msg = "验证码错误或已过期";
                     return vm;
                 }
 
                 if (string.IsNullOrWhiteSpace(mo.SuName) || string.IsNullOrWhiteSpace(mo.SuPwd))
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                     vm.Msg = "用户名或密码不能为空";
                     return vm;
                 }
@@ -89,14 +88,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             if (outMo == null || string.IsNullOrWhiteSpace(outMo.SuId))
             {
-                vm.Set(SharedEnum.RTag.unauthorized);
+                vm.Set(EnumTo.RTag.unauthorized);
                 vm.Msg = "用户名或密码错误";
                 return vm;
             }
 
             if (outMo.SuStatus != 1)
             {
-                vm.Set(SharedEnum.RTag.refuse);
+                vm.Set(EnumTo.RTag.refuse);
                 vm.Msg = "用户已被禁止登录";
                 return vm;
             }
@@ -123,7 +122,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 //写入
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authParam);
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
                 vm.Data = "/";
 
                 return vm;
@@ -150,7 +149,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             //清空全局缓存
-            Application.CommonService.GlobalCacheRmove();
+            Core.CacheTo.RemoveAll();
 
             return Redirect("/");
         }
@@ -178,9 +177,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public SharedResultVM UpdateNewPassword(string oldpwd, string newpwd1, string newpwd2)
+        public ResultVM UpdateNewPassword(string oldpwd, string newpwd1, string newpwd2)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             if (string.IsNullOrWhiteSpace(oldpwd) || string.IsNullOrWhiteSpace(newpwd1))
             {

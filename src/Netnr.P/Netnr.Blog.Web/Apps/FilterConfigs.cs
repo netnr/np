@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Netnr.Blog.Data;
-using Netnr.SharedFast;
-using Netnr.SharedApp;
-using Netnr.SharedLogging;
 
 namespace Netnr.Blog.Web.Apps
 {

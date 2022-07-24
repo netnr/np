@@ -1,7 +1,6 @@
 ﻿using Netnr.FileServer.Application;
 using Netnr.FileServer.Domain;
 using Netnr.Core;
-using Netnr.SharedFast;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace Netnr.FileServer.Controllers
@@ -20,9 +19,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="owner">用户，唯一，文件夹名，推荐小写字母</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM CreateApp(string password, string owner)
+        public ResultVM CreateApp(string password, string owner)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -36,7 +35,7 @@ namespace Netnr.FileServer.Controllers
                 }
                 else if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -44,7 +43,7 @@ namespace Netnr.FileServer.Controllers
                     vm = FileServerService.CreateApp(owner);
                     if (vm.Code == -1 && vm.Msg.Contains("UNIQUE"))
                     {
-                        vm.Set(SharedEnum.RTag.exist);
+                        vm.Set(EnumTo.RTag.exist);
                         vm.Msg = "owner 用户已经存在";
                     }
                 }
@@ -66,15 +65,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="pageSize">页量，默认20</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetAppList(string password, int pageNumber = 1, int pageSize = 20)
+        public ResultVM GetAppList(string password, int pageNumber = 1, int pageSize = 20)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -98,9 +97,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetAppInfo(string AppId, string AppKey)
+        public ResultVM GetAppInfo(string AppId, string AppKey)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -121,15 +120,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="password">密码，必填</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM ResetAll(string password)
+        public ResultVM ResetAll(string password)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -146,7 +145,7 @@ namespace Netnr.FileServer.Controllers
                         Directory.Delete(rootdir, true);
                     }
 
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
             }
             catch (Exception ex)
@@ -165,15 +164,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="keepTime">保留最近文件，超过时间被清理，0为全部清理，单位：分</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM ClearTmp(string password, int keepTime = 30)
+        public ResultVM ClearTmp(string password, int keepTime = 30)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
                 }
                 else
@@ -216,7 +215,7 @@ namespace Netnr.FileServer.Controllers
                         }
                     }
 
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                     vm.Data = listDel;
                 }
             }
@@ -236,20 +235,20 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AppKey">分配的应用密钥</param>
         /// <returns></returns>
         [HttpGet, ResponseCache(Duration = 30)]
-        public SharedResultVM GetToken(string AppId, string AppKey)
+        public ResultVM GetToken(string AppId, string AppKey)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey))
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                     vm.Msg = "参数缺失";
                 }
                 else
                 {
-                    if (CacheTo.Get(AppKey) is not SharedResultVM cvm)
+                    if (CacheTo.Get(AppKey) is not ResultVM cvm)
                     {
                         vm = FileServerService.GetToken(AppId, AppKey);
 
@@ -283,15 +282,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="AuthMethod">授权接口名，多个用逗号分割，区分大小写</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM CreateFixedToken(string AppId, string AppKey, string Name, string AuthMethod)
+        public ResultVM CreateFixedToken(string AppId, string AppKey, string Name, string AuthMethod)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(AuthMethod))
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                     vm.Msg = "参数缺失";
                 }
                 else
@@ -299,7 +298,7 @@ namespace Netnr.FileServer.Controllers
                     var listAm = AuthMethodList().Data as List<string>;
                     if (!AuthMethod.Split(',').ToList().All(x => listAm.Contains(x)))
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(EnumTo.RTag.invalid);
                         vm.Msg = "AuthMethod 存在无效接口名";
                     }
                     else
@@ -325,15 +324,15 @@ namespace Netnr.FileServer.Controllers
         /// <param name="FixedToken">固定 Token</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM DelFixedToken(string AppId, string AppKey, string FixedToken)
+        public ResultVM DelFixedToken(string AppId, string AppKey, string FixedToken)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(FixedToken))
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                     vm.Msg = "参数缺失";
                 }
                 else
@@ -355,9 +354,9 @@ namespace Netnr.FileServer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM AuthMethodList()
+        public ResultVM AuthMethodList()
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -373,7 +372,7 @@ namespace Netnr.FileServer.Controllers
                     }
                 }
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
                 vm.Data = listA;
             }
             catch (Exception ex)
@@ -393,9 +392,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="subdir">子目录，可选</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public SharedResultVM Upload(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir)
+        public ResultVM Upload(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -492,9 +491,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="chunks">总分片数</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public SharedResultVM UploadChunk(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks)
+        public ResultVM UploadChunk(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -518,7 +517,7 @@ namespace Netnr.FileServer.Controllers
                 else
                 {
                     var vtkey = "vt-" + token;
-                    if (CacheTo.Get(vtkey) is not SharedResultVM vt)
+                    if (CacheTo.Get(vtkey) is not ResultVM vt)
                     {
                         vt = FileServerService.ValidToken(token, mn);
                         //缓存 Token 验证 30 分钟
@@ -636,7 +635,7 @@ namespace Netnr.FileServer.Controllers
         [HttpGet, ResponseCache(Duration = 30)]
         public ActionResult View(string path, string token)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -662,12 +661,12 @@ namespace Netnr.FileServer.Controllers
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                     }
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
             }
             catch (Exception ex)
@@ -686,9 +685,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM Copy(string token, string path)
+        public ResultVM Copy(string token, string path)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -759,9 +758,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public SharedResultVM Cover(IFormFile file, [FromForm] string token, [FromForm] string path)
+        public ResultVM Cover(IFormFile file, [FromForm] string token, [FromForm] string path)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -813,7 +812,7 @@ namespace Netnr.FileServer.Controllers
                             }
                             else
                             {
-                                vm.Set(SharedEnum.RTag.invalid);
+                                vm.Set(EnumTo.RTag.invalid);
                                 vm.Msg = "文件路径无效";
                             }
                         }
@@ -836,9 +835,9 @@ namespace Netnr.FileServer.Controllers
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM Delete(string token, string path)
+        public ResultVM Delete(string token, string path)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
             try
@@ -871,22 +870,22 @@ namespace Netnr.FileServer.Controllers
         /// <param name="file">文件流</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public SharedResultVM UploadTmp(IFormFile file)
+        public ResultVM UploadTmp(IFormFile file)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
                 if (!GlobalTo.GetValue<bool>("Safe:EnableUploadTmp"))
                 {
-                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Set(EnumTo.RTag.refuse);
                     vm.Msg = "该接口已关闭";
                 }
                 else
                 {
                     if (file == null)
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "未找到上传文件";
                     }
                     else
@@ -906,7 +905,7 @@ namespace Netnr.FileServer.Controllers
                             fs.Flush();
                         }
 
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         vm.Data = PathTo.Combine(vpath, filename);
                     }
                 }

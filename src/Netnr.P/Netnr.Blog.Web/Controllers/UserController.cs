@@ -4,8 +4,9 @@ using Netnr.Core;
 using Netnr.Login;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
-using Netnr.SharedFast;
 using AgGrid.InfiniteRowModel;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -62,7 +63,7 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize]
         public IActionResult DelMessage([FromRoute] string id)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             if (!string.IsNullOrWhiteSpace(id))
             {
@@ -71,11 +72,11 @@ namespace Netnr.Blog.Web.Controllers
                 var um = db.UserMessage.Find(id);
                 if (um == null)
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
                 else if (um?.Uid != uinfo.UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -125,7 +126,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="UserSay"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM UpdateUserSay([FromForm] string UserSay)
+        public ResultVM UpdateUserSay([FromForm] string UserSay)
         {
             var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
@@ -151,9 +152,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="source"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM UpdateUserAvatar([FromForm] string type, [FromForm] string source)
+        public ResultVM UpdateUserAvatar([FromForm] string type, [FromForm] string source)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -163,9 +164,7 @@ namespace Netnr.Blog.Web.Controllers
                     var uinfo = Apps.LoginService.Get(HttpContext);
 
                     //物理根路径
-                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath");
-                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, prp, GlobalTo.GetValue("StaticResource:AvatarPath"));
-
+                    var ppath = Application.CommonService.StaticResourcePath("AvatarPath");
                     if (!Directory.Exists(ppath))
                     {
                         Directory.CreateDirectory(ppath);
@@ -192,11 +191,12 @@ namespace Netnr.Blog.Web.Controllers
                                 int num = db.SaveChanges();
                                 if (num > 0)
                                 {
-                                    using var ac = new AccountController(db);
-                                    ac.SetAuth(HttpContext, usermo);
+                                    //写入授权
+                                    var siObj = AccountController.BuildSignIn(usermo);
+                                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
                                 }
 
-                                vm.Set(SharedEnum.RTag.success);
+                                vm.Set(EnumTo.RTag.success);
                             }
                             break;
                         case "link":
@@ -209,11 +209,12 @@ namespace Netnr.Blog.Web.Controllers
                                 int num = db.SaveChanges();
                                 if (num > 0)
                                 {
-                                    using var ac = new AccountController(db);
-                                    ac.SetAuth(HttpContext, usermo);
+                                    //写入授权
+                                    var siObj = AccountController.BuildSignIn(usermo);
+                                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
                                 }
 
-                                vm.Set(SharedEnum.RTag.success);
+                                vm.Set(EnumTo.RTag.success);
                             }
                             break;
                     }
@@ -251,9 +252,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM SaveUserInfo([FromForm] UserInfo mo)
+        public ResultVM SaveUserInfo([FromForm] UserInfo mo)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var errMsg = new List<string>();
             if (string.IsNullOrWhiteSpace(mo.UserName))
@@ -275,7 +276,7 @@ namespace Netnr.Blog.Web.Controllers
 
             if (errMsg.Count > 0)
             {
-                vm.Set(SharedEnum.RTag.refuse);
+                vm.Set(EnumTo.RTag.refuse);
                 vm.Msg = string.Join("<br/>", errMsg);
 
                 return vm;
@@ -292,7 +293,7 @@ namespace Netnr.Blog.Web.Controllers
                 //账号重复
                 if (db.UserInfo.Any(x => x.UserName == mo.UserName))
                 {
-                    vm.Set(SharedEnum.RTag.exist);
+                    vm.Set(EnumTo.RTag.exist);
                     vm.Msg = "账号已经存在";
 
                     return vm;
@@ -314,14 +315,14 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     if (!ParsingTo.IsMail(mo.UserMail))
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(EnumTo.RTag.invalid);
                         vm.Msg = "邮箱格式有误";
 
                         return vm;
                     }
                     else if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
                     {
-                        vm.Set(SharedEnum.RTag.exist);
+                        vm.Set(EnumTo.RTag.exist);
                         vm.Msg = "邮箱已经存在";
 
                         return vm;
@@ -342,16 +343,14 @@ namespace Netnr.Blog.Web.Controllers
             logModel.LogGroup = "9";
             logModel.LogContent = log.ToJson();
             logModel.LogRemark = "修改个人信息";
-            SharedLogging.LoggingTo.Add(logModel);
+            LoggingTo.Add(logModel);
 
             db.UserInfo.Update(usermo);
             var num = db.SaveChanges();
 
             //更新授权信息
-            using (var ac = new AccountController(db))
-            {
-                ac.SetAuth(HttpContext, usermo, true);
-            }
+            var siObj = AccountController.BuildSignIn(usermo);
+            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
 
             vm.Set(num > 0);
 
@@ -416,9 +415,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="newPassword"></param>
         /// <returns></returns>
         [Authorize]
-        public SharedResultVM UpdatePassword(string oldPassword, string newPassword)
+        public ResultVM UpdatePassword(string oldPassword, string newPassword)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -433,7 +432,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                vm.Set(SharedEnum.RTag.unauthorized);
+                vm.Set(EnumTo.RTag.unauthorized);
                 vm.Msg = "原密码错误";
             }
 
@@ -478,9 +477,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="grp"></param>
         /// <returns></returns>
         [Authorize, HttpGet]
-        public SharedResultVM WriteList(string grp)
+        public ResultVM WriteList(string grp)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -503,7 +502,7 @@ namespace Netnr.Blog.Web.Controllers
                             };
 
                 vm.Data = query.GetInfiniteRowModelBlock(grp);
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
 
                 return vm;
             });
@@ -515,9 +514,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public SharedResultVM WriteOne(int id)
+        public ResultVM WriteOne(int id)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -529,7 +528,7 @@ namespace Netnr.Blog.Web.Controllers
                 item = mo,
                 tags = listTags
             };
-            vm.Set(SharedEnum.RTag.success);
+            vm.Set(EnumTo.RTag.success);
 
             return vm;
         }
@@ -541,9 +540,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="TagIds"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
+        public ResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var lisTagId = new List<int>();
                 TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
@@ -554,7 +553,7 @@ namespace Netnr.Blog.Web.Controllers
                 var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == mo.UwId);
                 if (oldmo?.UwStatus == -1)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else if (oldmo != null)
                 {
@@ -597,9 +596,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [Authorize, HttpGet]
-        public SharedResultVM WriteDel(string ids)
+        public ResultVM WriteDel(string ids)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
                 var listKeyId = ids.Split(',').Select(x => Convert.ToInt32(x)).ToList();
@@ -632,14 +631,14 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         public IActionResult Verify([FromRoute] string id)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             if (!string.IsNullOrWhiteSpace(id))
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
-                var vcurl = GlobalTo.GetValue("VerifyCode:Url");
-                var vckey = GlobalTo.GetValue("VerifyCode:Key");
+                var vckey = GlobalTo.GetValue("Common:GlobalKey");
+                var vcurl = GlobalTo.GetValue("Common:EmailVerificationLink");
 
                 switch (id.ToLower())
                 {
@@ -667,7 +666,7 @@ namespace Netnr.Blog.Web.Controllers
                                     }
                                     else
                                     {
-                                        var mcs = FileTo.ReadText(GlobalTo.WebRootPath + "/file/mailchecker/list.txt").Split(Environment.NewLine);
+                                        var mcs = System.IO.File.ReadAllLines(Path.Combine(GlobalTo.WebRootPath, "file/mailchecker/list.txt"));
                                         if (mcs.Contains(usermo.UserMail.Split('@').LastOrDefault().ToLower()))
                                         {
                                             vm.Msg = "该邮箱已被屏蔽";
@@ -687,7 +686,7 @@ namespace Netnr.Blog.Web.Controllers
                                             var vcode = CalcTo.AESEncrypt(vjson, vckey).ToBase64Encode().ToUrlEncode();
                                             var VerifyLink = string.Format(vcurl, vcode);
 
-                                            var txt = FileTo.ReadText(GlobalTo.WebRootPath + "/file/template/sendmailverify.html");
+                                            var txt = System.IO.File.ReadAllText(Path.Combine(GlobalTo.WebRootPath, "file/template/sendmailverify.html"));
                                             txt = txt.Replace("@ToMail@", ToMail).Replace("@VerifyLink@", VerifyLink);
 
                                             vm = Application.MailService.Send(ToMail, $"[{GlobalTo.GetValue("Common:EnglishName")}] 验证你的邮箱", txt);

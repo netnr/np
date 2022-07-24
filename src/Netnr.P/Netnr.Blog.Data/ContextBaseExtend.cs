@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Netnr.SharedFast;
 
 namespace Netnr.Blog.Data
 {

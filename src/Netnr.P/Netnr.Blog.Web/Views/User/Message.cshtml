@@ -1,11 +1,11 @@
-@model SharedPageVM
+@model PageVM
 @{
     var listUm = Model.Rows as List<UserMessage>;
 
     ViewData["Title"] = "消息";
 }
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css"))
+@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css"))
 
 <div class="container-fluid p-4">
     <div class="row">

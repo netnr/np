@@ -67,6 +67,8 @@ namespace Netnr.Core
         /// <returns></returns>
         public static string AESEncrypt(string txt, string key, string iv = "")
         {
+            Console.WriteLine(txt);
+            Console.WriteLine(key);
             return AESEncrypt(txt, AESBuild(key, iv));
         }
 

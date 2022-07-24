@@ -6,7 +6,7 @@ import '../css/dark.css';
 
 import '@shoelace-style/shoelace';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
-setBasePath('https://unpkg.com/@shoelace-style/shoelace@2.0.0-beta.78/dist');
+setBasePath('https://fastly.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.78/dist');
 
 import { nr } from './global';
 import { ag } from './ag';

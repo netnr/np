@@ -8,6 +8,38 @@ namespace Netnr.Blog.Application
     public class ThirdLoginService
     {
         /// <summary>
+        /// 三方登录
+        /// </summary>
+        public class ThirdLoginVM
+        {
+            /// <summary>
+            /// 路径名，标识
+            /// </summary>
+            public string Key { get; set; }
+
+            /// <summary>
+            /// 显示名称
+            /// </summary>
+            public string Name { get; set; }
+
+            /// <summary>
+            /// 图标
+            /// </summary>
+            public string Icon
+            {
+                get
+                {
+                    return CommonService.StaticResourceLink("LoginPath", $"{Key}.svg");
+                }
+            }
+
+            /// <summary>
+            /// 是否绑定
+            /// </summary>
+            public bool Bind { get; set; }
+        }
+
+        /// <summary>
         /// 登录链接
         /// </summary>
         /// <param name="loginType">登录类型</param>
@@ -147,46 +179,46 @@ namespace Netnr.Blog.Application
         /// </summary>
         /// <param name="umo">用户绑定状态</param>
         /// <returns></returns>
-        public static List<ViewModel.QuickLoginVM> GetQuickLogin(Domain.UserInfo umo = null)
+        public static List<ThirdLoginVM> GetQuickLogin(Domain.UserInfo umo = null)
         {
             if (umo == null)
             {
                 umo = new Domain.UserInfo();
             }
 
-            return new List<ViewModel.QuickLoginVM>
+            return new List<ThirdLoginVM>
             {
-                new ViewModel.QuickLoginVM
+                new ThirdLoginVM
                 {
                     Key = "qq",
                     Name = "QQ",
                     Bind = !string.IsNullOrWhiteSpace(umo.OpenId1)
                 },
-                new ViewModel.QuickLoginVM
+                new ThirdLoginVM
                 {
                     Key = "weibo",
                     Name = "微博",
                     Bind = !string.IsNullOrWhiteSpace(umo.OpenId2)
                 },
-                new ViewModel.QuickLoginVM
+                new ThirdLoginVM
                 {
                     Key = "github",
                     Name = "GitHub",
                     Bind = !string.IsNullOrWhiteSpace(umo.OpenId3)
                 },
-                new ViewModel.QuickLoginVM
+                new ThirdLoginVM
                 {
                     Key = "taobao",
                     Name = "淘宝",
                     Bind = !string.IsNullOrWhiteSpace(umo.OpenId4)
                 },
-                new ViewModel.QuickLoginVM
+                new ThirdLoginVM
                 {
                     Key = "microsoft",
                     Name = "Microsoft",
                     Bind = !string.IsNullOrWhiteSpace(umo.OpenId5)
                 },
-                new ViewModel.QuickLoginVM
+                new ThirdLoginVM
                 {
                     Key = "dingtalk",
                     Name = "钉钉",

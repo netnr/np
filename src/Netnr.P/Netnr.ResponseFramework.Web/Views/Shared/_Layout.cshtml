@@ -1,4 +1,4 @@
-﻿@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
+﻿@Html.Raw(Netnr.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>@ViewData["Title"]</title>
 
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon,bootstrap3.css,fa4.css,jquery3.js,bootstrap3.js"))
+    @Html.Raw(Netnr.QuoteTo.Html("favicon,bootstrap3.css,fa4.css,jquery3.js,bootstrap3.js"))
     <partial name="_QuotePartial" model="@("easyui,z.css,z.js")" />
 </head>
 <body>

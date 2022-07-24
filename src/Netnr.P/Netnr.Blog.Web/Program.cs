@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Netnr;
 using Netnr.Core;
 using Netnr.Login;
-using Netnr.SharedApp;
-using Netnr.SharedFast;
 
-var builder = WebApplication.CreateBuilder(args).SetGlobal();
+var builder = WebApplication.CreateBuilder(args);
+
+ReadyTo.EncodingReg();
+ReadyTo.LegacyTimestamp();
 
 //（上传）主体大小限制
 var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");
@@ -20,7 +21,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
 });
 
 //结巴词典路径
-var jbPath = PathTo.Combine(GlobalTo.ContentRootPath, "db/jieba");
+var jbPath = Path.Combine(GlobalTo.ContentRootPath, "db/jieba");
 if (!Directory.Exists(jbPath))
 {
     Directory.CreateDirectory(jbPath);
@@ -29,8 +30,8 @@ if (!Directory.Exists(jbPath))
         var dhost = "https://raw.githubusercontent.com/anderscui/jieba.NET/master/src/Segmenter/Resources/";
         "prob_trans.json,prob_emit.json,idf.txt,pos_prob_start.json,pos_prob_trans.json,pos_prob_emit.json,char_state_tab.json".Split(',').ToList().ForEach(file =>
         {
-            var fullPath = PathTo.Combine(jbPath, file);
-            HttpTo.DownloadSave(HttpTo.HWRequest(dhost + file), fullPath);
+            var fullPath = Path.Combine(jbPath, file);
+            HttpTo.DownloadSave(dhost + file, fullPath);
         });
     }
     catch (Exception ex)
@@ -164,7 +165,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<Netnr.Blog.Data.ContextBase>();
 
     var createScript = db.Database.GenerateCreateScript();
-    if (GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
+    if (GlobalTo.TDB == EnumTo.TypeDB.PostgreSQL)
     {
         createScript = createScript.Replace(" datetime ", " timestamp ");
     }

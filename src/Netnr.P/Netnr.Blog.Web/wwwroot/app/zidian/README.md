@@ -12,7 +12,7 @@
 <script src="dist/zidian.js"></script>
 ```
 
-查看 <https://unpkg.com/zidian/>  
+查看 <https://www.npmjs.com/package/zidian>  
 拉取 `npm install zidian`
 
 汉字查询

@@ -152,11 +152,6 @@ namespace Netnr.ResponseFramework.Data
                     .HasMaxLength(50)
                     .HasComment("动作");
 
-                entity.Property(e => e.LogArea)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasComment("IP归属地");
-
                 entity.Property(e => e.LogBrowserName)
                     .HasMaxLength(50)
                     .HasComment("浏览器");

@@ -2,19 +2,19 @@
 @{
     Layout = null;
 }
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("the"))
+@Html.Raw(Netnr.QuoteTo.Html("the"))
 <!DOCTYPE html>
 <html style="overflow:hidden; padding:0;">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("favicon"))
+    @Html.Raw(Netnr.QuoteTo.Html("favicon"))
     <title>NRF 响应式框架</title>
 </head>
 
 <body class="no-skin">
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading,bootstrap3.css,fa4.css"))
+    @Html.Raw(Netnr.QuoteTo.Html("loading,bootstrap3.css,fa4.css"))
     <partial name="_QuotePartial" model="@("ace.css,z.css")" />
 
     <!--顶部-->
@@ -137,7 +137,7 @@
                             <li><a href="/home/guide"><i class="fa fa-flag blue"></i>系统初始化向导</a></li>
                             <li class="divider"></li>
                             <li><a href="#wechatp"><i class="fa fa-wechat green"></i>关注公众号</a></li>
-                            <li><a href="https://netnr.eu.org" target="_blank"><i class="fa fa-envelope green"></i>联系打赏</a></li>
+                            <li><a href="https://zme.ink" target="_blank"><i class="fa fa-envelope green"></i>联系打赏</a></li>
                             <li class="divider"></li>
                             <li><a href="#updatepassword"><i class="fa fa-edit orange"></i>修改密码</a></li>
                             <li class="divider"></li>
@@ -227,7 +227,7 @@
         </div>
     </div>
     
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("jquery3.js,bootstrap3.js"))
+    @Html.Raw(Netnr.QuoteTo.Html("jquery3.js,bootstrap3.js"))
     <partial name="_QuotePartial" model="@("ace.js,z.js,init.js")" />
 
 </body>

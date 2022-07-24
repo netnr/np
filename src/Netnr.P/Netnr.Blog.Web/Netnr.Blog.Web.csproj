@@ -9,11 +9,11 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Drawing;DataKit;DKController;App;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Drawing;DataKit;DKController;Web;Logging</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Drawing;DataKit;DKController;App;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Drawing;DataKit;DKController;Web;Logging</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
@@ -33,7 +33,6 @@
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
-		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />
 	</ItemGroup>
 
@@ -44,5 +43,7 @@
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
+
+	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

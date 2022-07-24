@@ -1,4 +1,4 @@
-@model SharedPageVM
+@model PageVM
 @{
     var rows = Model.Rows as List<Netnr.Blog.Domain.Gist>;
 
@@ -19,7 +19,7 @@
 }
 else
 {
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js"))
+    @Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd.js"))
     <style>
         /*代码块显示语言*/
         pre code::after {

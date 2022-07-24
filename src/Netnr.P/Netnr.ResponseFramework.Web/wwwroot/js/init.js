@@ -388,7 +388,7 @@ $('#usermenu').click(function (e) {
                     ao.modal.find('.modal-footer').addClass('hidden');
 
                     var img = new Image();
-                    img.src = "https://s1.netnr.com/static/wechat_netnrcom.jpg";
+                    img.src = "https://gs.zme.ink/static/wechat_netnrcom.jpg";
                     img.onload = function () {
                         ao.modal.find('img').attr('src', img.src);
                     }

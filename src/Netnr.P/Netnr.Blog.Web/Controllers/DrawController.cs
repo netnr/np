@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Netnr.Blog.Data;
-using Netnr.SharedFast;
+﻿using Netnr.Blog.Data;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -98,19 +96,19 @@ namespace Netnr.Blog.Web.Controllers
                 //编辑
                 if (!string.IsNullOrWhiteSpace(sid))
                 {
-                    var vm = new SharedResultVM();
+                    var vm = new ResultVM();
                     var mo = db.Draw.Find(sid);
 
                     //分享码
                     var isShare = !string.IsNullOrWhiteSpace(mo?.Spare1) && mo?.Spare1 == code;
                     if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId || isShare)
                     {
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                         vm.Data = mo;
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Set(EnumTo.RTag.unauthorized);
                     }
                     return Content(vm.ToJson());
                 }
@@ -158,7 +156,7 @@ namespace Netnr.Blog.Web.Controllers
                         var newmo = db.Draw.Find(mof.DrId);
                         if (newmo.Uid != uinfo.UserId)
                         {
-                            vm.Set(SharedEnum.RTag.unauthorized);
+                            vm.Set(EnumTo.RTag.unauthorized);
                         }
                         else
                         {
@@ -231,7 +229,7 @@ namespace Netnr.Blog.Web.Controllers
                         }
                         else
                         {
-                            vm.Set(SharedEnum.RTag.unauthorized);
+                            vm.Set(EnumTo.RTag.unauthorized);
                         }
                     }
                 }
@@ -241,7 +239,7 @@ namespace Netnr.Blog.Web.Controllers
             //删除
             else if (id == "delete")
             {
-                var vm = new SharedResultVM();
+                var vm = new ResultVM();
 
                 if (User.Identity.IsAuthenticated)
                 {
@@ -255,12 +253,12 @@ namespace Netnr.Blog.Web.Controllers
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Set(EnumTo.RTag.unauthorized);
                     }
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
 
                 if (vm.Code == 200)

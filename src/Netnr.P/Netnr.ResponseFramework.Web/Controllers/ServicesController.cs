@@ -1,6 +1,3 @@
-using Netnr.SharedApp;
-using Netnr.SharedFast;
-using Netnr.SharedLogging;
 using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Web.Controllers
@@ -11,6 +8,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
     [Route("[controller]/[action]")]
     public class ServicesController : Controller
     {
+        private readonly IWebHostEnvironment hostEnv;
+        public ServicesController(IWebHostEnvironment webHost)
+        {
+            hostEnv = webHost;
+        }
+
         /// <summary>
         /// 服务
         /// </summary>
@@ -28,29 +31,29 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public SharedResultVM DatabaseReset(string zipName = "db/backup.zip")
+        public ResultVM DatabaseReset(string zipName = "db/backup.zip")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (HttpContext != null && new UAParser.Parsers(new ClientTo(HttpContext).UserAgent).GetBot() != null)
                 {
-                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Set(EnumTo.RTag.refuse);
                     vm.Msg = "are you human？";
                 }
                 else
                 {
-                    var idb = new SharedDataKit.TransferVM.ImportDatabase
+                    var idb = new DataKitTransferVM.ImportDatabase
                     {
-                        WriteConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo
+                        WriteConnectionInfo = new DataKitTransferVM.ConnectionInfo
                         {
                             ConnectionType = GlobalTo.TDB,
-                            ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=")
+                            ConnectionString = FactoryTo.GetConn().Replace("Filename=", "Data Source=")
                         },
                         PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
                         WriteDeleteData = true
                     };
 
-                    vm = SharedDataKit.DataKit.ImportDatabase(idb);
+                    vm = DataKitTo.ImportDatabase(idb);
                 }
 
                 return vm;
@@ -64,27 +67,27 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public SharedResultVM DatabaseExport(string zipName = "db/backup.zip")
+        public ResultVM DatabaseExport(string zipName = "db/backup.zip")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
-                if (GlobalTo.HostEnvironment.IsDevelopment())
+                if (hostEnv.IsDevelopment())
                 {
-                    var edb = new SharedDataKit.TransferVM.ExportDatabase
+                    var edb = new DataKitTransferVM.ExportDatabase
                     {
-                        PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
-                        ReadConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo()
+                        PackagePath = Path.Combine(GlobalTo.ContentRootPath, zipName),
+                        ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
                         {
-                            ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source="),
+                            ConnectionString = FactoryTo.GetConn().Replace("Filename=", "Data Source="),
                             ConnectionType = GlobalTo.TDB
                         }
                     };
 
-                    vm = SharedDataKit.DataKit.ExportDatabase(edb);
+                    vm = DataKitTo.ExportDatabase(edb);
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Set(EnumTo.RTag.refuse);
                     vm.Msg = "仅限开发环境使用";
                 }
 
@@ -98,9 +101,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public SharedResultVM ClearTmp()
+        public ResultVM ClearTmp()
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 string directoryPath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:TmpDir"));
 
@@ -108,7 +111,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                 if (!Directory.Exists(directoryPath))
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                     vm.Msg = "文件路径不存在";
                 }
                 else
@@ -150,7 +153,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
 
                     vm.Log.Insert(0, $"删除文件{delFileCount}个，删除{delFolderCount}个文件夹");
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
 
                 return vm;

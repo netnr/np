@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Netnr.SharedFast;
 
 namespace Netnr.Chat.Data
 {
@@ -15,9 +14,9 @@ namespace Netnr.Chat.Data
         /// <returns></returns>
         public static DbContextOptionsBuilder<ContextBase> CreateDbContextOptionsBuilder(DbContextOptionsBuilder builder = null)
         {
-            System.Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out SharedEnum.TypeDB tdb);
+            Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out EnumTo.TypeDB tdb);
             var conn = GlobalTo.Configuration.GetConnectionString(tdb.ToString()).Replace("~", GlobalTo.ContentRootPath);
-            return SharedDbContext.FactoryTo.CreateDbContextOptionsBuilder<ContextBase>(tdb, conn, builder);
+            return FactoryTo.CreateDbContextOptionsBuilder<ContextBase>(tdb, conn, builder);
         }
 
         /// <summary>

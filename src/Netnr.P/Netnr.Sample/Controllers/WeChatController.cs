@@ -61,7 +61,7 @@ namespace Netnr.Sample.Controllers
                     var myByteArray = ms.ToArray();
 
                     var decryptMsg = string.Empty;
-                    string postStr = System.Text.Encoding.UTF8.GetString(myByteArray);
+                    string postStr = Encoding.UTF8.GetString(myByteArray);
 
                     #region 解密
                     if (safeMode)
@@ -103,7 +103,7 @@ namespace Netnr.Sample.Controllers
             }
 
             //输出
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(result);
+            byte[] buffer = Encoding.UTF8.GetBytes(result);
             await Response.Body.WriteAsync(buffer.AsMemory(0, buffer.Length));
             await Response.Body.FlushAsync();
         }

@@ -5,11 +5,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;Public;Fast;AdoFull;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;Base;App;AdoFull;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;Public;Fast;AdoFull;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;Base;App;AdoFull;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>

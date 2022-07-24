@@ -61,11 +61,13 @@ namespace Netnr.Core
         /// <summary>
         /// HTTP请求
         /// </summary>
-        /// <param name="request">HttpWebRequest对象</param>
+        /// <param name="url"></param>
         /// <param name="fullFilePath">存储完整路径</param>
         /// <returns></returns>
-        public static void DownloadSave(HttpWebRequest request, string fullFilePath)
+        public static void DownloadSave(string url, string fullFilePath)
         {
+            var request = HWRequest(url);
+
             HttpWebResponse response = null;
             var stream = Stream(request, ref response, null);
 
@@ -78,17 +80,6 @@ namespace Netnr.Core
             using var fs = File.Create(fullFilePath);
             stream.BaseStream.CopyTo(fs);
             fs.Flush();
-        }
-
-        /// <summary>
-        /// HTTP请求
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="fullFilePath">存储完整路径</param>
-        /// <returns></returns>
-        public static void DownloadSave(string url, string fullFilePath)
-        {
-            DownloadSave(HWRequest(url), fullFilePath);
         }
 
         /// <summary>

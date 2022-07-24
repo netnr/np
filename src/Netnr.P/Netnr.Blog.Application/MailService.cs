@@ -1,6 +1,5 @@
 ﻿using MimeKit;
 using MailKit.Net.Smtp;
-using Netnr.SharedFast;
 
 namespace Netnr.Blog.Application
 {
@@ -16,9 +15,9 @@ namespace Netnr.Blog.Application
         /// <param name="Title">标题</param>
         /// <param name="Content">内容</param>
         /// <returns></returns>
-        public static SharedResultVM Send(string ToMail, string Title, string Content)
+        public static ResultVM Send(string ToMail, string Title, string Content)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -40,7 +39,7 @@ namespace Netnr.Blog.Application
                 client.Send(message);
                 client.Disconnect(true);
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
             }
             catch (Exception ex)
             {

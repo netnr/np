@@ -1,5 +1,4 @@
 ﻿using Netnr.Core;
-using Netnr.SharedFast;
 using Newtonsoft.Json.Linq;
 
 namespace Netnr.Blog.Application
@@ -13,7 +12,7 @@ namespace Netnr.Blog.Application
         {
             get
             {
-                var fullPath = PathTo.Combine(GlobalTo.WebRootPath, "file/ss/nav.json");
+                var fullPath = Path.Combine(GlobalTo.WebRootPath, "file/ss/nav.json");
                 return File.ReadAllText(fullPath).ToJArray();
             }
         }

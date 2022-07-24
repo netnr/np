@@ -50,26 +50,24 @@ namespace Netnr.Core
         }
 
         /// <summary>
-        /// 读取
+        /// 遍历目录
         /// </summary>
-        /// <param name="fileFullPath">文件完整物理路径</param>
-        /// <param name="e">编码 默认UTF8</param>
-        /// <returns></returns>
-        public static string ReadText(string fileFullPath, Encoding e = null)
+        /// <param name="rootPath"></param>
+        /// <param name="handler"></param>
+        public static void EachDirectory(string rootPath, Action<DirectoryInfo[], FileInfo[]> handler)
         {
-            var result = string.Empty;
-
-            if (File.Exists(fileFullPath))
+            var dir = new DirectoryInfo(rootPath);
+            if (dir.Exists)
             {
-                if (e == null)
+                var subDir = dir.GetDirectories();
+
+                handler.Invoke(subDir, dir.GetFiles()); //处理
+
+                foreach (DirectoryInfo dd in subDir)
                 {
-                    e = Encoding.UTF8;
+                    EachDirectory(dd.FullName, handler);
                 }
-
-                result = File.ReadAllText(fileFullPath, e);
             }
-
-            return result;
         }
 
         /// <summary>

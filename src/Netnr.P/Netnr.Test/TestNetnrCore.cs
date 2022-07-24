@@ -244,11 +244,11 @@ namespace Netnr.Test
         [Fact]
         public void Extend_1_JSON_Table_List()
         {
-            var vm = new SharedResultVM();
-            var list = new List<SharedResultVM>()
+            var vm = new ResultVM();
+            var list = new List<ResultVM>()
             {
-                new SharedResultVM(),
-                new SharedResultVM()
+                new ResultVM(),
+                new ResultVM()
             };
 
             var val1 = vm.ToJson();
@@ -262,15 +262,15 @@ namespace Netnr.Test
             Assert.NotNull(ja1);
             Assert.True(string.IsNullOrEmpty(jo1["null"].ToStringOrEmpty()));
 
-            var jo2 = val1.DeJson<SharedResultVM>();
-            var jo3 = val2.DeJsons<SharedResultVM>();
-            Assert.IsType<SharedResultVM>(jo2);
+            var jo2 = val1.DeJson<ResultVM>();
+            var jo3 = val2.DeJsons<ResultVM>();
+            Assert.IsType<ResultVM>(jo2);
             Assert.Equal(2, jo3.Count);
 
             var dt1 = list.ToDataTable();
             Assert.Equal(2, dt1.Rows.Count);
 
-            var list2 = dt1.ToModel<SharedResultVM>();
+            var list2 = dt1.ToModel<ResultVM>();
             Assert.Equal(2, list2.Count);
         }
 
@@ -302,12 +302,12 @@ namespace Netnr.Test
         [Fact]
         public void Extend_4_Copy()
         {
-            var vm1 = new SharedResultVM
+            var vm1 = new ResultVM
             {
                 Code = 2,
                 Msg = "msg"
             };
-            var vm2 = new SharedResultVM().ToCopy(vm1);
+            var vm2 = new ResultVM().ToCopy(vm1);
             Assert.Equal(vm1.Code, vm2.Code);
             Assert.Equal(vm1.Msg, vm2.Msg);
         }
@@ -341,11 +341,11 @@ namespace Netnr.Test
             Core.FileTo.WriteText(txt1, path);
             Core.FileTo.WriteText(txt1, path);
 
-            Assert.StartsWith($"{txt1}\r\n{txt1}", Core.FileTo.ReadText(path));
+            Assert.StartsWith($"{txt1}\r\n{txt1}", File.ReadAllText(path));
 
             var txt2 = "test2";
             Core.FileTo.WriteText(txt2, path, false);
-            Assert.StartsWith(txt2, Core.FileTo.ReadText(path));
+            Assert.StartsWith(txt2, File.ReadAllText(path));
 
             File.Delete(path);
         }
@@ -371,7 +371,7 @@ namespace Netnr.Test
         {
             string url = "https://img01.sogoucdn.com/app/a/100540022/2021053117531272442865.png";
             var tmpPath = Path.GetTempFileName();
-            Core.HttpTo.DownloadSave(Core.HttpTo.HWRequest(url), tmpPath);
+            Core.HttpTo.DownloadSave(url, tmpPath);
 
             Assert.True(File.Exists(tmpPath));
         }
@@ -425,7 +425,7 @@ namespace Netnr.Test
         [Fact]
         public void SnowflakeTo()
         {
-            var st = new SharedTimingVM();
+            var st = new TimingVM();
             var sf = new Core.SnowflakeTo();
 
             var hs = new HashSet<long>();
@@ -460,12 +460,12 @@ namespace Netnr.Test
         [Fact]
         public void TreeTo()
         {
-            var list = new List<SharedResultVM>();
+            var list = new List<ResultVM>();
             //id:Code Pid:Data
-            var vm1 = new SharedResultVM() { Code = 1, Msg = "一级", Data = 0 };
-            var vm2 = new SharedResultVM() { Code = 11, Msg = "二级", Data = 1 };
-            var vm3 = new SharedResultVM() { Code = 12, Msg = "二级", Data = 1 };
-            var vm4 = new SharedResultVM() { Code = 121, Msg = "三级", Data = 12 };
+            var vm1 = new ResultVM() { Code = 1, Msg = "一级", Data = 0 };
+            var vm2 = new ResultVM() { Code = 11, Msg = "二级", Data = 1 };
+            var vm3 = new ResultVM() { Code = 12, Msg = "二级", Data = 1 };
+            var vm4 = new ResultVM() { Code = 121, Msg = "三级", Data = 12 };
             list.Add(vm1);
             list.Add(vm2);
             list.Add(vm3);
@@ -481,7 +481,7 @@ namespace Netnr.Test
         [Fact]
         public void UniqueTo()
         {
-            var st = new SharedTimingVM();
+            var st = new TimingVM();
             var hs = new HashSet<long>();
             for (int i = 0; i < 1_999_999; i++)
             {

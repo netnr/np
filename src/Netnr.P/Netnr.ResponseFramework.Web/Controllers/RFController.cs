@@ -247,9 +247,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="moMain"></param>
         /// <param name="rows"></param>
         /// <returns></returns>
-        public SharedResultVM SaveInvoiceForm(TempInvoiceMain moMain, string rows)
+        public ResultVM SaveInvoiceForm(TempInvoiceMain moMain, string rows)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             //明细反序列化为对象
             var listDetail = rows.DeJsons<TempInvoiceDetail>();

@@ -32,9 +32,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="grp"></param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM NoteList(string grp)
+        public ResultVM NoteList(string grp)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -52,7 +52,7 @@ namespace Netnr.Blog.Web.Controllers
                             };
 
                 vm.Data = query.GetInfiniteRowModelBlock(grp);
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
 
                 return vm;
             });
@@ -64,14 +64,14 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM SaveNote([FromForm] Domain.Notepad mo)
+        public ResultVM SaveNote([FromForm] Domain.Notepad mo)
         {
             var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
             {
                 if (string.IsNullOrWhiteSpace(mo.NoteTitle) || string.IsNullOrWhiteSpace(mo.NoteContent))
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
                 else
                 {
@@ -107,7 +107,7 @@ namespace Netnr.Blog.Web.Controllers
                         }
                         else
                         {
-                            vm.Set(SharedEnum.RTag.unauthorized);
+                            vm.Set(EnumTo.RTag.unauthorized);
                         }
                     }
                 }
@@ -123,25 +123,25 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM QueryNoteOne(int id)
+        public ResultVM QueryNoteOne(int id)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
 
                 var mo = db.Notepad.Find(id);
                 if (mo == null)
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                 }
                 else if (mo.Uid == uinfo.UserId)
                 {
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                     vm.Data = mo;
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
 
                 return vm;
@@ -154,9 +154,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="ids">多个逗号分隔</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM DelNote(string ids)
+        public ResultVM DelNote(string ids)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var uinfo = Apps.LoginService.Get(HttpContext);
                 var listKeyId = ids.Split(',').Select(x => Convert.ToInt32(x)).ToList();
@@ -171,7 +171,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
 
                 return vm;

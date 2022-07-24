@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using Netnr.Blog.Data;
-using Netnr.SharedLogging;
-using Netnr.SharedFast;
 using AgGrid.InfiniteRowModel;
 
 namespace Netnr.Blog.Web.Controllers
@@ -81,9 +79,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM WriteSave([FromForm] Domain.UserWriting mo)
+        public ResultVM WriteSave([FromForm] Domain.UserWriting mo)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -166,9 +164,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM ReplySave([FromForm] Domain.UserReply mo)
+        public ResultVM ReplySave([FromForm] Domain.UserReply mo)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             var uinfo = Apps.LoginService.Get(HttpContext);
 
@@ -294,9 +292,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="keys"></param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM KeyVal([FromRoute] string id, string keys)
+        public ResultVM KeyVal([FromRoute] string id, string keys)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var listKey = string.IsNullOrWhiteSpace(keys) ? new List<string>() : keys.Split(',').ToList();
 
@@ -420,7 +418,7 @@ namespace Netnr.Blog.Web.Controllers
                         break;
                 }
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
                 return vm;
             });
         }
@@ -435,9 +433,9 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         [HttpGet]
-        public SharedResultVM TableQuery(string queryAllSql, string queryLimitSql)
+        public ResultVM TableQuery(string queryAllSql, string queryLimitSql)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var conn = db.Database.GetDbConnection();
                 if (conn.State != ConnectionState.Open)
@@ -459,19 +457,19 @@ namespace Netnr.Blog.Web.Controllers
                     conn.Close();
                 }
                 vm.Data = new { table, count };
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
 
                 return vm;
             });
         }
 
         [HttpGet]
-        public SharedResultVM TableMeta(string name, string tableName)
+        public ResultVM TableMeta(string name, string tableName)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var conn = db.Database.GetDbConnection();
-                var dk = new SharedDataKit.DataKit(GlobalTo.TDB, conn);
+                var dk = new DataKitTo(GlobalTo.TDB, conn);
 
                 switch (name)
                 {
@@ -482,7 +480,7 @@ namespace Netnr.Blog.Web.Controllers
                     case "column": vm.Data = dk.GetColumn(tableName); break;
                 }
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
 
                 return vm;
             });
@@ -507,7 +505,7 @@ namespace Netnr.Blog.Web.Controllers
         /// 构建静态文件
         /// </summary>
         /// <returns></returns>
-        public SharedResultVM Build()
+        public ResultVM Build()
         {
             var vm = BuildHtml<SSController>();
             return vm;
@@ -518,9 +516,9 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private SharedResultVM BuildHtml<T>() where T : Controller
+        private ResultVM BuildHtml<T>() where T : Controller
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -553,7 +551,7 @@ namespace Netnr.Blog.Web.Controllers
                 vm.Log.AddRange(cbs);
                 Console.WriteLine("\nDone!\n");
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
             }
             catch (Exception ex)
             {

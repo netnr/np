@@ -14,7 +14,7 @@
     <title>Mind @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
 </head>
 <body>
-    @Html.Raw(Netnr.SharedApp.QuoteTo.Html("loading"))
+    @Html.Raw(Netnr.QuoteTo.Html("loading"))
 
     <div>
         <!--导出-->
@@ -62,9 +62,9 @@
 
     <input type="hidden" id="vid" value='@ViewData["vid"]' />
 
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.4.1/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/codemirror@5.65.2/lib/codemirror.css" />
-    <link rel="stylesheet" href="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.css" />
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/lib/codemirror.css" />
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.css" />
 
     <link rel="stylesheet" href="@baseServer/hotbox.css" asp-append-version="true" />
     <link rel="stylesheet" href="@baseServer/color-picker.min.css" asp-append-version="true" />
@@ -72,22 +72,22 @@
 
     <script src="/js/draw/km.js" asp-append-version="true"></script>
 
-    <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://unpkg.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
-    <script src="https://unpkg.com/angular@1.8.2/angular.min.js"></script>
-    <script src="https://unpkg.com/angular-bootstrap@0.12.2/ui-bootstrap-tpls.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/lib/codemirror.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/mode/xml/xml.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/mode/javascript/javascript.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/mode/css/css.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/mode/htmlmixed/htmlmixed.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/mode/markdown/markdown.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/addon/mode/overlay.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.2/mode/gfm/gfm.js"></script>
-    <script src="https://unpkg.com/angular-ui-codemirror@0.3.0/src/ui-codemirror.js"></script>
-    <script src="https://unpkg.com/marked@3.0.8/lib/marked.js"></script>
-    <script src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script>
-    <script src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/angular@1.8.2/angular.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/angular-bootstrap@0.12.2/ui-bootstrap-tpls.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/lib/codemirror.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/mode/xml/xml.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/mode/javascript/javascript.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/mode/css/css.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/mode/markdown/markdown.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/addon/mode/overlay.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/codemirror@5.65.2/mode/gfm/gfm.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/angular-ui-codemirror@0.3.0/src/ui-codemirror.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/marked@3.0.8/lib/marked.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script>
 
     <script src="@baseServer/hotbox.min.js" asp-append-version="true"></script>
     <script src="@baseServer/json-diff.js" asp-append-version="true"></script>

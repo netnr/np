@@ -18,7 +18,7 @@
                 var avatar = "/favicon.svg";
                 if (!string.IsNullOrWhiteSpace(Model.UserPhoto))
                 {
-                    avatar = PathTo.Combine(GlobalTo.GetValue("StaticResource:Server"), GlobalTo.GetValue("StaticResource:AvatarPath"), Model.UserPhoto);
+                    avatar = CommonService.StaticResourceLink("AvatarPath", Model.UserPhoto);
                 }
 
                 Model.UserSay = string.IsNullOrEmpty(Model.UserSay) ? "暂无简介 ^_^ " : Model.UserSay;
@@ -78,5 +78,5 @@
     <sl-button class="nr-btn-save-avatar" disabled slot="footer" variant="warning">保存</sl-button>
 </sl-dialog>
 
-@Html.Raw(Netnr.SharedApp.QuoteTo.Html("md5.js"))
+@Html.Raw(Netnr.QuoteTo.Html("md5.js"))
 <script src="/js/user/index.js" asp-append-version="true"></script>

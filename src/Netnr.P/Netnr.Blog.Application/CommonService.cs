@@ -4,7 +4,6 @@ using LinqKit;
 using Netnr.Core;
 using Netnr.Blog.Data;
 using Netnr.Blog.Domain;
-using Netnr.SharedFast;
 
 namespace Netnr.Blog.Application
 {
@@ -13,6 +12,40 @@ namespace Netnr.Blog.Application
     /// </summary>
     public class CommonService
     {
+        /// <summary>
+        /// 静态资源链接
+        /// </summary>
+        /// <param name="typePath"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string StaticResourceLink(string typePath, params string[] args)
+        {
+            var paths = new List<string>();
+            new string[] { "Server", "PhysicalRootPath", typePath }.ForEach(item =>
+            {
+                paths.Add(GlobalTo.GetValue($"StaticResource:{item}"));
+            });
+            paths.AddRange(args);
+            return PathTo.Combine(paths.ToArray());
+        }
+
+        /// <summary>
+        /// 静态资源路径
+        /// </summary>
+        /// <param name="typePath"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string StaticResourcePath(string typePath, params string[] args)
+        {
+            var paths = new List<string> { GlobalTo.WebRootPath };
+            new string[] { "PhysicalRootPath", typePath }.ForEach(item =>
+            {
+                paths.Add(GlobalTo.GetValue($"StaticResource:{item}"));
+            });
+            paths.AddRange(args);
+            return PathTo.Combine(paths.ToArray());
+        }
+
         /// <summary>
         /// 获取所有标签
         /// </summary>
@@ -68,13 +101,13 @@ namespace Netnr.Blog.Application
         /// <param name="page"></param>
         /// <param name="TagName"></param>
         /// <returns></returns>
-        public static SharedPageVM UserWritingQuery(string KeyWords, int page, string TagName = "")
+        public static PageVM UserWritingQuery(string KeyWords, int page, string TagName = "")
         {
-            var vm = new SharedPageVM();
+            var vm = new PageVM();
 
             KeyWords ??= "";
 
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18
@@ -108,10 +141,10 @@ namespace Netnr.Blog.Application
                 var inner = PredicateBuilder.New<UserWriting>();
                 switch (GlobalTo.TDB)
                 {
-                    case SharedEnum.TypeDB.SQLite:
+                    case EnumTo.TypeDB.SQLite:
                         kws.ForEach(k => inner.Or(x => EF.Functions.Like(x.UwTitle, $"%{k}%")));
                         break;
-                    case SharedEnum.TypeDB.PostgreSQL:
+                    case EnumTo.TypeDB.PostgreSQL:
                         kws.ForEach(k => inner.Or(x => EF.Functions.ILike(x.UwTitle, $"%{k}%")));
                         break;
                     default:
@@ -214,9 +247,9 @@ namespace Netnr.Blog.Application
         /// <param name="action">动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static SharedPageVM UserConnWritingQuery(int OwnerId, EnumService.ConnectionType connectionType, int action, int page)
+        public static PageVM UserConnWritingQuery(int OwnerId, EnumService.ConnectionType connectionType, int action, int page)
         {
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18
@@ -286,7 +319,7 @@ namespace Netnr.Blog.Application
                 }
             }
 
-            var vm = new SharedPageVM()
+            var vm = new PageVM()
             {
                 Rows = list,
                 Pag = pag
@@ -334,7 +367,7 @@ namespace Netnr.Blog.Application
         /// <param name="UrTargetId">回复目标ID</param>
         /// <param name="pag">分页信息</param>
         /// <returns></returns>
-        public static List<UserReply> ReplyOneQuery(EnumService.ReplyType replyType, string UrTargetId, SharedPaginationVM pag)
+        public static List<UserReply> ReplyOneQuery(EnumService.ReplyType replyType, string UrTargetId, PaginationVM pag)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserReply
@@ -419,7 +452,7 @@ namespace Netnr.Blog.Application
         /// <param name="action">消息动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static SharedPageVM MessageQuery(int UserId, EnumService.MessageType? messageType, int? action, int page = 1)
+        public static PageVM MessageQuery(int UserId, EnumService.MessageType? messageType, int? action, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserMessage
@@ -442,7 +475,7 @@ namespace Netnr.Blog.Application
                 query = query.Where(x => x.a.UmAction == action);
             }
 
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18,
@@ -467,7 +500,7 @@ namespace Netnr.Blog.Application
 
             var data = list.Select(x => x.a).ToList();
 
-            SharedPageVM pageSet = new()
+            PageVM pageSet = new()
             {
                 Rows = data,
                 Pag = pag
@@ -520,7 +553,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static SharedPageVM GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static PageVM GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query1 = from a in db.Gist
@@ -542,8 +575,8 @@ namespace Netnr.Blog.Application
             {
                 query1 = GlobalTo.TDB switch
                 {
-                    SharedEnum.TypeDB.SQLite => query1.Where(x => EF.Functions.Like(x.a.GistFilename, $"%{q}%") || EF.Functions.Like(x.a.GistRemark, $"%{q}%") || EF.Functions.Like(x.a.GistContent, $"%{q}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query1.Where(x => EF.Functions.ILike(x.a.GistFilename, $"%{q}%") || EF.Functions.ILike(x.a.GistRemark, $"%{q}%") || EF.Functions.ILike(x.a.GistContent, $"%{q}%")),
+                    EnumTo.TypeDB.SQLite => query1.Where(x => EF.Functions.Like(x.a.GistFilename, $"%{q}%") || EF.Functions.Like(x.a.GistRemark, $"%{q}%") || EF.Functions.Like(x.a.GistContent, $"%{q}%")),
+                    EnumTo.TypeDB.PostgreSQL => query1.Where(x => EF.Functions.ILike(x.a.GistFilename, $"%{q}%") || EF.Functions.ILike(x.a.GistRemark, $"%{q}%") || EF.Functions.ILike(x.a.GistContent, $"%{q}%")),
                     _ => query1.Where(x => x.a.GistFilename.Contains(q) || x.a.GistRemark.Contains(q) || x.a.GistContent.Contains(q)),
                 };
             }
@@ -579,7 +612,7 @@ namespace Netnr.Blog.Application
 
                 switch (GlobalTo.TDB)
                 {
-                    case SharedEnum.TypeDB.SQLite:
+                    case EnumTo.TypeDB.SQLite:
                         query2 = query1.Select(x => new
                         {
                             SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{q}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{q}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{q}%") ? 1 : 0),
@@ -587,7 +620,7 @@ namespace Netnr.Blog.Application
                             x.a
                         }).OrderByDescending(x => x.SearchOrder);
                         break;
-                    case SharedEnum.TypeDB.PostgreSQL:
+                    case EnumTo.TypeDB.PostgreSQL:
                         query2 = query1.Select(x => new
                         {
                             SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{q}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{q}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{q}%") ? 1 : 0),
@@ -634,7 +667,7 @@ namespace Netnr.Blog.Application
                 });
             }
 
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 10
@@ -645,7 +678,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new()
+            PageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -663,7 +696,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static SharedPageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
+        public static PageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.DocSet
@@ -704,13 +737,13 @@ namespace Netnr.Blog.Application
             {
                 query = GlobalTo.TDB switch
                 {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DsName, $"%{q}%") || EF.Functions.Like(x.DsRemark, $"%{q}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DsName, $"%{q}%") || EF.Functions.ILike(x.DsRemark, $"%{q}%")),
+                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DsName, $"%{q}%") || EF.Functions.Like(x.DsRemark, $"%{q}%")),
+                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DsName, $"%{q}%") || EF.Functions.ILike(x.DsRemark, $"%{q}%")),
                     _ => query.Where(x => x.DsName.Contains(q) || x.DsRemark.Contains(q)),
                 };
             }
 
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18
@@ -721,7 +754,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new()
+            PageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -739,7 +772,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static SharedPageVM RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static PageVM RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Run
@@ -781,13 +814,13 @@ namespace Netnr.Blog.Application
             {
                 query = GlobalTo.TDB switch
                 {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.RunRemark, $"%{q}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.RunRemark, $"%{q}%")),
+                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.RunRemark, $"%{q}%")),
+                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.RunRemark, $"%{q}%")),
                     _ => query.Where(x => x.RunRemark.Contains(q)),
                 };
             }
 
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18
@@ -798,7 +831,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new()
+            PageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -816,7 +849,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static SharedPageVM DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static PageVM DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Draw
@@ -861,13 +894,13 @@ namespace Netnr.Blog.Application
             {
                 query = GlobalTo.TDB switch
                 {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DrName, $"%{q}%") || EF.Functions.Like(x.DrRemark, $"%{q}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DrName, $"%{q}%") || EF.Functions.ILike(x.DrRemark, $"%{q}%")),
+                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DrName, $"%{q}%") || EF.Functions.Like(x.DrRemark, $"%{q}%")),
+                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DrName, $"%{q}%") || EF.Functions.ILike(x.DrRemark, $"%{q}%")),
                     _ => query.Where(x => x.DrName.Contains(q) || x.DrRemark.Contains(q)),
                 };
             }
 
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18
@@ -878,7 +911,7 @@ namespace Netnr.Blog.Application
             pag.Total = query.Count();
             var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
 
-            SharedPageVM pageSet = new()
+            PageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,
@@ -900,7 +933,7 @@ namespace Netnr.Blog.Application
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static SharedPageVM GuffQuery(string category, string q, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
+        public static PageVM GuffQuery(string category, string q, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
         {
             var ctype = EnumService.ConnectionType.GuffRecord.ToString();
 
@@ -1096,13 +1129,13 @@ namespace Netnr.Blog.Application
             {
                 query = GlobalTo.TDB switch
                 {
-                    SharedEnum.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.GrContent, $"%{q}%") || EF.Functions.Like(x.GrRemark, $"%{q}%") || EF.Functions.Like(x.GrTag, $"%{q}%")),
-                    SharedEnum.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.GrContent, $"%{q}%") || EF.Functions.ILike(x.GrRemark, $"%{q}%") || EF.Functions.ILike(x.GrTag, $"%{q}%")),
+                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.GrContent, $"%{q}%") || EF.Functions.Like(x.GrRemark, $"%{q}%") || EF.Functions.Like(x.GrTag, $"%{q}%")),
+                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.GrContent, $"%{q}%") || EF.Functions.ILike(x.GrRemark, $"%{q}%") || EF.Functions.ILike(x.GrTag, $"%{q}%")),
                     _ => query.Where(x => x.GrContent.Contains(q) || x.GrRemark.Contains(q) || x.GrTag.Contains(q)),
                 };
             }
 
-            var pag = new SharedPaginationVM
+            var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
                 PageSize = 18
@@ -1144,7 +1177,7 @@ namespace Netnr.Blog.Application
                 db.SaveChanges();
             }
 
-            SharedPageVM pageSet = new()
+            PageVM pageSet = new()
             {
                 Rows = list,
                 Pag = pag,

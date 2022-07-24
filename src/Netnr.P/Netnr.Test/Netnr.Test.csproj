@@ -6,16 +6,16 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>$(DefineConstants)TRACE;ImportBase;Public;AdoFull;DataKit;Logging;Compile</DefineConstants>
+		<DefineConstants>$(DefineConstants)TRACE;ImportBase;Base;AdoFull;DataKit;Logging;Compile</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>$(DefineConstants)TRACE;ImportBase;Public;AdoFull;DataKit;Logging;Compile</DefineConstants>
+		<DefineConstants>$(DefineConstants)TRACE;ImportBase;Base;AdoFull;DataKit;Logging;Compile</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MaxMind.Db" Version="4.0.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
-		<PackageReference Include="IP2Region" Version="1.2.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.7" />
 		<PackageReference Include="MySqlConnector" Version="2.1.11" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.61" />
@@ -32,7 +32,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="YamlDotNet" Version="11.2.1" />
+		<PackageReference Include="YamlDotNet" Version="12.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

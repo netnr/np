@@ -6,7 +6,6 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Netnr.Core;
-using Netnr.SharedFast;
 using Netnr.WeChat;
 using Netnr.WeChat.Entities;
 using Netnr.Blog.Application;
@@ -200,21 +199,21 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM DatabaseExport(string zipName = "db/backup.zip")
+        public ResultVM DatabaseExport(string zipName = "db/backup.zip")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
-                var edb = new SharedDataKit.TransferVM.ExportDatabase
+                var edb = new DataKitTransferVM.ExportDatabase
                 {
-                    PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
-                    ReadConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo()
+                    PackagePath = Path.Combine(GlobalTo.ContentRootPath, zipName),
+                    ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
                     {
-                        ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source="),
+                        ConnectionString = FactoryTo.GetConn().Replace("Filename=", "Data Source="),
                         ConnectionType = GlobalTo.TDB
                     }
                 };
 
-                vm = SharedDataKit.DataKit.ExportDatabase(edb);
+                vm = DataKitTo.ExportDatabase(edb);
 
                 return vm;
             });
@@ -226,13 +225,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM DatabaseBackupToGit()
+        public ResultVM DatabaseBackupToGit()
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (GlobalTo.GetValue<bool>("ReadOnly"))
                 {
-                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Set(EnumTo.RTag.refuse);
                     return vm;
                 }
 
@@ -271,7 +270,7 @@ namespace Netnr.Blog.Web.Controllers
                 var zipPath = $"db/backup_{now}.zip";
                 if (DatabaseExport(zipPath).Code == 200)
                 {
-                    var ppath = PathTo.Combine(GlobalTo.ContentRootPath, zipPath);
+                    var ppath = Path.Combine(GlobalTo.ContentRootPath, zipPath);
                     var b2 = Convert.ToBase64String(System.IO.File.ReadAllBytes(ppath));
                     var p2 = $"{database}/backup_{now}.zip";
                     try
@@ -377,9 +376,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM DatabaseExportDemo()
+        public ResultVM DatabaseExportDemo()
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -440,7 +439,7 @@ namespace Netnr.Blog.Web.Controllers
                     //导入恢复
                     if (DatabaseImport(export_before, true).Code == 200)
                     {
-                        var fullPath = PathTo.Combine(GlobalTo.ContentRootPath, "db", export_before);
+                        var fullPath = Path.Combine(GlobalTo.ContentRootPath, "db", export_before);
                         System.IO.File.Delete(fullPath);
                     }
                 }
@@ -461,22 +460,22 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM DatabaseImport(string zipName = "db/backup.zip", bool clearTable = false)
+        public ResultVM DatabaseImport(string zipName = "db/backup.zip", bool clearTable = false)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
-                var idb = new SharedDataKit.TransferVM.ImportDatabase
+                var idb = new DataKitTransferVM.ImportDatabase
                 {
-                    WriteConnectionInfo = new SharedDataKit.TransferVM.ConnectionInfo
+                    WriteConnectionInfo = new DataKitTransferVM.ConnectionInfo
                     {
                         ConnectionType = GlobalTo.TDB,
-                        ConnectionString = SharedDbContext.FactoryTo.GetConn().Replace("Filename=", "Data Source=")
+                        ConnectionString = FactoryTo.GetConn().Replace("Filename=", "Data Source=")
                     },
-                    PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                    PackagePath = Path.Combine(GlobalTo.ContentRootPath, zipName),
                     WriteDeleteData = clearTable
                 };
 
-                vm = SharedDataKit.DataKit.ImportDatabase(idb);
+                vm = DataKitTo.ImportDatabase(idb);
 
                 return vm;
             });
@@ -488,9 +487,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM GistSync()
+        public ResultVM GistSync()
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -704,7 +703,7 @@ namespace Netnr.Blog.Web.Controllers
 
                 listLog.Add("完成同步");
 
-                vm.Set(SharedEnum.RTag.success);
+                vm.Set(EnumTo.RTag.success);
                 vm.Data = listLog;
 
             }
@@ -727,9 +726,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM HandleOperationRecord()
+        public ResultVM HandleOperationRecord()
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -759,7 +758,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.lack);
+                    vm.Set(EnumTo.RTag.lack);
                 }
             }
             catch (Exception ex)
@@ -781,9 +780,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [Apps.FilterConfigs.IsAdmin]
-        public SharedResultVM Monitor(string type)
+        public ResultVM Monitor(string type)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (GlobalTo.GetValue<bool>("Monitor:enable"))
                 {
@@ -936,7 +935,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.refuse);
+                    vm.Set(EnumTo.RTag.refuse);
                     vm.Msg = "未启用";
                 }
 
@@ -956,9 +955,9 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<SharedResultVM> WebHook()
+        public async Task<ResultVM> WebHook()
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -970,7 +969,7 @@ namespace Netnr.Blog.Web.Controllers
                     Console.WriteLine(postStr);
 
                     vm.Data = postStr.ToJObject();
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
             }
             catch (Exception ex)
@@ -987,9 +986,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="rootPath">静态资源根目录</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM StaticResourceUsageAnalysis(string rootPath = @"D:\ROOM\static")
+        public ResultVM StaticResourceUsageAnalysis(string rootPath = @"D:\ROOM\static")
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 vm.LogEvent(le =>
                 {

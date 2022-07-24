@@ -419,7 +419,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM ItemSave([FromForm] DocSetDetail mo)
+        public ResultVM ItemSave([FromForm] DocSetDetail mo)
         {
             var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
@@ -429,7 +429,7 @@ namespace Netnr.Blog.Web.Controllers
                 var ds = db.DocSet.Find(mo.DsCode);
                 if (ds?.Uid != uinfo.UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -536,13 +536,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="rows"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM SaveCatalog([FromRoute] string id, [FromForm] string rows)
+        public ResultVM SaveCatalog([FromRoute] string id, [FromForm] string rows)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(SharedEnum.RTag.invalid);
+                    vm.Set(EnumTo.RTag.invalid);
                 }
                 else
                 {
@@ -553,7 +553,7 @@ namespace Netnr.Blog.Web.Controllers
                     var uinfo = Apps.LoginService.Get(HttpContext);
                     if (db.DocSet.Find(id)?.Uid != uinfo.UserId)
                     {
-                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Set(EnumTo.RTag.unauthorized);
                     }
                     else
                     {
@@ -616,7 +616,7 @@ namespace Netnr.Blog.Web.Controllers
                         var num = db.SaveChanges();
                         Console.WriteLine(listAdd.ToJson());
                         vm.Data = num;
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                     }
                 }
 
@@ -741,9 +741,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="sid"></param>
         /// <returns></returns>
         [Authorize, HttpGet]
-        public SharedResultVM MenuTree([FromRoute] string id, [FromRoute] string sid)
+        public ResultVM MenuTree([FromRoute] string id, [FromRoute] string sid)
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             try
             {
@@ -759,19 +759,19 @@ namespace Netnr.Blog.Web.Controllers
                 if (sid == "parent")
                 {
                     vm.Data = list;
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else
                 {
                     var listtree = Core.TreeTo.ListToTree(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
                     if (string.IsNullOrWhiteSpace(listtree))
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                     }
                     else
                     {
                         vm.Data = listtree.ToJArray();
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                     }
                 }
             }

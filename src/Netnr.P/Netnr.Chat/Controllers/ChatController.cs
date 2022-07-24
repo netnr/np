@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Netnr.Chat.Application.ViewModel;
-using Netnr.SharedFast;
 using chs = Netnr.Chat.Application.ChatHubService;
 
 namespace Netnr.Chat.Controllers
@@ -32,14 +31,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="CmToIds">接收用户ID</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM PushMessageToUsers([FromQuery] string access_token, [FromForm] string CmFromId, [FromForm] string CmFromDevice, [FromForm] string CmFromSign, [FromForm] string CmContent, [FromForm] string CmType, [FromForm] List<string> CmToIds)
+        public ResultVM PushMessageToUsers([FromQuery] string access_token, [FromForm] string CmFromId, [FromForm] string CmFromDevice, [FromForm] string CmFromSign, [FromForm] string CmContent, [FromForm] string CmType, [FromForm] List<string> CmToIds)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != CmFromId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -58,27 +57,27 @@ namespace Netnr.Chat.Controllers
 
                     if (string.IsNullOrWhiteSpace(cm.CmFromId))
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "发送用户ID不能为空";
                     }
                     else if (cm.CmContent == null)
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "发送内容不能为空";
                     }
                     else if (!Enum.TryParse(cm.CmType, true, out MessageType mt))
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "消息类型有误";
                     }
                     else if (cm.CmToIds == null || cm.CmToIds.Count == 0)
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "接收用户ID不能为空";
                     }
                     else if (cm.CmToIds.Count > pmax)
                     {
-                        vm.Set(SharedEnum.RTag.refuse);
+                        vm.Set(EnumTo.RTag.refuse);
                         vm.Msg = $"接收用户限制为最多{pmax}";
                     }
                     else
@@ -94,7 +93,7 @@ namespace Netnr.Chat.Controllers
                         //非好友
                         if (!isBuddy)
                         {
-                            vm.Set(SharedEnum.RTag.refuse);
+                            vm.Set(EnumTo.RTag.refuse);
                             vm.Msg = "不是好友关系不能发送消息";
                         }
                         else
@@ -135,11 +134,11 @@ namespace Netnr.Chat.Controllers
                                 }
 
                                 vm.Data = cm.CmId;
-                                vm.Set(SharedEnum.RTag.success);
+                                vm.Set(EnumTo.RTag.success);
                             }
                             else
                             {
-                                vm.Set(SharedEnum.RTag.fail);
+                                vm.Set(EnumTo.RTag.fail);
                             }
                         }
                     }
@@ -158,14 +157,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="CmStatus">消息状态</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM UserMessageReceipt(string access_token, string CmId, string UserId, int CmStatus)
+        public ResultVM UserMessageReceipt(string access_token, string CmId, string UserId, int CmStatus)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -173,12 +172,12 @@ namespace Netnr.Chat.Controllers
                     var mb = db.NChatMessageToUser.Find(CmId);
                     if (mb == null)
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(EnumTo.RTag.invalid);
                         vm.Msg = "消息ID无效";
                     }
                     else if (mb.CmuPullUserId != UserId)
                     {
-                        vm.Set(SharedEnum.RTag.unauthorized);
+                        vm.Set(EnumTo.RTag.unauthorized);
                     }
                     else
                     {
@@ -205,14 +204,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="CmToIds">接收群组ID</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM PushMessageToGroups([FromQuery] string access_token, [FromForm] string CmFromId, [FromForm] string CmFromDevice, [FromForm] string CmFromSign, [FromForm] string CmContent, [FromForm] string CmType, [FromForm] List<string> CmToIds)
+        public ResultVM PushMessageToGroups([FromQuery] string access_token, [FromForm] string CmFromId, [FromForm] string CmFromDevice, [FromForm] string CmFromSign, [FromForm] string CmContent, [FromForm] string CmType, [FromForm] List<string> CmToIds)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != CmFromId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -231,27 +230,27 @@ namespace Netnr.Chat.Controllers
 
                     if (string.IsNullOrWhiteSpace(cm.CmFromId))
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "发送用户ID不能为空";
                     }
                     else if (cm.CmContent == null)
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "发送内容不能为空";
                     }
                     else if (!Enum.TryParse(cm.CmType, true, out MessageType mt))
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "消息类型有误";
                     }
                     else if (cm.CmToIds == null || cm.CmToIds.Count == 0)
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "接收群组ID不能为空";
                     }
                     else if (cm.CmToIds.Count > pmax)
                     {
-                        vm.Set(SharedEnum.RTag.refuse);
+                        vm.Set(EnumTo.RTag.refuse);
                         vm.Msg = $"接收组限制为最多{pmax}";
                     }
                     else
@@ -262,7 +261,7 @@ namespace Netnr.Chat.Controllers
                         var isMember = cm.CmToIds.Any(x => gms.Contains(x + ":" + CmFromId));
                         if (!isMember)
                         {
-                            vm.Set(SharedEnum.RTag.refuse);
+                            vm.Set(EnumTo.RTag.refuse);
                             vm.Msg = "非群组成员不能发送消息";
                         }
                         else
@@ -298,11 +297,11 @@ namespace Netnr.Chat.Controllers
                                 }
 
                                 vm.Data = cm.CmId;
-                                vm.Set(SharedEnum.RTag.success);
+                                vm.Set(EnumTo.RTag.success);
                             }
                             else
                             {
-                                vm.Set(SharedEnum.RTag.fail);
+                                vm.Set(EnumTo.RTag.fail);
                             }
                         }
                     }
@@ -319,20 +318,20 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetUserUnreadMessageCount(string access_token, string UserId)
+        public ResultVM GetUserUnreadMessageCount(string access_token, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
                     int num = db.NChatMessageToUser.Where(x => x.CmuPullUserId == UserId && x.CmuStatus >= 1 && x.CmuStatus <= 3).Count();
                     vm.Data = num;
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
 
                 return vm;
@@ -346,14 +345,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetGroupUnreadMessageCount(string access_token, string UserId)
+        public ResultVM GetGroupUnreadMessageCount(string access_token, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -393,7 +392,7 @@ namespace Netnr.Chat.Controllers
                         Count = gk.Values.Sum(),
                         Detail = gk
                     };
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
 
                 return vm;
@@ -409,14 +408,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="size">页量</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetHistoryUserMessage(string access_token, string UserId, int page, int size)
+        public ResultVM GetHistoryUserMessage(string access_token, string UserId, int page, int size)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -428,7 +427,7 @@ namespace Netnr.Chat.Controllers
                                 .ToList();
 
                     vm.Data = chs.WriteMessageForUserReverse(list);
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
 
                 return vm;
@@ -445,14 +444,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="size">页量</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetHistoryGroupMessage(string access_token, string GroupId, string UserId, int page, int size)
+        public ResultVM GetHistoryGroupMessage(string access_token, string GroupId, string UserId, int page, int size)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -467,11 +466,11 @@ namespace Netnr.Chat.Controllers
                                     .ToList();
 
                         vm.Data = chs.WriteMessageForGroupReverse(list);
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.refuse);
+                        vm.Set(EnumTo.RTag.refuse);
                     }
                 }
 
@@ -487,14 +486,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetGroupMember(string access_token, string GroupId, string UserId)
+        public ResultVM GetGroupMember(string access_token, string GroupId, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -511,16 +510,16 @@ namespace Netnr.Chat.Controllers
                         if (list.Count > 0)
                         {
                             vm.Data = list;
-                            vm.Set(SharedEnum.RTag.success);
+                            vm.Set(EnumTo.RTag.success);
                         }
                         else
                         {
-                            vm.Set(SharedEnum.RTag.invalid);
+                            vm.Set(EnumTo.RTag.invalid);
                         }
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.refuse);
+                        vm.Set(EnumTo.RTag.refuse);
                     }
                 }
 
@@ -536,14 +535,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetGroupInfo(string access_token, string GroupId, string UserId)
+        public ResultVM GetGroupInfo(string access_token, string GroupId, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -555,16 +554,16 @@ namespace Netnr.Chat.Controllers
                         if (mo != null)
                         {
                             vm.Data = mo;
-                            vm.Set(SharedEnum.RTag.success);
+                            vm.Set(EnumTo.RTag.success);
                         }
                         else
                         {
-                            vm.Set(SharedEnum.RTag.invalid);
+                            vm.Set(EnumTo.RTag.invalid);
                         }
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.refuse);
+                        vm.Set(EnumTo.RTag.refuse);
                     }
                 }
 
@@ -579,14 +578,14 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetUserInfo(string access_token, string UserId)
+        public ResultVM GetUserInfo(string access_token, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null || ua.UserId != UserId)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
@@ -594,11 +593,11 @@ namespace Netnr.Chat.Controllers
                     if (mo != null)
                     {
                         vm.Data = mo;
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(EnumTo.RTag.invalid);
                     }
                 }
 
@@ -615,25 +614,25 @@ namespace Netnr.Chat.Controllers
         /// <param name="GroupClassify">群组分类</param>
         /// <returns></returns>
         [HttpPost]
-        public SharedResultVM GroupNew([FromQuery] string access_token, [FromForm] string GroupName, [FromForm] List<string> GroupUser, [FromForm] string GroupClassify)
+        public ResultVM GroupNew([FromQuery] string access_token, [FromForm] string GroupName, [FromForm] List<string> GroupUser, [FromForm] string GroupClassify)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
                 var ua = chs.GetUserAuthInfo(HttpContext, access_token);
                 if (ua == null)
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
                 else
                 {
                     if (string.IsNullOrWhiteSpace(GroupName))
                     {
-                        vm.Set(SharedEnum.RTag.lack);
+                        vm.Set(EnumTo.RTag.lack);
                         vm.Msg = "组名称不能为空";
                     }
                     else if (GroupUser.Count == 0)
                     {
-                        vm.Set(SharedEnum.RTag.fail);
+                        vm.Set(EnumTo.RTag.fail);
                         vm.Msg = "组用户至少有一个（默认第一个用户为管理员）";
                     }
                     else
@@ -679,16 +678,16 @@ namespace Netnr.Chat.Controllers
                             if (num > 0)
                             {
                                 vm.Data = GroupId;
-                                vm.Set(SharedEnum.RTag.success);
+                                vm.Set(EnumTo.RTag.success);
                             }
                             else
                             {
-                                vm.Set(SharedEnum.RTag.fail);
+                                vm.Set(EnumTo.RTag.fail);
                             }
                         }
                         else
                         {
-                            vm.Set(SharedEnum.RTag.invalid);
+                            vm.Set(EnumTo.RTag.invalid);
                             vm.Msg = "组用户无效";
                         }
                     }
@@ -706,9 +705,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GroupAddMember(string access_token, string GroupId, string UserId)
+        public ResultVM GroupAddMember(string access_token, string GroupId, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
 
                 return vm;
@@ -723,9 +722,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public static SharedResultVM GroupDeleteMember(string access_token, string GroupId, string UserId)
+        public static ResultVM GroupDeleteMember(string access_token, string GroupId, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
 
                 return vm;
@@ -740,9 +739,9 @@ namespace Netnr.Chat.Controllers
         /// <param name="UserId">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public static SharedResultVM GroupDelete(string access_token, string GroupId, string UserId)
+        public static ResultVM GroupDelete(string access_token, string GroupId, string UserId)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
 
                 return vm;

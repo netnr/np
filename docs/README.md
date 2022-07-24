@@ -18,7 +18,6 @@ netnr@netnr.com
 &nbsp; 跨域请求
 &nbsp; https://cors.eu.org
 &nbsp; https://seep.eu.org
-&nbsp; https://netnr-proxy.herokuapp.com
 
 **KMS**
 &nbsp; KMS 激活服务，slmgr 命令激活 Windows 系统、Office

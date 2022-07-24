@@ -37,6 +37,7 @@ NodeJS
 
 部署 Deploy
 - <https://www.heroku.com>
+- <https://render.com>
 
 无服务 Serverless
 - <https://vercel.com/home>

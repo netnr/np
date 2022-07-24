@@ -1,5 +1,4 @@
 ﻿using Netease.Cloud.NOS;
-using Netnr.SharedFast;
 using Newtonsoft.Json.Linq;
 using Qiniu.Storage;
 using Qiniu.Util;
@@ -170,7 +169,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine(ex);
+                Console.WriteLine(ex);
                 return BadRequest(ex.Message);
             }
 

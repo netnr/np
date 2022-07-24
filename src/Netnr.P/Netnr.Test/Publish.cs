@@ -10,7 +10,7 @@ namespace Netnr.Test
     public class Publish
     {
         [Fact]
-        public void NetnrBlogWeb_BuildSS()
+        public void Netnr_01_Blog_BuildSS()
         {
             var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
             var projectName = "Netnr.Blog.Web";
@@ -66,19 +66,19 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void NetnrBlogWeb()
+        public void Netnr_02_Blog()
         {
             Release("Netnr.Blog.Web", "blog");
         }
 
         [Fact]
-        public void NetnrResponseFrameworkWeb()
+        public void Netnr_10_RF()
         {
             Release("Netnr.ResponseFramework.Web", "rf");
         }
 
         [Fact]
-        public void NetnrDataKitWeb_ClientApp()
+        public void Netnr_20_DataKit_ClientApp()
         {
             var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
             var clientAppDir = Path.Combine(npDir.FullName, "Netnr.DataKit.Web/ClientApp");
@@ -101,7 +101,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void NetnrDataKitWeb()
+        public void Netnr_21_DataKit()
         {
             var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
             var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.DataKit.Web/ClientApp/src/js/ndkVary.js"));
@@ -144,11 +144,11 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void NetnrDataX()
+        public void Netnr_30_DataX()
         {
             var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
             var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.DataX/Domain/ConfigInit.cs"));
-            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains("Version = ")).Split('"')[1];
+            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
 
             var projectName = "Netnr.DataX";
             var shortName = "ndx";
@@ -230,11 +230,11 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void NetnrServe()
+        public void Netnr_40_Serve()
         {
             var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
-            var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.Shared/SharedServe/ServeTo.cs"));
-            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains("version =")).Split('"')[1];
+            var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.Shared/Serve/ServeTo.cs"));
+            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
 
             var projectName = "Netnr.Serve";
             var shortName = "ns";

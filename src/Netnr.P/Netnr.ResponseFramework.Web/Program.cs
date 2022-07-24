@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Netnr;
 using Netnr.Core;
-using Netnr.SharedApp;
 
-var builder = WebApplication.CreateBuilder(args).SetGlobal();
+var builder = WebApplication.CreateBuilder(args);
+
+ReadyTo.EncodingReg();
+ReadyTo.LegacyTimestamp();
 
 //（上传）主体大小限制
 var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");
@@ -51,7 +53,7 @@ builder.Services.AddDbContextPool<Netnr.ResponseFramework.Data.ContextBase>(opti
 {
     FluentScheduler.JobManager.Initialize();
 
-    var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController();
+    var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(builder.Environment);
 
     //每2天在2:2 重置数据库
     FluentScheduler.JobManager.AddJob(() =>
@@ -101,7 +103,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<Netnr.ResponseFramework.Data.ContextBase>();
 
     var createScript = db.Database.GenerateCreateScript();
-    if (Netnr.SharedFast.GlobalTo.TDB == SharedEnum.TypeDB.PostgreSQL)
+    if (GlobalTo.TDB == EnumTo.TypeDB.PostgreSQL)
     {
         createScript = createScript.Replace(" datetime ", " timestamp ");
     }
@@ -111,7 +113,7 @@ using (var scope = app.Services.CreateScope())
     if (db.Database.EnsureCreated())
     {
         //重置数据库
-        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController().DatabaseReset();
+        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController(app.Environment).DatabaseReset();
         Console.WriteLine(vm.ToJson(true));
     }
 }

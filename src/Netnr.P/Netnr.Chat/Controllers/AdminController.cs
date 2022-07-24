@@ -17,19 +17,19 @@ namespace Netnr.Chat.Controllers
         /// <param name="key">密码</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM GetOnlineAllUser(string key)
+        public ResultVM GetOnlineAllUser(string key)
         {
-            return SharedResultVM.Try(vm =>
+            return ResultVM.Try(vm =>
             {
-                var ak = SharedFast.GlobalTo.GetValue<string>("TokenManagement:AdminKey");
+                var ak = GlobalTo.GetValue<string>("TokenManagement:AdminKey");
                 if (!string.IsNullOrWhiteSpace(ak) && key == ak)
                 {
                     vm.Data = chs.OnlineUser1;
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else
                 {
-                    vm.Set(SharedEnum.RTag.unauthorized);
+                    vm.Set(EnumTo.RTag.unauthorized);
                 }
 
                 return vm;

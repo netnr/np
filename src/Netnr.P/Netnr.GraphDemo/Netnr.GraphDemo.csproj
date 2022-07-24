@@ -19,7 +19,7 @@
 		<PackageReference Include="NetVips" Version="2.1.0" />
 		<PackageReference Include="NetVips.Native.linux-x64" Version="8.12.2" />
 		<PackageReference Include="NetVips.Native.win-x64" Version="8.12.2" />
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
 		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.91" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.91" />
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />

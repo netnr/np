@@ -1,5 +1,4 @@
 ﻿using Netnr.Core;
-using Netnr.SharedFast;
 
 namespace Netnr.Chat.Application.ViewModel
 {

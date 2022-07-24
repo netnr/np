@@ -119,7 +119,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public SharedResultVM Save([FromForm] Domain.Gist mo)
+        public ResultVM Save([FromForm] Domain.Gist mo)
         {
             var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
@@ -140,7 +140,7 @@ namespace Netnr.Blog.Web.Controllers
                     db.SaveChanges();
 
                     vm.Data = mo.GistCode;
-                    vm.Set(SharedEnum.RTag.success);
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else
                 {
@@ -161,11 +161,11 @@ namespace Netnr.Blog.Web.Controllers
                         db.SaveChanges();
 
                         vm.Data = mo.GistCode;
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.fail);
+                        vm.Set(EnumTo.RTag.fail);
                     }
                 }
 

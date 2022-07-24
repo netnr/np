@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Netnr.ResponseFramework.Data;
 using Netnr.ResponseFramework.Application;
 using Netnr.Core;
-using Netnr.SharedFast;
-using Netnr.SharedApp;
-using Netnr.SharedNpoi;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -30,9 +27,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="title">标题，文件名</param>
         /// <returns></returns>
         [HttpGet]
-        public SharedResultVM Export(QueryDataInputVM ivm, string title = "export")
+        public ResultVM Export(QueryDataInputVM ivm, string title = "export")
         {
-            var vm = new SharedResultVM();
+            var vm = new ResultVM();
 
             //虚拟路径
             string vpath = GlobalTo.GetValue("StaticResource:TmpDir");
@@ -54,7 +51,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 switch (ivm.TableName?.ToLower())
                 {
                     default:
-                        vm.Set(SharedEnum.RTag.invalid);
+                        vm.Set(EnumTo.RTag.invalid);
                         break;
 
                     //角色
@@ -91,7 +88,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 }
 
                 Console.WriteLine($"Export table rows : {dtReport.Rows.Count}");
-                if (vm.Msg != SharedEnum.RTag.invalid.ToString())
+                if (vm.Msg != EnumTo.RTag.invalid.ToString())
                 {
                     //生成
                     if (NpoiTo.DataTableToExcel(dtReport, PathTo.Combine(ppath, filename)))
@@ -101,11 +98,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
                         //生成的Excel继续操作
                         ExportService.ExcelDraw(PathTo.Combine(ppath, filename), ivm);
 
-                        vm.Set(SharedEnum.RTag.success);
+                        vm.Set(EnumTo.RTag.success);
                     }
                     else
                     {
-                        vm.Set(SharedEnum.RTag.fail);
+                        vm.Set(EnumTo.RTag.fail);
                     }
                 }
             }

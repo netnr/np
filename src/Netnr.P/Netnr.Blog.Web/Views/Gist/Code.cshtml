@@ -39,7 +39,7 @@
         <div class="col-12">
             @if (Model.GistLanguage == "shell" && Model.GistFilename.EndsWith(".cast"))
             {
-                @Html.Raw(Netnr.SharedApp.QuoteTo.Html("asciinema-player"))
+                @Html.Raw(Netnr.QuoteTo.Html("asciinema-player"))
 
                 <sl-divider></sl-divider>
                 <div style="height:75vh">
@@ -58,7 +58,7 @@
                 <div class="markdown-body position-relative"><pre>@Model.GistContent</pre></div>
                 <sl-divider></sl-divider>
 
-                @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js"))
+                @Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd.js"))
                 <script>
                     let mb = document.querySelector('.markdown-body');
                     mb.innerHTML = netnrmd.render(mb.querySelector('pre').innerHTML);
@@ -70,7 +70,7 @@
                     <pre><code contenteditable language="@Model.GistLanguage">@Model.GistContent</code></pre>
                 </div>
                 
-                @Html.Raw(Netnr.SharedApp.QuoteTo.Html("netnrmd.css,netnrmd.js"))
+                @Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd.js"))
                 <style>
                     pre code::after {
                         position: absolute;

@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Netnr.SharedDbContext;
-using Netnr.SharedFast;
 
 namespace Netnr.ResponseFramework.Data
 {
@@ -16,7 +14,7 @@ namespace Netnr.ResponseFramework.Data
         /// <returns></returns>
         public static DbContextOptionsBuilder<ContextBase> CreateDbContextOptionsBuilder(DbContextOptionsBuilder builder = null)
         {
-            Enum.TryParse(GlobalTo.GetValue("TypeDB"), true, out GlobalTo.TDB);
+            GlobalTo.TDB = GlobalTo.GetValue<EnumTo.TypeDB>("TypeDB");
             return CreateDbContextOptionsBuilder<ContextBase>(GlobalTo.TDB, GetConn(), builder);
         }
 

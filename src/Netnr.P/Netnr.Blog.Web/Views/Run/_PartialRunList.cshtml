@@ -1,4 +1,4 @@
-@model SharedPageVM
+@model PageVM
 @{
     var rows = Model.Rows as List<Netnr.Blog.Domain.Run>;
     var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
