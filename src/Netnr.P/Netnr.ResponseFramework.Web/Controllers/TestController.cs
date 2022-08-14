@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Netnr.ResponseFramework.Data;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {

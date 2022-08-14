@@ -1,6 +1,6 @@
 ﻿/**
  * by netnr
- * 2019-09-14
+ * 2019-09-14 - 2022-08-12
  * */
 var rt = {
     //配置
@@ -8,8 +8,9 @@ var rt = {
         notes: true,//带注释
         indent: 6,//间隙
         typeMapStringToDateTime: true,//类型映射，string时，是时间，则对应datetime
-        classNameFirstBig: true,//类名首字母大写
-        classNameAppend: "Entity"//类名末尾追加
+        bigHump: true,//大驼峰
+        withPropertyName: false, //属性名
+        classNameAppend: "Model"//类名末尾追加
     },
     //判断类型
     type: function (obj) {
@@ -56,12 +57,12 @@ var rt = {
         }
 
         if (isOA == "Array") {
-            if (rt.config.classNameFirstBig) {
+            if (rt.config.bigHump) {
                 key = rt.convertFirstUpper(key);
             }
             outType = "List<" + key + rt.config.classNameAppend + ">";
         } else if (isOA == "Object") {
-            if (rt.config.classNameFirstBig) {
+            if (rt.config.bigHump) {
                 key = rt.convertFirstUpper(key);
             }
             outType = key + rt.config.classNameAppend;
@@ -87,16 +88,22 @@ var rt = {
         var arr = [];
         if (notes != false) {
             arr.push("/// <summary>");
-            arr.push("/// ");
+            arr.push("/// " + varname);
             arr.push("/// </summary>");
         }
-        arr.push("public " + type + " " + varname + " { get; set; }");
+        if (rt.config.withPropertyName) {
+            arr.push(`[JsonPropertyName("${varname}")]`);
+        }
+        if (rt.config.bigHump) {
+            varname = rt.convertFirstUpper(varname);
+        }
+        arr.push(`public ${type} ${varname} { get; set; }`);
         return arr;
     },
     //生成一个类，类名，属性数组，缩进
     createObject: function (classname, pros, indent) {
         var arr = [], i = 0, ilen = pros.length;
-        if (rt.config.classNameFirstBig) {
+        if (rt.config.bigHump) {
             classname = rt.convertFirstUpper(classname);
         }
         arr.push("public class " + classname);
@@ -260,7 +267,8 @@ nr.onReady = function () {
                     json = JSON.parse(json);
 
                     rt.config.notes = nr.domSeComment.value == 1;
-                    rt.config.classNameFirstBig = nr.domSeCapital.value == 1;
+                    rt.config.bigHump = nr.domSeCapital.value == 1;
+                    rt.config.withPropertyName = nr.domSePropertyName.value == 1;
 
                     var result = rt.init(json);
                     me.keepSetValue(editor2, result);

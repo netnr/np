@@ -1,34 +1,33 @@
-﻿namespace Netnr.Core
+﻿namespace Netnr;
+
+/// <summary>
+/// 路径
+/// </summary>
+public class PathTo
 {
     /// <summary>
-    /// 路径
+    /// 路径结合，默认 / 拼接
     /// </summary>
-    public class PathTo
+    /// <param name="args"></param>
+    /// <returns></returns>
+    public static string Combine(params string[] args)
     {
-        /// <summary>
-        /// 路径结合，默认 / 拼接
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static string Combine(params string[] args)
+        var path = string.Empty;
+        foreach (var arg in args)
         {
-            var path = string.Empty;
-            foreach (var arg in args)
+            if (!string.IsNullOrWhiteSpace(arg))
             {
-                if (!string.IsNullOrWhiteSpace(arg))
+                if (path == string.Empty)
                 {
-                    if (path == string.Empty)
-                    {
-                        path = arg.Trim();
-                    }
-                    else
-                    {
-                        var tsarg = arg.Trim().TrimStart('/');
-                        path += (path.EndsWith("/") || path.EndsWith("\\")) ? tsarg : '/' + tsarg;
-                    }
+                    path = arg.Trim();
+                }
+                else
+                {
+                    var tsarg = arg.Trim().TrimStart('/');
+                    path += (path.EndsWith("/") || path.EndsWith("\\")) ? tsarg : '/' + tsarg;
                 }
             }
-            return path;
         }
+        return path;
     }
 }

@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,16 +20,14 @@
 	<ItemGroup>
 		<PackageReference Include="AgGrid.InfiniteRowModel" Version="1.6.0" />
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
-		<PackageReference Include="Markdig" Version="0.30.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.7" />
+		<PackageReference Include="Markdig" Version="0.30.3" />
 		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
 		<PackageReference Include="Qiniu" Version="8.2.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.4.0" />
-		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.91">
+		<PackageReference Include="SkiaSharp" Version="2.88.1-preview.108">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.91">
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.1-preview.108">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
@@ -39,11 +37,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Blog.Application\Netnr.Blog.Application.csproj" />
 		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
-		<ProjectReference Include="..\Netnr.WeChat\Netnr.WeChat.csproj" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
-	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" wwwroot_4app_4blog_4package_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

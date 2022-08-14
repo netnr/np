@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Netnr.Blog.Data;
-
-namespace Netnr.Blog.Web.Controllers
+﻿namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// Gist
@@ -39,7 +36,7 @@ namespace Netnr.Blog.Web.Controllers
             }
 
             //Auth
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
             switch (sid?.ToLower())
             {
                 case "edit":
@@ -87,7 +84,7 @@ namespace Netnr.Blog.Web.Controllers
                         from b in bg.DefaultIfEmpty()
                         join c in db.UserInfo on a.Uid equals c.UserId
                         where a.GistCode == id && a.GistStatus == 1 && a.GistOpen == 1
-                        select new Domain.Gist
+                        select new Gist
                         {
                             GistId = a.GistId,
                             Uid = a.Uid,
@@ -119,12 +116,12 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM Save([FromForm] Domain.Gist mo)
+        public ResultVM Save([FromForm] Gist mo)
         {
-            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            var vm = IdentityService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 //add
                 if (string.IsNullOrWhiteSpace(mo.GistCode))
@@ -135,7 +132,7 @@ namespace Netnr.Blog.Web.Controllers
                     mo.GistStatus = 1;
                     mo.Uid = uinfo.UserId;
 
-                    mo.GistCode = Core.UniqueTo.LongId().ToString();
+                    mo.GistCode = UniqueTo.LongId().ToString();
                     db.Gist.Add(mo);
                     db.SaveChanges();
 
@@ -170,7 +167,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 //推送通知
-                Application.PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
+                PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
             }
 
             return vm;
@@ -186,9 +183,9 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, string lang, int page = 1)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.GistQuery(k, lang, 0, uinfo.UserId, page);
+            var ps = CommonService.GistQuery(k, lang, 0, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             return View("/Views/Gist/_PartialGistList.cshtml", ps);
@@ -219,9 +216,9 @@ namespace Netnr.Blog.Web.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.GistQuery(k, lang, uid, uinfo.UserId, page);
+            var ps = CommonService.GistQuery(k, lang, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             return View("/Views/Gist/_PartialGistList.cshtml", ps);

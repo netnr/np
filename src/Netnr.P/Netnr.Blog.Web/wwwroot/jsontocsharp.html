@@ -1,6 +1,6 @@
 ﻿<!--
 https://github.com/netnr
-2022-07-23 22:53:03
+2022-08-14 19:08:48
 -->
 
 <!DOCTYPE html>
@@ -17,7 +17,7 @@ https://github.com/netnr
 <link href='https://fastly.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css' rel='stylesheet' async />
 
     <link href="/app/blog/dist/all.css?v=s4JQhw3ECj7Xw3HDIQV6vIhspWUzveJmB6mq0LZHC04" rel="stylesheet" />
-    <script src="/app/blog/dist/all.js?v=cqdNGiAdwgb_Sug918PUL5phG3wZnvPl42P_sHFN4KE"></script>
+    <script src="/app/blog/dist/all.js?v=JU70HLrYzh8xYPr1jwH8vNQdhFhb62zP6TohkudeLZY"></script>
 </head>
 <body>
         
@@ -80,14 +80,20 @@ https://github.com/netnr
         </div>
         <div class="col-auto mb-3 d-none d-sm-inline-block">
             <sl-select class="nr-se-comment" value="2">
-                <sl-menu-item value="1">带注释</sl-menu-item>
-                <sl-menu-item value="2">不带注释</sl-menu-item>
+                <sl-menu-item value="1">包含注释</sl-menu-item>
+                <sl-menu-item value="2">不含注释</sl-menu-item>
             </sl-select>
         </div>
         <div class="col-auto mb-3 d-none d-sm-inline-block">
-            <sl-select class="nr-se-capital" value="2">
-                <sl-menu-item value="1">类名 强制大写</sl-menu-item>
-                <sl-menu-item value="2">类名 不强制大写</sl-menu-item>
+            <sl-select class="nr-se-capital" value="1">
+                <sl-menu-item value="1">大驼峰命名</sl-menu-item>
+                <sl-menu-item value="2">不改变命名</sl-menu-item>
+            </sl-select>
+        </div>
+        <div class="col-auto mb-3 d-none d-sm-inline-block">
+            <sl-select class="nr-se-property-name" value="2">
+                <sl-menu-item value="1">包含属性名</sl-menu-item>
+                <sl-menu-item value="2">不含属性名</sl-menu-item>
             </sl-select>
         </div>
     </div>
@@ -101,20 +107,20 @@ https://github.com/netnr
     </div>
 </div>
 
-<script src='https://fastly.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js'></script>
+<script src='https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs/loader.js'></script>
 
 <script>
     var meRequire = require;
 
     require.config({
         paths: {
-            vs: 'https://fastly.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs'
+            vs: 'https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
 </script>
                         
 
-            <script src="/js/ss/jsontocsharp.js?v=mloVoHCo76-w3FCE6nJd5ZbfHl9C0ig1Xfv326xltws"></script>
+            <script src="/js/ss/jsontocsharp.js?v=NtG9beKZ-x9PE6c0dFKbJ3GtIZw1RujexHCGEhdB4xI"></script>
 </body>
 </html>

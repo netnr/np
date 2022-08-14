@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
-using Netnr.Blog.Data;
 using AgGrid.InfiniteRowModel;
 
 namespace Netnr.Blog.Web.Controllers
@@ -10,7 +8,7 @@ namespace Netnr.Blog.Web.Controllers
     /// 后台管理
     /// </summary>
     [Authorize]
-    [Apps.FilterConfigs.IsAdmin]
+    [FilterConfigs.IsAdmin]
     public class AdminController : Controller
     {
         public ContextBase db;
@@ -79,11 +77,11 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM WriteSave([FromForm] Domain.UserWriting mo)
+        public ResultVM WriteSave([FromForm] UserWriting mo)
         {
             var vm = new ResultVM();
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             var oldmo = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
 
@@ -164,11 +162,11 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM ReplySave([FromForm] Domain.UserReply mo)
+        public ResultVM ReplySave([FromForm] UserReply mo)
         {
             var vm = new ResultVM();
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             var oldmo = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
 
@@ -307,13 +305,13 @@ namespace Netnr.Blog.Web.Controllers
                                 string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToUrlEncode()}&bk_length=600";
                                 try
                                 {
-                                    var result = Core.HttpTo.Get(api);
+                                    var result = HttpTo.Get(api);
                                     if (result.Length > 100)
                                     {
                                         var mo = db.KeyValues.FirstOrDefault(x => x.KeyName == key);
                                         if (mo == null)
                                         {
-                                            mo = new Domain.KeyValues
+                                            mo = new KeyValues
                                             {
                                                 KeyId = Guid.NewGuid().ToString(),
                                                 KeyName = key.ToLower(),
@@ -348,10 +346,10 @@ namespace Netnr.Blog.Web.Controllers
                             string mainKey = listKey.First().ToLower();
                             listKey.RemoveAt(0);
 
-                            var listkvs = new List<Domain.KeyValueSynonym>();
+                            var listkvs = new List<KeyValueSynonym>();
                             listKey.ForEach(key =>
                             {
-                                var kvs = new Domain.KeyValueSynonym
+                                var kvs = new KeyValueSynonym
                                 {
                                     KsId = Guid.NewGuid().ToString(),
                                     KeyName = mainKey,
@@ -378,13 +376,13 @@ namespace Netnr.Blog.Web.Controllers
                                 var mt = db.Tags.Where(x => listKey.Contains(x.TagName)).ToList();
                                 if (mt.Count == 0)
                                 {
-                                    var listMo = new List<Domain.Tags>();
+                                    var listMo = new List<Tags>();
                                     var tagHs = new HashSet<string>();
                                     foreach (var tag in listKey)
                                     {
                                         if (tagHs.Add(tag))
                                         {
-                                            var mo = new Domain.Tags
+                                            var mo = new Tags
                                             {
                                                 TagName = tag,
                                                 TagCode = tag,
@@ -401,7 +399,7 @@ namespace Netnr.Blog.Web.Controllers
                                     db.Tags.AddRange(listMo);
                                     var num = db.SaveChanges();
 
-                                    Application.CommonService.TagsQuery(false);
+                                    CommonService.TagsQuery(false);
                                     vm.Log.Add($"Done 已刷新缓存 {num}");
                                 }
                                 else
@@ -411,7 +409,7 @@ namespace Netnr.Blog.Web.Controllers
                             }
                             else
                             {
-                                Application.CommonService.TagsQuery(false);
+                                CommonService.TagsQuery(false);
                                 vm.Log.Add($"Done 已刷新缓存");
                             }
                         }
@@ -456,6 +454,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     conn.Close();
                 }
+
                 vm.Data = new { table, count };
                 vm.Set(EnumTo.RTag.success);
 
@@ -469,13 +468,13 @@ namespace Netnr.Blog.Web.Controllers
             return ResultVM.Try(vm =>
             {
                 var conn = db.Database.GetDbConnection();
-                var dk = new DataKitTo(GlobalTo.TDB, conn);
+                var dk = new DataKitTo(AppTo.TDB, conn);
 
                 switch (name)
                 {
                     case "table":
                         vm.Data = dk.GetTable();
-                        vm.Log.Add(GlobalTo.TDB);
+                        vm.Log.Add(AppTo.TDB);
                         break;
                     case "column": vm.Data = dk.GetColumn(tableName); break;
                 }
@@ -492,7 +491,8 @@ namespace Netnr.Blog.Web.Controllers
 
         public IActionResult ClearCache()
         {
-            Core.CacheTo.RemoveAll();
+            GlobalTo.Memorys.Clear();
+            CacheTo.RemoveAll();
             return Ok("Done!");
         }
 
@@ -523,7 +523,8 @@ namespace Netnr.Blog.Web.Controllers
             try
             {
                 Console.WriteLine("BuildHtml Start ...");
-                Core.CacheTo.RemoveAll();
+                GlobalTo.Memorys.Clear();
+                CacheTo.RemoveAll();
 
                 AppContext.SetSwitch("Netnr.BuildHtml", true);
 
@@ -544,9 +545,9 @@ namespace Netnr.Blog.Web.Controllers
                     Console.WriteLine(mh.Name);
 
                     cbs.Add(mh.Name);
-                    string html = Core.HttpTo.Get(urlPrefix + mh.Name);
-                    var savePath = $"{GlobalTo.WebRootPath}/{mh.Name.ToLower()}.html";
-                    Core.FileTo.WriteText(html, savePath, false);
+                    string html = HttpTo.Get(urlPrefix + mh.Name);
+                    var savePath = $"{AppTo.WebRootPath}/{mh.Name.ToLower()}.html";
+                    FileTo.WriteText(html, savePath, false);
                 });
                 vm.Log.AddRange(cbs);
                 Console.WriteLine("\nDone!\n");

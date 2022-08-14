@@ -70,7 +70,7 @@ function initCaptcha() {
 function initResize() {
     var htm = [];
 
-    htm.push(`<td><p>原图</p><img src="/bird.jpg"/><p></p></td>`);
+    htm.push(`<td><p>原图</p><img src="/netnr_avatar.jpg"/><p></p></td>`);
 
     config.forEach(item => {
 
@@ -78,9 +78,9 @@ function initResize() {
         var uri = item.resize;
         if (uri) {
             if (item.link) {
-                htm.push(`<td><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" src="/bird.jpg" /><p></p></td>`)
+                htm.push(`<td><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" src="/netnr_avatar.jpg" /><p></p></td>`)
             } else {
-                htm.push(`<td><p>${item.name}</p><img data-src="${uri}" src="/bird.jpg" /><p></p></td>`)
+                htm.push(`<td><p>${item.name}</p><img data-src="${uri}" src="/netnr_avatar.jpg" /><p></p></td>`)
             }
 
             var xhr = new XMLHttpRequest();

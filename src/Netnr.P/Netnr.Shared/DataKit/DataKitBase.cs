@@ -309,7 +309,7 @@ namespace Netnr
                 databaseName = DefaultDatabaseName();
             }
 
-            var listSchemaNameTableName = new List<Tuple<string, string>>();
+            var listSchemaNameTableName = new List<ValueTuple<string, string>>();
             if (!string.IsNullOrWhiteSpace(filterSchemaNameTableName))
             {
                 filterSchemaNameTableName.Replace("'", "").Split(',').ToList().ForEach(item =>
@@ -327,7 +327,7 @@ namespace Netnr
                         tableName = listST[0];
                     }
 
-                    listSchemaNameTableName.Add(new Tuple<string, string>(schemaName, tableName));
+                    listSchemaNameTableName.Add(new ValueTuple<string, string>(schemaName, tableName));
                 });
             }
 
@@ -413,7 +413,7 @@ namespace Netnr
         /// </summary>
         /// <param name="sql">脚本</param>
         /// <returns></returns>
-        public Tuple<DataSet, DataSet, object> ExecuteSql(string sql)
+        public ValueTuple<DataSet, DataSet, object> ExecuteSql(string sql)
         {
             var st = new TimingVM();
 
@@ -495,7 +495,7 @@ namespace Netnr
                 dtInfo.Rows.Add(drInfo.ItemArray);
             });
 
-            return new Tuple<DataSet, DataSet, object>(er.Item1, er.Item3, new { info = dtInfo });
+            return new ValueTuple<DataSet, DataSet, object>(er.Item1, er.Item3, new { info = dtInfo });
         }
     }
 }

@@ -1,46 +1,59 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net48;netstandard2;netstandard2.1</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Authors>netnr</Authors>
-    <PackageProjectUrl>https://github.com/netnr</PackageProjectUrl>
-    <Description>集成三方登录，QQ、微信（WeChat）、微博、GitHub、码云（Gitee）、淘宝（天猫）、微软（Microsoft ）、钉钉、谷歌（Google）、支付宝（AliPay）、StackOverflow
-文档：https://zme.ink
-</Description>
-    <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects> 
-    <Version>4.0.1</Version>
-    <PackageReleaseNotes>升级依赖版本和更改图标</PackageReleaseNotes>
-    <PackageTags>oauth2.0 login</PackageTags>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>    <DocumentationFile></DocumentationFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>favicon.png</PackageIcon>
-    <OutputType>Library</OutputType>
-    <StartupObject />
-    <RepositoryUrl>https://github.com/netnr</RepositoryUrl>
-    <Copyright>netnr</Copyright>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReadmeFile>Netnr.Login.md</PackageReadmeFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net48;netstandard2.0;netstandard2.1</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Version>5.0.0</Version>
+		<Authors>netnr</Authors>
+		<Company>$(Authors)</Company>
+		<Description>第三方 OAuth2 授权登录，QQ、微信（Weixin）、微博（Weibo）、淘宝（Taobao）、支付宝（AliPay）、钉钉（DingTalk）、码云（Gitee）、GitHub、微软（Microsoft ）、StackOverflow、谷歌（Google）</Description>
+		<PackageProjectUrl>https://github.com/netnr</PackageProjectUrl>
+		<PackageIcon>favicon.png</PackageIcon>
+		<PackageReadmeFile>Netnr.Login.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/netnr</RepositoryUrl>
+		<PackageTags>oauth2.0;login</PackageTags>
+		<Copyright>netnr</Copyright>
+		<PackageReleaseNotes>DingTalk（钉钉）</PackageReleaseNotes>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;net40</DefineConstants>
-    <NoWarn>1701;1702;1591</NoWarn>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\..\..\docs\Netnr.Login.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="favicon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\..\docs\Netnr.Login.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\Netnr.Blog.Web\wwwroot\favicon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Text.Json" Version="6.0.5" />
+	</ItemGroup>
+
 </Project>

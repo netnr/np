@@ -130,6 +130,7 @@ namespace Netnr
                     break;
                 case EnumTo.TypeDB.SQLServer:
                     citem.Add("TrustServerCertificate", "true");
+                    citem.Add("MultipleActiveResultSets", "true");
                     break;
             }
 
@@ -158,26 +159,22 @@ namespace Netnr
             if (isDecrypt)
             {
                 var ckey = "CONNED" + conn.GetHashCode();
-                if (Core.CacheTo.Get(ckey) is not string cval)
+                if (!GlobalTo.Memorys.ContainsKey(ckey))
                 {
                     var clow = conn.ToLower();
                     var pts = new List<string> { "database", "server", "filename", "source", "user" };
                     if (!pts.Any(x => clow.Contains(x)))
                     {
-                        cval = Core.CalcTo.AESDecrypt(conn, pwd);
-                    }
-                    else
-                    {
-                        cval = conn;
+                        conn = CalcTo.AESDecrypt(conn, pwd);
                     }
 
-                    Core.CacheTo.Set(ckey, cval);
+                    GlobalTo.Memorys[ckey] = conn;
                 }
-                return cval;
+                return GlobalTo.Memorys[ckey].ToString();
             }
             else
             {
-                return conn = Core.CalcTo.AESEncrypt(conn, pwd);
+                return conn = CalcTo.AESEncrypt(conn, pwd);
             }
         }
 
@@ -214,7 +211,7 @@ namespace Netnr
             }
             else
             {
-                Console.WriteLine($"解析 Heroku 环境变量连接字符串失败，环境变量：{ev}，值：{val}");
+                Console.WriteLine($"解析 URL 连接字符串失败，环境变量：{ev}，值：{val}");
             }
 
             return conn;
@@ -258,11 +255,11 @@ namespace Netnr
         }
 
         /// <summary>
-        /// 获取空表结构、元信息、主键列（先填充数据再设置主键列，修复 SQLServer）
+        /// 获取空表结构、元信息、主键列（先填充数据再设置主键列，考虑复合主键列只查询一列时的情况）
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>NULL 或 {Table, Schema, PrimaryKey}</returns>
-        public static Tuple<DataTable, DataTable, List<DataColumn>> ReaderTableSchema(DbDataReader reader)
+        public static ValueTuple<DataTable, DataTable, List<DataColumn>> ReaderTableSchema(DbDataReader reader)
         {
             var hasField = reader.FieldCount > 0;
             if (hasField)
@@ -324,17 +321,15 @@ namespace Netnr
 
                     dtTable.Columns.Add(column);
                 }
-                if (keyCols.Count > 0)
-                {
-                    // SQLServer 查询 SELECT * from sys.columns; 列 column_id 架构信息 IsKey=True
-                    // 修复方法：先填充数据，再设置主键（即使是出错）
-                    //dtTable.PrimaryKey = keyCols.ToArray();
-                }
 
-                return new Tuple<DataTable, DataTable, List<DataColumn>>(dtTable, dtSchema, keyCols);
+                //考虑复合主键列只查询一列时的情况
+                //先填充数据，再设置主键（即使是出错）
+                //dtTable.PrimaryKey = keyCols.ToArray();
+
+                return new ValueTuple<DataTable, DataTable, List<DataColumn>>(dtTable, dtSchema, keyCols);
             }
 
-            return null;
+            return default;
         }
     }
 
@@ -349,7 +344,7 @@ namespace Netnr
         /// <param name="dbCommand"></param>
         /// <param name="tableLoad">默认使用 Load 模式，False 则逐行读取（针对Load模式出错时用）</param>
         /// <returns>表数据、受影响行数、表结构</returns>
-        public static Tuple<DataSet, int, DataSet> ExecuteDataSet(this DbCommand dbCommand, bool tableLoad = true)
+        public static ValueTuple<DataSet, int, DataSet> ExecuteDataSet(this DbCommand dbCommand, bool tableLoad = true)
         {
             var dsTable = new DataSet();
             var dsSchema = new DataSet();
@@ -439,7 +434,7 @@ namespace Netnr
                 } while (reader.NextResult());
             }
 
-            return new Tuple<DataSet, int, DataSet>(dsTable, recordsAffected, dsSchema);
+            return new ValueTuple<DataSet, int, DataSet>(dsTable, recordsAffected, dsSchema);
         }
 
         /// <summary>
@@ -487,7 +482,7 @@ namespace Netnr
             do
             {
                 var rts = DbHelper.ReaderTableSchema(reader);
-                if (rts != null)
+                if (!rts.Equals(default))
                 {
                     var dt = rts.Item1;
 

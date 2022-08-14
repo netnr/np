@@ -6,6 +6,9 @@ global using System.Linq;
 global using System.Text;
 global using System.Data;
 global using System.Data.Common;
+global using System.Text.Json;
+global using System.Text.Json.Nodes;
+global using System.Text.Json.Serialization;
 global using System.Diagnostics;
 global using System.Threading;
 global using System.Threading.Tasks;
@@ -17,7 +20,6 @@ global using System.Collections.Specialized;
 
 #if Full || ImportWeb
 
-global using Newtonsoft.Json;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Builder;

@@ -1,13 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
-{
-    //Action原样输出JSON
-    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-    //日期格式化
-    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
-});
+builder.Services.AddControllersWithViews();
 
 //配置swagger
 builder.Services.AddSwaggerGen(c =>

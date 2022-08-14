@@ -2,8 +2,8 @@
     var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
     var themeClass = theme == "dark" ? "navbar-dark bg-dark" : "navbar-light bg-light";
 
-    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
-    int num = uinfo.UserId == 0 ? 0 : Netnr.Blog.Application.CommonService.NewMessageQuery(uinfo.UserId);
+    var uinfo = IdentityService.Get(ViewContext.HttpContext);
+    int num = uinfo.UserId == 0 ? 0 : CommonService.NewMessageQuery(uinfo.UserId);
 
     var rdv = ViewContext.RouteData.Values;
     var ctrl = rdv["controller"].ToString().ToLower();
@@ -238,7 +238,7 @@ else
                                     <sl-divider></sl-divider>
                                     <sl-menu-item data-href="/note">记事本</sl-menu-item>
                                     <sl-divider></sl-divider>
-                                    @if (uinfo.UserId == GlobalTo.GetValue<int>("Common:AdminId"))
+                                    @if (uinfo.UserId == AppTo.GetValue<int>("Common:AdminId"))
                                     {
                                         <sl-menu-item data-href="/admin">后台管理</sl-menu-item>
                                         <sl-divider></sl-divider>
@@ -278,7 +278,7 @@ else
                         <sl-divider></sl-divider>
                         <sl-menu-item data-href="/note">记事本</sl-menu-item>
                         <sl-divider></sl-divider>
-                        @if (uinfo.UserId == GlobalTo.GetValue<int>("Common:AdminId"))
+                        @if (uinfo.UserId == AppTo.GetValue<int>("Common:AdminId"))
                         {
                             <sl-menu-item data-href="/admin">后台管理</sl-menu-item>
                             <sl-divider></sl-divider>

@@ -28,7 +28,7 @@ public class DataKitController : Controller
                 HttpContext.RequestAborted.Register(() =>
                 {
                     dk.db.CommandAbort();
-                    Console.WriteLine("\rCancellation Requested\r");
+                    ConsoleTo.Title("Cancellation Requested");
                 });
 
                 vm.Data = dkCall(dk);

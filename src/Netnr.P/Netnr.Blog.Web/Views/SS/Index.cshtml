@@ -4,8 +4,8 @@
     AppContext.TryGetSwitch("Netnr.BuildHtml", out bool isBuildHtml);
     var ctrl = ViewContext.RouteData.Values["controller"].ToString().ToLower();
 
-    var navs = ScriptService.Nav;
-    var iconMD5 = CalcTo.MD5(File.ReadAllText(GlobalTo.WebRootPath + "/images/icon.svg"));
+    var navs = ScriptService.NavArray;
+    var iconMD5 = CalcTo.MD5(File.ReadAllText(AppTo.WebRootPath + "/images/icon.svg"));
 }
 <input type="hidden" class="nr-hid-icon" value="/images/icon.svg?@iconMD5" />
 
@@ -22,7 +22,7 @@
                 <sl-menu-item value="">全部</sl-menu-item>
                 @foreach (var ng in navs)
                 {
-                    var group = ng["group"].ToString();
+                    var group = ng.GetValue("group");
                     <sl-menu-item value="@group">@group</sl-menu-item>
                 }
             </sl-select>
@@ -35,19 +35,19 @@
     <div class="nr-card-nav">
         @foreach (var ng in navs)
         {
-            var group = ng["group"].ToString();
-            var items = ng["items"];
+            var group = ng.GetValue("group");
+            var items = ng.GetProperty("items").EnumerateArray();
 
             <div class="row">
                 <h4 class="mt-4">@group</h4>
 
                 @foreach (var item in items)
                 {
-                    var url = item["url"].ToString();
-                    var icon = item["icon"].ToString();
-                    var title = item["title"].ToString();
-                    var remark = item["remark"]?.ToString() ?? title;
-                    var target = item["target"]?.ToString();
+                    var url = item.GetValue("url");
+                    var icon = item.GetValue("icon");
+                    var title = item.GetValue("title");
+                    var remark = item.GetValue("remark") ?? title;
+                    var target = item.GetValue("target");
 
                     if (!isBuildHtml && url.StartsWith('/') && group != "子站")
                     {
@@ -61,7 +61,7 @@
                     <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
                         <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="@url" @Html.Raw(target)>
                             <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#@item["icon"].ToString()"></use></svg>
+                                <svg class="w-100 h-100"><use xlink:href="#@item.GetValue("icon")"></use></svg>
                             </div>
                             <div class="w-75">
                                 <div class="fs-5 text-truncate">@Html.Raw(title)</div>

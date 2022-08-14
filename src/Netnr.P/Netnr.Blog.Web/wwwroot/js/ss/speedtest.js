@@ -54,11 +54,6 @@ var sp = {
     //测速节点
     ss: [
         {
-            name: "饿了么 CDN",
-            cr: 1126 / 10578,
-            link: "https://npm.elemecdn.com/sql.js@1.2.2/dist/sql-asm-debug.js"
-        },
-        {
             name: "七牛 CDN",
             cr: 1126 / 10578,
             link: "https://cdn.staticfile.org/sql.js/1.2.2/dist/sql-asm-debug.js"

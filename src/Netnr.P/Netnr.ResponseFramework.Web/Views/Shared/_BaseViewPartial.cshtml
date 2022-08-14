@@ -18,7 +18,7 @@
 <!--引入页面JS-->
 @{
     var jssrc = $"/js/{ViewContext.RouteData.Values["controller"].ToString().ToLower()}/{ViewContext.RouteData.Values["action"].ToString().ToLower()}.js";
-    var jspath = GlobalTo.WebRootPath + jssrc;
+    var jspath = AppTo.WebRootPath + jssrc;
     if (System.IO.File.Exists(jspath))
     {
         <script src='@jssrc' asp-append-version="true"></script>

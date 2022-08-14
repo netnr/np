@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Netnr.ResponseFramework.Data;
-using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -28,14 +26,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public string QueryMenu(string type)
         {
             string result = string.Empty;
-            var listMenu = Application.CommonService.QuerySysMenuList(x => x.SmStatus == 1, false);
+            var listMenu = CommonService.QuerySysMenuList(x => x.SmStatus == 1, false);
             if (type != "all")
             {
                 #region 根据登录用户查询角色配置的菜单
-                var userinfo = Apps.LoginService.GetLoginUserInfo(HttpContext);
+                var userinfo = IdentityService.Get(HttpContext);
                 if (!string.IsNullOrWhiteSpace(userinfo.RoleId))
                 {
-                    var role = Application.CommonService.QuerySysRoleEntity(x => x.SrId == userinfo.RoleId);
+                    var role = CommonService.QuerySysRoleEntity(x => x.SrId == userinfo.RoleId);
                     if (role != null)
                     {
                         var menuArray = role.SrMenus.Split(',').ToList();
@@ -44,12 +42,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        listMenu = new List<Domain.SysMenu>();
+                        listMenu = new List<SysMenu>();
                     }
                 }
                 else
                 {
-                    listMenu = new List<Domain.SysMenu>();
+                    listMenu = new List<SysMenu>();
                 }
                 #endregion
             }
@@ -88,7 +86,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         public string QueryButtonTree()
         {
             string result = string.Empty;
-            var list = Application.CommonService.QuerySysButtonList(x => x.SbStatus == 1);
+            var list = CommonService.QuerySysButtonList(x => x.SbStatus == 1);
 
             #region 把实体转为JSON节点实体
             var listNode = new List<TreeNodeVM>();
@@ -172,10 +170,10 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     var now = DateTime.Now;
 
                     //虚拟路径
-                    var vpath = GlobalTo.GetValue("StaticResource:RootDir");
+                    var vpath = AppTo.GetValue("StaticResource:RootDir");
                     if (temp == 1)
                     {
-                        vpath = GlobalTo.GetValue("StaticResource:TmpDir");
+                        vpath = AppTo.GetValue("StaticResource:TmpDir");
                     }
                     else
                     {
@@ -183,7 +181,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
 
                     //物理路径
-                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+                    var ppath = PathTo.Combine(AppTo.WebRootPath, vpath);
                     if (!Directory.Exists(ppath))
                     {
                         Directory.CreateDirectory(ppath);

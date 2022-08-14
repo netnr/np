@@ -6,13 +6,13 @@
 
     var dscode = ViewContext.RouteData.Values["id"]?.ToString();
     var sid = ViewContext.RouteData.Values["sid"]?.ToString();
-    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+    var uinfo = IdentityService.Get(ViewContext.HttpContext);
 }
 <!DOCTYPE html>
 <html lang="zh-cn" class="@themeClass">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] @GlobalTo.GetValue("Common:EnglishName") Doc</title>
+    <title>@ViewData["Title"] @AppTo.GetValue("Common:EnglishName") Doc</title>
 
     @Html.Raw(Netnr.QuoteTo.Html("favicon,blog-seo"))
 </head>

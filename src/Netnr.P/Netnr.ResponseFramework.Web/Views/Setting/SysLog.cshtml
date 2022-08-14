@@ -7,7 +7,7 @@
     TableName = "SysLog"
 })
 
-@if (!GlobalTo.GetValue<bool>("logs:enable"))
+@if (!AppTo.GetValue<bool>("logs:enable"))
 {
     <script>
         setTimeout(function () {

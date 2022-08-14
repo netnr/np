@@ -1,6 +1,6 @@
 @model PageVM
 @{
-    var rows = Model.Rows as List<Netnr.Blog.Domain.Gist>;
+    var rows = Model.Rows as List<Gist>;
 
     //如果搜索只有一条，直接跳转
     var search = ViewContext.HttpContext.Request.Query["k"];

@@ -1,7 +1,7 @@
 @{
-    var adminGitHub = GlobalTo.GetValue("Common:AdminGitHub");
-    var mirror = GlobalTo.GetValue("Common:Mirror");
-    var links = GlobalTo.GetValue("Common:Links").Split(',');
+    var adminGitHub = AppTo.GetValue("Common:AdminGitHub");
+    var mirror = AppTo.GetValue("Common:Mirror");
+    var links = AppTo.GetValue("Common:Links").Split(',');
 }
 <hr />
 
@@ -27,14 +27,14 @@
         <div class="col-md-6 px-4 small">
             @{
                 var fd = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-                var os = Netnr.Core.SystemStatusTo.GetOSPlatform();
+                var os = SystemStatusTo.GetOSPlatform();
             }
             <a class="text-muted me-3 lh-lg" href="https://dot.net">Powered by @fd ❤ @os</a>
             <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/about">About</a>
             <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/faq">FAQ</a>
             <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/terms">Terms</a>
             <a class="text-muted text-nowrap me-3 lh-lg" href="@mirror" title="不定时备份到镜像只读站点">Mirror</a>
-            <span class="text-muted">&copy; @GlobalTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
+            <span class="text-muted">&copy; @AppTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
         </div>
     </div>
 </div>

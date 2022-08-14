@@ -1,20 +1,19 @@
 ﻿using System;
 
-namespace Netnr.Core
+namespace Netnr;
+
+/// <summary>
+/// 生成唯一标识
+/// </summary>
+public class UniqueTo
 {
     /// <summary>
-    /// 生成唯一标识
+    /// 根据Guid获取唯一数字序列，19位
     /// </summary>
-    public class UniqueTo
+    /// <returns></returns>
+    public static long LongId()
     {
-        /// <summary>
-        /// 根据Guid获取唯一数字序列，19位
-        /// </summary>
-        /// <returns></returns>
-        public static long LongId()
-        {
-            byte[] bytes = Guid.NewGuid().ToByteArray();
-            return BitConverter.ToInt64(bytes, 0);
-        }
+        byte[] bytes = Guid.NewGuid().ToByteArray();
+        return BitConverter.ToInt64(bytes, 0);
     }
 }

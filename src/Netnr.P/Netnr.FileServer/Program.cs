@@ -5,24 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 ReadyTo.EncodingReg();
 
 //（上传）主体大小限制
-var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Limits.MaxRequestBodySize = srms * 1024 * 1024;
-});
-builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = srms * 1024 * 1024;
-});
+builder.SetMaxRequestData();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
-{
-    //Action原样输出JSON
-    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-    //日期格式化
-    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
-});
+builder.Services.AddControllersWithViews().SetJsonConfig();
 
 //配置swagger
 builder.Services.AddSwaggerGen(c =>
@@ -32,15 +18,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo
     {
         Title = name,
-        Description = $@"
-<b>GitHub</b>：<a target='_blank' href='https://github.com/netnr'>https://github.com/netnr</a>
-&nbsp; 
-<b>Blog</b>：<a target='_blank' href='https://www.netnr.com'>https://www.netnr.com</a>
-&nbsp; 
-文件上传大小限制：<b>{srms}</b> MB
-&nbsp; 
-管理员默认密码：<b>nr</b>
-"
+        Description = "<b>GitHub</b>：<a target='_blank' href='https://github.com/netnr'>https://github.com/netnr</a> 管理员默认密码：<b>nr</b>"
     });
 
     c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
@@ -88,7 +66,7 @@ if (builder.Configuration.GetValue<bool>("Safe:EnableDirectoryBrowsing") && buil
     {
         Directory.CreateDirectory(prootdir);
     }
-    
+
     var fso = new FileServerOptions()
     {
         EnableDirectoryBrowsing = true,

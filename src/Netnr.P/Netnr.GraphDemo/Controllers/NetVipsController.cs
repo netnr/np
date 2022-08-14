@@ -1,4 +1,5 @@
-﻿using NetVips;
+﻿using Microsoft.AspNetCore.Mvc;
+using NetVips;
 
 namespace Netnr.GraphDemo.Controllers;
 
@@ -100,7 +101,7 @@ public class NetVipsController : Controller
     /// <param name="format">格式</param>
     /// <returns></returns>
     [HttpPost]
-    public FileResult SmartCrop(IFormFile file, [FromForm] string w_h = "300_200", [FromForm] string format = "png")
+    public FileResult SmartCrop(IFormFile file, [FromForm] string w_h = "61_100", [FromForm] string format = "png")
     {
         var w_hArr = w_h.Split('_');
         var w = int.Parse(w_hArr[0]);
@@ -119,7 +120,7 @@ public class NetVipsController : Controller
         }
         else
         {
-            var fileName = Path.Combine(env.WebRootPath, "baby.jpg");
+            var fileName = Path.Combine(env.WebRootPath, "netnr_avatar.jpg");
             using var image = Image.Thumbnail(fileName, width: w, height: h, crop: Enums.Interesting.Attention);
             return File(image.WriteToBuffer(formatString), contentType);
         }

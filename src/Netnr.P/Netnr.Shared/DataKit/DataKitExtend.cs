@@ -6,7 +6,6 @@ using MySqlConnector;
 using Oracle.ManagedDataAccess.Client;
 using Microsoft.Data.SqlClient;
 using Npgsql;
-using Netnr.Core;
 
 namespace Netnr
 {
@@ -317,11 +316,8 @@ namespace Netnr
             var dbRead = mdt.ReadConnectionInfo.NewDbHelper();
             //写入数据库
             var dbWrite = mdt.WriteConnectionInfo.NewDbHelper();
-            //写入预检
-            if ((new[] { EnumTo.TypeDB.MySQL, EnumTo.TypeDB.MariaDB }).Contains(mdt.WriteConnectionInfo.ConnectionType))
-            {
-                dbWrite.PreCheckMySQL();
-            }
+            //预检通过
+            var isCopy = dbWrite.PreCheck() != -1;
 
             //遍历
             for (int i = 0; i < mdt.ListReadWrite.Count; i++)
@@ -418,7 +414,7 @@ namespace Netnr
                         //分批写入
                         vm.Log.Add($"写入表（{rw.WriteTableName}）第 {batchNo} 批（行：{dtWrite.Rows.Count}/{rowCount}）");
 
-                        dbWrite.BulkCopy(mdt.WriteConnectionInfo.ConnectionType, dtWrite);
+                        dbWrite.BulkCopy(mdt.WriteConnectionInfo.ConnectionType, dtWrite, isCopy);
 
                         //清理
                         dtWrite.Clear();
@@ -444,7 +440,7 @@ namespace Netnr
                     //分批写入
                     vm.Log.Add($"写入表（{rw.WriteTableName}）第 {batchNo} 批（行：{dtWrite.Rows.Count}/{rowCount}）");
 
-                    dbWrite.BulkCopy(mdt.WriteConnectionInfo.ConnectionType, dtWrite);
+                    dbWrite.BulkCopy(mdt.WriteConnectionInfo.ConnectionType, dtWrite, isCopy);
 
                     //清理
                     dtWrite.Clear();
@@ -490,11 +486,7 @@ namespace Netnr
             var dk = Init(idb.WriteConnectionInfo);
             var writeTables = dk.GetTable();
 
-            //写入预检
-            if ((new[] { EnumTo.TypeDB.MySQL, EnumTo.TypeDB.MariaDB }).Contains(idb.WriteConnectionInfo.ConnectionType))
-            {
-                dk.db.PreCheckMySQL();
-            }
+            var isCopy = dk.db.PreCheck() != -1; //预检通过
 
             for (int i = 0; i < zipList.Count; i++)
             {
@@ -565,7 +557,7 @@ namespace Netnr
 
                 vm.Log.Add($"导入表（{sntn}）分片：{item.Name}（大小：{ParsingTo.FormatByteSize(item.Length)}，行：{dt.Rows.Count}）");
 
-                db.BulkCopy(idb.WriteConnectionInfo.ConnectionType, dt);
+                db.BulkCopy(idb.WriteConnectionInfo.ConnectionType, dt, isCopy);
 
                 vm.Log.Add($"导入表（{sntn}）分片成功，耗时：{vm.PartTimeFormat()}，导入进度：{i + 1}/{zipList.Count}\n");
             }

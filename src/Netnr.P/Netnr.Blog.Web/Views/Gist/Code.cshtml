@@ -1,11 +1,11 @@
-@model Netnr.Blog.Domain.Gist
+@model Gist
 @{
     ViewData["Title"] = Model.GistRemark;
 
-    bool IsMe = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext).UserId == Model.Uid;
-    bool IsAdmin = GlobalTo.GetValue<int>("Common:AdminId") == Model.Uid;
-    var AdminGitHub = GlobalTo.GetValue("Common:AdminGitHub");
-    var AdminGitee = GlobalTo.GetValue("Common:AdminGitee");
+    bool IsMe = IdentityService.Get(ViewContext.HttpContext).UserId == Model.Uid;
+    bool IsAdmin = AppTo.GetValue<int>("Common:AdminId") == Model.Uid;
+    var AdminGitHub = AppTo.GetValue("Common:AdminGitHub");
+    var AdminGitee = AppTo.GetValue("Common:AdminGitee");
 }
 
 <div class="container-fluid p-4">

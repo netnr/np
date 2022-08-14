@@ -1,6 +1,5 @@
 using SQLite;
 using Netnr.FileServer.Domain;
-using Netnr.Core;
 
 namespace Netnr.FileServer.Application
 {
@@ -12,7 +11,7 @@ namespace Netnr.FileServer.Application
         /// <summary>
         /// 连接字符串
         /// </summary>
-        public static string SQLiteConn { get; set; } = GlobalTo.Configuration.GetConnectionString("SQLite").Replace("~", GlobalTo.ContentRootPath);
+        public static string SQLiteConn { get; set; } = AppTo.Configuration.GetConnectionString("SQLite").Replace("~", AppTo.ContentRootPath);
 
         /// <summary>
         /// 创建App
@@ -34,7 +33,7 @@ namespace Netnr.FileServer.Application
                     CreateTime = DateTime.Now,
                     Owner = owner,
                     Token = NewToken(),
-                    TokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired")),
+                    TokenExpireTime = DateTime.Now.AddMinutes(AppTo.GetValue<int>("Safe:TokenExpired")),
                     Remark = "通过接口创建"
                 };
 
@@ -128,7 +127,7 @@ namespace Netnr.FileServer.Application
                 if (sk != null)
                 {
                     sk.Token = NewToken();
-                    sk.TokenExpireTime = DateTime.Now.AddMinutes(GlobalTo.GetValue<int>("Safe:TokenExpired"));
+                    sk.TokenExpireTime = DateTime.Now.AddMinutes(AppTo.GetValue<int>("Safe:TokenExpired"));
 
                     int num = db.Update(sk);
                     vm.Data = new
@@ -172,7 +171,7 @@ namespace Netnr.FileServer.Application
                     var listmo = new List<FixedTokenJson>();
                     if (!string.IsNullOrWhiteSpace(sk.FixedToken))
                     {
-                        listmo = sk.FixedToken.DeJsons<FixedTokenJson>();
+                        listmo = sk.FixedToken.DeJson<List<FixedTokenJson>>();
                     }
 
                     var fixToken = NewToken(true);
@@ -223,7 +222,7 @@ namespace Netnr.FileServer.Application
                 var sk = db.Table<SysApp>().FirstOrDefault(x => x.AppId == AppId && x.AppKey == AppKey);
                 if (sk != null)
                 {
-                    var listmo = sk.FixedToken.DeJsons<FixedTokenJson>();
+                    var listmo = sk.FixedToken.DeJson<List<FixedTokenJson>>();
                     if (listmo.Any(x => x.Token == FixedToken))
                     {
                         listmo.Remove(listmo.FirstOrDefault(x => x.Token.Contains(FixedToken)));
@@ -271,13 +270,13 @@ namespace Netnr.FileServer.Application
                     using var db = new SQLiteConnection(SQLiteConn);
 
                     //FixedToken
-                    if (token.StartsWith(GlobalTo.GetValue("Safe:FixedTokenPrefix")))
+                    if (token.StartsWith(AppTo.GetValue("Safe:FixedTokenPrefix")))
                     {
                         var sk = db.Table<SysApp>().FirstOrDefault(x => x.FixedToken.Contains(token));
 
                         if (sk != null)
                         {
-                            var mo = sk.FixedToken.DeJsons<FixedTokenJson>().FirstOrDefault(x => x.Token == token);
+                            var mo = sk.FixedToken.DeJson<List<FixedTokenJson>>().FirstOrDefault(x => x.Token == token);
                             if (mo.AuthMethod.Split(',').Contains(MethodName))
                             {
                                 vm.Set(EnumTo.RTag.success);
@@ -350,7 +349,7 @@ namespace Netnr.FileServer.Application
                     {
                         vm.Set(EnumTo.RTag.success);
 
-                        var mo = sk.FixedToken.DeJsons<FixedTokenJson>().FirstOrDefault(x => x.Token == fixedToken);
+                        var mo = sk.FixedToken.DeJson<List<FixedTokenJson>>().FirstOrDefault(x => x.Token == fixedToken);
                         mo.Owner = sk.Owner;
                         vm.Data = mo;
                     }
@@ -498,7 +497,7 @@ namespace Netnr.FileServer.Application
                 }
                 else
                 {
-                    var fp = Path.Combine(GlobalTo.WebRootPath, fr.Path);
+                    var fp = Path.Combine(AppTo.WebRootPath, fr.Path);
                     if (File.Exists(fp))
                     {
                         File.Delete(fp);
@@ -524,7 +523,7 @@ namespace Netnr.FileServer.Application
         /// <returns></returns>
         public static string NewToken(bool IsFixedToken = false)
         {
-            return (IsFixedToken ? GlobalTo.GetValue("Safe:FixedTokenPrefix") : "") + (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
+            return (IsFixedToken ? AppTo.GetValue("Safe:FixedTokenPrefix") : "") + (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToUpper();
         }
 
         /// <summary>
@@ -534,7 +533,7 @@ namespace Netnr.FileServer.Application
         /// <returns></returns>
         public static string StaticVrPathAsPhysicalPath(string VrDir)
         {
-            return PathTo.Combine(GlobalTo.GetValue<bool>("Safe:PublicAccess") ? GlobalTo.WebRootPath : GlobalTo.ContentRootPath, VrDir);
+            return PathTo.Combine(AppTo.GetValue<bool>("Safe:PublicAccess") ? AppTo.WebRootPath : AppTo.ContentRootPath, VrDir);
         }
 
     }

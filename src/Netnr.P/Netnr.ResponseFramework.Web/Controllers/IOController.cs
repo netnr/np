@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Netnr.ResponseFramework.Data;
-using Netnr.ResponseFramework.Application;
-using Netnr.Core;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -32,9 +29,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = new ResultVM();
 
             //虚拟路径
-            string vpath = GlobalTo.GetValue("StaticResource:TmpDir");
+            string vpath = AppTo.GetValue("StaticResource:TmpDir");
             //物理路径
-            var ppath = PathTo.Combine(GlobalTo.WebRootPath, vpath);
+            var ppath = PathTo.Combine(AppTo.WebRootPath, vpath);
             if (!Directory.Exists(ppath))
             {
                 Directory.CreateDirectory(ppath);

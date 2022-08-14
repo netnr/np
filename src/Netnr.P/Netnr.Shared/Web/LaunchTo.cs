@@ -8,20 +8,47 @@ namespace Netnr;
 public static class LaunchTo
 {
     /// <summary>
-    /// JSON 统一配置
+    /// 设置最大请求数据长度
     /// </summary>
     /// <param name="builder"></param>
-    public static void SetJson(this IMvcBuilder builder)
+    /// <param name="maxLength">单位：B</param>
+    public static void SetMaxRequestData(this WebApplicationBuilder builder, long? maxLength = null)
     {
-        builder.AddNewtonsoftJson(options =>
+        if (maxLength == null)
         {
-            //Action原样输出JSON
-            options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-            //日期格式化
-            options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+            var maxSize = builder.Configuration.GetValue<int?>("StaticResource:MaxSize");
+            if (!maxSize.HasValue)
+            {
+                maxSize = 50;
+            }
+            maxLength = maxSize * 1024 * 1024;
+        }
 
-            //swagger枚举显示名称
-            options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.Limits.MaxRequestBodySize = maxLength.Value;
+        });
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = maxLength.Value;
+        });
+    }
+
+    /// <summary>
+    /// 配置 JSON
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static IMvcBuilder SetJsonConfig(this IMvcBuilder builder)
+    {
+        return builder.AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.IncludeFields = true; //包含字段 如元组 Tuple
+            options.JsonSerializerOptions.PropertyNamingPolicy = null; // 原样输出，首字母不转小写
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DateTimeJsonConverter()); // 时间格式化
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //枚举字符串
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataTableJsonConverter()); //数据表格式化
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataSetJsonConverter()); //数据集格式化
         });
     }
 
@@ -44,7 +71,7 @@ public static class LaunchTo
                 {
                     errBody = $"{DateTime.Now}\r\n{ex.Error}";
                     Console.WriteLine(errBody);
-                    Core.ConsoleTo.Log(ex.Error);
+                    ConsoleTo.Log(ex.Error);
                 }
                 catch (Exception ex2)
                 {

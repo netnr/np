@@ -1,7 +1,4 @@
-﻿using Netnr.ResponseFramework.Data;
-using Netnr.ResponseFramework.Domain;
-
-namespace Netnr.ResponseFramework.Web.Controllers
+﻿namespace Netnr.ResponseFramework.Web.Controllers
 {
     /// <summary>
     /// 示例，请删除
@@ -36,7 +33,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.TempExample;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -64,7 +61,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysTableConfig;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -115,7 +112,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysMenu;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -143,7 +140,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysRole;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -158,7 +155,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysUser;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -212,7 +209,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.TempInvoiceMain;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -236,7 +233,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 query = query.Where(x => x.TimId == ivm.Pe1);
             }
 
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -252,7 +249,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var vm = new ResultVM();
 
             //明细反序列化为对象
-            var listDetail = rows.DeJsons<TempInvoiceDetail>();
+            var listDetail = rows.DeJson<TempInvoiceDetail[]>();
 
             //新增，补齐主表信息
             var isadd = string.IsNullOrWhiteSpace(moMain.TimId);
@@ -283,7 +280,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
 
             //添加明细
-            if (listDetail.Count > 0)
+            if (listDetail.Length > 0)
             {
                 //初始值
                 foreach (var item in listDetail)
@@ -301,7 +298,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             if (isadd)
             {
-                vm.Data =  moMain.TimId;
+                vm.Data = moMain.TimId;
             }
 
             return vm;

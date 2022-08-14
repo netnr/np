@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Netnr.Blog.Data;
-
-namespace Netnr.Blog.Web.Controllers
+﻿namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// Run
@@ -56,7 +53,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
             }
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             //cmd (Auth)
             switch (sid?.ToLower())
@@ -139,12 +136,12 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM Save([FromForm] Domain.Run mo)
+        public ResultVM Save([FromForm] Run mo)
         {
-            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            var vm = IdentityService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 //add
                 if (string.IsNullOrWhiteSpace(mo.RunCode))
@@ -155,7 +152,7 @@ namespace Netnr.Blog.Web.Controllers
                     mo.RunOpen = 1;
                     mo.Uid = uinfo.UserId;
 
-                    mo.RunCode = Core.UniqueTo.LongId().ToString();
+                    mo.RunCode = UniqueTo.LongId().ToString();
                     db.Run.Add(mo);
                     int num = db.SaveChanges();
 
@@ -186,7 +183,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 //推送通知
-                Application.PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
+                PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
             }
 
             return vm;
@@ -201,9 +198,9 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, int page = 1)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.RunQuery(k, 0, uinfo.UserId, page);
+            var ps = CommonService.RunQuery(k, 0, uinfo.UserId, page);
             ps.Route = Request.Path;
 
             return View("/Views/Run/_PartialRunList.cshtml", ps);
@@ -233,9 +230,9 @@ namespace Netnr.Blog.Web.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.RunQuery(k, uid, uinfo.UserId, page);
+            var ps = CommonService.RunQuery(k, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
 
             return View("/Views/Run/_PartialRunList.cshtml", ps);

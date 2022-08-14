@@ -5,41 +5,21 @@ namespace Netnr.Test
     public class TestNetnrCore
     {
         [Fact]
-        public void CacheTo_1_Set()
+        public void CacheTo_1()
         {
-            var key1 = "test1";
-            Core.CacheTo.Set(key1, "val", 1, false);
+            CacheTo.Set("abc", 1);
+            Debug.WriteLine(CacheTo.Get<int>("abc"));
+            Debug.WriteLine(CacheTo.Get<int>("abcd"));
+            CacheTo.Set("abc", DateTime.Now);
+            Debug.WriteLine(CacheTo.Get<DateTime>("abc"));
+            CacheTo.Set("abc", new ResultVM());
+            Debug.WriteLine(CacheTo.Get<ResultVM>("abc"));
+            Debug.WriteLine(CacheTo.Get<ResultVM>("abcd"));
 
-            Assert.Equal("val", Core.CacheTo.Get(key1));
-
+            CacheTo.Set("k1", DateTime.Now, 1, false);
+            Debug.WriteLine(CacheTo.Get<DateTime>("k1"));
             Thread.Sleep(1000);
-
-            Assert.Null(Core.CacheTo.Get(key1));
-        }
-
-        [Fact]
-        public void CacheTo_2_Remove()
-        {
-            var key2 = "test2";
-            Core.CacheTo.Set(key2, "val");
-
-            Assert.Equal("val", Core.CacheTo.Get(key2));
-
-            Core.CacheTo.Remove(key2);
-
-            Assert.Null(Core.CacheTo.Get(key2));
-        }
-
-        [Fact]
-        public void CacheTo_3_RemoveAll()
-        {
-            var key3 = "test3";
-            Core.CacheTo.SetOption(key3, "val3", 10, false);
-
-            Thread.Sleep(3000);
-            Core.CacheTo.RemoveAll();
-
-            Assert.Null(Core.CacheTo.Get(key3));
+            Debug.WriteLine(CacheTo.Get<DateTime?>("k1"));
         }
 
         [Fact]
@@ -48,15 +28,18 @@ namespace Netnr.Test
             var txt1 = "text1";
             var key1 = "key1";
 
-            var val1 = Core.CalcTo.AESEncrypt(txt1, key1);
-            var txt2 = Core.CalcTo.AESDecrypt(val1, key1);
+            var val1 = CalcTo.AESEncrypt(txt1, key1);
+            var txt2 = CalcTo.AESDecrypt(val1, key1);
 
             Assert.Equal(txt1, txt2);
+
+            var v1 = CalcTo.AESDecrypt("ObQj0pVbF5lUu8lKGIhMqw==", "");
+            Debug.WriteLine(v1);
 
             var key2 = "bad key";
             try
             {
-                Core.CalcTo.AESDecrypt(val1, key2);
+                CalcTo.AESDecrypt(val1, key2);
             }
             catch (Exception ex)
             {
@@ -70,8 +53,8 @@ namespace Netnr.Test
         {
             var txt1 = "text1";
 
-            var val1 = Core.CalcTo.AESEncrypt(txt1, Core.CalcTo.AESBuild("key 123", "iv 456"));
-            var txt2 = Core.CalcTo.AESDecrypt(val1, Core.CalcTo.AESBuild("key 123", "iv 456"));
+            var val1 = CalcTo.AESEncrypt(txt1, CalcTo.AESBuild("key 123"));
+            var txt2 = CalcTo.AESDecrypt(val1, CalcTo.AESBuild("key 123"));
 
             Assert.Equal(txt1, txt2);
         }
@@ -82,15 +65,15 @@ namespace Netnr.Test
             var txt1 = "text1";
             var key1 = "key1";
 
-            var val1 = Core.CalcTo.DESEncrypt(txt1, key1);
-            var txt2 = Core.CalcTo.DESDecrypt(val1, key1);
+            var val1 = CalcTo.DESEncrypt(txt1, key1);
+            var txt2 = CalcTo.DESDecrypt(val1, key1);
 
             Assert.Equal(txt1, txt2);
 
             var key2 = "bad key";
             try
             {
-                Core.CalcTo.DESDecrypt(val1, key2);
+                CalcTo.DESDecrypt(val1, key2);
             }
             catch (Exception ex)
             {
@@ -104,8 +87,8 @@ namespace Netnr.Test
         {
             var txt1 = "text1";
 
-            var val1 = Core.CalcTo.DESEncrypt(txt1, Core.CalcTo.DESBuild("key 123", "iv 456"));
-            var txt2 = Core.CalcTo.DESDecrypt(val1, Core.CalcTo.DESBuild("key 123", "iv 456"));
+            var val1 = CalcTo.DESEncrypt(txt1, CalcTo.DESBuild("key 123", "iv 456"));
+            var txt2 = CalcTo.DESDecrypt(val1, CalcTo.DESBuild("key 123", "iv 456"));
 
             Assert.Equal(txt1, txt2);
         }
@@ -115,7 +98,7 @@ namespace Netnr.Test
         {
             var txt1 = "text1";
 
-            var val1 = Core.CalcTo.HashBase64(Core.CalcTo.HashType.MD5, txt1.ToStream());
+            var val1 = CalcTo.HashBase64(CalcTo.HashType.MD5, txt1.ToStream());
 
             //https://approsto.com/md5-generator/
             Assert.Equal("zvfM2J2s8c7W9eyR11mVPw==", val1);
@@ -125,37 +108,37 @@ namespace Netnr.Test
         public void CaclTo_2_HashString()
         {
             var txt1 = "text1";
-            Assert.Equal("cef7ccd89dacf1ced6f5ec91d759953f", Core.CalcTo.MD5(txt1));
-            Assert.Equal("38e9be6401e62f7d1555230d9df956fb85c2ba6e", Core.CalcTo.SHA_1(txt1));
-            Assert.Equal("fe8df1a5a1980493ca9406ad3bb0e41297d979d90165a181fb39a5616a1c0789", Core.CalcTo.SHA_256(txt1));
-            Assert.Equal("94cdfd2332d260a102e4b5541503f9ff82d1e7136a2f720fea018816dbb7c62eb761ef050a83fd44971d667483080fdf", Core.CalcTo.SHA_384(txt1));
-            Assert.Equal("b5534aa935bcb3749cbd0846c636ef2dca0d4119225b731b03336d51fd765a81ff0d9c19ed31ccc6dc6b6fc2826ee0eac29e7115330566e2088e3c2ee9155b4e", Core.CalcTo.SHA_512(txt1));
+            Assert.Equal("cef7ccd89dacf1ced6f5ec91d759953f", CalcTo.MD5(txt1));
+            Assert.Equal("38e9be6401e62f7d1555230d9df956fb85c2ba6e", CalcTo.SHA_1(txt1));
+            Assert.Equal("fe8df1a5a1980493ca9406ad3bb0e41297d979d90165a181fb39a5616a1c0789", CalcTo.SHA_256(txt1));
+            Assert.Equal("94cdfd2332d260a102e4b5541503f9ff82d1e7136a2f720fea018816dbb7c62eb761ef050a83fd44971d667483080fdf", CalcTo.SHA_384(txt1));
+            Assert.Equal("b5534aa935bcb3749cbd0846c636ef2dca0d4119225b731b03336d51fd765a81ff0d9c19ed31ccc6dc6b6fc2826ee0eac29e7115330566e2088e3c2ee9155b4e", CalcTo.SHA_512(txt1));
 
             var key1 = "key1";
-            Assert.Equal("9f04de3535fa2e64924083003b8b16c8a84ef0ee", Core.CalcTo.HMAC_SHA1(txt1, key1));
-            Assert.Equal("cd1e288d14bfafa334ccb7f4394d9f524726a6c565aa548a9483155c89dd0e8c", Core.CalcTo.HMAC_SHA256(txt1, key1));
-            Assert.Equal("eeea03bda39b6c6441b4baab8c644832fcd48ff269b682b53a2407249f54ce5ebedab1c325198c464357280349f0b101", Core.CalcTo.HMAC_SHA384(txt1, key1));
-            Assert.Equal("fceeb5fa9d2107da9e35a9b068d0b4f38020b63ef56810d8e042c5e59d8deb9810232f8fdc61772b485318f9a0261a763ae6979442687ceba8aefe7d372f365a", Core.CalcTo.HMAC_SHA512(txt1, key1));
-            Assert.Equal("cb3b4a1be8c7c2963c4a2475c0837466", Core.CalcTo.HMAC_MD5(txt1, key1));
+            Assert.Equal("9f04de3535fa2e64924083003b8b16c8a84ef0ee", CalcTo.HMAC_SHA1(txt1, key1));
+            Assert.Equal("cd1e288d14bfafa334ccb7f4394d9f524726a6c565aa548a9483155c89dd0e8c", CalcTo.HMAC_SHA256(txt1, key1));
+            Assert.Equal("eeea03bda39b6c6441b4baab8c644832fcd48ff269b682b53a2407249f54ce5ebedab1c325198c464357280349f0b101", CalcTo.HMAC_SHA384(txt1, key1));
+            Assert.Equal("fceeb5fa9d2107da9e35a9b068d0b4f38020b63ef56810d8e042c5e59d8deb9810232f8fdc61772b485318f9a0261a763ae6979442687ceba8aefe7d372f365a", CalcTo.HMAC_SHA512(txt1, key1));
+            Assert.Equal("cb3b4a1be8c7c2963c4a2475c0837466", CalcTo.HMAC_MD5(txt1, key1));
         }
 
         [Fact]
         public void CaclTo_1_RSA()
         {
-            Core.CalcTo.RSAKey(out string xmlPrivateKey, out string xmlPublicKey, 2048);
+            CalcTo.RSAKey(out string xmlPrivateKey, out string xmlPublicKey, 2048);
             Assert.NotEmpty(xmlPrivateKey);
             Assert.NotEmpty(xmlPublicKey);
 
             var content1 = "abc 123 !@#";
-            var content2 = Core.CalcTo.encoding.GetBytes(content1);
+            var content2 = CalcTo.encoding.GetBytes(content1);
 
-            var resultEncrypt1 = Core.CalcTo.RSAEncrypt(xmlPublicKey, content1);
-            var resultEncrypt2 = Core.CalcTo.RSAEncrypt(xmlPublicKey, content2);
+            var resultEncrypt1 = CalcTo.RSAEncrypt(xmlPublicKey, content1);
+            var resultEncrypt2 = CalcTo.RSAEncrypt(xmlPublicKey, content2);
             Assert.NotEmpty(resultEncrypt1);
             Assert.NotEmpty(resultEncrypt2);
 
-            var resultDecrypt1 = Core.CalcTo.RSADecrypt(xmlPrivateKey, resultEncrypt1);
-            var resultDecrypt2 = Core.CalcTo.RSADecrypt(xmlPrivateKey, resultEncrypt2);
+            var resultDecrypt1 = CalcTo.RSADecrypt(xmlPrivateKey, resultEncrypt1);
+            var resultDecrypt2 = CalcTo.RSADecrypt(xmlPrivateKey, resultEncrypt2);
             Assert.Equal(content1, resultDecrypt1);
             Assert.Equal(content1, resultDecrypt2);
         }
@@ -163,15 +146,15 @@ namespace Netnr.Test
         [Fact]
         public void CmdTo_1()
         {
-            if (Core.CmdTo.IsWindows)
+            if (GlobalTo.IsWindows)
             {
-                var val1 = Core.CmdTo.Execute("ver");
+                var val1 = CmdTo.Execute("ver");
                 Assert.Empty(val1.CrError);
                 Assert.Contains("Microsoft Windows", val1.CrOutput);
             }
             else
             {
-                var val1 = Core.CmdTo.Execute("uname -a");
+                var val1 = CmdTo.Execute("uname -a");
                 Assert.Empty(val1.CrError);
                 Assert.Contains("Linux", val1.CrOutput);
             }
@@ -181,8 +164,8 @@ namespace Netnr.Test
         public void CmdTo_2()
         {
             var result = string.Empty;
-            var psi = Core.CmdTo.PSInfo("-V", @"curl");
-            Core.CmdTo.Execute(psi, (process, cr) =>
+            var psi = CmdTo.PSInfo("-V", @"curl");
+            CmdTo.Execute(psi, (process, cr) =>
             {
                 process.Start();
                 result = process.StandardOutput.ReadToEnd();
@@ -197,7 +180,7 @@ namespace Netnr.Test
         public void CmdTo_3_FFmpeg()
         {
             var result = string.Empty;
-            Core.CmdTo.Execute(Core.CmdTo.PSInfo(@"-i", "ffmpeg"), (process, cr) =>
+            CmdTo.Execute(CmdTo.PSInfo(@"-i", "ffmpeg"), (process, cr) =>
             {
                 process.ErrorDataReceived += (sender, output) =>
                 {
@@ -215,9 +198,8 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void ConsoleTo()
+        public void ConsoleTo_1()
         {
-            Core.ConsoleTo.Log(DateTime.Now);
             var i = 0;
             try
             {
@@ -225,7 +207,7 @@ namespace Netnr.Test
             }
             catch (Exception ex)
             {
-                Core.ConsoleTo.Log(ex);
+                ConsoleTo.Log(ex);
             }
 
             var now = DateTime.Now;
@@ -242,30 +224,31 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void Extend_1_JSON_Table_List()
+        public void Extensions_0_Xml()
         {
-            var vm = new ResultVM();
+            var v1 =
+@"
+<xml>
+  <ToUserName><![CDATA[toUser]]></ToUserName>
+  <FromUserName><![CDATA[FromUser]]></FromUserName>
+  <CreateTime>123456789</CreateTime>
+  <MsgType><![CDATA[event]]></MsgType>
+  <Event><![CDATA[subscribe]]></Event>
+</xml>
+";
+            var doc = v1.DeXml();
+            Assert.True(doc.GetValue("/xml/ToUserName") == "toUser");
+            Assert.True(doc.SelectSingleNode("/xml/FromUserName").InnerText == "FromUser");
+        }
+
+        [Fact]
+        public void Extensions_1_Table_List()
+        {
             var list = new List<ResultVM>()
             {
                 new ResultVM(),
                 new ResultVM()
             };
-
-            var val1 = vm.ToJson();
-            var val2 = list.ToJson();
-            Assert.NotEmpty(val1);
-            Assert.NotEmpty(val2);
-
-            var jo1 = val1.ToJObject();
-            var ja1 = val2.ToJArray();
-            Assert.NotNull(jo1);
-            Assert.NotNull(ja1);
-            Assert.True(string.IsNullOrEmpty(jo1["null"].ToStringOrEmpty()));
-
-            var jo2 = val1.DeJson<ResultVM>();
-            var jo3 = val2.DeJsons<ResultVM>();
-            Assert.IsType<ResultVM>(jo2);
-            Assert.Equal(2, jo3.Count);
 
             var dt1 = list.ToDataTable();
             Assert.Equal(2, dt1.Rows.Count);
@@ -275,7 +258,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void Extend_2_Escape()
+        public void Extensions_2_Escape()
         {
             var passwd = "' or ''='";
             var sql = $"select 1 from user where user='admin' and passwd='{passwd.OfSql()}'";
@@ -283,7 +266,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void Extend_3_Encode_Decode()
+        public void Extensions_3_Encode_Decode()
         {
             var key1 = "一二三";
             var val1 = key1.ToUrlEncode();
@@ -300,7 +283,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void Extend_4_Copy()
+        public void Extensions_4_Copy()
         {
             var vm1 = new ResultVM
             {
@@ -313,7 +296,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void Extend_5_Date()
+        public void Extensions_5_Date()
         {
             var datetime = new DateTime(2022, 5, 12, 3, 24, 35, DateTimeKind.Utc);
             Assert.Equal(1652325875, datetime.ToTimestamp());
@@ -321,7 +304,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void Extend_6_Add()
+        public void Extensions_6_Add()
         {
             var v1 = new string[3] { "a", "b", "c" };
             var v2 = v1.Add("d");
@@ -333,18 +316,18 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void FileTo()
+        public void FileTo_1()
         {
             var txt1 = "test1";
             var path = Path.GetTempFileName();
 
-            Core.FileTo.WriteText(txt1, path);
-            Core.FileTo.WriteText(txt1, path);
+            FileTo.WriteText(txt1, path);
+            FileTo.WriteText(txt1, path);
 
             Assert.StartsWith($"{txt1}\r\n{txt1}", File.ReadAllText(path));
 
             var txt2 = "test2";
-            Core.FileTo.WriteText(txt2, path, false);
+            FileTo.WriteText(txt2, path, false);
             Assert.StartsWith(txt2, File.ReadAllText(path));
 
             File.Delete(path);
@@ -354,7 +337,7 @@ namespace Netnr.Test
         public void HttpTo_1_Get()
         {
             string url = "https://vv.video.qq.com/checktime?otype=json";
-            var result = Core.HttpTo.Get(url);
+            var result = HttpTo.Get(url);
             Assert.Contains("QZOutputJson", result);
         }
 
@@ -362,7 +345,7 @@ namespace Netnr.Test
         public void HttpTo_2_Post()
         {
             string url = "https://vv.video.qq.com/checktime?otype=json";
-            var result = Core.HttpTo.Post(url, "");
+            var result = HttpTo.Post(url, "");
             Assert.Contains("QZOutputJson", result);
         }
 
@@ -371,62 +354,87 @@ namespace Netnr.Test
         {
             string url = "https://img01.sogoucdn.com/app/a/100540022/2021053117531272442865.png";
             var tmpPath = Path.GetTempFileName();
-            Core.HttpTo.DownloadSave(url, tmpPath);
+            HttpTo.DownloadSave(url, tmpPath);
 
             Assert.True(File.Exists(tmpPath));
+        }
+
+        [Fact]
+        public async void MailTo_1()
+        {
+            try
+            {
+                var model = new MailTo.SendModel()
+                {
+                    Host = "smtp.exmail.qq.com",
+                    //Port = 465,
+                    FromMail = "netnr@netnr.com",
+                    FromPassword = "密码",
+                    FromName = "Netnr",
+                    Subject = "验证码",
+                    Body = $"你的验证码为：<h2 style='text-align:center'>{RandomTo.NumCode()}</h2>",
+                    ToMail = new List<string> { "netnr@tempmail.cn", "netnr@bccto.cc" },
+                    CcMail = new List<string> { "netnr@teml.net", "netnr@nqmo.com" }
+                };
+                await MailTo.Send(model);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
         }
 
         [Fact]
         public void ParsingTo_1_Is()
         {
             var key1 = "netnr@netnr.com";
-            Assert.True(Core.ParsingTo.IsMail(key1));
-            Assert.False(Core.ParsingTo.IsMail(key1.Replace(".", "..")));
-            Assert.False(Core.ParsingTo.IsMail(key1.Replace("@", "")));
+            Assert.True(ParsingTo.IsMail(key1));
+            Assert.False(ParsingTo.IsMail(key1.Replace(".", "..")));
+            Assert.False(ParsingTo.IsMail(key1.Replace("@", "")));
         }
 
         [Fact]
         public void ParsingTo_2_Format()
         {
-            Assert.Equal("1023 B", Core.ParsingTo.FormatByteSize(1023));
-            Assert.Equal("1 KiB", Core.ParsingTo.FormatByteSize(1024));
-            Assert.Equal("1 KiB", Core.ParsingTo.FormatByteSize(1025));
-            Assert.Equal("1 MiB", Core.ParsingTo.FormatByteSize(1024 * 1024));
-            Assert.Equal("1 MiB", Core.ParsingTo.FormatByteSize(1024 * 1024 + 1));
-            Assert.Equal("1 MiB", Core.ParsingTo.FormatByteSize(1024 * 1024 - 1));
-            Assert.Equal("1 GiB", Core.ParsingTo.FormatByteSize(1024 * 1024 * 1024));
+            Assert.Equal("1023 B", ParsingTo.FormatByteSize(1023));
+            Assert.Equal("1 KiB", ParsingTo.FormatByteSize(1024));
+            Assert.Equal("1 KiB", ParsingTo.FormatByteSize(1025));
+            Assert.Equal("1 MiB", ParsingTo.FormatByteSize(1024 * 1024));
+            Assert.Equal("1 MiB", ParsingTo.FormatByteSize(1024 * 1024 + 1));
+            Assert.Equal("1 MiB", ParsingTo.FormatByteSize(1024 * 1024 - 1));
+            Assert.Equal("1 GiB", ParsingTo.FormatByteSize(1024 * 1024 * 1024));
 
-            Assert.Equal("00:00:00:222", Core.ParsingTo.FormatMillisecondsSize(222));
-            Assert.Equal("00:00:22:022", Core.ParsingTo.FormatMillisecondsSize(1000 * 22 + 22));
-            Assert.Equal("00:01:22:022", Core.ParsingTo.FormatMillisecondsSize(1000 * 82 + 22));
-            Assert.Equal("01:00:00:022", Core.ParsingTo.FormatMillisecondsSize(1000 * 3600 + 22));
+            Assert.Equal("00:00:00:222", ParsingTo.FormatMillisecondsSize(222));
+            Assert.Equal("00:00:22:022", ParsingTo.FormatMillisecondsSize(1000 * 22 + 22));
+            Assert.Equal("00:01:22:022", ParsingTo.FormatMillisecondsSize(1000 * 82 + 22));
+            Assert.Equal("01:00:00:022", ParsingTo.FormatMillisecondsSize(1000 * 3600 + 22));
         }
 
         [Fact]
-        public void PathTo()
+        public void PathTo_1()
         {
-            Assert.Equal("abc/123/xyz/", Core.PathTo.Combine("abc/ ", "/123", "", "xyz/"));
+            Assert.Equal("abc/123/xyz/", PathTo.Combine("abc/ ", "/123", "", "xyz/"));
 
             Assert.NotEqual("abc/123/xyz/", Path.Combine("abc/ ", "/123", "", "xyz/"));
         }
 
         [Fact]
-        public void RandomTo()
+        public void RandomTo_1()
         {
-            Assert.Matches("\\w{4}", Core.RandomTo.NumCode());
-            Assert.Matches("\\d{99}", Core.RandomTo.NumCode(99));
+            Assert.Matches("\\w{4}", RandomTo.NumCode());
+            Assert.Matches("\\d{99}", RandomTo.NumCode(99));
 
-            Assert.Matches("\\w{4}", Core.RandomTo.StrCode());
-            Assert.Matches("\\w{10}", Core.RandomTo.StrCode(10));
-            Assert.Matches("\\w{50}", Core.RandomTo.StrCode(50));
-            Assert.Matches("\\w{999}", Core.RandomTo.StrCode(999));
+            Assert.Matches("\\w{4}", RandomTo.StrCode());
+            Assert.Matches("\\w{10}", RandomTo.StrCode(10));
+            Assert.Matches("\\w{50}", RandomTo.StrCode(50));
+            Assert.Matches("\\w{999}", RandomTo.StrCode(999));
         }
 
         [Fact]
-        public void SnowflakeTo()
+        public void SnowflakeTo_1()
         {
             var st = new TimingVM();
-            var sf = new Core.SnowflakeTo();
+            var sf = new SnowflakeTo();
 
             var hs = new HashSet<long>();
             for (int i = 0; i < 1_999_999; i++)
@@ -441,51 +449,21 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void SystemStatusTo()
+        public void SystemStatusTo_1()
         {
-            var ss = new Core.SystemStatusTo();
+            var ss = new SystemStatusTo();
             Assert.NotEmpty(ss.ToJson());
             Assert.NotEmpty(ss.ToView());
-
-            //var isStop = false;
-            //Core.SystemStatusTo.GetNetworkSpeed((brSpeed, bsSpeed, brDic, bsDic) =>
-            //{
-            //    Debug.WriteLine($"Received Speed: {Core.ParsingTo.FormatByteSize(brSpeed)}/s");
-            //    Debug.WriteLine($"Sent Speed: {Core.ParsingTo.FormatByteSize(bsSpeed)}/s\r\n");
-
-            //    isStop = true;
-            //}, ref isStop);
         }
 
         [Fact]
-        public void TreeTo()
-        {
-            var list = new List<ResultVM>();
-            //id:Code Pid:Data
-            var vm1 = new ResultVM() { Code = 1, Msg = "一级", Data = 0 };
-            var vm2 = new ResultVM() { Code = 11, Msg = "二级", Data = 1 };
-            var vm3 = new ResultVM() { Code = 12, Msg = "二级", Data = 1 };
-            var vm4 = new ResultVM() { Code = 121, Msg = "三级", Data = 12 };
-            list.Add(vm1);
-            list.Add(vm2);
-            list.Add(vm3);
-            list.Add(vm4);
-
-            var result = Core.TreeTo.ListToTree(list, "Data", "Code", new List<string> { "0" });
-            Assert.NotEmpty(result);
-
-            var nodes = Core.TreeTo.FindToTree(list, "Data", "Code", new List<string> { "12" });
-            Assert.Single(nodes);
-        }
-
-        [Fact]
-        public void UniqueTo()
+        public void UniqueTo_1()
         {
             var st = new TimingVM();
             var hs = new HashSet<long>();
             for (int i = 0; i < 1_999_999; i++)
             {
-                var val = Core.UniqueTo.LongId();
+                var val = UniqueTo.LongId();
                 if (!hs.Add(val))
                 {
                     throw new Exception("same");
@@ -507,16 +485,16 @@ namespace Netnr.Test
             };
 
             var zipPath = Path.Combine(Path.GetTempPath(), "00-zip-test.zip");
-            Core.ZipTo.Create(dicFile, zipPath);
+            ZipTo.Create(dicFile, zipPath);
             Assert.True(File.Exists(zipPath));
 
-            Core.ZipTo.Extract(zipPath);
+            ZipTo.Extract(zipPath);
 
             var dirPath = Path.Combine(Path.GetTempPath(), "00-zip-test");
             Assert.True(File.Exists(Path.Combine(dirPath, Path.GetFileName(pathName1))));
 
             File.Delete(zipPath);
-            Core.ZipTo.Create(dirPath, zipPath);
+            ZipTo.Create(dirPath, zipPath);
 
             File.Delete(pathName1);
             File.Delete(pathName2);
@@ -534,11 +512,11 @@ namespace Netnr.Test
 
             var savePath = Path.Combine(Path.GetTempPath(), "text2zip.zip");
 
-            var zipBuffer = Core.ZipTo.TextToZip(text);
-            var text1 = Core.ZipTo.ZipToText(zipBuffer);
+            var zipBuffer = ZipTo.TextToZip(text);
+            var text1 = ZipTo.ZipToText(zipBuffer);
             Assert.Equal(text, text1);
 
-            Core.ZipTo.TextToZip(text, savePath: savePath);
+            ZipTo.TextToZip(text, savePath: savePath);
             Assert.True(File.Exists(savePath));
 
             File.Delete(savePath);

@@ -91,65 +91,6 @@ namespace Netnr
                 return num;
             });
         }
-
-        /// <summary>
-        /// MySQL写入预检
-        /// </summary>
-        /// <returns></returns>
-        public int PreCheckMySQL()
-        {
-            var drs = SqlExecuteReader("SHOW VARIABLES").Item1.Tables[0].Select();
-
-            var dicVar1 = new Dictionary<string, string>
-            {
-                { "local_infile","是否允许加载本地数据，BulkCopy 需要开启"},
-                { "innodb_lock_wait_timeout","innodb 的 dml 操作的行级锁的等待时间，事务等待获取资源等待的最长时间，BulkCopy 量大超时设置，单位：秒"},
-                { "max_allowed_packet","传输的 packet 大小限制，最大 1G，单位：B"}
-            };
-
-            var listBetterSql = new List<string>();
-            foreach (var key in dicVar1.Keys)
-            {
-                var dr = drs.FirstOrDefault(x => x[0].ToString() == key);
-                if (dr != null)
-                {
-                    var val = dr[1]?.ToString();
-                    switch (key)
-                    {
-                        case "local_infile":
-                            if (val != "ON")
-                            {
-                                //ON 开启，OFF 关闭
-                                listBetterSql.Add("SET GLOBAL local_infile = ON");
-                            }
-                            break;
-                        case "innodb_lock_wait_timeout":
-                            if (Convert.ToInt32(val) < 600)
-                            {
-                                //10 分钟超时
-                                listBetterSql.Add("SET GLOBAL innodb_lock_wait_timeout = 600");
-                            }
-                            break;
-                        case "max_allowed_packet":
-                            if (Convert.ToInt32(val) != 1073741824)
-                            {
-                                //传输的 packet 大小 1G
-                                listBetterSql.Add("SET GLOBAL max_allowed_packet = 1073741824");
-                            }
-                            break;
-                    }
-                }
-            }
-
-            if (listBetterSql.Count > 0)
-            {
-                Console.WriteLine($"\n执行优化脚本：\n{string.Join(Environment.NewLine, listBetterSql)}\n");
-                SqlExecuteNonQuery(listBetterSql);
-            }
-
-            return listBetterSql.Count;
-        }
-
     }
 }
 

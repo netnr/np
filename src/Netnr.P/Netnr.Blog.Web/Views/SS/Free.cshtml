@@ -1,5 +1,5 @@
 @{
-    var md = File.ReadAllText(GlobalTo.WebRootPath + "/file/ss/free.md");
+    var md = File.ReadAllText(AppTo.WebRootPath + "/file/ss/free.md");
     var html = Markdig.Markdown.ToHtml(md);
 }
 

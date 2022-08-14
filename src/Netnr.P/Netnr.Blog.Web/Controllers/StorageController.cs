@@ -1,5 +1,4 @@
 ﻿using Netease.Cloud.NOS;
-using Newtonsoft.Json.Linq;
 using Qiniu.Storage;
 using Qiniu.Util;
 using System.Security.Cryptography;
@@ -9,7 +8,7 @@ namespace Netnr.Blog.Web.Controllers
     /// <summary>
     /// 对象存储
     /// </summary>
-    [Apps.FilterConfigs.IsAdmin]
+    [FilterConfigs.IsAdmin]
     public class StorageController : Controller
     {
         /// <summary>
@@ -61,8 +60,8 @@ namespace Netnr.Blog.Web.Controllers
             var keys = Request.Query["keys"].ToString();
             var newKey = Request.Query["newKey"].ToString();
 
-            var secretId = GlobalTo.GetValue($"StorageKey:{id}:SecretId");
-            var secretKey = GlobalTo.GetValue($"StorageKey:{id}:SecretKey");
+            var secretId = AppTo.GetValue($"StorageKey:{id}:SecretId");
+            var secretKey = AppTo.GetValue($"StorageKey:{id}:SecretKey");
 
             try
             {
@@ -70,7 +69,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     case "key":
                         {
-                            var result = System.IO.File.ReadAllText(GlobalTo.ContentRootPath + "/appsettings.json").ToJObject()["StorageKey"].ToJson();
+                            var result = System.IO.File.ReadAllText(AppTo.ContentRootPath + "/appsettings.json").DeJson().GetProperty("StorageKey").ToJson();
                             return Content(result);
                         }
                     case "qiniu":
@@ -131,11 +130,11 @@ namespace Netnr.Blog.Web.Controllers
                             {
                                 case "upload-token":
                                     {
-                                        var putPolicy = new JObject
+                                        var putPolicy = new
                                         {
-                                            ["Bucket"] = bucket,
-                                            ["Object"] = key,
-                                            ["Expires"] = DateTime.Now.AddHours(7).ToTimestamp() // Unix时间，单位：秒
+                                            Bucket = bucket,
+                                            Object = key,
+                                            Expires = DateTime.Now.AddHours(7).ToTimestamp() // Unix时间，单位：秒
                                         };
                                         var encodedPutPolicy = putPolicy.ToJson().ToBase64Encode();
                                         using var algorithm = new HMACSHA256();

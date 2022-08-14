@@ -14,7 +14,7 @@ public class QuoteTo
     /// <returns></returns>
     public static string Html(string quotes)
     {
-        var adminGitHub = GlobalTo.GetValue("Common:AdminGitHub");
+        var adminGitHub = AppTo.GetValue("Common:AdminGitHub");
 
         var vh = new List<string>();
 
@@ -34,7 +34,7 @@ public class QuoteTo
                 case "favicon":
                     vh.Add("<link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />");
                     break;
-                    
+
                 case "netnrmd.css":
                     vh.Add("<link href='/app/md/dist/netnrmd.css?v4-20220714' rel='stylesheet' />");
                     break;
@@ -68,20 +68,14 @@ public class QuoteTo
                     break;
 
                 case "bpmn-js":
-                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.1/dist/assets/diagram-js.css' rel='stylesheet' async />");
-                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.1/dist/assets/bpmn-js.css' rel='stylesheet' async />");
-                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.1/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />");
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.1/dist/bpmn-modeler.production.min.js'></script>");
+                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.2/dist/assets/diagram-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.2/dist/assets/bpmn-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.2/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/bpmn-js@9.3.2/dist/bpmn-modeler.production.min.js'></script>");
                     break;
 
                 case "leancloud-storage.js":
                     vh.Add("<script src='https://fastly.jsdelivr.net/npm/leancloud-storage@4.13.1/dist/av-min.js'></script>");
-                    break;
-
-                case "shoelace":
-                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/themes/light.css' rel='stylesheet' async />");
-                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/themes/dark.css' rel='stylesheet' async />");
-                    vh.Add("<script type='module' src='https://fastly.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/shoelace.js'></script>");
                     break;
 
                 case "jstree":
@@ -106,11 +100,11 @@ public class QuoteTo
                     break;
 
                 case "cos-js-sdk-v5.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/cos-js-sdk-v5@1.3.9/dist/cos-js-sdk-v5.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/cos-js-sdk-v5@1.3.10/dist/cos-js-sdk-v5.min.js'></script>");
                     break;
 
                 case "ag-grid-enterprise.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/ag-grid-enterprise@28.0.2/dist/ag-grid-enterprise.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/ag-grid-enterprise@28.1.0/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
                     break;
 
@@ -137,7 +131,7 @@ public class QuoteTo
                     break;
 
                 case "sql-formatter.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/sql-formatter@8.2.0/dist/sql-formatter.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/sql-formatter@9.0.0/dist/sql-formatter.min.js'></script>");
                     break;
 
                 case "highcharts.js":
@@ -145,7 +139,7 @@ public class QuoteTo
                     break;
 
                 case "hls.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/hls.js@1.1.5/dist/hls.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/hls.js@1.2.0/dist/hls.min.js'></script>");
                     break;
 
                 case "watermark.js":
@@ -180,27 +174,27 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/swagger-ui-dist@4.13.0/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://fastly.jsdelivr.net/npm/swagger-ui-dist@4.13.2/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/swagger-ui-dist@4.13.0/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/swagger-ui-dist@4.13.0/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/swagger-ui-dist@4.13.2/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/swagger-ui-dist@4.13.2/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/js-beautify@1.14.4/js/lib/beautifier.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/js-beautify@1.14.5/js/lib/beautifier.min.js'></script>");
                     break;
 
                 case "jdenticon.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/jdenticon@3.1.1/dist/jdenticon.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/jdenticon@3.2.0/dist/jdenticon.min.js'></script>");
                     break;
 
                 case "jszip.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/jszip@3.10.0/dist/jszip.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'></script>");
                     break;
 
                 case "pdf.js":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/pdfjs-dist@2.14.305/legacy/build/pdf.min.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/pdfjs-dist@2.15.349/legacy/build/pdf.min.js'></script>");
                     break;
 
                 case "nginxbeautifier":
@@ -208,14 +202,14 @@ public class QuoteTo
                     break;
 
                 case "monaco-editor":
-                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js'></script>");
+                    vh.Add("<script src='https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
                                 var meRequire = require;
 
                                 require.config({
                                     paths: {
-                                        vs: 'https://fastly.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs'
+                                        vs: 'https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs'
                                     },
                                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                 });

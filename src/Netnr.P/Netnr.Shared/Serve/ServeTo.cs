@@ -34,7 +34,7 @@ public class ServeTo
         return null;
     }
 
-    public const string Version = "1.0.1"; // 2022-07-17
+    public const string Version = "1.0.1"; // 2022-08-08
 
     public HttpListener Listener;
     public ServeOptions so;
@@ -126,7 +126,10 @@ public class ServeTo
     /// <param name="options"></param>
     public ServeTo(ServeOptions options)
     {
-        Listener = new HttpListener();
+        Listener = new HttpListener
+        {
+            IgnoreWriteExceptions = true
+        };
 
         if (string.IsNullOrWhiteSpace(options.Urls))
         {
@@ -440,7 +443,8 @@ public class ServeTo
             }
             else
             {
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                response.Headers.Add("WWW-Authenticate", "Basic realm=\"Authorization Required\"");
+                OutputText(response, "Not Authorized", HttpStatusCode.Unauthorized);
             }
         }
         catch (DirectoryNotFoundException ex)
@@ -449,7 +453,7 @@ public class ServeTo
             Console.WriteLine(ex);
             Console.ForegroundColor = ConsoleColor.White;
 
-            OutputText(response, "404 Not Found", HttpStatusCode.NotFound);
+            OutputText(response, "Not Found", HttpStatusCode.NotFound);
         }
         catch (Exception ex)
         {

@@ -1,0 +1,108 @@
+:root {
+    --nrc-spliter-width: 8px;
+}
+
+/*分离器-水平*/
+.nrc-spliter-horizontal {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+.nrc-spliter-item {
+    flex-shrink: 0;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    transition-property: width, height;
+    transition-duration: .1s, .1s;
+    transition-timing-function: linear;
+}
+
+.nrc-spliter-bar {
+    flex-shrink: 0;
+    cursor: e-resize;
+    user-select: none;
+    width: var(--nrc-spliter-width);
+}
+
+    .nrc-spliter-bar:hover {
+        border: 1px dashed #0284c7;
+        background: linear-gradient(to bottom,var(--sl-color-orange-100) 0%,var(--sl-color-orange-100) 33.333%,var(--sl-color-orange-200) 33.333%,var(--sl-color-orange-200) 66.666%,var(--sl-color-orange-300) 66.666%,var(--sl-color-orange-300) 100%);
+    }
+
+.nrc-spliter-bar-active {
+    position: absolute;
+    height: 100%;
+    z-index: 1;
+    display: none;
+    user-select: none;
+    pointer-events: none;
+    background-color: var(--sl-color-orange-300);
+    width: var(--nrc-spliter-width);
+}
+
+/*分离器-垂直*/
+.nrc-spliter-vertical {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+    .nrc-spliter-vertical .nrc-spliter-bar {
+        width: 100%;
+        height: var(--nrc-spliter-width);
+        cursor: n-resize;
+    }
+
+        .nrc-spliter-vertical .nrc-spliter-bar:hover {
+            background: linear-gradient(to right,var(--sl-color-orange-100) 0%,var(--sl-color-orange-100) 33.333%,var(--sl-color-orange-200) 33.333%,var(--sl-color-orange-200) 66.666%,var(--sl-color-orange-300) 66.666%,var(--sl-color-orange-300) 100%);
+        }
+
+    .nrc-spliter-vertical .nrc-spliter-bar-active {
+        width: 100%;
+        height: var(--nrc-spliter-width);
+    }
+
+/*旋转*/
+@keyframes kf-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.nrc-rotate-1 {
+    animation: kf-rotate 1s infinite;
+}
+
+/*全屏*/
+.nrc-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/*字体色*/
+.nrc-text-orange {
+    color: var(--sl-color-orange-700);
+}
+/*默认项*/
+.nrc-item-default {
+    background-color: var(--sl-color-orange-50);
+}

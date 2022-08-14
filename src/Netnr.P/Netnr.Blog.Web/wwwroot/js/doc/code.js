@@ -113,8 +113,8 @@ const nd = {
                                             <style type="text/css">${cssContent}</style>
                                         </head><body><div class="markdown-body">${bodyContent}</div></body></html>`;
 
-                                        netnrmd.readyPackage("htmlDocx", () => {
-                                            netnrmd.getScript("https://fastly.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js", () => {
+                                        nd.getScript("https://fastly.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js", () => {
+                                            nd.getScript("https://fastly.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js", () => {
                                                 saveAs(htmlDocx.asBlob(html), 'doc.docx');
                                             })
                                         })
@@ -161,6 +161,39 @@ const nd = {
 
             e.stopPropagation();
         });
+    },
+
+    /**
+     * 加载脚本
+     * @param {*} src 
+     * @param {*} success 
+     */
+    getScript: function (src, success) {
+        let isLoad = false;
+        for (let index = 0; index < document.scripts.length; index++) {
+            const script = document.scripts[index];
+            if (script.src == src) {
+                isLoad = true;
+                break;
+            }
+        }
+
+        if (isLoad) {
+            if (success != null) {
+                success();
+            }
+        } else {
+            var ele = document.createElement("SCRIPT");
+            ele.src = src;
+            ele.type = "text/javascript";
+            //加载完成回调
+            if (success != null) {
+                ele.onload = ele.onreadystatechange = function () {
+                    if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") { success(); }
+                }
+            }
+            document.head.appendChild(ele);
+        }
     }
 }
 

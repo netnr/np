@@ -36,12 +36,12 @@
             <!--标签分类-->
             @if (Model.Temp != null)
             {
-                var joabs = Model.Temp.ToString().ToJObject();
+                var tagObj = Model.Temp.ToJson().DeJson();
 
                 <div class="col-12 px-4 small">
-                    <partial name="_PartialTag" model="@joabs["tags"].ToJson()" />
-                    <span class="opacity-75">@joabs["abs"][0].ToString()</span>
-                    <a class="text-nowrap" href="@joabs["abs"][1].ToString()" target="_blank">[More]</a>
+                    <partial name="_PartialTag" model="@tagObj.GetValue("tag")" />
+                    <span class="opacity-75">@tagObj.GetValue("baike_abstract")</span>
+                    <a class="text-nowrap" href="@tagObj.GetValue("baike_url")" target="_blank">[More]</a>
                 </div>
             }
             else

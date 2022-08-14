@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Netnr.Blog.Data;
 using AgGrid.InfiniteRowModel;
 
 namespace Netnr.Blog.Web.Controllers
@@ -36,13 +34,13 @@ namespace Netnr.Blog.Web.Controllers
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 var query = from a in db.Notepad
                             join b in db.UserInfo on a.Uid equals b.UserId
                             orderby a.NoteCreateTime descending
                             where a.Uid == uinfo.UserId
-                            select new Domain.Notepad
+                            select new Notepad
                             {
                                 NoteId = a.NoteId,
                                 NoteTitle = a.NoteTitle,
@@ -64,9 +62,9 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveNote([FromForm] Domain.Notepad mo)
+        public ResultVM SaveNote([FromForm] Notepad mo)
         {
-            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            var vm = IdentityService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
             {
                 if (string.IsNullOrWhiteSpace(mo.NoteTitle) || string.IsNullOrWhiteSpace(mo.NoteContent))
@@ -75,7 +73,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    var uinfo = Apps.LoginService.Get(HttpContext);
+                    var uinfo = IdentityService.Get(HttpContext);
 
                     var now = DateTime.Now;
                     if (mo.NoteId == 0)
@@ -127,7 +125,7 @@ namespace Netnr.Blog.Web.Controllers
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 var mo = db.Notepad.Find(id);
                 if (mo == null)
@@ -158,7 +156,7 @@ namespace Netnr.Blog.Web.Controllers
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
                 var listKeyId = ids.Split(',').Select(x => Convert.ToInt32(x)).ToList();
 
                 var listMo = db.Notepad.Where(x => listKeyId.Contains(x.NoteId) && x.Uid == uinfo.UserId).ToList();

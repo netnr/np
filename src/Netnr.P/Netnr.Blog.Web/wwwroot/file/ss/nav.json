@@ -393,7 +393,7 @@
         "url": "/nlp",
         "icon": "nlp",
         "title": "自然语言处理",
-        "remark": "分词、关键词"
+        "remark": "分词"
       }
     ]
   },

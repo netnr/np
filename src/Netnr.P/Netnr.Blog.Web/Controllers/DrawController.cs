@@ -1,6 +1,4 @@
-﻿using Netnr.Blog.Data;
-
-namespace Netnr.Blog.Web.Controllers
+﻿namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// Draw
@@ -51,7 +49,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="xml"></param>
         /// <param name="mof"></param>
         /// <returns></returns>
-        public IActionResult Code([FromRoute] string id, [FromRoute] string sid, string code, string filename, string xml, Domain.Draw mof)
+        public IActionResult Code([FromRoute] string id, [FromRoute] string sid, string code, string filename, string xml, Draw mof)
         {
             id ??= "";
             sid ??= "";
@@ -79,7 +77,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
             }
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             if (!string.IsNullOrWhiteSpace(filename))
             {
@@ -136,13 +134,13 @@ namespace Netnr.Blog.Web.Controllers
             //保存标题等信息
             else if (id == "saveform")
             {
-                var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                var vm = IdentityService.CompleteInfoValid(HttpContext);
                 if (vm.Code == 200)
                 {
                     int num = 0;
                     if (string.IsNullOrWhiteSpace(mof.DrId))
                     {
-                        mof.DrId = mof.DrType[0] + Core.UniqueTo.LongId().ToString();
+                        mof.DrId = mof.DrType[0] + UniqueTo.LongId().ToString();
                         mof.DrCreateTime = DateTime.Now;
                         mof.Uid = uinfo.UserId;
                         mof.DrOrder = 100;
@@ -171,7 +169,7 @@ namespace Netnr.Blog.Web.Controllers
                     }
 
                     //推送通知
-                    Application.PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
+                    PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
 
                     vm.Set(num > 0);
                 }
@@ -188,18 +186,18 @@ namespace Netnr.Blog.Web.Controllers
             //保存内容
             else if (id == "save")
             {
-                var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                var vm = IdentityService.CompleteInfoValid(HttpContext);
                 if (vm.Code == 200)
                 {
                     //新增
                     if (string.IsNullOrWhiteSpace(sid))
                     {
-                        var mo = new Domain.Draw
+                        var mo = new Draw
                         {
                             DrName = filename,
                             DrContent = xml,
 
-                            DrId = mof.DrType[0] + Core.UniqueTo.LongId().ToString(),
+                            DrId = mof.DrType[0] + UniqueTo.LongId().ToString(),
                             DrType = mof.DrType,
                             DrCreateTime = DateTime.Now,
                             DrOpen = 1,
@@ -282,18 +280,18 @@ namespace Netnr.Blog.Web.Controllers
                 var msg = "fail";
                 var url = "";
 
-                var subdir = GlobalTo.GetValue("StaticResource:DrawPath");
+                var subdir = AppTo.GetValue("StaticResource:DrawPath");
                 var vm = api.APIController.UploadCheck(Request.Form.Files[0], null, "", subdir);
                 if (vm.Code == 200)
                 {
-                    var jd = vm.Data.ToJson().ToJObject();
-                    url = jd["server"].ToString() + jd["path"].ToString();
+                    var jd = vm.Data.ToJson().DeJson();
+                    url = jd.GetValue("server") + jd.GetValue("path");
                     errno = 0;
                     msg = "ok";
                 }
 
                 //推送通知
-                Application.PushService.PushAsync("网站消息（Upload）", $"{url}");
+                PushService.PushAsync("网站消息（Upload）", $"{url}");
 
                 return Content(new
                 {
@@ -327,9 +325,9 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, int page = 1)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.DrawQuery(k, 0, uinfo.UserId, page);
+            var ps = CommonService.DrawQuery(k, 0, uinfo.UserId, page);
             ps.Route = Request.Path;
             return View("/Views/Draw/_PartialDrawList.cshtml", ps);
         }
@@ -358,9 +356,9 @@ namespace Netnr.Blog.Web.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.DrawQuery(k, uid, uinfo.UserId, page);
+            var ps = CommonService.DrawQuery(k, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             return View("/Views/Draw/_PartialDrawList.cshtml", ps);
         }

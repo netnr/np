@@ -2,8 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Netnr.ResponseFramework.Data;
-using Netnr.ResponseFramework.Domain;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -29,9 +27,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         [HttpGet]
         public FileResult Captcha()
         {
-            string num = Core.RandomTo.NumCode(4);
+            string num = RandomTo.NumCode(4);
             byte[] bytes = ImageTo.Captcha(num);
-            HttpContext.Session.SetString("captcha", Core.CalcTo.MD5(num.ToLower()));
+            HttpContext.Session.SetString("captcha", CalcTo.MD5(num.ToLower()));
             return File(bytes, "image/jpeg");
         }
 
@@ -69,7 +67,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 var capt = HttpContext.Session.GetString("captcha");
                 HttpContext.Session.Remove("captcha");
 
-                if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != Core.CalcTo.MD5(captcha.ToLower()))
+                if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != CalcTo.MD5(captcha.ToLower()))
                 {
                     vm.Set(EnumTo.RTag.fail);
                     vm.Msg = "验证码错误或已过期";
@@ -83,7 +81,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     return vm;
                 }
 
-                outMo = db.SysUser.FirstOrDefault(x => x.SuName == mo.SuName && x.SuPwd == Core.CalcTo.MD5(mo.SuPwd, 32));
+                outMo = db.SysUser.FirstOrDefault(x => x.SuName == mo.SuName && x.SuPwd == CalcTo.MD5(mo.SuPwd, 32));
             }
 
             if (outMo == null || string.IsNullOrWhiteSpace(outMo.SuId))
@@ -149,7 +147,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             //清空全局缓存
-            Core.CacheTo.RemoveAll();
+            CacheTo.RemoveAll();
 
             return Redirect("/");
         }
@@ -195,12 +193,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             else
             {
-                var userinfo = Apps.LoginService.GetLoginUserInfo(HttpContext);
+                var userinfo = IdentityService.Get(HttpContext);
 
                 var mo = db.SysUser.Find(userinfo.UserId);
-                if (mo != null && mo.SuPwd == Core.CalcTo.MD5(oldpwd))
+                if (mo != null && mo.SuPwd == CalcTo.MD5(oldpwd))
                 {
-                    mo.SuPwd = Core.CalcTo.MD5(newpwd1);
+                    mo.SuPwd = CalcTo.MD5(newpwd1);
                     db.SysUser.Update(mo);
 
                     vm.Set(db.SaveChanges() > 0);

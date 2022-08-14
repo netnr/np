@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Xunit;
 
 namespace Netnr.Test
@@ -31,8 +32,8 @@ namespace Netnr.Test
             {
                 var conn = "Server=local.host;uid=sa;pwd=Abc123....;database=netnr;TrustServerCertificate=True;";
                 var sql = "print newid()";
-                var dbc = new Microsoft.Data.SqlClient.SqlConnection(conn);
-                dbc.InfoMessage += (s, e) => Debug.WriteLine($"{dbc.GetType().Name} InfoMessage: {e.Message}");
+                var dbc = new SqlConnection(conn);
+                dbc.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Message}");
 
                 var db = new DbHelper(dbc);
                 var result = db.SqlExecuteReader(sql);
@@ -48,7 +49,7 @@ BEGIN
 END
 $$;";
                 var dbc = new Npgsql.NpgsqlConnection(conn);
-                dbc.Notice += (s, e) => Debug.WriteLine($"{dbc.GetType().Name} InfoMessage: {e.Notice.MessageText}");
+                dbc.Notice += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Notice.MessageText}");
 
                 var db = new DbHelper(dbc);
                 var result = db.SqlExecuteReader(sql);
@@ -58,7 +59,7 @@ $$;";
                 var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=Abc123....";
                 var sql = @"";
                 var dbc = new Oracle.ManagedDataAccess.Client.OracleConnection(conn);
-                dbc.InfoMessage += (s, e) => Debug.WriteLine($"{dbc.GetType().Name} InfoMessage: {e.Message}");
+                dbc.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Message}");
 
                 var db = new DbHelper(dbc);
                 var result = db.SqlExecuteReader(sql);

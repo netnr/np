@@ -12,11 +12,11 @@
 
     if (ctrl == "ss")
     {
-        var navs = ScriptService.Nav;
+        var navs = ScriptService.NavArray;
         var item = ScriptService.Find(actionName);
         if (item != null)
         {
-            ViewData["Title"] = $"{item["title"].ToString()}";
+            ViewData["Title"] = $"{item.GetValue("title")}";
         }
     }
 }
@@ -39,12 +39,12 @@
     }
     else if (ctrl == "ss")
     {
-        var navs = ScriptService.Nav;
+        var navs = ScriptService.NavArray;
         var item = ScriptService.Find(actionName);
         if (item != null)
         {
-            var title = item["title"].ToString();
-            var remark = item["remark"]?.ToString() ?? title;
+            var title = item.GetValue("title");
+            var remark = item.GetValue("remark") ?? title;
             ViewData["Title"] = title;
 
             <meta name='keywords' content='NET牛人,Netnr,@Html.Raw(title)' />
@@ -64,7 +64,7 @@
         <meta name='description' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
     }
 
-    <title>@ViewData["Title"] @Html.Raw(GlobalTo.GetValue("Common:ChineseName"))</title>
+    <title>@ViewData["Title"] @Html.Raw(AppTo.GetValue("Common:ChineseName"))</title>
 
     @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css"))
     <link href="/app/blog/dist/all.css" rel="stylesheet" asp-append-version="true" />
@@ -73,9 +73,9 @@
 <body>
     @if (!canav.Any(x => ca.StartsWith(x)))
     {
-        if (GlobalTo.GetValue<bool>("ReadOnly"))
+        if (AppTo.GetValue<bool>("ReadOnly"))
         {
-            var myDomain = GlobalTo.GetValue("Common:Domain");
+            var myDomain = AppTo.GetValue("Common:Domain");
 
             <div class="p-2 text-center">Mirror site is read only <a href="@myDomain">@(new Uri(myDomain).Host)</a></div>
         }
@@ -85,7 +85,7 @@
     @if (ctrl == "ss")
     {
         var ownjs = $"/js/{ca}.js";
-        if (File.Exists(GlobalTo.WebRootPath + ownjs))
+        if (File.Exists(AppTo.WebRootPath + ownjs))
         {
             <script src="@ownjs" asp-append-version="true"></script>
         }

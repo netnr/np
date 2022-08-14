@@ -1,13 +1,10 @@
-﻿using Netnr.Blog.Data;
-using Netnr.Core;
-
-namespace Netnr.Blog.Web.Controllers.api
+﻿namespace Netnr.Blog.Web.Controllers.api
 {
     /// <summary>
     /// 尬服 guff.ltd 提供所有接口支持
     /// </summary>
     [Route("api/v1/guff/[action]")]
-    [Apps.FilterConfigs.AllowCors]
+    [FilterConfigs.AllowCors]
     public class GuffController : ControllerBase
     {
         public ContextBase db;
@@ -41,7 +38,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     OwnerId = uid;
                 }
 
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 if (new List<string> { "me", "melaud", "mereply" }.Contains(category))
                 {
@@ -56,7 +53,7 @@ namespace Netnr.Blog.Web.Controllers.api
                             OwnerId = uinfo.UserId;
                         }
 
-                        var pvm = Application.CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
+                        var pvm = CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
                         vm.Data = pvm;
 
                         vm.Set(EnumTo.RTag.success);
@@ -64,7 +61,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    var pvm = Application.CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
+                    var pvm = CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
                     vm.Data = pvm;
 
                     vm.Set(EnumTo.RTag.success);
@@ -90,9 +87,9 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    var ctype = Application.EnumService.ConnectionType.GuffRecord.ToString();
+                    var ctype = ConnectionType.GuffRecord.ToString();
 
-                    var uinfo = Apps.LoginService.Get(HttpContext);
+                    var uinfo = IdentityService.Get(HttpContext);
 
                     var query = from a in db.GuffRecord
                                 join b in db.UserInfo on a.Uid equals b.UserId
@@ -144,13 +141,13 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM Add([FromForm] Domain.GuffRecord mo)
+        public ResultVM Add([FromForm] GuffRecord mo)
         {
             var vm = new ResultVM();
 
             try
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 if (string.IsNullOrWhiteSpace(mo.GrContent) && string.IsNullOrWhiteSpace(mo.GrImage) && string.IsNullOrWhiteSpace(mo.GrAudio) && string.IsNullOrWhiteSpace(mo.GrVideo))
                 {
@@ -168,7 +165,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                    vm = IdentityService.CompleteInfoValid(HttpContext);
                     if (vm.Code == 200)
                     {
                         var now = DateTime.Now;
@@ -205,7 +202,7 @@ namespace Netnr.Blog.Web.Controllers.api
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Apps.FilterConfigs.LogWrite(HttpContext, ex);
+                LoggingService.Write(HttpContext, ex);
             }
 
             return vm;
@@ -217,13 +214,13 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM Update([FromForm] Domain.GuffRecord mo)
+        public ResultVM Update([FromForm] GuffRecord mo)
         {
             var vm = new ResultVM();
 
             try
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 if (string.IsNullOrWhiteSpace(mo.GrContent) && string.IsNullOrWhiteSpace(mo.GrImage) && string.IsNullOrWhiteSpace(mo.GrAudio) && string.IsNullOrWhiteSpace(mo.GrVideo))
                 {
@@ -282,7 +279,7 @@ namespace Netnr.Blog.Web.Controllers.api
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Apps.FilterConfigs.LogWrite(HttpContext, ex);
+                LoggingService.Write(HttpContext, ex);
             }
 
             return vm;
@@ -300,7 +297,7 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 if (uinfo.UserId == 0)
                 {
@@ -328,7 +325,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     }
                     else
                     {
-                        var ctype = Application.EnumService.ConnectionType.GuffRecord.ToString();
+                        var ctype = ConnectionType.GuffRecord.ToString();
                         switch (type)
                         {
                             case "add":
@@ -340,11 +337,11 @@ namespace Netnr.Blog.Web.Controllers.api
                                     else
                                     {
                                         //关联记录
-                                        var ucmo = new Domain.UserConnection()
+                                        var ucmo = new UserConnection()
                                         {
                                             UconnId = UniqueTo.LongId().ToString(),
                                             Uid = uinfo.UserId,
-                                            UconnTargetType = Application.EnumService.ConnectionType.GuffRecord.ToString(),
+                                            UconnTargetType = ConnectionType.GuffRecord.ToString(),
                                             UconnTargetId = id,
                                             UconnAction = ac,
                                             UconnCreateTime = DateTime.Now
@@ -413,7 +410,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="id">ID</param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM ReplyAdd([FromForm] Domain.UserReply mo, [FromForm] string id)
+        public ResultVM ReplyAdd([FromForm] UserReply mo, [FromForm] string id)
         {
             var vm = new ResultVM();
 
@@ -430,10 +427,10 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+                    vm = IdentityService.CompleteInfoValid(HttpContext);
                     if (vm.Code == 200)
                     {
-                        var uinfo = Apps.LoginService.Get(HttpContext);
+                        var uinfo = IdentityService.Get(HttpContext);
 
                         var guffmo = db.GuffRecord.Find(id);
                         if (guffmo == null)
@@ -443,7 +440,7 @@ namespace Netnr.Blog.Web.Controllers.api
                         else
                         {
                             mo.Uid = uinfo.UserId;
-                            mo.UrTargetType = Application.EnumService.ConnectionType.GuffRecord.ToString();
+                            mo.UrTargetType = ConnectionType.GuffRecord.ToString();
                             mo.UrTargetId = id;
                             mo.UrCreateTime = DateTime.Now;
                             mo.UrStatus = 1;
@@ -465,7 +462,7 @@ namespace Netnr.Blog.Web.Controllers.api
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Apps.FilterConfigs.LogWrite(HttpContext, ex);
+                LoggingService.Write(HttpContext, ex);
             }
 
             return vm;
@@ -482,7 +479,7 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 var pag = new PaginationVM
                 {
@@ -490,7 +487,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     PageSize = 10
                 };
 
-                var list = Application.CommonService.ReplyOneQuery(Application.EnumService.ReplyType.GuffRecord, id, pag);
+                var list = CommonService.ReplyOneQuery(ReplyType.GuffRecord, id, pag);
                 //匿名用户，生成邮箱MD5加密用于请求头像
                 foreach (var item in list)
                 {
@@ -529,7 +526,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    var uinfo = Apps.LoginService.Get(HttpContext);
+                    var uinfo = IdentityService.Get(HttpContext);
                     if (uinfo.UserId != 0)
                     {
                         var mo = db.GuffRecord.Find(id);

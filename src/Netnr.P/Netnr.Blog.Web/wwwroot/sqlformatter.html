@@ -1,6 +1,6 @@
 ﻿<!--
 https://github.com/netnr
-2022-07-23 22:53:03
+2022-08-14 19:08:47
 -->
 
 <!DOCTYPE html>
@@ -17,7 +17,7 @@ https://github.com/netnr
 <link href='https://fastly.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css' rel='stylesheet' async />
 
     <link href="/app/blog/dist/all.css?v=s4JQhw3ECj7Xw3HDIQV6vIhspWUzveJmB6mq0LZHC04" rel="stylesheet" />
-    <script src="/app/blog/dist/all.js?v=cqdNGiAdwgb_Sug918PUL5phG3wZnvPl42P_sHFN4KE"></script>
+    <script src="/app/blog/dist/all.js?v=JU70HLrYzh8xYPr1jwH8vNQdhFhb62zP6TohkudeLZY"></script>
 </head>
 <body>
         
@@ -89,16 +89,14 @@ https://github.com/netnr
                 <sl-menu-item value="plsql">PL/SQL</sl-menu-item>
                 <sl-menu-item value="postgresql">PostgreSQL</sl-menu-item>
                 <sl-menu-item value="spark">Spark</sl-menu-item>
+                <sl-menu-item value="sqlite">SQLite</sl-menu-item>
                 <sl-menu-item value="tsql">Transact-SQL</sl-menu-item>
+                <sl-menu-item value="trino">Trino</sl-menu-item>
             </sl-select>
             <sl-select class="nr-se-uppercase mb-3" label="大小写" value="preserve">
                 <sl-menu-item value="preserve">不处理</sl-menu-item>
                 <sl-menu-item value="upper">大写</sl-menu-item>
                 <sl-menu-item value="lower">小写</sl-menu-item>
-            </sl-select>
-            <sl-select class="nr-se-columnalignment mb-3" label="列对齐" value="false">
-                <sl-menu-item value="false">默认（左对齐）</sl-menu-item>
-                <sl-menu-item value="true">列名（右对齐）</sl-menu-item>
             </sl-select>
             <sl-select class="nr-se-indentation mb-3" label="缩进模式" value="standard">
                 <sl-menu-item value="standard">默认（标准）</sl-menu-item>
@@ -117,21 +115,21 @@ https://github.com/netnr
     </div>
 </div>
 
-<script src='https://fastly.jsdelivr.net/npm/sql-formatter@8.2.0/dist/sql-formatter.min.js'></script>
-<script src='https://fastly.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js'></script>
+<script src='https://fastly.jsdelivr.net/npm/sql-formatter@9.0.0/dist/sql-formatter.min.js'></script>
+<script src='https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs/loader.js'></script>
 
 <script>
     var meRequire = require;
 
     require.config({
         paths: {
-            vs: 'https://fastly.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs'
+            vs: 'https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
 </script>
                         
 
-            <script src="/js/ss/sqlformatter.js?v=fi_F8rZVJek1mcj8d1BA24MbUmBDL_usPL2GknyilxQ"></script>
+            <script src="/js/ss/sqlformatter.js?v=g1rz4-Y-lK0jl1Fe6gFCmIgJtu-r80rQdfUnElO6HNc"></script>
 </body>
 </html>

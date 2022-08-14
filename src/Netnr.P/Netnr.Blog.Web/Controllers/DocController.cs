@@ -1,8 +1,4 @@
 ﻿using Markdig;
-using Microsoft.AspNetCore.Authorization;
-using Netnr.Blog.Application.ViewModel;
-using Netnr.Blog.Data;
-using Netnr.Blog.Domain;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -36,9 +32,9 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, int page = 1)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.DocQuery(k, 0, uinfo.UserId, page);
+            var ps = CommonService.DocQuery(k, 0, uinfo.UserId, page);
             ps.Route = Request.Path;
             return View("/Views/Doc/_PartialDocList.cshtml", ps);
         }
@@ -67,9 +63,9 @@ namespace Netnr.Blog.Web.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
-            var ps = Application.CommonService.DocQuery(k, uid, uinfo.UserId, page);
+            var ps = CommonService.DocQuery(k, uid, uinfo.UserId, page);
             ps.Route = Request.Path;
             return View("/Views/Doc/_PartialDocList.cshtml", ps);
         }
@@ -84,7 +80,7 @@ namespace Netnr.Blog.Web.Controllers
         {
             if (!string.IsNullOrWhiteSpace(id))
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 var moout = db.DocSet.Find(id);
                 if (moout.Uid == uinfo.UserId)
@@ -108,12 +104,12 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize, HttpPost]
         public IActionResult SaveForm([FromForm] DocSet mo)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
             int num;
 
             if (string.IsNullOrWhiteSpace(mo.DsCode))
             {
-                mo.DsCode = Core.UniqueTo.LongId().ToString();
+                mo.DsCode = UniqueTo.LongId().ToString();
                 mo.Uid = uinfo.UserId;
                 mo.DsStatus = 1;
                 mo.DsCreateTime = DateTime.Now;
@@ -143,7 +139,7 @@ namespace Netnr.Blog.Web.Controllers
             }
 
             //推送通知
-            Application.PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
+            PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
 
             if (num > 0)
             {
@@ -163,7 +159,7 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize, HttpGet]
         public IActionResult Delete([FromRoute] string id)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             var mo = db.DocSet.Find(id);
             if (mo.Uid == uinfo.UserId)
@@ -229,7 +225,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    var uinfo = Apps.LoginService.Get(HttpContext);
+                    var uinfo = IdentityService.Get(HttpContext);
                     if (uinfo.UserId != ds.Uid)
                     {
                         return Unauthorized();
@@ -392,7 +388,7 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize]
         public IActionResult Item([FromRoute] string id, [FromRoute] string sid)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             var ds = db.DocSet.Find(id);
             if (ds?.Uid != uinfo.UserId)
@@ -421,10 +417,10 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize, HttpPost]
         public ResultVM ItemSave([FromForm] DocSetDetail mo)
         {
-            var vm = Apps.LoginService.CompleteInfoValid(HttpContext);
+            var vm = IdentityService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 var ds = db.DocSet.Find(mo.DsCode);
                 if (ds?.Uid != uinfo.UserId)
@@ -448,13 +444,13 @@ namespace Netnr.Blog.Web.Controllers
 
                     if (string.IsNullOrWhiteSpace(mo.DsdId))
                     {
-                        mo.DsdId = Core.UniqueTo.LongId().ToString();
+                        mo.DsdId = UniqueTo.LongId().ToString();
                         mo.DsdCreateTime = mo.DsdUpdateTime;
 
                         db.DocSetDetail.Add(mo);
 
                         //推送通知
-                        Application.PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
+                        PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
                     }
                     else
                     {
@@ -488,7 +484,7 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize, HttpGet]
         public IActionResult ItemDelete([FromRoute] string id, [FromRoute] string sid)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             if (!string.IsNullOrWhiteSpace(sid))
             {
@@ -518,7 +514,7 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize]
         public IActionResult Catalog([FromRoute] string id)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             var ds = db.DocSet.Find(id);
             if (ds?.Uid != uinfo.UserId)
@@ -548,9 +544,9 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     var listTree = string.IsNullOrWhiteSpace(rows)
                     ? new List<DocTreeVM>()
-                    : rows.DeJsons<DocTreeVM>();
+                    : rows.DeJson<List<DocTreeVM>>();
 
-                    var uinfo = Apps.LoginService.Get(HttpContext);
+                    var uinfo = IdentityService.Get(HttpContext);
                     if (db.DocSet.Find(id)?.Uid != uinfo.UserId)
                     {
                         vm.Set(EnumTo.RTag.unauthorized);
@@ -632,7 +628,7 @@ namespace Netnr.Blog.Web.Controllers
         [HttpGet]
         public IActionResult ToHtml([FromRoute] string id)
         {
-            var uinfo = Apps.LoginService.Get(HttpContext);
+            var uinfo = IdentityService.Get(HttpContext);
 
             var mo = db.DocSet.Find(id);
             if (mo != null && (mo.DsOpen == 1 || uinfo.UserId == mo.Uid))
@@ -763,14 +759,14 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    var listtree = Core.TreeTo.ListToTree(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
+                    var listtree = TreeTo.ListToTree(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
                     if (string.IsNullOrWhiteSpace(listtree))
                     {
                         vm.Set(EnumTo.RTag.lack);
                     }
                     else
                     {
-                        vm.Data = listtree.ToJArray();
+                        vm.Data = listtree.DeJson();
                         vm.Set(EnumTo.RTag.success);
                     }
                 }
@@ -778,7 +774,7 @@ namespace Netnr.Blog.Web.Controllers
             catch (Exception ex)
             {
                 vm.Set(ex);
-                Apps.FilterConfigs.LogWrite(HttpContext, ex);
+                LoggingService.Write(HttpContext, ex);
             }
 
             return vm;

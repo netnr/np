@@ -25,6 +25,7 @@ nr.onReady = function () {
             value: defaultContent,
             language: defaultLang,
         });
+        window.editor = editor;
         nr.domEditor.classList.add('border');
         ss.loading(false);
         nr.domCardBox.classList.remove('invisible');

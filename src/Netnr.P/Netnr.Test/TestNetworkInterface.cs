@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using Xunit;
 
 namespace Netnr.Test
@@ -21,8 +22,8 @@ namespace Netnr.Test
 
                 var dic = new Dictionary<string, object>
                 {
-                    { "Bytes Sent", Core.ParsingTo.FormatByteSize(ipStats.BytesSent) },
-                    { "Bytes Received", Core.ParsingTo.FormatByteSize(ipStats.BytesReceived) },
+                    { "Bytes Sent", ParsingTo.FormatByteSize(ipStats.BytesSent) },
+                    { "Bytes Received", ParsingTo.FormatByteSize(ipStats.BytesReceived) },
                     { "PhysicalAddress(MAC)", ni.GetPhysicalAddress() },
                     { "DnsSuffix", pp.DnsSuffix },
                     { "IsDnsEnabled", pp.IsDnsEnabled },
@@ -122,6 +123,35 @@ namespace Netnr.Test
                 if (reply.Status != IPStatus.TtlExpired && reply.Status != IPStatus.TimedOut)
                     break;
             }
+        }
+
+        /// <summary>
+        /// 获取本地 IP
+        /// https://stackoverflow.com/questions/6803073/get-local-ip-address
+        /// </summary>
+        [Fact]
+        public void GetLocalIPAddress_list()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    Debug.WriteLine(ip.ToString());
+                }
+            }
+        }
+
+        /// <summary>
+        /// 本地IP 且可访问公网
+        /// </summary>
+        [Fact]
+        public void GetLocalIPAddress_Internet()
+        {
+            using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
+            socket.Connect("114.114.114.114", 65530);
+            IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+            Debug.WriteLine(endPoint.Address.ToString());
         }
     }
 }

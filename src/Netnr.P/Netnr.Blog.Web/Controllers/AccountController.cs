@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Netnr.Blog.Data;
 using Netnr.Login;
 using System.Security.Claims;
-using Netnr.Core;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -38,7 +36,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="RegisterCode">验证码</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Register(Domain.UserInfo mo, string RegisterCode)
+        public IActionResult Register(UserInfo mo, string RegisterCode)
         {
             var vm = new ResultVM();
             if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
@@ -59,7 +57,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     mo.UserMail = mo.UserName;
                 }
-                vm = RegisterUser(mo);
+                vm = PublicRegister(mo);
             }
 
             ViewData["UserName"] = mo.UserName;
@@ -79,46 +77,6 @@ namespace Netnr.Blog.Web.Controllers
             HttpContext.Session.SetString("RegisterCode", num);
             byte[] bytes = ImageTo.Captcha(num);
             return File(bytes, "image/jpeg");
-        }
-
-        /// <summary>
-        /// 公共注册
-        /// </summary>
-        /// <param name="mo">个人用户信息</param>
-        /// <returns></returns>
-        private ResultVM RegisterUser(Domain.UserInfo mo)
-        {
-            var vm = new ResultVM();
-
-            var isok = true;
-
-            //邮箱注册
-            if (!string.IsNullOrWhiteSpace(mo.UserMail))
-            {
-                isok = !db.UserInfo.Any(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail);
-
-                vm.Set(EnumTo.RTag.exist);
-                vm.Msg = "该邮箱已经注册";
-            }
-            else
-            {
-                isok = !db.UserInfo.Any(x => x.UserName == mo.UserName);
-
-                vm.Set(EnumTo.RTag.exist);
-                vm.Msg = "该账号已经注册";
-            }
-
-            if (isok)
-            {
-                db.UserInfo.Add(mo);
-                int num = db.SaveChanges();
-                vm.Set(num > 0);
-
-                //推送通知
-                Application.PushService.PushAsync("网站消息（注册）", $"{mo.UserId}");
-            }
-
-            return vm;
         }
 
         #endregion
@@ -147,10 +105,10 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult Login(Domain.UserInfo mo, int? remember)
+        public IActionResult Login(UserInfo mo, int? remember)
         {
             var isRemember = remember == 1;
-            var vm = ValidateLogin(null, mo, isRemember);
+            var vm = PublicLogin(null, mo, isRemember);
             if (vm.Code == 200)
             {
                 var rurl = Request.Cookies["ReturnUrl"];
@@ -169,112 +127,6 @@ namespace Netnr.Blog.Web.Controllers
             }
         }
 
-        /// <summary>
-        /// 公共登录验证
-        /// </summary>
-        /// <param name="vt">登录类型</param>
-        /// <param name="mo">用户信息</param>
-        /// <param name="isRemember">记住账号</param>
-        /// <returns></returns>
-        private ResultVM ValidateLogin(LoginBase.LoginType? vt, Domain.UserInfo mo, bool isRemember = true)
-        {
-            var vm = new ResultVM();
-
-            string sql = string.Empty;
-
-            var uiR = db.UserInfo;
-            Domain.UserInfo outMo = new();
-
-            switch (vt)
-            {
-                case LoginBase.LoginType.QQ:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId1.Equals(mo.OpenId1));
-                    break;
-                case LoginBase.LoginType.WeiBo:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId2.Equals(mo.OpenId2));
-                    break;
-                case LoginBase.LoginType.GitHub:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId3.Equals(mo.OpenId3));
-                    break;
-                case LoginBase.LoginType.TaoBao:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId4.Equals(mo.OpenId4));
-                    break;
-                case LoginBase.LoginType.MicroSoft:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId5.Equals(mo.OpenId5));
-                    break;
-                case LoginBase.LoginType.DingTalk:
-                    outMo = uiR.FirstOrDefault(x => x.OpenId6.Equals(mo.OpenId6));
-                    break;
-                default:
-                    if (string.IsNullOrWhiteSpace(mo.UserName) || string.IsNullOrWhiteSpace(mo.UserPwd))
-                    {
-                        vm.Msg = "用户名或密码不能为空";
-                        return vm;
-                    }
-                    else
-                    {
-                        mo.UserPwd = CalcTo.MD5(mo.UserPwd);
-
-                        //邮箱登录
-                        if (ParsingTo.IsMail(mo.UserName))
-                        {
-                            outMo = uiR.FirstOrDefault(x => x.UserMail == mo.UserName && x.UserPwd == mo.UserPwd);
-                        }
-                        else
-                        {
-                            outMo = uiR.FirstOrDefault(x => x.UserName == mo.UserName && x.UserPwd == mo.UserPwd);
-                        }
-                    }
-                    break;
-            }
-
-            if (outMo == null || outMo.UserId == 0)
-            {
-                vm.Msg = "用户名或密码错误";
-                return vm;
-            }
-
-            if (outMo.LoginLimit == 1)
-            {
-                vm.Msg = "用户已被禁止登录";
-                return vm;
-            }
-
-            //刷新登录标记
-            if (!GlobalTo.GetValue<bool>("ReadOnly"))
-            {
-                outMo.UserLoginTime = DateTime.Now;
-                outMo.UserSign = outMo.UserLoginTime.Value.ToTimestamp().ToString();
-                uiR.Update(outMo);
-                db.SaveChangesAsync();
-            }
-
-            try
-            {
-                //登录标记 缓存5分钟，绝对过期
-                if (GlobalTo.GetValue<bool>("Common:SingleSignOn"))
-                {
-                    var usk = "UserSign_" + outMo.UserId;
-                    CacheTo.Set(usk, outMo.UserSign, 5 * 60, false);
-                }
-
-                //写入授权
-                var siObj = BuildSignIn(outMo, isRemember);
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
-
-                //生成Token
-                vm.Data = Apps.LoginService.TokenMake(outMo);
-
-                vm.Set(EnumTo.RTag.success);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
-        }
-
         #endregion
 
         #region 登录（第三方）
@@ -284,435 +136,148 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="id">登录类型</param>
         /// <returns></returns>
-        public IActionResult Auth([FromRoute] string id)
-        {
-            var url = Application.ThirdLoginService.LoginLink(id);
-            return Redirect(url);
-        }
+        public IActionResult Auth([FromRoute] LoginWhich? id) => Redirect(ThirdLoginService.LoginLink(id, "login"));
 
         /// <summary>
         /// 登录授权回调
         /// </summary>
-        /// <param name="id">登录类型</param>
-        /// <param name="authorizeResult">获取授权码以及防伪标识</param>
+        /// <param name="id">哪家</param>
+        /// <param name="authResult">接收授权码</param>
         /// <returns></returns>
-        public IActionResult AuthCallback([FromRoute] string id, LoginBase.AuthorizeResult authorizeResult)
+        public IActionResult AuthCallback([FromRoute] LoginWhich? id, AuthorizeResult authResult)
         {
-            var vm = new ResultVM();
-
             try
             {
-                if (string.IsNullOrWhiteSpace(authorizeResult.code))
+                if (id == null || !ThirdLoginService.OpenIdMap.ContainsKey(id.Value))
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    throw new Exception($"不支持该方式授权 {RouteData.Values["id"]?.ToString()}");
+                }
+                else if (authResult.NoAuthCode())
+                {
+                    throw new Exception($"授权失败");
                 }
                 else
                 {
-                    //唯一标示
-                    string openId = string.Empty;
+                    var loginType = id.Value;
+                    ConsoleTo.Title($"{loginType} login authorization callback");
+
+                    var publicUser = LoginTo.Entry(loginType, authResult);
+                    Console.WriteLine(publicUser.ToJson(true));
+
+                    if (string.IsNullOrWhiteSpace(publicUser.UniqueId))
+                    {
+                        throw new Exception("登录失败，未能获取唯一标识");
+                    }
+
+                    //兼容历史版本取唯一标识
+                    var uniqueId = publicUser.UniqueId;
+                    if (loginType == LoginWhich.DingTalk && DingTalk.IsOld)
+                    {
+                        uniqueId = publicUser.OpenId;
+                    }
+
+                    var now = DateTime.Now;
                     //注册信息
-                    var mo = new Domain.UserInfo()
+                    var newUser = new UserInfo()
                     {
                         LoginLimit = 0,
-                        UserSex = 0,
-                        UserCreateTime = DateTime.Now
+                        UserCreateTime = now,
+                        UserLoginTime = now,
+                        Nickname = publicUser.Nickname ?? publicUser.Name,
+                        UserSex = publicUser.Gender,
+                        UserMail = publicUser.Email,
+                        UserMailValid = publicUser.EmailVerified ? 1 : 0,
+                        UserUrl = publicUser.Site,
+                        UserSay = publicUser.Intro
                     };
-                    //头像
-                    string avatar = string.Empty;
-
-                    Enum.TryParse(id, true, out LoginBase.LoginType vtype);
-
-                    Console.WriteLine(vtype);
-                    switch (vtype)
+                    if (string.IsNullOrWhiteSpace(newUser.Nickname))
                     {
-                        case LoginBase.LoginType.QQ:
-                            {
-                                //获取 access_token
-                                var tokenEntity = QQ.AccessToken(new QQ_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //获取 OpendId
-                                var openidEntity = QQ.OpenId(tokenEntity.access_token);
-                                Console.WriteLine(openidEntity.ToJson());
-
-                                //获取 UserInfo
-                                var userEntity = QQ.OpenId_Get_User_Info(new QQ_OpenAPI_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token,
-                                    openid = openidEntity.openid
-                                });
-                                Console.WriteLine(userEntity.ToJson());
-
-                                //身份唯一标识
-                                openId = openidEntity.openid;
-                                mo.OpenId1 = openId;
-
-                                mo.Nickname = userEntity.nickname;
-                                mo.UserSex = userEntity.gender == "男" ? 1 : 2;
-                                mo.UserSay = "";
-                                mo.UserUrl = "";
-
-                                avatar = userEntity.figureurl_2;
-                            }
-                            break;
-                        case LoginBase.LoginType.WeiBo:
-                            {
-                                //获取 access_token
-                                var tokenEntity = Weibo.AccessToken(new Weibo_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //获取 access_token 的授权信息
-                                var tokenInfoEntity = Weibo.GetTokenInfo(tokenEntity.access_token);
-                                Console.WriteLine(tokenInfoEntity.ToJson());
-
-                                //获取 users/show
-                                var userEntity = Weibo.UserShow(new Weibo_UserShow_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token,
-                                    uid = Convert.ToInt64(tokenInfoEntity.uid)
-                                });
-                                Console.WriteLine(userEntity.ToJson());
-
-                                openId = tokenEntity.access_token;
-                                mo.OpenId2 = openId;
-
-                                mo.Nickname = userEntity.screen_name;
-                                mo.UserSex = userEntity.gender == "m" ? 1 : userEntity.gender == "f" ? 2 : 0;
-                                mo.UserSay = userEntity.description;
-                                mo.UserUrl = userEntity.domain;
-
-                                avatar = userEntity.avatar_large;
-                            }
-                            break;
-                        case LoginBase.LoginType.WeChat:
-                            {
-                                //获取 access_token
-                                var tokenEntity = Netnr.Login.WeChat.AccessToken(new WeChat_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //openId = tokenEntity.openid;
-
-                                //获取 user
-                                var userEntity = Netnr.Login.WeChat.Get_User_Info(new WeChat_OpenAPI_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token,
-                                    openid = tokenEntity.openid
-                                });
-                                Console.WriteLine(userEntity.ToJson());
-
-                                avatar = userEntity.headimgurl;
-                            }
-                            break;
-                        case LoginBase.LoginType.GitHub:
-                            {
-                                try
-                                {
-                                    Console.WriteLine("获取 access_token");
-                                    //获取 access_token
-                                    var tokenEntity = GitHub.AccessToken(new GitHub_AccessToken_RequestEntity()
-                                    {
-                                        code = authorizeResult.code
-                                    });
-                                    Console.WriteLine(tokenEntity.ToJson());
-
-                                    //获取 user
-                                    var userEntity = GitHub.User(tokenEntity.access_token);
-                                    Console.WriteLine(userEntity.ToJson());
-
-                                    openId = userEntity.id.ToString();
-                                    mo.OpenId3 = openId;
-
-                                    mo.Nickname = userEntity.name;
-                                    mo.UserSay = userEntity.bio;
-                                    mo.UserUrl = userEntity.blog;
-                                    mo.UserMail = userEntity.email;
-
-                                    avatar = userEntity.avatar_url;
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine("GitHub ERROR:");
-                                    Console.WriteLine(ex);
-                                }
-                            }
-                            break;
-                        case LoginBase.LoginType.Gitee:
-                            {
-                                //获取 access_token
-                                var tokenEntity = Gitee.AccessToken(new Gitee_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //获取 user
-                                var userEntity = Gitee.User(tokenEntity.access_token);
-                                Console.WriteLine(userEntity.ToJson());
-
-                                //openId = userEntity.id.ToString();
-
-                                mo.Nickname = userEntity.name;
-                                mo.UserSay = userEntity.bio;
-                                mo.UserUrl = userEntity.blog;
-
-                                avatar = userEntity.avatar_url;
-                            }
-                            break;
-                        case LoginBase.LoginType.TaoBao:
-                            {
-                                //获取 access_token
-                                var tokenEntity = TaoBao.AccessToken(new TaoBao_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                openId = tokenEntity.open_uid;
-                                mo.OpenId4 = openId;
-
-                                mo.Nickname = "淘宝用户";
-                            }
-                            break;
-                        case LoginBase.LoginType.MicroSoft:
-                            {
-                                //获取 access_token
-                                var tokenEntity = MicroSoft.AccessToken(new MicroSoft_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //获取 user
-                                var userEntity = MicroSoft.User(tokenEntity.access_token);
-                                Console.WriteLine(userEntity.ToJson());
-
-                                openId = userEntity.id;
-                                mo.OpenId5 = openId;
-
-                                mo.Nickname = userEntity.last_name + userEntity.first_name;
-                                mo.UserMail = userEntity.emails?["account"].ToStringOrEmpty();
-                            }
-                            break;
-                        case LoginBase.LoginType.DingTalk:
-                            {
-                                //获取 user
-                                var userEntity = DingTalk.User(new DingTalk_User_RequestEntity(), authorizeResult.code);
-                                Console.WriteLine(userEntity.ToJson());
-
-                                openId = userEntity.openid;
-                                mo.OpenId6 = openId;
-
-                                mo.Nickname = userEntity.nick;
-                            }
-                            break;
-                        case LoginBase.LoginType.Google:
-                            {
-                                //获取 access_token
-                                var tokenEntity = Google.AccessToken(new Google_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //获取 user
-                                var userEntity = Google.User(tokenEntity.access_token);
-                                Console.WriteLine(userEntity.ToJson());
-
-                                //openId = userEntity.sub;
-
-                                avatar = userEntity.picture;
-                            }
-                            break;
-                        case LoginBase.LoginType.AliPay:
-                            {
-                                //获取 access_token
-                                var tokenEntity = AliPay.AccessToken(new AliPay_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //openId = tokenEntity.user_id;
-
-                                //获取 user
-                                var userEntity = AliPay.User(new AliPay_User_RequestEntity()
-                                {
-                                    auth_token = tokenEntity.access_token
-                                });
-                                Console.WriteLine(userEntity.ToJson());
-
-                                avatar = userEntity.avatar;
-                            }
-                            break;
-                        case LoginBase.LoginType.StackOverflow:
-                            {
-                                //获取 access_token
-                                var tokenEntity = StackOverflow.AccessToken(new StackOverflow_AccessToken_RequestEntity()
-                                {
-                                    code = authorizeResult.code
-                                });
-                                Console.WriteLine(tokenEntity.ToJson());
-
-                                //获取 user
-                                var userEntity = StackOverflow.User(new StackOverflow_User_RequestEntity()
-                                {
-                                    access_token = tokenEntity.access_token
-                                });
-                                Console.WriteLine(userEntity.ToJson());
-
-                                //openId= userEntity.user_id;
-
-                                avatar = userEntity.profile_image;
-                            }
-                            break;
+                        newUser.Nickname = $"{loginType}用户";
                     }
+                    newUser.UserName = uniqueId;
+                    newUser.UserPwd = CalcTo.MD5(uniqueId);
 
-                    mo.UserCreateTime = DateTime.Now;
-                    mo.UserName = openId;
-                    mo.UserPwd = CalcTo.MD5(openId);
-                    if (!string.IsNullOrWhiteSpace(avatar))
+                    //绑定用户
+                    if (User.Identity.IsAuthenticated && authResult.State.StartsWith("bind"))
                     {
-                        mo.UserPhoto = UniqueTo.LongId().ToString() + ".jpg";
-                    }
-                    Console.WriteLine(mo.ToJson());
-
-                    if (string.IsNullOrWhiteSpace(openId))
-                    {
-                        vm.Set(EnumTo.RTag.unauthorized);
-                        vm.Msg = "身份验证失败";
-                    }
-                    else
-                    {
-                        //判断是绑定操作
-                        bool isbind = User.Identity.IsAuthenticated && authorizeResult.state.StartsWith("bind");
-                        if (isbind)
+                        var bindResult = BindUser(loginType, uniqueId);
+                        if (bindResult.Code == 200)
                         {
-                            int uid = Apps.LoginService.Get(HttpContext).UserId;
-
-                            //检测是否绑定其它账号
-                            var queryIsBind = db.UserInfo.Where(x => x.UserId != uid);
-                            switch (vtype)
-                            {
-                                case LoginBase.LoginType.QQ:
-                                    queryIsBind = queryIsBind.Where(x => x.OpenId1 == openId);
-                                    break;
-                                case LoginBase.LoginType.WeiBo:
-                                    queryIsBind = queryIsBind.Where(x => x.OpenId2 == openId);
-                                    break;
-                                case LoginBase.LoginType.GitHub:
-                                    queryIsBind = queryIsBind.Where(x => x.OpenId3 == openId);
-                                    break;
-                                case LoginBase.LoginType.TaoBao:
-                                    queryIsBind = queryIsBind.Where(x => x.OpenId4 == openId);
-                                    break;
-                                case LoginBase.LoginType.MicroSoft:
-                                    queryIsBind = queryIsBind.Where(x => x.OpenId5 == openId);
-                                    break;
-                                case LoginBase.LoginType.DingTalk:
-                                    queryIsBind = queryIsBind.Where(x => x.OpenId6 == openId);
-                                    break;
-                            }
-                            if (queryIsBind.Any())
-                            {
-                                return Content("已绑定其它账号，不能重复绑定");
-                            }
-
-                            var userInfo = db.UserInfo.Find(uid);
-
-                            switch (vtype)
-                            {
-                                case LoginBase.LoginType.QQ:
-                                    userInfo.OpenId1 = openId;
-                                    break;
-                                case LoginBase.LoginType.WeiBo:
-                                    userInfo.OpenId2 = openId;
-                                    break;
-                                case LoginBase.LoginType.GitHub:
-                                    userInfo.OpenId3 = openId;
-                                    break;
-                                case LoginBase.LoginType.TaoBao:
-                                    userInfo.OpenId4 = openId;
-                                    break;
-                                case LoginBase.LoginType.MicroSoft:
-                                    userInfo.OpenId5 = openId;
-                                    break;
-                                case LoginBase.LoginType.DingTalk:
-                                    userInfo.OpenId6 = openId;
-                                    break;
-                            }
-                            db.UserInfo.Update(userInfo);
-                            db.SaveChanges();
-
                             return Redirect("/user/setting");
                         }
                         else
                         {
-                            Domain.UserInfo vmo = null;
-                            switch (vtype)
-                            {
-                                case LoginBase.LoginType.QQ:
-                                    vmo = db.UserInfo.FirstOrDefault(x => x.OpenId1 == openId);
-                                    break;
-                                case LoginBase.LoginType.WeiBo:
-                                    vmo = db.UserInfo.FirstOrDefault(x => x.OpenId2 == openId);
-                                    break;
-                                case LoginBase.LoginType.GitHub:
-                                    vmo = db.UserInfo.FirstOrDefault(x => x.OpenId3 == openId);
-                                    break;
-                                case LoginBase.LoginType.TaoBao:
-                                    vmo = db.UserInfo.FirstOrDefault(x => x.OpenId4 == openId);
-                                    break;
-                                case LoginBase.LoginType.MicroSoft:
-                                    vmo = db.UserInfo.FirstOrDefault(x => x.OpenId5 == openId);
-                                    break;
-                                case LoginBase.LoginType.DingTalk:
-                                    vmo = db.UserInfo.FirstOrDefault(x => x.OpenId6 == openId);
-                                    break;
-                            }
-                            //未注册
-                            if (vmo == null)
-                            {
-                                var ruvm = RegisterUser(mo);
-                                if (ruvm.Code == 200)
-                                {
-                                    vm = ValidateLogin(vtype, mo);
-                                    //拉取头像
-                                    if (vm.Code == 200 && !string.IsNullOrWhiteSpace(avatar))
-                                    {
-                                        try
-                                        {
-                                            //物理根路径
-                                            var ppath = Application.CommonService.StaticResourcePath("AvatarPath");
-                                            if (!Directory.Exists(ppath))
-                                            {
-                                                Directory.CreateDirectory(ppath);
-                                            }
+                            throw new Exception($"绑定失败，{bindResult.Msg}");
+                        }
+                    }
+                    else
+                    {
+                        UserInfo hasUser = null;
+                        if (ThirdLoginService.OpenIdMap.ContainsKey(loginType))
+                        {
+                            var propertyName = ThirdLoginService.OpenIdMap[loginType];
+                            //x.OpenId1 = UniqueId
+                            var whereEqual = PredicateTo.Compare<UserInfo>(propertyName, "=", uniqueId);
+                            hasUser = db.UserInfo.FirstOrDefault(whereEqual);
+                            //newUser.OpenId1 = UniqueId
+                            newUser.GetType().GetProperty(propertyName).SetValue(newUser, uniqueId);
+                        }
 
-                                            HttpTo.DownloadSave(avatar, PathTo.Combine(ppath, mo.UserPhoto));
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Console.WriteLine(ex);
-                                        }
-                                    }
-                                }
-                                else
+                        //注册用户
+                        if (hasUser == null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(publicUser.Avatar) && loginType != LoginWhich.Microsoft)
+                            {
+                                newUser.UserPhoto = $"{UniqueTo.LongId()}.jpg";
+                                try
                                 {
-                                    vm.Msg = ruvm.Msg;
+                                    //物理根路径
+                                    var ppath = CommonService.StaticResourcePath("AvatarPath");
+                                    if (!Directory.Exists(ppath))
+                                    {
+                                        Directory.CreateDirectory(ppath);
+                                    }
+
+                                    HttpTo.DownloadSave(publicUser.Avatar, PathTo.Combine(ppath, newUser.UserPhoto));
                                 }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"下载头像失败 {ex.Message}");
+                                    LoggingService.Write(HttpContext, ex);
+                                }
+                            }
+
+                            var ruResult = PublicRegister(newUser);
+                            //注册成功
+                            if (ruResult.Code == 200)
+                            {
+                                hasUser = newUser;
                             }
                             else
                             {
-                                vm = ValidateLogin(vtype, vmo);
+                                throw new Exception(ruResult.Msg);
+                            }
+                        }
+
+                        //登录
+                        if (hasUser != null)
+                        {
+                            var vlogin = PublicLogin(loginType, hasUser);
+                            if (vlogin.Code == 200)
+                            {
+                                var rurl = Request.Cookies["ReturnUrl"];
+                                rurl = string.IsNullOrWhiteSpace(rurl) ? "/" : rurl;
+
+                                if (rurl.StartsWith("http"))
+                                {
+                                    rurl += "?cookie=ok";
+                                }
+
+                                return Redirect(rurl);
+                            }
+                            else
+                            {
+                                throw new Exception(vlogin.Msg);
                             }
                         }
                     }
@@ -720,28 +285,11 @@ namespace Netnr.Blog.Web.Controllers
             }
             catch (Exception ex)
             {
-                Apps.FilterConfigs.LogWrite(HttpContext, ex);
-                Response.Headers["X-Output-Msg"] = ex.ToJson();
-                vm.Set(ex);
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
             }
 
-            //成功
-            if (vm.Code == 200)
-            {
-                var rurl = Request.Cookies["ReturnUrl"];
-                rurl = string.IsNullOrWhiteSpace(rurl) ? "/" : rurl;
-
-                if (rurl.StartsWith("http"))
-                {
-                    rurl += "?cookie=ok";
-                }
-
-                return Redirect(rurl);
-            }
-            else
-            {
-                return Content(vm.ToJson());
-            }
+            return BadRequest("授权失败");
         }
 
         #endregion
@@ -755,7 +303,8 @@ namespace Netnr.Blog.Web.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             //清空全局缓存
-            Core.CacheTo.RemoveAll();
+            GlobalTo.Memorys.Clear();
+            CacheTo.RemoveAll();
 
             return Redirect("/" + (id ?? ""));
         }
@@ -766,7 +315,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="user"></param>
         /// <param name="isremember"></param>
         /// <returns></returns>
-        public static Tuple<ClaimsPrincipal, AuthenticationProperties> BuildSignIn(Domain.UserInfo user, bool isremember = true)
+        public static ValueTuple<ClaimsPrincipal, AuthenticationProperties> BuildSignIn(UserInfo user, bool isremember = true)
         {
             var claims = new List<Claim>
             {
@@ -787,10 +336,162 @@ namespace Netnr.Blog.Web.Controllers
                 ap.ExpiresUtc = DateTimeOffset.Now.AddDays(10);
             }
 
-            return new Tuple<ClaimsPrincipal, AuthenticationProperties>(cp, ap);
+            return new ValueTuple<ClaimsPrincipal, AuthenticationProperties>(cp, ap);
 
             //写入授权
             //await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, cp, ap);
+        }
+
+        /// <summary>
+        /// 用户绑定
+        /// </summary>
+        /// <param name="loginType"></param>
+        /// <param name="openId"></param>
+        /// <exception cref="Exception"></exception>
+        private ResultVM BindUser(LoginWhich? loginType, string openId)
+        {
+            var vm = new ResultVM();
+
+            int uid = IdentityService.Get(HttpContext).UserId;
+
+            var isBindOther = false;
+            var queryIsBind = db.UserInfo.Where(x => x.UserId != uid);
+            var userInfo = db.UserInfo.Find(uid);
+
+            if (loginType.HasValue && ThirdLoginService.OpenIdMap.ContainsKey(loginType.Value))
+            {
+                var propertyName = ThirdLoginService.OpenIdMap[loginType.Value];
+                //x.OpenId1 = UniqueId
+                var whereEqual = PredicateTo.Compare<UserInfo>(propertyName, "=", openId);
+                isBindOther = db.UserInfo.Where(whereEqual).Any();
+                if (!isBindOther)
+                {
+                    //userInfo.OpenId1 = UniqueId;
+                    userInfo.GetType().GetProperty(propertyName).SetValue(userInfo, openId);
+                }
+            }
+
+            if (isBindOther)
+            {
+                vm.Set(EnumTo.RTag.exist);
+                vm.Msg = "已绑定其它用户";
+            }
+            else
+            {
+                db.UserInfo.Update(userInfo);
+                vm.Data = db.SaveChanges();
+                vm.Set(EnumTo.RTag.success);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 公共注册
+        /// </summary>
+        /// <param name="mo">个人用户信息</param>
+        /// <returns></returns>
+        private ResultVM PublicRegister(UserInfo mo)
+        {
+            var vm = new ResultVM();
+
+            //邮箱注册
+            if (!string.IsNullOrWhiteSpace(mo.UserMail)
+                && db.UserInfo.Any(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail))
+            {
+                vm.Set(EnumTo.RTag.exist);
+                vm.Msg = "该邮箱已经注册";
+            }
+            else if (db.UserInfo.Any(x => x.UserName == mo.UserName))
+            {
+                vm.Set(EnumTo.RTag.exist);
+                vm.Msg = "该账号已经注册";
+            }
+            else
+            {
+                db.UserInfo.Add(mo);
+                int num = db.SaveChanges();
+                vm.Set(num > 0);
+
+                //推送通知
+                PushService.PushAsync("网站消息（注册）", $"{mo.UserId}");
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 公共登录
+        /// </summary>
+        /// <param name="loginType">登录类型</param>
+        /// <param name="mo">用户信息</param>
+        /// <param name="isRemember">记住账号</param>
+        /// <returns></returns>
+        private ResultVM PublicLogin(LoginWhich? loginType, UserInfo mo, bool isRemember = true)
+        {
+            var vm = new ResultVM();
+
+            UserInfo loginUser = null;
+
+            //第三方登录
+            if (loginType.HasValue && ThirdLoginService.OpenIdMap.ContainsKey(loginType.Value))
+            {
+                loginUser = mo;
+            }
+            else if (!string.IsNullOrWhiteSpace(mo.UserName) && !string.IsNullOrWhiteSpace(mo.UserPwd))
+            {
+                mo.UserPwd = CalcTo.MD5(mo.UserPwd);
+
+                //邮箱登录
+                if (ParsingTo.IsMail(mo.UserName))
+                {
+                    loginUser = db.UserInfo.FirstOrDefault(x => x.UserMail == mo.UserName && x.UserPwd == mo.UserPwd);
+                }
+                else
+                {
+                    loginUser = db.UserInfo.FirstOrDefault(x => x.UserName == mo.UserName && x.UserPwd == mo.UserPwd);
+                }
+            }
+
+            if (loginUser == null || loginUser.UserId == 0)
+            {
+                vm.Set(EnumTo.RTag.fail);
+                vm.Msg = "用户名或密码错误";
+            }
+            else if (loginUser.LoginLimit == 1)
+            {
+                vm.Set(EnumTo.RTag.refuse);
+                vm.Msg = "用户已被禁止登录";
+            }
+            else
+            {
+                //刷新登录标记
+                if (!AppTo.GetValue<bool>("ReadOnly"))
+                {
+                    loginUser.UserLoginTime = DateTime.Now;
+                    loginUser.UserSign = loginUser.UserLoginTime.Value.ToTimestamp().ToString();
+                    db.UserInfo.Update(loginUser);
+                    db.SaveChanges();
+                }
+
+                //登录标记 缓存5分钟，绝对过期
+                if (AppTo.GetValue<bool>("Common:SingleSignOn"))
+                {
+                    var usk = "UserSign_" + loginUser.UserId;
+                    CacheTo.Set(usk, loginUser.UserSign, 5 * 60, false);
+                }
+
+                //写入授权
+                var siObj = BuildSignIn(loginUser, isRemember);
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
+
+                //生成Token
+                vm.Data = IdentityService.TokenMake(loginUser);
+
+                vm.Set(EnumTo.RTag.success);
+            }
+
+            return vm;
         }
     }
 }

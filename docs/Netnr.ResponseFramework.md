@@ -14,9 +14,8 @@
     - 全部采用 LINQ，跨数据库、避免 SQL 注入
 
 ### 项目结构
-- Netnr.ResponseFramework.Data 数据访问、仓储（Scaffold-DbContext 命令自动生成）
-- Netnr.ResponseFramework.Domain 实体（Scaffold-DbContext 命令自动生成）
-- Netnr.ResponseFramework.Application 应用层
+- Netnr.ResponseFramework.Domain 领域层（Entities Enums Models）
+- Netnr.ResponseFramework.Application 应用层（Datas Services）
 - Netnr.ResponseFramework.Web 站点
 
 ### 数据表

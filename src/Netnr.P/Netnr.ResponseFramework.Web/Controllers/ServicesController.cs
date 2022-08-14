@@ -1,5 +1,3 @@
-using Netnr.Core;
-
 namespace Netnr.ResponseFramework.Web.Controllers
 {
     /// <summary>
@@ -46,10 +44,10 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         WriteConnectionInfo = new DataKitTransferVM.ConnectionInfo
                         {
-                            ConnectionType = GlobalTo.TDB,
-                            ConnectionString = FactoryTo.GetConn().Replace("Filename=", "Data Source=")
+                            ConnectionType = AppTo.TDB,
+                            ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source=")
                         },
-                        PackagePath = PathTo.Combine(GlobalTo.ContentRootPath, zipName),
+                        PackagePath = PathTo.Combine(AppTo.ContentRootPath, zipName),
                         WriteDeleteData = true
                     };
 
@@ -75,11 +73,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 {
                     var edb = new DataKitTransferVM.ExportDatabase
                     {
-                        PackagePath = Path.Combine(GlobalTo.ContentRootPath, zipName),
+                        PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
                         ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
                         {
-                            ConnectionString = FactoryTo.GetConn().Replace("Filename=", "Data Source="),
-                            ConnectionType = GlobalTo.TDB
+                            ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source="),
+                            ConnectionType = AppTo.TDB
                         }
                     };
 
@@ -105,7 +103,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             return ResultVM.Try(vm =>
             {
-                string directoryPath = PathTo.Combine(GlobalTo.WebRootPath, GlobalTo.GetValue("StaticResource:TmpDir"));
+                string directoryPath = PathTo.Combine(AppTo.WebRootPath, AppTo.GetValue("StaticResource:TmpDir"));
 
                 vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 清理临时目录：{directoryPath}");
 

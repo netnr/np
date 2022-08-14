@@ -27,30 +27,30 @@ var page = {
                 case "Qiniu":
                     {
                         Object.assign(page.vender, {
-                            key: "key",
+                            key: "Key",
                             column: {
-                                key: "key",
-                                size: "fsize",
-                                mimeType: "mimeType",
-                                lastModified: "putTime",
+                                key: "Key",
+                                size: "Fsize",
+                                mimeType: "MimeType",
+                                lastModified: "PutTime",
                                 lastModified_valueFormatter: params => {
                                     if (params.value) {
                                         return new Date(params.value.toString().substring(0, 13) * 1).toLocaleString()
                                     }
                                 }
                             },
-                            dataList: data => data.Result.items,
+                            dataList: data => data.Result.Items,
                             dataListSort: data => {
-                                let list = data.Result.items;
+                                let list = data.Result.Items;
                                 list.sort((a, b) => {
                                     if (a.fsize == b.fsize) {
-                                        return a.key.localeCompare(b.key)
-                                    } else if (a.key.endsWith('/')) {
+                                        return a.Key.localeCompare(b.Key)
+                                    } else if (a.Key.endsWith('/')) {
                                         return -1
-                                    } else if (b.key.endsWith('/')) {
+                                    } else if (b.Key.endsWith('/')) {
                                         return 1;
                                     } else {
-                                        return a.key.localeCompare(b.key)
+                                        return a.Key.localeCompare(b.Key)
                                     }
                                 });
                                 return list;

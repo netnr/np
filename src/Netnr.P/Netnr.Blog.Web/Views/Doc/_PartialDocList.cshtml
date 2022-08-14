@@ -1,7 +1,7 @@
 @model PageVM
 @{
-    var rows = Model.Rows as List<Netnr.Blog.Domain.DocSet>;
-    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+    var rows = Model.Rows as List<DocSet>;
+    var uinfo = IdentityService.Get(ViewContext.HttpContext);
 
     var nickname = ViewData["Nickname"]?.ToString() ?? "Discover";
     ViewData["Title"] = $"{nickname} docs";

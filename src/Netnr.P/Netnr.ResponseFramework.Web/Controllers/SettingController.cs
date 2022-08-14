@@ -1,7 +1,4 @@
-﻿using System.Linq.Dynamic.Core;
-using Microsoft.AspNetCore.Authorization;
-using Netnr.ResponseFramework.Data;
-using Netnr.ResponseFramework.Domain;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -43,8 +40,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var list = db.SysButton.OrderBy(x => x.SbBtnOrder).ToList();
-            var tree = Core.TreeTo.ListToTree(list, "SbPid", "SbId", new List<string> { Guid.Empty.ToString() });
-            ovm.Data = tree.ToJArray();
+            var tree = TreeTo.ListToTree(list, "SbPid", "SbId", new List<string> { Guid.Empty.ToString() });
+            ovm.Data = tree.DeJson();
 
             //列
             if (ivm.ColumnsExists != 1)
@@ -89,7 +86,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             vm.Set(num > 0);
 
             //清理缓存
-            Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysButton);
+            CacheTo.Remove(CommonService.GlobalCacheKey.SysButton);
 
             return vm;
         }
@@ -139,8 +136,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var list = db.SysMenu.OrderBy(x => x.SmOrder).ToList();
-            var tree = Core.TreeTo.ListToTree(list, "SmPid", "SmId", new List<string> { Guid.Empty.ToString() });
-            ovm.Data = tree.ToJArray();
+            var tree = TreeTo.ListToTree(list, "SmPid", "SmId", new List<string> { Guid.Empty.ToString() });
+            ovm.Data = tree.DeJson();
 
             //列
             if (ivm.ColumnsExists != 1)
@@ -181,7 +178,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             vm.Set(num > 0);
 
             //清理缓存
-            Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysMenu);
+            CacheTo.Remove(CommonService.GlobalCacheKey.SysMenu);
 
             return vm;
         }
@@ -245,7 +242,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysRole;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -276,7 +273,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             if (num > 0)
             {
                 //清理缓存
-                Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysRole);
+                CacheTo.Remove(CommonService.GlobalCacheKey.SysRole);
             }
 
             vm.Set(num > 0);
@@ -308,7 +305,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             if (num > 0)
             {
                 //清理缓存
-                Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysRole);
+                CacheTo.Remove(CommonService.GlobalCacheKey.SysRole);
             }
 
             vm.Set(num > 0);
@@ -339,7 +336,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 if (num > 0)
                 {
                     //清理缓存
-                    Core.CacheTo.Remove(Application.CommonService.GlobalCacheKey.SysRole);
+                    CacheTo.Remove(CommonService.GlobalCacheKey.SysRole);
                 }
 
                 vm.Set(num > 0);
@@ -389,7 +386,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                             OldUserPwd = a.SuPwd,
                             b.SrName
                         };
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -416,7 +413,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 {
                     mo.SuId = Guid.NewGuid().ToString();
                     mo.SuCreateTime = DateTime.Now;
-                    mo.SuPwd = Core.CalcTo.MD5(mo.SuPwd);
+                    mo.SuPwd = CalcTo.MD5(mo.SuPwd);
                     db.SysUser.Add(mo);
                 }
             }
@@ -430,7 +427,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 {
                     if (mo.SuPwd != OldUserPwd)
                     {
-                        mo.SuPwd = Core.CalcTo.MD5(mo.SuPwd);
+                        mo.SuPwd = CalcTo.MD5(mo.SuPwd);
                     }
                     db.SysUser.Update(mo);
                 }
@@ -487,7 +484,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysLog;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -518,7 +515,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysDictionary;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -597,7 +594,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysTableConfig;
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }

@@ -7,7 +7,7 @@
     bool laud = ViewData["uca1"]?.ToString() == "yes";
     bool mark = ViewData["uca2"]?.ToString() == "yes";
 
-    var avatarUrl = GlobalTo.GetValue("Common:Gravatar");
+    var avatarUrl = AppTo.GetValue("Common:Gravatar");
 }
 
 <input class="nr-hid-write-id" type="hidden" value="@uw.UwId" />
@@ -104,7 +104,7 @@
         @foreach (var item in listRp)
         {
             lv += 1;
-            var gra = avatarUrl + Netnr.Core.CalcTo.MD5(item.UrAnonymousMail ?? "") + "?r=pg";
+            var gra = avatarUrl + CalcTo.MD5(item.UrAnonymousMail ?? "") + "?r=pg";
 
             <div class="row" id="no_@lv">
                 <div class="col-auto">
@@ -161,7 +161,7 @@
         <partial name="_PartialPaging" />
     }
 
-    @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && !GlobalTo.GetValue<bool>("ReadOnly"))
+    @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && !AppTo.GetValue<bool>("ReadOnly"))
     {
         <div class="row my-5">
             <!--回复帖子-->

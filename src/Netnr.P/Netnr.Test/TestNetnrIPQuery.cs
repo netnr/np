@@ -8,19 +8,11 @@ namespace Netnr.Test
         [Fact]
         public void Query()
         {
-            var address = IPAddress.Parse("202.97.96.2");
+            var address = IPAddress.Parse("114.44.227.87");
 
-            using (var reader = new MaxMind.Db.Reader(@"D:\tmp\res\dbip\dbip-asn.mmdb"))
-            {
-                var data = reader.Find<Dictionary<string, object>>(address);
-                Debug.WriteLine(data);
-            }
-
-            using (var reader = new MaxMind.Db.Reader(@"D:\tmp\res\dbip\dbip-city.mmdb"))
-            {
-                var data = reader.Find<Dictionary<string, object>>(address);
-                Debug.WriteLine(data);
-            }
+            using var reader = new MaxMind.Db.Reader(@"D:\tmp\res\GeoLite2\GeoLite2-Country.mmdb");
+            var data = reader.Find<Dictionary<string, object>>(address);
+            Debug.WriteLine(data);
         }
     }
 }

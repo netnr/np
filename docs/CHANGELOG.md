@@ -1,5 +1,8 @@
 # Change Log
 
+### 2022-08
+- 调整 Newtonsoft.Json 组件为 System.Text.Json
+
 ### 2022-04
 - 升级 站点引入 shoelace-style 组件库，去 jquery、font-awesome
 - 发布 NDX (Netnr.FileServer)

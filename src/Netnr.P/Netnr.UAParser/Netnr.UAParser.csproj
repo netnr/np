@@ -37,14 +37,10 @@ var botEntity = uap.GetBot();
 		  <Pack>True</Pack>
 		  <PackagePath>\</PackagePath>
 		</None>
-		<None Include="favicon.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
+		<None Include="..\Netnr.Blog.Web\wwwroot\favicon.png">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

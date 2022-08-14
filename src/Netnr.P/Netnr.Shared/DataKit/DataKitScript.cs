@@ -1294,7 +1294,7 @@ $$;
         /// <param name="databaseName">数据库名</param>
         /// <param name="listSchemaNameTableName">过滤 模式名、表名集合</param>
         /// <returns></returns>
-        public static string GetColumn(EnumTo.TypeDB tdb, string databaseName, List<Tuple<string, string>> listSchemaNameTableName = null)
+        public static string GetColumn(EnumTo.TypeDB tdb, string databaseName, List<ValueTuple<string, string>> listSchemaNameTableName = null)
         {
             string result = null;
 
@@ -1512,6 +1512,7 @@ SELECT
     WHEN c.system_type_id IN (40, 41, 42, 43, 58, 61) THEN NULL
     ELSE ODBCSCALE(c.system_type_id, c.scale)
   END AS DataScale,
+  -- c.object_id, -- 复合主键
   c.column_id AS ColumnOrder,
   k.key_ordinal AS PrimaryKey,
   c.is_identity AS AutoIncr,

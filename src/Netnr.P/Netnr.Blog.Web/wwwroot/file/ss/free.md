@@ -1,22 +1,23 @@
 临时短信 Temporary SMS
+- <http://www.114sim.com>
 - <https://yunduanxin.net>
+- <https://receiveasms.com>
 - <https://www.yunjiema.top>
 - <https://www.clearcode.cn>
-- <https://ch.freephonenum.com>
-- <https://www.zusms.com>
-- <http://z-sms.com>
-- <http://www.114sim.com>
 - <https://mianfeijiema.com>
-- <https://zh.mytrashmobile.com>
+- <https://ch.freephonenum.com>
 - <https://www.receive-sms-online.info>
-- <https://receiveasms.com>
-- <https://receive-sms.com>
 - <https://sms-online.co/receive-free-sms>
 - <https://www.zsrq.net>
 
 临时邮箱 Temporary mailbox
-- <https://maildrop.cc>
-- <https://10minutemail.net>
+- <https://rootsh.com>
+- <https://mail.td/zh>
+- <https://tempmail.cn>
+- <https://mailpoof.com/zh>
+- <https://www.mailtemp.net>
+- <https://www.moakt.com/zh>
+- <https://www.guerrillamail.com/zh>
 
 MySQL
 - <https://remotemysql.com>
@@ -36,8 +37,8 @@ NodeJS
 - <https://cloudno.de>
 
 部署 Deploy
-- <https://www.heroku.com>
 - <https://render.com>
+- <https://www.heroku.com>
 
 无服务 Serverless
 - <https://vercel.com/home>
@@ -49,9 +50,7 @@ NodeJS
 - <http://wifi.aliyun.com>
 - <http://114.taobao.com>
 - <http://safe.taobao.com>
-- <http://imis.qq.com>
 - <http://ecd.tencent.com>
-- <http://127-0-0-1.s.test.cab> ( SSL：<https://s.test.cab> )
 
 更多 More
 - <https://free-for.dev>

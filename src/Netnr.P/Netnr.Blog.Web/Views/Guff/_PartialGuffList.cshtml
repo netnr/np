@@ -1,6 +1,6 @@
 @model PageVM
 @{
-    var rows = Model.Rows as List<Netnr.Blog.Domain.GuffRecord>;
+    var rows = Model.Rows as List<GuffRecord>;
 
     var nickname = ViewData["Nickname"]?.ToString() ?? "Discover";
     ViewData["Title"] = $"{nickname} guffs";

@@ -7,10 +7,7 @@
             nr.domBtnQuery.loading = true;
             fetch(`${ss.apiServer}/api/v1/Analysis`, {
                 method: 'POST',
-                body: nr.toFormData({
-                    content: val,
-                    ctype: nr.domSeType.value,
-                })
+                body: nr.toFormData({ content: val })
             }).then(resp => resp.json()).then(res => {
                 nr.domBtnQuery.loading = false;
                 if (res.code == 200) {

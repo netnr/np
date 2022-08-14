@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Netnr.ResponseFramework.Data;
-using Newtonsoft.Json.Linq;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -32,7 +30,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var query = db.SysTableConfig.Where(x => x.ColHide != 2);
-            Application.CommonService.QueryJoin(query, ivm, db, ref ovm);
+            CommonService.QueryJoin(query, ivm, db, ref ovm);
 
             return ovm;
         }
@@ -48,23 +46,24 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             var vm = new ResultVM();
 
-            JArray ja = JArray.Parse(rows);
+            var ja = rows.DeJson().EnumerateArray();
 
             var listRow = db.SysTableConfig.Where(x => x.TableName == tablename).ToList();
 
             int order = 0;
-            foreach (JToken jt in ja)
+            foreach (var jt in ja)
             {
-                string id = jt["Id"].ToString();
+                string id = jt.GetValue("Id");
 
                 var mo = listRow.FirstOrDefault(x => x.Id == id);
 
-                mo.ColTitle = jt["ColTitle"].ToStringOrEmpty();
-                mo.ColAlign = string.IsNullOrWhiteSpace(jt["ColAlign"].ToStringOrEmpty()) ? 1 : Convert.ToInt32(jt["ColAlign"].ToStringOrEmpty());
-                mo.ColWidth = string.IsNullOrWhiteSpace(jt["ColWidth"].ToStringOrEmpty()) ? 0 : Convert.ToInt32(jt["ColWidth"].ToStringOrEmpty());
-                mo.ColHide = string.IsNullOrWhiteSpace(jt["ColHide"].ToStringOrEmpty()) ? 0 : Convert.ToInt32(jt["ColHide"].ToStringOrEmpty());
-                mo.ColFrozen = string.IsNullOrWhiteSpace(jt["ColFrozen"].ToStringOrEmpty()) ? 0 : Convert.ToInt32(jt["ColFrozen"].ToStringOrEmpty());
-                mo.ColExport = string.IsNullOrWhiteSpace(jt["ColExport"].ToStringOrEmpty()) ? 0 : Convert.ToInt32(jt["ColExport"].ToStringOrEmpty());
+                mo.ColTitle = jt.GetValue("ColTitle");
+                mo.ColAlign = jt.GetValue<int?>("ColAlign") ?? 1;
+                mo.ColWidth = jt.GetValue<int>("ColWidth");
+                mo.ColHide = jt.GetValue<int>("ColHide");
+                mo.ColFrozen = jt.GetValue<int>("ColFrozen");
+                mo.ColExport = jt.GetValue<int>("ColExport");
+
                 mo.ColOrder = order++;
             }
 
@@ -91,19 +90,19 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             var vm = new ResultVM();
 
-            JArray ja = JArray.Parse(rows);
+            var ja = rows.DeJson().EnumerateArray();
 
             var listRow = db.SysTableConfig.Where(x => x.TableName == tablename).ToList();
 
             int order = 0;
-            foreach (JToken jt in ja)
+            foreach (var jt in ja)
             {
-                string field = jt["field"].ToStringOrEmpty();
+                string field = jt.GetValue("field");
                 var mo = listRow.FirstOrDefault(x => x.ColField == field);
 
-                mo.ColTitle = jt["title"].ToStringOrEmpty();
-                mo.FormSpan = string.IsNullOrWhiteSpace(jt["span"].ToStringOrEmpty()) ? 1 : Convert.ToInt32(jt["span"].ToStringOrEmpty());
-                mo.FormArea = string.IsNullOrWhiteSpace(jt["area"].ToStringOrEmpty()) ? 0 : Convert.ToInt32(jt["area"].ToStringOrEmpty());
+                mo.ColTitle = jt.GetValue("title");
+                mo.FormSpan = jt.GetValue<int?>("span") ?? 1;
+                mo.FormSpan = jt.GetValue<int>("FormArea");
                 mo.FormOrder = order++;
             }
 

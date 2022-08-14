@@ -1,6 +1,5 @@
 ﻿using Netnr.FileServer.Application;
 using Netnr.FileServer.Domain;
-using Netnr.Core;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace Netnr.FileServer.Controllers
@@ -9,7 +8,7 @@ namespace Netnr.FileServer.Controllers
     /// API接口
     /// </summary>
     [Route("[controller]/[action]")]
-    [Apps.FilterConfigs.AllowCors]
+    [Filters.FilterConfigs.AllowCors]
     public class APIController : ControllerBase
     {
         /// <summary>
@@ -29,11 +28,11 @@ namespace Netnr.FileServer.Controllers
                 {
                     vm.Msg = "owner 必填，仅为字母、数字";
                 }
-                else if (owner.ToLower() == GlobalTo.GetValue("StaticResource:TmpDir").ToLower())
+                else if (owner.ToLower() == AppTo.GetValue("StaticResource:TmpDir").ToLower())
                 {
                     vm.Msg = "owner 与临时目录冲突";
                 }
-                else if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
+                else if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
@@ -71,7 +70,7 @@ namespace Netnr.FileServer.Controllers
 
             try
             {
-                if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
+                if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
@@ -126,7 +125,7 @@ namespace Netnr.FileServer.Controllers
 
             try
             {
-                if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
+                if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
@@ -139,7 +138,7 @@ namespace Netnr.FileServer.Controllers
                     db.DeleteAll<FileRecord>();
 
                     //删除上传文件
-                    var rootdir = FileServerService.StaticVrPathAsPhysicalPath(GlobalTo.GetValue("StaticResource:RootDir"));
+                    var rootdir = FileServerService.StaticVrPathAsPhysicalPath(AppTo.GetValue("StaticResource:RootDir"));
                     if (Directory.Exists(rootdir))
                     {
                         Directory.Delete(rootdir, true);
@@ -170,7 +169,7 @@ namespace Netnr.FileServer.Controllers
 
             try
             {
-                if (string.IsNullOrWhiteSpace(password) || password != GlobalTo.GetValue("Safe:AdminPassword"))
+                if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                     vm.Msg = "密码错误或已关闭管理接口";
@@ -180,7 +179,7 @@ namespace Netnr.FileServer.Controllers
                     var listDel = new List<string>();
 
                     //删除临时文件
-                    var tmpdir = FileServerService.StaticVrPathAsPhysicalPath(GlobalTo.GetValue("StaticResource:TmpDir"));
+                    var tmpdir = FileServerService.StaticVrPathAsPhysicalPath(AppTo.GetValue("StaticResource:TmpDir"));
                     if (Directory.Exists(tmpdir))
                     {
                         if (keepTime > 0)
@@ -248,19 +247,16 @@ namespace Netnr.FileServer.Controllers
                 }
                 else
                 {
-                    if (CacheTo.Get(AppKey) is not ResultVM cvm)
+                    vm = CacheTo.Get<ResultVM>(AppKey);
+                    if (vm == null)
                     {
                         vm = FileServerService.GetToken(AppId, AppKey);
 
                         if (vm.Code == 200)
                         {
                             //Token缓存
-                            CacheTo.Set(AppKey, vm, GlobalTo.GetValue<int>("Safe:TokenCache"), false);
+                            CacheTo.Set(AppKey, vm, AppTo.GetValue<int>("Safe:TokenCache"), false);
                         }
-                    }
-                    else
-                    {
-                        vm = cvm;
                     }
                 }
             }
@@ -423,7 +419,7 @@ namespace Netnr.FileServer.Controllers
                         var listFr = new List<FileRecord>();
 
                         //虚拟路径
-                        var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
+                        var vpath = PathTo.Combine(AppTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
 
                         //物理路径
                         var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
@@ -510,14 +506,15 @@ namespace Netnr.FileServer.Controllers
                 {
                     vm.Msg = "subdir 仅为字母、数字";
                 }
-                else if (file.Length * (chunks - 1) > GlobalTo.GetValue<int>("StaticResource:MaxSize") * 1024 * 1024)
+                else if (file.Length * (chunks - 1) > AppTo.GetValue<int>("StaticResource:MaxSize") * 1024 * 1024)
                 {
                     vm.Msg = "文件大小超出限制";
                 }
                 else
                 {
                     var vtkey = "vt-" + token;
-                    if (CacheTo.Get(vtkey) is not ResultVM vt)
+                    var vt = CacheTo.Get<ResultVM>(vtkey);
+                    if (vt == null)
                     {
                         vt = FileServerService.ValidToken(token, mn);
                         //缓存 Token 验证 30 分钟
@@ -534,7 +531,7 @@ namespace Netnr.FileServer.Controllers
                         if (chunks > 0)
                         {
                             //分片临时虚拟目录
-                            var chunkDir = PathTo.Combine(GlobalTo.GetValue("StaticResource:TmpDir"), ts);
+                            var chunkDir = PathTo.Combine(AppTo.GetValue("StaticResource:TmpDir"), ts);
 
                             var ext = Path.GetExtension(file.FileName);
                             //存入分片临时目录（格式：Id_片索引.文件格式后缀）
@@ -555,7 +552,7 @@ namespace Netnr.FileServer.Controllers
 
                             //记录已上传的分片总数
                             var ckkey = $"chunk-{ts}";
-                            var ci = CacheTo.Get(ckkey) as int? ?? 0;
+                            var ci = CacheTo.Get<int>(ckkey);
                             ci++;
                             CacheTo.Set(ckkey, ci);
 
@@ -567,7 +564,7 @@ namespace Netnr.FileServer.Controllers
                                 var vtjson = vt.Data as FixedTokenJson;
 
                                 //虚拟路径
-                                var vpath = PathTo.Combine(GlobalTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
+                                var vpath = PathTo.Combine(AppTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
 
                                 //物理路径
                                 var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
@@ -642,7 +639,7 @@ namespace Netnr.FileServer.Controllers
             {
                 var isAuth = false;
                 //公开访问
-                if (GlobalTo.GetValue<bool>("Safe:PublicAccess"))
+                if (AppTo.GetValue<bool>("Safe:PublicAccess"))
                 {
                     isAuth = true;
                 }
@@ -876,7 +873,7 @@ namespace Netnr.FileServer.Controllers
 
             try
             {
-                if (!GlobalTo.GetValue<bool>("Safe:EnableUploadTmp"))
+                if (!AppTo.GetValue<bool>("Safe:EnableUploadTmp"))
                 {
                     vm.Set(EnumTo.RTag.refuse);
                     vm.Msg = "该接口已关闭";
@@ -890,7 +887,7 @@ namespace Netnr.FileServer.Controllers
                     }
                     else
                     {
-                        var vpath = GlobalTo.GetValue("StaticResource:TmpDir");
+                        var vpath = AppTo.GetValue("StaticResource:TmpDir");
                         var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
                         if (!Directory.Exists(ppath))
                         {

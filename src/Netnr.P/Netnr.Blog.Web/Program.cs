@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Netnr;
-using Netnr.Core;
-using Netnr.Login;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,18 +7,10 @@ ReadyTo.EncodingReg();
 ReadyTo.LegacyTimestamp();
 
 //（上传）主体大小限制
-var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Limits.MaxRequestBodySize = srms * 1024 * 1024;
-});
-builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = srms * 1024 * 1024;
-});
+builder.SetMaxRequestData();
 
 //结巴词典路径
-var jbPath = Path.Combine(GlobalTo.ContentRootPath, "db/jieba");
+var jbPath = Path.Combine(AppTo.ContentRootPath, "db/jieba");
 if (!Directory.Exists(jbPath))
 {
     Directory.CreateDirectory(jbPath);
@@ -42,37 +31,32 @@ if (!Directory.Exists(jbPath))
 JiebaNet.Segmenter.ConfigManager.ConfigFileBaseDir = jbPath;
 
 //第三方登录
-new List<Type>
+if (!AppTo.GetValue<bool>("ReadOnly") && AppTo.GetValue<bool?>("OAuthLogin:enable") == true)
 {
-    typeof(QQConfig),
-    typeof(WeChatConfig),
-    typeof(WeiboConfig),
-    typeof(GitHubConfig),
-    typeof(GiteeConfig),
-    typeof(TaoBaoConfig),
-    typeof(MicroSoftConfig),
-    typeof(DingTalkConfig),
-    typeof(GoogleConfig),
-    typeof(AliPayConfig),
-    typeof(StackOverflowConfig)
-}.ForEach(lc =>
-{
-    var fields = lc.GetFields();
-    foreach (var field in fields)
+    Netnr.Login.LoginTo.InitConfig((loginType, field) =>
     {
-        if (!field.Name.StartsWith("API_"))
+        object val = null;
+        if (field == "Redirect_Uri")
         {
-            var cv = GlobalTo.GetValue($"OAuthLogin:{lc.Name.Replace("Config", "")}:{field.Name}");
-            field.SetValue(lc, cv);
+            val = string.Format(AppTo.GetValue($"OAuthLogin:Redirect_Uri"), loginType.ToString().ToLower());
         }
-    }
-});
+        else if (field.StartsWith("Is"))
+        {
+            val = AppTo.GetValue<bool?>($"OAuthLogin:{loginType}:{field}");
+        }
+        else if (!field.StartsWith("API_"))
+        {
+            val = AppTo.GetValue($"OAuthLogin:{loginType}:{field}");
+        }
+        return val;
+    });
+}
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
     //cookie存储需用户同意，欧盟新标准，暂且关闭，否则用户没同意无法写入
     options.CheckConsentNeeded = context => false;
-    if (!GlobalTo.GetValue<bool>("ReadOnly"))
+    if (!AppTo.GetValue<bool>("ReadOnly"))
     {
         //允许其他站点携带授权Cookie访问，会出现伪造
         //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
@@ -83,17 +67,16 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 builder.Services.AddControllersWithViews(options =>
 {
     //注册全局过滤器
-    options.Filters.Add(new Netnr.Blog.Web.Apps.FilterConfigs.GlobalFilter());
+    options.Filters.Add(new FilterConfigs.GlobalFilter());
 
     //注册全局授权访问时登录标记是否有效
-    options.Filters.Add(new Netnr.Blog.Web.Apps.FilterConfigs.LoginSignValid());
-}).SetJson();
-builder.Services.AddSwaggerGenNewtonsoftSupport();
+    options.Filters.Add(new FilterConfigs.LoginSignValid());
+}).SetJsonConfig();
 
 //授权访问信息
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    if (!GlobalTo.GetValue<bool>("ReadOnly"))
+    if (!AppTo.GetValue<bool>("ReadOnly"))
     {
         //允许其他站点携带授权Cookie访问，会出现伪造
         //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
@@ -108,17 +91,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddSession();
 
 //数据库连接池
-builder.Services.AddDbContextPool<Netnr.Blog.Data.ContextBase>(options =>
+builder.Services.AddDbContextPool<ContextBase>(options =>
 {
-    Netnr.Blog.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
+    AppTo.TDB = AppTo.GetValue<EnumTo.TypeDB>("TypeDB");
+    DbContextTo.CreateDbContextOptionsBuilder<ContextBase>(AppTo.TDB, options);
 }, 10);
 
 //定时任务 https://github.com/fluentscheduler/FluentScheduler
-if (!GlobalTo.GetValue<bool>("ReadOnly"))
+if (!AppTo.GetValue<bool>("ReadOnly"))
 {
     FluentScheduler.JobManager.Initialize();
 
-    var sc = new Netnr.Blog.Web.Controllers.ServicesController();
+    var sc = new Netnr.Blog.Web.Controllers.ServiceController();
 
     //Gist 同步任务
     FluentScheduler.JobManager.AddJob(() => sc.GistSync(), s =>
@@ -162,10 +146,10 @@ if (!app.Environment.IsDevelopment())
 //数据库初始化
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<Netnr.Blog.Data.ContextBase>();
+    var db = scope.ServiceProvider.GetRequiredService<ContextBase>();
 
     var createScript = db.Database.GenerateCreateScript();
-    if (GlobalTo.TDB == EnumTo.TypeDB.PostgreSQL)
+    if (AppTo.TDB == EnumTo.TypeDB.PostgreSQL)
     {
         createScript = createScript.Replace(" datetime ", " timestamp ");
     }
@@ -175,7 +159,7 @@ using (var scope = app.Services.CreateScope())
     if (db.Database.EnsureCreated())
     {
         //导入数据库示例数据
-        var vm = new Netnr.Blog.Web.Controllers.ServicesController().DatabaseImport("db/backup_demo.zip");
+        var vm = new Netnr.Blog.Web.Controllers.ServiceController().DatabaseImport("db/backup_demo.zip");
         Console.WriteLine(vm.ToJson(true));
     }
 }
@@ -205,7 +189,7 @@ app.UseStaticFiles(new StaticFileOptions()
     }
 });
 //目录浏览&&公开访问
-if (GlobalTo.GetValue<bool>("ReadOnly"))
+if (AppTo.GetValue<bool>("ReadOnly"))
 {
     var fso = new FileServerOptions()
     {
@@ -222,7 +206,7 @@ if (GlobalTo.GetValue<bool>("ReadOnly"))
         resp.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
         resp.Context.Response.Headers.Add("Cache-Control", "public, max-age=604800");
     };
-    fso.FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(GlobalTo.WebRootPath);
+    fso.FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(AppTo.WebRootPath);
     fso.RequestPath = new PathString($"/_");
 
     app.UseFileServer(fso);
@@ -238,8 +222,9 @@ app.UseAuthorization();
 //session
 app.UseSession();
 
+//default index.html
 //https://docs.microsoft.com/en-us/aspnet/core/tutorials/min-web-api
-app.Map("/app/{appName}/", (string appName) => Results.File($"{GlobalTo.WebRootPath}/app/{appName}/index.html", "text/html; charset=utf-8"));
+app.Map("/app/{appName}/", (string appName) => Results.File($"{AppTo.WebRootPath}/app/{appName}/index.html", "text/html; charset=utf-8"));
 
 //app.Map("/{xid:int}", (int xid) => Results.Ok(xid));
 app.Map("/generate_200", () => Results.Ok());

@@ -1,11 +1,9 @@
 ﻿using System.Net;
 using System.Globalization;
 using JiebaNet.Segmenter;
-using JiebaNet.Analyser;
 using JiebaNet.Segmenter.PosSeg;
 using SkiaSharp;
 using SkiaSharp.QrCode;
-using Netnr.Core;
 
 namespace Netnr.Blog.Web.Controllers.api
 {
@@ -13,7 +11,7 @@ namespace Netnr.Blog.Web.Controllers.api
     /// 公共接口
     /// </summary>
     [Route("api/v1/[action]")]
-    [Apps.FilterConfigs.AllowCors]
+    [FilterConfigs.AllowCors]
     public partial class APIController : ControllerBase
     {
         /// <summary>
@@ -25,7 +23,7 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = Apps.LoginService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
                 if (uinfo.UserId != 0)
                 {
@@ -49,10 +47,10 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="content"></param>
         /// <returns></returns>
         [HttpPost]
-        [Apps.FilterConfigs.AllowCors]
+        [FilterConfigs.AllowCors]
         public IActionResult PushAsync([FromForm] string title = "", [FromForm] string content = "")
         {
-            Application.PushService.PushAsync(title, content);
+            PushService.PushAsync(title, content);
             return NoContent();
         }
 
@@ -92,11 +90,11 @@ namespace Netnr.Blog.Web.Controllers.api
                 else
                 {
                     //物理根路径
-                    var prp = GlobalTo.GetValue("StaticResource:PhysicalRootPath");
+                    var prp = AppTo.GetValue("StaticResource:PhysicalRootPath");
                     //虚拟路径
                     var vpath = PathTo.Combine(subdir, now.ToString("yyyy"));
                     //物理路径
-                    var ppath = PathTo.Combine(GlobalTo.WebRootPath, prp, vpath);
+                    var ppath = PathTo.Combine(AppTo.WebRootPath, prp, vpath);
                     //创建物理目录
                     if (!Directory.Exists(ppath))
                     {
@@ -118,8 +116,8 @@ namespace Netnr.Blog.Web.Controllers.api
                     //输出
                     vm.Data = new
                     {
-                        server = GlobalTo.GetValue("StaticResource:Server"),
-                        prp = prp,
+                        server = AppTo.GetValue("StaticResource:Server"),
+                        prp,
                         path = PathTo.Combine(vpath, filename)
                     };
                     vm.Set(EnumTo.RTag.success);
@@ -137,12 +135,12 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [Apps.FilterConfigs.AllowCors]
+        [FilterConfigs.AllowCors]
         public ResultVM Upload(IFormFile file, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
             {
-                if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                     return vm;
@@ -170,12 +168,12 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [Apps.FilterConfigs.AllowCors]
+        [FilterConfigs.AllowCors]
         public ResultVM UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
             {
-                if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                     return vm;
@@ -207,12 +205,12 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [Apps.FilterConfigs.AllowCors]
+        [FilterConfigs.AllowCors]
         public ResultVM UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
             {
-                if (!GlobalTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                     return vm;
@@ -234,34 +232,17 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
-        /// 内容分词解析（结巴）
+        /// 内容分词解析
         /// </summary>
-        /// <param name="ctype">命令类型，0：分词（默认，可不传）；1：关键词提取；2：词性标注</param>
         /// <param name="content">内容</param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM Analysis([FromForm] int ctype, [FromForm] string content = "结过婚的和尚未结过婚的")
+        public ResultVM Analysis([FromForm] string content = "结过婚的和尚未结过婚的")
         {
             return ResultVM.Try(vm =>
             {
                 var jb = new JiebaSegmenter();
-
-                switch (ctype)
-                {
-                    case 1:
-                        vm.Data = new TfidfExtractor().ExtractTagsWithWeight(content);
-                        break;
-                    case 2:
-                        {
-                            var ps = new PosSegmenter();
-                            vm.Data = ps.Cut(content);
-                        }
-                        break;
-                    default:
-                        vm.Data = jb.Cut(content);
-                        break;
-                }
-
+                vm.Data = jb.Cut(content);
                 vm.Set(EnumTo.RTag.success);
 
                 return vm;
@@ -374,6 +355,27 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
+        /// 生成雪花ID,默认返回一条
+        /// </summary>
+        /// <param name="count">自定义条数（限制1-99）</param>
+        /// <returns></returns>
+        [HttpGet, Route("{count}")]
+        public List<long> SnowflakeId([FromRoute] int count = 1)
+        {
+            count = Math.Max(1, count);
+            count = Math.Min(99, count);
+
+            var list = new List<long>();
+            var sf = new SnowflakeTo();
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(sf.NewId());
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// 百度AI参数检查
         /// </summary>
         /// <param name="file"></param>
@@ -384,8 +386,8 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             if (string.IsNullOrWhiteSpace(API_KEY) && string.IsNullOrWhiteSpace(SECRET_KEY))
             {
-                API_KEY = GlobalTo.GetValue("ApiKey:Aip:API_KEY");
-                SECRET_KEY = GlobalTo.GetValue("ApiKey:Aip:SECRET_KEY");
+                API_KEY = AppTo.GetValue("ApiKey:Aip:API_KEY");
+                SECRET_KEY = AppTo.GetValue("ApiKey:Aip:SECRET_KEY");
             }
 
             byte[] bytes = null;
@@ -416,12 +418,12 @@ namespace Netnr.Blog.Web.Controllers.api
 
                 if (bytes != null)
                 {
-                    vm.Data = ocr.GeneralBasic(bytes);
+                    vm.Data = ocr.GeneralBasic(bytes).ToString().DeJson();
                     vm.Set(EnumTo.RTag.success);
                 }
                 else if (!string.IsNullOrWhiteSpace(url))
                 {
-                    vm.Data = ocr.GeneralBasicUrl(url);
+                    vm.Data = ocr.GeneralBasicUrl(url).ToString().DeJson();
                     vm.Set(EnumTo.RTag.success);
                 }
                 else
@@ -435,6 +437,27 @@ namespace Netnr.Blog.Web.Controllers.api
             });
         }
 
+        private Dictionary<string, string> DicOCRType { get; set; } = new Dictionary<string, string>
+        {
+            { "General", "通用文字识别（标准含位置版） 500次/天" },
+            { "AccurateBasic", "通用文字识别（高精度版） 500次/天" },
+            { "Accurate", "通用文字识别（高精度含位置版） 50次/天" },
+            { "WebImage", "网络图片文字识别 500次/天" },
+            { "Numbers", "数字识别 200次/天" },
+            { "Handwriting", "手写文字识别 50次/天" },
+            { "Idcard", "身份证识别 500次/天" },
+            { "Bankcard", "银行卡识别 500次/天" },
+            { "BusinessLicense", "营业执照识别 200次/天" },
+            { "VatInvoice", "增值税发票识别 500次/天" },
+            { "TrainTicket", "火车票识别 50次/天" },
+            { "TaxiReceipt", "出租车票识别 50次/天" },
+            { "Receipt", "通用票据识别 200次/天" },
+            { "VehicleLicense", "行驶证识别 200次/天" },
+            { "DrivingLicense", "驾驶证识别 200次/天" },
+            { "LicensePlate", "车牌识别 200次/天" },
+            { "Seal", "印章识别 100次/天" }
+        };
+
         /// <summary>
         /// OCR 支持的子类型
         /// </summary>
@@ -444,26 +467,7 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             var vm = new ResultVM
             {
-                Data = new Dictionary<string, string>
-                {
-                    { "General", "通用文字识别（标准含位置版） 500次/天" },
-                    { "AccurateBasic", "通用文字识别（高精度版） 500次/天" },
-                    { "Accurate", "通用文字识别（高精度含位置版） 50次/天" },
-                    { "WebImage", "网络图片文字识别 500次/天" },
-                    { "Numbers", "数字识别 200次/天" },
-                    { "Handwriting", "手写文字识别 50次/天" },
-                    { "Idcard", "身份证识别 500次/天" },
-                    { "Bankcard", "银行卡识别 500次/天" },
-                    { "BusinessLicense", "营业执照识别 200次/天" },
-                    { "VatInvoice", "增值税发票识别 500次/天" },
-                    { "TrainTicket", "火车票识别 50次/天" },
-                    { "TaxiReceipt", "出租车票识别 50次/天" },
-                    { "Receipt", "通用票据识别 200次/天" },
-                    { "VehicleLicense", "行驶证识别 200次/天" },
-                    { "DrivingLicense", "驾驶证识别 200次/天" },
-                    { "LicensePlate", "车牌识别 200次/天" },
-                    { "Seal", "印章识别 100次/天" }
-                }
+                Data = DicOCRType
             };
             vm.Set(EnumTo.RTag.success);
 
@@ -484,12 +488,10 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return ResultVM.Try(vm =>
             {
-                type = type?.ToLower();
-
                 var bytes = AipCheck(file, ref API_KEY, ref SECRET_KEY);
                 var ocr = new Baidu.Aip.Ocr.Ocr(API_KEY, SECRET_KEY);
 
-                switch (type)
+                switch (type?.ToLower())
                 {
                     case "general":
                         vm.Log.Add("通用文字识别（标准含位置版） 500次/天");
@@ -581,12 +583,17 @@ namespace Netnr.Blog.Web.Controllers.api
                         break;
                 }
 
+                if (vm.Code == 200)
+                {
+                    vm.Data = vm.Data.ToString().DeJson();
+                }
+
                 return vm;
             });
         }
 
         /// <summary>
-        /// OCR 支持的子类型
+        /// NLP 支持的子类型
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -624,8 +631,6 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             return ResultVM.Try(vm =>
             {
-                type = type?.ToLower();
-
                 var bytes = AipCheck(null, ref API_KEY, ref SECRET_KEY);
                 var nlp = new Baidu.Aip.Nlp.Nlp(API_KEY, SECRET_KEY);
 
@@ -636,7 +641,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    switch (type)
+                    switch (type?.ToLower())
                     {
                         case "commenttag":
                             vm.Log.Add("评论观点抽取");
@@ -680,6 +685,11 @@ namespace Netnr.Blog.Web.Controllers.api
                             }
                             break;
                     }
+                }
+
+                if (vm.Code == 200)
+                {
+                    vm.Data = vm.Data.ToString().DeJson();
                 }
 
                 return vm;
@@ -808,7 +818,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPatch]
         [HttpDelete]
         [HttpOptions]
-        [Apps.FilterConfigs.AllowCors]
+        [FilterConfigs.AllowCors]
         public ActionResult Proxy(string url, string charset = "utf-8")
         {
             var outCode = 500;
@@ -820,7 +830,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 var ci = new ClientTo(HttpContext);
                 Console.WriteLine($"PROXY | {Request.Method} | {ci.IPv4} | {url} | {ci.UserAgent}");
 
-                if (!GlobalTo.GetValue<bool>("ReadOnly"))
+                if (!AppTo.GetValue<bool>("ReadOnly"))
                 {
                     return BadRequest("Refuse");
                 }
@@ -947,12 +957,12 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="fileName">文件（可选，默认 cmd.exe 或 bash ）</param>
         /// <returns></returns>
         [HttpGet]
-        [Apps.FilterConfigs.IsAdmin]
+        [FilterConfigs.IsAdmin]
         public ResultVM CommandLine(string arguments, string fileName)
         {
             return ResultVM.Try(vm =>
             {
-                if (GlobalTo.GetValue<bool>("ReadOnly"))
+                if (AppTo.GetValue<bool>("ReadOnly"))
                 {
                     var cr = CmdTo.Execute(arguments, fileName);
                     vm.Data = cr.CrOutput?.Split(Environment.NewLine);

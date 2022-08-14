@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Netnr;
-using Netnr.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,15 +8,7 @@ ReadyTo.EncodingReg();
 ReadyTo.LegacyTimestamp();
 
 //（上传）主体大小限制
-var srms = builder.Configuration.GetValue<int>("StaticResource:MaxSize");
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Limits.MaxRequestBodySize = srms * 1024 * 1024;
-});
-builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = srms * 1024 * 1024;
-});
+builder.SetMaxRequestData();
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -29,9 +20,8 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 builder.Services.AddControllersWithViews(options =>
 {
     //注册全局过滤器
-    options.Filters.Add(new Netnr.ResponseFramework.Web.Apps.FilterConfigs.GlobalActionAttribute());
-}).SetJson();
-builder.Services.AddSwaggerGenNewtonsoftSupport();
+    options.Filters.Add(new FilterConfigs.GlobalActionAttribute());
+}).SetJsonConfig();
 
 //授权访问信息
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -44,9 +34,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddSession();
 
 //数据库连接池
-builder.Services.AddDbContextPool<Netnr.ResponseFramework.Data.ContextBase>(options =>
+builder.Services.AddDbContextPool<ContextBase>(options =>
 {
-    Netnr.ResponseFramework.Data.ContextBaseFactory.CreateDbContextOptionsBuilder(options);
+    AppTo.TDB = AppTo.GetValue<EnumTo.TypeDB>("TypeDB");
+    DbContextTo.CreateDbContextOptionsBuilder<ContextBase>(AppTo.TDB, options);
 }, 10);
 
 //定时任务 https://github.com/fluentscheduler/FluentScheduler
@@ -60,7 +51,7 @@ builder.Services.AddDbContextPool<Netnr.ResponseFramework.Data.ContextBase>(opti
     {
         var vm = sc.DatabaseReset();
         Console.WriteLine(vm.ToJson(true));
-        ConsoleTo.Log(vm);
+        ConsoleTo.Log(vm.ToJson());
     }, s =>
     {
         s.WithName("Job_DatabaseReset");
@@ -72,7 +63,7 @@ builder.Services.AddDbContextPool<Netnr.ResponseFramework.Data.ContextBase>(opti
     {
         var vm = sc.ClearTmp();
         Console.WriteLine(vm.ToJson(true));
-        ConsoleTo.Log(vm);
+        ConsoleTo.Log(vm.ToJson());
     }, s => s.ToRunEvery(2).Days().At(3, 3));
 }
 
@@ -100,10 +91,10 @@ if (!app.Environment.IsDevelopment())
 //数据库初始化
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<Netnr.ResponseFramework.Data.ContextBase>();
+    var db = scope.ServiceProvider.GetRequiredService<ContextBase>();
 
     var createScript = db.Database.GenerateCreateScript();
-    if (GlobalTo.TDB == EnumTo.TypeDB.PostgreSQL)
+    if (AppTo.TDB == EnumTo.TypeDB.PostgreSQL)
     {
         createScript = createScript.Replace(" datetime ", " timestamp ");
     }

@@ -1,7 +1,6 @@
-@model Netnr.Blog.Domain.UserInfo
+@model UserInfo
 @{
     ViewData["Title"] = "个人设置";
-    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin(Model);
 }
 
 <div class="container-fluid p-4">
@@ -90,20 +89,25 @@
         <div class="col-lg-3 mb-4">
             <h4>授权关联</h4>
             <sl-divider></sl-divider>
-            @foreach (var login in listQuickLogin)
+            @foreach (var key in ThirdLoginService.OpenIdMap.Keys)
             {
+                var loginType = key.ToString().ToLower();
+                var loginIcon = CommonService.StaticResourceLink("LoginPath", $"{loginType}.svg");
+                var field = ThirdLoginService.OpenIdMap[key];
+                var isBind = !string.IsNullOrWhiteSpace(Model.GetType().GetProperty(field).GetValue(Model)?.ToString());
+
                 <div class="mb-3">
                     <span class="me-2">
-                        <img src="@login.Icon" style="height:1.3em" />&nbsp;@login.Name
+                        <img src="@loginIcon" style="height:1.3em" />&nbsp;@key
                     </span>
-                    @if (login.Bind)
+                    @if (isBind)
                     {
                         <sl-badge variant="success">已绑定</sl-badge>
-                        <a href="/user/ridoauth/@login.Key">解除</a>
+                        <a href="/user/ridoauth/@loginType">解除</a>
                     }
                     else
                     {
-                        <a href="/user/oauth/@login.Key">绑定账号</a>
+                        <a href="/user/oauth/@loginType">绑定账号</a>
                     }
                 </div>
             }

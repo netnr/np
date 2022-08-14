@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Microsoft.AspNetCore.Mvc;
+using SkiaSharp;
 using SkiaSharp.QrCode;
 
 namespace Netnr.GraphDemo.Controllers;
@@ -46,7 +47,7 @@ public class SkiaSharpController : Controller
     {
         try
         {
-            var imgPath = Path.Combine(env.WebRootPath, "bird.jpg");
+            var imgPath = Path.Combine(env.WebRootPath, "netnr_avatar.jpg");
             byte[] bytes = ResizeBin(imgPath, 200, null);
             return File(bytes, "image/jpeg");
         }
@@ -67,7 +68,7 @@ public class SkiaSharpController : Controller
     {
         try
         {
-            var imgPath = Path.Combine(env.WebRootPath, "bird.jpg");
+            var imgPath = Path.Combine(env.WebRootPath, "netnr_avatar.jpg");
             byte[] bytes = WatermarkForTextBin(imgPath, text);
             return File(bytes, "image/jpeg");
         }
@@ -219,7 +220,7 @@ public class SkiaSharpController : Controller
             FakeBoldText = true,
             TextAlign = SKTextAlign.Right,
             TextSize = 48,
-            Color = SKColors.Orange
+            Color = SKColors.DeepPink
         };
 
         paint?.Invoke(textPaint);

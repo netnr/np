@@ -1,11 +1,11 @@
-@model Netnr.Blog.Domain.UserInfo
+@model UserInfo
 @{
     ViewData["Title"] = Model.Nickname;
 
-    var uinfo = Netnr.Blog.Web.Apps.LoginService.Get(ViewContext.HttpContext);
+    var uinfo = IdentityService.Get(ViewContext.HttpContext);
     var isme = uinfo.UserId == Model.UserId;
 
-    var avatarUrl = GlobalTo.GetValue("Common:Gravatar");
+    var avatarUrl = AppTo.GetValue("Common:Gravatar");
 }
 
 <input type="hidden" class="nr-hid-isme" value='@(isme?1:0)' />

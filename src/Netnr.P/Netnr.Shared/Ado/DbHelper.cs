@@ -85,7 +85,7 @@ namespace Netnr
         /// <param name="func">回调</param>
         /// <param name="openTransaction">开启事务，默认</param>
         /// <returns>返回 表数据、受影响行数、表结构</returns>
-        public Tuple<DataSet, int, DataSet> SqlExecuteReader(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null, bool openTransaction = true)
+        public ValueTuple<DataSet, int, DataSet> SqlExecuteReader(string sql, DbParameter[] parameters = null, Func<DbCommand, DbCommand> func = null, bool openTransaction = true)
         {
             return SafeConn(() =>
             {
@@ -95,7 +95,7 @@ namespace Netnr
                 var dsSchema = new DataSet();
                 int recordsAffected = -1;
 
-                var isOracle = Connection.GetType().FullName.ToLower().Contains("oracle");
+                var isOracle = nameof(Connection).ToLower().Contains("oracle");
                 var isSplit = false;
                 if (isOracle)
                 {
@@ -166,7 +166,7 @@ namespace Netnr
 
                 Transaction?.Commit();
 
-                return new Tuple<DataSet, int, DataSet>(dsTable, recordsAffected, dsSchema);
+                return new ValueTuple<DataSet, int, DataSet>(dsTable, recordsAffected, dsSchema);
             });
         }
 
@@ -179,7 +179,7 @@ namespace Netnr
         {
             SafeConn(() =>
             {
-                var isOracle = Connection.GetType().FullName.ToLower().Contains("oracle");
+                var isOracle = nameof(Connection).ToLower().Contains("oracle");
                 var isSplit = false;
                 if (isOracle)
                 {

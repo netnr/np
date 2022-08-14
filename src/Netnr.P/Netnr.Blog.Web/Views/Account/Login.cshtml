@@ -1,8 +1,6 @@
 @model ResultVM
 @{
     ViewData["Title"] = "登录";
-
-    var listQuickLogin = Netnr.Blog.Application.ThirdLoginService.GetQuickLogin();
 }
 
 <div class="container-fluid">
@@ -11,11 +9,11 @@
             <div class="my-4">
                 <a href="/">
                     <sl-animation name="jello" easing="ease-in-out" duration="5000" play>
-                        <img src="/favicon.svg" alt="@GlobalTo.GetValue("Common:EnglishName")" />
+                        <img src="/favicon.svg" alt="@AppTo.GetValue("Common:EnglishName")" />
                     </sl-animation>
                 </a>
             </div>
-            <h4 class="my-3">Sign in to @GlobalTo.GetValue("Common:EnglishName")</h4>
+            <h4 class="my-3">Sign in to @AppTo.GetValue("Common:EnglishName")</h4>
         </div>
         <div class="col-12">
             <div class="border rounded mx-auto p-4" style="max-width:20em">
@@ -41,13 +39,16 @@
                     <sl-button style="width:100%" type="submit" variant="warning">Sign in</sl-button>
                 </form>
 
-                @if (GlobalTo.GetValue<bool>("OAuthLogin:enable"))
+                @if (AppTo.GetValue<bool>("OAuthLogin:enable"))
                 {
                     <div class="pagination justify-content-center mt-3">
-                        @foreach (var login in listQuickLogin)
+                        @foreach (var key in ThirdLoginService.OpenIdMap.Keys)
                         {
-                            <a class="m-2" href="/account/auth/@login.Key">
-                                <img src="@login.Icon" style="height:1.8em" title="@login.Name" />
+                            var loginType = key.ToString().ToLower();
+                            var loginIcon = CommonService.StaticResourceLink("LoginPath", $"{loginType}.svg");
+
+                            <a class="m-2" href="/account/auth/@loginType">
+                                <img src="@loginIcon" style="height:1.8em" title="@key" />
                             </a>
                         }
                     </div>

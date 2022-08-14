@@ -10,6 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperFast.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\JsonConverterTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\TreeTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NJson\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\LaunchTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitScript.cs" />
@@ -31,7 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Compile\CompileTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitExtend.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\ViewModel\DataKitDatabaseVM.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)App\GlobalTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)App\AppTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\ImageTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\ViewModel\DataKitColumnVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\ViewModel\DataKitTableVM.cs" />
@@ -39,7 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\PaginationVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\ResultVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\EnumTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DbContext\FactoryTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DbContext\DbContextTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggingModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggingResultVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggingTo.cs" />

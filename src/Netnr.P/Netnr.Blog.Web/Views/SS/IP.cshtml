@@ -10,10 +10,6 @@
                 <sl-input class="nr-txt-ip3" placeholder="Loading..." size="large"></sl-input>
             </div>
             <div class="mb-3">
-                <a href="https://whois.pconline.com.cn/ipJson.jsp" target="_blank">太平洋</a>
-                <sl-input class="nr-txt-ip4" placeholder="Loading..." size="large"></sl-input>
-            </div>
-            <div class="mb-3">
                 <a href="https://netnr.zme.ink/api/v1/IP" target="_blank">https://netnr.zme.ink/api/v1/IP</a>
                 <sl-input class="nr-txt-ip1" placeholder="Loading..." size="large"></sl-input>
             </div>
@@ -21,7 +17,7 @@
                 更多：
                 <a href="https://api.ip.sb/ip" target="_blank">IP.SB</a>
                 &nbsp;
-                <a href="https://resolver.gslb.mi-idc.com/gslb/gslb/getbucket.asp" target="_blank">小米</a>
+                <a href="http://resolver.gslb.mi-idc.com/gslb/gslb/getbucket.asp" target="_blank">小米</a>
                 &nbsp;
                 <a href="http://dyact.vip.xunlei.com/iface.php?c=telecomip&a=getIp&d=telecomip&callback=fn" target="_blank">迅雷</a>
                 &nbsp;
@@ -33,7 +29,6 @@
 
 <script src="https://pv.sohu.com/cityjson"></script>
 <script src="https://vv.video.qq.com/checktime?otype=json"></script>
-<script src="https://whois.pconline.com.cn/ipJson.jsp" async defer></script>
 <script>
     nr.onReady = function () {
         try {
@@ -44,10 +39,5 @@
             nr.domTxtIp2.value = returnCitySN.cip;
             nr.domTxtIp3.value = QZOutputJson.ip;
         } catch (e) { }
-    }
-
-    //太平洋
-    function IPCallBack(obj){
-        document.querySelector(".nr-txt-ip4").value = obj.ip;
     }
 </script>

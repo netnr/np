@@ -1,0 +1,37 @@
+:root {
+    --sl-font-size-small: var(--nr-font-size) !important;
+}
+
+/* 字体 */
+sl-alert::part(icon), sl-alert::part(message), sl-alert::part(close-button),
+sl-dialog::part(body), sl-dialog::part(close-button) {
+    font-size: 1.2em;
+}
+
+/* 提示 */
+sl-tooltip::part(base) {
+    word-break: break-all;
+}
+
+/* 选项卡组 */
+sl-tab-group::part(tabs) {
+    border-bottom-color: transparent;
+}
+
+/* 选项卡面板 */
+sl-tab-panel::part(base) {
+    padding-top: 5px;
+    --sl-spacing-medium: 0;
+}
+
+/* 选项卡间距 */
+sl-tab::part(base) {
+    --sl-spacing-medium: 3px;
+    --sl-spacing-large: 12px;
+}
+
+/* 选项卡图标 */
+sl-tab sl-icon {
+    margin-right: .2em;
+    margin-bottom: -.2em;
+}
