@@ -1,0 +1,132 @@
+/*主体*/
+.nr-main {
+    margin: .3em .3em 0;
+}
+
+/*上*/
+.nr-box-head {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+    .nr-box-head > * {
+        margin-right: .5em;
+    }
+
+.nr-box-head > *:last-child {
+    margin-left: auto;
+}
+
+/* 设置 */
+.nr-dialog-setting sl-details{
+    margin-bottom: .5em;
+}
+
+/*选项卡 窗口 对应的连接-数据库*/
+.nr-window-conns {
+    margin-left: 1em;
+}
+/*分离器-sql*/
+.nr-spliter-sql {
+    --es-sql-height: 45%;
+}
+
+    .nr-spliter-sql .nrc-spliter-item:first-child {
+        height: var(--es-sql-height)
+    }
+
+    .nr-spliter-sql .nrc-spliter-item:last-child {
+        height: calc(100% - var(--nrc-spliter-width) - var(--es-sql-height))
+    }
+
+/*分离器-主体*/
+.nr-spliter-body {
+    border-top: 1px solid var(--sl-color-primary-100);
+}
+.nr-spliter-body .nr-box-left {
+    width: 48%;
+}
+.nr-spliter-body .nr-box-right {
+    width: calc(100% - 48% - var(--nrc-spliter-width));
+}
+
+/*选项卡（右侧主体）窗口 编辑器*/
+.nr-editor-box {
+    display: flex;
+    border: 1px solid var(--sl-color-primary-100);
+    --ebox-tool-width: 30px;
+}
+
+.nr-editor-tool {
+    width: var(--ebox-tool-width);
+    background-color: var(--sl-color-neutral-100);
+}
+.nr-editor-tool sl-icon-button::part(base){
+    padding: .2em .1em;    
+}
+
+.nr-editor-sql {
+    height: 100%;
+    width: calc(100% - var(--ebox-tool-width))
+}
+
+/*选项卡 执行结果*/
+.nr-tab-group-esql {
+    height: 100%;
+    width: 100%;
+}
+
+.nr-grid-execute-sql {
+    height: 200px;
+}
+
+/*设置参数*/
+.nr-parameter-config {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;    
+    align-items: flex-end;
+}
+.nr-parameter-config > div {
+    min-width: 8em;
+    margin: 0 1em 1em;
+}
+
+/*分离器-code*/
+.nr-spliter-code .nrc-spliter-item {
+    width: 50%;
+}
+.nr-spliter-code .nr-editor-gc1,
+.nr-spliter-code .nr-editor-gc2 {
+    border: 1px solid var(--sl-color-primary-100);
+}
+.nr-gc1-tool,
+.nr-gc2-tool {
+    display: flex;
+}
+.nr-gc1-tool > * {
+    margin-right: .5em;
+}
+.nr-gc1-fn,
+.nr-gc2-language {
+    min-width: 12em;
+}
+
+/* 输出 */
+.nr-output {
+    display: inline;
+    position: relative;
+}
+.nr-output-body {
+    position: absolute;
+    z-index: 1;
+    top: 28px;
+    right: -0.5em;
+    padding: .5em;
+    display: none;
+    max-width: 100vw;
+    background-color: var(--sl-panel-background-color);
+    border: solid var(--sl-panel-border-width) var(--sl-panel-border-color);
+    border-radius: var(--sl-border-radius-medium);
+    box-shadow: var(--sl-shadow-large);
+}

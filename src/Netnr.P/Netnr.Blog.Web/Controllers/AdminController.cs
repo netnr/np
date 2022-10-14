@@ -81,21 +81,18 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ResultVM();
 
-            var uinfo = IdentityService.Get(HttpContext);
-
-            var oldmo = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
-
-            if (oldmo != null)
+            var model = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
+            if (model != null)
             {
-                oldmo.UwTitle = mo.UwTitle;
-                oldmo.UwStatus = mo.UwStatus;
-                oldmo.UwReplyNum = mo.UwReplyNum;
-                oldmo.UwReadNum = mo.UwReadNum;
-                oldmo.UwLaud = mo.UwLaud;
-                oldmo.UwMark = mo.UwMark;
-                oldmo.UwOpen = mo.UwOpen;
+                model.UwTitle = mo.UwTitle;
+                model.UwStatus = mo.UwStatus;
+                model.UwReplyNum = mo.UwReplyNum;
+                model.UwReadNum = mo.UwReadNum;
+                model.UwLaud = mo.UwLaud;
+                model.UwMark = mo.UwMark;
+                model.UwOpen = mo.UwOpen;
 
-                db.UserWriting.Update(oldmo);
+                db.UserWriting.Update(model);
 
                 int num = db.SaveChanges();
 
@@ -166,22 +163,19 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ResultVM();
 
-            var uinfo = IdentityService.Get(HttpContext);
-
-            var oldmo = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
-
-            if (oldmo != null)
+            var model = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
+            if (model != null)
             {
-                oldmo.UrAnonymousName = mo.UrAnonymousName;
-                oldmo.UrAnonymousMail = mo.UrAnonymousMail;
-                oldmo.UrAnonymousLink = mo.UrAnonymousLink;
+                model.UrAnonymousName = mo.UrAnonymousName;
+                model.UrAnonymousMail = mo.UrAnonymousMail;
+                model.UrAnonymousLink = mo.UrAnonymousLink;
 
-                oldmo.UrContent = mo.UrContent;
-                oldmo.UrContentMd = mo.UrContentMd;
+                model.UrContent = mo.UrContent;
+                model.UrContentMd = mo.UrContentMd;
 
-                oldmo.UrStatus = mo.UrStatus;
+                model.UrStatus = mo.UrStatus;
 
-                db.UserReply.Update(oldmo);
+                db.UserReply.Update(model);
 
                 int num = db.SaveChanges();
 
@@ -491,79 +485,8 @@ namespace Netnr.Blog.Web.Controllers
 
         public IActionResult ClearCache()
         {
-            GlobalTo.Memorys.Clear();
             CacheTo.RemoveAll();
             return Ok("Done!");
-        }
-
-        #endregion
-
-        #region 生成脚本服务
-
-
-        /// <summary>
-        /// 构建静态文件
-        /// </summary>
-        /// <returns></returns>
-        public ResultVM Build()
-        {
-            var vm = BuildHtml<SSController>();
-            return vm;
-        }
-
-        /// <summary>
-        /// 根据控制器构建静态页面
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        private ResultVM BuildHtml<T>() where T : Controller
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                Console.WriteLine("BuildHtml Start ...");
-                GlobalTo.Memorys.Clear();
-                CacheTo.RemoveAll();
-
-                AppContext.SetSwitch("Netnr.BuildHtml", true);
-
-                //反射 action
-                var type = typeof(T);
-                var methods = type.GetMethods().Where(x => x.DeclaringType == type).ToList();
-                var ctrlName = type.Name.Replace("Controller", "").ToLower();
-
-                //访问前缀
-                var urlPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ctrlName}/";
-
-                vm.Log.Add($"Build Count：{methods.Count}");
-
-                var cbs = new ConcurrentBag<string>();
-                //并行请求
-                Parallel.ForEach(methods, mh =>
-                {
-                    Console.WriteLine(mh.Name);
-
-                    cbs.Add(mh.Name);
-                    string html = HttpTo.Get(urlPrefix + mh.Name);
-                    var savePath = $"{AppTo.WebRootPath}/{mh.Name.ToLower()}.html";
-                    FileTo.WriteText(html, savePath, false);
-                });
-                vm.Log.AddRange(cbs);
-                Console.WriteLine("\nDone!\n");
-
-                vm.Set(EnumTo.RTag.success);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-            finally
-            {
-                AppContext.SetSwitch("Netnr.BuildHtml", false);
-            }
-
-            return vm;
         }
 
         #endregion

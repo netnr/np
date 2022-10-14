@@ -32,9 +32,9 @@ namespace Netnr.Blog.Web.Controllers
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, int page = 1)
         {
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.DocQuery(k, 0, uinfo.UserId, page);
+            var ps = CommonService.DocQuery(k, 0, userId, page);
             ps.Route = Request.Path;
             return View("/Views/Doc/_PartialDocList.cshtml", ps);
         }
@@ -63,9 +63,9 @@ namespace Netnr.Blog.Web.Controllers
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.DocQuery(k, uid, uinfo.UserId, page);
+            var ps = CommonService.DocQuery(k, uid, userId, page);
             ps.Route = Request.Path;
             return View("/Views/Doc/_PartialDocList.cshtml", ps);
         }
@@ -83,13 +83,13 @@ namespace Netnr.Blog.Web.Controllers
                 var uinfo = IdentityService.Get(HttpContext);
 
                 var moout = db.DocSet.Find(id);
-                if (moout.Uid == uinfo.UserId)
+                if (moout.Uid == uinfo?.UserId)
                 {
                     return View("/Views/Doc/_PartialDocForm.cshtml", moout);
                 }
                 else
                 {
-                    return Unauthorized();
+                    return Unauthorized("Not Authorized");
                 }
             }
 
@@ -104,13 +104,13 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize, HttpPost]
         public IActionResult SaveForm([FromForm] DocSet mo)
         {
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
             int num;
 
             if (string.IsNullOrWhiteSpace(mo.DsCode))
             {
                 mo.DsCode = UniqueTo.LongId().ToString();
-                mo.Uid = uinfo.UserId;
+                mo.Uid = userId;
                 mo.DsStatus = 1;
                 mo.DsCreateTime = DateTime.Now;
 
@@ -121,9 +121,9 @@ namespace Netnr.Blog.Web.Controllers
             else
             {
                 var currmo = db.DocSet.Find(mo.DsCode);
-                if (currmo.Uid != uinfo.UserId)
+                if (currmo.Uid != userId)
                 {
-                    return Unauthorized();
+                    return Unauthorized("Not Authorized");
                 }
                 else
                 {
@@ -139,11 +139,11 @@ namespace Netnr.Blog.Web.Controllers
             }
 
             //推送通知
-            PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
+            _ = PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
 
             if (num > 0)
             {
-                return Redirect("/doc/user/" + uinfo.UserId);
+                return Redirect("/doc/user/" + userId);
             }
             else
             {
@@ -159,10 +159,10 @@ namespace Netnr.Blog.Web.Controllers
         [Authorize, HttpGet]
         public IActionResult Delete([FromRoute] string id)
         {
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
             var mo = db.DocSet.Find(id);
-            if (mo.Uid == uinfo.UserId)
+            if (mo.Uid == userId)
             {
                 db.DocSet.Remove(mo);
                 var moDetail = db.DocSetDetail.Where(x => x.DsCode == id).ToList();
@@ -170,7 +170,7 @@ namespace Netnr.Blog.Web.Controllers
                 var num = db.SaveChanges();
                 if (num > 0)
                 {
-                    return Redirect("/doc/user/" + uinfo.UserId);
+                    return Redirect("/doc/user/" + userId);
                 }
             }
 
@@ -226,14 +226,14 @@ namespace Netnr.Blog.Web.Controllers
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
                     var uinfo = IdentityService.Get(HttpContext);
-                    if (uinfo.UserId != ds.Uid)
+                    if (uinfo?.UserId != ds.Uid)
                     {
-                        return Unauthorized();
+                        return Unauthorized("Not Authorized");
                     }
                 }
                 else
                 {
-                    return Unauthorized();
+                    return Unauthorized("Not Authorized");
                 }
             }
 
@@ -393,7 +393,7 @@ namespace Netnr.Blog.Web.Controllers
             var ds = db.DocSet.Find(id);
             if (ds?.Uid != uinfo.UserId)
             {
-                return Unauthorized();
+                return Unauthorized("Not Authorized");
             }
 
             var mo = new DocSetDetail
@@ -450,7 +450,7 @@ namespace Netnr.Blog.Web.Controllers
                         db.DocSetDetail.Add(mo);
 
                         //推送通知
-                        PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
+                        _ = PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
                     }
                     else
                     {
@@ -491,7 +491,7 @@ namespace Netnr.Blog.Web.Controllers
                 var ds = db.DocSet.Find(id);
                 if (ds?.Uid != uinfo.UserId)
                 {
-                    return Unauthorized();
+                    return Unauthorized("Not Authorized");
                 }
 
                 var mo = db.DocSetDetail.Find(sid);
@@ -519,7 +519,7 @@ namespace Netnr.Blog.Web.Controllers
             var ds = db.DocSet.Find(id);
             if (ds?.Uid != uinfo.UserId)
             {
-                return Unauthorized();
+                return Unauthorized("Not Authorized");
             }
 
             return View();
@@ -631,7 +631,7 @@ namespace Netnr.Blog.Web.Controllers
             var uinfo = IdentityService.Get(HttpContext);
 
             var mo = db.DocSet.Find(id);
-            if (mo != null && (mo.DsOpen == 1 || uinfo.UserId == mo.Uid))
+            if (mo != null && (mo.DsOpen == 1 || uinfo?.UserId == mo.Uid))
             {
                 var list = db.DocSetDetail.Where(x => x.DsCode == id).OrderBy(x => x.DsdOrder).Select(x => new
                 {

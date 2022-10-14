@@ -138,4 +138,33 @@ public class SnowflakeTo
         return true;
     }
     #endregion
+
+    #region 实例
+
+    private static SnowflakeTo Snow { get; set; }
+
+    /// <summary>
+    /// 实例对象
+    /// </summary>
+    public static SnowflakeTo SnowInstance
+    {
+        get
+        {
+            Snow ??= new SnowflakeTo();
+            return Snow;
+        }
+        set
+        {
+            Snow = value;
+        }
+    }
+
+    /// <summary>
+    /// 新ID
+    /// </summary>
+    /// <returns></returns>
+    public static long Id() => SnowInstance.NewId();
+
+    #endregion
+
 }

@@ -3,7 +3,7 @@ var ss = {
     apiServer: "https://netnr.zme.ink",
 
     fetch: (obj, hostIndex) => new Promise((resolve, reject) => {
-        var hosts = ["https://cors.eu.org/", "https://cors.zme.ink/", "https://netnr.zme.ink/api/v1/Proxy?url="];
+        var hosts = ["https://cors.zme.ink/", "https://netnr.zme.ink/api/v1/Proxy?url="];
         var url = encodeURIComponent(obj.url);
         var encoding = obj.encoding || "utf-8"; //GBK
         delete obj.url;

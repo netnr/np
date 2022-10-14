@@ -30,8 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ado\MySQLHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\PostgreSQLHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\SQLServerHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\ClientTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\DownTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\ClientInfoTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Compile\CompileTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitExtend.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\ViewModel\DataKitDatabaseVM.cs" />
@@ -50,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Npoi\NpoiTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pinyin\PinyinTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\ReadyTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XOps\MonitorTo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Import\" />

@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = Model.GistRemark;
 
-    bool IsMe = IdentityService.Get(ViewContext.HttpContext).UserId == Model.Uid;
+    bool IsMe = IdentityService.Get(ViewContext.HttpContext)?.UserId == Model.Uid;
     bool IsAdmin = AppTo.GetValue<int>("Common:AdminId") == Model.Uid;
     var AdminGitHub = AppTo.GetValue("Common:AdminGitHub");
     var AdminGitee = AppTo.GetValue("Common:AdminGitee");

@@ -44,7 +44,7 @@ var page = {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
-            }, 0).then(res => {
+            }).then(res => {
                 ss.loading(false);
                 res = JSON.parse(res);
                 page.view(res);
@@ -62,9 +62,9 @@ var page = {
         var gridOptions = ag.optionDef({
             columnDefs: [
                 {
-                    field: "online", headerName: "在线状态", enableRowGroup: true, cellRenderer: function (params) {
+                    field: "online", headerName: "在线状态", enableRowGroup: true, valueFormatter: (params) => {
                         if (params.data) {
-                            return params.value ? "🔵" : "🔴"
+                            return params.value ? '✅' : '⛔'
                         }
                     }
                 },
@@ -80,34 +80,24 @@ var page = {
                         }
                     }
                 },
+                { field: "config.ipAssignments", headerName: "托管IP" },
                 {
-                    field: "managedIp", headerName: "托管IP", cellRenderer: function (params) {
+                    field: "config.noAutoAssignIps", headerName: "自动分配IP", valueFormatter: (params) => {
                         if (params.data) {
-                            return params.data.config.ipAssignments.join('<br/>');
-                        }
-                    }
-                },
-                {
-                    field: "noAutoAssignIps", headerName: "自动分配IP", cellRenderer: function (params) {
-                        if (params.data) {
-                            if (!params.data.config.noAutoAssignIps) {
-                                return '🔵'
-                            } else {
-                                return '🔴'
-                            }
+                            return params.value ? '✅' : '⛔'
                         }
                     }
                 },
                 { field: "physicalAddress", headerName: "公网IP" },
                 {
-                    field: "creationTime", headerName: "创建时间", width: 220, cellRenderer: function (params) {
+                    field: "config.creationTime", headerName: "创建时间", width: 220, valueFormatter: (params) => {
                         if (params.data) {
                             return new Date(params.data.config.creationTime + 8 * 3600 * 1000).toISOString().replace("T", " ").substring(0, 19);
                         }
                     }
                 },
                 {
-                    field: "lastOnline", headerName: "最后在线时间", width: 220, cellRenderer: function (params) {
+                    field: "lastOnline", headerName: "最后在线时间", width: 220, valueFormatter: (params) => {
                         if (params.data) {
                             if (params.value != 0) {
                                 return new Date(params.value + 8 * 3600 * 1000).toISOString().replace("T", " ").substring(0, 19);
@@ -117,13 +107,9 @@ var page = {
                     }
                 },
                 {
-                    field: "authorized", headerName: "授权", cellRenderer: function (params) {
+                    field: "config.authorized", headerName: "授权", valueFormatter: (params) => {
                         if (params.data) {
-                            if (params.data.config.authorized) {
-                                return '🔵'
-                            } else {
-                                return '🔴'
-                            }
+                            return params.value ? '✅' : '⛔'
                         }
                     }
                 },

@@ -15,23 +15,7 @@
     }
 </style>
 
-<div class="container-fluid p-4">
-    <div class="row">
-        <div class="col-auto">
-            <sl-select class="nr-se-group" style="width:7em">
-                <sl-menu-item value="">全部</sl-menu-item>
-                @foreach (var ng in navs)
-                {
-                    var group = ng.GetValue("group");
-                    <sl-menu-item value="@group">@group</sl-menu-item>
-                }
-            </sl-select>
-        </div>
-        <div class="col">
-            <sl-input class="nr-txt-filter" placeholder="Search..."></sl-input>
-        </div>
-    </div>
-
+<div class="container-fluid p-4 pt-0">
     <div class="nr-card-nav">
         @foreach (var ng in navs)
         {

@@ -26,6 +26,7 @@ public class HttpTo
         request.AllowAutoRedirect = true;
         request.MaximumAutomaticRedirections = 4;
         request.Timeout = short.MaxValue * 3;//MS
+        request.UserAgent = "Netnr";
         request.ContentType = "application/x-www-form-urlencoded";
 
         //发送内容
@@ -47,7 +48,7 @@ public class HttpTo
     /// <param name="charset">编码，默认utf-8</param>
     /// <param name="response">输出</param>
     /// <returns></returns>
-    public static StreamReader Stream(HttpWebRequest request, ref HttpWebResponse response, string charset = "utf-8")
+    public static StreamReader Stream(HttpWebRequest request, out HttpWebResponse response, string charset = "utf-8")
     {
         try
         {
@@ -63,7 +64,7 @@ public class HttpTo
         catch (WebException e)
         {
             var httpResponse = (HttpWebResponse)e.Response;
-            var errCode = (int)httpResponse.StatusCode;
+            var statusCode = (int)httpResponse.StatusCode;
             var result = string.Empty;
             if (e.Response == null)
             {
@@ -75,8 +76,10 @@ public class HttpTo
                 using var reader = new StreamReader(stream);
                 result = reader.ReadToEnd();
             }
-            Console.WriteLine($"Error Code: {errCode}");
-            Console.WriteLine(result);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"StatusCode: {statusCode}\r\n{result}");
+            Console.ForegroundColor = ConsoleColor.White;
 
             throw e;
         }
@@ -92,8 +95,7 @@ public class HttpTo
     {
         var request = HWRequest(url);
 
-        HttpWebResponse response = null;
-        var stream = Stream(request, ref response, null);
+        var stream = Stream(request, out _, null);
 
         var fileDir = Path.GetDirectoryName(fullFilePath);
         if (!Directory.Exists(fileDir))
@@ -114,8 +116,7 @@ public class HttpTo
     /// <returns></returns>
     public static string Url(HttpWebRequest request, string charset = "utf-8")
     {
-        HttpWebResponse response = null;
-        var stream = Stream(request, ref response, charset);
+        var stream = Stream(request, out _, charset);
         return stream.ReadToEnd();
     }
 

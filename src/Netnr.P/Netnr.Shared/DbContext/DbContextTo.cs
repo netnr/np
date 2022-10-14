@@ -15,14 +15,14 @@ namespace Netnr
         /// 应用程序不为每个上下文实例创建新的ILoggerFactory实例非常重要。这样做会导致内存泄漏和性能下降
         /// </summary>
         private static ILoggerFactory logFactory = null;
+        /// <summary>
+        /// 日志
+        /// </summary>
         public static ILoggerFactory LogFactory
         {
             get
             {
-                if (logFactory == null)
-                {
-                    logFactory = LoggerFactory.Create(logging => logging.AddConsole().AddFilter(level => level >= LogLevel.Information));
-                }
+                logFactory ??= LoggerFactory.Create(logging => logging.AddConsole().AddFilter(level => level >= LogLevel.Information));
                 return logFactory;
             }
         }
@@ -35,10 +35,7 @@ namespace Netnr
         /// <returns></returns>
         public static DbContextOptionsBuilder<T> CreateDbContextOptionsBuilder<T>(EnumTo.TypeDB tdb, DbContextOptionsBuilder options = null) where T : DbContext
         {
-            if (options == null)
-            {
-                options = new DbContextOptionsBuilder<T>();
-            }
+            options ??= new DbContextOptionsBuilder<T>();
 
             if (!options.IsConfigured)
             {

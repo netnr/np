@@ -434,12 +434,11 @@ namespace Netnr.Test
         public void SnowflakeTo_1()
         {
             var st = new TimingVM();
-            var sf = new SnowflakeTo();
 
             var hs = new HashSet<long>();
             for (int i = 0; i < 1_999_999; i++)
             {
-                var val = sf.NewId();
+                var val = SnowflakeTo.Id();
                 if (!hs.Add(val))
                 {
                     throw new Exception("same");

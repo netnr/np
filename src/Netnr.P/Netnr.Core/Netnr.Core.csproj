@@ -3,24 +3,20 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2;netstandard2.1</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
-		<Description>开发常用的核心类库；文档：https://zme.ink</Description>
+		<Version>2.0.0</Version>
+		<Authors>netnr</Authors>
 		<Copyright>netnr</Copyright>
-		<PackageIconUrl></PackageIconUrl>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Company>$(Authors)</Company>
+		<PackageIcon>favicon.png</PackageIcon>
+		<Description>开发常用的核心类库；文档：https://zme.ink</Description>
 		<PackageProjectUrl>https://github.com/netnr</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/netnr</RepositoryUrl>
-		<PackageLicenseUrl></PackageLicenseUrl>
 		<PackageTags>netnr</PackageTags>
 		<PackageReleaseNotes>移除 Newtonsoft.Json、System.Runtime.Caching
 变更命名空间 Netnr.Core 为 Netnr</PackageReleaseNotes>
-		<Authors>netnr</Authors>
-		<Version>2.0.0</Version>
-		<DocumentationFile></DocumentationFile>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageIcon>favicon.png</PackageIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>Netnr.Core.md</PackageReadmeFile>
-		<Company>$(Authors)</Company>
 	</PropertyGroup>
 
 	<ItemGroup>

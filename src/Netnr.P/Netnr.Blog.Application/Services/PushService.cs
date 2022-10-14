@@ -26,7 +26,7 @@
                 CacheTo.Set(atkey, ato, 3600, false);
             }
 
-            var access_token = ato.Value.GetValue("access_token");
+            var access_token = ato.GetValue("access_token");
             return access_token;
         }
 
@@ -37,59 +37,56 @@
         /// <param name="content"></param>
         /// <param name="msgtype">默认 text,可选 markdown</param>
         /// <returns></returns>
-        public static ResultVM SendAppMessage(string content = "", string msgtype = "text")
+        public static ResultVM SendAppMessage(string content = "", string msgtype = "text") => ResultVM.Try(vm =>
         {
-            return ResultVM.Try(vm =>
+            if (AppTo.GetValue<bool>("ApiKey:EWeixinApp:enable"))
             {
-                if (AppTo.GetValue<bool>("ApiKey:EWeixinApp:enable"))
+                vm.Set(EnumTo.RTag.success);
+
+                var access_token = GetAccessToken();
+                var touser = AppTo.GetValue("ApiKey:EWeixinApp:ToUser");
+                var agentid = AppTo.GetValue<int>("ApiKey:EWeixinApp:AgentId");
+
+                var post_data = new JsonObject
                 {
-                    vm.Set(EnumTo.RTag.success);
-
-                    var access_token = GetAccessToken();
-                    var touser = AppTo.GetValue("ApiKey:EWeixinApp:ToUser");
-                    var agentid = AppTo.GetValue<int>("ApiKey:EWeixinApp:AgentId");
-
-                    var post_data = new JsonObject
+                    ["touser"] = touser,
+                    ["msgtype"] = msgtype,
+                    ["agentid"] = agentid,
+                    [msgtype] = new JsonObject
                     {
-                        ["touser"] = touser,
-                        ["msgtype"] = msgtype,
-                        ["agentid"] = agentid,
-                        [msgtype] = new JsonObject
-                        {
-                            ["content"] = content
-                        }
-                    };
-
-                    var post_url = $"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}";
-                    var post_result = HttpTo.Post(post_url, post_data.ToJson());
-                    Console.WriteLine($"\r\n------- WeChat message push {DateTime.Now:yyyy-MM-dd HH:mm:ss}\r\n{post_result.ToJson(true)}");
-
-                    if (post_result.DeJson().GetValue("errcode") == "0")
-                    {
-                        vm.Log.Add($"successfully");
+                        ["content"] = content
                     }
-                    else
-                    {
-                        vm.Log.Add($"failed {touser}");
-                        vm.Set(EnumTo.RTag.fail);
-                    }
+                };
+
+                var post_url = $"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}";
+                var post_result = HttpTo.Post(post_url, post_data.ToJson());
+                Console.WriteLine($"\r\n------- WeChat message push {DateTime.Now:yyyy-MM-dd HH:mm:ss}\r\n{post_result.ToJson(true)}");
+
+                if (post_result.DeJson().GetValue("errcode") == "0")
+                {
+                    vm.Log.Add($"successfully");
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.refuse);
-                    vm.Msg = "未启用";
+                    vm.Log.Add($"failed {touser}");
+                    vm.Set(EnumTo.RTag.fail);
                 }
+            }
+            else
+            {
+                vm.Set(EnumTo.RTag.refuse);
+                vm.Msg = "未启用";
+            }
 
-                return vm;
-            });
-        }
+            return vm;
+        });
 
         /// <summary>
         /// 推送（异步）
         /// </summary>
         /// <param name="title"></param>
         /// <param name="content"></param>
-        public async static void PushAsync(string title, string content = "")
+        public async static Task<ResultVM> PushAsync(string title, string content = "")
         {
             var list = new List<string>();
             if (!string.IsNullOrWhiteSpace(title))
@@ -102,7 +99,7 @@
                 list.Add("\r\n" + content);
             }
 
-            await Task.Run(() => SendAppMessage(string.Join("\r\n", list)));
+            return await Task.Run(() => SendAppMessage(string.Join("\r\n", list)));
         }
     }
 }

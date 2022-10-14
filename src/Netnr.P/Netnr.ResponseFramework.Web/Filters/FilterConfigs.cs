@@ -24,11 +24,10 @@ namespace Netnr.ResponseFramework.Web.Filters
                 string action = context.RouteData.Values["action"].ToString().ToLower();
                 var ca = "/" + controller + "/" + action;
 
-                //用户信息
-                var userinfo = IdentityService.Get(hc);
+                var uinfo = IdentityService.Get(hc);
 
                 //角色有权限访问配置的菜单
-                if (!CommonService.QueryMenuIsAuth(userinfo.RoleId, ca))
+                if (uinfo != null && !CommonService.QueryMenuIsAuth(uinfo.RoleId, ca))
                 {
                     context.Result = new ContentResult()
                     {
@@ -49,7 +48,7 @@ namespace Netnr.ResponseFramework.Web.Filters
                 string url = hc.Request.Path.ToString() + hc.Request.QueryString.Value;
 
                 //用户信息
-                var userinfo = IdentityService.Get(hc);
+                var uinfo = IdentityService.Get(hc);
 
                 //日志记录，设置“__nolog”参数可忽略日志记录，为压力测试等环境考虑（即一些不需要记录请求日志的需求）
                 if (AppTo.GetValue<bool>("logs:enable") && string.IsNullOrWhiteSpace(hc.Request.Query["__nolog"].ToString()))
@@ -59,17 +58,17 @@ namespace Netnr.ResponseFramework.Web.Filters
                         swAsync.Stop();
 
                         //客户端信息
-                        var ct = new ClientTo(hc);
+                        var ci = new ClientInfoTo(hc);
 
                         //日志保存
                         var mo = new SysLog()
                         {
-                            SuName = userinfo.UserName,
-                            SuNickname = userinfo.Nickname,
+                            SuName = uinfo?.UserName,
+                            SuNickname = uinfo?.Nickname,
                             LogAction = ca,
                             LogUrl = url,
-                            LogIp = ct.IPv4,
-                            LogUserAgent = ct.UserAgent,
+                            LogIp = ci.IP,
+                            LogUserAgent = ci.Headers.UserAgent,
                             LogCreateTime = DateTime.Now,
                             LogGroup = 1,
                             LogLevel = "I",
@@ -158,6 +157,7 @@ namespace Netnr.ResponseFramework.Web.Filters
         /// <summary>
         /// 是管理员
         /// </summary>
+        [AttributeUsage(AttributeTargets.All)]
         public class IsAdmin : Attribute, IActionFilter
         {
             public void OnActionExecuted(ActionExecutedContext context)
@@ -167,23 +167,7 @@ namespace Netnr.ResponseFramework.Web.Filters
 
             public void OnActionExecuting(ActionExecutingContext context)
             {
-                var an = AppTo.GetValue("Common:AdminName");
-
-                bool isv;
-                //cookie 授权已登录
-                if (context.HttpContext.User.Identity.IsAuthenticated)
-                {
-                    var uinfo = IdentityService.Get(context.HttpContext);
-                    isv = uinfo.UserName == an;
-                }
-                else
-                {
-                    var token = context.HttpContext.Request.Headers["Authorization"].ToString();
-                    var mo = IdentityService.TokenValid(token);
-                    isv = mo?.UserName == an;
-                }
-
-                if (!isv)
+                if (!IdentityService.IsAdmin(context.HttpContext))
                 {
                     context.Result = new ContentResult()
                     {

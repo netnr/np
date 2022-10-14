@@ -113,8 +113,8 @@ const nd = {
                                             <style type="text/css">${cssContent}</style>
                                         </head><body><div class="markdown-body">${bodyContent}</div></body></html>`;
 
-                                        nd.getScript("https://fastly.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js", () => {
-                                            nd.getScript("https://fastly.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js", () => {
+                                        nd.getScript("https://ss.netnr.com/html-docx-js@0.3.1/dist/html-docx.js", () => {
+                                            nd.getScript("https://ss.netnr.com/file-saver@2.0.5/dist/FileSaver.min.js", () => {
                                                 saveAs(htmlDocx.asBlob(html), 'doc.docx');
                                             })
                                         })

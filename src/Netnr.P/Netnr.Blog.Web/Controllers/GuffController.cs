@@ -40,17 +40,21 @@
             {
                 return BadRequest("标签不能为空");
             }
+            else if (IdentityService.CompleteInfoValid(HttpContext).Code != 200)
+            {
+                return BadRequest("请先完善个人信息");
+            }
             else
             {
                 //推送通知
-                PushService.PushAsync("网站消息（Guff）", $"新增或修改");
+                _ = PushService.PushAsync("网站消息（Guff）", $"新增或修改");
 
                 var now = DateTime.Now;
 
                 //add
                 if (string.IsNullOrWhiteSpace(mo.GrId))
                 {
-                    mo.Uid = uinfo.UserId;
+                    mo.Uid = uinfo?.UserId;
                     mo.GrId = UniqueTo.LongId().ToString();
                     mo.GrCreateTime = now;
                     mo.GrUpdateTime = now;
@@ -85,9 +89,9 @@
                 else
                 {
                     var currMo = db.GuffRecord.Find(mo.GrId);
-                    if (currMo == null || currMo.Uid != uinfo.UserId)
+                    if (currMo == null || currMo.Uid != uinfo?.UserId)
                     {
-                        return Unauthorized();
+                        return Unauthorized("Not Authorized");
                     }
                     else
                     {
@@ -134,9 +138,9 @@
         [ResponseCache(Duration = 10)]
         public IActionResult Discover([FromRoute] string id, string k, int page = 1)
         {
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var vm = CommonService.GuffQuery(category: id, k, null, null, null, OwnerId: 0, UserId: uinfo.UserId, page);
+            var vm = CommonService.GuffQuery(category: id, k, null, null, null, OwnerId: 0, UserId: userId, page);
             vm.Route = Request.Path;
             return View("/Views/Guff/_PartialGuffList.cshtml", vm);
         }
@@ -164,9 +168,9 @@
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var vm = CommonService.GuffQuery(category: sid, k, null, null, null, OwnerId: 0, UserId: uinfo.UserId, page);
+            var vm = CommonService.GuffQuery(category: sid, k, null, null, null, OwnerId: 0, UserId: userId, page);
             vm.Route = Request.Path;
             return View("/Views/Guff/_PartialGuffList.cshtml", vm);
         }
@@ -190,9 +194,9 @@
             {
                 var mo = db.GuffRecord.Find(id);
 
-                if (mo.Uid != uinfo.UserId)
+                if (mo.Uid != uinfo?.UserId)
                 {
-                    return Unauthorized();
+                    return Unauthorized("Not Authorized");
                 }
                 else
                 {
@@ -207,7 +211,7 @@
 
                     if (mo.Uid != uinfo.UserId)
                     {
-                        return Unauthorized();
+                        return Unauthorized("Not Authorized");
                     }
                     else if (mo.GrStatus == -1)
                     {
@@ -229,7 +233,7 @@
                 }
                 else
                 {
-                    return Unauthorized();
+                    return Unauthorized("Not Authorized");
                 }
             }
             else // view
@@ -309,7 +313,7 @@
                         }
                         else
                         {
-                            mo.Uid = uinfo.UserId;
+                            mo.Uid = uinfo?.UserId;
                             mo.UrTargetType = ConnectionType.GuffRecord.ToString();
                             mo.UrTargetId = id;
                             mo.UrCreateTime = DateTime.Now;
@@ -349,8 +353,6 @@
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = IdentityService.Get(HttpContext);
-
                 var pag = new PaginationVM
                 {
                     PageNumber = Math.Max(page, 1),

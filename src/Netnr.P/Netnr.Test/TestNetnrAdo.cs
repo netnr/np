@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
+using System.Data;
 using Xunit;
 
 namespace Netnr.Test
@@ -64,6 +65,77 @@ $$;";
                 var db = new DbHelper(dbc);
                 var result = db.SqlExecuteReader(sql);
             }
+        }
+
+        [Fact]
+        public void OracleReader()
+        {
+            var connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=123";
+
+            var conn = new Oracle.ManagedDataAccess.Client.OracleConnection(connectionString);
+            conn.Open();
+
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM PT_SYS_LOG";
+            var reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            do
+            {
+                var dt = new DataTable();
+                var dtSchema = reader.GetSchemaTable();
+                foreach (DataRow dr in dtSchema.Rows)
+                {
+                    //跳过隐藏列（针对配置 CommandBehavior.KeyInfo 添加了额外的列）
+                    if (dt.Columns.Contains("IsHidden") && Convert.ToBoolean(dr["IsHidden"] == DBNull.Value ? false : dr["IsHidden"]))
+                    {
+                        continue;
+                    }
+
+                    var columnName = dr["ColumnName"].ToString();
+                    var dataType = dr["DataType"];
+
+                    var column = new DataColumn()
+                    {
+                        ColumnName = columnName,
+                        DataType = (Type)dataType,
+                        Unique = Convert.ToBoolean(dr["IsUnique"] == DBNull.Value ? false : dr["IsUnique"]),
+                        AllowDBNull = Convert.ToBoolean(dr["AllowDBNull"] == DBNull.Value ? true : dr["AllowDBNull"]),
+                        AutoIncrement = Convert.ToBoolean(dr["IsAutoIncrement"] == DBNull.Value ? false : dr["IsAutoIncrement"])
+                    };
+
+                    if (column.DataType == typeof(string))
+                    {
+                        column.MaxLength = (int)dr["ColumnSize"];
+                    }
+                    dt.Columns.Add(column);
+                }
+
+                var rowCount = 0;
+                while (reader.Read())
+                {
+                    //var dr = dt.NewRow();                    
+                    //for (int i = 0; i < reader.FieldCount; i++)
+                    //{
+                    //    dr[i] = reader[i];
+                    //}
+                    //dt.Rows.Add(dr.ItemArray);
+
+                    object[] row = new object[reader.FieldCount];
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        row[i] = reader[i];
+                    }
+                    dt.Rows.Add(row);
+
+                    if (++rowCount % 10000 == 0)
+                    {
+                        Debug.WriteLine($"{rowCount} rows, memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
+                        dt.Clear();
+                    }
+                }
+            } while (reader.NextResult());
+
+            Debug.WriteLine($"Done! memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
         }
     }
 }

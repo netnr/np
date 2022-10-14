@@ -1,0 +1,19 @@
+/*移动端*/
+@media screen and (max-width: 800px) {    
+    .nrc-spliter-horizontal {
+        flex-wrap: wrap;
+    }    
+    .nr-spliter-body .nrc-spliter-item {
+        width: 100% !important;
+        max-height: none;
+    }
+    .nr-box-right {
+        margin-top: .5rem;
+    }
+    .nr-spliter-sql .nrc-spliter-item {
+        height: 100vh !important;
+    }
+    .nrc-spliter-vertical {
+        height: auto !important;
+    }
+}

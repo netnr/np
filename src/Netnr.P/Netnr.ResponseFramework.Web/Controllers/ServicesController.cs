@@ -6,22 +6,6 @@ namespace Netnr.ResponseFramework.Web.Controllers
     [Route("[controller]/[action]")]
     public class ServicesController : Controller
     {
-        private readonly IWebHostEnvironment hostEnv;
-        public ServicesController(IWebHostEnvironment webHost)
-        {
-            hostEnv = webHost;
-        }
-
-        /// <summary>
-        /// 服务
-        /// </summary>
-        /// <returns></returns>
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult Index()
-        {
-            return Ok("Normal Service!");
-        }
-
         /// <summary>
         /// 数据库重置
         /// </summary>
@@ -29,34 +13,31 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public ResultVM DatabaseReset(string zipName = "db/backup.zip")
+        public ResultVM DatabaseReset(string zipName = "db/backup.zip") => ResultVM.Try(vm =>
         {
-            return ResultVM.Try(vm =>
+            if (HttpContext != null && new UAParser.Parsers(HttpContext.Request.Headers.UserAgent).GetBot() != null)
             {
-                if (HttpContext != null && new UAParser.Parsers(new ClientTo(HttpContext).UserAgent).GetBot() != null)
+                vm.Set(EnumTo.RTag.refuse);
+                vm.Msg = "are you human？";
+            }
+            else
+            {
+                var idb = new DataKitTransferVM.ImportDatabase
                 {
-                    vm.Set(EnumTo.RTag.refuse);
-                    vm.Msg = "are you human？";
-                }
-                else
-                {
-                    var idb = new DataKitTransferVM.ImportDatabase
+                    WriteConnectionInfo = new DataKitTransferVM.ConnectionInfo
                     {
-                        WriteConnectionInfo = new DataKitTransferVM.ConnectionInfo
-                        {
-                            ConnectionType = AppTo.TDB,
-                            ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source=")
-                        },
-                        PackagePath = PathTo.Combine(AppTo.ContentRootPath, zipName),
-                        WriteDeleteData = true
-                    };
+                        ConnectionType = AppTo.TDB,
+                        ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source=")
+                    },
+                    PackagePath = PathTo.Combine(AppTo.ContentRootPath, zipName),
+                    WriteDeleteData = true
+                };
 
-                    vm = DataKitTo.ImportDatabase(idb);
-                }
+                vm = DataKitTo.ImportDatabase(idb);
+            }
 
-                return vm;
-            });
-        }
+            return vm;
+        });
 
         /// <summary>
         /// 数据库导出（开发环境）
@@ -65,33 +46,30 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public ResultVM DatabaseExport(string zipName = "db/backup.zip")
+        public ResultVM DatabaseExport(string zipName = "db/backup.zip") => ResultVM.Try(vm =>
         {
-            return ResultVM.Try(vm =>
+            if (GlobalTo.IsDev)
             {
-                if (hostEnv.IsDevelopment())
+                var edb = new DataKitTransferVM.ExportDatabase
                 {
-                    var edb = new DataKitTransferVM.ExportDatabase
+                    PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
+                    ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
                     {
-                        PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
-                        ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
-                        {
-                            ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source="),
-                            ConnectionType = AppTo.TDB
-                        }
-                    };
+                        ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source="),
+                        ConnectionType = AppTo.TDB
+                    }
+                };
 
-                    vm = DataKitTo.ExportDatabase(edb);
-                }
-                else
-                {
-                    vm.Set(EnumTo.RTag.refuse);
-                    vm.Msg = "仅限开发环境使用";
-                }
+                vm = DataKitTo.ExportDatabase(edb);
+            }
+            else
+            {
+                vm.Set(EnumTo.RTag.refuse);
+                vm.Msg = "仅限开发环境使用";
+            }
 
-                return vm;
-            });
-        }
+            return vm;
+        });
 
         /// <summary>
         /// 清理临时目录

@@ -14,23 +14,57 @@ namespace Netnr.Test
         /// </summary>
         public static string ReleaseRoot { get; set; } = @"D:\tmp\release";
 
+        /// <summary>
+        /// 项目根目录
+        /// </summary>
+        public static string ProjectRoot { get; set; } = new DirectoryInfo(ReadyTo.ProjectRootPath).Parent.FullName;
+
+        [Fact]
+        public void ReleaseAll()
+        {
+            NetnrDataKit_Client_Online();
+
+            NetnrBlogBuildSS();
+            NetnrBlog();
+
+            NetnrResponseFramework();
+
+            NetnrFileServer();
+
+            NetnrDataKit();
+
+            NetnrDataX();
+
+            NetnrServe();
+
+            NetnrDataKit_Client_Online();
+        }
+
         [Fact]
         public void NetnrBlogBuildSS()
         {
-            var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
             var projectName = "Netnr.Blog.Web";
-            var projectDir = Path.Combine(npDir.FullName, projectName);
-            var batPath = Path.Combine(Path.GetTempPath(), "_build.bat");
-            var uri = "https://localhost:8001";
+            var projectDir = Path.Combine(ProjectRoot, projectName);
+            var launchSettings = File.ReadAllText(Path.Combine(projectDir, "Properties/launchSettings.json"));
+            var uri = launchSettings.DeJson().GetProperty("profiles").GetProperty(projectName).GetValue("applicationUrl").Split(';').FirstOrDefault(x => x.StartsWith("https"));
 
-            File.WriteAllText(batPath, $"cd {projectDir} && dotnet run --urls {uri}");
-
-            Process proc = null;
+            //带参数 模式启动，用于授权
             Task.Run(() =>
             {
-                CmdTo.Execute(CmdTo.PSInfo($"start {batPath}"), (process, cr) =>
+                CmdTo.Execute(CmdTo.PSInfo($"cd {projectDir} && dotnet run --urls {uri} --admin"), (process, cr) =>
                 {
-                    proc = process;
+                    process.OutputDataReceived += (sender, output) =>
+                    {
+                        if (output.Data != null)
+                        {
+                            Debug.WriteLine(output.Data);
+                            if (output.Data == "Done!")
+                            {
+                                process.Kill();
+                            }
+                        }
+                    };
+
                     process.Start();//启动线程
                     process.BeginOutputReadLine();//开始异步读取
                     process.WaitForExit();//阻塞等待进程结束
@@ -54,18 +88,20 @@ namespace Netnr.Test
                 try
                 {
                     var resp = client.Send(request);
-
                     if (resp.StatusCode == HttpStatusCode.OK)
                     {
                         Debug.WriteLine("服务已启动成功，准备执行生成");
                         Thread.Sleep(3000);
-                        CmdTo.Execute($"start {uri}/admin/build");
+                        var bresult = HttpTo.Get($"{uri}/ss/build");
+                        Debug.WriteLine(bresult);
+                        Assert.True(bresult.DeJson<ResultVM>().Code == 200);
 
                         break;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Debug.WriteLine(ex);
                 }
             }
         }
@@ -85,11 +121,10 @@ namespace Netnr.Test
         [Fact]
         public void NetnrFileServer()
         {
-            var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
-            var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.FileServer/appsettings.json"));
+            var projectName = "Netnr.FileServer";
+            var versionContent = File.ReadAllText(Path.Combine(ProjectRoot, projectName, "appsettings.json"));
             var version = versionContent.DeJson().GetValue("Version");
 
-            var projectName = "Netnr.FileServer";
             var shortName = "nfs";
             var platform = "win-x64";
             var zipFile = $"{shortName}-{version}-{platform}.zip";
@@ -125,16 +160,17 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void NetnrDataKit_ClientApp_Online()
+        public void NetnrDataKit_Client_Online()
         {
-            var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
-            var clientAppDir = Path.Combine(npDir.FullName, "Netnr.DataKit/ClientApp");
-            var wwwroot = Path.Combine(npDir.FullName, "Netnr.DataKit/wwwroot");
-            var blogdk = Path.Combine(npDir.FullName, "Netnr.Blog.Web/wwwroot/app/dk");
+            var projectName = "Netnr.DataKit";
+            var projectDir = Path.Combine(ProjectRoot, projectName);
+            var clientDir = new DirectoryInfo(projectDir).GetDirectories("*Client*").First().FullName;
+            var wwwroot = Path.Combine(projectDir, "wwwroot");
+            var blogdk = Path.Combine(ProjectRoot, "Netnr.Blog.Web/wwwroot/app/dk");
             var batPath = Path.Combine(Path.GetTempPath(), "_build.bat");
 
             Debug.WriteLine("构建在线资源版到 Netnr.Blog.Web/wwwroot/app/dk");
-            File.WriteAllText(batPath, $"npm run prod_online --prefix {clientAppDir} && exit");
+            File.WriteAllText(batPath, $"npm run prod_online --prefix {clientDir} && exit");
             Debug.WriteLine(CmdTo.Execute($"start {batPath}").CrOutput);
             if (Directory.Exists(blogdk))
             {
@@ -146,19 +182,19 @@ namespace Netnr.Test
         [Fact]
         public void NetnrDataKit()
         {
-            var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
-            var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.DataKit/ClientApp/src/js/ndkVary.js"));
+            var projectName = "Netnr.DataKit";
+            var shortName = "ndk";
+            var projectDir = Path.Combine(ProjectRoot, projectName);
+            var clientDir = new DirectoryInfo(projectDir).GetDirectories("*Client*").First().FullName;
+            var versionContent = File.ReadAllText(Path.Combine(clientDir, "src/js/ndkVary.js"));
             var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains("version:")).Split('"')[1];
 
             //npm build
             Debug.WriteLine("构建本地资源版");
-            var clientAppDir = Path.Combine(npDir.FullName, "Netnr.DataKit/ClientApp");
             var batPath = Path.Combine(Path.GetTempPath(), "_build.bat");
-            File.WriteAllText(batPath, $"npm run prod --prefix {clientAppDir} && exit");
+            File.WriteAllText(batPath, $"npm run prod --prefix {clientDir} && exit");
             Debug.WriteLine(CmdTo.Execute($"start {batPath}").CrOutput);
 
-            var projectName = "Netnr.DataKit";
-            var shortName = "ndk";
             var platform = "linux-x64";
             var zipFile = $"{shortName}-{version}-{platform}.zip";
             var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
@@ -193,12 +229,13 @@ namespace Netnr.Test
         [Fact]
         public void NetnrDataX()
         {
-            var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
-            var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.DataX/Domain/ConfigInit.cs"));
-            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
-
             var projectName = "Netnr.DataX";
             var shortName = "ndx";
+
+            var projectDir = Path.Combine(ProjectRoot, projectName);
+            var versionContent = File.ReadAllText(Path.Combine(projectDir, "Domain/ConfigInit.cs"));
+            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
+
             var platform = "win-x64";
             var zipFile = $"{shortName}-{version}-{platform}.zip";
             var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
@@ -279,12 +316,12 @@ namespace Netnr.Test
         [Fact]
         public void NetnrServe()
         {
-            var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
-            var versionContent = File.ReadAllText(Path.Combine(npDir.FullName, "Netnr.Shared/Serve/ServeTo.cs"));
-            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
-
             var projectName = "Netnr.Serve";
             var shortName = "ns";
+            var projectDir = Path.Combine(ProjectRoot, projectName);
+            var versionContent = File.ReadAllText(Path.Combine(projectDir, "Serve/ServeTo.cs"));
+            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
+
             var platform = "win-x64";
             var zipFile = $"{shortName}-{version}-{platform}.zip";
             var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
@@ -349,10 +386,9 @@ namespace Netnr.Test
         /// <param name="shortName"></param>
         private static void Release(string projectName, string shortName, string platform = "linux-x64", string zipFile = "publish.zip")
         {
-            var npDir = new DirectoryInfo(AppContext.BaseDirectory.Split("bin")[0]).Parent;
             var model = new ReleaseService
             {
-                ProjectDir = Path.Combine(npDir.FullName, projectName),
+                ProjectDir = Path.Combine(ProjectRoot, projectName),
                 ProjectShortName = shortName,
                 OutputDir = Path.Combine(ReleaseRoot, shortName, platform),
                 PackagePath = Path.Combine(ReleaseRoot, shortName, zipFile),
@@ -419,12 +455,10 @@ namespace Netnr.Test
             {
                 Directory.Delete(model.OutputDir, true);
             }
-            else
-            {
-                Directory.CreateDirectory(model.OutputDir);
-            }
+            Directory.CreateDirectory(model.OutputDir);
 
             var cer = CmdTo.Execute(run);
+
             Debug.WriteLine(cer.CrOutput);
             Debug.WriteLine(cer.CrError);
 

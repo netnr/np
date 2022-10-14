@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Netnr.Login;
-using System.Security.Claims;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -303,43 +302,9 @@ namespace Netnr.Blog.Web.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             //清空全局缓存
-            GlobalTo.Memorys.Clear();
             CacheTo.RemoveAll();
 
             return Redirect("/" + (id ?? ""));
-        }
-
-        /// <summary>
-        /// 构建写入授权信息
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="isremember"></param>
-        /// <returns></returns>
-        public static ValueTuple<ClaimsPrincipal, AuthenticationProperties> BuildSignIn(UserInfo user, bool isremember = true)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.PrimarySid, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.GivenName, user.Nickname ?? ""),
-                new Claim(ClaimTypes.Sid, user.UserSign),
-                new Claim(ClaimTypes.UserData, user.UserPhoto ?? ""),
-            };
-
-            var cp = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
-            var ap = new AuthenticationProperties();
-            if (isremember)
-            {
-                //记住
-                ap.IsPersistent = true;
-                ap.ExpiresUtc = DateTimeOffset.Now.AddDays(10);
-            }
-
-            return new ValueTuple<ClaimsPrincipal, AuthenticationProperties>(cp, ap);
-
-            //写入授权
-            //await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, cp, ap);
         }
 
         /// <summary>
@@ -347,12 +312,12 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="loginType"></param>
         /// <param name="openId"></param>
-        /// <exception cref="Exception"></exception>
+        /// <returns></returns>
         private ResultVM BindUser(LoginWhich? loginType, string openId)
         {
             var vm = new ResultVM();
 
-            int uid = IdentityService.Get(HttpContext).UserId;
+            var uid = IdentityService.Get(HttpContext)?.UserId;
 
             var isBindOther = false;
             var queryIsBind = db.UserInfo.Where(x => x.UserId != uid);
@@ -414,7 +379,7 @@ namespace Netnr.Blog.Web.Controllers
                 vm.Set(num > 0);
 
                 //推送通知
-                PushService.PushAsync("网站消息（注册）", $"{mo.UserId}");
+                _ = PushService.PushAsync("网站消息（注册）", $"{mo.UserId}");
             }
 
             return vm;
@@ -482,11 +447,10 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 //写入授权
-                var siObj = BuildSignIn(loginUser, isRemember);
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
+                IdentityService.Set(HttpContext, loginUser, isRemember).Wait();
 
                 //生成Token
-                vm.Data = IdentityService.TokenMake(loginUser);
+                vm.Data = IdentityService.AccessTokenBuild(loginUser);
 
                 vm.Set(EnumTo.RTag.success);
             }

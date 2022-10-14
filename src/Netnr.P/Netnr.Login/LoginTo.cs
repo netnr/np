@@ -67,7 +67,7 @@ public class LoginTo
     /// <param name="varCall"></param>
     public static void InitConfig(Func<LoginWhich, string, object> varCall)
     {
-        var arr = new[] { typeof(QQ), typeof(Weixin), typeof(Weibo), typeof(Taobao), typeof(Alipay), typeof(DingTalk), typeof(Gitee), typeof(GitHub), typeof(Microsoft), typeof(StackOverflow), typeof(Google) };
+        var arr = new[] { typeof(QQ), typeof(Weixin), typeof(WeixinMP), typeof(Weibo), typeof(Taobao), typeof(Alipay), typeof(DingTalk), typeof(Gitee), typeof(GitHub), typeof(Microsoft), typeof(StackOverflow), typeof(Google) };
         foreach (var item in arr)
         {
             Enum.TryParse(item.Name, true, out LoginWhich loginType);
@@ -128,6 +128,16 @@ public class LoginTo
                                     authModel.State = stateCall.Invoke(authModel.State);
                                 }
                                 result.Raw = AuthorizeLink(Weixin.API_Authorize, authModel);
+                            }
+                            break;
+                        case LoginWhich.WeixinMP:
+                            {
+                                var authModel = reqModel == null ? new WeixinMPAuthorizeModel() : reqModel as WeixinMPAuthorizeModel;
+                                if (stateCall != null)
+                                {
+                                    authModel.State = stateCall.Invoke(authModel.State);
+                                }
+                                result.Raw = AuthorizeLink(WeixinMP.API_Authorize, authModel);
                             }
                             break;
                         case LoginWhich.Weibo:
@@ -255,7 +265,7 @@ public class LoginTo
                     var authModel = beforeResult as AuthorizeResult;
                     if (authModel == null && reqModel == null)
                     {
-                        throw new Exception($"请求 {step} 需要 {typeof(AuthorizeResult).Name} 或 自定义构建 AccessTokenModel");
+                        throw new Exception($"请求 {step} 需要 {nameof(AuthorizeResult)} 或 自定义构建 AccessTokenModel");
                     }
 
                     switch (which)
@@ -282,6 +292,18 @@ public class LoginTo
                                     };
                                 }
                                 result.Raw = Get(Weixin.API_AccessToken, sendModel);
+                            }
+                            break;
+                        case LoginWhich.WeixinMP:
+                            {
+                                if (reqModel is not WeixinMPAccessTokenModel sendModel)
+                                {
+                                    sendModel = new WeixinMPAccessTokenModel()
+                                    {
+                                        Code = authModel.Code
+                                    };
+                                }
+                                result.Raw = Get(WeixinMP.API_AccessToken, sendModel);
                             }
                             break;
                         case LoginWhich.Weibo:
@@ -447,6 +469,19 @@ public class LoginTo
                                 result.Raw = Get(Weixin.API_RefreshToken, sendModel);
                             }
                             break;
+                        case LoginWhich.WeixinMP:
+                            {
+                                if (reqModel is not WeixinMPRefreshTokenModel sendModel)
+                                {
+                                    var beforeModel = beforeResult as DocModel;
+                                    sendModel = new WeixinMPRefreshTokenModel()
+                                    {
+                                        Refresh_Token = beforeModel.Doc.GetValue("refresh_token")
+                                    };
+                                }
+                                result.Raw = Get(WeixinMP.API_RefreshToken, sendModel);
+                            }
+                            break;
                         case LoginWhich.Taobao:
                             {
                                 if (reqModel is not TaobaoRefreshTokenModel sendModel)
@@ -596,6 +631,20 @@ public class LoginTo
                                     };
                                 }
                                 result.Raw = Get(Weixin.API_User, sendModel);
+                            }
+                            break;
+                        case LoginWhich.WeixinMP:
+                            {
+                                if (reqModel is not WeixinMPUserModel sendModel)
+                                {
+                                    var beforeModel = beforeResult as DocModel;
+                                    sendModel = new WeixinMPUserModel()
+                                    {
+                                        Access_Token = beforeModel.Doc.GetValue("access_token"),
+                                        OpenId = beforeModel.Doc.GetValue("openid")
+                                    };
+                                }
+                                result.Raw = Get(WeixinMP.API_User, sendModel);
                             }
                             break;
                         case LoginWhich.Weibo:
@@ -809,6 +858,7 @@ public class LoginTo
                 }
                 break;
             case LoginWhich.Weixin:
+            case LoginWhich.WeixinMP:
                 {
                     publicUser.UniqueId = userResult.Doc.GetValue("unionid");
                     publicUser.OpenId = userResult.Doc.GetValue("openid");
@@ -976,9 +1026,13 @@ public enum LoginWhich
     /// </summary>
     QQ,
     /// <summary>
-    /// 腾讯微信
+    /// 微信（开放平台）
     /// </summary>
     Weixin,
+    /// <summary>
+    /// 微信（公众平台）
+    /// </summary>
+    WeixinMP,
     /// <summary>
     /// 新浪微博
     /// </summary>

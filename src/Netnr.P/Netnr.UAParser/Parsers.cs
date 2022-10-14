@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
+using System;
 
 namespace Netnr.UAParser;
 
@@ -92,23 +93,31 @@ public class Parsers
         var result = Caches.Get<Entities.ClientEntity>(ckey);
         if (result == null)
         {
-            foreach (var item in Regexes.ListClient)
+            try
             {
-                var match = item.R.Match(UserAgent);
-                if (match.Success)
+                foreach (var item in Regexes.ListClient)
                 {
-                    if (match.Groups.Count > 1 && item.Version.Contains("$1"))
+                    var match = item.R.Match(UserAgent);
+                    if (match.Success)
                     {
-                        item.Version = item.Version.Replace("$1", match.Groups[1].ToString());
+                        if (match.Groups.Count > 1 && item.Version.Contains("$1"))
+                        {
+                            item.Version = item.Version.Replace("$1", match.Groups[1].ToString());
+                        }
+                        if (match.Groups.Count > 2 && item.Version.Contains("$2"))
+                        {
+                            item.Version = item.Version.Replace("$2", match.Groups[2].ToString());
+                        }
+                        result = item;
+                        Caches.Set(ckey, result);
+                        break;
                     }
-                    if (match.Groups.Count > 2 && item.Version.Contains("$2"))
-                    {
-                        item.Version = item.Version.Replace("$2", match.Groups[2].ToString());
-                    }
-                    result = item;
-                    Caches.Set(ckey, result);
-                    break;
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UAParser {nameof(GetClient)} Error {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                Console.WriteLine(ex);
             }
         }
 
@@ -125,15 +134,23 @@ public class Parsers
         var result = Caches.Get<Entities.DeviceEntity>(ckey);
         if (result == null)
         {
-            foreach (var item in Regexes.ListDevice)
+            try
             {
-                var match = item.R.Match(UserAgent);
-                if (match.Success)
+                foreach (var item in Regexes.ListDevice)
                 {
-                    result = item;
-                    Caches.Set(ckey, result);
-                    break;
+                    var match = item.R.Match(UserAgent);
+                    if (match.Success)
+                    {
+                        result = item;
+                        Caches.Set(ckey, result);
+                        break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UAParser {nameof(GetDevice)} Error {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                Console.WriteLine(ex);
             }
         }
 
@@ -150,34 +167,42 @@ public class Parsers
         var result = Caches.Get<Entities.OSEntity>(ckey);
         if (result == null)
         {
-            foreach (var item in Regexes.ListOS)
+            try
             {
-                var match = item.R.Match(UserAgent);
-                if (match.Success)
+                foreach (var item in Regexes.ListOS)
                 {
-                    if (match.Groups.Count > 1)
+                    var match = item.R.Match(UserAgent);
+                    if (match.Success)
                     {
-                        if (item.Name.Contains("$1"))
+                        if (match.Groups.Count > 1)
                         {
-                            item.Name = item.Name.Replace("$1", match.Groups[1].ToString());
+                            if (item.Name.Contains("$1"))
+                            {
+                                item.Name = item.Name.Replace("$1", match.Groups[1].ToString());
+                            }
+                            if (item.Version.Contains("$1"))
+                            {
+                                item.Version = item.Version.Replace("$1", match.Groups[1].ToString());
+                            }
                         }
-                        if (item.Version.Contains("$1"))
+                        if (match.Groups.Count > 2 && item.Version.Contains("$2"))
                         {
-                            item.Version = item.Version.Replace("$1", match.Groups[1].ToString());
+                            item.Version = item.Version.Replace("$2", match.Groups[2].ToString());
                         }
+                        if (match.Groups.Count > 3 && item.Version.Contains("$3"))
+                        {
+                            item.Version = item.Version.Replace("$3", match.Groups[2].ToString());
+                        }
+                        result = item;
+                        Caches.Set(ckey, result);
+                        break;
                     }
-                    if (match.Groups.Count > 2 && item.Version.Contains("$2"))
-                    {
-                        item.Version = item.Version.Replace("$2", match.Groups[2].ToString());
-                    }
-                    if (match.Groups.Count > 3 && item.Version.Contains("$3"))
-                    {
-                        item.Version = item.Version.Replace("$3", match.Groups[2].ToString());
-                    }
-                    result = item;
-                    Caches.Set(ckey, result);
-                    break;
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UAParser {nameof(GetOS)} Error {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                Console.WriteLine(ex);
             }
         }
 
@@ -194,15 +219,23 @@ public class Parsers
         var result = Caches.Get<Entities.BotEntity>(ckey);
         if (result == null)
         {
-            foreach (var item in Regexes.ListBot)
+            try
             {
-                var match = item.R.Match(UserAgent);
-                if (match.Success)
+                foreach (var item in Regexes.ListBot)
                 {
-                    result = item;
-                    Caches.Set(ckey, result);
-                    break;
+                    var match = item.R.Match(UserAgent);
+                    if (match.Success)
+                    {
+                        result = item;
+                        Caches.Set(ckey, result);
+                        break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UAParser {nameof(GetBot)} Error {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                Console.WriteLine(ex);
             }
         }
 

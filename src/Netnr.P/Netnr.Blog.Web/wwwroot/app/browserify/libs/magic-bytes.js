@@ -1,0 +1,1 @@
+global.magicBytes = require('magic-bytes.js');

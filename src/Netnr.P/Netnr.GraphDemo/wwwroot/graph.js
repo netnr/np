@@ -16,6 +16,18 @@
         link: "https://github.com/SixLabors/ImageSharp",
         captcha: "/SixLaborsImageSharpDrawing/Captcha",
         resize: null
+    },
+    {
+        name: "Magick.NET",
+        link: "https://github.com/dlemstra/Magick.NET",
+        captcha: "/MagickNET/Captcha",
+        resize: null
+    },
+    {
+        name: "System.Drawing.Common",
+        captcha: "/SystemDrawingCommon/Captcha",
+        resize: "/SystemDrawingCommon/Resize",
+        watermarkForText: "/SystemDrawingCommon/Watermark"
     }
 ];
 
@@ -30,9 +42,9 @@ function initCaptcha() {
         var uri = item.captcha;
         if (uri) {
             if (item.link) {
-                htm.push(`<td><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" /><p></p></td>`)
+                htm.push(`<li><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" /><p></p></li>`)
             } else {
-                htm.push(`<td><p>${item.name}</p><img data-src="${uri}" /><p></p></td>`)
+                htm.push(`<li><p>${item.name}</p><img data-src="${uri}" /><p></p></li>`)
             }
 
             var xhr = new XMLHttpRequest();
@@ -62,15 +74,15 @@ function initCaptcha() {
         }
     });
 
-    var table = document.createElement("table");
-    table.innerHTML = `<table><tr>${htm.join('')}</tr></table>`;
+    var table = document.createElement("div");
+    table.innerHTML = `<ul style="display:flex;flex-wrap:warp;justify-content:space-around">${htm.join('')}</ul>`;
     box.appendChild(table);
 }
 
 function initResize() {
     var htm = [];
 
-    htm.push(`<td><p>原图</p><img src="/netnr_avatar.jpg"/><p></p></td>`);
+    htm.push(`<li><p>原图</p><img src="/netnr_avatar.jpg"/><p></p></li>`);
 
     config.forEach(item => {
 
@@ -78,9 +90,9 @@ function initResize() {
         var uri = item.resize;
         if (uri) {
             if (item.link) {
-                htm.push(`<td><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" src="/netnr_avatar.jpg" /><p></p></td>`)
+                htm.push(`<li><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" src="/netnr_avatar.jpg" /><p></p></li>`)
             } else {
-                htm.push(`<td><p>${item.name}</p><img data-src="${uri}" src="/netnr_avatar.jpg" /><p></p></td>`)
+                htm.push(`<li><p>${item.name}</p><img data-src="${uri}" src="/netnr_avatar.jpg" /><p></p></li>`)
             }
 
             var xhr = new XMLHttpRequest();
@@ -110,8 +122,8 @@ function initResize() {
         }
     });
 
-    var table = document.createElement("table");
-    table.innerHTML = `<table><tr>${htm.join('')}</tr></table>`;
+    var table = document.createElement("div");
+    table.innerHTML = `<ul style="display:flex;flex-wrap:warp;justify-content:space-around">${htm.join('')}</ul>`;
     box.appendChild(table);
 
     //原图
@@ -147,9 +159,9 @@ function initWatermark() {
         var uri = item.watermarkForText;
         if (uri) {
             if (item.link) {
-                htm.push(`<td><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" /><p></p></td>`)
+                htm.push(`<li><a href="${item.link}" target="_blank"><p>${item.name}</p></a><img data-src="${uri}" /><p></p></li>`)
             } else {
-                htm.push(`<td><p>${item.name}</p><img data-src="${uri}" /><p></p></td>`)
+                htm.push(`<li><p>${item.name}</p><img data-src="${uri}" /><p></p></li>`)
             }
 
             var xhr = new XMLHttpRequest();
@@ -178,8 +190,8 @@ function initWatermark() {
         }
     });
 
-    var table = document.createElement("table");
-    table.innerHTML = `<table><tr>${htm.join('')}</tr></table>`;
+    var table = document.createElement("div");
+    table.innerHTML = `<ul style="display:flex;flex-wrap:warp;justify-content:space-around">${htm.join('')}</ul>`;
     box.appendChild(table);
 }
 

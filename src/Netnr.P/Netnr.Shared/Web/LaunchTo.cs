@@ -1,5 +1,7 @@
 ﻿#if Full || Web
 
+using System.Text.Encodings.Web;
+
 namespace Netnr;
 
 /// <summary>
@@ -43,8 +45,11 @@ public static class LaunchTo
     {
         return builder.AddJsonOptions(options =>
         {
+            //编码
             options.JsonSerializerOptions.IncludeFields = true; //包含字段 如元组 Tuple
             options.JsonSerializerOptions.PropertyNamingPolicy = null; // 原样输出，首字母不转小写
+            options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping; //编码
+
             options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DateTimeJsonConverter()); // 时间格式化
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //枚举字符串
             options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataTableJsonConverter()); //数据表格式化

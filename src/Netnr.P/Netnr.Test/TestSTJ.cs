@@ -107,6 +107,9 @@ namespace Netnr.Test
         [Fact]
         public void STJOther()
         {
+            var cc = new ColorClass();
+            Debug.WriteLine(JsonSerializer.Serialize(cc));
+
             var vm = new ResultVM
             {
                 Data = new
@@ -126,7 +129,8 @@ namespace Netnr.Test
 
                 ReadCommentHandling = JsonCommentHandling.Skip, //允许注释
                 AllowTrailingCommas = true, //允许末尾逗号
-                NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, //允许带引号的数字
+                //允许带引号的数字（读、写）
+                NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString,
 
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, //忽略 null 值 
 
@@ -175,6 +179,8 @@ namespace Netnr.Test
             /// </summary>
             [JsonPropertyName("blue")]
             public string Blue { get; set; } = "blue";
+
+            public int Order { get; set; } = 99;
 
             /// <summary>
             /// 指定顺序

@@ -49,7 +49,7 @@ namespace Netnr.Test
             // The data can go through 64 gateways or routers
             // before it is destroyed, and the data packet
             // cannot be fragmented.
-            PingOptions options = new PingOptions(64, true);
+            var options = new PingOptions(64, true);
 
             // Send the request.
             PingReply reply = pingSender.Send("zme.ink", timeout, buffer, options);

@@ -1,5 +1,8 @@
 ﻿namespace Netnr.Login;
 
+/// <summary>
+/// Google
+/// </summary>
 public class Google
 {
     /// <summary>

@@ -106,10 +106,10 @@ namespace Netnr.Blog.Web.Controllers
         {
             if (id > 0)
             {
-                var usermo = db.UserInfo.Find(id);
-                if (usermo != null)
+                var userInfo = db.UserInfo.Find(id);
+                if (userInfo != null)
                 {
-                    return View(usermo);
+                    return View(userInfo);
                 }
             }
 
@@ -181,15 +181,14 @@ namespace Netnr.Blog.Web.Controllers
                                 byte[] bytes = Convert.FromBase64String(source);
                                 System.IO.File.WriteAllBytes(PathTo.Combine(ppath, upname), bytes);
 
-                                var usermo = db.UserInfo.Find(uinfo.UserId);
-                                usermo.UserPhoto = npnew;
-                                db.UserInfo.Update(usermo);
+                                var userInfo = db.UserInfo.Find(uinfo.UserId);
+                                userInfo.UserPhoto = npnew;
+                                db.UserInfo.Update(userInfo);
                                 int num = db.SaveChanges();
                                 if (num > 0)
                                 {
                                     //写入授权
-                                    var siObj = AccountController.BuildSignIn(usermo);
-                                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
+                                    IdentityService.Set(HttpContext, userInfo).Wait();
                                 }
 
                                 vm.Set(EnumTo.RTag.success);
@@ -199,15 +198,14 @@ namespace Netnr.Blog.Web.Controllers
                             {
                                 HttpTo.DownloadSave(source, PathTo.Combine(ppath, upname));
 
-                                var usermo = db.UserInfo.Find(uinfo.UserId);
-                                usermo.UserPhoto = npnew;
-                                db.UserInfo.Update(usermo);
+                                var userInfo = db.UserInfo.Find(uinfo.UserId);
+                                userInfo.UserPhoto = npnew;
+                                db.UserInfo.Update(userInfo);
                                 int num = db.SaveChanges();
                                 if (num > 0)
                                 {
                                     //写入授权
-                                    var siObj = AccountController.BuildSignIn(usermo);
-                                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
+                                    IdentityService.Set(HttpContext, userInfo).Wait();
                                 }
 
                                 vm.Set(EnumTo.RTag.success);
@@ -280,11 +278,11 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = IdentityService.Get(HttpContext);
 
-            var usermo = db.UserInfo.Find(uinfo.UserId);
-            var log = new List<object>() { new UserInfo().ToCopy(usermo) };
+            var userInfo = db.UserInfo.Find(uinfo.UserId);
+            var log = new List<object>() { new UserInfo().ToCopy(userInfo) };
 
             //变更账号
-            if (!string.IsNullOrWhiteSpace(mo.UserName) && usermo.UserNameChange != 1 && usermo.UserName != mo.UserName)
+            if (!string.IsNullOrWhiteSpace(mo.UserName) && userInfo.UserNameChange != 1 && userInfo.UserName != mo.UserName)
             {
                 //账号重复
                 if (db.UserInfo.Any(x => x.UserName == mo.UserName))
@@ -296,15 +294,15 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    usermo.UserName = mo.UserName;
-                    usermo.UserNameChange = 1;
+                    userInfo.UserName = mo.UserName;
+                    userInfo.UserNameChange = 1;
                 }
             }
 
             //变更邮箱
-            if (mo.UserMail != usermo.UserMail)
+            if (mo.UserMail != userInfo.UserMail)
             {
-                usermo.UserMailValid = 0;
+                userInfo.UserMailValid = 0;
 
                 //邮箱正则验证
                 if (!string.IsNullOrWhiteSpace(mo.UserMail))
@@ -326,12 +324,12 @@ namespace Netnr.Blog.Web.Controllers
                 }
             }
 
-            usermo.UserMail = mo.UserMail;
-            usermo.Nickname = mo.Nickname;
-            usermo.UserPhone = mo.UserPhone;
-            usermo.UserUrl = mo.UserUrl;
+            userInfo.UserMail = mo.UserMail;
+            userInfo.Nickname = mo.Nickname;
+            userInfo.UserPhone = mo.UserPhone;
+            userInfo.UserUrl = mo.UserUrl;
 
-            log.Add(usermo);
+            log.Add(userInfo);
 
             //留痕
             var logModel = LoggingService.Build(HttpContext);
@@ -341,12 +339,11 @@ namespace Netnr.Blog.Web.Controllers
             logModel.LogRemark = "修改个人信息";
             LoggingTo.Add(logModel);
 
-            db.UserInfo.Update(usermo);
+            db.UserInfo.Update(userInfo);
             var num = db.SaveChanges();
 
             //更新授权信息
-            var siObj = AccountController.BuildSignIn(usermo);
-            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, siObj.Item1, siObj.Item2).Wait();
+            IdentityService.Set(HttpContext, userInfo).Wait();
 
             vm.Set(num > 0);
 
@@ -631,8 +628,6 @@ namespace Netnr.Blog.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(id))
             {
-                var uinfo = IdentityService.Get(HttpContext);
-
                 var vckey = AppTo.GetValue("Common:GlobalKey");
                 var vcurl = AppTo.GetValue("Common:EmailVerificationLink");
 
@@ -643,18 +638,20 @@ namespace Netnr.Blog.Web.Controllers
                         {
                             if (User.Identity.IsAuthenticated)
                             {
-                                var usermo = db.UserInfo.Find(uinfo.UserId);
-                                if (usermo.UserMailValid == 1)
+                                var uinfo = IdentityService.Get(HttpContext);
+
+                                var userInfo = db.UserInfo.Find(uinfo.UserId);
+                                if (userInfo.UserMailValid == 1)
                                 {
                                     vm.Msg = "邮箱已经完成验证";
                                 }
-                                else if (string.IsNullOrWhiteSpace(usermo.UserMail))
+                                else if (string.IsNullOrWhiteSpace(userInfo.UserMail))
                                 {
                                     vm.Msg = "邮箱不能为空";
                                 }
                                 else
                                 {
-                                    var cacheKey = "Global_VerifyMail_" + usermo.UserId;
+                                    var cacheKey = "Global_VerifyMail_" + userInfo.UserId;
                                     var issend = CacheTo.Get<bool>(cacheKey);
                                     if (issend == true)
                                     {
@@ -663,14 +660,14 @@ namespace Netnr.Blog.Web.Controllers
                                     else
                                     {
                                         var mcs = System.IO.File.ReadAllLines(Path.Combine(AppTo.WebRootPath, "file/mailchecker/list.txt"));
-                                        if (mcs.Contains(usermo.UserMail.Split('@').LastOrDefault().ToLower()))
+                                        if (mcs.Contains(userInfo.UserMail.Split('@').LastOrDefault().ToLower()))
                                         {
                                             vm.Msg = "该邮箱已被屏蔽";
                                         }
                                         else
                                         {
                                             //发送验证
-                                            var toMail = usermo.UserMail;
+                                            var toMail = userInfo.UserMail;
 
                                             var vjson = new
                                             {
@@ -731,18 +728,18 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
-                                    var usermo = db.UserInfo.FirstOrDefault(x => x.UserMail == mail);
-                                    if (usermo != null)
+                                    var userInfo = db.UserInfo.FirstOrDefault(x => x.UserMail == mail);
+                                    if (userInfo != null)
                                     {
-                                        if (usermo.UserMailValid == 1)
+                                        if (userInfo.UserMailValid == 1)
                                         {
                                             vm.Msg = "已验证，勿重复验证";
                                         }
                                         else
                                         {
-                                            usermo.UserMailValid = 1;
+                                            userInfo.UserMailValid = 1;
 
-                                            db.UserInfo.Update(usermo);
+                                            db.UserInfo.Update(userInfo);
 
                                             int num = db.SaveChanges();
 

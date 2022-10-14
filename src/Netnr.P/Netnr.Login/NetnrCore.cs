@@ -2,19 +2,20 @@
 global using System.IO;
 global using System.Net;
 global using System.Reflection;
-global using System.Security.Cryptography;
-global using System.Collections.Concurrent;
 global using System.ComponentModel;
 global using System.Globalization;
 global using System.Text;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.Text.Encodings.Web;
-global using System.Text.Unicode;
 global using System.Collections.Generic;
+global using System.Security.Cryptography;
 
 namespace Netnr.Login;
 
+/// <summary>
+/// Common
+/// </summary>
 internal static class NetnrCore
 {
     /// <summary>
@@ -57,11 +58,11 @@ internal static class NetnrCore
             //允许注释
             ReadCommentHandling = useStrict ? JsonCommentHandling.Disallow : JsonCommentHandling.Skip,
             //允许带引号的数字
-            NumberHandling = useStrict ? JsonNumberHandling.Strict : JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString,
+            NumberHandling = useStrict ? JsonNumberHandling.Strict : JsonNumberHandling.AllowReadingFromString,
             //原样输出
             PropertyNamingPolicy = null,
             //编码
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             //格式化
             Converters = {
                 new DateTimeJsonConverterTo(formatter), //时间格式化
@@ -265,6 +266,7 @@ internal static class NetnrCore
     public static string ToParameters<T>(this T model, bool nameLowercase = true, string exclude = "API_") where T : class
     {
         var list = new List<string>();
+        var hash = string.Empty;
         var pis = model.GetType().GetProperties();
         foreach (var pi in pis)
         {
@@ -277,8 +279,13 @@ internal static class NetnrCore
                     list.Add($"{name}={val.ToString().ToEncode()}");
                 }
             }
+            //微信公众平台，链接带 hash
+            else if (pi.Name == "API_Hash")
+            {
+                hash = pi.GetValue(model, null).ToString();
+            }
         }
-        var result = string.Join("&", list);
+        var result = string.Join("&", list) + hash;
         return result;
     }
 }

@@ -2,7 +2,6 @@
 基于 .NET (Latest) 的简单文件服务器，数据库为 SQLite
 
 > https://github.com/netnr/np/releases  
-> https://netnr-fs.herokuapp.com  
 > `appsettings.json` 为配置文件，文件数据库 和 上传目录 赋予读写权限
 
 ### 功能

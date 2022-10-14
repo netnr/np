@@ -1,10 +1,7 @@
 ﻿nr.onReady = function () {
     page.iconLoad();
-    
-    nr.domSeGroup.addEventListener('sl-change', function () {
-        page.search();
-    })
-    nr.domTxtFilter.addEventListener('input', function () {
+
+    nr.domTxtSearch.addEventListener('input', function () {
         page.search();
     })
 }
@@ -31,8 +28,8 @@ var page = {
         hdom.classList.add('d-none');
         document.body.appendChild(hdom);
     },
-    search: function () {
-        var groupName = nr.domSeGroup.value, keywords = nr.domTxtFilter.value.trim().toLowerCase();
+    search: () => {
+        var keywords = nr.domTxtSearch.value.trim().toLowerCase();
 
         nr.domCardNav.querySelectorAll('a').forEach(node => {
             var col = node.parentElement;
@@ -49,19 +46,11 @@ var page = {
 
         nr.domCardNav.querySelectorAll('.row').forEach(node => {
             var cols = node.children;
-            if (groupName != "") {
-                if (cols[0].innerText.trim() == groupName) {
-                    node.classList.remove('d-none');
-                } else {
-                    node.classList.add('d-none');
-                }
+            node.classList.remove('d-none');
+            if (node.querySelectorAll('.d-none').length + 1 >= cols.length) {
+                cols[0].classList.add('d-none');
             } else {
-                node.classList.remove('d-none');
-                if (node.querySelectorAll('.d-none').length + 1 >= cols.length) {
-                    cols[0].classList.add('d-none');
-                } else {
-                    cols[0].classList.remove('d-none');
-                }
+                cols[0].classList.remove('d-none');
             }
         });
     }

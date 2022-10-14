@@ -208,17 +208,11 @@ namespace Netnr
                 sw.Start();
 
                 //读取行
-                db.SqlExecuteDataRow(sql, dr =>
+                db.SqlExecuteDataRow(sql, row =>
                 {
                     rowCount++;
 
-                    if (rowCount == 1)
-                    {
-                        dt = dr.Table.Clone();
-                        sntn = DbHelper.SqlSNTN(dt.TableName, dt.Namespace);
-                    }
-
-                    dt.Rows.Add(dr.ItemArray);
+                    dt.Rows.Add(row);
 
                     if (sw.Elapsed.TotalMilliseconds > 5000)
                     {
@@ -246,35 +240,56 @@ namespace Netnr
 
                         dt.Clear();
                     }
-                });
+                }, emptyTable =>
+                {
+                    dt = emptyTable.Clone();
+                    dt.MinimumCapacity = BatchMaxRows;
+                    sntn = DbHelper.SqlSNTN(dt.TableName, dt.Namespace);
 
-                if (batchNo == 0 && dt.Rows.Count == 0)
-                {
-                    vm.Log.Add($"跳过空表，导表进度：{i + 1}/{edt.ListReadDataSQL.Count}\n");
-                }
-                else
-                {
-                    //最后一批
-                    if (dt.Rows.Count > 0)
+                    //表结构 DDL
+                    if (edt.Type == "all")
                     {
-                        batchNo++;
+                        var dk = edt.ReadConnectionInfo.NewDataKit();
 
-                        var xmlName = $"{sntn}_{batchNo.ToString().PadLeft(7, '0')}.xml";
+                        var tableDesc = "-- --------------------";
+                        var ddl = dk.GetTableDDL(dt.TableName, dt.Namespace);
+                        var bytes = string.Join("\r\n", new string[] { tableDesc, $"-- {sntn}", tableDesc, ddl }).ToByte();
 
-                        //xml 写入 zip
+                        var sqlName = $"{sntn}.sql";
+
+                        //sql 写入 zip
                         var zae = isOldZip
-                        ? zip.GetEntry(xmlName) ?? zip.CreateEntry(xmlName)
-                        : zip.CreateEntry(xmlName);
+                        ? zip.GetEntry(sqlName) ?? zip.CreateEntry(sqlName)
+                        : zip.CreateEntry(sqlName);
 
                         var ceStream = zae.Open();
-                        dt.WriteXml(ceStream, XmlWriteMode.WriteSchema);
+                        ceStream.Write(bytes);
                         ceStream.Close();
 
-                        vm.Log.Add($"导出表（{sntn}）第 {batchNo} 批（行：{dt.Rows.Count}/{rowCount}），耗时：{vm.PartTimeFormat()}");
+                        vm.Log.Add($"导出表（{sntn}）DDL结构，耗时：{vm.PartTimeFormat()}");
                     }
+                });
 
-                    vm.Log.Add($"导出表（{sntn}）完成（行：{rowCount}），导表进度：{i + 1}/{edt.ListReadDataSQL.Count}\n");
+                //最后一批
+                if (dt.Rows.Count > 0)
+                {
+                    batchNo++;
+
+                    var xmlName = $"{sntn}_{batchNo.ToString().PadLeft(7, '0')}.xml";
+
+                    //xml 写入 zip
+                    var zae = isOldZip
+                    ? zip.GetEntry(xmlName) ?? zip.CreateEntry(xmlName)
+                    : zip.CreateEntry(xmlName);
+
+                    var ceStream = zae.Open();
+                    dt.WriteXml(ceStream, XmlWriteMode.WriteSchema);
+                    ceStream.Close();
+
+                    vm.Log.Add($"导出表（{sntn}）第 {batchNo} 批（行：{dt.Rows.Count}/{rowCount}），耗时：{vm.PartTimeFormat()}");
                 }
+
+                vm.Log.Add($"导出表（{sntn}）完成（行：{rowCount}），导表进度：{i + 1}/{edt.ListReadDataSQL.Count}\n");
 
                 //清理包历史分片
                 if (isOldZip)
@@ -339,39 +354,18 @@ namespace Netnr
                 var catchCount = 0;
 
                 //读取行
-                dbRead.SqlExecuteDataRow(rw.ReadDataSQL, drRead =>
+                dbRead.SqlExecuteDataRow(rw.ReadDataSQL, rowRead =>
                 {
                     rowCount++;
-
-                    //构建列映射
-                    if (rowCount == 1)
-                    {
-                        foreach (DataColumn dcRead in drRead.Table.Columns)
-                        {
-                            //指定映射
-                            if (rw.ReadWriteColumnMap.ContainsKey(dcRead.ColumnName))
-                            {
-                                rwMap.Add(dcRead.ColumnName, rw.ReadWriteColumnMap[dcRead.ColumnName]);
-                            }
-                            else
-                            {
-                                //自动映射
-                                var columnNameWrite = dtWriteColumnName.FirstOrDefault(x => x.ToLower() == dcRead.ColumnName.ToLower());
-                                if (columnNameWrite != null)
-                                {
-                                    rwMap.Add(dcRead.ColumnName, columnNameWrite);
-                                }
-                            }
-                        }
-                    }
 
                     //构建一行 写入表
                     var drWriteNew = dtWrite.NewRow();
                     //根据读取表列映射写入表列填充单元格数据
+                    var columnIndex = 0;
                     foreach (var columnNameRead in rwMap.Keys)
                     {
                         //读取表列值
-                        var valueRead = drRead[columnNameRead];
+                        var valueRead = rowRead[columnIndex++];
                         if (valueRead is not DBNull)
                         {
                             //读取表列值 转换类型为 写入表列值
@@ -418,6 +412,26 @@ namespace Netnr
 
                         //清理
                         dtWrite.Clear();
+                    }
+                }, emptyTable =>
+                {
+                    //构建列映射
+                    foreach (DataColumn dcRead in emptyTable.Columns)
+                    {
+                        //指定映射
+                        if (rw.ReadWriteColumnMap.ContainsKey(dcRead.ColumnName))
+                        {
+                            rwMap.Add(dcRead.ColumnName, rw.ReadWriteColumnMap[dcRead.ColumnName]);
+                        }
+                        else
+                        {
+                            //自动映射
+                            var columnNameWrite = dtWriteColumnName.FirstOrDefault(x => x.ToLower() == dcRead.ColumnName.ToLower());
+                            if (columnNameWrite != null)
+                            {
+                                rwMap.Add(dcRead.ColumnName, columnNameWrite);
+                            }
+                        }
                     }
                 });
 
@@ -471,99 +485,151 @@ namespace Netnr
             var vm = new ResultVM();
             vm.LogEvent(le);
 
-            vm.Log.Add($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss} 导入数据\n");
+            vm.Log.Add($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss} 导入数据\r\n");
+            vm.Log.Add($"读取数据源：{idb.PackagePath}\r\n");
 
             var db = idb.WriteConnectionInfo.NewDbHelper();
-
-            var hsName = new HashSet<string>();
-
-            vm.Log.Add($"读取数据源：{idb.PackagePath}\n");
+            var isCopy = db.PreCheck() != -1; //预检通过
 
             using var zipRead = ZipFile.OpenRead(idb.PackagePath);
-            var zipList = zipRead.Entries.OrderBy(x => x.Name).ToList();
-
-            vm.Log.Add($"读取写入库表信息");
-            var dk = Init(idb.WriteConnectionInfo);
-            var writeTables = dk.GetTable();
-
-            var isCopy = dk.db.PreCheck() != -1; //预检通过
-
-            for (int i = 0; i < zipList.Count; i++)
+            //表名分组
+            var tableGroups = zipRead.Entries.GroupBy(x =>
             {
-                var dt = new DataTable();
-
-                var item = zipList[i];
-                dt.ReadXml(item.Open());
-
-                //指定导入表名
-                var writeTableMap = string.Empty;
-                foreach (var key in idb.ReadWriteTableMap.Keys)
+                if (x.Name.EndsWith(".sql"))
                 {
-                    var val = idb.ReadWriteTableMap[key];
-                    var sntnArray = key.Split('.');
-                    if (sntnArray.Length == 2)
-                    {
-                        if (dt.Namespace == sntnArray[0] && dt.TableName == sntnArray[1])
-                        {
-                            writeTableMap = val;
-                            break;
-                        }
-                    }
-                    else if (dt.TableName == key)
-                    {
-                        writeTableMap = val;
-                        break;
-                    }
+                    return Path.GetFileNameWithoutExtension(x.Name);
                 }
-                //指定映射 且在 写入库
-                if (!string.IsNullOrWhiteSpace(writeTableMap) && writeTables.Any(x => DbHelper.SqlEqualSNTN(writeTableMap, x.TableName, x.SchemaName)))
+                else
                 {
-                    var sntnArray = writeTableMap.Split('.');
-                    if (sntnArray.Length == 2)
+                    return x.Name[..x.Name.LastIndexOf('_')];
+                }
+            });
+
+            var hsName = new HashSet<string>(); // 已导入的表记录
+
+            //写入库表信息
+            var writeTables = new List<DataKitTableVM>();
+            if (!zipRead.Entries.Any(x => x.Name.EndsWith(".sql")))
+            {
+                vm.Log.Add($"读取写入库表信息");
+                var dk = Init(idb.WriteConnectionInfo);
+                writeTables = dk.GetTable();
+            }
+
+            var tableIndex = 0;
+            foreach (var tableGroup in tableGroups)
+            {
+                tableIndex++;
+                vm.Log.Add($"读取表（{tableGroup.Key}），进度：{tableIndex}/{tableGroups.Count()}");
+
+                var sqlFile = tableGroup.FirstOrDefault(x => x.Name.EndsWith(".sql"));
+
+                //仅数据时，支持表、列映射配置，导入前清空表数据，不同类型数据库（主要用于数据迁移）
+                //含 SQL 文件时，视为同类型数据库，重建表，直接写入数据（主要用于备份还原）
+                var dataOnly = sqlFile == null;
+                if (!dataOnly)
+                {
+                    var sqlContent = sqlFile.Open().ToText();
+
+                    vm.Log.Add($"创建表结构，执行脚本：{sqlFile.Name}");
+                    db.SqlExecuteNonQuery(sqlContent);
+                }
+
+                //当前表分片
+                foreach (var item in tableGroup)
+                {
+                    if (item.Name.EndsWith(".sql"))
                     {
-                        dt.Namespace = sntnArray[0];
-                        dt.TableName = sntnArray[1];
+                        continue;
+                    }
+
+                    //读取分片为数据表
+                    var dt = new DataTable();
+                    dt.ReadXml(item.Open());
+
+                    var sntn = tableGroup.Key;
+
+                    //有数据
+                    if (dt.Rows.Count > 0)
+                    {
+                        //表列映射，是否先清空表数据等判断
+                        if (dataOnly)
+                        {
+                            //写入表名映射
+                            var writeTableMap = string.Empty;
+                            foreach (var key in idb.ReadWriteTableMap.Keys)
+                            {
+                                var val = idb.ReadWriteTableMap[key];
+                                var sntnArray = key.Split('.');
+                                if (sntnArray.Length == 2)
+                                {
+                                    if (dt.Namespace == sntnArray[0] && dt.TableName == sntnArray[1])
+                                    {
+                                        writeTableMap = val;
+                                        break;
+                                    }
+                                }
+                                else if (dt.TableName == key)
+                                {
+                                    writeTableMap = val;
+                                    break;
+                                }
+                            }
+
+                            //指定映射 且在 写入库
+                            if (!string.IsNullOrWhiteSpace(writeTableMap) && writeTables.Any(x => DbHelper.SqlEqualSNTN(writeTableMap, x.TableName, x.SchemaName)))
+                            {
+                                var sntnArray = writeTableMap.Split('.');
+                                if (sntnArray.Length == 2)
+                                {
+                                    dt.Namespace = sntnArray[0];
+                                    dt.TableName = sntnArray[1];
+                                }
+                                else
+                                {
+                                    dt.Namespace = "";
+                                    dt.TableName = sntnArray[0];
+                                }
+                            }
+                            //有模式名 但不在 写入库 清除模式名
+                            else if (!string.IsNullOrWhiteSpace(dt.Namespace) && !writeTables.Any(x => x.SchemaName == dt.Namespace))
+                            {
+                                dt.Namespace = "";
+                            }
+
+                            if (!writeTables.Any(x => x.TableName == dt.TableName))
+                            {
+                                vm.Log.Add($"写入库未找到表（{dt.TableName}），已跳过分片：{item.Name}");
+                                continue;
+                            }
+
+                            //模式名.表名
+                            sntn = DbHelper.SqlSNTN(dt.TableName, dt.Namespace);
+
+                            //清空表
+                            if (hsName.Add(sntn) && idb.WriteDeleteData)
+                            {
+                                var clearTableSql = DbHelper.SqlClearTable(idb.WriteConnectionInfo.ConnectionType, sntn);
+
+                                vm.Log.Add($"清理写入表：{clearTableSql}");
+                                var num = db.SqlExecuteReader(clearTableSql).Item2;
+                                vm.Log.Add($"返回受影响行数：{num}，耗时：{vm.PartTimeFormat()}");
+                            }
+                        }
+
+                        vm.Log.Add($"正在导入（{sntn}）分片：{item.Name}（行：{dt.Rows.Count}，大小：{ParsingTo.FormatByteSize(item.Length)}）");
+                        db.BulkCopy(idb.WriteConnectionInfo.ConnectionType, dt, isCopy);
+                        vm.Log.Add($"导入表（{sntn}）分片成功，耗时：{vm.PartTimeFormat()}");
                     }
                     else
                     {
-                        dt.Namespace = "";
-                        dt.TableName = sntnArray[0];
+                        vm.Log.Add($"跳过空分片：{item.Name}");
                     }
                 }
-                //有模式名 但不在 写入库 清除模式名
-                else if (!string.IsNullOrWhiteSpace(dt.Namespace) && !writeTables.Any(x => x.SchemaName == dt.Namespace))
-                {
-                    dt.Namespace = "";
-                }
-
-                if (!writeTables.Any(x => x.TableName == dt.TableName))
-                {
-                    vm.Log.Add($"写入库未找到表（{dt.TableName}），已跳过");
-                    continue;
-                }
-
-                //模式名.表名
-                var sntn = DbHelper.SqlSNTN(dt.TableName, dt.Namespace);
-
-                //清空表
-                if (hsName.Add(sntn) && idb.WriteDeleteData)
-                {
-                    var clearTableSql = DbHelper.SqlClearTable(idb.WriteConnectionInfo.ConnectionType, sntn);
-
-                    vm.Log.Add($"清理写入表：{clearTableSql}");
-                    var num = db.SqlExecuteReader(clearTableSql).Item2;
-                    vm.Log.Add($"返回受影响行数：{num}，耗时：{vm.PartTimeFormat()}");
-                }
-
-                vm.Log.Add($"导入表（{sntn}）分片：{item.Name}（大小：{ParsingTo.FormatByteSize(item.Length)}，行：{dt.Rows.Count}）");
-
-                db.BulkCopy(idb.WriteConnectionInfo.ConnectionType, dt, isCopy);
-
-                vm.Log.Add($"导入表（{sntn}）分片成功，耗时：{vm.PartTimeFormat()}，导入进度：{i + 1}/{zipList.Count}\n");
+                vm.Log.Add($"导入表（{tableGroup.Key}）完成\r\n");
             }
 
-            vm.Log.Add($"导入完成，共耗时：{vm.UseTimeFormat}\n");
-            GC.Collect();
+            vm.Log.Add($"导入完成，共耗时：{vm.UseTimeFormat}\r\n");
 
             vm.Set(EnumTo.RTag.success);
             return vm;

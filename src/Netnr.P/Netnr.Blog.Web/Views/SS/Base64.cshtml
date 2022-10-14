@@ -13,9 +13,16 @@
                 <sl-button class="nr-btn-decode" variant="success">解码</sl-button>
                 <sl-button class="nr-btn-encode" variant="primary">编码</sl-button>
             </sl-button-group>
+            <sl-dropdown class="nr-dd-detect mb-3">
+                <sl-button slot="trigger" caret variant="warning">检测 Base64 MIME</sl-button>
+                <sl-menu>
+                    <sl-menu-item>未知</sl-menu-item>
+                </sl-menu>
+            </sl-dropdown>
             <div class="nr-card-result"></div>
         </div>
     </div>
 </div>
 
+<script src="/app/browserify/dist/magic-bytes.min.js" asp-append-version="true"></script>
 @Html.Raw(Netnr.QuoteTo.Html("monaco-editor"))

@@ -1,5 +1,8 @@
 ﻿namespace Netnr.Login;
 
+/// <summary>
+/// Weixin 微信（开放平台）
+/// </summary>
 public class Weixin
 {
     /// <summary>

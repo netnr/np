@@ -76,14 +76,14 @@ public class FileTo
     /// <param name="source">源目录</param>
     /// <param name="target">新目录</param>
     /// <param name="ignoreFolder">忽略文件夹</param>
-    public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, List<string> ignoreFolder = null)
+    public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, IList<string> ignoreFolder = null)
     {
         if (source.FullName.Equals(target.FullName, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
 
-        if (ignoreFolder != null && ignoreFolder.Any(x => target.FullName.EndsWith(x)))
+        if (ignoreFolder != null && ignoreFolder.Any(x => target.Name.EndsWith(x)))
         {
             return;
         }
@@ -115,7 +115,7 @@ public class FileTo
     /// <param name="sourceDirectory">源目录</param>
     /// <param name="targetDirectory">新目录</param>
     /// <param name="ignoreFolder">忽略文件夹</param>
-    public static void CopyDirectory(string sourceDirectory, string targetDirectory, List<string> ignoreFolder = null)
+    public static void CopyDirectory(string sourceDirectory, string targetDirectory, IList<string> ignoreFolder = null)
     {
         DirectoryInfo diSource = new(sourceDirectory);
         DirectoryInfo diTarget = new(targetDirectory);

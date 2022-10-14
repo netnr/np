@@ -133,6 +133,8 @@ nr.onReady = function () {
 
     page.codeBuild();
     nr.domBtnBuild.addEventListener('click', page.codeBuild);
+    nr.domTxtLength.addEventListener('input', page.codeBuild);
+    nr.domTxtExclude.addEventListener('input', page.codeBuild);
     nr.domBtnReset.addEventListener('click', function () {
         [nr.domTxtLength, nr.domTxtExclude].forEach(function (dom) {
             dom.value = dom.defaultValue;
@@ -164,8 +166,10 @@ var page = {
                 dom.addEventListener('sl-change', page.codeBuild);
             }
 
-            var val = config[dom.classList[0]];
-            dom.checked = (val != null && val != "");
+            if (dom.classList[0] in config) {
+                var val = config[dom.classList[0]];
+                dom.checked = (val != null && val != "");
+            }
         });
     },
     codeBuild: function () {

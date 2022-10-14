@@ -1,15 +1,20 @@
 # Change Log
 
+### 2022-09
+- 调整 npm 资源为自建代理，仅限白名单包名访问
+
 ### 2022-08
 - 调整 Newtonsoft.Json 组件为 System.Text.Json
 
 ### 2022-04
 - 升级 站点引入 shoelace-style 组件库，去 jquery、font-awesome
-- 发布 NDX (Netnr.FileServer)
 
 ### 2022-02
 - 发布 NDK (Netnr.DataKit)
 - 发布 NDX (Netnr.DataX)
+- 发布 NS (Netnr.Serve)
+- 发布 NFS (Netnr.FileServer)
+- https://gitee.com/netnr/np/releases
 - https://github.com/netnr/np/releases
 
 ### 2021-06

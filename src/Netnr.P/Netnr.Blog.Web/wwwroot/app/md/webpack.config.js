@@ -21,7 +21,7 @@ var config = {
         static: {
             directory: path.join(__dirname, './src'),
         },
-        port: 8003,
+        port: 9913,
     },
     module: {
         // Bundle styles

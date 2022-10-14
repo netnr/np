@@ -1,4 +1,4 @@
-@{
+﻿@{
     Layout = null;
 
     var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
@@ -30,7 +30,7 @@
                 </a>
             </li>
             <li>
-                @if (uinfo.UserId == 0)
+                @if (uinfo == null)
                 {
                     <a data-href="/doc/discover" title="Doc discover">Doc</a>
                 }
@@ -40,19 +40,19 @@
                 }
             </li>
             <li>
-                Menu
+                ⓂMenu
                 <ul>
-                    @if (uinfo.UserId != 0)
+                    @if (uinfo != null)
                     {
-                        <li><a data-href="/doc/item/@dscode" title="Add">Add</a></li>
-                        <li><a title="Edit">Edit</a></li>
-                        <li><a title="Delete">Delete</a></li>
+                        <li><a data-href="/doc/item/@dscode" title="Add">📝 Add</a></li>
+                        <li><a title="Edit">✒ Edit</a></li>
+                        <li><a title="Delete">❌ Delete</a></li>
                         <li></li>
-                        <li><a data-href="/doc/catalog/@dscode" title="Menu">Catalog</a></li>
+                        <li><a data-href="/doc/catalog/@dscode" title="Menu">📁 Catalog</a></li>
                         <li></li>
                     }
-                    <li><a title="Word">Word</a></li>
-                    <li><a title="Print">Print</a></li>
+                    <li><a title="Word">📄 Word</a></li>
+                    <li><a title="Print">🖨 Print</a></li>
                 </ul>
             </li>
         </ul>

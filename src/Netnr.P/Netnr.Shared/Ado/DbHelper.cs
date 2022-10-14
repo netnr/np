@@ -95,7 +95,7 @@ namespace Netnr
                 var dsSchema = new DataSet();
                 int recordsAffected = -1;
 
-                var isOracle = nameof(Connection).ToLower().Contains("oracle");
+                var isOracle = Connection.GetType().Name.ToLower().Contains("oracle");
                 var isSplit = false;
                 if (isOracle)
                 {
@@ -174,12 +174,13 @@ namespace Netnr
         /// 查询 读取行
         /// </summary>
         /// <param name="sql"></param>
-        /// <param name="readRow"></param>
-        public void SqlExecuteDataRow(string sql, Action<DataRow> readRow)
+        /// <param name="readRow">行数据</param>
+        /// <param name="emptyTable">空表</param>
+        public void SqlExecuteDataRow(string sql, Action<object[]> readRow, Action<DataTable> emptyTable = null)
         {
             SafeConn(() =>
             {
-                var isOracle = nameof(Connection).ToLower().Contains("oracle");
+                var isOracle = Connection.GetType().Name.ToLower().Contains("oracle");
                 var isSplit = false;
                 if (isOracle)
                 {
@@ -204,7 +205,7 @@ namespace Netnr
                     }
 
                     var cmd = GetCommand(sql, timeout: 600);
-                    cmd.ExecuteDataRow(readRow);
+                    cmd.ExecuteDataRow(readRow, emptyTable);
                 }
             });
         }

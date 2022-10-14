@@ -53,7 +53,7 @@
                 }
             }
 
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
             //cmd (Auth)
             switch (sid?.ToLower())
@@ -71,12 +71,12 @@
                     {
                         if (HttpContext.User.Identity.IsAuthenticated)
                         {
-                            var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.Uid == uinfo.UserId);
+                            var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.Uid == userId);
                             db.Run.Remove(mo);
                             int num = db.SaveChanges();
                             if (num > 0)
                             {
-                                return Redirect("/run/user/" + uinfo.UserId);
+                                return Redirect("/run/user/" + userId);
                             }
                             else
                             {
@@ -85,7 +85,7 @@
                         }
                         else
                         {
-                            return Unauthorized();
+                            return Unauthorized("Not Authorized");
                         }
                     }
             }
@@ -96,16 +96,16 @@
             {
                 return NotFound();
             }
-            else if (moout.RunOpen != 1 && moout.Uid != uinfo.UserId)
+            else if (moout.RunOpen != 1 && moout.Uid != userId)
             {
-                return Unauthorized();
+                return Unauthorized("Not Authorized");
             }
             else
             {
                 var html = moout.RunContent1;
-                var st = Process.GetCurrentProcess().StartTime.ToUtcTotalDays();
+                var totalDays = GlobalTo.StartTime.ToUtcTotalDays();
 
-                var injectJS = $"\n<script src='/js/run/oconsole.js?{st}'></script>\n" +
+                var injectJS = $"\n<script src='/js/run/oconsole.js?{totalDays}'></script>\n" +
                     (string.IsNullOrWhiteSpace(moout.RunContent2)
                     ? "" : $"<script>\n{moout.RunContent2}\n</script>\n");
 
@@ -183,7 +183,7 @@
                 }
 
                 //推送通知
-                PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
+                _ = PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
             }
 
             return vm;
@@ -198,9 +198,9 @@
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, int page = 1)
         {
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.RunQuery(k, 0, uinfo.UserId, page);
+            var ps = CommonService.RunQuery(k, 0, userId, page);
             ps.Route = Request.Path;
 
             return View("/Views/Run/_PartialRunList.cshtml", ps);
@@ -230,9 +230,9 @@
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.RunQuery(k, uid, uinfo.UserId, page);
+            var ps = CommonService.RunQuery(k, uid, userId, page);
             ps.Route = Request.Path;
 
             return View("/Views/Run/_PartialRunList.cshtml", ps);

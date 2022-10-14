@@ -80,7 +80,7 @@ namespace Netnr
         {
             try
             {
-                if (nameof(Connection).ToLower().Contains("mysql"))
+                if (Connection.GetType().Name.ToLower().Contains("mysql"))
                 {
                     var drs = SqlExecuteReader("SHOW VARIABLES").Item1.Tables[0].Select();
 

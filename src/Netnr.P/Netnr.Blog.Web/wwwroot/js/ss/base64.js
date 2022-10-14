@@ -80,6 +80,30 @@ nr.onReady = function () {
         }
     });
 
+    //检测 base64 
+    nr.domDdDetect.addEventListener('sl-show', function () {
+        var domMenu = nr.domDdDetect.querySelector('sl-menu');
+        domMenu.innerHTML = '<sl-menu-item>正在检测</sl-menu-item>';
+
+        var code = editor.getValue();
+        var ftinfo = page.base64Detect(code);
+        if (ftinfo.length) {
+            domMenu.innerHTML = ftinfo.map(x => x.mime == null ? "" : `<sl-menu-item value="${x.mime}">.${x.extension} → ${x.mime}</sl-menu-item>`).join('');
+        } else {
+            domMenu.innerHTML = '<sl-menu-item>检测失败</sl-menu-item>';
+        }
+    });
+    nr.domDdDetect.addEventListener('sl-select', event => {
+        const selectedItem = event.detail.item;
+        if (selectedItem.value != "") {
+            if (window.isSecureContext && navigator.clipboard != null) {
+                navigator.clipboard.writeText(selectedItem.value)
+            } else {
+                console.log(selectedItem.value);
+            }
+        }
+    });
+
     //接收文件
     nr.receiveFiles(function (files) {
         page.fileAsBase64(files[0])
@@ -95,6 +119,7 @@ var page = {
             var result = e.target.result;
             me.keepSetValue(editor, result)
             nr.domCardInfo.innerHTML = `文件：<b>${nr.formatByteSize(file.size)}</b>，Base64 编码：<b>${nr.formatByteSize(result.length)}</b>`;
+            nr.domTxtMime.value = result.substring(5, result.indexOf(';'));
             ss.loading(false);
         }
         r.readAsDataURL(file);
@@ -110,19 +135,44 @@ var page = {
             base64 = code;
         }
 
-        if (mime == null && mimeType == "") {
-            mime = "application/octet-stream";
-        } else if (mimeType != "") {
-            mime = mimeType;
-        }
-
         var bin = atob(base64);
         var len = bin.length;
         var arr = new Uint8Array(len);
         for (var i = 0; i < len; i++) {
             arr[i] = bin.charCodeAt(i);
         }
+        var ftinfo = magicBytes.filetypeinfo(arr);
+        console.debug(`识别文件格式：\r\n${JSON.stringify(ftinfo, null, 2)}`);
+
+        if (mime == null) {
+            if (mimeType.trim() == "") {
+                if (ftinfo.length) {
+                    mimeType = ftinfo[0].mime
+                } else {
+                    mimeType = "application/octet-stream";
+                }
+            }
+            mime = mimeType;
+            nr.domTxtMime.value = mime;
+        }
 
         return new Blob([arr], { type: mime });
+    },
+    base64Detect: function (code) {
+        try {
+            var parts = code.split(';base64,');
+            var base64 = parts.pop();
+
+            var bin = atob(base64);
+            var len = bin.length;
+            var arr = new Uint8Array(len);
+            for (var i = 0; i < len; i++) {
+                arr[i] = bin.charCodeAt(i);
+            }
+            var ftinfo = magicBytes.filetypeinfo(arr);
+            return ftinfo;
+        } catch (e) {
+            return [];
+        }
     }
 }

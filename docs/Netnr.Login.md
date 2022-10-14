@@ -15,9 +15,14 @@ Install-Package Netnr.Login
         <td><a target="_blank" href="https://connect.qq.com/manage.html">应用申请</a></td>
     </tr>
     <tr>
-        <td><img src="https://gs.zme.ink/static/login/weixin.svg" height="30" title="微信/Weixin"></td>
+        <td><img src="https://gs.zme.ink/static/login/weixin.svg" height="30" title="微信开放平台/Weixin"></td>
         <td><a target="_blank" href="https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html">参考文档</a></td>
         <td><a target="_blank" href="https://open.weixin.qq.com">应用申请</a></td>
+    </tr>
+    <tr>
+        <td><img src="https://gs.zme.ink/static/login/weixin.svg" height="30" title="微信公众平台/WeixinMP"></td>
+        <td><a target="_blank" href="https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Wechat_webpage_authorization.html">参考文档</a></td>
+        <td><a target="_blank" href="https://mp.weixin.qq.com">应用申请</a></td>
     </tr>
     <tr>
         <td><img src="https://gs.zme.ink/static/login/weibo.svg" height="30" title="微博/Weibo"></td>
@@ -70,7 +75,7 @@ Install-Package Netnr.Login
 - v5 版本全面重写，不兼容以前，调用方法更简单简洁
 - 移除 Newtonsoft.Json 组件，改为 System.Text.Json
 - 微软含新旧模式（注意新旧版本标识不相同）
-- 钉钉含新旧模式（新版本：企业内部开发 H5微应用；旧版本：移动应用接入 扫码登录）
+- 钉钉含新旧模式（新：企业内部开发 H5微应用；旧：移动应用接入 扫码登录）
 - 微信需要企业认证，没有测试，如有测试用户请反馈，谢谢
 
 ### 使用

@@ -99,7 +99,7 @@
 
                     //分享码
                     var isShare = !string.IsNullOrWhiteSpace(mo?.Spare1) && mo?.Spare1 == code;
-                    if (mo?.DrOpen == 1 || mo?.Uid == uinfo.UserId || isShare)
+                    if (mo?.DrOpen == 1 || mo?.Uid == uinfo?.UserId || isShare)
                     {
                         vm.Set(EnumTo.RTag.success);
                         vm.Data = mo;
@@ -123,7 +123,7 @@
                 if (!string.IsNullOrWhiteSpace(sid))
                 {
                     var mo = db.Draw.Find(sid);
-                    if (mo.Uid == uinfo.UserId)
+                    if (mo.Uid == uinfo?.UserId)
                     {
                         return View("/Views/Draw/_PartialDrawForm.cshtml", mo);
                     }
@@ -142,7 +142,7 @@
                     {
                         mof.DrId = mof.DrType[0] + UniqueTo.LongId().ToString();
                         mof.DrCreateTime = DateTime.Now;
-                        mof.Uid = uinfo.UserId;
+                        mof.Uid = uinfo?.UserId;
                         mof.DrOrder = 100;
                         mof.DrStatus = 1;
 
@@ -169,7 +169,7 @@
                     }
 
                     //推送通知
-                    PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
+                    _ = PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
 
                     vm.Set(num > 0);
                 }
@@ -203,7 +203,7 @@
                             DrOpen = 1,
                             DrOrder = 100,
                             DrStatus = 1,
-                            Uid = uinfo.UserId
+                            Uid = uinfo?.UserId
                         };
 
                         db.Draw.Add(mo);
@@ -215,7 +215,7 @@
                     else
                     {
                         var mo = db.Draw.Find(sid);
-                        if (mo?.Uid == uinfo.UserId)
+                        if (mo?.Uid == uinfo?.UserId)
                         {
                             mo.DrName = filename;
                             mo.DrContent = xml;
@@ -242,7 +242,7 @@
                 if (User.Identity.IsAuthenticated)
                 {
                     var mo = db.Draw.Find(sid);
-                    if (mo.Uid == uinfo.UserId)
+                    if (mo.Uid == uinfo?.UserId)
                     {
                         db.Remove(mo);
                         int num = db.SaveChanges();
@@ -261,7 +261,7 @@
 
                 if (vm.Code == 200)
                 {
-                    return Redirect("/draw/user/" + uinfo.UserId);
+                    return Redirect("/draw/user/" + uinfo?.UserId);
                 }
                 else
                 {
@@ -273,7 +273,7 @@
             {
                 if (!User.Identity.IsAuthenticated)
                 {
-                    return Unauthorized();
+                    return Unauthorized("Not Authorized");
                 }
 
                 var errno = -1;
@@ -325,9 +325,9 @@
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, int page = 1)
         {
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.DrawQuery(k, 0, uinfo.UserId, page);
+            var ps = CommonService.DrawQuery(k, 0, userId, page);
             ps.Route = Request.Path;
             return View("/Views/Draw/_PartialDrawList.cshtml", ps);
         }
@@ -356,9 +356,9 @@
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.DrawQuery(k, uid, uinfo.UserId, page);
+            var ps = CommonService.DrawQuery(k, uid, userId, page);
             ps.Route = Request.Path;
             return View("/Views/Draw/_PartialDrawList.cshtml", ps);
         }

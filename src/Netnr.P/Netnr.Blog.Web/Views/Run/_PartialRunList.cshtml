@@ -28,7 +28,7 @@ else
                     <a class="mx-2 text-decoration-none" href="/run/code/@item.RunCode/edit" title="edit">
                         <sl-icon name="pencil-square"></sl-icon>
                     </a>
-                    @if (item.Uid == uinfo.UserId)
+                    @if (item.Uid == uinfo?.UserId)
                     {
                         <a class="text-danger text-decoration-none" href="/run/code/@item.RunCode/delete" title="delete" onclick="return confirm('confirm delete?')">
                             <sl-icon name="trash"></sl-icon>

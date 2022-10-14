@@ -51,87 +51,64 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="remember">1记住登录状态</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ResultVM> LoginValidation(SysUser mo, string captcha, int remember)
+        public async Task<ResultVM> LoginValidation(SysUser mo, string captcha, int? remember)
         {
             var vm = new ResultVM();
-
             var outMo = new SysUser();
-
-            //跳过验证码
-            if (captcha == "_pass_")
-            {
-                outMo = mo;
-            }
-            else
-            {
-                var capt = HttpContext.Session.GetString("captcha");
-                HttpContext.Session.Remove("captcha");
-
-                if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != CalcTo.MD5(captcha.ToLower()))
-                {
-                    vm.Set(EnumTo.RTag.fail);
-                    vm.Msg = "验证码错误或已过期";
-                    return vm;
-                }
-
-                if (string.IsNullOrWhiteSpace(mo.SuName) || string.IsNullOrWhiteSpace(mo.SuPwd))
-                {
-                    vm.Set(EnumTo.RTag.lack);
-                    vm.Msg = "用户名或密码不能为空";
-                    return vm;
-                }
-
-                outMo = db.SysUser.FirstOrDefault(x => x.SuName == mo.SuName && x.SuPwd == CalcTo.MD5(mo.SuPwd, 32));
-            }
-
-            if (outMo == null || string.IsNullOrWhiteSpace(outMo.SuId))
-            {
-                vm.Set(EnumTo.RTag.unauthorized);
-                vm.Msg = "用户名或密码错误";
-                return vm;
-            }
-
-            if (outMo.SuStatus != 1)
-            {
-                vm.Set(EnumTo.RTag.refuse);
-                vm.Msg = "用户已被禁止登录";
-                return vm;
-            }
 
             try
             {
-                #region 授权访问信息
-
-                //登录信息
-                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
-                identity.AddClaim(new Claim(ClaimTypes.PrimarySid, outMo.SuId));
-                identity.AddClaim(new Claim(ClaimTypes.Name, outMo.SuName));
-                identity.AddClaim(new Claim(ClaimTypes.GivenName, outMo.SuNickname ?? ""));
-                identity.AddClaim(new Claim(ClaimTypes.Role, outMo.SrId));
-
-                //配置
-                var authParam = new AuthenticationProperties();
-                if (remember == 1)
+                //跳过验证码
+                if (captcha == "_pass_")
                 {
-                    authParam.IsPersistent = true;
-                    authParam.ExpiresUtc = DateTime.Now.AddDays(10);
+                    outMo = mo;
+                }
+                else
+                {
+                    var capt = HttpContext.Session.GetString("captcha");
+                    HttpContext.Session.Remove("captcha");
+
+                    if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != CalcTo.MD5(captcha.ToLower()))
+                    {
+                        vm.Set(EnumTo.RTag.fail);
+                        vm.Msg = "验证码错误或已过期";
+                    }
+                    else if (string.IsNullOrWhiteSpace(mo.SuName) || string.IsNullOrWhiteSpace(mo.SuPwd))
+                    {
+                        vm.Set(EnumTo.RTag.lack);
+                        vm.Msg = "用户名或密码不能为空";
+                    }
+                    else
+                    {
+                        outMo = db.SysUser.FirstOrDefault(x => x.SuName == mo.SuName && x.SuPwd == CalcTo.MD5(mo.SuPwd, 32));
+                    }
                 }
 
-                //写入
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authParam);
+                if (outMo == null || string.IsNullOrWhiteSpace(outMo.SuId))
+                {
+                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Msg = "用户名或密码错误";
+                }
+                else if (outMo.SuStatus != 1)
+                {
+                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Msg = "用户已被禁止登录";
+                }
+                else
+                {
+                    //授权访问信息
+                    await IdentityService.Set(HttpContext, outMo, remember == 1);
 
-                vm.Set(EnumTo.RTag.success);
-                vm.Data = "/";
-
-                return vm;
-
-                #endregion
+                    vm.Set(EnumTo.RTag.success);
+                    vm.Data = "/";
+                }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                return vm;
             }
+
+            return vm;
         }
         #endregion
 
@@ -193,9 +170,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             else
             {
-                var userinfo = IdentityService.Get(HttpContext);
+                var uinfo = IdentityService.Get(HttpContext);
 
-                var mo = db.SysUser.Find(userinfo.UserId);
+                var mo = db.SysUser.Find(uinfo.UserId);
                 if (mo != null && mo.SuPwd == CalcTo.MD5(oldpwd))
                 {
                     mo.SuPwd = CalcTo.MD5(newpwd1);

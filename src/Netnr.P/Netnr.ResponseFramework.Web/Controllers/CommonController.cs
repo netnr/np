@@ -30,10 +30,10 @@ namespace Netnr.ResponseFramework.Web.Controllers
             if (type != "all")
             {
                 #region 根据登录用户查询角色配置的菜单
-                var userinfo = IdentityService.Get(HttpContext);
-                if (!string.IsNullOrWhiteSpace(userinfo.RoleId))
+                var uinfo = IdentityService.Get(HttpContext);
+                if (uinfo != null)
                 {
-                    var role = CommonService.QuerySysRoleEntity(x => x.SrId == userinfo.RoleId);
+                    var role = CommonService.QuerySysRoleEntity(x => x.SrId == uinfo.RoleId);
                     if (role != null)
                     {
                         var menuArray = role.SrMenus.Split(',').ToList();

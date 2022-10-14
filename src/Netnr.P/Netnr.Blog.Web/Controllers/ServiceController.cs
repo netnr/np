@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
-using JiebaNet.Segmenter;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -68,28 +67,112 @@ namespace Netnr.Blog.Web.Controllers
         /// 数据库导出（管理员）
         /// </summary>
         /// <param name="zipName">文件名</param>
+        /// <param name="onlyData">仅数据，默认带表结构</param>
         /// <returns></returns>
         [HttpGet]
         [FilterConfigs.IsAdmin]
-        public ResultVM DatabaseExport(string zipName = "db/backup.zip")
+        public ResultVM DatabaseExport(string zipName = "db/backup.zip", bool onlyData = false) => ResultVM.Try(vm =>
         {
-            return ResultVM.Try(vm =>
+            var edb = new DataKitTransferVM.ExportDatabase
             {
-                var edb = new DataKitTransferVM.ExportDatabase
+                PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
+                ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
                 {
-                    PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
-                    ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
+                    ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source="),
+                    ConnectionType = AppTo.TDB
+                },
+                Type = onlyData ? "onlyData" : "all"
+            };
+
+            if (System.IO.File.Exists(edb.PackagePath))
+            {
+                System.IO.File.Delete(edb.PackagePath);
+            }
+            vm = DataKitTo.ExportDatabase(edb);
+
+            return vm;
+        });
+
+        /// <summary>
+        /// 数据库导出（管理员，示例数据，开发环境）
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [FilterConfigs.IsAdmin]
+        public ResultVM DatabaseExportDemo() => ResultVM.Try(vm =>
+        {
+            if (GlobalTo.IsDev)
+            {
+                var export_before = "db/backup_demo_before.zip";
+                var export_demo = "db/backup_demo.zip";
+
+                //备份
+                if (DatabaseExport(export_before).Code == 200)
+                {
+                    //清理仅保留示例数据
+
+                    using var db = ContextBaseFactory.CreateDbContext();
+
+                    db.UserInfo.RemoveRange(db.UserInfo.ToList());
+                    db.UserInfo.Add(new UserInfo()
                     {
-                        ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source="),
-                        ConnectionType = AppTo.TDB
+                        UserId = 1,
+                        UserName = "netnr",
+                        UserPwd = "e10adc3949ba59abbe56e057f20f883e",//123456
+                        UserCreateTime = DateTime.Now
+                    });
+
+                    db.UserConnection.RemoveRange(db.UserConnection.ToList());
+                    db.UserMessage.RemoveRange(db.UserMessage.ToList());
+                    db.UserReply.RemoveRange(db.UserReply.Where(x => x.UrTargetId != "117").ToList());
+                    db.UserWriting.RemoveRange(db.UserWriting.Where(x => x.UwId != 117).ToList());
+                    db.UserWritingTags.RemoveRange(db.UserWritingTags.Where(x => x.UwId != 117).ToList());
+
+                    db.Tags.RemoveRange(db.Tags.Where(x => x.TagId != 58 && x.TagId != 96).ToList());
+
+                    db.Run.RemoveRange(db.Run.OrderBy(x => x.RunCreateTime).Skip(1).ToList());
+
+                    db.OperationRecord.RemoveRange(db.OperationRecord.ToList());
+
+                    db.Notepad.RemoveRange(db.Notepad.ToList());
+
+                    db.KeyValues.RemoveRange(db.KeyValues.Where(x => x.KeyName != "https" && x.KeyName != "browser").ToList());
+                    db.KeyValueSynonym.RemoveRange(db.KeyValueSynonym.ToList());
+
+                    db.GuffRecord.RemoveRange(db.GuffRecord.ToList());
+
+                    db.Gist.RemoveRange(db.Gist.Where(x => x.GistCode != "5373307231488995367").ToList());
+                    db.GistSync.RemoveRange(db.GistSync.Where(x => x.GistCode != "5373307231488995367").ToList());
+
+                    db.GiftRecord.RemoveRange(db.GiftRecord.ToList());
+                    db.GiftRecordDetail.RemoveRange(db.GiftRecordDetail.ToList());
+
+                    db.Draw.RemoveRange(db.Draw.Where(x => x.DrId != "d4969500168496794720" && x.DrId != "m4976065893797151245").ToList());
+
+                    db.DocSet.RemoveRange(db.DocSet.Where(x => x.DsCode != "4840050256984581805" && x.DsCode != "5036967707833574483").ToList());
+                    db.DocSetDetail.RemoveRange(db.DocSetDetail.Where(x => x.DsCode != "4840050256984581805" && x.DsCode != "5036967707833574483").ToList());
+
+                    var num = db.SaveChanges();
+
+                    //导出示例数据
+                    vm = DatabaseExport(export_demo, true);
+
+                    //导入恢复
+                    if (DatabaseImport(export_before, true).Code == 200)
+                    {
+                        var fullPath = Path.Combine(AppTo.ContentRootPath, export_before);
+                        System.IO.File.Delete(fullPath);
                     }
-                };
+                }
+            }
+            else
+            {
+                vm.Set(EnumTo.RTag.refuse);
+                vm.Msg = "仅限开发环境使用";
+            }
 
-                vm = DataKitTo.ExportDatabase(edb);
-
-                return vm;
-            });
-        }
+            return vm;
+        });
 
         /// <summary>
         /// 数据库备份到 Git（管理员）
@@ -202,7 +285,6 @@ namespace Netnr.Blog.Web.Controllers
             hwr.Headers.Set("Accept", "application/vnd.github.v3+json");
             hwr.Headers.Set("Authorization", $"token {token}");
             hwr.Headers.Set("Content-Type", "application/json");
-            hwr.UserAgent = "Netnr Agent";
 
             var result = HttpTo.Url(hwr);
 
@@ -240,88 +322,6 @@ namespace Netnr.Blog.Web.Controllers
             var result = HttpTo.Url(hwr);
 
             return result;
-        }
-
-        /// <summary>
-        /// 数据库导出（示例数据）（管理员）
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [FilterConfigs.IsAdmin]
-        public ResultVM DatabaseExportDemo()
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                var export_before = "db/backup_demo_before.zip";
-                var export_demo = "db/backup_demo.zip";
-
-                //备份
-                if (DatabaseExport(export_before).Code == 200)
-                {
-                    //清理仅保留示例数据
-
-                    using var db = ContextBaseFactory.CreateDbContext();
-
-                    db.UserInfo.RemoveRange(db.UserInfo.ToList());
-                    db.UserInfo.Add(new UserInfo()
-                    {
-                        UserId = 1,
-                        UserName = "netnr",
-                        UserPwd = "e10adc3949ba59abbe56e057f20f883e",//123456
-                        UserCreateTime = DateTime.Now
-                    });
-
-                    db.UserConnection.RemoveRange(db.UserConnection.ToList());
-                    db.UserMessage.RemoveRange(db.UserMessage.ToList());
-                    db.UserReply.RemoveRange(db.UserReply.Where(x => x.UrTargetId != "117").ToList());
-                    db.UserWriting.RemoveRange(db.UserWriting.Where(x => x.UwId != 117).ToList());
-                    db.UserWritingTags.RemoveRange(db.UserWritingTags.Where(x => x.UwId != 117).ToList());
-
-                    db.Tags.RemoveRange(db.Tags.Where(x => x.TagId != 58 && x.TagId != 96).ToList());
-
-                    db.Run.RemoveRange(db.Run.OrderBy(x => x.RunCreateTime).Skip(1).ToList());
-
-                    db.OperationRecord.RemoveRange(db.OperationRecord.ToList());
-
-                    db.Notepad.RemoveRange(db.Notepad.ToList());
-
-                    db.KeyValues.RemoveRange(db.KeyValues.Where(x => x.KeyName != "https" && x.KeyName != "browser").ToList());
-                    db.KeyValueSynonym.RemoveRange(db.KeyValueSynonym.ToList());
-
-                    db.GuffRecord.RemoveRange(db.GuffRecord.ToList());
-
-                    db.Gist.RemoveRange(db.Gist.Where(x => x.GistCode != "5373307231488995367").ToList());
-                    db.GistSync.RemoveRange(db.GistSync.Where(x => x.GistCode != "5373307231488995367").ToList());
-
-                    db.GiftRecord.RemoveRange(db.GiftRecord.ToList());
-                    db.GiftRecordDetail.RemoveRange(db.GiftRecordDetail.ToList());
-
-                    db.Draw.RemoveRange(db.Draw.Where(x => x.DrId != "d4969500168496794720" && x.DrId != "m4976065893797151245").ToList());
-
-                    db.DocSet.RemoveRange(db.DocSet.Where(x => x.DsCode != "4840050256984581805" && x.DsCode != "5036967707833574483").ToList());
-                    db.DocSetDetail.RemoveRange(db.DocSetDetail.Where(x => x.DsCode != "4840050256984581805" && x.DsCode != "5036967707833574483").ToList());
-
-                    var num = db.SaveChanges();
-
-                    //导出示例数据
-                    vm = DatabaseExport(export_demo);
-
-                    //导入恢复
-                    if (DatabaseImport(export_before, true).Code == 200)
-                    {
-                        var fullPath = Path.Combine(AppTo.ContentRootPath, "db", export_before);
-                        System.IO.File.Delete(fullPath);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
         }
 
         /// <summary>
@@ -449,7 +449,6 @@ namespace Netnr.Blog.Web.Controllers
                                         var hwr = HttpTo.HWRequest("https://api.github.com/gists", "POST", sendData);
                                         hwr.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
                                         hwr.ContentType = "application/json";
-                                        hwr.UserAgent = "Netnr Agent";
 
                                         var rt = HttpTo.Url(hwr);
 
@@ -488,7 +487,6 @@ namespace Netnr.Blog.Web.Controllers
                                         var hwr = HttpTo.HWRequest("https://api.github.com/gists/" + gs.GsGitHubId, "PATCH", sendData);
                                         hwr.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
                                         hwr.ContentType = "application/json";
-                                        hwr.UserAgent = "Netnr Agent";
 
                                         _ = HttpTo.Url(hwr);
 
@@ -533,7 +531,6 @@ namespace Netnr.Blog.Web.Controllers
                         #region GitHub
                         var hwr_gh = HttpTo.HWRequest("https://api.github.com/gists/" + gs.GsGitHubId, "DELETE");
                         hwr_gh.Headers.Add(HttpRequestHeader.Authorization, "token " + token_gh);
-                        hwr_gh.UserAgent = "Netnr Agent";
                         var resp_gh = (HttpWebResponse)hwr_gh.GetResponse();
                         if (resp_gh.StatusCode == HttpStatusCode.NoContent)
                         {
@@ -676,18 +673,14 @@ namespace Netnr.Blog.Web.Controllers
                                                 Method = lm.Last().ToLower() == "post" ? HttpMethod.Post : HttpMethod.Get
                                             };
 
-                                            var num = 0;
-                                            if (GlobalTo.Memorys.ContainsKey(ckey))
-                                            {
-                                                num = (int)GlobalTo.Memorys[ckey];
-                                            }
+                                            var num = CacheTo.Get<int>(ckey);
                                             try
                                             {
                                                 if (client.Send(request).StatusCode == HttpStatusCode.OK)
                                                 {
                                                     if (num >= 3)
                                                     {
-                                                        PushService.PushAsync("HTTP 监控通知（正常）", item);
+                                                        _ = PushService.PushAsync("HTTP 监控通知（正常）", item);
                                                     }
                                                     num = 0;
                                                 }
@@ -701,10 +694,10 @@ namespace Netnr.Blog.Web.Controllers
                                                 num++;
                                                 if (num == 3)
                                                 {
-                                                    PushService.PushAsync("HTTP 监控通知（异常）", item);
+                                                    _ = PushService.PushAsync("HTTP 监控通知（异常）", item);
                                                 }
                                             }
-                                            GlobalTo.Memorys[ckey] = num;
+                                            CacheTo.Set(ckey, num);
                                         }
                                         break;
                                     case "tcp":
@@ -714,18 +707,14 @@ namespace Netnr.Blog.Web.Controllers
                                             var hp = item.Split(' ');
                                             var client = new TcpClient();
 
-                                            var num = 0;
-                                            if (GlobalTo.Memorys.ContainsKey(ckey))
-                                            {
-                                                num = (int)GlobalTo.Memorys[ckey];
-                                            }
+                                            var num = CacheTo.Get<int>(ckey);
                                             try
                                             {
                                                 if (client.ConnectAsync(Dns.GetHostAddresses(hp.First()).First(), Convert.ToInt32(hp.Last())).Wait(5000))
                                                 {
                                                     if (num >= 3)
                                                     {
-                                                        PushService.PushAsync("TCP 监控通知（正常）", item);
+                                                        _ = PushService.PushAsync("TCP 监控通知（正常）", item);
                                                     }
                                                     num = 0;
                                                 }
@@ -739,10 +728,10 @@ namespace Netnr.Blog.Web.Controllers
                                                 num++;
                                                 if (num == 3)
                                                 {
-                                                    PushService.PushAsync("TCP 监控通知（异常）", item);
+                                                    _ = PushService.PushAsync("TCP 监控通知（异常）", item);
                                                 }
                                             }
-                                            GlobalTo.Memorys[ckey] = num;
+                                            CacheTo.Set(ckey, num);
                                         }
                                         break;
                                     case "ssl":
@@ -781,7 +770,7 @@ namespace Netnr.Blog.Web.Controllers
                                                 if (outMsg.Count > 0)
                                                 {
                                                     outMsg.Insert(0, item);
-                                                    PushService.PushAsync("SSL 监控通知", string.Join("\r\n", outMsg));
+                                                    _ = PushService.PushAsync("SSL 监控通知", string.Join("\r\n", outMsg));
                                                 }
 
                                                 return true;

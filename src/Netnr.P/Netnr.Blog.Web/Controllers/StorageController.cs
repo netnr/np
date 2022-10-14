@@ -75,8 +75,10 @@ namespace Netnr.Blog.Web.Controllers
                     case "qiniu":
                         {
                             // 设置存储区域
-                            Config config = new();
-                            config.Zone = Zone.ZONE_CN_East;
+                            Config config = new()
+                            {
+                                Zone = Zone.ZONE_CN_East
+                            };
                             Mac mac = new(secretId, secretKey);
                             BucketManager bucketManager = new(mac, config);
 

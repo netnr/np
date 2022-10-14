@@ -3,7 +3,7 @@
     ViewData["Title"] = Model.Nickname;
 
     var uinfo = IdentityService.Get(ViewContext.HttpContext);
-    var isme = uinfo.UserId == Model.UserId;
+    var isme = uinfo?.UserId == Model.UserId;
 
     var avatarUrl = AppTo.GetValue("Common:Gravatar");
 }

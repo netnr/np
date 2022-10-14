@@ -289,7 +289,6 @@ var page = {
                     },
                 },
                 { field: "LogIp", enableRowGroup: true, },
-                { field: "LogArea", enableRowGroup: true, },
                 { field: "LogReferer", width: 300, enableRowGroup: true, },
                 {
                     field: "LogCreateTime", cellRenderer: params => {

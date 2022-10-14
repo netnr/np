@@ -7,6 +7,9 @@ namespace Netnr;
 /// </summary>
 public class TimingVM
 {
+    /// <summary>
+    /// 跑表
+    /// </summary>
     public Stopwatch sw;
     private double et = 0;
 

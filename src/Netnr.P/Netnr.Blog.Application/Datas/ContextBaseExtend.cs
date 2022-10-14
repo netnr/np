@@ -12,7 +12,7 @@ public partial class ContextBase : DbContext
     /// </summary>
     public static void IsReadOnly()
     {
-        if (AppTo.GetValue<bool>("ReadOnly") && Process.GetCurrentProcess().StartTime.AddMinutes(1) < DateTime.Now)
+        if (AppTo.GetValue<bool>("ReadOnly") && GlobalTo.StartTime.AddMinutes(1) < DateTime.Now)
         {
             throw new Exception("The database is read-only");
         }

@@ -36,40 +36,40 @@
             }
 
             //Auth
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
             switch (sid?.ToLower())
             {
                 case "edit":
                     {
                         if (!User.Identity.IsAuthenticated)
                         {
-                            return Unauthorized();
+                            return Unauthorized("Not Authorized");
                         }
 
                         var mo = db.Gist.Where(x => x.GistCode == id).FirstOrDefault();
                         //有记录且为当前用户
-                        if (mo != null && mo.Uid == uinfo.UserId)
+                        if (mo != null && mo.Uid == userId)
                         {
                             return View("/Views/Gist/_PartialGistEditor.cshtml", mo);
                         }
                         else
                         {
-                            return Unauthorized();
+                            return Unauthorized("Not Authorized");
                         }
                     }
                 case "delete":
                     {
                         if (!User.Identity.IsAuthenticated)
                         {
-                            return Unauthorized();
+                            return Unauthorized("Not Authorized");
                         }
 
-                        var mo = db.Gist.Where(x => x.GistCode == id && x.Uid == uinfo.UserId).FirstOrDefault();
+                        var mo = db.Gist.Where(x => x.GistCode == id && x.Uid == userId).FirstOrDefault();
                         db.Gist.Remove(mo);
                         int num = db.SaveChanges();
                         if (num > 0)
                         {
-                            return Redirect("/gist/user/" + uinfo.UserId);
+                            return Redirect("/gist/user/" + userId);
                         }
                         else
                         {
@@ -130,7 +130,7 @@
                     mo.GistCreateTime = DateTime.Now;
                     mo.GistUpdateTime = mo.GistCreateTime;
                     mo.GistStatus = 1;
-                    mo.Uid = uinfo.UserId;
+                    mo.Uid = uinfo?.UserId;
 
                     mo.GistCode = UniqueTo.LongId().ToString();
                     db.Gist.Add(mo);
@@ -142,7 +142,7 @@
                 else
                 {
                     var oldmo = db.Gist.FirstOrDefault(x => x.GistCode == mo.GistCode);
-                    if (oldmo?.Uid == uinfo.UserId)
+                    if (oldmo?.Uid == uinfo?.UserId)
                     {
                         oldmo.GistRemark = mo.GistRemark;
                         oldmo.GistFilename = mo.GistFilename;
@@ -167,7 +167,7 @@
                 }
 
                 //推送通知
-                PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
+                _ = PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
             }
 
             return vm;
@@ -183,9 +183,9 @@
         [ResponseCache(Duration = 10)]
         public IActionResult Discover(string k, string lang, int page = 1)
         {
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.GistQuery(k, lang, 0, uinfo.UserId, page);
+            var ps = CommonService.GistQuery(k, lang, 0, userId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             return View("/Views/Gist/_PartialGistList.cshtml", ps);
@@ -216,9 +216,9 @@
             }
             ViewData["Nickname"] = mu.Nickname;
 
-            var uinfo = IdentityService.Get(HttpContext);
+            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.GistQuery(k, lang, uid, uinfo.UserId, page);
+            var ps = CommonService.GistQuery(k, lang, uid, userId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             return View("/Views/Gist/_PartialGistList.cshtml", ps);

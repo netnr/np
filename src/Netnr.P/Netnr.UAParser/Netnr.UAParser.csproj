@@ -5,6 +5,9 @@
 		<LangVersion>latest</LangVersion>
 		<Version>1.0.2</Version>
 		<Authors>netnr</Authors>
+		<Copyright>netnr</Copyright>
+		<Company>$(Authors)</Company>
+		<PackageIcon>favicon.png</PackageIcon>
 		<Description>提取浏览器名称、浏览器版本号、系统名称、系统版本号、是否为爬虫
 
 ### 使用 (Usage)
@@ -22,12 +25,11 @@ var botEntity = uap.GetBot();
 对比：&lt;https://github.com/totpero/DeviceDetector.NET&gt;  
 去除详细型号检测，包精简，轻依赖，预加载正则，相对缓存热数据  
 不命中缓存时，一个耗时 300ms 左右，而 DeviceDetector.NET 需要 3s 左右</Description>
-		<Copyright>netnr</Copyright>
 		<PackageProjectUrl>https://github.com/netnr</PackageProjectUrl>
-		<PackageIcon>favicon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/netnr</RepositoryUrl>
 		<PackageTags>netnr;UserAgent;user-agent;device-detector;bot-detector</PackageTags>
 		<PackageReleaseNotes>device-detector mini</PackageReleaseNotes>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>Netnr.UAParser.md</PackageReadmeFile>
 	</PropertyGroup>

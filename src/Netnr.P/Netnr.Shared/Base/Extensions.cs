@@ -16,6 +16,11 @@ public static partial class Extensions
     /// <returns></returns>
     public static string ToJson(this object obj, bool indented = false, string dateTimeFormatter = JsonConverterTo.DefaultDateTimeFormatter)
     {
+        if (obj == null)
+        {
+            return "null";
+        }
+
         var options = JsonConverterTo.JSOptions(dateTimeFormatter);
         options.WriteIndented = indented;
 

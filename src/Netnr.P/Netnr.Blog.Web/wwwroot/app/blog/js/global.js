@@ -165,11 +165,7 @@ var nr = {
         return qs.join("&");
     },
 
-    htmlEncode: html => {
-        var div = document.createElement("div");
-        div.innerText = html;
-        return div.innerHTML;
-    },
+    htmlEncode: html => html.replace(/[\u00A0-\u9999<>\&]/g, (i) => '&#' + i.charCodeAt(0) + ';'),
     htmlDecode: html => {
         var div = document.createElement('div');
         div.innerHTML = html;

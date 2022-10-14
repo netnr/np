@@ -1,0 +1,25 @@
+.nr-layout-main {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 3.53em;
+    min-height: 100vh;
+}
+
+.nr-layout-left {
+    width: 260px;
+    height: auto;
+    overflow: auto;
+    position: relative;
+    border-right: 1px solid deeppink;
+}
+
+.nr-layout-left sl-tree {
+    position: absolute;
+    width: 100%;
+    overflow: auto;
+}
+
+.nr-layout-right {
+    flex: 1;
+    position: relative;
+}

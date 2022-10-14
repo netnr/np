@@ -139,7 +139,9 @@ var page = {
             ],
             suppressRowClickSelection: true,
             rowSelection: 'multiple',
-            cacheBlockSize: 30, //请求行数
+            pagination: true, //分页
+            paginationPageSize: 100,
+            cacheBlockSize: 30,
             enableRangeSelection: true, //范围选择
             animateRows: true, //动画
             rowModelType: 'infinite', //无限行模式

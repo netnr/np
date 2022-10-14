@@ -142,6 +142,7 @@ public static partial class Extensions
     /// <typeparam name="T">泛型</typeparam>
     /// <param name="table">表</param>
     /// <returns></returns>
+
     public static List<T> ToModel<T>(this DataTable table) where T : class, new()
     {
         var list = new List<T>();
@@ -190,12 +191,16 @@ public static partial class Extensions
                 .Select(uu => new { uu.Name, Value = uu.GetValue(ex) })
                 .Where(uu => uu.Name != tsName).ToList();
 
-        var dic = new Dictionary<string, object>();
+        var result = new Dictionary<string, object>();
         foreach (var item in propList)
         {
-            dic.Add(item.Name, item.Value is not Exception innerEx ? item.Value : innerEx.ToTree());
+            var value = item.Value is not Exception innerEx ? item.Value : innerEx.ToTree();
+            if (!result.ContainsKey(item.Name))
+            {
+                result.Add(item.Name, value);
+            }
         }
-        return dic;
+        return result;
     }
 
     /// <summary>
@@ -239,6 +244,18 @@ public static partial class Extensions
     }
 
     /// <summary>
+    /// 按多个字符串分割
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static string[] Split(this string value, string separator)
+    {
+        var result = value.Split(new[] { separator }, StringSplitOptions.None);
+        return result;
+    }
+
+    /// <summary>
     /// 转 Byte
     /// </summary>
     /// <param name="value">内容</param>
@@ -260,6 +277,18 @@ public static partial class Extensions
     {
         encoding ??= Encoding.UTF8;
         return encoding.GetString(value);
+    }
+
+    /// <summary>
+    /// Stream 转
+    /// </summary>
+    /// <param name="stream">流</param>
+    /// <returns></returns>
+    public static string ToText(this Stream stream)
+    {
+        using var reader = new StreamReader(stream);
+        var result = reader.ReadToEnd();
+        return result;
     }
 
     /// <summary>
@@ -295,6 +324,16 @@ public static partial class Extensions
     {
         encoding ??= Encoding.UTF8;
         return Convert.ToBase64String(encoding.GetBytes(value));
+    }
+
+    /// <summary>
+    /// Url 安全替换
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static string ToUrlSafe(this string value)
+    {
+        return value.Replace('+', '-').Replace('/', '_');
     }
 
     /// <summary>

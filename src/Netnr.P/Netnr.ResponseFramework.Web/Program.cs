@@ -26,7 +26,7 @@ builder.Services.AddControllersWithViews(options =>
 //授权访问信息
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.Cookie.Name = "__NRF_AUTH";
+    options.Cookie.Name = "AUTH_NRF";
     options.LoginPath = "/account/login";
 });
 
@@ -40,11 +40,32 @@ builder.Services.AddDbContextPool<ContextBase>(options =>
     DbContextTo.CreateDbContextOptionsBuilder<ContextBase>(AppTo.TDB, options);
 }, 10);
 
+//配置swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    var name = builder.Environment.ApplicationName;
+    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
+
+    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
+});
+
+var app = builder.Build();
+
+//ERROR
+app.UseExceptionHandler(options => options.SetExceptionHandler());
+
+// Configure the HTTP request pipeline.
+if (!(GlobalTo.IsDev = app.Environment.IsDevelopment()))
+{
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
 //定时任务 https://github.com/fluentscheduler/FluentScheduler
 {
     FluentScheduler.JobManager.Initialize();
 
-    var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(builder.Environment);
+    var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController();
 
     //每2天在2:2 重置数据库
     FluentScheduler.JobManager.AddJob(() =>
@@ -67,27 +88,6 @@ builder.Services.AddDbContextPool<ContextBase>(options =>
     }, s => s.ToRunEvery(2).Days().At(3, 3));
 }
 
-//配置swagger
-builder.Services.AddSwaggerGen(c =>
-{
-    var name = builder.Environment.ApplicationName;
-    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
-
-    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
-});
-
-var app = builder.Build();
-
-//ERROR
-app.UseExceptionHandler(options => options.SetExceptionHandler());
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
 //数据库初始化
 using (var scope = app.Services.CreateScope())
 {
@@ -104,7 +104,7 @@ using (var scope = app.Services.CreateScope())
     if (db.Database.EnsureCreated())
     {
         //重置数据库
-        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController(app.Environment).DatabaseReset();
+        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController().DatabaseReset();
         Console.WriteLine(vm.ToJson(true));
     }
 }

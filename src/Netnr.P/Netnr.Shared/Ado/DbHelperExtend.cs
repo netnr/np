@@ -1,5 +1,6 @@
 ﻿#if Full || Ado || AdoFull
 
+using System.Runtime.Intrinsics.Arm;
 using System.Text.RegularExpressions;
 
 namespace Netnr
@@ -158,8 +159,9 @@ namespace Netnr
         {
             if (isDecrypt)
             {
-                var ckey = "CONNED" + conn.GetHashCode();
-                if (!GlobalTo.Memorys.ContainsKey(ckey))
+                var ckey = "CONN_" + conn.GetHashCode();
+                var cval = CacheTo.Get<string>(ckey);
+                if (cval == null)
                 {
                     var clow = conn.ToLower();
                     var pts = new List<string> { "database", "server", "filename", "source", "user" };
@@ -167,10 +169,10 @@ namespace Netnr
                     {
                         conn = CalcTo.AESDecrypt(conn, pwd);
                     }
-
-                    GlobalTo.Memorys[ckey] = conn;
+                    CacheTo.Set(ckey, conn);
+                    cval = conn;
                 }
-                return GlobalTo.Memorys[ckey].ToString();
+                return cval;
             }
             else
             {
@@ -473,9 +475,10 @@ namespace Netnr
         /// 查询读取数据行
         /// </summary>
         /// <param name="dbCommand"></param>
-        /// <param name="readRow">读取行，dt.Namespace = SchemaName，dt.TableName = TableName</param>
+        /// <param name="readRow">读取行</param>
+        /// <param name="emptyTable">表结构（空表） dt.Namespace = SchemaName，dt.TableName = TableName</param>
         /// <returns></returns>
-        public static void ExecuteDataRow(this DbCommand dbCommand, Action<DataRow> readRow)
+        public static void ExecuteDataRow(this DbCommand dbCommand, Action<object[]> readRow, Action<DataTable> emptyTable = null)
         {
             using var reader = dbCommand.ExecuteReader(CommandBehavior.KeyInfo | CommandBehavior.CloseConnection);
 
@@ -485,32 +488,18 @@ namespace Netnr
                 if (!rts.Equals(default))
                 {
                     var dt = rts.Item1;
+                    emptyTable?.Invoke(dt); //空表
 
                     while (reader.Read())
                     {
-                        var dr = dt.NewRow();
-                        for (int i = 0; i < dt.Columns.Count; i++)
+                        object[] row = new object[reader.FieldCount];
+
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            var col = dt.Columns[i];
-                            var cellValue = reader[i];
-
-                            if (cellValue != DBNull.Value)
-                            {
-                                dr[i] = cellValue;
-                            }
-                            else if (col.AllowDBNull == false)
-                            {
-                                dr[i] = cellValue.ToString();
-
-                                /*
-                                 * 目前遇到 Oracle 的两种情况：
-                                 * Oracle 的字段约束状态为 Disable
-                                 * Oracle 不为 Null 的 Empty CLOB
-                                 */
-                            }
+                            row[i] = reader[i];
                         }
 
-                        readRow.Invoke(dr);
+                        readRow.Invoke(row); //行数据
                     }
                 }
             } while (reader.NextResult());

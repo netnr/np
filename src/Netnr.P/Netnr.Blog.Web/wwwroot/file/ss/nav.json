@@ -93,7 +93,7 @@
       {
         "url": "/base64",
         "icon": "code",
-        "title": "转 Base64",
+        "title": "Base64",
         "remark": "Base64 解码、编码"
       },
       {

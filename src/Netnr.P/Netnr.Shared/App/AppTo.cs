@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Netnr
 {
+    /// <summary>
+    /// 应用对象
+    /// </summary>
     public class AppTo
     {
         /// <summary>
@@ -23,6 +26,9 @@ namespace Netnr
 
         private static IConfiguration Config { get; set; }
 
+        /// <summary>
+        /// 配置对象
+        /// </summary>
         public static IConfiguration Configuration
         {
             get

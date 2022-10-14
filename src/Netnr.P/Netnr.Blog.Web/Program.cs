@@ -69,8 +69,8 @@ builder.Services.AddControllersWithViews(options =>
     //注册全局过滤器
     options.Filters.Add(new FilterConfigs.GlobalFilter());
 
-    //注册全局授权访问时登录标记是否有效
-    options.Filters.Add(new FilterConfigs.LoginSignValid());
+    //注册全局授权访问单一在线
+    options.Filters.Add(new FilterConfigs.SingleOnlineFilter());
 }).SetJsonConfig();
 
 //授权访问信息
@@ -83,7 +83,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.None;
     }
 
-    options.Cookie.Name = "__NETNR_AUTH";
+    options.Cookie.Name = "AUTH_BLOG";
     options.LoginPath = "/account/login";
 });
 
@@ -96,6 +96,26 @@ builder.Services.AddDbContextPool<ContextBase>(options =>
     AppTo.TDB = AppTo.GetValue<EnumTo.TypeDB>("TypeDB");
     DbContextTo.CreateDbContextOptionsBuilder<ContextBase>(AppTo.TDB, options);
 }, 10);
+
+//配置swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    var name = builder.Environment.ApplicationName;
+    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
+    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
+});
+
+var app = builder.Build();
+
+//ERROR
+app.UseExceptionHandler(options => options.SetExceptionHandler());
+
+// Configure the HTTP request pipeline.
+if (!(GlobalTo.IsDev = app.Environment.IsDevelopment()))
+{
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
 //定时任务 https://github.com/fluentscheduler/FluentScheduler
 if (!AppTo.GetValue<bool>("ReadOnly"))
@@ -115,32 +135,12 @@ if (!AppTo.GetValue<bool>("ReadOnly"))
     FluentScheduler.JobManager.AddJob(() => sc.HandleOperationRecord(), s => s.ToRunEvery(6).Hours());
 
     //数据库备份到 Git
-    FluentScheduler.JobManager.AddJob(() => sc.DatabaseBackupToGit(), s => s.ToRunEvery(7).Days().At(16, 16));
+    FluentScheduler.JobManager.AddJob(() => sc.DatabaseBackupToGit(), s => s.ToRunEvery(5).Days().At(16, 16));
 
     //监控
     FluentScheduler.JobManager.AddJob(() => sc.Monitor("http"), s => s.ToRunEvery(1).Minutes());
     FluentScheduler.JobManager.AddJob(() => sc.Monitor("tcp"), s => s.ToRunEvery(1).Minutes());
     FluentScheduler.JobManager.AddJob(() => sc.Monitor("ssl"), s => s.ToRunEvery(1).Days().At(10, 10));
-}
-
-//配置swagger
-builder.Services.AddSwaggerGen(c =>
-{
-    var name = builder.Environment.ApplicationName;
-    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
-    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
-});
-
-var app = builder.Build();
-
-//ERROR
-app.UseExceptionHandler(options => options.SetExceptionHandler());
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
 }
 
 //数据库初始化

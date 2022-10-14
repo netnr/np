@@ -510,7 +510,7 @@ var page = {
 
                         var fd = new FormData();
                         fd.append('file', null);
-                        fd.append("key", options.key);
+                        fd.append("key", options[page.vender.key]);
                         fd.append("token", token);
 
                         //上传
@@ -538,7 +538,7 @@ var page = {
             case "Netease":
                 {
                     page.uploadFile({
-                        key: options.key,
+                        [page.vender.key]: options[page.vender.key],
                         file: '',
                         onFileFinish: function () {
                             resolve()
@@ -577,7 +577,7 @@ var page = {
 
                         var fd = new FormData();
                         fd.append('file', options.file);
-                        fd.append("key", options.key);
+                        fd.append("key", options[page.vender.key]);
                         fd.append("token", token);
 
                         //上传
@@ -610,7 +610,7 @@ var page = {
                 break;
             case "Netease":
                 {
-                    page.getToken(options.key).then(token => {
+                    page.getToken(options[page.vender.key]).then(token => {
                         options.token = token;
                         //上传
                         page.uploadLoop(options);
@@ -622,7 +622,7 @@ var page = {
                     var objOps = Object.assign({
                         Bucket: page.config.Bucket,
                         Region: page.config.Region,
-                        Key: '',
+                        [page.vender.key]: '',
                         Body: null,
                         SliceSize: 1024 * 1024 * 2,
                         onTaskReady: function (taskId) {
@@ -632,10 +632,9 @@ var page = {
                             console.log(progressData);
                         },
                         onFileFinish: function (err, data, options) {   /* 非必须 */
-                            console.log(options.Key + '上传' + (err ? '失败' : '完成'));
+                            console.log(options[page.vender.key] + '上传' + (err ? '失败' : '完成'));
                         },
                     }, options);
-                    objOps.Key = options.key;
                     objOps.Body = options.file;
 
                     page.vender.client.uploadFile(objOps);
@@ -648,7 +647,7 @@ var page = {
         options = Object.assign({
             bucket: page.config.Bucket,
             token: "",
-            key: "",
+            [page.vender.key]: "",
             file: null,
             chunk: null,
             offset: 0,
@@ -671,7 +670,7 @@ var page = {
         } else {
             options.complete = "true";
         }
-        var url = `https://nosup-eastchina1.126.net/${options.bucket}/${options.key}?offset=${options.offset}&complete=${options.complete}&context=${options.context}&version=${options.version}`
+        var url = `https://nosup-eastchina1.126.net/${options.bucket}/${options[page.vender.key]}?offset=${options.offset}&complete=${options.complete}&context=${options.context}&version=${options.version}`
 
         //上传
         var xhr = new XMLHttpRequest();
@@ -757,7 +756,7 @@ var page = {
         }
     }),
     load: function () {
-        page.setLoading(1);
+        page.setLoading(true);
         page.getBucket(page.config).then(data => {
             page.setLoading(false);
             nr.domBtnUploader.classList.remove('invisible');
@@ -792,7 +791,7 @@ var page = {
             };
 
             page.uploadFile({
-                key: obj.path + file.name,
+                [page.vender.key]: obj.path + file.name,
                 file: obj.file,
                 onProgress: function (progressData) {
                     obj.progress = progressData;

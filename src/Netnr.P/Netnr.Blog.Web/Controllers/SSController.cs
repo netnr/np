@@ -1,7 +1,16 @@
+using System.Collections.Concurrent;
+
 namespace Netnr.Blog.Web.Controllers
 {
+    /// <summary>
+    /// 脚本服务
+    /// </summary>
     public class SSController : Controller
     {
+        /// <summary>
+        /// 首页
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View();
@@ -331,7 +340,6 @@ namespace Netnr.Blog.Web.Controllers
             return View();
         }
 
-
         /// <summary>
         /// OCR 识别图片内容
         /// </summary>
@@ -493,5 +501,82 @@ namespace Netnr.Blog.Web.Controllers
         {
             return View();
         }
+
+        #region 生成脚本服务
+
+        /// <summary>
+        /// 【管理员】构建静态文件
+        /// </summary>
+        /// <returns></returns>
+        public ResultVM Build()
+        {
+            var vm = new ResultVM();
+
+            //是管理员 或 带参数
+            if (IdentityService.IsAdmin(HttpContext) || Environment.GetCommandLineArgs().Contains("--admin"))
+            {
+                vm = BuildHtml<SSController>();
+            }
+            else
+            {
+                vm.Set(EnumTo.RTag.unauthorized);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 根据控制器构建静态页面
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        private ResultVM BuildHtml<T>() where T : Controller
+        {
+            var vm = new ResultVM();
+
+            try
+            {
+                ConsoleTo.Title("Build HTML");
+
+                AppContext.SetSwitch("Netnr.BuildHtml", true);
+
+                //反射 action
+                var type = typeof(T);
+                var rtype = typeof(IActionResult);
+                var methods = type.GetMethods().Where(x => x.DeclaringType == type && x.ReturnType == rtype).ToList();
+                var ctrlName = type.Name.Replace("Controller", "").ToLower();
+
+                //访问前缀
+                var urlPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ctrlName}/";
+
+                var cbs = new ConcurrentBag<string>();
+                //并行请求
+                Parallel.ForEach(methods, mh =>
+                {
+                    Console.WriteLine(mh.Name);
+
+                    cbs.Add(mh.Name);
+                    string html = HttpTo.Get(urlPrefix + mh.Name);
+                    var savePath = $"{AppTo.WebRootPath}/{mh.Name.ToLower()}.html";
+                    FileTo.WriteText(html, savePath, false);
+                });
+                vm.Log.AddRange(cbs);
+                Console.WriteLine("\r\nDone!");
+
+                vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+            finally
+            {
+                AppContext.SetSwitch("Netnr.BuildHtml", false);
+            }
+
+            return vm;
+        }
+
+        #endregion
     }
 }

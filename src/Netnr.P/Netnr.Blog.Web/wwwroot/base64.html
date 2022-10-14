@@ -1,6 +1,6 @@
 ﻿<!--
 https://github.com/netnr
-2022-08-14 19:08:47
+2022-10
 -->
 
 <!DOCTYPE html>
@@ -8,16 +8,16 @@ https://github.com/netnr
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <meta name='keywords' content='NET牛人,Netnr,转 Base64' />
+            <meta name='keywords' content='NET牛人,Netnr,Base64' />
             <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,Base64 解码、编码' />
 
-    <title>&#x8F6C; Base64 NET牛人</title>
+    <title>Base64 NET牛人</title>
 
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-<link href='https://fastly.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css' rel='stylesheet' async />
+<link href='https://ss.netnr.com/bootstrap@5.2.2/dist/css/bootstrap.min.css' rel='stylesheet' async />
 
-    <link href="/app/blog/dist/all.css?v=s4JQhw3ECj7Xw3HDIQV6vIhspWUzveJmB6mq0LZHC04" rel="stylesheet" />
-    <script src="/app/blog/dist/all.js?v=JU70HLrYzh8xYPr1jwH8vNQdhFhb62zP6TohkudeLZY"></script>
+    <link href="/app/blog/dist/all.css?v=_0J1Z05gYDHZvs0TcVouj90G3JcLkWwwo_3smoSKH-k" rel="stylesheet" />
+    <script src="/app/blog/dist/all.js?v=pdXbZGA0pjsmi6dbIAckfyJYPsviDIH7VPLX4qnQjYE"></script>
 </head>
 <body>
         
@@ -27,8 +27,8 @@ https://github.com/netnr
                 <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
                 <span class="d-none d-sm-inline-block">Netnr</span>
             </a>
-            <a class='small d-block d-lg-none' href="/base64" title='&#x8F6C; Base64'>
-                <b style="color:var(--sl-color-warning-600)">&#x8F6C; Base64</b>
+            <a class='small d-block d-lg-none' href="/base64" title='Base64'>
+                <b style="color:var(--sl-color-warning-600)">Base64</b>
             </a>
 
             <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
@@ -47,8 +47,8 @@ https://github.com/netnr
                         </a>
                     </li>
                         <li class="nav-item mx-2">
-                            <a class='nav-link' href="/base64" title='&#x8F6C; Base64'>
-                                <b style="color:var(--sl-color-warning-600)">&#x8F6C; Base64</b>
+                            <a class='nav-link' href="/base64" title='Base64'>
+                                <b style="color:var(--sl-color-warning-600)">Base64</b>
                             </a>
                         </li>
                 </ul>
@@ -65,7 +65,7 @@ https://github.com/netnr
                 <sl-menu>
                     <sl-menu-item data-href="/">SS</sl-menu-item>
 
-                        <sl-menu-item data-href="/base64">&#x8F6C; Base64</sl-menu-item>
+                        <sl-menu-item data-href="/base64">Base64</sl-menu-item>
                     <sl-divider></sl-divider>
                     <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
                 </sl-menu>
@@ -88,25 +88,32 @@ https://github.com/netnr
                 <sl-button class="nr-btn-decode" variant="success">解码</sl-button>
                 <sl-button class="nr-btn-encode" variant="primary">编码</sl-button>
             </sl-button-group>
+            <sl-dropdown class="nr-dd-detect mb-3">
+                <sl-button slot="trigger" caret variant="warning">检测 Base64 MIME</sl-button>
+                <sl-menu>
+                    <sl-menu-item>未知</sl-menu-item>
+                </sl-menu>
+            </sl-dropdown>
             <div class="nr-card-result"></div>
         </div>
     </div>
 </div>
 
-<script src='https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs/loader.js'></script>
+<script src="/app/browserify/dist/magic-bytes.min.js?v=Vf489zMUtNItQuJTTxAudTvGij99VlIuvmJ4_2nM168"></script>
+<script src='https://ss.netnr.com/monaco-editor@0.34.0/min/vs/loader.js'></script>
 
 <script>
     var meRequire = require;
 
     require.config({
         paths: {
-            vs: 'https://fastly.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs'
+            vs: 'https://ss.netnr.com/monaco-editor@0.34.0/min/vs'
         },
         'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
 </script>
                         
 
-            <script src="/js/ss/base64.js?v=VcjAdlLb1d8AbEJnR8YnNCB-hn5s-fcjpUx7WFYpi0k"></script>
+            <script src="/js/ss/base64.js?v=woeKc_4ljBG-ihrELmhBE58kfaiAvIqk7_vYxsAjMns"></script>
 </body>
 </html>

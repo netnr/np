@@ -1,19 +1,34 @@
 var ag = {
-    agSetColumn: (column, obj) => {
-        return Object.assign(column, {
-            cellRenderer: params => {
-                if (params.value in obj) {
-                    return obj[params.value];
-                }
-                return params.value;
-            },
-            filter: 'agSetColumnFilter', filterParams: { values: Object.keys(obj) }
-        });
-    },
-
     lk: function () {
         agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { };
     },
+
+    /**
+     * 字典列
+     * @param {any} column
+     * @param {any} obj
+     */
+    agSetColumn: (column, obj) => Object.assign(column, {
+        cellRenderer: params => {
+            if (params.value in obj) {
+                return obj[params.value];
+            }
+            return params.value;
+        },
+        filter: 'agSetColumnFilter', filterParams: {
+            buttons: ['apply', 'reset'], values: Object.keys(obj),
+            cellRenderer: (params) => params.value in obj ? `${obj[params.value]} (${params.value})` : params.value
+        }
+    }),
+
+    /**
+     * 日期列
+     * @param {any} column
+     * @param {any} obj
+     */
+    agDateColumn: (column) => Object.assign(column, {
+        filter: 'agDateColumnFilter', filterParams: { buttons: ['apply', 'reset'] }
+    }),
 
     /**
      * 默认列属性
@@ -96,8 +111,8 @@ var ag = {
         // Text Filter
         contains: '包含',
         notContains: '不包含',
-        startsWith: '头包含',
-        endsWith: '尾包含',
+        startsWith: '开始包含',
+        endsWith: '结尾包含',
 
         // Date Filter
         dateFormatOoo: 'yyyy-mm-dd',

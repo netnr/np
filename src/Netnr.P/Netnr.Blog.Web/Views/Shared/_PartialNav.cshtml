@@ -3,7 +3,7 @@
     var themeClass = theme == "dark" ? "navbar-dark bg-dark" : "navbar-light bg-light";
 
     var uinfo = IdentityService.Get(ViewContext.HttpContext);
-    int num = uinfo.UserId == 0 ? 0 : CommonService.NewMessageQuery(uinfo.UserId);
+    int num = uinfo == null ? 0 : CommonService.NewMessageQuery(uinfo.UserId);
 
     var rdv = ViewContext.RouteData.Values;
     var ctrl = rdv["controller"].ToString().ToLower();
@@ -200,13 +200,19 @@ else
                             </form>
                         </li>
                     }
+                    else if (ca == "ss/index")
+                    {
+                        <li class="nav-item mx-2 pt-1">
+                            <sl-input placeholder="Search..." size="small" class="nr-txt-search"></sl-input>
+                        </li>
+                    }
                 </ul>
 
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
                     </li>
-                    @if (uinfo.UserId == 0)
+                    @if (uinfo == null)
                     {
                         <li class="nav-item">
                             <a class="nav-link" href="/account/login">Sign in</a>
@@ -238,7 +244,7 @@ else
                                     <sl-divider></sl-divider>
                                     <sl-menu-item data-href="/note">记事本</sl-menu-item>
                                     <sl-divider></sl-divider>
-                                    @if (uinfo.UserId == AppTo.GetValue<int>("Common:AdminId"))
+                                    @if (uinfo?.UserId == AppTo.GetValue<int>("Common:AdminId"))
                                     {
                                         <sl-menu-item data-href="/admin">后台管理</sl-menu-item>
                                         <sl-divider></sl-divider>
@@ -263,7 +269,7 @@ else
                     <sl-divider></sl-divider>
                     <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
                     <sl-divider></sl-divider>
-                    @if (uinfo.UserId == 0)
+                    @if (uinfo == null)
                     {
                         <sl-menu-item data-href="/account/login">Sign in</sl-menu-item>
                     }

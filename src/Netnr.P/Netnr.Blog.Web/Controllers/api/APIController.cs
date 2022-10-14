@@ -11,7 +11,7 @@ namespace Netnr.Blog.Web.Controllers.api
     /// 公共接口
     /// </summary>
     [Route("api/v1/[action]")]
-    [FilterConfigs.AllowCors]
+    [FilterConfigs.IsCors]
     public partial class APIController : ControllerBase
     {
         /// <summary>
@@ -24,8 +24,7 @@ namespace Netnr.Blog.Web.Controllers.api
             return ResultVM.Try(vm =>
             {
                 var uinfo = IdentityService.Get(HttpContext);
-
-                if (uinfo.UserId != 0)
+                if (uinfo != null)
                 {
                     vm.Data = uinfo;
 
@@ -47,10 +46,10 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="content"></param>
         /// <returns></returns>
         [HttpPost]
-        [FilterConfigs.AllowCors]
-        public IActionResult PushAsync([FromForm] string title = "", [FromForm] string content = "")
+        [FilterConfigs.IsCors]
+        public async Task<IActionResult> PushAsync([FromForm] string title = "", [FromForm] string content = "")
         {
-            PushService.PushAsync(title, content);
+            await PushService.PushAsync(title, content);
             return NoContent();
         }
 
@@ -135,7 +134,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [FilterConfigs.AllowCors]
+        [FilterConfigs.IsCors]
         public ResultVM Upload(IFormFile file, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
@@ -168,7 +167,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [FilterConfigs.AllowCors]
+        [FilterConfigs.IsCors]
         public ResultVM UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
@@ -205,7 +204,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [FilterConfigs.AllowCors]
+        [FilterConfigs.IsCors]
         public ResultVM UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
@@ -366,10 +365,9 @@ namespace Netnr.Blog.Web.Controllers.api
             count = Math.Min(99, count);
 
             var list = new List<long>();
-            var sf = new SnowflakeTo();
             for (int i = 0; i < count; i++)
             {
-                list.Add(sf.NewId());
+                list.Add(SnowflakeTo.Id());
             }
 
             return list;
@@ -818,7 +816,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPatch]
         [HttpDelete]
         [HttpOptions]
-        [FilterConfigs.AllowCors]
+        [FilterConfigs.IsCors]
         public ActionResult Proxy(string url, string charset = "utf-8")
         {
             var outCode = 500;
@@ -827,8 +825,8 @@ namespace Netnr.Blog.Web.Controllers.api
 
             try
             {
-                var ci = new ClientTo(HttpContext);
-                Console.WriteLine($"PROXY | {Request.Method} | {ci.IPv4} | {url} | {ci.UserAgent}");
+                var ci = new ClientInfoTo(HttpContext);
+                Console.WriteLine($"PROXY | {Request.Method} | {ci.IP} | {url} | {ci.Headers.UserAgent}");
 
                 if (!AppTo.GetValue<bool>("ReadOnly"))
                 {
@@ -902,8 +900,7 @@ namespace Netnr.Blog.Web.Controllers.api
                         }
                     }
 
-                    HttpWebResponse response = null;
-                    var stream = HttpTo.Stream(hwr, ref response, charset);
+                    var stream = HttpTo.Stream(hwr, out HttpWebResponse response, charset);
                     if (!string.IsNullOrEmpty(response.ContentType))
                     {
                         outContentType = response.ContentType;

@@ -88,23 +88,23 @@ namespace Netnr.Blog.Web.Services
             string reqQueryString = context.Request.QueryString.ToString();
 
             //客户端信息
-            var ct = new ClientTo(context);
+            var ci = new ClientInfoTo(context);
 
             //用户信息
-            var userinfo = IdentityService.Get(context);
+            var uinfo = IdentityService.Get(context);
 
             //日志保存
             var mo = new LoggingModel()
             {
                 LogApp = AppTo.GetValue("Common:EnglishName"),
-                LogUid = userinfo?.UserName,
-                LogNickname = userinfo?.Nickname,
+                LogUid = uinfo?.UserName,
+                LogNickname = uinfo?.Nickname,
                 LogAction = reqPath,
                 LogUrl = reqPath + reqQueryString,
-                LogIp = ct.IPv4,
-                LogReferer = ct.Referer,
+                LogIp = ci.IP,
+                LogReferer = ci.Headers.Referer,
                 LogCreateTime = DateTime.Now,
-                LogUserAgent = ct.UserAgent,
+                LogUserAgent = ci.Headers.UserAgent,
                 LogGroup = "1",
                 LogLevel = "I"
             };

@@ -117,7 +117,7 @@ namespace Netnr.Blog.Web.Controllers
                     TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
                     var lisTagName = CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
 
-                    mo.Uid = uinfo.UserId;
+                    mo.Uid = uinfo?.UserId;
                     mo.UwCreateTime = DateTime.Now;
                     mo.UwUpdateTime = mo.UwCreateTime;
                     mo.UwLastUid = mo.Uid;
@@ -155,7 +155,7 @@ namespace Netnr.Blog.Web.Controllers
                     int num = db.SaveChanges();
 
                     //推送通知
-                    PushService.PushAsync("网站消息（文章）", $"文章ID：{mo.UwId}\r\n{mo.UwTitle}");
+                    _ = PushService.PushAsync("网站消息（文章）", $"文章ID：{mo.UwId}\r\n{mo.UwTitle}");
 
                     vm.Data = mo.UwId;
                     vm.Set(num > 0);
@@ -235,9 +235,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    var uinfo = IdentityService.Get(HttpContext);
-                    mo.Uid = uinfo.UserId;
-
+                    mo.Uid = IdentityService.Get(HttpContext)?.UserId ?? 0;
                     var now = DateTime.Now;
 
                     //回复消息
@@ -281,7 +279,7 @@ namespace Netnr.Blog.Web.Controllers
                     int num = db.SaveChanges();
 
                     //推送通知
-                    PushService.PushAsync("网站消息（留言）", $"类别：{mo.UrTargetType}\r\n{mo.UrContentMd}");
+                    _ = PushService.PushAsync("网站消息（留言）", $"类别：{mo.UrTargetType}\r\n{mo.UrContentMd}");
 
                     vm.Set(num > 0);
                 }
@@ -303,12 +301,12 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = IdentityService.Get(HttpContext);
 
-            var uw = db.UserWriting.Find(id);
+            var modelWriting = db.UserWriting.Find(id);
 
-            var uc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == id.ToString() && x.UconnAction == a);
-            if (uc == null)
+            var modelConn = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == id.ToString() && x.UconnAction == a);
+            if (modelConn == null)
             {
-                uc = new UserConnection()
+                modelConn = new UserConnection()
                 {
                     UconnId = UniqueTo.LongId().ToString(),
                     UconnAction = a,
@@ -317,31 +315,31 @@ namespace Netnr.Blog.Web.Controllers
                     UconnTargetType = ConnectionType.UserWriting.ToString(),
                     Uid = uinfo.UserId
                 };
-                db.UserConnection.Add(uc);
+                db.UserConnection.Add(modelConn);
                 if (a == 1)
                 {
-                    uw.UwLaud += 1;
+                    modelWriting.UwLaud += 1;
                 }
                 if (a == 2)
                 {
-                    uw.UwMark += 1;
+                    modelWriting.UwMark += 1;
                 }
-                db.UserWriting.Update(uw);
+                db.UserWriting.Update(modelWriting);
 
                 vm.Data = "1";
             }
             else
             {
-                db.UserConnection.Remove(uc);
+                db.UserConnection.Remove(modelConn);
                 if (a == 1)
                 {
-                    uw.UwLaud -= 1;
+                    modelWriting.UwLaud -= 1;
                 }
                 if (a == 2)
                 {
-                    uw.UwMark -= 1;
+                    modelWriting.UwMark -= 1;
                 }
-                db.UserWriting.Update(uw);
+                db.UserWriting.Update(modelWriting);
 
                 vm.Data = "0";
             }

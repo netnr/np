@@ -56,29 +56,31 @@ var page = {
                 { headerName: "浏览", field: "UwReadNum", filter: 'agNumberColumnFilter', },
                 { headerName: "点赞", field: "UwLaud", filter: 'agNumberColumnFilter', },
                 { headerName: "收藏", field: "UwMark", filter: 'agNumberColumnFilter', },
-                // ag.agSetColumn({ headerName: "公开", field: "UwOpen", }, { "1": "✔", "2": "✘" }),
-                // ag.agSetColumn({ headerName: "状态", field: "UwStatus", }, { "1": "✔", "2": "Block", "-1": "Lock" }),
-                {
-                    headerName: "公开", field: "UwOpen", filter: 'agNumberColumnFilter', cellRenderer: params => {
-                        switch (params.value) {
-                            case 1: return "✔"; break;
-                            case 2: return "✘"; break;
-                        }
-                    }
-                },
-                {
-                    headerName: "状态", field: "UwStatus", filter: 'agNumberColumnFilter', cellRenderer: function (params) {
-                        switch (params.value) {
-                            case 1: return "✔"; break;
-                            case 2: return "Block"; break;
-                            case -1: return "Lock"; break;
-                        }
-                    }
-                }
+                 ag.agSetColumn({ headerName: "公开", field: "UwOpen", }, { "1": "✔", "2": "✘" }),
+                 ag.agSetColumn({ headerName: "状态", field: "UwStatus", }, { "1": "✔", "2": "Block", "-1": "Lock" }),
+                //{
+                //    headerName: "公开", field: "UwOpen", filter: 'agNumberColumnFilter', cellRenderer: params => {
+                //        switch (params.value) {
+                //            case 1: return "✔"; break;
+                //            case 2: return "✘"; break;
+                //        }
+                //    }
+                //},
+                //{
+                //    headerName: "状态", field: "UwStatus", filter: 'agNumberColumnFilter', cellRenderer: function (params) {
+                //        switch (params.value) {
+                //            case 1: return "✔"; break;
+                //            case 2: return "Block"; break;
+                //            case -1: return "Lock"; break;
+                //        }
+                //    }
+                //}
             ],
             suppressRowClickSelection: true,
             rowSelection: 'multiple',
-            cacheBlockSize: 30, //请求行数
+            pagination: true, //分页
+            paginationPageSize: 100,
+            cacheBlockSize: 30,
             enableRangeSelection: true, //范围选择
             animateRows: true, //动画
             rowModelType: 'infinite', //无限行模式

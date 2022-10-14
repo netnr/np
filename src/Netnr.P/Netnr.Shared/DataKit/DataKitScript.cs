@@ -297,7 +297,7 @@ FROM
   AND m3.TABLE_NAME = t1.TABLE_NAME
   LEFT JOIN DBA_SEGMENTS t4 ON t1.OWNER = t4.OWNER
   AND t1.TABLE_NAME = t4.SEGMENT_NAME
-  AND t4.SEGMENT_TYPE = 'TABLE'
+  AND t4.SEGMENT_TYPE IN ('TABLE', 'LOBSEGMENT')
   LEFT JOIN (
     SELECT
       p1.OWNER,
@@ -1596,6 +1596,39 @@ ORDER BY
   t1.table_name,
   t1.ordinal_position
 ";
+                    break;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取补全对象
+        /// </summary>
+        /// <param name="tdb"></param>
+        /// <param name="databaseName">数据库名</param>
+        /// <returns></returns>
+        public static string GetCompletionObject(EnumTo.TypeDB tdb, string databaseName)
+        {
+            string result = null;
+
+            switch (tdb)
+            {
+                case EnumTo.TypeDB.SQLite:
+                    result = "SELECT t1.name AS table_name, t2.name AS column_name FROM sqlite_master t1 LEFT JOIN pragma_table_info(t1.name) t2 where t1.type='table'";
+                    break;
+                case EnumTo.TypeDB.MySQL:
+                case EnumTo.TypeDB.MariaDB:
+                    result = $"SELECT TABLE_NAME AS table_name, COLUMN_NAME AS column_name from information_schema.COLUMNS WHERE TABLE_SCHEMA='{databaseName.OfSql()}'";
+                    break;
+                case EnumTo.TypeDB.Oracle:
+                    result = $"SELECT TABLE_NAME AS table_name,COLUMN_NAME AS column_name FROM all_tab_cols WHERE OWNER='{databaseName.OfSql()}'";
+                    break;
+                case EnumTo.TypeDB.SQLServer:
+                    result = $"USE [{databaseName}];SELECT TABLE_SCHEMA AS table_schema, TABLE_NAME AS table_name, COLUMN_NAME AS column_name from information_schema.COLUMNS";
+                    break;
+                case EnumTo.TypeDB.PostgreSQL:
+                    result = "select table_schema,table_name,column_name from information_schema.columns";
                     break;
             }
 

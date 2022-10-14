@@ -417,6 +417,16 @@ namespace Netnr
         {
             var st = new TimingVM();
 
+            //开启事务
+            var openTransaction = true;
+            var sqlUpper = sql.ToUpper();
+            var listKey = "DROP DATABASE,ALTER DATABASE,CREATE DATABASE".Split(',');
+            var listTypeDB = EnumTo.TypeDB.PostgreSQL | EnumTo.TypeDB.SQLServer;
+            if (listTypeDB.HasFlag(tdb) && listKey.Any(x => sqlUpper.Contains(x)))
+            {
+                openTransaction = false;
+            }
+
             //消息
             var listInfo = new List<string>();
 
@@ -476,7 +486,7 @@ namespace Netnr
                 }
 
                 return cmd;
-            });
+            }, openTransaction: openTransaction);
 
             listInfo.Add($"耗时: {st.PartTimeFormat()}");
             st.sw.Stop();

@@ -21,5 +21,9 @@
         /// 角色ID
         /// </summary>
         public string RoleId { get; set; }
+        /// <summary>
+        /// Authorization 有效期时间戳（单位秒）
+        /// </summary>
+        public long Expired { get; set; }
     }
 }

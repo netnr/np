@@ -57,7 +57,7 @@ public class CacheTo
     /// </summary>
     /// <param name="key">键</param>
     /// <param name="data">值</param>
-    /// <param name="second">过期时间，默认7200秒 </param>
+    /// <param name="second">过期时间，默认7200秒，0不过期 </param>
     /// <param name="sliding">是否相对过期，默认是；否，则固定时间过期</param>
     public static void Set(string key, object data, int second = 7200, bool sliding = true)
     {

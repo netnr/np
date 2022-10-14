@@ -42,6 +42,11 @@ tc.json(jsyaml.dump({ "basePath": "/", "definitions": {} }).replaceAll("\n", "<b
 
 
 
+tc.title("======= magic-bytes.js");
+console.debug(magicBytes)
+
+
+
 tc.title("======= clean-css");
 var input = 'a{ font-weight: bold; }';
 var options = { /* options */ };

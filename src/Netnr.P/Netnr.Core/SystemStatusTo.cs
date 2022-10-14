@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Net.NetworkInformation;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 
 namespace Netnr;
 
@@ -84,6 +84,10 @@ public class SystemStatusTo
     /// </summary>
     public long FreePhysicalMemory { get; set; } = 0;
     /// <summary>
+    /// 使用物理内存
+    /// </summary>
+    public long UseMemory { get; set; } = Environment.WorkingSet;
+    /// <summary>
     /// 总交换空间（Linux）B
     /// </summary>
     public long SwapTotal { get; set; } = 0;
@@ -92,13 +96,13 @@ public class SystemStatusTo
     /// </summary>
     public long SwapFree { get; set; } = 0;
     /// <summary>
-    /// 使用物理内存
+    /// 物理内存明细
     /// </summary>
-    public long UseMemory { get; set; } = Environment.WorkingSet;
+    public List<Dictionary<string, object>> PhysicalMemory { get; set; } = new List<Dictionary<string, object>>();
     /// <summary>
     /// 逻辑磁盘 B
     /// </summary>
-    public object LogicalDisk { get; set; }
+    public List<Dictionary<string, object>> LogicalDisk { get; set; } = new List<Dictionary<string, object>>();
     /// <summary>
     /// 型号
     /// </summary>
@@ -108,7 +112,6 @@ public class SystemStatusTo
     /// </summary>
     public string OperatingSystem { get; set; }
 
-
     /// <summary>
     /// 构造
     /// </summary>
@@ -116,16 +119,37 @@ public class SystemStatusTo
     {
         OS = GetOSPlatform();
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (GlobalTo.IsWindows)
         {
-            LogicalDisk = GetLogicalDisk();
+            LogicalDisk.AddRange(GetLogicalDisk());
 
-            //系统名称、开机时间、可用物理内存、总内存
-            var cmd_os = "wmic os get Caption,LastBootUpTime,FreePhysicalMemory,TotalVisibleMemorySize /value";
+            var separator = "-=-=-";
+
+            var cmds = string.Join($" & echo {separator} & ", new List<string>
+            {
+                //0 系统名称、开机时间、可用物理内存、总内存
+                $"wmic os get Caption,LastBootUpTime,FreePhysicalMemory,TotalVisibleMemorySize /value",
+
+                //1 CPU name
+                "wmic cpu get Name /value",
+
+                //2 CPU used
+                "PowerShell \"Get-Counter '\\Processor(_Total)\\% Processor Time'\"",
+
+                //3 Memory Info
+                "wmic MemoryChip get Capacity,Speed",
+
+                //4 Model
+                $"wmic csproduct get name /value"
+            });
+
             try
             {
-                var items = CmdTo.Execute(cmd_os).CrOutput.Split('\n').ToList();
-                foreach (var item in items)
+                var cr = CmdTo.Execute(cmds);
+                var outGroup = cr.CrOutput.Split(separator).ToList();
+
+                var osResult = outGroup[0].Split('\n');
+                foreach (var item in osResult)
                 {
                     if (item.StartsWith("Caption="))
                     {
@@ -151,62 +175,45 @@ public class SystemStatusTo
                         TotalPhysicalMemory = 1024 * long.Parse(val);
                     }
                 }
+
+                var cpuResult = outGroup[1].Split('\n');
+                ProcessorName = cpuResult.FirstOrDefault(x => x.StartsWith("Name=")).Split('=').LastOrDefault().Trim();
+
+                var cpuuResult = outGroup[2].Trim().Split(Environment.NewLine);
+                ProcessorUsed = Math.Ceiling(Convert.ToDecimal(cpuuResult.LastOrDefault().ToString().Trim()));
+
+                var memoryChipResult = outGroup[3].Split('\n');
+                foreach (var item in memoryChipResult)
+                {
+                    if (!item.Contains("Capacity") && !string.IsNullOrWhiteSpace(item))
+                    {
+                        var cols = item.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                        var dicItem = new Dictionary<string, object>
+                        {
+                            { "Capacity", Convert.ToInt64(cols[0]) },
+                            { "Speed", Convert.ToInt64(cols[1]) },
+                        };
+                        PhysicalMemory.Add(dicItem);
+                    }
+                }
+
+                var csproductResult = outGroup[4].Split('\n');
+                Model = csproductResult.FirstOrDefault(x => x.StartsWith("Name=")).Split('=').LastOrDefault().Trim();
             }
             catch (Exception ex)
             {
-                Console.WriteLine(cmd_os);
-                Console.WriteLine(ex);
-            }
-
-            //CPU name
-            var cmd_cpu_name = "wmic cpu get Name /value";
-            try
-            {
-                var items = CmdTo.Execute(cmd_cpu_name).CrOutput.Split('\n').ToList();
-                var val = items.FirstOrDefault(x => x.StartsWith("Name=")).Split('=').LastOrDefault().Trim();
-
-                ProcessorName = val;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(cmd_cpu_name);
-                Console.WriteLine(ex);
-            }
-
-            //CPU used
-            var cmd_cpu_used = "PowerShell \"Get-Counter '\\Processor(_Total)\\% Processor Time'\"";
-            try
-            {
-                var list = CmdTo.Execute(cmd_cpu_used).CrOutput.Trim().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                var val = Math.Ceiling(Convert.ToDecimal(list.LastOrDefault().ToString().Trim()));
-
-                ProcessorUsed = val;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(cmd_cpu_used);
-                Console.WriteLine(ex);
-            }
-
-            //Model
-            var cmd_model = "wmic csproduct get name /value";
-            try
-            {
-                var items = CmdTo.Execute(cmd_model).CrOutput.Split('\n');
-                var val = items.FirstOrDefault(x => x.StartsWith("Name=")).Split('=').LastOrDefault().Trim();
-
-                Model = val;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(cmd_model);
+                Console.WriteLine(cmds);
                 Console.WriteLine(ex);
             }
         }
         else
         {
+            if (string.IsNullOrWhiteSpace(SystemDirectory))
+            {
+                SystemDirectory = "/boot";
+            }
+
             //logical disk
-            var listLogicalDisk = new List<object>();
             try
             {
                 var items = CmdTo.Execute("df").CrOutput.Split('\n').ToList();
@@ -219,11 +226,12 @@ public class SystemStatusTo
                         //大于 1GB
                         if (size > 1073741824)
                         {
-                            listLogicalDisk.Add(new
+                            LogicalDisk.Add(new Dictionary<string, object>
                             {
-                                Name = dis[0],
-                                Size = size,
-                                FreeSpace = long.Parse(dis[3]) * 1024
+                                { "Directory", dis.Last() },
+                                { "VolumeLabel", dis.First() },
+                                { "TotalSize", size },
+                                { "TotalFreeSpace", long.Parse(dis[3]) * 1024 }
                             });
                         }
                     }
@@ -234,7 +242,6 @@ public class SystemStatusTo
                 Console.WriteLine("df");
                 Console.WriteLine(ex);
             }
-            LogicalDisk = listLogicalDisk;
 
             //内存
             try
@@ -296,6 +303,28 @@ public class SystemStatusTo
             catch (Exception ex)
             {
                 Console.WriteLine("vmstat 1 2");
+                Console.WriteLine(ex);
+            }
+
+            //memory info
+            try
+            {
+                var meminfo = CmdTo.Execute("lshw -short -C memory").CrOutput;
+                var items = meminfo.Split('\n');
+                foreach (var item in items)
+                {
+                    if (item.Contains("iB") && !item.Contains("System Memory"))
+                    {
+                        var dicItem = new Dictionary<string, object>
+                        {
+                            { "Capacity", item.Split(' ').Last() }
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("lshw -short -quiet -C memory");
                 Console.WriteLine(ex);
             }
 
@@ -377,22 +406,27 @@ public class SystemStatusTo
     /// 获取磁盘信息（Linux建议使用df命令）
     /// </summary>
     /// <returns></returns>
-    public static List<object> GetLogicalDisk()
+    public static List<Dictionary<string, object>> GetLogicalDisk()
     {
-        var listld = new List<object>();
-        var allDrives = DriveInfo.GetDrives();
+        var list = new List<Dictionary<string, object>>();
 
+        var allDrives = DriveInfo.GetDrives();
         foreach (var di in allDrives)
         {
-            listld.Add(new
+            if (di.IsReady)
             {
-                Name = di.Name,
-                VolumeName = di.VolumeLabel,
-                Size = di.TotalSize,
-                FreeSpace = di.TotalFreeSpace,
-            });
+                var dicItem = new Dictionary<string, object>
+                {
+                    { "Directory", di.RootDirectory.FullName },
+                    { "VolumeLabel", di.VolumeLabel },
+                    { "TotalSize", di.TotalSize },
+                    { "TotalFreeSpace", di.TotalFreeSpace }
+                };
+                list.Add(dicItem);
+            }
         }
-        return listld;
+
+        return list;
     }
 
     /// <summary>
@@ -521,18 +555,15 @@ public class SystemStatusTo
             dic.Add(9, $" Swap: {ProgressBar(SwapTotal - SwapFree, SwapTotal)}");
         }
 
-        var lgds = LogicalDisk as List<object>;
         var listlgd = new List<string>();
-        for (int i = 0; i < lgds.Count; i++)
+        LogicalDisk.ForEach(item =>
         {
-            var lgdi = lgds[i];
-            var gt = lgdi.GetType();
-            var fs = Convert.ToInt64(gt.GetProperty("FreeSpace").GetValue(lgdi));
-            var size = Convert.ToInt64(gt.GetProperty("Size").GetValue(lgdi));
-            var name = gt.GetProperty("Name").GetValue(lgdi).ToString();
-            listlgd.Add(ProgressBar(size - fs, size, true, name));
-        }
-        dic.Add(10, $" Disk: {string.Join(" ", listlgd)}");
+            var totalSize = (long)item["TotalSize"];
+            var totalFreeSpace = (long)item["TotalFreeSpace"];
+            var dir = item["Directory"].ToString();
+            listlgd.Add(ProgressBar(totalSize - totalFreeSpace, totalSize, true, dir));
+        });
+        dic.Add(10, $" Disk: {string.Join("", listlgd)}");
 
         if (isRealTime)
         {
@@ -574,7 +605,7 @@ public class SystemStatusTo
 
         var listpb = new List<string>()
         {
-            "\r\n\r\n "
+            "\r\n "
         };
         while (--v3 > 0)
         {

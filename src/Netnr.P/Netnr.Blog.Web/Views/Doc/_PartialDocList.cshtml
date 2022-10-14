@@ -25,7 +25,7 @@ else
             @foreach (var item in rows)
             {
                 <div class="col-md-6 col-lg-4 my-4 px-4">
-                    @if (uinfo.UserId == item.Uid)
+                    @if (uinfo?.UserId == item.Uid)
                     {
                         if (item.DsOpen != 1)
                         {
@@ -39,7 +39,7 @@ else
                         }
                     }
                     <a href="/doc/code/@item.DsCode/">@item.DsName</a>
-                    @if (item.Uid == uinfo.UserId)
+                    @if (item.Uid == uinfo?.UserId)
                     {
                         <a class="mx-2 text-decoration-none" href="/doc/form/@item.DsCode" title="edit">
                             <sl-icon name="pencil-square"></sl-icon>

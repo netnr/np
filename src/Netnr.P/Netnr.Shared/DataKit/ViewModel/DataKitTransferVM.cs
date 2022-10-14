@@ -66,6 +66,12 @@ namespace Netnr
             /// </summary>
             /// <returns></returns>
             public DbHelper NewDbHelper() => DbHelper.Init(ConnectionType, ConnectionString);
+
+            /// <summary>
+            /// 新实例
+            /// </summary>
+            /// <returns></returns>
+            public DataKitTo NewDataKit() => DataKitTo.Init(ConnectionType, ConnectionString, DatabaseName);
         }
 
         /// <summary>
@@ -168,10 +174,7 @@ namespace Netnr
                         {
                             //尝试匹配模式名 或 取第一条
                             var writeTable = listWriteTable.FirstOrDefault(x => x.SchemaName == readTable.SchemaName);
-                            if (writeTable == null)
-                            {
-                                writeTable = listWriteTable.First();
-                            }
+                            writeTable ??= listWriteTable.First();
 
                             var readSNTN = DbHelper.SqlSNTN(readTable.TableName, readTable.SchemaName, mdt.ReadConnectionInfo.ConnectionType);
                             var writeSNTN = DbHelper.SqlSNTN(writeTable.TableName, writeTable.SchemaName, mdt.WriteConnectionInfo.ConnectionType);
@@ -213,6 +216,10 @@ namespace Netnr
             /// 读取模式名
             /// </summary>
             public List<string> ListReadSchemaName { get; set; } = new List<string>();
+            /// <summary>
+            /// 导出类型（仅数据：dataOnly；结构及数据：all）
+            /// </summary>
+            public string Type { get; set; } = "all";
             /// <summary>
             /// 导出包完整路径
             /// </summary>

@@ -1,4 +1,17 @@
 ﻿nr.onReady = function () {
+
+    if (!Intl.Segmenter) {
+        nr.domBtnLocal.remove();
+    } else {
+        nr.domBtnLocal.addEventListener('click', function () {
+            var val = nr.domTxtContent.value.trim();
+
+            var segm = new Intl.Segmenter('cn', { granularity: 'word' });
+            var vals = Array.from(segm.segment(val));
+            nr.domTxtResult.value = JSON.stringify(vals.map(x => x.segment), null, 2);
+        });
+    }
+
     nr.domBtnQuery.addEventListener('click', function () {
         var val = nr.domTxtContent.value.trim();
         if (val == "") {

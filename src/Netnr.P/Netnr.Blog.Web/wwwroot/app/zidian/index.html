@@ -11,7 +11,7 @@
     <title>字典</title>
 
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <link href="https://fastly.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://ss.netnr.com/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/app/md/dist/netnrmd.css" rel="stylesheet" />
 </head>
 
@@ -66,9 +66,9 @@
                     <li>提取字、词、成语为数组，根据数组索引分页生成详情，具体请看 <code>build.html</code> 的拆分脚本</li>
                 </ul>
                 <h3 id="toc_2">使用</h3>
-<pre><code class="hljs language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://fastly.jsdelivr.net/npm/zidian@0.0.3/dist/zidian.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<pre><code class="hljs language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://ss.netnr.com/zidian@0.0.3/dist/zidian.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 </code></pre>
-                <p>查看 <a href="https://fastly.jsdelivr.net/npm/zidian/">https://fastly.jsdelivr.net/npm/zidian/</a><br>拉取 <code>npm install zidian</code></p>
+                <p>查看 <a href="https://www.npmjs.com/package/zidian">https://www.npmjs.com/package/zidian</a><br>拉取 <code>npm install zidian</code></p>
                 <p>汉字查询</p>
 <pre><code class="hljs language-js">zidian.<span class="hljs-property">equalWord</span> (key)
 zidian.<span class="hljs-property">equalWord</span> (<span class="hljs-string">"爱"</span>).<span class="hljs-property">then</span> (<span class="hljs-variable language_">console</span>.<span class="hljs-property">log</span>)
@@ -108,7 +108,7 @@ zidian.<span class="hljs-property">likeIdiom</span> (<span class="hljs-string">"
             return escape(s).indexOf("%u") >= 0;
         }
 
-        zidian.config.host = "https://fastly.jsdelivr.net/npm/zidian@0.0.3/";
+        zidian.config.host = "https://ss.netnr.com/zidian@0.0.3/";
 
         var res = document.getElementById('res');
 

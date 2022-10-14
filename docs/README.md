@@ -42,6 +42,7 @@ netnr@netnr.com
 
 更多发布应用
 &nbsp; https://github.com/netnr/np/releases
+
 ---
 
 ### Sponsors
@@ -50,3 +51,14 @@ netnr@netnr.com
 <img src="static/donate/wechat.svg" title="微信" height="240" />
 
 [Sponsor list](SPONSORS.md)
+
+---
+
+### 良师益友
+不要把人或事往坏处想
+
+傲慢是一种得不到支持的尊严
+
+听从安排，保留意见
+
+可以提出意见，态度温和友善

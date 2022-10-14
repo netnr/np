@@ -4,7 +4,7 @@
     /// 尬服 guff.ltd 提供所有接口支持
     /// </summary>
     [Route("api/v1/guff/[action]")]
-    [FilterConfigs.AllowCors]
+    [FilterConfigs.IsCors]
     public class GuffController : ControllerBase
     {
         public ContextBase db;
@@ -42,7 +42,7 @@
 
                 if (new List<string> { "me", "melaud", "mereply" }.Contains(category))
                 {
-                    if (uinfo.UserId == 0)
+                    if (uinfo == null)
                     {
                         vm.Set(EnumTo.RTag.unauthorized);
                     }
@@ -89,11 +89,11 @@
                 {
                     var ctype = ConnectionType.GuffRecord.ToString();
 
-                    var uinfo = IdentityService.Get(HttpContext);
+                    var uid = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
                     var query = from a in db.GuffRecord
                                 join b in db.UserInfo on a.Uid equals b.UserId
-                                join c in db.UserConnection.Where(x => x.UconnTargetType == ctype && x.UconnAction == 1 && x.Uid == uinfo.UserId) on a.GrId equals c.UconnTargetId into cg
+                                join c in db.UserConnection.Where(x => x.UconnTargetType == ctype && x.UconnAction == 1 && x.Uid == uid) on a.GrId equals c.UconnTargetId into cg
                                 from c1 in cg.DefaultIfEmpty()
                                 where a.GrId == id
                                 select new
@@ -109,7 +109,7 @@
                     }
                     else
                     {
-                        if (qm.a.GrOpen == 1 || uinfo.UserId == qm.a.Uid)
+                        if (qm.a.GrOpen == 1 || uid == qm.a.Uid)
                         {
                             // 阅读 +1
                             qm.a.GrReadNum += 1;
@@ -117,7 +117,7 @@
                             db.SaveChanges();
 
                             qm.a.Spare1 = string.IsNullOrEmpty(qm.UconnTargetId) ? "" : "laud";
-                            qm.a.Spare2 = (uinfo.UserId == qm.a.Uid) ? "owner" : "";
+                            qm.a.Spare2 = (uid == qm.a.Uid) ? "owner" : "";
                             qm.a.Spare3 = qm.Nickname;
 
                             vm.Data = qm.a;
@@ -159,7 +159,7 @@
                     vm.Code = 2;
                     vm.Msg = "标签不能为空";
                 }
-                else if (uinfo.UserId == 0)
+                else if (uinfo == null)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                 }
@@ -232,7 +232,7 @@
                     vm.Code = 2;
                     vm.Msg = "标签不能为空";
                 }
-                else if (uinfo.UserId == 0)
+                else if (uinfo == null)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                 }
@@ -299,7 +299,7 @@
             {
                 var uinfo = IdentityService.Get(HttpContext);
 
-                if (uinfo.UserId == 0)
+                if (uinfo == null)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                 }
@@ -439,7 +439,7 @@
                         }
                         else
                         {
-                            mo.Uid = uinfo.UserId;
+                            mo.Uid = uinfo?.UserId;
                             mo.UrTargetType = ConnectionType.GuffRecord.ToString();
                             mo.UrTargetId = id;
                             mo.UrCreateTime = DateTime.Now;
@@ -479,8 +479,6 @@
         {
             return ResultVM.Try(vm =>
             {
-                var uinfo = IdentityService.Get(HttpContext);
-
                 var pag = new PaginationVM
                 {
                     PageNumber = Math.Max(page, 1),
@@ -527,27 +525,26 @@
                 else
                 {
                     var uinfo = IdentityService.Get(HttpContext);
-                    if (uinfo.UserId != 0)
+                    if (uinfo != null)
                     {
-                        var mo = db.GuffRecord.Find(id);
-
-                        if (mo == null)
+                        var model = db.GuffRecord.Find(id);
+                        if (model == null)
                         {
                             vm.Set(EnumTo.RTag.invalid);
                         }
                         else
                         {
-                            if (mo.Uid != uinfo.UserId)
+                            if (model.Uid != uinfo.UserId)
                             {
                                 vm.Set(EnumTo.RTag.unauthorized);
                             }
-                            else if (mo.GrStatus == -1)
+                            else if (model.GrStatus == -1)
                             {
                                 vm.Set(EnumTo.RTag.refuse);
                             }
                             else
                             {
-                                db.Remove(mo);
+                                db.Remove(model);
                                 int num = db.SaveChanges();
 
                                 vm.Set(num > 0);

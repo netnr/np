@@ -45,6 +45,8 @@ public class HomeController : Controller
         var c1 = new SixLaborsImageSharpDrawingController();
         var c2 = new NetVipsController(env);
         var c3 = new SkiaSharpController(env);
+        var c4 = new MagickNETController(env);
+        var c5 = new SystemDrawingCommonController(env);
 
         var dicout = new Dictionary<string, object> { { "Loop", num } };
 
@@ -93,6 +95,36 @@ public class HomeController : Controller
         {
             Console.WriteLine(ex);
             dicout.Add("SkiaSharp", ex.Message);
+        }
+
+        sw.Restart();
+        try
+        {
+            for (int i = 0; i < num; i++)
+            {
+                c4.Captcha(code);
+            }
+            dicout.Add("Magick.NET", sw.ElapsedMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            dicout.Add("Magick.NET", ex.Message);
+        }
+
+        sw.Restart();
+        try
+        {
+            for (int i = 0; i < num; i++)
+            {
+                c5.Captcha(code);
+            }
+            dicout.Add("System.Drawing.Common", sw.ElapsedMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            dicout.Add("System.Drawing.Common", ex.Message);
         }
 
         return Json(dicout);

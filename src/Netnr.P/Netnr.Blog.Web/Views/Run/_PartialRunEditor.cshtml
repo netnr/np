@@ -37,7 +37,7 @@ else
             @{
                 var hc = ViewContext.HttpContext;
                 bool IsLogin = hc.User.Identity.IsAuthenticated;
-                bool IsMe = IsLogin && IdentityService.Get(hc).UserId == mo.Uid;
+                bool IsMe = IsLogin && IdentityService.Get(hc)?.UserId == mo.Uid;
             }
 
             <sl-button size="small" variant="primary" outline class='nr-btn-save @(IsLogin?"":"d-none")'>Save</sl-button>
