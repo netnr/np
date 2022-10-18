@@ -57,7 +57,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source="),
                         ConnectionType = AppTo.TDB
-                    }
+                    },
+                    Type = "onlyData"
                 };
 
                 vm = DataKitTo.ExportDatabase(edb);

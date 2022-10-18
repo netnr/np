@@ -318,8 +318,7 @@ namespace Netnr.Test
         {
             var projectName = "Netnr.Serve";
             var shortName = "ns";
-            var projectDir = Path.Combine(ProjectRoot, projectName);
-            var versionContent = File.ReadAllText(Path.Combine(projectDir, "Serve/ServeTo.cs"));
+            var versionContent = File.ReadAllText(Path.Combine(ProjectRoot, "Netnr.Shared/Serve/ServeTo.cs"));
             var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
 
             var platform = "win-x64";

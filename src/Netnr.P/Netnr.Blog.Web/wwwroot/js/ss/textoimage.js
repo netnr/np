@@ -3,7 +3,6 @@
 
     me.init().then(() => {
         me.editor = me.create(nr.domEditor, {
-            language: "text/plain",
             wordWrap: "on"
         });
         nr.domEditor.classList.add('border');

@@ -304,7 +304,7 @@ var ndkView = {
                 var viewdbs = [];
                 if (edata) {
                     var cp = ndkStep.cpCurrent();
-                    var tabTitle = ndkVary.iconSvg(edata.type, edata.alias);
+                    var tabTitle = ndkVary.iconSvg(edata.type, edata.alias, { library: "nr-icon" });
                     var seeAction = (name) => () => {
                         //快速构建 SQL 执行
                         var sqlOrPromise = ndkGenerateSQL.buildConnSeeSql(cp, name);
@@ -1329,8 +1329,8 @@ var ndkView = {
     },
 
     /**
-     * 显示执行SQL
-     * @param {any} esdata
+     * 显示执行SQL结果
+     * @param {any} esdata 执行结果数据
      * @param {any} tpkey
      */
     viewExecuteSql: (esdata, tpkey) => new Promise((resolve) => {
@@ -1711,10 +1711,11 @@ var ndkView = {
         }).then(() => {
             //默认呈现第一个结果
             ndkTab.tabNavFix();
+            console.debug(tpobj)
             //无结果优先显示信息
             if (tpobj.grids.length == 2 && tpobj.grids[0].opsExecuteSql.columnDefs.length == 0) {
                 tpobj.domTabGroupEsql.show(tpobj.grids[1].tpkey);
-            } else {
+            } else if (tpobj.grids.length) {
                 tpobj.domTabGroupEsql.show(tpobj.grids[0].tpkey);
             }
 

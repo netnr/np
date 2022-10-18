@@ -320,22 +320,25 @@ var ndkStep = {
                 break;
             case "tp1-database":
                 {
-                    var srows = ndkVary.gridOpsDatabase.api.getSelectedRows(),
-                        crows = ndkVary.gridOpsDatabase.api.getCellRanges(), edata;
-                    if (srows.length) {
-                        edata = srows.sort((a, b) => a.DatabaseName.localeCompare(b.DatabaseName))[0];
-                    } else if (crows.length) {
-                        //范围选择行
-                        edata = ndkVary.gridOpsDatabase.api.getDisplayedRowAtIndex(crows[0].startRow.rowIndex).data
-                    }
+                    if (ndkVary.gridOpsDatabase) {
+                        var srows = ndkVary.gridOpsDatabase.api.getSelectedRows(),
+                            crows = ndkVary.gridOpsDatabase.api.getCellRanges(), edata;
+                        if (srows.length) {
+                            edata = srows.sort((a, b) => a.DatabaseName.localeCompare(b.DatabaseName))[0];
+                        } else if (crows.length) {
+                            //范围选择行
+                            edata = ndkVary.gridOpsDatabase.api.getDisplayedRowAtIndex(crows[0].startRow.rowIndex).data
+                        }
 
-                    var cp = ndkStep.cpGet(1);
-                    if (edata) {
-                        return { cobj: cp.cobj, databaseName: edata.DatabaseName };
-                    } else {
-                        return cp;
+                        var cp = ndkStep.cpGet(1);
+                        if (edata) {
+                            return { cobj: cp.cobj, databaseName: edata.DatabaseName };
+                        } else {
+                            return cp;
+                        }
                     }
                 }
+                break;
             case "tp1-table":
             case "tp1-column":
                 {
@@ -385,7 +388,7 @@ var ndkStep = {
         if (ndkStep.stepVarIng != 1) {
 
             var sobj = {
-                theme: ndkVary.theme, //主题
+                theme: ndkVary.theme || ndkVary.resTheme[0].key, //主题
                 language: ndkI18n.language, //语言
                 spliterBodySize: ndkAction.getSpliterSize(ndkVary.domSpliterBody), //分离器主体大小
                 apiServer: ndkVary.apiServer, //api服务器
@@ -448,14 +451,24 @@ var ndkStep = {
                 "step-conn-cache",
                 "step-view-conns",
                 "step-tab-group-tree-show",
-            ], sobj).then(() => ndkStep.stepItemRun([
-                "step-view-database",
-                "step-view-table",
-                "step-view-column"
             ], sobj).then(() => {
-                ndkStep.stepStatus(2);
-                resolve()
-            })));
+                ndkRequest.reqServiceStatus().then(isOk => {
+                    if (isOk) {
+                        ndkStep.stepItemRun([
+                            "step-view-database",
+                            "step-view-table",
+                            "step-view-column"
+                        ], sobj).then(() => {
+                            ndkStep.stepStatus(2);
+                            resolve()
+                        })
+                    } else {
+                        ndkFunction.alert(`${ndkVary.apiServer}${ndkVary.apiServiceStatus}<hr/>${ndkI18n.lg.menu} > ${ndkI18n.lg.setting} > ${ndkI18n.lg.setServerTitle}`, ndkI18n.lg.serverError);
+                        ndkStep.stepStatus(2);
+                        resolve()
+                    }
+                })
+            }));
         }
     }),
     /**

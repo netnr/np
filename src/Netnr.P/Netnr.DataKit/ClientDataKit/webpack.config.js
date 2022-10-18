@@ -60,21 +60,14 @@ var config = {
                     from: path.join(__dirname, './src/favicon.ico'),
                     to: path.resolve(releaseRoot)
                 },
-
-                // Copy Shoelace assets to dist/shoelace
+                {
+                    from: path.resolve(__dirname, './src/assets'),
+                    to: path.resolve(releaseRoot, 'assets')
+                },
                 {
                     from: path.resolve(__dirname, 'node_modules/@shoelace-style/shoelace/dist/assets'),
-                    to: path.resolve(releaseRoot, 'shoelace/assets')
-                },
-                // Copy custom icons to dist/shoelace
-                {
-                    from: path.resolve(__dirname, './src/icons'),
-                    to: path.resolve(releaseRoot, 'shoelace/assets/icons')
-                },
-                {
-                    from: path.resolve(__dirname, 'node_modules/@shoelace-style/shoelace/dist/themes'),
-                    to: path.resolve(releaseRoot, 'shoelace/themes')
-                },
+                    to: path.resolve(releaseRoot, 'assets')
+                }
             ]
         }),
         new MonacoWebpackPlugin({

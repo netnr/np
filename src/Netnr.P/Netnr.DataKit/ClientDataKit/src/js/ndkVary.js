@@ -14,7 +14,7 @@ var ndkVary = {
     },
     // 主题
     resTheme: [
-        { key: 'auto', icon: 'square-half' },
+        { key: 'auto', icon: 'square-half' }, // 默认值，保持首位，其它地方有引用
         { key: 'dark', icon: 'moon-fill' },
         { key: 'light', icon: 'sun' },
     ],
@@ -137,9 +137,9 @@ var ndkVary = {
         { key: "https://netnr.zme.ink/api/v1", remark: "Deploy on Render" }
     ],
 
-    apiServer: "https://netnr.zme.ink/api/v1", //指定接口服务
-    apiHeaders: null, //接口头部参数（如：{ Authorization: "token" }）
+    apiServer: location.origin, //指定接口服务
 
+    apiServiceStatus: "/DK/ServiceStatus", // 服务状态检测 200
     apiGetDatabaseName: "/DK/GetDatabaseName",
     apiGetDatabaseInfo: "/DK/GetDatabase",
     apiGetTable: "/DK/GetTable",

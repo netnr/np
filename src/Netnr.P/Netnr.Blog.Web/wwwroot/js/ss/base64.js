@@ -5,7 +5,6 @@ nr.onReady = function () {
 
     me.init().then(() => {
         editor = me.create(nr.domEditor, {
-            language: "text/plain",
             wordWrap: "on"
         });
         nr.domEditor.classList.add('border');

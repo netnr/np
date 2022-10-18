@@ -16,8 +16,8 @@ var page = {
         }
 
         me.init().then(() => {
-            page.originalModel = monaco.editor.createModel("just some text\n\nHello World\n\nSome more text", "text/plain");
-            page.modifiedModel = monaco.editor.createModel("just some Text\n\nHello World\n\nSome more changes", "text/plain");
+            page.originalModel = monaco.editor.createModel("just some text\n\nHello World\n\nSome more text", "plaintext");
+            page.modifiedModel = monaco.editor.createModel("just some Text\n\nHello World\n\nSome more changes", "plaintext");
 
             page.diffEditor = monaco.editor.createDiffEditor(nr.domEditor, me.config({
                 originalEditable: true

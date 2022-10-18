@@ -16,7 +16,6 @@ nr.onReady = function () {
 
         editor2 = me.create(nr.domEditor2, {
             value: "",
-            language: "text/plain",
             wordWrap: "on",
         });
 

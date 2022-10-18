@@ -1,5 +1,7 @@
 import { ndkTab } from './ndkTab';
 import { ndkVary } from './ndkVary';
+import { ndkStep } from './ndkStep';
+import { ndkView } from './ndkView';
 import { ndkEditor } from './ndkEditor';
 import { ndkFunction } from './ndkFunction';
 import { ndkRequest } from './ndkRequest';
@@ -12,9 +14,9 @@ var ndkExecute = {
      * 执行SQL
      * @param {*} cobj
      * @param {*} forcedReload
-     * @returns 
+     * @returns 返回执行结果数据
      */
-    executeSql: (cobj, databaseName, sql) => new Promise((resolve, reject) => {
+    executeSql: async (cobj, databaseName, sql) => {
         var fd = new FormData();
         fd.append('tdb', cobj.type);
         fd.append('conn', cobj.conn);
@@ -25,14 +27,12 @@ var ndkExecute = {
 
         //记录历史
         if (sql.length < 9999) {
-            ndkStorage.historysAdd(cobj.id, databaseName, sql);
+            await ndkStorage.historysAdd(cobj.id, databaseName, sql);
         }
 
-        ndkRequest.request(`${ndkVary.apiServer}${ndkVary.apiExecuteSql}`, {
-            method: "POST",
-            body: fd
-        }).then(res => resolve(res.data)).catch(err => reject(err));
-    }),
+        let res = await ndkRequest.request(`${ndkVary.apiServer}${ndkVary.apiExecuteSql}`, { method: "POST", body: fd });
+        return res.data;
+    },
 
     /**
      * 获取 首行首列
@@ -51,17 +51,17 @@ var ndkExecute = {
      * 执行编辑器 SQL
      * @param {any} tpkey
      */
-    editorSql: (tpkey) => {
+    editorSql: async (tpkey) => {
         var tpobj = ndkTab.tabKeys[tpkey];
 
         var sql = ndkEditor.selectedOrAllValue(tpobj.editor);
         if (sql.trim() == "") {
             ndkFunction.output(ndkI18n.lg.contentNotEmpty);
         } else {
-            var tpcp = ndkStep.cpGet(tpkey)
-            ndkExecute.executeSql(tpcp.cobj, tpcp.databaseName, sql).then(esdata => {
-                ndkView.viewExecuteSql(esdata, tpkey)
-            })
+            var tpcp = ndkStep.cpGet(tpkey);
+            var esdata = await ndkExecute.executeSql(tpcp.cobj, tpcp.databaseName, sql);
+            var tpobj = await ndkView.viewExecuteSql(esdata, tpkey);
+            return tpobj;
         }
     },
 

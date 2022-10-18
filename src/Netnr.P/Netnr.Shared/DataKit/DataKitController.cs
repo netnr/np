@@ -48,6 +48,13 @@ public class DataKitController : Controller
     }
 
     /// <summary>
+    /// 服务状态
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult ServiceStatus() => Ok();
+
+    /// <summary>
     /// 获取库名
     /// </summary>
     /// <param name="tdb">数据库类型</param>

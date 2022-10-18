@@ -1641,7 +1641,7 @@ setTimeout(function () {
 
     //透明
     document.body.style.opacity = 1;
-}, 0);
+}, 10);
 
 /**
  * 载入调整窗口大小

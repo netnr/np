@@ -15,15 +15,26 @@
     padding-top: 0;
 }
 
+.ag-theme-balham-dark .ag-selection-checkbox,
+.ag-theme-balham-dark .ag-group-expanded,
+.ag-theme-balham-dark .ag-group-contracted,
+.ag-theme-balham .ag-selection-checkbox,
+.ag-theme-balham .ag-group-expanded,
+.ag-theme-balham .ag-group-contracted {
+    margin-top: 4px;
+}
+
 /*图标大小*/
 .ag-icon {
     font-size: 20px !important;
 }
+
 /*新增：标题类型标记*/
 .ag-header-type-icon {
     margin-top: -.3em;
 }
-.ag-header-type-icon sl-icon{
+
+.ag-header-type-icon sl-icon {
     margin-right: 0.2em;
     vertical-align: text-top;
 }
@@ -45,6 +56,7 @@
 .ag-status-bar {
     line-height: .5;
 }
+
 .ag-status-name-value {
     padding-top: 0.2em !important;
     padding-bottom: 0.2em !important;

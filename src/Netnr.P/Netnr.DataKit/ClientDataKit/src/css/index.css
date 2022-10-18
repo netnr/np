@@ -107,9 +107,9 @@
 .nr-gc1-tool > * {
     margin-right: .5em;
 }
-.nr-gc1-fn,
+.nr-gc1-code,
 .nr-gc2-language {
-    min-width: 12em;
+    min-width: 18em;
 }
 
 /* 输出 */

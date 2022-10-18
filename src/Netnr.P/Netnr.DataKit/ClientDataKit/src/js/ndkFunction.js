@@ -30,6 +30,21 @@ var ndkFunction = {
     },
 
     /**
+     * 类名处理
+     * @param {*} name 名称
+     * @param {*} smallHump 小驼峰，默认大驼峰 
+     */
+    handleClassName: (name, smallHump) => {
+        var items = name.split("_");
+        items = items.map(item => item[0].toUpperCase() + item.slice(1));
+        var varName = items.join('');
+        if (smallHump) {
+            varName = varName[0].toLowerCase() + varName.slice(1);
+        }
+        return varName;
+    },
+
+    /**
      * 获取或设置CSS变量
      * @param {any} dom
      * @param {any} k
@@ -51,6 +66,27 @@ var ndkFunction = {
     type: function (obj) {
         var tv = {}.toString.call(obj);
         return tv.split(' ')[1].replace(']', '');
+    },
+
+    /**
+     * 运行代码
+     * @param {*} code 
+     * @returns 
+     */
+    runCode: async (code) => {
+        //执行代码
+        var ecode = eval('(' + code + ')');
+        var etype = ndkFunction.type(ecode);
+        switch (etype) {
+            case "AsyncFunction":
+            case "Promise":
+                ecode = await ecode();
+                break;
+            case "Function":
+                ecode = ecode();
+                break;
+        }
+        return ecode;
     },
 
     /**
@@ -338,26 +374,23 @@ var ndkFunction = {
      * @param {*} password 密钥
      * @returns 
      */
-    AESEncrypt: (plaintext, password) => new Promise((resolve, reject) => {
+    AESEncrypt: async (plaintext, password) => {
         let pwUtf8 = new TextEncoder().encode(password);
-        window.crypto.subtle.digest('SHA-256', pwUtf8).then((pwHash) => {
+        let pwHash = await window.crypto.subtle.digest('SHA-256', pwUtf8);
 
-            let iv = window.crypto.getRandomValues(new Uint8Array(12));
-            let ivStr = Array.from(iv).map(b => String.fromCharCode(b)).join('');
+        let iv = window.crypto.getRandomValues(new Uint8Array(12));
+        let ivStr = Array.from(iv).map(b => String.fromCharCode(b)).join('');
 
-            let alg = { name: 'AES-GCM', iv: iv };
-            window.crypto.subtle.importKey('raw', pwHash, alg, false, ['encrypt']).then(key => {
-                let ptUint8 = new TextEncoder().encode(plaintext);
+        let alg = { name: 'AES-GCM', iv: iv };
+        let key = await window.crypto.subtle.importKey('raw', pwHash, alg, false, ['encrypt']);
+        let ptUint8 = new TextEncoder().encode(plaintext);
 
-                window.crypto.subtle.encrypt(alg, key, ptUint8).then(ctBuffer => {
-                    let ctArray = Array.from(new Uint8Array(ctBuffer));
-                    let ctStr = ctArray.map(byte => String.fromCharCode(byte)).join('');
-                    let result = window.btoa(ivStr + ctStr);
-                    resolve(result);
-                }).catch(reject);
-            }).catch(reject);
-        }).catch(reject);
-    }),
+        let ctBuffer = await window.crypto.subtle.encrypt(alg, key, ptUint8);
+        let ctArray = Array.from(new Uint8Array(ctBuffer));
+        let ctStr = ctArray.map(byte => String.fromCharCode(byte)).join('');
+        let result = window.btoa(ivStr + ctStr);
+        return result;
+    },
 
     /**
      * AES 256 GCM 解密
@@ -365,24 +398,22 @@ var ndkFunction = {
      * @param {*} password 密钥
      * @returns 
      */
-    AESDecrypt: (ciphertext, password) => new Promise((resolve, reject) => {
+    AESDecrypt: async (ciphertext, password) => {
         let pwUtf8 = new TextEncoder().encode(password);
-        window.crypto.subtle.digest('SHA-256', pwUtf8).then((pwHash) => {
-            let ivStr = window.atob(ciphertext).slice(0, 12);
-            let iv = new Uint8Array(Array.from(ivStr).map(ch => ch.charCodeAt(0)));
+        let pwHash = await window.crypto.subtle.digest('SHA-256', pwUtf8);
 
-            let alg = { name: 'AES-GCM', iv: iv };
-            window.crypto.subtle.importKey('raw', pwHash, alg, false, ['decrypt']).then(key => {
-                let ctStr = window.atob(ciphertext).slice(12);
-                let ctUint8 = new Uint8Array(Array.from(ctStr).map(ch => ch.charCodeAt(0)));
+        let ivStr = window.atob(ciphertext).slice(0, 12);
+        let iv = new Uint8Array(Array.from(ivStr).map(ch => ch.charCodeAt(0)));
 
-                window.crypto.subtle.decrypt(alg, key, ctUint8).then(plainBuffer => {
-                    let result = new TextDecoder().decode(plainBuffer);
-                    resolve(result);
-                }).catch(reject);
-            }).catch(reject);
-        }).catch(reject);
-    }),
+        let alg = { name: 'AES-GCM', iv: iv };
+        let key = await window.crypto.subtle.importKey('raw', pwHash, alg, false, ['decrypt']);
+        let ctStr = window.atob(ciphertext).slice(12);
+        let ctUint8 = new Uint8Array(Array.from(ctStr).map(ch => ch.charCodeAt(0)));
+
+        let plainBuffer = await window.crypto.subtle.decrypt(alg, key, ctUint8);
+        let result = new TextDecoder().decode(plainBuffer);
+        return result;
+    },
 
     /**
      * 下载
@@ -406,13 +437,9 @@ var ndkFunction = {
      * @param {any} encoding GBK 或 utf-8
      */
     readFileContent: (file, encoding = "utf-8") => new Promise((resolve, reject) => {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            resolve(e.target.result);
-        };
-        reader.onerror = function () {
-            reject(reader.error);
-        };
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => reject();
         reader.readAsText(file, encoding);
     }),
 
@@ -443,21 +470,15 @@ var ndkFunction = {
      * 读写剪贴板
      * @param {*} content 写入内容
      */
-    clipboard: (content) => new Promise((resolve, reject) => {
+    clipboard: async (content) => {
+        var text;
         if (ndkFunction.supportClipboard) {
             if (content == null) {
-                navigator.clipboard.readText().then(text => {
-                    resolve(text);
-                }).catch(err => {
-                    reject(err);
-                });
+                text = await navigator.clipboard.readText();
             } else {
-                navigator.clipboard.writeText(content).then(text => {
-                    resolve(text);
-                }).catch(err => {
-                    reject(err);
-                });
+                text = await navigator.clipboard.writeText(content);
             }
+            return text;
         } else if (content != null) {
             //兼容模式复制
             var textarea = document.createElement("textarea");
@@ -466,13 +487,14 @@ var ndkFunction = {
             textarea.style.opacity = 0;
             document.body.appendChild(textarea);
             textarea.select();
-            document.execCommand("Copy");
+            window.document.execCommand("Copy");
             textarea.remove();
-            resolve(content);
+
+            return content;
         } else {
-            reject(ndkI18n.lg.unsupported);
+            return ndkI18n.lg.unsupported;
         }
-    }),
+    },
 
     //可读写剪贴板内容
     supportClipboard: window.isSecureContext && navigator.clipboard != null,

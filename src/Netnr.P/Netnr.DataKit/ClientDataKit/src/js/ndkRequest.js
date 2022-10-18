@@ -143,6 +143,21 @@ var ndkRequest = {
     }),
 
     /**
+     * 请求服务状态
+     * @param {*} url 
+     * @returns 
+     */
+    reqServiceStatus: async (url) => {
+        url = url || `${ndkVary.apiServer}${ndkVary.apiServiceStatus}`;
+        try {
+            var resp = await fetch(url);
+            return resp.status == 200;
+        } catch (error) {
+            return false;
+        }
+    },
+
+    /**
      * 请求连接
      */
     reqConns: () => new Promise((resolve) => {

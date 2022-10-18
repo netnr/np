@@ -27,7 +27,7 @@ var ndkTab = {
      * @param {any} title
      * @param {any} type
      */
-    tabBuild: (key, title, type) => new Promise(resolve => {
+    tabBuild: async (key, title, type) => {
 
         key = `tp-${key}`;
         if (!(key in ndkTab.tabKeys)) {
@@ -35,8 +35,8 @@ var ndkTab = {
         }
 
         // ndkVary.domTabGroupBody.show(key); //在回调结果中调用
-        resolve(key);
-    }),
+        return key;
+    },
 
     /**
      * 快捷构建 SQL
@@ -46,41 +46,35 @@ var ndkTab = {
      * @param {*} isExecute 是否立即执行
      * @returns 
      */
-    tabBuildFast_sql: (cp, title, sqlOrPromise, isExecute = false) => new Promise(resolve => {
-        ndkTab.tabBuild(ndkFunction.random(), title, ndkTab.tabType.sql).then(tpkey => {
-            ndkVary.domTabGroupBody.show(tpkey);//显示选项卡
-            ndkStep.cpSet(tpkey, cp.cobj, cp.databaseName); //记录连接
-            ndkStep.cpInfo(tpkey); //显示连接
+    tabBuildFast_sql: async (cp, title, sqlOrPromise, isExecute = false) => {
+        let tpkey = await ndkTab.tabBuild(ndkFunction.random(), title, ndkTab.tabType.sql);
+        ndkVary.domTabGroupBody.show(tpkey);//显示选项卡
+        ndkStep.cpSet(tpkey, cp.cobj, cp.databaseName); //记录连接
+        ndkStep.cpInfo(tpkey); //显示连接
 
-            var tpobj = ndkTab.tabKeys[tpkey];
-            //赋值SQL
-            if (sqlOrPromise == null || typeof sqlOrPromise == "string") {
-                if (sqlOrPromise == null) {
-                    sqlOrPromise = "";
-                }
-
-                tpobj.editor.setValue(sqlOrPromise);
-                //执行脚本
-                if (isExecute && sqlOrPromise.trim() != "") {
-                    ndkExecute.editorSql(tpkey);
-                }
-
-                resolve(tpkey);
-            } else {
-                tpobj.editor.setValue(`-- ${ndkI18n.lg.generatingScript}`);
-
-                sqlOrPromise.then(res => {
-                    tpobj.editor.setValue(res);
-                    //执行脚本
-                    if (isExecute && res.trim() != "") {
-                        ndkExecute.editorSql(tpkey);
-                    }
-
-                    resolve(tpkey);
-                })
+        let tpobj = ndkTab.tabKeys[tpkey];
+        //赋值SQL
+        if (sqlOrPromise == null || typeof sqlOrPromise == "string") {
+            if (sqlOrPromise == null) {
+                sqlOrPromise = "";
             }
-        })
-    }),
+
+            tpobj.editor.setValue(sqlOrPromise);
+            //执行脚本
+            if (isExecute && sqlOrPromise.trim() != "") {
+                ndkExecute.editorSql(tpkey);
+            }
+        } else {
+            tpobj.editor.setValue(`-- ${ndkI18n.lg.generatingScript}`);
+            let res = await sqlOrPromise;
+            tpobj.editor.setValue(res);
+            //执行脚本
+            if (isExecute && res.trim() != "") {
+                ndkExecute.editorSql(tpkey);
+            }
+        }
+        return tpkey;
+    },
 
     /**
      * 构建类型
@@ -272,13 +266,13 @@ var ndkTab = {
     <!--Editor Code-->
     <div class="nrc-spliter-item">
         <div class="nr-gc1-tool">
-            <sl-select class="nr-gc1-fn mb-2" size="small" panel="${key}" placeholder="${ndkI18n.lg.pleaseChoose}" multiple clearable></sl-select>            
-            <sl-tooltip content="Debug">
-                <sl-icon-button class="nr-gc1-debug mb-2" name="play-circle" label="${ndkI18n.lg.debug}" panel="${key}"></sl-icon-button>
-            </sl-tooltip>
-            <sl-tooltip content="Run">
-                <sl-icon-button class="nr-gc1-run mb-2" name="play-circle-fill" label="${ndkI18n.lg.run}" panel="${key}"></sl-icon-button>
-            </sl-tooltip>
+            <sl-select class="nr-gc1-code mb-2" size="small" panel="${key}" placeholder="${ndkI18n.lg.pleaseChoose}" clearable></sl-select>
+            <sl-button class="nr-gc1-debug" variant="default" size="small">
+                <sl-icon slot="prefix" name="play-circle"></sl-icon>${ndkI18n.lg.debug}
+            </sl-button>
+            <sl-button class="nr-gc1-run" variant="default" size="small">
+                <sl-icon slot="prefix" name="play-circle-fill"></sl-icon>${ndkI18n.lg.run}
+            </sl-button>
         </div>
         <div class="nr-editor-gc1"></div>
     </div>
@@ -300,10 +294,9 @@ var ndkTab = {
         tabbox.innerHTML = `<sl-tab slot="nav" panel="${key}" closable>${title}</sl-tab><sl-tab-panel name="${key}">${pbox}</sl-tab-panel>`;
         var domTab = tabbox.querySelector('sl-tab'),
             domTabPanel = tabbox.querySelector('sl-tab-panel'),
-
             domTool1 = tabbox.querySelector('.nr-gc1-tool'),
             domTool2 = tabbox.querySelector('.nr-gc2-tool'),
-            domSelectFn = tabbox.querySelector(".nr-gc1-fn"),
+            domSelectCode = tabbox.querySelector(".nr-gc1-code"),
             domSelectDebug = tabbox.querySelector(".nr-gc1-debug"),
             domSelectRun = tabbox.querySelector(".nr-gc1-run"),
             domEditor1 = tabbox.querySelector('.nr-editor-gc1'),
@@ -311,104 +304,67 @@ var ndkTab = {
             domSelectLanguage = tabbox.querySelector(".nr-gc2-language");
 
         // 生成项
-        var fnhtm = [];
-        ndkFunction.groupBy(ndkGenerateCode.fns, x => x.language).forEach(language => {
-            if (fnhtm.length > 0) {
-                fnhtm.push(`<sl-divider></sl-divider>`);
-            }
-            fnhtm.push(`<sl-menu-label>${language}</sl-menu-label>`);
-            ndkGenerateCode.fns.filter(x => x.language == language).forEach(item => {
-                fnhtm.push(`<sl-menu-item value="${language}:${item.name}">${language} - ${item.name}</sl-menu-item>`);
+        ndkGenerateCode.codeContent("list.txt").then(codeList => {
+            codeList = codeList.split('\n').filter(x => x != "");
+            var seCodeHtml = [];
+            ndkFunction.groupBy(codeList, x => x.split('_')[0]).forEach(language => {
+                if (seCodeHtml.length > 0) {
+                    seCodeHtml.push(`<sl-divider></sl-divider>`);
+                }
+                codeList.filter(x => x.startsWith(language)).forEach(item => {
+                    seCodeHtml.push(`<sl-menu-item value="${item}">${item}</sl-menu-item>`);
+                });
             });
-        });
-        domSelectFn.innerHTML = fnhtm.join('');
-        // 选择生成项
-        domSelectFn.addEventListener('sl-change', function () {
-            var tpobj = ndkTab.tabKeys[this.getAttribute('panel')];
+            domSelectCode.innerHTML = seCodeHtml.join('');
+        })
+        // 选择代码项
+        domSelectCode.addEventListener('sl-change', async function () {
+            if (this.value) {
+                var tpobj = ndkTab.tabKeys[domTab.panel];
+                var code = await ndkGenerateCode.codeContent(this.value);
+                tpobj.editor1.setValue(code);
 
-            if (this.value.length == 1) {
-                var vals = this.value[0].split(':');
-                var code = ndkGenerateCode.fns.find(x => x.language == vals[0] && x.name == vals[1]).code;
-                tpobj.editor1.setValue(`//${vals.join(' - ')}\r\n${code}`);
-                ndkEditor.formatter(tpobj.editor1); // 格式化代码
-            } else {
-                tpobj.editor1.setValue("");
+                await codeDebugOrRun(true);
             }
         });
 
-        // 调试代码
-        domSelectDebug.addEventListener('click', function () {
-            var tpobj = ndkTab.tabKeys[this.getAttribute('panel')];
+        var codeDebugOrRun = async (isDebug) => {
+            var tpobj = ndkTab.tabKeys[domTab.panel];
             var code = tpobj.editor1.getValue().trim();
             if (code == "") {
                 ndkFunction.output(ndkI18n.lg.contentNotEmpty);
-                return;
-            }
-
-            //执行代码
-            var fnout = eval('(' + code + ')');
-            if (typeof fnout == 'function') {
-                fnout = fnout();
-            }
-
-            // 输出结果
-            if (typeof fnout == 'object') {
-                tpobj.editor2.setValue(fnout.map(x => x.content).join('\r\n\r\n\r\n'));
-                domSelectLanguage.value = tpobj.domSelectFn.value[0].split(':')[0];
-                ndkEditor.formatter(tpobj.editor2); // 格式化代码
             } else {
-                tpobj.editor2.setValue(fnout.toString());
+                var result = await ndkFunction.runCode(code);
+                if (typeof result == "object") {
+                    if (isDebug) {
+                        tpobj.editor2.setValue(result.files.map(f => f.content).join('\r\n\r\n\r\n'));
+                        domSelectLanguage.value = result.language || "plaintext";
+                        // ndkEditor.formatter(tpobj.editor2); // 格式化代码
+                    }
+                    else {
+                        var zip = new JSZip();
+                        result.files.forEach(f => zip.file(f.fullName, f.content));
+                        //下载 zip
+                        var downCode = await zip.generateAsync({ type: "blob" });
+                        ndkFunction.download(downCode, "code.zip");
+
+                        ndkFunction.output(ndkI18n.lg.done);
+                    }
+                } else {
+                    tpobj.editor2.setValue(fnEval.toString());
+                }
             }
 
-            // 分离器自动
-            ndkAction.setSpliterSize(tpobj.domTabPanel.children[0], 'auto');
-        });
-
-        // 运行代码
-        domSelectRun.addEventListener('click', function () {
-            var tpobj = ndkTab.tabKeys[this.getAttribute('panel')];
-
-            if (tpobj.domSelectFn.value.length) {
-
-                var zip = new JSZip();
-
-                //遍历项
-                tpobj.domSelectFn.value.forEach(item => {
-                    var vals = item.split(':');
-                    var code = ndkGenerateCode.fns.find(x => x.language == vals[0] && x.name == vals[1]).code;
-
-                    //执行代码
-                    var fnout = eval('(' + code + ')');
-                    if (typeof fnout == 'function') {
-                        fnout = fnout();
-                    }
-
-                    // 填充到zip
-                    if (typeof fnout == 'object') {
-                        fnout.forEach(x => {
-                            //构建路径
-                            var filePath = [x.name];
-                            if (x.path != "") {
-                                filePath.unshift(x.path);
-                            }
-
-                            zip.file(filePath.join('/'), x.content);
-                        });
-                    } else {
-                        ndkFunction.output(fnout.toString());
-                    }
-                });
-
-                //下载zip
-                zip.generateAsync({ type: "blob" }).then(function (content) {
-                    ndkFunction.download(content, "code.zip");
-                });
-
-                ndkFunction.output(ndkI18n.lg.done);
-            } else {
-                ndkFunction.output(ndkI18n.lg.selectAnItem);
+            if (isDebug) {
+                // 分离器自动
+                ndkAction.setSpliterSize(tpobj.domTabPanel.children[0], 'auto');
             }
-        });
+        }
+
+        // 调试代码
+        domSelectDebug.addEventListener('click', async () => await codeDebugOrRun(true));
+        // 运行代码并下载
+        domSelectRun.addEventListener('click', async () => await codeDebugOrRun());
 
         //绑定语言
         var slhtm = [];
@@ -416,7 +372,7 @@ var ndkTab = {
             slhtm.push(`<sl-menu-item value="${l}">${l}</sl-menu-item>`);
         })
         domSelectLanguage.innerHTML = slhtm.join('');
-        domSelectLanguage.value = "csharp";
+        domSelectLanguage.value = "plaintext";
         // 选择语言
         domSelectLanguage.addEventListener('sl-change', function () {
             var tpobj = ndkTab.tabKeys[this.getAttribute('panel')];
@@ -439,7 +395,7 @@ var ndkTab = {
             domTabPanel,
             domTool1,
             domTool2,
-            domSelectFn,
+            domSelectFn: domSelectCode,
             domSelectSave: domSelectRun,
             domEditor1,
             domEditor2,
@@ -453,10 +409,8 @@ var ndkTab = {
             ndkEditor.wordWrap(editor); //换行
             ndkEditor.fullScreen(editor); //全屏
 
-            //Ctrl + Enter 运行
-            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function () {
-
-            })
+            //Pause Break 调式
+            editor.addCommand(monaco.KeyCode.PauseBreak, async () => await codeDebugOrRun(true));
         });
 
         //构建编辑器

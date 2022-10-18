@@ -31,7 +31,7 @@ var config = {
             {
                 test: /\.svg$/,
                 loader: 'svg-sprite-loader'
-            }
+            },
         ],
     },
     optimization: {
@@ -59,10 +59,9 @@ var config = {
                     from: path.join(__dirname, './src/favicon.ico'),
                     to: path.resolve(releaseRoot)
                 },
-                // Copy custom icons to dist/shoelace
                 {
-                    from: path.resolve(__dirname, './src/icons'),
-                    to: path.resolve(releaseRoot, 'images/icons')
+                    from: path.resolve(__dirname, './src/assets'),
+                    to: path.resolve(releaseRoot, 'assets')
                 },
             ]
         })

@@ -19,6 +19,7 @@ var ndkInit = {
 
         //接口服务
         var htmlApiServer = [`<sl-input class="nr-text-api-server mb-2" placeholder="${ndkI18n.lg.setServerPlaceholder}"></sl-input>`];
+        htmlApiServer.push(`<sl-button class="nr-test-api-server mb-2" variant="warning" size="small" data-cmd="test-api-server">${ndkI18n.lg.test}</sl-button>`);
         ndkVary.resApiServer.forEach(item => {
             htmlApiServer.push(`
             <sl-tooltip content="${item.remark ?? item.key}">
@@ -597,8 +598,10 @@ window.addEventListener("DOMContentLoaded", function () {
         ndkStep.stepStart().then(() => {
             ndkVary.domLoading.style.display = "none";
             ndkVary.domMain.style.visibility = "visible";
+            document.body.style.removeProperty("overflow");
 
-            //setTimeout(() => console.clear(), 1000 * 2);
+            console.clear();
+            console.debug(`${ndkVary.name} v${ndkVary.version}`);
         })
     });
 }, false);

@@ -1,7 +1,6 @@
 import { ndkVary } from "./ndkVary";
 import { ndkI18n } from "./ndkI18n";
 import { ndkTab } from "./ndkTab";
-import { ndkStep } from "./ndkStep";
 import { ndkRequest } from "./ndkRequest";
 
 // monaco editor
@@ -195,10 +194,10 @@ var ndkEditor = {
      * @param {any} dom
      * @param {any} config
      */
-    create: (dom, config) => new Promise(resolve => {
+    create: async (dom, config) => {
         var editor = monaco.editor.create(dom, ndkEditor.config(config));
-        resolve(editor);
-    }),
+        return editor;
+    },
 
     /**
      * 执行格式化

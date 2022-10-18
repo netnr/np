@@ -16,7 +16,7 @@ var me = {
     config: options => Object.assign({
         value: "",
         theme: nr.isDark() ? 'vs-dark' : 'vs',
-        language: 'text/plain',
+        language: 'plaintext',
         fontSize: 18,
         automaticLayout: true,
         scrollbar: {

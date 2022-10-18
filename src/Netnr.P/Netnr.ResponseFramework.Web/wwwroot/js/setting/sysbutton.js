@@ -65,7 +65,7 @@ z.button('edit', function () {
         //表单标题
         z.FormTitle({
             icon: 1,
-            title: '修改系统角色'
+            title: '修改系统按钮'
         });
         //显示模态框
         $('#fv_modal_1').modal();

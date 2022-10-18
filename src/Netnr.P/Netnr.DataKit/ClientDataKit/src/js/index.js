@@ -26,12 +26,12 @@ import '@shoelace-style/shoelace/dist/themes/light.css';
 import '@shoelace-style/shoelace/dist/themes/dark.css';
 import '@shoelace-style/shoelace';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
-setBasePath(`${location.pathname.split('/').slice(0, -1).join('/')}/shoelace`);
+setBasePath(`${location.pathname.split('/').slice(0, -1).join('/')}`);
 
 // @shoelace-style/shoelace register icon
 import { registerIconLibrary } from '@shoelace-style/shoelace/dist/utilities/icon-library.js';
 registerIconLibrary('nr-icon', {
-  resolver: name => `/shoelace/assets/icons/${name}.svg`,
+  resolver: name => `/assets/icons/${name}.svg`,
   mutator: svg => svg.setAttribute('fill', 'currentColor')
 });
 

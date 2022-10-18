@@ -8,6 +8,7 @@ import { ndkNoteSQL } from "./ndkNoteSQL";
 import { ndkI18n } from "./ndkI18n";
 import { ndkExecute } from "./ndkExecute";
 import { ndkFunction } from "./ndkFunction";
+import { ndkRequest } from "./ndkRequest";
 
 // 动作
 var ndkAction = {
@@ -23,7 +24,7 @@ var ndkAction = {
             //主题
             case "theme":
                 {
-                    ndkVary.theme = dval;
+                    ndkVary.theme = ndkVary.resTheme.findIndex(x => x.key == dval) == -1 ? ndkVary.resTheme[0].key : dval;
                     ndkAction.themeSL();
                     ndkAction.themeGrid();
                     ndkAction.themeEditor();
@@ -124,6 +125,17 @@ var ndkAction = {
                 {
                     ndkVary.domTextApiServer.value = ndkVary.apiServer = dval;
                     ndkStep.stepSave();
+                }
+                break;
+            //测试接口服务
+            case "test-api-server":
+                {
+                    var url = `${ndkVary.domTextApiServer.value}${ndkVary.apiServiceStatus}`;
+                    ndkVary.domTestApiServer.loading = true;
+                    ndkRequest.reqServiceStatus(url).then(isOk => {
+                        ndkVary.domTestApiServer.loading = false;
+                        ndkFunction.alert(isOk ? ndkI18n.lg.success : ndkI18n.lg.serverError)
+                    })
                 }
                 break;
             //导出配置

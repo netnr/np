@@ -64,6 +64,7 @@ var ndkI18n = {
             pleaseChoose: "请选择",
             run: "运行",
             debug: "调试",
+            test: "测试",
             copyTitle: "复制标题",
             see: "查看",
 
@@ -79,6 +80,7 @@ var ndkI18n = {
             inProgress: "正在进行中...",
             onlyTextFile: "只能是文本文件!",
             unsupported: "不支持!",
+            serverError: "服务错误!",
             copiedToClipboard: "已复制到剪贴板!",
 
             //主题
@@ -280,6 +282,7 @@ var ndkI18n = {
             pleaseChoose: "Please Choose",
             run: "Run",
             debug: "Debug",
+            test: "Test",
             copyTitle: "Copy Title",
             see: "See",
 
@@ -295,6 +298,7 @@ var ndkI18n = {
             inProgress: "In progress...",
             onlyTextFile: "Only text file!",
             unsupported: "Unsupported!",
+            serverError: "Service Error!",
             copiedToClipboard: "Copied to clipboard!",
 
             //主题

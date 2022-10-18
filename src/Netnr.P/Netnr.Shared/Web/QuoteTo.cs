@@ -68,14 +68,10 @@ public class QuoteTo
                     break;
 
                 case "bpmn-js":
-                    vh.Add("<link href='https://ss.netnr.com/bpmn-js@10.2.0/dist/assets/diagram-js.css' rel='stylesheet' async />");
-                    vh.Add("<link href='https://ss.netnr.com/bpmn-js@10.2.0/dist/assets/bpmn-js.css' rel='stylesheet' async />");
-                    vh.Add("<link href='https://ss.netnr.com/bpmn-js@10.2.0/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />");
-                    vh.Add("<script src='https://ss.netnr.com/bpmn-js@10.2.0/dist/bpmn-modeler.production.min.js'></script>");
-                    break;
-
-                case "leancloud-storage.js":
-                    vh.Add("<script src='https://ss.netnr.com/leancloud-storage@4.13.2/dist/av-min.js'></script>");
+                    vh.Add("<link href='https://ss.netnr.com/bpmn-js@10.2.1/dist/assets/diagram-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://ss.netnr.com/bpmn-js@10.2.1/dist/assets/bpmn-js.css' rel='stylesheet' async />");
+                    vh.Add("<link href='https://ss.netnr.com/bpmn-js@10.2.1/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />");
+                    vh.Add("<script src='https://ss.netnr.com/bpmn-js@10.2.1/dist/bpmn-modeler.production.min.js'></script>");
                     break;
 
                 case "jstree":
@@ -89,10 +85,10 @@ public class QuoteTo
                     break;
 
                 case "viewer.css":
-                    vh.Add("<link href='https://ss.netnr.com/viewerjs@1.10.5/dist/viewer.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://ss.netnr.com/viewerjs@1.11.0/dist/viewer.min.css' rel='stylesheet' />");
                     break;
                 case "viewer.js":
-                    vh.Add("<script src='https://ss.netnr.com/viewerjs@1.10.5/dist/viewer.min.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/viewerjs@1.11.0/dist/viewer.min.js'></script>");
                     break;
 
                 case "qiniu.js":
@@ -202,14 +198,14 @@ public class QuoteTo
                     break;
 
                 case "monaco-editor":
-                    vh.Add("<script src='https://ss.netnr.com/monaco-editor@0.34.0/min/vs/loader.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/monaco-editor@0.34.1/min/vs/loader.js'></script>");
                     vh.Add(@"
                             <script>
                                 var meRequire = require;
 
                                 require.config({
                                     paths: {
-                                        vs: 'https://ss.netnr.com/monaco-editor@0.34.0/min/vs'
+                                        vs: 'https://ss.netnr.com/monaco-editor@0.34.1/min/vs'
                                     },
                                     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
                                 });

@@ -426,6 +426,10 @@ namespace Netnr
             {
                 openTransaction = false;
             }
+            if (tdb == EnumTo.TypeDB.SQLite && sqlUpper == "VACUUM")
+            {
+                openTransaction = false; 
+            }
 
             //消息
             var listInfo = new List<string>();
