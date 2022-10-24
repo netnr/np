@@ -5,6 +5,9 @@ var me = {
             //xml formatter
             monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
 
+            //json comments
+            monaco.languages.json.jsonDefaults.diagnosticsOptions.comments = "ignore";
+
             resolve();
         });
     }),

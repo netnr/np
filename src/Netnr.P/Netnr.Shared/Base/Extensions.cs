@@ -66,25 +66,18 @@ public static partial class Extensions
     /// <summary>
     /// 获取值（无效类型返回默认值）
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">基本数据类型，不是类</typeparam>
     /// <param name="ele"></param>
     /// <param name="name"></param>
     /// <returns></returns>
     public static T GetValue<T>(this JsonElement ele, string name)
     {
         var val = GetValue(ele, name);
-        if (!string.IsNullOrWhiteSpace(val))
+        if (!string.IsNullOrEmpty(val))
         {
             try
             {
-                if (typeof(T).IsClass)
-                {
-                    return val.DeJson<T>();
-                }
-                else
-                {
-                    return val.ToConvert<T>();
-                }
+                return val.ToConvert<T>();
             }
             catch (Exception) { }
         }

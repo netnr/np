@@ -9,7 +9,12 @@
 
 @if (rows.Count == 0)
 {
-    <h1 class="text-center my-5 py-5">咣</h1>
+    <div class="text-center my-5 py-5">
+        <h4>咣</h4>
+        <sl-animation name="jello" duration="5000" play>
+            <sl-button href="/draw/code/form" size="small">Add draw</sl-button>
+        </sl-animation>
+    </div>
 }
 else
 {

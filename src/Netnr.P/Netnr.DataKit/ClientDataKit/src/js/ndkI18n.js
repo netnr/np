@@ -50,6 +50,7 @@ var ndkI18n = {
             default: "默认",
             current: "当前",
             about: "关于",
+            reset: "重置",
             version: "版本",
             notify: "通知",
             message: "消息",
@@ -81,6 +82,7 @@ var ndkI18n = {
             onlyTextFile: "只能是文本文件!",
             unsupported: "不支持!",
             serverError: "服务错误!",
+            deleteAllData: "删除所有数据",
             copiedToClipboard: "已复制到剪贴板!",
 
             //主题
@@ -268,6 +270,7 @@ var ndkI18n = {
             default: "Default",
             current: "Current",
             about: "About",
+            reset: "Reset",
             version: "Version",
             notify: "Notify",
             message: "Message",
@@ -299,6 +302,7 @@ var ndkI18n = {
             onlyTextFile: "Only text file!",
             unsupported: "Unsupported!",
             serverError: "Service Error!",
+            deleteAllData: "Delete All Data",
             copiedToClipboard: "Copied to clipboard!",
 
             //主题

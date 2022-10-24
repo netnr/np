@@ -9,7 +9,12 @@
 
 @if (rows.Count == 0)
 {
-    <h1 class="text-center my-5 py-5">咣</h1>
+    <div class="text-center my-5 py-5">
+        <h4>咣</h4>
+        <sl-animation name="jello" duration="5000" play>
+            <sl-button href="/doc/form" size="small">Add doc</sl-button>
+        </sl-animation>
+    </div>
 }
 else
 {
@@ -29,7 +34,7 @@ else
                     {
                         if (item.DsOpen != 1)
                         {
-                            <sl-icon class="text-success" title="私有" name="lock-fill" ></sl-icon>
+                            <sl-icon class="text-success" title="私有" name="lock-fill"></sl-icon>
                         }
                         if (item.DsOpen != 1 && !string.IsNullOrWhiteSpace(item.Spare1))
                         {
@@ -60,5 +65,5 @@ else
                 <partial name="_PartialPaging" model="Model" />
             </div>
         </div>
-    </div>   
+    </div>
 }

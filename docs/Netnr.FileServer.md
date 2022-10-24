@@ -1,8 +1,10 @@
 # NFS (Netnr.FileServer)
-基于 .NET (Latest) 的简单文件服务器，数据库为 SQLite
+简单文件服务器  
+simple file server
 
-> https://github.com/netnr/np/releases  
-> `appsettings.json` 为配置文件，文件数据库 和 上传目录 赋予读写权限
+`appsettings.json` 为配置文件，文件数据库 和 上传目录 赋予读写权限
+
+https://github.com/netnr/np/releases
 
 ### 功能
 - [x] 获取 Token 授权操作（有效期内访问所有接口）

@@ -38,6 +38,9 @@ var ndkEditor = {
         //xml formatter
         monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
 
+        //json comments
+        monaco.languages.json.jsonDefaults.diagnosticsOptions.comments = "ignore";
+
         //sql formatter
         let langs = ['sql', 'mysql', 'pgsql'];
         langs.forEach(lang => {

@@ -118,6 +118,7 @@ body {
 /* iframe 切换由隐藏改为浮动层&透明度（修复因隐藏造成easyui表格显示不正常的问题） */
 #mtabox {
     position: relative;
+    height: calc(100vh + 45px);
 }
 
     #mtabox .tab-pane {

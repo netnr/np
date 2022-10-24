@@ -161,10 +161,7 @@ namespace Netnr
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 //当前缓存的日志
-                Parallel.ForEach(logs, log =>
-                {
-                    CurrentCacheLog.Enqueue(log);
-                });
+                logs.AsParallel().ForAll(log => CurrentCacheLog.Enqueue(log));
 
                 //锁
                 if (Monitor.TryEnter(WriteMark))
@@ -265,7 +262,7 @@ namespace Netnr
         /// <param name="logs"></param>
         public static void MakeUpLogs(ref IEnumerable<LoggingModel> logs)
         {
-            Parallel.ForEach(logs, item =>
+            logs.AsParallel().ForAll(item =>
             {
                 //设置ID
                 item.LogId = BitConverter.ToInt64(Guid.NewGuid().ToByteArray(), 0).ToString();

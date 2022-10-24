@@ -1,7 +1,8 @@
 # NS (Netnr.Serve)
-基于 .NET (Latest) 的简单 WEB 服务
+简单 WEB 服务  
+Simple Web Service
 
-> https://github.com/netnr/np/releases
+https://github.com/netnr/np/releases
 
 ### Start (启动)
 ```bat

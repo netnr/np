@@ -96,7 +96,7 @@ public class QuoteTo
                     break;
 
                 case "cos-js-sdk-v5.js":
-                    vh.Add("<script src='https://ss.netnr.com/cos-js-sdk-v5@1.4.6/dist/cos-js-sdk-v5.min.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/cos-js-sdk-v5@1.4.10/dist/cos-js-sdk-v5.min.js'></script>");
                     break;
 
                 case "ag-grid-enterprise.js":
@@ -170,15 +170,15 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://ss.netnr.com/swagger-ui-dist@4.14.3/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://ss.netnr.com/swagger-ui-dist@4.15.0/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.14.3/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.14.3/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.15.0/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.15.0/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
-                    vh.Add("<script src='https://ss.netnr.com/js-beautify@1.14.6/js/lib/beautifier.min.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/js-beautify@1.14.7/js/lib/beautifier.min.js'></script>");
                     break;
 
                 case "jdenticon.js":

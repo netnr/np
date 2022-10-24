@@ -176,6 +176,40 @@ namespace Netnr
 
             return num;
         }
+
+        /// <summary>
+        /// 批量写入
+        /// </summary>
+        /// <param name="tdb"></param>
+        /// <param name="dt"></param>
+        /// <param name="sqlEmpty">查询空表脚本，默认*，可选列，会影响数据更新的列</param>
+        /// <returns></returns>
+        public int BulkBatch(EnumTo.TypeDB tdb, DataTable dt, string sqlEmpty = null)
+        {
+            int num = 0;
+
+            switch (tdb)
+            {
+                case EnumTo.TypeDB.SQLite:
+                    num = BulkBatchSQLite(dt, sqlEmpty);
+                    break;
+                case EnumTo.TypeDB.MySQL:
+                case EnumTo.TypeDB.MariaDB:
+                    num = BulkBatchMySQL(dt, sqlEmpty);
+                    break;
+                case EnumTo.TypeDB.Oracle:
+                    num = BulkBatchOracle(dt, sqlEmpty);
+                    break;
+                case EnumTo.TypeDB.SQLServer:
+                    num = BulkBatchSQLServer(dt, sqlEmpty);
+                    break;
+                case EnumTo.TypeDB.PostgreSQL:
+                    num = BulkBatchPostgreSQL(dt, sqlEmpty);
+                    break;
+            }
+
+            return num;
+        }
     }
 }
 

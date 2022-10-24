@@ -21,10 +21,15 @@
         </div>
         @if (rows.Count == 0)
         {
-            <h1 class="text-center my-5 py-5">咣</h1>
+            <div class="text-center my-5 py-5">
+                <h4>咣</h4>
+                <sl-animation name="jello" duration="5000" play>
+                    <sl-button href="/guff" size="small">Add guff</sl-button>
+                </sl-animation>
+            </div>
         }
         else
-        {     
+        {
             <div class="col-12 px-4">
                 <span class="me-3 fs-4 align-middle"><b>@Model.Pag.Total.ToString("N0")</b> guffs results</span>
                 <sl-animation name="jello" duration="5000" play>
@@ -82,22 +87,24 @@
                             <sl-icon class="align-middle" name="reply"></sl-icon>@item.GrReplyNum.Value
                         </a>
                         <a href="/guff/user/@item.Uid" class="me-3 text-nowrap lh-lg">@item.Spare3</a>
-                        <small class="me-3 d-none d-sm-inline-block opacity-75" title="创建于">@VisualFormatService.Duration(item.GrCreateTime.Value)</small>                    
-                    
-                        @if (!string.IsNullOrWhiteSpace(item.GrTypeName) && !string.IsNullOrWhiteSpace(item.GrTypeValue)) {
+                        <small class="me-3 d-none d-sm-inline-block opacity-75" title="创建于">@VisualFormatService.Duration(item.GrCreateTime.Value)</small>
+
+                        @if (!string.IsNullOrWhiteSpace(item.GrTypeName) && !string.IsNullOrWhiteSpace(item.GrTypeValue))
+                        {
                             <!--分类-->
                             <a class="me-3 text-nowrap lh-lg text-decoration-none opacity-75" title="分类名/分类值">
                                 <sl-icon class="align-middle" name="diagram-2"></sl-icon>@(item.GrTypeName + '/' + item.GrTypeValue)
                             </a>
                         }
-                    
-                        @if (!string.IsNullOrWhiteSpace(item.GrObject)) {
+
+                        @if (!string.IsNullOrWhiteSpace(item.GrObject))
+                        {
                             <!--对象-->
                             <a class="me-3 text-nowrap lh-lg text-decoration-none opacity-75" title="对象">
                                 <sl-icon class="align-middle" name="person"></sl-icon>@item.GrObject
                             </a>
                         }
-                    
+
                         @if (!string.IsNullOrWhiteSpace(item.GrTag))
                         {
                             var tags = item.GrTag.Split(',');
@@ -109,7 +116,7 @@
                                 </a>
                             }
                         }
-                    
+
                         <!--查看-->
                         <a href="/guff/code/@item.GrId" class="lh-lg text-decoration-none me-3" title="查看这一条">
                             <sl-icon class="align-middle" name="eye"></sl-icon>
@@ -130,6 +137,6 @@
             <div class="col-12">
                 <partial name="_PartialPaging" model="Model" />
             </div>
-        }   
+        }
     </div>
 </div>

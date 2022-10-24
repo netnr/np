@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Netnr;
 
@@ -95,6 +99,139 @@ public class CmdTo
 
             return cr;
         });
+    }
+
+    /// <summary>
+    /// 根据端口号杀进程
+    /// </summary>
+    /// <param name="ports"></param>
+    public static void KillProcess(int[] ports)
+    {
+        var listPortInfo = GetPortInfo();
+        var listPid = listPortInfo.Where(x => ports.Contains(x.Port)).Select(x => x.ProcessId).ToList();
+        listPid.ForEach(pid =>
+        {
+            try
+            {
+                var proc = Process.GetProcessById(pid);
+                proc.Kill();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        });
+    }
+
+    /// <summary>
+    /// 获取端口信息
+    /// </summary>
+    /// <returns></returns>
+    public static List<PortInfo> GetPortInfo()
+    {
+        var result = new List<PortInfo>();
+
+        if (GlobalTo.IsWindows)
+        {
+            var er = Execute("-ano", "netstat");
+            var rows = Regex.Split(er.CrOutput, "\r\n");
+            foreach (string row in rows)
+            {
+                var tokens = Regex.Split(row, "\\s+");
+                if (tokens.Length > 4 && (tokens[1].Equals("UDP") || tokens[1].Equals("TCP")))
+                {
+                    var proto = tokens[1].ToLower();
+                    var ipAndPort = tokens[2];
+                    var ipv6AndPort = ipAndPort.Split("]:");
+
+                    var pi = new PortInfo
+                    {
+                        Protocol = proto,
+                        ProcessId = Convert.ToInt32(tokens[proto == "udp" ? 4 : 5])
+                    };
+
+                    //ipv6
+                    if (ipv6AndPort.Length == 2)
+                    {
+                        pi.IP = $"{ipv6AndPort[0].TrimStart('[')}";
+                        pi.Port = Convert.ToInt32(ipv6AndPort[1]);
+                        pi.Protocol += "6";
+                    }
+                    else
+                    {
+                        var ipv4AndPort = ipAndPort.Split(':');
+                        pi.IP = ipv4AndPort[0];
+                        pi.Port = Convert.ToInt32(ipv4AndPort[1]);
+                    }
+
+                    try
+                    {
+                        var procInfo = Process.GetProcessById(pi.ProcessId);
+                        pi.ProcessName = procInfo.ProcessName;
+                    }
+                    catch (Exception) { }
+
+                    result.Add(pi);
+                }
+            }
+        }
+        else
+        {
+            var er = Execute("-tunlp", "netstat");
+            var rows = Regex.Split(er.CrOutput, "\n");
+            foreach (string row in rows)
+            {
+                var tokens = Regex.Split(row, "\\s+");
+                var proto = tokens[0];
+
+                if ((proto.StartsWith("tcp") || proto.StartsWith("udp")) && tokens.Length > 7 && tokens[5] == "LISTEN")
+                {
+                    var ipAndPort = tokens[3];
+                    var ipsIndex = ipAndPort.LastIndexOf(':');
+                    var pipn = tokens[6].Split('/').ToList();
+                    var pi = new PortInfo
+                    {
+                        Port = Convert.ToInt32(ipAndPort.Substring(ipsIndex + 1)),
+                        IP = ipAndPort.Substring(0, ipsIndex),
+                        Protocol = proto,
+                        ProcessId = Convert.ToInt32(pipn[0])
+                    };
+                    pipn.RemoveAt(0);
+                    pi.ProcessName = string.Join("/", pipn);
+
+                    result.Add(pi);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 端口信息
+    /// </summary>
+    public class PortInfo
+    {
+        /// <summary>
+        /// 端口
+        /// </summary>
+        public int Port { get; set; }
+        /// <summary>
+        /// IP
+        /// </summary>
+        public string IP { get; set; }
+        /// <summary>
+        /// tcp udp tcp6 udp6
+        /// </summary>
+        public string Protocol { get; set; }
+        /// <summary>
+        /// 进程名称
+        /// </summary>
+        public string ProcessName { get; set; }
+        /// <summary>
+        /// 进程ID
+        /// </summary>
+        public int ProcessId { get; set; }
     }
 
     /// <summary>

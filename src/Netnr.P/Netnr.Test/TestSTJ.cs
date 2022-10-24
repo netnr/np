@@ -57,7 +57,7 @@ namespace Netnr.Test
                 }
             };
             Debug.WriteLine(vm.ToJson());
-            Debug.WriteLine(vm.ToJson().DeJson().GetProperty("data").GetValue<ResultVM>("sub"));
+            Debug.WriteLine(vm.ToJson().DeJson().GetProperty("data").GetProperty("sub").ToString().DeJson<ResultVM>());
 
             var jsonFormat = JsonSerializer.Serialize(jsonElement, new JsonSerializerOptions()
             {

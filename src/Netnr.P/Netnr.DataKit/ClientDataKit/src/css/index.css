@@ -9,16 +9,16 @@
     flex-wrap: wrap;
 }
 
-    .nr-box-head > * {
-        margin-right: .5em;
-    }
+.nr-box-head>* {
+    margin-right: .5em;
+}
 
-.nr-box-head > *:last-child {
+.nr-box-head>*:last-child {
     margin-left: auto;
 }
 
 /* 设置 */
-.nr-dialog-setting sl-details{
+.nr-dialog-setting sl-details {
     margin-bottom: .5em;
 }
 
@@ -26,26 +26,29 @@
 .nr-window-conns {
     margin-left: 1em;
 }
+
 /*分离器-sql*/
 .nr-spliter-sql {
     --es-sql-height: 45%;
 }
 
-    .nr-spliter-sql .nrc-spliter-item:first-child {
-        height: var(--es-sql-height)
-    }
+.nr-spliter-sql .nrc-spliter-item:first-child {
+    height: var(--es-sql-height)
+}
 
-    .nr-spliter-sql .nrc-spliter-item:last-child {
-        height: calc(100% - var(--nrc-spliter-width) - var(--es-sql-height))
-    }
+.nr-spliter-sql .nrc-spliter-item:last-child {
+    height: calc(100% - var(--nrc-spliter-width) - var(--es-sql-height))
+}
 
 /*分离器-主体*/
 .nr-spliter-body {
     border-top: 1px solid var(--sl-color-primary-100);
 }
+
 .nr-spliter-body .nr-box-left {
     width: 48%;
 }
+
 .nr-spliter-body .nr-box-right {
     width: calc(100% - 48% - var(--nrc-spliter-width));
 }
@@ -61,8 +64,9 @@
     width: var(--ebox-tool-width);
     background-color: var(--sl-color-neutral-100);
 }
-.nr-editor-tool sl-icon-button::part(base){
-    padding: .2em .1em;    
+
+.nr-editor-tool sl-icon-button::part(base) {
+    padding: .2em .1em;
 }
 
 .nr-editor-sql {
@@ -80,33 +84,43 @@
     height: 200px;
 }
 
+/*设置服务*/
+.nr-server-config {
+    display: flex;
+}
+
 /*设置参数*/
 .nr-parameter-config {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;    
+    flex-direction: row;
     align-items: flex-end;
 }
-.nr-parameter-config > div {
+
+.nr-parameter-config>div {
     min-width: 8em;
-    margin: 0 1em 1em;
+    margin: 0 1em 1em 0;
 }
 
 /*分离器-code*/
 .nr-spliter-code .nrc-spliter-item {
     width: 50%;
 }
+
 .nr-spliter-code .nr-editor-gc1,
 .nr-spliter-code .nr-editor-gc2 {
     border: 1px solid var(--sl-color-primary-100);
 }
+
 .nr-gc1-tool,
 .nr-gc2-tool {
     display: flex;
 }
-.nr-gc1-tool > * {
+
+.nr-gc1-tool>* {
     margin-right: .5em;
 }
+
 .nr-gc1-code,
 .nr-gc2-language {
     min-width: 18em;
@@ -117,6 +131,7 @@
     display: inline;
     position: relative;
 }
+
 .nr-output-body {
     position: absolute;
     z-index: 1;

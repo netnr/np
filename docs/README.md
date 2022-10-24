@@ -3,7 +3,6 @@
 netnr@netnr.com  
 .NET、SQL、JavaScript
 
----
 
 ### Site
 **Git** 源码托管
@@ -43,7 +42,6 @@ netnr@netnr.com
 更多发布应用
 &nbsp; https://github.com/netnr/np/releases
 
----
 
 ### Sponsors
 支付宝 微信  
@@ -52,7 +50,8 @@ netnr@netnr.com
 
 [Sponsor list](SPONSORS.md)
 
----
+[扫码进群](https://s1.netnr.com/tmp/weixin_group.jpg)
+
 
 ### Up
 不要把人或事往坏处想

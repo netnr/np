@@ -8,7 +8,7 @@ var ndkStorage = {
 
     // 存储实例
     instanceConfig: null,
-    instanceCache: null,
+    instanceCache: null,   
 
     // 初始化
     init: localforage => {

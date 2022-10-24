@@ -18,12 +18,12 @@ var ndkInit = {
         main.style.visibility = "hidden";
 
         //接口服务
-        var htmlApiServer = [`<sl-input class="nr-text-api-server mb-2" placeholder="${ndkI18n.lg.setServerPlaceholder}"></sl-input>`];
-        htmlApiServer.push(`<sl-button class="nr-test-api-server mb-2" variant="warning" size="small" data-cmd="test-api-server">${ndkI18n.lg.test}</sl-button>`);
+        var htmlApiServer = [`<sl-input class="nr-text-api-server mb-2 me-3" placeholder="${ndkI18n.lg.setServerPlaceholder}"></sl-input>`];
+        htmlApiServer.unshift(`<sl-button class="nr-test-api-server mb-2 me-2" variant="warning" data-cmd="test-api-server">${ndkI18n.lg.test}</sl-button>`);
         ndkVary.resApiServer.forEach(item => {
             htmlApiServer.push(`
             <sl-tooltip content="${item.remark ?? item.key}">
-                <sl-button class="mb-2" size="small" data-cmd="set-api-server" data-val="${item.key}" >${item.key}</sl-button>
+                <sl-button class="mb-2 me-2" data-cmd="set-api-server" data-val="${item.key}" >${item.key}</sl-button>
             </sl-tooltip>
             `);
         });
@@ -79,6 +79,9 @@ var ndkInit = {
                     <sl-divider></sl-divider>
                     ${htmlLanguageItems.join('\n')}
                     <sl-divider></sl-divider>
+                    <sl-menu-item data-cmd="reset">
+                        ${ndkVary.iconSvg("brush-fill", ndkI18n.lg.reset, { slot: "prefix" })}
+                    </sl-menu-item>
                     <sl-menu-item data-cmd="about">
                         ${ndkVary.iconSvg("info-circle", ndkI18n.lg.about, { slot: "prefix" })}
                     </sl-menu-item>
@@ -88,15 +91,19 @@ var ndkInit = {
             <!--设置弹窗-->
             <sl-dialog label="${ndkVary.emoji.cog}${ndkI18n.lg.setTitle}" class="nr-dialog-setting dialog-width" style="--width: 70vw;">
                 <sl-details summary="${ndkVary.emoji.server}${ndkI18n.lg.setServerTitle}" open>
-                    ${htmlApiServer.join('\n')}
+                    <div class="nr-server-config">${htmlApiServer.join('\n')}</div>
                 </sl-details>
                 <sl-details summary="${ndkVary.emoji.parameter}${ndkI18n.lg.setParameterConfigTitle}" open>
                     <div class="nr-parameter-config"></div>
                 </sl-details>
                 <sl-details summary="${ndkVary.emoji.io}${ndkI18n.lg.setExportTitle}" open>
-                    ${htmlConfigExport.join('\n')}                    
+                    ${htmlConfigExport.join('\n')}
                     <sl-divider></sl-divider>
-                    ${htmlConfigImport.join('\n')}                    
+                    ${htmlConfigImport.join('\n')}
+                    <sl-divider></sl-divider>
+                    <sl-button data-cmd="reset" variant="danger" size="large">
+                        ${ndkVary.iconSvg("brush-fill", ndkI18n.lg.reset, { slot: "prefix" })}
+                    </sl-button>
                 </sl-details>
             </sl-dialog>
 
@@ -566,44 +573,43 @@ var ndkInit = {
     },
 }
 
-window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("DOMContentLoaded", async () => {
     agg.lk();
     ndkStorage.init(window["localforage"]);
 
     // 初始化语言
-    ndkStorage.stepsGet().then(sobj => {
-        if (sobj && sobj.language) {
-            ndkI18n.language = sobj.language;
+    var sobj = await ndkStorage.stepsGet();
+    if (sobj && sobj.language) {
+        ndkI18n.language = sobj.language;
+    }
+
+    // 初始化dom
+    ndkInit.dom();
+    //dom对象
+    document.querySelectorAll('*').forEach(node => {
+        if (node.classList.value.startsWith('nr-')) {
+            var vkey = 'dom';
+            node.classList[0].substring(3).split('-').forEach(c => vkey += c.substring(0, 1).toUpperCase() + c.substring(1))
+            ndkVary[vkey] = node;
         }
-
-        // 初始化dom
-        ndkInit.dom();
-        //dom对象
-        document.querySelectorAll('*').forEach(node => {
-            if (node.classList.value.startsWith('nr-')) {
-                var vkey = 'dom';
-                node.classList[0].substring(3).split('-').forEach(c => vkey += c.substring(0, 1).toUpperCase() + c.substring(1))
-                ndkVary[vkey] = node;
-            }
-        });
-        // 语言选中
-        ndkAction.actionRun('language', ndkI18n.language);
-
-        // 编辑器初始化
-        ndkEditor.init(window["meRequire"]);
-
-        //事件
-        ndkInit.event();
-        //步骤恢复
-        ndkStep.stepStart().then(() => {
-            ndkVary.domLoading.style.display = "none";
-            ndkVary.domMain.style.visibility = "visible";
-            document.body.style.removeProperty("overflow");
-
-            console.clear();
-            console.debug(`${ndkVary.name} v${ndkVary.version}`);
-        })
     });
+    // 语言选中
+    ndkAction.actionRun('language', ndkI18n.language);
+
+    // 编辑器初始化
+    ndkEditor.init(window["meRequire"]);
+
+    //事件
+    ndkInit.event();
+
+    //步骤恢复
+    await ndkStep.stepStart();
+    ndkStep.stepLog(ndkI18n.lg.done);
+    ndkVary.domLoading.style.display = "none";
+    ndkVary.domMain.style.visibility = "visible";
+    document.body.style.removeProperty("overflow");
+    console.clear();
+    console.debug(`${ndkVary.name} v${ndkVary.version}`);
 }, false);
 
 export { ndkInit }

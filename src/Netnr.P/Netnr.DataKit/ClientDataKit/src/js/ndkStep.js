@@ -440,6 +440,7 @@ var ndkStep = {
 
             ndkStep.stepVarDefer = setTimeout(() => {
                 ndkStep.stepStatus(-1);
+                ndkStep.stepLog("Timeout");
                 resolve();
             }, 1000 * 30);
 
@@ -452,6 +453,7 @@ var ndkStep = {
                 "step-view-conns",
                 "step-tab-group-tree-show",
             ], sobj).then(() => {
+                ndkStep.stepLog(`${ndkI18n.lg.test} ${ndkVary.apiServer}${ndkVary.apiServiceStatus}`);
                 ndkRequest.reqServiceStatus().then(isOk => {
                     if (isOk) {
                         ndkStep.stepItemRun([
@@ -489,6 +491,8 @@ var ndkStep = {
      */
     stepItemCmd: (stepItem, sobj) => new Promise(resolve => {
         sobj = sobj || {}
+
+        ndkStep.stepLog(stepItem.replace("step-", ""));
         switch (stepItem) {
             //主题
             case "step-theme":
@@ -610,7 +614,21 @@ var ndkStep = {
             default:
                 break;
         }
-    })
+    }),
+
+    /**
+     * 日志
+     * @param {*} content 
+     */
+    stepLog: (content) => {
+        if (!ndkVary.domStepLog) {
+            ndkVary.domStepLog = document.createElement("small");
+            ndkVary.domLoading.appendChild(ndkVary.domStepLog);
+        }
+        var domItem = document.createElement("div");
+        domItem.innerHTML = content;
+        ndkVary.domStepLog.appendChild(domItem);
+    },
 }
 
 export { ndkStep }

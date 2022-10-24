@@ -225,7 +225,7 @@ var ndkView = {
                 ndkVary.typeDB.forEach(type => {
                     adddbs.push({
                         name: type,
-                        icon: ndkVary.iconSvg(type),
+                        icon: ndkVary.iconSvg(type, '', { library: "nr-icon" }),
                         action: function () {
                             var order = enode ? enode.rowIndex + 1 : agg.getAllRows(ndkVary.gridOpsConns, true).length;
 
@@ -254,7 +254,7 @@ var ndkView = {
                 ndkVary.resConnDemo.forEach(dc => {
                     adddbs.push({
                         name: `[${dc.group}] ${dc.alias}`,
-                        icon: ndkVary.iconSvg(dc.type),
+                        icon: ndkVary.iconSvg(dc.type, '', { library: "nr-icon" }),
                         action: function () {
                             var rows = agg.getAllRows(ndkVary.gridOpsConns, true);
                             if (rows.filter(x => x.id == dc.id).length) {

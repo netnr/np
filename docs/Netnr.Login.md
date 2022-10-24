@@ -1,5 +1,5 @@
 # Netnr.Login
-第三方 OAuth2 授权登录，QQ、微信（Weixin）、微博（Weibo）、淘宝（Taobao）、支付宝（AliPay）、钉钉（DingTalk）、码云（Gitee）、GitHub、微软（Microsoft ）、StackOverflow、谷歌（Google）
+第三方 OAuth2 授权登录，QQ、微信（Weixin）、微博（Weibo）、淘宝（Taobao）、支付宝（Alipay）、钉钉（DingTalk）、码云（Gitee）、GitHub、微软（Microsoft ）、StackOverflow、谷歌（Google）
 
 ### 安装 (NuGet)
 ```

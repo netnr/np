@@ -180,7 +180,7 @@ namespace Netnr.Blog.Web.Services
                 {
                     if (string.IsNullOrWhiteSpace(uinfo.Nickname))
                     {
-                        vm.Log.Add("填写昵称");
+                        vm.Log.Add("完善个人信息：填写昵称");
                     }
 
                     using var db = ContextBaseFactory.CreateDbContext();
@@ -190,12 +190,12 @@ namespace Netnr.Blog.Web.Services
                     {
                         if (umo.UserMailValid != 1)
                         {
-                            vm.Log.Add("验证邮箱");
+                            vm.Log.Add("完善个人信息：验证邮箱");
                         }
 
                         if (string.IsNullOrWhiteSpace(umo.UserPhone) || umo.UserPhone.Trim().Length != 11)
                         {
-                            vm.Log.Add("填写手机号码");
+                            vm.Log.Add("完善个人信息：填写手机号码");
                         }
 
                         if (string.IsNullOrWhiteSpace(umo.OpenId1)
@@ -205,7 +205,7 @@ namespace Netnr.Blog.Web.Services
                             && string.IsNullOrWhiteSpace(umo.OpenId5)
                             && string.IsNullOrWhiteSpace(umo.OpenId6))
                         {
-                            vm.Log.Add("绑定一项授权关联");
+                            vm.Log.Add("完善个人信息：绑定一项授权关联");
                         }
 
                         if (umo.UserCreateTime.Value.AddDays(15) > DateTime.Now)

@@ -134,7 +134,7 @@ var ndkVary = {
     //接口服务列表
     resApiServer: [
         { key: location.origin, remark: ndkI18n.lg.current },
-        { key: "https://netnr.zme.ink/api/v1", remark: "Deploy on Render" }
+        { key: "https://netnr.zme.ink/api/v1", remark: "online" }
     ],
 
     apiServer: location.origin, //指定接口服务

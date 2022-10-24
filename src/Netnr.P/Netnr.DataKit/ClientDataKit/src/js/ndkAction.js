@@ -113,6 +113,19 @@ var ndkAction = {
                     }
                 }
                 break;
+            //重置
+            case "reset":
+                {
+                    ndkFunction.alert(`<sl-button style="width:100%" size="large" variant="danger">${ndkI18n.lg.deleteAllData}</sl-button>`, ndkI18n.lg.reset, '25vw');
+                    ndkVary.domAlert.querySelector('sl-button').addEventListener('click', async () => {
+                        if (confirm(ndkI18n.lg.deleteAllData)) {
+                            await ndkStorage.instanceCache.dropInstance();
+                            await ndkStorage.instanceConfig.dropInstance();
+                            location.reload(false);
+                        }
+                    })
+                }
+                break;
             case "about":
                 {
                     ndkFunction.alert(`<div style="font-size:var(--sl-font-size-x-large)">${ndkVary.name} <sl-badge variant="warning">v${ndkVary.version}</sl-badge></div>

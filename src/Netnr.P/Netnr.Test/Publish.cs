@@ -60,7 +60,8 @@ namespace Netnr.Test
                             Debug.WriteLine(output.Data);
                             if (output.Data == "Done!")
                             {
-                                process.Kill();
+                                process.Close();//关闭进程
+                                process.Dispose();
                             }
                         }
                     };
@@ -68,8 +69,9 @@ namespace Netnr.Test
                     process.Start();//启动线程
                     process.BeginOutputReadLine();//开始异步读取
                     process.WaitForExit();//阻塞等待进程结束
-                    process.Close();//关闭进程
-                    process.Dispose();
+
+                    //process.Close();//关闭进程
+                    //process.Dispose();
                 });
             });
 
@@ -91,7 +93,7 @@ namespace Netnr.Test
                     if (resp.StatusCode == HttpStatusCode.OK)
                     {
                         Debug.WriteLine("服务已启动成功，准备执行生成");
-                        Thread.Sleep(3000);
+                        Thread.Sleep(1000);
                         var bresult = HttpTo.Get($"{uri}/ss/build");
                         Debug.WriteLine(bresult);
                         Assert.True(bresult.DeJson<ResultVM>().Code == 200);
@@ -101,15 +103,56 @@ namespace Netnr.Test
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex);
+                    Debug.WriteLine(ex.Message);
                 }
             }
+
+            Thread.Sleep(2000);
+            CmdTo.KillProcess(new int[] { Convert.ToInt32(uri.Split(':').Last()) });
         }
 
         [Fact]
         public void NetnrBlog()
         {
             Release("Netnr.Blog.Web", "blog");
+        }
+
+        [Fact]
+        public void NetnrProjectCopy()
+        {
+            //源目录
+            var sourcePath = @"D:\site\npp";
+            //目标目录
+            var targetPath = @"D:\site\np";
+            //忽略文件夹
+            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.SMS,Netnr.XOps";
+
+            //删除旧文件夹
+            Directory.Delete(Path.Combine(targetPath, "docs"), true);
+            Directory.Delete(Path.Combine(targetPath, "src"), true);
+
+            FileTo.CopyDirectory(sourcePath, targetPath, ignoreForder.Split(','));
+            Debug.WriteLine("Copy completed!");
+
+            //需要处理的项目名称
+            var listEp = "Netnr.Blog.Web".ToLower().Split(",").ToList();
+
+            var filesPath = Directory.GetFiles(targetPath, "appsettings.json", SearchOption.AllDirectories);
+            for (int i = 0; i < filesPath.Length; i++)
+            {
+                var filePath = filesPath[i];
+                if (!listEp.Any(x => filePath.ToLower().Contains(x)))
+                {
+                    continue;
+                }
+
+                var jo = File.ReadAllText(filePath).DeJsonNode();
+                ClearJsonObject(jo);
+
+                FileTo.WriteText(jo.ToJson(true), filePath, false);
+            }
+
+            Debug.WriteLine("Done!");
         }
 
         [Fact]
@@ -166,17 +209,25 @@ namespace Netnr.Test
             var projectDir = Path.Combine(ProjectRoot, projectName);
             var clientDir = new DirectoryInfo(projectDir).GetDirectories("*Client*").First().FullName;
             var wwwroot = Path.Combine(projectDir, "wwwroot");
-            var blogdk = Path.Combine(ProjectRoot, "Netnr.Blog.Web/wwwroot/app/dk");
+
+            var dkBlog = Path.Combine(ProjectRoot, "Netnr.Blog.Web/wwwroot/app/dk");
+            var dkRF = Path.Combine(ProjectRoot, "Netnr.ResponseFramework.Web/wwwroot/libs/dk");
+
             var batPath = Path.Combine(Path.GetTempPath(), "_build.bat");
 
-            Debug.WriteLine("构建在线资源版到 Netnr.Blog.Web/wwwroot/app/dk");
+            Debug.WriteLine("构建在线资源版到 Netnr.Blog.Web/wwwroot/app/dk\r\nNetnr.ResponseFramework.Web/wwwroot/libs/dk");
             File.WriteAllText(batPath, $"npm run prod_online --prefix {clientDir} && exit");
             Debug.WriteLine(CmdTo.Execute($"start {batPath}").CrOutput);
-            if (Directory.Exists(blogdk))
+            if (Directory.Exists(dkBlog))
             {
-                Directory.Delete(blogdk, true);
-                FileTo.CopyDirectory(wwwroot, blogdk);
+                Directory.Delete(dkBlog, true);
             }
+            FileTo.CopyDirectory(wwwroot, dkBlog);
+            if (Directory.Exists(dkRF))
+            {
+                Directory.Delete(dkRF, true);
+            }
+            FileTo.CopyDirectory(wwwroot, dkRF);
         }
 
         [Fact]
@@ -394,6 +445,70 @@ namespace Netnr.Test
                 Platform = platform
             };
             ReleaseService.ReleasePackage(model);
+        }
+
+        /// <summary>
+        /// 遍历清除值
+        /// </summary>
+        /// <param name="jo"></param>
+        private static void ClearJsonObject(JsonNode node, JsonElement? ele = null)
+        {
+            if (!ele.HasValue)
+            {
+                ele = node.ToJson().DeJson();
+            }
+
+            node.AsObject().Select(x => x.Key).ToList().ForEach(key =>
+            {
+                var jv = ele.Value.GetProperty(key);
+                switch (jv.ValueKind)
+                {
+                    case JsonValueKind.Object:
+                        ClearJsonObject(node[key], jv);
+                        break;
+                    case JsonValueKind.Array:
+                        ClearJsonArray(node[key], jv);
+                        break;
+                    case JsonValueKind.True:
+                        node[key] = false;
+                        break;
+                    case JsonValueKind.String:
+                        node[key] = "";
+                        break;
+                    case JsonValueKind.Number:
+                        node[key] = 10;
+                        break;
+                }
+            });
+        }
+
+        /// <summary>
+        /// 遍历清除值
+        /// </summary>
+        /// <param name="ja"></param>
+        private static void ClearJsonArray(JsonNode node, JsonElement? ele = null)
+        {
+            if (!ele.HasValue)
+            {
+                ele = node.ToJson().DeJson();
+            }
+
+            var nodeArr = node.AsArray();
+            var eleArr = ele.Value.EnumerateArray();
+            var ei = 0;
+            foreach (var item in eleArr)
+            {
+                switch (item.ValueKind)
+                {
+                    case JsonValueKind.Object:
+                        ClearJsonObject(nodeArr[ei], item);
+                        break;
+                    case JsonValueKind.Array:
+                        ClearJsonArray(nodeArr[ei], item);
+                        break;
+                }
+                ei++;
+            }
         }
     }
 

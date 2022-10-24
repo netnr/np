@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
+
+	<!-- SqlClient v5 剪裁配置 -->
+	<!-- https://docs.microsoft.com/zh-cn/dotnet/core/deploying/trimming/trimming-options -->
+	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
+		<ItemGroup>
+			<ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Private.CoreLib'">
+				<TrimMode>copyused</TrimMode>
+			</ManagedAssemblyToLink>
+		</ItemGroup>
+	</Target>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>TRACE;Ready;ImportBase;Base;AdoFull;DataKit;Serve</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>TRACE;Ready;ImportBase;Base;AdoFull;DataKit;Serve</DefineConstants>
+	</PropertyGroup>
+
+	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
+
+	<ItemGroup>
+		<TrimmableAssembly Include="System.StubHelpers.InterfaceMarshaler" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.10" />
+		<PackageReference Include="MiniExcel" Version="1.28.1" />
+		<PackageReference Include="MySqlConnector" Version="2.1.13" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.80" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
+		<PackageReference Include="Npgsql" Version="6.0.7" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="ud\config.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="ud\hub\" />
+	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties ud_4config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

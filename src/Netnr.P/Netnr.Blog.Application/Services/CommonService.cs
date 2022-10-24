@@ -538,6 +538,7 @@ namespace Netnr.Blog.Application.Services
         public static PageVM GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
+
             var query1 = from a in db.Gist
                          join b in db.UserInfo on a.Uid equals b.UserId
                          where a.GistStatus == 1
@@ -666,6 +667,12 @@ namespace Netnr.Blog.Application.Services
                 Pag = pag,
                 QueryString = dicQs
             };
+
+            //显示词云 Spare1=1
+            if (string.IsNullOrWhiteSpace(q) && pag.Total > 0)
+            {
+                pageSet.Temp = db.Gist.Select(x => new { x.GistCode, x.GistFilename, x.GistRemark, x.GistCreateTime, x.GistOpen, x.GistStatus, x.Spare1 }).Where(x => x.GistOpen == 1 && x.GistStatus == 1 && x.Spare1 == "1").OrderByDescending(x => x.GistCreateTime).ToList().ToJson();
+            }
 
             return pageSet;
         }

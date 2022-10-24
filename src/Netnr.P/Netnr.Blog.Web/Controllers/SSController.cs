@@ -550,8 +550,8 @@ namespace Netnr.Blog.Web.Controllers
                 var urlPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ctrlName}/";
 
                 var cbs = new ConcurrentBag<string>();
-                //并行请求
-                Parallel.ForEach(methods, mh =>
+                //请求
+                methods.ForEach(mh =>
                 {
                     Console.WriteLine(mh.Name);
 

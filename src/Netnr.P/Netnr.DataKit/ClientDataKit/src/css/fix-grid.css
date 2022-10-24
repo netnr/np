@@ -15,13 +15,8 @@
     padding-top: 0;
 }
 
-.ag-theme-balham-dark .ag-selection-checkbox,
-.ag-theme-balham-dark .ag-group-expanded,
-.ag-theme-balham-dark .ag-group-contracted,
-.ag-theme-balham .ag-selection-checkbox,
-.ag-theme-balham .ag-group-expanded,
-.ag-theme-balham .ag-group-contracted {
-    margin-top: 4px;
+.ag-cell-wrapper {
+    min-height: 100%;
 }
 
 /*图标大小*/

@@ -130,14 +130,7 @@ internal static class NetnrCore
         {
             try
             {
-                if (typeof(T).IsClass)
-                {
-                    return val.DeJson<T>();
-                }
-                else
-                {
-                    return val.ToConvert<T>();
-                }
+                return val.ToConvert<T>();
             }
             catch (Exception) { }
         }

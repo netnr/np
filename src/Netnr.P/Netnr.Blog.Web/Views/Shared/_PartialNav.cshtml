@@ -42,13 +42,22 @@
                             </sl-animation>
                         </a>
                     </li>
-                    @if (ctrl == "ss" && actionName != "index")
+                    @if (ctrl == "ss")
                     {
-                        <li class="nav-item mx-2">
-                            <a class='nav-link' href="/@actionName" title='@ViewData["Title"]'>
-                                <b style="color:var(--sl-color-warning-600)">@ViewData["Title"]</b>
-                            </a>
-                        </li>
+                        if (actionName == "index")
+                        {
+                            <li class="nav-item mx-2 pt-1">
+                                <sl-input placeholder="Search..." size="small" class="nr-txt-search"></sl-input>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item mx-2">
+                                <a class='nav-link' href="/@actionName" title='@ViewData["Title"]'>
+                                    <b style="color:var(--sl-color-warning-600)">@ViewData["Title"]</b>
+                                </a>
+                            </li>
+                        }
                     }
                 </ul>
 

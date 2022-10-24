@@ -386,9 +386,10 @@ namespace Netnr.FileServer.Controllers
         /// <param name="files">文件流</param>
         /// <param name="token">token，授权验证，必填</param>
         /// <param name="subdir">子目录，可选</param>
+        /// <param name="oname">原名保存，1原名存储，默认生成新ID</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public ResultVM Upload(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir)
+        public ResultVM Upload(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir, [FromForm] int oname = 0)
         {
             var vm = new ResultVM();
 
@@ -440,7 +441,7 @@ namespace Netnr.FileServer.Controllers
                                 CreateTime = now
                             };
 
-                            var filename = fr.Id + Path.GetExtension(file.FileName);
+                            var filename = oname == 1 ? fr.Name : fr.Id + Path.GetExtension(file.FileName);
 
                             using (var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew))
                             {
@@ -485,9 +486,10 @@ namespace Netnr.FileServer.Controllers
         /// <param name="subdir">子目录，可选</param>
         /// <param name="chunk">当前分片索引</param>
         /// <param name="chunks">总分片数</param>
+        /// <param name="oname">原名保存，1原名存储，默认生成新ID</param>
         /// <returns></returns>
         [HttpPost, HttpOptions]
-        public ResultVM UploadChunk(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks)
+        public ResultVM UploadChunk(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks, [FromForm] int oname = 0)
         {
             var vm = new ResultVM();
 
@@ -582,7 +584,7 @@ namespace Netnr.FileServer.Controllers
                                     Type = file.ContentType,
                                     CreateTime = now
                                 };
-                                var filename = fr.Id + Path.GetExtension(file.FileName);
+                                var filename = oname == 1 ? fr.Name : fr.Id + Path.GetExtension(file.FileName);
 
                                 using var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.Create);
                                 //排序从 0-N Write

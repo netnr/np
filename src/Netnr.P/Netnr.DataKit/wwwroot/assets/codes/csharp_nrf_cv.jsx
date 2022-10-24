@@ -1,6 +1,6 @@
 // @namespace   netnr
 // @name        csharp_nrf_cv
-// @date        2022-10-16
+// @date        2022-10-24
 // @version     1.0.0
 // @description NRF 生成 Controllers Views
 
@@ -68,6 +68,10 @@ async () => {
         codes.push('\t\t}');
         codes.push('');
 
+        var pkCol = tableObj.tableColumns.filter(col => col.PrimaryKey == 1)[0];
+        if (pkCol == null) {
+            tableObj.tableColumns[0];
+        }
         codes.push('\t\t/// <summary>');
         codes.push(`\t\t/// ${classInfo.classComment} 保存`);
         codes.push('\t\t/// </summary>');
@@ -81,6 +85,7 @@ async () => {
         codes.push('');
         codes.push('\t\t\tif (savetype == "add")');
         codes.push('\t\t\t{');
+        codes.push(`\t\t\t\tdb.${classInfo.className}.${pkCol.ColumnName} = Guid.NewGuid().ToString();`);
         codes.push(`\t\t\t\tdb.${classInfo.className}.Add(mo);`);
         codes.push('\t\t\t}');
         codes.push('\t\t\telse');
@@ -116,7 +121,7 @@ async () => {
         codes.push('\t\t\t}');
         codes.push('\t\t\telse');
         codes.push('\t\t\t{');
-        codes.push('\t\t\t\tvm.Set(ARTag.invalid);');
+        codes.push('\t\t\t\tvm.Set(EnumTo.RTag.invalid);');
         codes.push('\t\t\t}');
         codes.push('');
         codes.push('\t\t\treturn vm;');

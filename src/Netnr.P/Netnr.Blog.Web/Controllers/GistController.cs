@@ -185,6 +185,8 @@
         {
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
+
+
             var ps = CommonService.GistQuery(k, lang, 0, userId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;

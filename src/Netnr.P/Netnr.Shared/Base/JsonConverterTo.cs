@@ -110,9 +110,10 @@ public class JsonConverterTo
                         double value => key => writer.WriteNumber(key, value),
                         float value => key => writer.WriteNumber(key, value),
                         short value => key => writer.WriteNumber(key, value),
-                        int value => key => writer.WriteNumber(key, value),
                         ushort value => key => writer.WriteNumber(key, value),
+                        int value => key => writer.WriteNumber(key, value),
                         uint value => key => writer.WriteNumber(key, value),
+                        long value => key => writer.WriteNumber(key, value),
                         ulong value => key => writer.WriteNumber(key, value),
 
                         // strings

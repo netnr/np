@@ -15,7 +15,12 @@
 
 @if (rows.Count == 0)
 {
-    <h1 class="text-center my-5 py-5">咣</h1>
+    <div class="text-center my-5 py-5">
+        <h4>咣</h4>
+        <sl-animation name="jello" duration="5000" play>
+            <sl-button href="/gist" size="small">Add gist</sl-button>
+        </sl-animation>
+    </div>
 }
 else
 {
@@ -41,6 +46,19 @@ else
                     <sl-button href="/gist" size="small">Add gist</sl-button>
                 </sl-animation>
             </div>
+            @if (Model.Temp?.ToString().Length > 10)
+            {
+                var fastIndex = Model.Temp.ToString().DeJson().EnumerateArray();
+                <div class="col-12 p-4">
+                    <sl-details summary="热词" open>
+                        @foreach (var item in fastIndex)
+                        {
+                            var ci = System.IO.Path.GetFileNameWithoutExtension(item.GetValue("GistFilename"));
+                            <a class="text-nowrap lh-lg me-4 fs-6" title="@item.GetValue("GistRemark")" href="/gist/code/@item.GetValue("GistCode")">@ci</a>
+                        }
+                    </sl-details>
+                </div>
+            }
             @foreach (var item in rows)
             {
                 <div class="col-lg-6 my-4 px-4">

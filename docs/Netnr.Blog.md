@@ -10,9 +10,7 @@
 - 支持：SQLServer、MySQL、PostgreSQL、SQLite 等
 - ==================================
 - Baidu-AI （OCR 免费额度）
-- DeviceDetector.NET （日志分析设备来源、爬虫）
 - FluentScheduler（定时任务）
-- IP2Region （IP 区域查询）
 - Markdig （markdown 解析）
 - SkiaSharp （验证码）
 - SkiaSharp.QrCode （二维码）
@@ -22,6 +20,7 @@
 - Netnr.Core（公共类库）
 - Netnr.Login（第三方登录）
 - Netnr.WeChat（微信公众号）
+- Netnr.UAParser（UserAgent 解析爬虫、浏览器）
 
 ### 功能模块
 - 登录、注册（第三方直接登录：QQ、微博、GitHub、淘宝、Microsoft）
