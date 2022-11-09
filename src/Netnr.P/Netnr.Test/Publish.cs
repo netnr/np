@@ -215,7 +215,7 @@ namespace Netnr.Test
 
             var batPath = Path.Combine(Path.GetTempPath(), "_build.bat");
 
-            Debug.WriteLine("构建在线资源版到 Netnr.Blog.Web/wwwroot/app/dk\r\nNetnr.ResponseFramework.Web/wwwroot/libs/dk");
+            Debug.WriteLine("构建在线资源版到\r\nNetnr.Blog.Web/wwwroot/app/dk\r\nNetnr.ResponseFramework.Web/wwwroot/libs/dk");
             File.WriteAllText(batPath, $"npm run prod_online --prefix {clientDir} && exit");
             Debug.WriteLine(CmdTo.Execute($"start {batPath}").CrOutput);
             if (Directory.Exists(dkBlog))

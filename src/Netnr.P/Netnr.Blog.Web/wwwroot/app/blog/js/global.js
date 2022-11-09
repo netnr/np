@@ -157,13 +157,12 @@ var nr = {
         }
         return fd;
     },
-    toQueryString: function (obj) {
-        var qs = [];
-        for (var key in obj) {
-            qs.push(key + "=" + encodeURIComponent(obj[key]));
-        }
-        return qs.join("&");
-    },
+    /**
+     * JSON 转参数
+     * @param {*} obj 
+     * @returns 
+     */
+    toQueryString: (obj) => new URLSearchParams(obj).toString(),
 
     htmlEncode: html => html.replace(/[\u00A0-\u9999<>\&]/g, (i) => '&#' + i.charCodeAt(0) + ';'),
     htmlDecode: html => {

@@ -85,10 +85,10 @@ public class QuoteTo
                     break;
 
                 case "viewer.css":
-                    vh.Add("<link href='https://ss.netnr.com/viewerjs@1.11.0/dist/viewer.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://ss.netnr.com/viewerjs@1.11.1/dist/viewer.min.css' rel='stylesheet' />");
                     break;
                 case "viewer.js":
-                    vh.Add("<script src='https://ss.netnr.com/viewerjs@1.11.0/dist/viewer.min.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/viewerjs@1.11.1/dist/viewer.min.js'></script>");
                     break;
 
                 case "qiniu.js":
@@ -100,7 +100,7 @@ public class QuoteTo
                     break;
 
                 case "ag-grid-enterprise.js":
-                    vh.Add("<script src='https://ss.netnr.com/ag-grid-enterprise@28.2.0/dist/ag-grid-enterprise.min.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/ag-grid-enterprise@28.2.1/dist/ag-grid-enterprise.min.js'></script>");
                     vh.Add("<script>agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }</script>");
                     break;
 
@@ -131,11 +131,11 @@ public class QuoteTo
                     break;
 
                 case "highcharts.js":
-                    vh.Add("<script src='https://ss.netnr.com/highcharts@10.2.1/highcharts.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/highcharts@10.3.1/highcharts.js'></script>");
                     break;
 
                 case "hls.js":
-                    vh.Add("<script src='https://ss.netnr.com/hls.js@1.2.4/dist/hls.min.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/hls.js@1.2.5/dist/hls.min.js'></script>");
                     break;
 
                 case "watermark.js":
@@ -170,11 +170,11 @@ public class QuoteTo
                     break;
 
                 case "swagger-ui-dist.css":
-                    vh.Add("<link href='https://ss.netnr.com/swagger-ui-dist@4.15.0/swagger-ui.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://ss.netnr.com/swagger-ui-dist@4.15.2/swagger-ui.css' rel='stylesheet' />");
                     break;
                 case "swagger-ui-dist.js":
-                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.15.0/swagger-ui-bundle.js'></script>");
-                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.15.0/swagger-ui-standalone-preset.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.15.2/swagger-ui-bundle.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/swagger-ui-dist@4.15.2/swagger-ui-standalone-preset.js'></script>");
                     break;
 
                 case "js-beautify":
@@ -190,7 +190,7 @@ public class QuoteTo
                     break;
 
                 case "pdf.js":
-                    vh.Add("<script src='https://ss.netnr.com/pdfjs-dist@2.16.105/legacy/build/pdf.min.js'></script>");
+                    vh.Add("<script src='https://ss.netnr.com/pdfjs-dist@3.0.279/legacy/build/pdf.min.js'></script>");
                     break;
 
                 case "nginxbeautifier":

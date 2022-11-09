@@ -127,7 +127,7 @@ namespace Netnr
                 //写Excel
                 using (FileStream file = new(fullPathName, FileMode.OpenOrCreate))
                 {
-                    workbook.Write(file);
+                    workbook.Write(file, false);
                 }
 
                 return true;

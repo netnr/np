@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 
 namespace Netnr;
@@ -63,6 +64,24 @@ public class ParsingTo
             return !Regex.IsMatch(txt.Replace("/", ""), @"\W");
         }
     }
+
+    /// <summary>
+    /// 危险替换：仅保留 字母、数字或下划线
+    /// </summary>
+    /// <param name="txt"></param>
+    /// <returns></returns>
+    public static string DangerReplace(string txt)
+    {
+        var result = Regex.Replace(txt, "[^a-zA-Z0-9_]+", "", RegexOptions.Compiled);
+        return result;
+    }
+
+    /// <summary>
+    /// 危险检测：非字母、数字或下划线
+    /// </summary>
+    /// <param name="txt"></param>
+    /// <returns></returns>
+    public static bool IsDanger(string txt) => Regex.IsMatch(txt, "[^a-zA-Z0-9_]+");
 
     /// <summary>
     /// JS安全拼接

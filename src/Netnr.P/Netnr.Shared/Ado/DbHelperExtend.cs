@@ -312,10 +312,11 @@ namespace Netnr
                         column.DataType = typeof(object);
                     }
 
-                    if (column.DataType == typeof(string))
-                    {
-                        column.MaxLength = (int)dr["ColumnSize"];
-                    }
+                    //取消长度设置，MySQL 执行 show engine innodb status 出错
+                    //if (column.DataType == typeof(string))
+                    //{
+                    //    column.MaxLength = (int)dr["ColumnSize"];
+                    //}
                     if (Convert.ToBoolean(dr["IsKey"] == DBNull.Value ? false : dr["IsKey"]))
                     {
                         keyCols.Add(column);

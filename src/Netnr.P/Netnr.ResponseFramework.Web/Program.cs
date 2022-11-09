@@ -26,7 +26,7 @@ builder.Services.AddControllersWithViews(options =>
 //授权访问信息
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.Cookie.Name = "AUTH_NRF";
+    options.Cookie.Name = "netnrf_auth";
     options.LoginPath = "/account/login";
 });
 

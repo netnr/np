@@ -433,7 +433,7 @@ namespace Netnr.FileServer.Controllers
                         {
                             var fr = new FileRecord()
                             {
-                                Id = now.ToTimestamp() + RandomTo.NumCode(),
+                                Id = now.ToTimestamp() + RandomTo.NewNumber(),
                                 OwnerUser = vtjson.Owner,
                                 Name = Path.GetFileName(file.FileName),
                                 Size = file.Length,
@@ -577,7 +577,7 @@ namespace Netnr.FileServer.Controllers
 
                                 var fr = new FileRecord()
                                 {
-                                    Id = now.ToTimestamp() + RandomTo.NumCode(),
+                                    Id = now.ToTimestamp() + RandomTo.NewNumber(),
                                     OwnerUser = vtjson.Owner,
                                     Name = Path.GetFileName(file.FileName),
                                     Size = file.Length,
@@ -716,7 +716,7 @@ namespace Netnr.FileServer.Controllers
                         var now = DateTime.Now;
                         var fr = new FileRecord()
                         {
-                            Id = now.ToTimestamp() + RandomTo.NumCode(),
+                            Id = now.ToTimestamp() + RandomTo.NewNumber(),
                             OwnerUser = nowfile.OwnerUser,
                             Name = nowfile.Name,
                             Size = nowfile.Size,
@@ -896,7 +896,7 @@ namespace Netnr.FileServer.Controllers
                             Directory.CreateDirectory(ppath);
                         }
 
-                        var filename = DateTime.Now.ToTimestamp() + RandomTo.NumCode() + Path.GetExtension(file.FileName);
+                        var filename = DateTime.Now.ToTimestamp() + RandomTo.NewNumber() + Path.GetExtension(file.FileName);
 
                         using (var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew))
                         {

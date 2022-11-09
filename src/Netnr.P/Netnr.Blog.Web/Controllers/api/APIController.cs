@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Globalization;
 using JiebaNet.Segmenter;
-using JiebaNet.Segmenter.PosSeg;
 using SkiaSharp;
 using SkiaSharp.QrCode;
 
@@ -79,7 +78,7 @@ namespace Netnr.Blog.Web.Controllers.api
             else
             {
                 var now = DateTime.Now;
-                string filename = now.ToString("MMddHHmmss") + RandomTo.NumCode(3) + ext;
+                string filename = now.ToString("MMddHHmmss") + RandomTo.NewNumber(3) + ext;
 
                 if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
                 {

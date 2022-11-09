@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using static Netnr.Blog.Web.Filters.FilterConfigs;
 
 namespace Netnr.Blog.Web.Services
 {
@@ -132,17 +131,19 @@ namespace Netnr.Blog.Web.Services
         }
 
         /// <summary>
-        /// 单一在线，验证登录标记是最新，不是则注销登录（即同一用户不允许同时在线，按缓存时间生效）
+        /// 登录检查，修改密码 单一在线
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static void SingleOnline(HttpContext context)
+        public static void LoginCheck(HttpContext context)
         {
             var uinfo = Get(context);
-            //已登录、启用单一在线
-            if (uinfo != null && AppTo.GetValue<bool>("Common:SingleOnline"))
+
+            //已登录 非只读模式
+            if (uinfo != null && !AppTo.GetValue<bool>("ReadOnly"))
             {
-                var ckey = $"SingleOnline-{uinfo.UserId}";
+                //查询登录标记（缓存||数据库）
+                var ckey = $"UserSign-{uinfo.UserId}";
                 var cval = CacheTo.Get<string>(ckey);
                 if (string.IsNullOrEmpty(cval))
                 {
@@ -152,8 +153,11 @@ namespace Netnr.Blog.Web.Services
                     CacheTo.Set(ckey, cval, 5 * 60, false);
                 }
 
-                //登录标记不相同，退出登录
-                if (uinfo.UserSign != cval)
+                var signSession = uinfo.UserSign.Split(':');
+                var signLatest = cval.Split(':');
+
+                //已修改密码 || 启用单一在线
+                if (signSession[0] != signLatest[0] || (AppTo.GetValue<bool>("Common:SingleOnline") && signSession.Last() != signLatest.Last()))
                 {
                     context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 }

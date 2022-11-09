@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Netnr;
 
@@ -8,31 +10,35 @@ namespace Netnr;
 public class RandomTo
 {
     /// <summary>
+    /// 获取实例，多次调用时请赋值变量
+    /// </summary>
+    public static Random Instance
+    {
+        get
+        {
+            Random random = new(Guid.NewGuid().GetHashCode());
+            return random;
+        }
+    }
+
+    /// <summary>
     /// 随机字符 验证码
     /// </summary>
-    /// <param name="strLen">长度 默认4个字符</param>
-    /// <param name="source">自定义随机的字符源</param>
+    /// <param name="length">长度 默认4个字符</param>
+    /// <param name="chars">自定义随机的字符源</param>
     /// <returns></returns>
-    public static string StrCode(int strLen = 4, string source = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+    public static string NewString(int length = 4, string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
     {
-        string result = string.Empty;
-        if (strLen > 0)
-        {
-            Random rd = new(Guid.NewGuid().GetHashCode());
-            for (int i = 0; i < strLen; i++)
-                result += source[rd.Next(source.Length)].ToString();
-        }
+        var random = Instance;
+        var result = new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         return result;
     }
 
     /// <summary>
     /// 随机字符 纯数字
     /// </summary>
-    /// <param name="strLen">长度 默认4</param>
-    /// <param name="source">生成的源字符串 默认0-9</param>
+    /// <param name="length">长度 默认4</param>
+    /// <param name="chars">自定义随机的字符源，默认 0-9</param>
     /// <returns></returns>
-    public static string NumCode(int strLen = 4, string source = "0123456789")
-    {
-        return StrCode(strLen, source);
-    }
+    public static string NewNumber(int length = 4, string chars = "0123456789") => NewString(length, chars);
 }

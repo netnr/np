@@ -82,7 +82,7 @@ namespace Netnr.ResponseFramework.Application.Services
                     }
                     catch (Exception)
                     {
-                        dt.Columns[col.ColField].ColumnName = col.ColTitle + "-" + RandomTo.NumCode();
+                        dt.Columns[col.ColField].ColumnName = col.ColTitle + "-" + RandomTo.NewNumber();
                     }
                 }
             }
@@ -355,7 +355,7 @@ namespace Netnr.ResponseFramework.Application.Services
 
             using (FileStream file = new(fullPath, FileMode.OpenOrCreate))
             {
-                workbook.Write(file);
+                workbook.Write(file, false);
                 workbook.Close();
             }
             return false;

@@ -50,7 +50,12 @@
                 })
             }).then(resp => resp.json()).then(res => {
                 nr.domBtnSavePwd.loading = false;
-                nr.alert(res.code);
+                nr.alert(res.msg);
+                if (res.code == 200) {
+                    setTimeout(() => {
+                        location.href = "/account/login";
+                    }, 2000);
+                }
             }).catch(err => {
                 nr.domBtnSavePwd.loading = false;
                 nr.alert(err);

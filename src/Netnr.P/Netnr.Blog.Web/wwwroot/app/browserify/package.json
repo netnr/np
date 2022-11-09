@@ -6,8 +6,8 @@
     "device-detector-js": "^3.0.3",
     "fast-xml-parser": "^4.0.11",
     "js-yaml": "^4.1.0",
-    "magic-bytes.js": "^1.0.12",
-    "svgo": "^2.8.0"
+    "magic-bytes.js": "^1.0.13",
+    "svgo": "^3.0.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",

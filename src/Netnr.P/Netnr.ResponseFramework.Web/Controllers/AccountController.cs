@@ -27,7 +27,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         [HttpGet]
         public FileResult Captcha()
         {
-            string num = RandomTo.NumCode(4);
+            string num = RandomTo.NewNumber(4);
             byte[] bytes = ImageTo.Captcha(num);
             HttpContext.Session.SetString("captcha", CalcTo.MD5(num.ToLower()));
             return File(bytes, "image/jpeg");

@@ -52,6 +52,10 @@ public class EnumTo
         /// </summary>
         success = 200,
         /// <summary>
+        /// 部分成功
+        /// </summary>
+        partialSuccess = 206,
+        /// <summary>
         /// 失败
         /// </summary>
         fail = 400,

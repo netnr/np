@@ -83,7 +83,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.None;
     }
 
-    options.Cookie.Name = "AUTH_BLOG";
+    options.Cookie.Name = "netnr_auth";
     options.LoginPath = "/account/login";
 });
 

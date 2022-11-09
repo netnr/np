@@ -60,7 +60,7 @@ public class JsonConverterTo
 
     /// <summary>
     /// STJ DataTable 数据表格式化
-    /// https://github.com/dotnet/docs/blob/main/docs/standard/serialization/snippets/system-text-json-how-to/csharp/RoundtripDataTable.cs
+    /// https://github.com/dotnet/docs/blob/main/docs/standard/serialization/system-text-json/snippets/system-text-json-how-to/csharp/RoundtripDataTable.cs
     /// </summary>
     public class DataTableJsonConverter : JsonConverter<DataTable>
     {
@@ -113,6 +113,8 @@ public class JsonConverterTo
                         ushort value => key => writer.WriteNumber(key, value),
                         int value => key => writer.WriteNumber(key, value),
                         uint value => key => writer.WriteNumber(key, value),
+
+                        //warning: JavaScript Number.MAX_SAFE_INTEGER=9007199254740991 use string
                         long value => key => writer.WriteNumber(key, value),
                         ulong value => key => writer.WriteNumber(key, value),
 

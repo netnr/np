@@ -94,8 +94,9 @@ public class ConsoleTo
     /// <param name="content">内容（可选）</param>
     public static void Title(string title, string content = null)
     {
+        Console.WriteLine("");
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"\r\n------- {title} {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}\r\n");
+        Console.WriteLine($"------- {title} {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}\r\n");
         Console.ForegroundColor = ConsoleColor.White;
         if (content != null)
         {

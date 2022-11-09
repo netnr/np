@@ -360,6 +360,31 @@ namespace Netnr.Test
         }
 
         [Fact]
+        public void LockTo_1()
+        {
+            var num = 0;
+            var arr = Enumerable.Range(1, 999);
+            arr.AsParallel().ForAll(i =>
+            {
+                num++;
+            });
+            // != 999
+            Debug.WriteLine(num);
+
+            num = 0;
+            arr.AsParallel().ForAll(i =>
+            {
+                LockTo.Run("key", 1000, () =>
+                {
+                    num++;
+                });
+            });
+            // == 999
+            Debug.WriteLine(num);
+            Assert.True(num == arr.Count());
+        }
+
+        [Fact]
         public async void MailTo_1()
         {
             try
@@ -372,7 +397,7 @@ namespace Netnr.Test
                     FromPassword = "密码",
                     FromName = "Netnr",
                     Subject = "验证码",
-                    Body = $"你的验证码为：<h2 style='text-align:center'>{RandomTo.NumCode()}</h2>",
+                    Body = $"你的验证码为：<h2 style='text-align:center'>{RandomTo.NewNumber()}</h2>",
                     ToMail = new List<string> { "netnr@tempmail.cn", "netnr@bccto.cc" },
                     CcMail = new List<string> { "netnr@teml.net", "netnr@nqmo.com" }
                 };
@@ -411,6 +436,19 @@ namespace Netnr.Test
         }
 
         [Fact]
+        public void ParsingTo_3_Safe()
+        {
+            var key1 = "Abc_123";
+            Assert.False(ParsingTo.IsDanger(key1));
+            Assert.True(ParsingTo.DangerReplace(key1) == key1);
+
+            var key2 = $"你好{key1}@-@,'\"";
+            Assert.True(ParsingTo.IsDanger("你好"));
+            Assert.True(ParsingTo.IsDanger(key2));
+            Assert.True(ParsingTo.DangerReplace(key2) == key1);
+        }
+
+        [Fact]
         public void PathTo_1()
         {
             Assert.Equal("abc/123/xyz/", PathTo.Combine("abc/ ", "/123", "", "xyz/"));
@@ -421,13 +459,13 @@ namespace Netnr.Test
         [Fact]
         public void RandomTo_1()
         {
-            Assert.Matches("\\w{4}", RandomTo.NumCode());
-            Assert.Matches("\\d{99}", RandomTo.NumCode(99));
+            Assert.Matches("\\w{4}", RandomTo.NewNumber());
+            Assert.Matches("\\d{99}", RandomTo.NewNumber(99));
 
-            Assert.Matches("\\w{4}", RandomTo.StrCode());
-            Assert.Matches("\\w{10}", RandomTo.StrCode(10));
-            Assert.Matches("\\w{50}", RandomTo.StrCode(50));
-            Assert.Matches("\\w{999}", RandomTo.StrCode(999));
+            Assert.Matches("\\w{4}", RandomTo.NewString());
+            Assert.Matches("\\w{10}", RandomTo.NewString(10));
+            Assert.Matches("\\w{50}", RandomTo.NewString(50));
+            Assert.Matches("\\w{999}", RandomTo.NewString(999));
         }
 
         [Fact]

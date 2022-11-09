@@ -192,7 +192,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         var file = files[i];
                         var ext = Path.GetExtension(file.FileName);
-                        var filename = now.ToString("ddHHmmss") + RandomTo.NumCode() + ext;
+                        var filename = now.ToString("ddHHmmss") + RandomTo.NewNumber() + ext;
 
                         using (var stream = new FileStream(PathTo.Combine(ppath, filename), FileMode.Create))
                         {

@@ -18,25 +18,17 @@ namespace Netnr.Test
                 Debug.WriteLine(ni.GetIPStatistics().ToJson(true));
 
                 var ipStats = ni.GetIPStatistics();
-                var pp = ni.GetIPProperties();
 
                 var dic = new Dictionary<string, object>
                 {
                     { "Bytes Sent", ParsingTo.FormatByteSize(ipStats.BytesSent) },
                     { "Bytes Received", ParsingTo.FormatByteSize(ipStats.BytesReceived) },
                     { "PhysicalAddress(MAC)", ni.GetPhysicalAddress() },
-                    { "DnsSuffix", pp.DnsSuffix },
-                    { "IsDnsEnabled", pp.IsDnsEnabled },
-                    { "IsDynamicDnsEnabled", pp.IsDynamicDnsEnabled }
                 };
                 foreach (var key in dic.Keys)
                 {
                     Debug.WriteLine($"{key}: {dic[key]}");
                 }
-                pp.AnycastAddresses.ToList().ForEach(item => Debug.WriteLine($"AnycastAddresses:{item}"));
-                pp.DhcpServerAddresses.ToList().ForEach(item => Debug.WriteLine($"DhcpServerAddresses:{item}"));
-                pp.DnsAddresses.ToList().ForEach(item => Debug.WriteLine($"DnsAddresses:{item}"));
-                pp.WinsServersAddresses.ToList().ForEach(item => Debug.WriteLine($"WinsServersAddresses:{item}"));
 
                 Debug.WriteLine("\r\n");
             }

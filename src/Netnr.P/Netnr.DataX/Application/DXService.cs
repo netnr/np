@@ -27,13 +27,13 @@ namespace Netnr.DataX.Application
             for (int i = 0; i < cms.Count; i++)
             {
                 var mi = cms[i];
-                var attrs = mi.CustomAttributes.LastOrDefault()?.NamedArguments;
-                if (attrs?.Count > 0)
+                var nameArgs = mi.CustomAttributes.LastOrDefault().NamedArguments;
+                if (nameArgs != null)
                 {
-                    var attrGroupName = attrs.FirstOrDefault(x => x.MemberName == "GroupName").TypedValue.Value?.ToString();
-                    var attrName = attrs.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value?.ToString();
-                    var attrShortName = attrs.FirstOrDefault(x => x.MemberName == "ShortName").TypedValue.Value?.ToString();
-                    var attrDescription = attrs.FirstOrDefault(x => x.MemberName == "Description").TypedValue.Value?.ToString();
+                    var attrGroupName = nameArgs.FirstOrDefault(x => x.MemberName == "GroupName").TypedValue.Value?.ToString();
+                    var attrName = nameArgs.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value?.ToString();
+                    var attrShortName = nameArgs.FirstOrDefault(x => x.MemberName == "ShortName").TypedValue.Value?.ToString();
+                    var attrDescription = nameArgs.FirstOrDefault(x => x.MemberName == "Description").TypedValue.Value?.ToString();
                     if (!string.IsNullOrWhiteSpace(attrShortName))
                     {
                         attrName = $"{attrShortName.Split(' ')[0]} ({attrName})";

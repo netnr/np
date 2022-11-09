@@ -2,9 +2,13 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>		
+		<!--剪裁粒度 https://learn.microsoft.com/zh-cn/dotnet/core/deploying/trimming/trimming-options-->
+		<TrimMode>partial</TrimMode>
+		<!--SqlClient 依赖ICU-->
+		<!--<InvariantGlobalization>true</InvariantGlobalization>-->
 	</PropertyGroup>
 
 	<!-- SqlClient v5 剪裁配置 -->
@@ -29,12 +33,12 @@
 
 	<ItemGroup>
 		<TrimmableAssembly Include="System.StubHelpers.InterfaceMarshaler" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.10" />
-		<PackageReference Include="MiniExcel" Version="1.28.1" />
-		<PackageReference Include="MySqlConnector" Version="2.1.13" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0" />
+		<PackageReference Include="MiniExcel" Version="1.28.5" />
+		<PackageReference Include="MySqlConnector" Version="2.2.0" />
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.80" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
-		<PackageReference Include="Npgsql" Version="6.0.7" />
+		<PackageReference Include="Npgsql" Version="7.0.0-rc.2" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
 	</ItemGroup>
 
@@ -52,6 +56,10 @@
 		<Folder Include="ud\hub\" />
 	</ItemGroup>
 
-	<ProjectExtensions><VisualStudio><UserProperties ud_4config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties ud_4config_1json__JsonSchema="" />
+		</VisualStudio>
+	</ProjectExtensions>
 
 </Project>

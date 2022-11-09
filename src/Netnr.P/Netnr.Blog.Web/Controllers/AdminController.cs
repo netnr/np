@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
 using AgGrid.InfiniteRowModel;
 
 namespace Netnr.Blog.Web.Controllers

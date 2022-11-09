@@ -12,16 +12,16 @@
     "marked"
   ],
   "dependencies": {
-    "ace-builds": "^1.10.1",
+    "ace-builds": "^1.12.5",
     "dompurify": "^2.4.0",
     "highlight.js": "^11.6.0",
-    "marked": "^4.1.0",
+    "marked": "^4.2.2",
     "pangu": "^4.0.7",
     "tocbot": "^4.18.2"
   },
   "devDependencies": {
     "css-loader": "^6.7.1",
-    "css-minimizer-webpack-plugin": "^4.1.0",
+    "css-minimizer-webpack-plugin": "^4.2.2",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.1",
     "style-loader": "^3.3.1",
@@ -29,7 +29,7 @@
     "terser-webpack-plugin": "^5.3.6",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.11.0"
+    "webpack-dev-server": "^4.11.1"
   },
   "scripts": {
     "dev": "webpack-dev-server --mode development --devtool source-map --progress",

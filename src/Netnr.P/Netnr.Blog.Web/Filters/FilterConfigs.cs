@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Netnr.Blog.Web.Filters
@@ -47,7 +45,7 @@ namespace Netnr.Blog.Web.Filters
         {
             public void OnAuthorization(AuthorizationFilterContext context)
             {
-                IdentityService.SingleOnline(context.HttpContext);
+                IdentityService.LoginCheck(context.HttpContext);
             }
         }
 

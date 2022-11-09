@@ -1,8 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Netnr.Login;
 using AgGrid.InfiniteRowModel;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -408,25 +407,42 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="newPassword"></param>
         /// <returns></returns>
         [Authorize]
-        public ResultVM UpdatePassword(string oldPassword, string newPassword)
+        public async Task<ResultVM> UpdatePassword(string oldPassword, string newPassword)
         {
             var vm = new ResultVM();
 
-            var uinfo = IdentityService.Get(HttpContext);
-
-            var userinfo = db.UserInfo.Find(uinfo.UserId);
-            if (userinfo.UserPwd == CalcTo.MD5(oldPassword))
+            try
             {
-                userinfo.UserPwd = CalcTo.MD5(newPassword);
-                db.UserInfo.Update(userinfo);
-                var num = db.SaveChanges();
+                var uinfo = IdentityService.Get(HttpContext);
 
-                vm.Set(num > 0);
+                var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
+                if (userInfo.UserPwd == CalcTo.MD5(oldPassword))
+                {
+                    userInfo.UserPwd = CalcTo.MD5(newPassword);
+                    //刷新登录标记
+                    userInfo.UserSign = $"{CalcTo.MD5(userInfo.UserPwd, 16)}:{userInfo.UserSign.Split(':').Last()}";
+                    db.UserInfo.Update(userInfo);
+                    var num = await db.SaveChangesAsync();
+                    if (num > 0)
+                    {
+                        //注销
+                        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+                        //清空全局缓存
+                        CacheTo.RemoveAll();
+                    }
+
+                    vm.Set(num > 0);
+                }
+                else
+                {
+                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Msg = "原密码错误";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                vm.Set(EnumTo.RTag.unauthorized);
-                vm.Msg = "原密码错误";
+                vm.Set(ex);
             }
 
             return vm;

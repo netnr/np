@@ -72,7 +72,7 @@ namespace Netnr.Blog.Web.Controllers
         public FileResult RegisterCode()
         {
             //生成验证码
-            string num = RandomTo.NumCode(4);
+            string num = RandomTo.NewNumber(4);
             HttpContext.Session.SetString("RegisterCode", num);
             byte[] bytes = ImageTo.Captcha(num);
             return File(bytes, "image/jpeg");
@@ -212,9 +212,8 @@ namespace Netnr.Blog.Web.Controllers
                     else
                     {
                         UserInfo hasUser = null;
-                        if (ThirdLoginService.OpenIdMap.ContainsKey(loginType))
+                        if (ThirdLoginService.OpenIdMap.TryGetValue(loginType, out string propertyName))
                         {
-                            var propertyName = ThirdLoginService.OpenIdMap[loginType];
                             //x.OpenId1 = UniqueId
                             var whereEqual = PredicateTo.Compare<UserInfo>(propertyName, "=", uniqueId);
                             hasUser = db.UserInfo.FirstOrDefault(whereEqual);
@@ -430,21 +429,20 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
+                loginUser.UserLoginTime = DateTime.Now;
+                //登录标记 密码再次 MD5 : 登录时间戳，用于修改密码登录失效、单一登录
+                loginUser.UserSign = $"{CalcTo.MD5(loginUser.UserPwd, 16)}:{loginUser.UserLoginTime.Value.ToTimestamp()}";
+
                 //刷新登录标记
                 if (!AppTo.GetValue<bool>("ReadOnly"))
                 {
-                    loginUser.UserLoginTime = DateTime.Now;
-                    loginUser.UserSign = loginUser.UserLoginTime.Value.ToTimestamp().ToString();
                     db.UserInfo.Update(loginUser);
                     db.SaveChanges();
                 }
 
-                //登录标记 缓存5分钟，绝对过期
-                if (AppTo.GetValue<bool>("Common:SingleSignOn"))
-                {
-                    var usk = "UserSign_" + loginUser.UserId;
-                    CacheTo.Set(usk, loginUser.UserSign, 5 * 60, false);
-                }
+                //缓存登录标记
+                var ckey = $"UserSign-{loginUser.UserId}";
+                CacheTo.Set(ckey, loginUser.UserSign, 5 * 60, false);
 
                 //写入授权
                 IdentityService.Set(HttpContext, loginUser, isRemember).Wait();
