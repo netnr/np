@@ -1,0 +1,69 @@
+/*ag-grid*/
+html[data-bs-theme="dark"] .ag-theme-alpine-dark {
+    --ag-foreground-color: var(--bs-body-color);
+}
+
+/*markdown*/
+html[data-bs-theme="dark"] .markdown-body,
+html[data-bs-theme="dark"] .markdown-body pre code {
+    color: currentColor;
+}
+
+/*ag-grid*/
+.ag-root-wrapper {
+    /*边框颜色*/
+    --ag-border-color: var(--bs-border-color);
+}
+
+.ag-popup-child {
+    /*右键菜单叠堆高度*/
+    z-index: 909 !important;
+}
+
+.ag-paging-panel {
+    /*分页组件高度自适应*/
+    height: auto !important;
+    min-height: 32px !important;
+}
+
+@media (max-width: 576px) {
+
+    /*小屏幕底部分页组件换行*/
+    .ag-paging-panel {
+        line-height: 2.5;
+        flex-direction: column !important;
+    }
+}
+
+div.ag-rich-select .ag-rich-select-list {
+    /*编辑高度自适应*/
+    width: 100%;
+    min-width: 200px;
+    height: 100% !important;
+}
+
+.ag-cell-inline-editing {
+    /*编辑单元格*/
+    height: 100% !important;
+}
+
+/*markdown*/
+.markdown-body>:last-child {
+    margin-bottom: 0 !important;
+}
+
+/*choices*/
+.choices__list--dropdown {
+    z-index: 9 !important;
+}
+
+/*jstree icon*/
+.fa-folder-open::before {
+    content: "📁";
+    font-style: normal;
+}
+
+.fa-file-text::before {
+    content: "📝";
+    font-style: normal;
+}

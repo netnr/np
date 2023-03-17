@@ -35,7 +35,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="RegisterCode">验证码</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Register(UserInfo mo, string RegisterCode)
+        public async Task<IActionResult> Register(UserInfo mo, string RegisterCode)
         {
             var vm = new ResultVM();
             if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
@@ -56,7 +56,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     mo.UserMail = mo.UserName;
                 }
-                vm = PublicRegister(mo);
+                vm = await PublicRegister(mo);
             }
 
             ViewData["UserName"] = mo.UserName;
@@ -104,10 +104,10 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult Login(UserInfo mo, int? remember)
+        public async Task<IActionResult> Login(UserInfo mo, int? remember)
         {
             var isRemember = remember == 1;
-            var vm = PublicLogin(null, mo, isRemember);
+            var vm = await PublicLogin(null, mo, isRemember);
             if (vm.Code == 200)
             {
                 var rurl = Request.Cookies["ReturnUrl"];
@@ -143,7 +143,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id">哪家</param>
         /// <param name="authResult">接收授权码</param>
         /// <returns></returns>
-        public IActionResult AuthCallback([FromRoute] LoginWhich? id, AuthorizeResult authResult)
+        public async Task<IActionResult> AuthCallback([FromRoute] LoginWhich? id, AuthorizeResult authResult)
         {
             try
             {
@@ -199,7 +199,7 @@ namespace Netnr.Blog.Web.Controllers
                     //绑定用户
                     if (User.Identity.IsAuthenticated && authResult.State.StartsWith("bind"))
                     {
-                        var bindResult = BindUser(loginType, uniqueId);
+                        var bindResult = await BindUser(loginType, uniqueId);
                         if (bindResult.Code == 200)
                         {
                             return Redirect("/user/setting");
@@ -216,7 +216,7 @@ namespace Netnr.Blog.Web.Controllers
                         {
                             //x.OpenId1 = UniqueId
                             var whereEqual = PredicateTo.Compare<UserInfo>(propertyName, "=", uniqueId);
-                            hasUser = db.UserInfo.FirstOrDefault(whereEqual);
+                            hasUser = await db.UserInfo.FirstOrDefaultAsync(whereEqual);
                             //newUser.OpenId1 = UniqueId
                             newUser.GetType().GetProperty(propertyName).SetValue(newUser, uniqueId);
                         }
@@ -245,7 +245,7 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                             }
 
-                            var ruResult = PublicRegister(newUser);
+                            var ruResult = await PublicRegister(newUser);
                             //注册成功
                             if (ruResult.Code == 200)
                             {
@@ -260,7 +260,7 @@ namespace Netnr.Blog.Web.Controllers
                         //登录
                         if (hasUser != null)
                         {
-                            var vlogin = PublicLogin(loginType, hasUser);
+                            var vlogin = await PublicLogin(loginType, hasUser);
                             if (vlogin.Code == 200)
                             {
                                 var rurl = Request.Cookies["ReturnUrl"];
@@ -300,8 +300,12 @@ namespace Netnr.Blog.Web.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            //清空全局缓存
-            CacheTo.RemoveAll();
+            //清空用户缓存
+            var uinfo = IdentityService.Get(HttpContext);
+            if (uinfo != null)
+            {
+                CacheTo.RemoveGroup(uinfo.UserId.ToString());
+            }
 
             return Redirect("/" + (id ?? ""));
         }
@@ -312,39 +316,37 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="loginType"></param>
         /// <param name="openId"></param>
         /// <returns></returns>
-        private ResultVM BindUser(LoginWhich? loginType, string openId)
+        private async Task<ResultVM> BindUser(LoginWhich loginType, string openId)
         {
             var vm = new ResultVM();
 
-            var uid = IdentityService.Get(HttpContext)?.UserId;
-
-            var isBindOther = false;
-            var queryIsBind = db.UserInfo.Where(x => x.UserId != uid);
-            var userInfo = db.UserInfo.Find(uid);
-
-            if (loginType.HasValue && ThirdLoginService.OpenIdMap.ContainsKey(loginType.Value))
+            var uinfo = IdentityService.Get(HttpContext);
+            if (uinfo != null && ThirdLoginService.OpenIdMap.TryGetValue(loginType, out string propertyName))
             {
-                var propertyName = ThirdLoginService.OpenIdMap[loginType.Value];
                 //x.OpenId1 = UniqueId
                 var whereEqual = PredicateTo.Compare<UserInfo>(propertyName, "=", openId);
-                isBindOther = db.UserInfo.Where(whereEqual).Any();
-                if (!isBindOther)
+                //已绑定其它用户
+                if (await db.UserInfo.AnyAsync(whereEqual))
                 {
+                    vm.Set(EnumTo.RTag.exist);
+                    vm.Msg = "已绑定其它用户";
+                }
+                else
+                {
+                    var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
+
                     //userInfo.OpenId1 = UniqueId;
                     userInfo.GetType().GetProperty(propertyName).SetValue(userInfo, openId);
-                }
-            }
+                    db.Update(uinfo);
 
-            if (isBindOther)
-            {
-                vm.Set(EnumTo.RTag.exist);
-                vm.Msg = "已绑定其它用户";
+                    var num = await db.SaveChangesAsync();
+                    vm.Set(num > 0);
+                    vm.Data = num;
+                }
             }
             else
             {
-                db.UserInfo.Update(userInfo);
-                vm.Data = db.SaveChanges();
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(EnumTo.RTag.unauthorized);
             }
 
             return vm;
@@ -355,26 +357,26 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="mo">个人用户信息</param>
         /// <returns></returns>
-        private ResultVM PublicRegister(UserInfo mo)
+        private async Task<ResultVM> PublicRegister(UserInfo mo)
         {
             var vm = new ResultVM();
 
             //邮箱注册
             if (!string.IsNullOrWhiteSpace(mo.UserMail)
-                && db.UserInfo.Any(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail))
+                && await db.UserInfo.AnyAsync(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail))
             {
                 vm.Set(EnumTo.RTag.exist);
                 vm.Msg = "该邮箱已经注册";
             }
-            else if (db.UserInfo.Any(x => x.UserName == mo.UserName))
+            else if (await db.UserInfo.AnyAsync(x => x.UserName == mo.UserName))
             {
                 vm.Set(EnumTo.RTag.exist);
                 vm.Msg = "该账号已经注册";
             }
             else
             {
-                db.UserInfo.Add(mo);
-                int num = db.SaveChanges();
+                await db.UserInfo.AddAsync(mo);
+                int num = await db.SaveChangesAsync();
                 vm.Set(num > 0);
 
                 //推送通知
@@ -391,7 +393,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo">用户信息</param>
         /// <param name="isRemember">记住账号</param>
         /// <returns></returns>
-        private ResultVM PublicLogin(LoginWhich? loginType, UserInfo mo, bool isRemember = true)
+        private async Task<ResultVM> PublicLogin(LoginWhich? loginType, UserInfo mo, bool isRemember = true)
         {
             var vm = new ResultVM();
 
@@ -409,17 +411,17 @@ namespace Netnr.Blog.Web.Controllers
                 //邮箱登录
                 if (ParsingTo.IsMail(mo.UserName))
                 {
-                    loginUser = db.UserInfo.FirstOrDefault(x => x.UserMail == mo.UserName && x.UserPwd == mo.UserPwd);
+                    loginUser = await db.UserInfo.FirstOrDefaultAsync(x => x.UserMail == mo.UserName && x.UserPwd == mo.UserPwd);
                 }
                 else
                 {
-                    loginUser = db.UserInfo.FirstOrDefault(x => x.UserName == mo.UserName && x.UserPwd == mo.UserPwd);
+                    loginUser = await db.UserInfo.FirstOrDefaultAsync(x => x.UserName == mo.UserName && x.UserPwd == mo.UserPwd);
                 }
             }
 
             if (loginUser == null || loginUser.UserId == 0)
             {
-                vm.Set(EnumTo.RTag.fail);
+                vm.Set(EnumTo.RTag.failure);
                 vm.Msg = "用户名或密码错误";
             }
             else if (loginUser.LoginLimit == 1)
@@ -437,15 +439,16 @@ namespace Netnr.Blog.Web.Controllers
                 if (!AppTo.GetValue<bool>("ReadOnly"))
                 {
                     db.UserInfo.Update(loginUser);
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
                 }
 
                 //缓存登录标记
-                var ckey = $"UserSign-{loginUser.UserId}";
-                CacheTo.Set(ckey, loginUser.UserSign, 5 * 60, false);
+                var ckey = "UserSign";
+                var gkey = loginUser.UserId.ToString();
+                CacheTo.Set(ckey, loginUser.UserSign, 5 * 60, false, gkey);
 
                 //写入授权
-                IdentityService.Set(HttpContext, loginUser, isRemember).Wait();
+                await IdentityService.Set(HttpContext, loginUser, isRemember);
 
                 //生成Token
                 vm.Data = IdentityService.AccessTokenBuild(loginUser);

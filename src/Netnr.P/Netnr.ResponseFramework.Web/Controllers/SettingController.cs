@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -35,18 +36,18 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QuerySysButton(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysButton(QueryDataInputVM ivm)
         {
             var ovm = new QueryDataOutputVM();
 
-            var list = db.SysButton.OrderBy(x => x.SbBtnOrder).ToList();
+            var list = await db.SysButton.OrderBy(x => x.SbBtnOrder).ToListAsync();
             var tree = TreeTo.ListToTree(list, "SbPid", "SbId", new List<string> { Guid.Empty.ToString() });
             ovm.Data = tree.DeJson();
 
             //列
             if (ivm.ColumnsExists != 1)
             {
-                ovm.Columns = db.SysTableConfig.Where(x => x.TableName == ivm.TableName).OrderBy(x => x.ColOrder).ToList();
+                ovm.Columns = await db.SysTableConfig.Where(x => x.TableName == ivm.TableName).OrderBy(x => x.ColOrder).ToListAsync();
             }
 
             return ovm;
@@ -59,7 +60,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype">保存类型</param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveSysButton(SysButton mo, string savetype)
+        public async Task<ResultVM> SaveSysButton(SysButton mo, string savetype)
         {
             var vm = new ResultVM();
 
@@ -75,14 +76,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
             if (savetype == "add")
             {
                 mo.SbId = Guid.NewGuid().ToString();
-                db.SysButton.Add(mo);
+                await db.SysButton.AddAsync(mo);
             }
             else
             {
                 db.SysButton.Update(mo);
             }
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             vm.Set(num > 0);
 
             //清理缓存
@@ -97,14 +98,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">按钮ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM DelSysButton(string id)
+        public async Task<ResultVM> DelSysButton(string id)
         {
             var vm = new ResultVM();
 
-            var mo = db.SysButton.Find(id);
-            db.SysButton.Remove(mo);
-
-            int num = db.SaveChanges();
+            var num = await db.SysButton.Where(x => x.SbBtnId == id).ExecuteDeleteAsync();
             vm.Set(num > 0);
 
             return vm;
@@ -131,18 +129,18 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QuerySysMenu(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysMenu(QueryDataInputVM ivm)
         {
             var ovm = new QueryDataOutputVM();
 
-            var list = db.SysMenu.OrderBy(x => x.SmOrder).ToList();
+            var list = await db.SysMenu.OrderBy(x => x.SmOrder).ToListAsync();
             var tree = TreeTo.ListToTree(list, "SmPid", "SmId", new List<string> { Guid.Empty.ToString() });
             ovm.Data = tree.DeJson();
 
             //列
             if (ivm.ColumnsExists != 1)
             {
-                ovm.Columns = db.SysTableConfig.Where(x => x.TableName == ivm.TableName).OrderBy(x => x.ColOrder).ToList();
+                ovm.Columns = await db.SysTableConfig.Where(x => x.TableName == ivm.TableName).OrderBy(x => x.ColOrder).ToListAsync();
             }
 
             return ovm;
@@ -237,13 +235,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QuerySysRole(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysRole(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysRole;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysRole, ivm, db);
             return ovm;
         }
 
@@ -254,7 +248,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveSysRole(SysRole mo, string savetype)
+        public async Task<ResultVM> SaveSysRole(SysRole mo, string savetype)
         {
             var vm = new ResultVM();
 
@@ -262,14 +256,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 mo.SrId = Guid.Empty.ToString();
                 mo.SrCreateTime = DateTime.Now;
-                db.SysRole.Add(mo);
+                await db.SysRole.AddAsync(mo);
             }
             else
             {
                 db.SysRole.Update(mo);
             }
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             if (num > 0)
             {
                 //清理缓存
@@ -288,11 +282,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="copyid">复制的角色ID</param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM CopySysRoleAuth(SysRole mo, string copyid)
+        public async Task<ResultVM> CopySysRoleAuth(SysRole mo, string copyid)
         {
             var vm = new ResultVM();
 
-            var list = db.SysRole.Where(x => x.SrId == mo.SrId || x.SrId == copyid).ToList();
+            var list = await db.SysRole.Where(x => x.SrId == mo.SrId || x.SrId == copyid).ToListAsync();
             var copymo = list.Find(x => x.SrId == copyid);
             foreach (var item in list)
             {
@@ -301,7 +295,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             db.SysRole.UpdateRange(list);
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             if (num > 0)
             {
                 //清理缓存
@@ -319,20 +313,17 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">角色ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM DelSysRole(string id)
+        public async Task<ResultVM> DelSysRole(string id)
         {
             var vm = new ResultVM();
 
-            if (db.SysUser.Where(x => x.SrId == id).Any())
+            if (await db.SysUser.AnyAsync(x => x.SrId == id))
             {
                 vm.Set(EnumTo.RTag.exist);
             }
             else
             {
-                var mo = db.SysRole.Find(id);
-                db.SysRole.Remove(mo);
-
-                int num = db.SaveChanges();
+                var num = await db.SysRole.Where(x => x.SrId == id).ExecuteDeleteAsync();
                 if (num > 0)
                 {
                     //清理缓存
@@ -366,10 +357,8 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QuerySysUser(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysUser(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
             var query = from a in db.SysUser
                         join b in db.SysRole on a.SrId equals b.SrId
                         select new
@@ -386,7 +375,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                             OldUserPwd = a.SuPwd,
                             b.SrName
                         };
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
+            var ovm = await CommonService.QueryJoin(query, ivm, db);
 
             return ovm;
         }
@@ -399,13 +388,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="OldUserPwd">原密码，有变化代表为改密码</param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveSysUser(SysUser mo, string savetype, string OldUserPwd)
+        public async Task<ResultVM> SaveSysUser(SysUser mo, string savetype, string OldUserPwd)
         {
             var vm = new ResultVM();
 
             if (savetype == "add")
             {
-                if (db.SysUser.Where(x => x.SuName == mo.SuName).Any())
+                if (await db.SysUser.Where(x => x.SuName == mo.SuName).AnyAsync())
                 {
                     vm.Set(EnumTo.RTag.exist);
                 }
@@ -414,12 +403,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     mo.SuId = Guid.NewGuid().ToString();
                     mo.SuCreateTime = DateTime.Now;
                     mo.SuPwd = CalcTo.MD5(mo.SuPwd);
-                    db.SysUser.Add(mo);
+                    await db.SysUser.AddAsync(mo);
                 }
             }
             else
             {
-                if (db.SysUser.Where(x => x.SuName == mo.SuName && x.SuId != mo.SuId).Any())
+                if (await db.SysUser.Where(x => x.SuName == mo.SuName && x.SuId != mo.SuId).AnyAsync())
                 {
                     vm.Set(EnumTo.RTag.exist);
                 }
@@ -433,7 +422,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 }
             }
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             vm.Set(num > 0);
 
             return vm;
@@ -445,14 +434,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">用户ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM DelSysUser(string id)
+        public async Task<ResultVM> DelSysUser(string id)
         {
             var vm = new ResultVM();
 
-            var mo = db.SysUser.Find(id);
-            db.SysUser.Remove(mo);
-
-            int num = db.SaveChanges();
+            var num = await db.SysUser.Where(x => x.SuId == id).ExecuteDeleteAsync();
             vm.Set(num > 0);
 
             return vm;
@@ -479,13 +465,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QuerySysLog(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysLog(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysLog;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysLog, ivm, db);
             return ovm;
         }
 
@@ -510,13 +492,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QuerySysDictionary(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysDictionary(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysDictionary;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysDictionary, ivm, db);
             return ovm;
         }
 
@@ -527,7 +505,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveSysDictionary(SysDictionary mo, string savetype)
+        public async Task<ResultVM> SaveSysDictionary(SysDictionary mo, string savetype)
         {
             var vm = new ResultVM();
 
@@ -535,14 +513,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 mo.SdId = Guid.NewGuid().ToString();
                 mo.SdPid = Guid.Empty.ToString();
-                db.SysDictionary.Add(mo);
+                await db.SysDictionary.AddAsync(mo);
             }
             else
             {
                 db.SysDictionary.Update(mo);
             }
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             vm.Set(num > 0);
 
             return vm;
@@ -554,15 +532,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id">字典ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM DelSysDictionary(string id)
+        public async Task<ResultVM> DelSysDictionary(string id)
         {
             var vm = new ResultVM();
 
-            var mo = db.SysDictionary.Find(id);
-            mo.SdStatus = -1;
-            db.SysDictionary.Update(mo);
-
-            int num = db.SaveChanges();
+            var num = await db.SysDictionary.Where(x => x.SdId == id).ExecuteUpdateAsync(x => x.SetProperty(p => p.SdStatus, -1));
             vm.Set(num > 0);
 
             return vm;
@@ -589,13 +563,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QuerySysTableConfig(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysTableConfig(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysTableConfig;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysTableConfig, ivm, db);
             return ovm;
         }
 
@@ -607,7 +577,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="savetype"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveSysTableConfig(SysTableConfig mo, List<string> ColRelation, string savetype)
+        public async Task<ResultVM> SaveSysTableConfig(SysTableConfig mo, List<string> ColRelation, string savetype)
         {
             var vm = new ResultVM();
 
@@ -616,14 +586,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
             if (savetype == "add")
             {
                 mo.Id = Guid.NewGuid().ToString();
-                db.SysTableConfig.Add(mo);
+                await db.SysTableConfig.AddAsync(mo);
             }
             else
             {
                 db.SysTableConfig.Update(mo);
             }
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             vm.Set(num > 0);
 
             return vm;
@@ -635,14 +605,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM DelSysTableConfig(string id)
+        public async Task<ResultVM> DelSysTableConfig(string id)
         {
             var vm = new ResultVM();
 
-            var mo = db.SysTableConfig.Find(id);
-            db.SysTableConfig.Remove(mo);
-
-            int num = db.SaveChanges();
+            var num = await db.SysTableConfig.Where(x => x.Id == id).ExecuteDeleteAsync();
             vm.Set(num > 0);
 
             return vm;

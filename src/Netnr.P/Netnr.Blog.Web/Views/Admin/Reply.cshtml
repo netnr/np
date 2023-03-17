@@ -2,13 +2,15 @@
     ViewData["Title"] = "回复管理";
 }
 
-<div class="container-fluid">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-12 mt-3">
-            <div class="nr-grid"></div>
+        <div class="col-auto mb-2">
+            <a href="/admin/write" class="btn btn-sm btn-outline-info">文章管理</a>
+            <a href="/admin/reply" class="btn btn-sm btn-primary" >回复管理</a>
         </div>
+        <div class="col-auto mb-2">
+            <input class="nrg-txt-filter form-control form-control-sm" placeholder="Search" />
+        </div>
+        <div class="nrg-grid col-12"></div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("ag-grid-enterprise.js"))
-<script src="/js/admin/reply.js" asp-append-version="true"></script>

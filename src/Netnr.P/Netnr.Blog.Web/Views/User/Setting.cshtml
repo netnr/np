@@ -3,116 +3,103 @@
     ViewData["Title"] = "个人设置";
 }
 
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-lg-5 mb-4 pe-lg-5">
-            <div>
-                <span class="h4">个人信息</span>
-                <sl-button class="nr-btn-edit-info float-end" size="small">编辑</sl-button>
-            </div>
-            <sl-divider></sl-divider>
-            <div>
-                <div class="row">
-                    <div class="col-auto">账号</div>
-                    <div class="col">@Model.UserName</div>
-                    <sl-divider></sl-divider>
-                    <div class="col-auto">昵称</div>
-                    <div class="col">@Model.Nickname</div>
-                    <sl-divider></sl-divider>
-                    <div class="col-auto">邮箱</div>
-                    <div class="col">
-                        <a class="me-2" href="mailto:@Model.UserMail">@Model.UserMail</a>
+        <div class="col-xl-5 mb-4">
+            <form class="nrg-form-info card">
+                <div class="card-header">个人信息</div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <span class="input-group-text">账号</span>
+                        <input class="form-control" name="UserName" required value="@Model.UserName" maxlength="50" @(Model.UserNameChange == 1 ? "readonly" : "") />
+                    </div>
+                    <div class="form-text mb-3">@(Model.UserNameChange == 1 ? "不能修改" : "可修改一次")</div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">昵称</span>
+                        <input class="form-control" name="Nickname" required value="@Model.Nickname" maxlength="50" />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">邮箱</span>
+                        <input class="form-control" type="email" name="UserMail" required value="@Model.UserMail" maxlength="50" />
+                    </div>
+                    <div class="form-text mb-3">
+                        <span class="me-3">更改邮箱需要重新验证</span>
+
                         @if (Model.UserMailValid == 1)
                         {
-                            <sl-badge variant="success">已验证</sl-badge>
+                            <span class="badge bg-success">已验证</span>
                         }
                         else if (!string.IsNullOrWhiteSpace(Model.UserMail))
                         {
-                            <sl-badge variant="neutral">未验证</sl-badge>
-                            <sl-button href="/user/verify/send" variant="text" size="small">立即发送验证邮件</sl-button>
+                            <span class="badge bg-secondary">未验证</span>
+                            <a href="/user/verify/send">立即发送验证邮件</a>
                         }
                     </div>
-                    <sl-divider></sl-divider>
-                    <div class="col-auto">手机</div>
-                    <div class="col"><a href="tel:@Model.UserPhone">@Model.UserPhone</a></div>
-                    <sl-divider></sl-divider>
-                    <div class="col-auto">网址</div>
-                    <div class="col">
-                        @if (!string.IsNullOrWhiteSpace(Model.UserUrl))
-                        {
-                            <a href='@(Model.UserUrl.Contains("//")?Model.UserUrl:"http://"+Model.UserUrl)'>@Model.UserUrl</a>
-                        }
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">手机</span>
+                        <input class="form-control" name="UserPhone" required value="@Model.UserPhone" maxlength="20" />
                     </div>
-                    <sl-divider></sl-divider>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">网址</span>
+                        <input class="form-control" type="url" name="UserUrl" required value="@Model.UserUrl" maxlength="100" />
+                    </div>
+
+                    <button class="nrg-btn-save-info btn btn-warning">提交</button>
                 </div>
+            </form>
+        </div>
+
+        <div class="col-xl-4 col-lg-6 mb-4 px-xl-4">
+            <form class="nrg-form-pwd card">
+                <div class="card-header">更改密码</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">当前密码</label>
+                        <input class="form-control" type="password" name="oldPassword" maxlength="20" placeholder="******" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">新的密码，至少 5 位数</label>
+                        <input class="form-control" type="password" name="newPassword" maxlength="20" placeholder="******" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">确认新的密码</label>
+                        <input class="form-control" type="password" name="newPassword2" maxlength="20" placeholder="******" required />
+                    </div>
+                    <button class="nrg-btn-save-pwd btn btn-warning">提交</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">授权关联</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var key in ThirdLoginService.OpenIdMap.Keys)
+                    {
+                        var loginType = key.ToString().ToLower();
+                        var loginIcon = CommonService.StaticResourceLink("LoginPath", $"{loginType}.svg");
+                        var field = ThirdLoginService.OpenIdMap[key];
+                        var isBind = !string.IsNullOrWhiteSpace(Model.GetType().GetProperty(field).GetValue(Model)?.ToString());
+
+                        <li class="list-group-item">
+                            <span class="me-2">
+                                <img src="@loginIcon" style="height:1.3em" />&nbsp;@key
+                            </span>
+                            @if (isBind)
+                            {
+                                <span class="badge bg-success">已绑定</span>
+                                <a href="/user/ridoauth/@loginType">解除</a>
+                            }
+                            else
+                            {
+                                <a href="/user/oauth/@loginType">绑定账号</a>
+                            }
+                        </li>
+                    }
+                </ul>
             </div>
-
-            <sl-dialog class="nr-dialog-form" label="编辑个人信息">
-                <form action="/User/SaveUserInfo" method="post">
-                    <sl-input class="mb-3" size="small" type="text" required label="账号@(Model.UserNameChange == 1?" （不能修改）":" （你可以修改一次账号）")" name="UserName" value="@Model.UserName" maxlength="50" @(Model.UserNameChange == 1 ? "readonly" : "")>
-                        <sl-icon name="person-circle" slot="prefix"></sl-icon>
-                    </sl-input>
-                    <sl-input class="mb-3" size="small" type="text" required label="昵称" name="Nickname" value="@Model.Nickname" maxlength="50">
-                        <sl-icon name="person-circle" slot="prefix"></sl-icon>
-                    </sl-input>
-                    <sl-input class="mb-3" size="small" type="email" required label="邮箱 （更改邮箱需要重新验证）" name="UserMail" value="@Model.UserMail" maxlength="50">
-                        <sl-icon name="envelope" slot="prefix"></sl-icon>
-                    </sl-input>
-                    <sl-input class="mb-3" size="small" type="tel" required label="手机" name="UserPhone" value="@Model.UserPhone" maxlength="20">
-                        <sl-icon name="phone" slot="prefix"></sl-icon>
-                    </sl-input>
-                    <sl-input class="mb-3" size="small" type="text" label="网址" name="UserUrl" value="@Model.UserUrl" maxlength="100">
-                        <sl-icon name="link-45deg" slot="prefix"></sl-icon>
-                    </sl-input>
-
-                    <sl-button class="nr-btn-save-info" type="submit" variant="warning">保存</sl-button>
-                </form>
-            </sl-dialog>
-
-        </div>
-
-        <div class="col-lg-4 mb-4 pe-lg-5">
-            <h4>更改密码</h4>
-            <sl-divider></sl-divider>
-            <sl-input class="nr-txt-pwd1 mb-3" type="password" size="small" label="当前密码" maxlength="20" placeholder="******" toggle-password>
-                <sl-icon name="key" slot="prefix"></sl-icon>
-            </sl-input>
-            <sl-input class="nr-txt-pwd2 mb-3" type="password" size="small" label="新的密码，至少 5 位数" maxlength="50" placeholder="******" toggle-password>
-                <sl-icon name="key" slot="prefix"></sl-icon>
-            </sl-input>
-            <sl-input class="nr-txt-pwd3 mb-3" type="password" size="small" label="确认新的密码" maxlength="50" placeholder="******" toggle-password>
-                <sl-icon name="key" slot="prefix"></sl-icon>
-            </sl-input>
-            <sl-button class="nr-btn-save-pwd mb-3" variant="warning" size="small">提交</sl-button>
-        </div>
-
-        <div class="col-lg-3 mb-4">
-            <h4>授权关联</h4>
-            <sl-divider></sl-divider>
-            @foreach (var key in ThirdLoginService.OpenIdMap.Keys)
-            {
-                var loginType = key.ToString().ToLower();
-                var loginIcon = CommonService.StaticResourceLink("LoginPath", $"{loginType}.svg");
-                var field = ThirdLoginService.OpenIdMap[key];
-                var isBind = !string.IsNullOrWhiteSpace(Model.GetType().GetProperty(field).GetValue(Model)?.ToString());
-
-                <div class="mb-3">
-                    <span class="me-2">
-                        <img src="@loginIcon" style="height:1.3em" />&nbsp;@key
-                    </span>
-                    @if (isBind)
-                    {
-                        <sl-badge variant="success">已绑定</sl-badge>
-                        <a href="/user/ridoauth/@loginType">解除</a>
-                    }
-                    else
-                    {
-                        <a href="/user/oauth/@loginType">绑定账号</a>
-                    }
-                </div>
-            }
         </div>
     </div>
 </div>
-
-<script src="/js/user/setting.js" asp-append-version="true"></script>

@@ -2,22 +2,19 @@
     ViewBag.Title = "写文章";
 }
 
-<div class="container-fluid mt-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
         <div class="col-auto mb-2">
-            <sl-button class="nr-btn-save" variant="warning" title="Ctrl + S 快捷保存">保存</sl-button>
+            <button class="nrg-btn-save btn btn-lg btn-warning" title="Ctrl + S 快捷保存">保存</button>
         </div>
         <div class="col mb-2">
-            <sl-input class="nr-txt-title" maxlength="200" placeholder="标题：简单的一句话"></sl-input>
+            <input class="nrg-txt-title form-control form-control-lg" maxlength="200" placeholder="标题：简单的一句话" />
         </div>
         <div class="col-md-4 mb-2">
-            <div class="nr-tags"></div>
+            <select class="nrg-se-tags form-select form-select-lg" placeholder="标签"></select>
         </div>
         <div class="col-12">
-            <div class="nr-editor">Loading ...</div>
+            <div class="nrg-editor">Loading ...</div>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd-ace.js,netnrmd.js,xm-select.js"))
-<script src="/js/home/write.js" asp-append-version="true"></script>

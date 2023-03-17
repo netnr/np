@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Filters;
-
 namespace Netnr.Blog.Web.Filters
 {
     /// <summary>
@@ -46,52 +44,6 @@ namespace Netnr.Blog.Web.Filters
             public void OnAuthorization(AuthorizationFilterContext context)
             {
                 IdentityService.LoginCheck(context.HttpContext);
-            }
-        }
-
-        /// <summary>
-        /// 【注解】允许跨域
-        /// </summary>
-        [AttributeUsage(AttributeTargets.All)]
-        public class IsCors : Attribute, IActionFilter
-        {
-            public void OnActionExecuted(ActionExecutedContext context)
-            {
-
-            }
-
-            public void OnActionExecuting(ActionExecutingContext context)
-            {
-                var res = context.HttpContext.Response;
-
-                var origin = context.HttpContext.Request.Headers["Origin"].ToString();
-
-                var dicAk = new Dictionary<string, string>
-                {
-                    { "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS" },
-                    { "Access-Control-Allow-Headers", "Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, Origin, User-Agent, X-Requested-With, Token, x-access-token" }
-                };
-
-                if (string.IsNullOrWhiteSpace(origin))
-                {
-                    dicAk.Add("Access-Control-Allow-Origin", "*");
-                }
-                else
-                {
-                    dicAk.Add("Access-Control-Allow-Origin", origin);
-                    dicAk.Add("Access-Control-Allow-Credentials", "true");
-                }
-
-                foreach (var ak in dicAk.Keys)
-                {
-                    res.Headers.Remove(ak);
-                    res.Headers.Add(ak, dicAk[ak]);
-                }
-
-                if (context.HttpContext.Request.Method == "OPTIONS")
-                {
-                    context.Result = new OkResult();
-                }
             }
         }
 

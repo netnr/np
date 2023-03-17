@@ -1,0 +1,13 @@
+﻿@{
+    var listTags = (await CommonService.TagsQuery()).Take(20).ToList();
+}
+
+<div class="col d-flex flex-nowrap overflow-hidden">
+    @foreach (var mo in listTags)
+    {
+        <a class="me-4 text-nowrap fs-5" href="/home/type/@System.Web.HttpUtility.UrlEncode(mo.TagName)">@mo.TagName</a>
+    }
+</div>
+<div class="col-auto">
+    <a class="fs-5" href="/home/tags">Tags</a>
+</div>

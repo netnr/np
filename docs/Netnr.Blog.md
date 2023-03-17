@@ -5,7 +5,7 @@
 > https://netnr.zme.ink 镜像站点
 
 ### 框架组件
-- Bootstrap + shoelace + AG-Grid
+- Bootstrap
 - .NET （latest） + EF + Linq
 - 支持：SQLServer、MySQL、PostgreSQL、SQLite 等
 - ==================================
@@ -26,13 +26,12 @@
 - 登录、注册（第三方直接登录：QQ、微博、GitHub、淘宝、Microsoft）
 - 文章：发布文章（Markdown 编辑器）
 - 留言：文章留言（Markdown 编辑器）
-- Gist：代码片段，可自动同步 GitHub、Gitee (配置管理员)
+- Gist：代码片段，可自动同步 GitHub、Gitee (仅一个管理员)
 - Run：在线运行 HTML 代码，写 demo 用
 - Doc：文档管理，API 说明文档
 - Draw：绘制，集成开源项目 mxGraph、百度脑图
 - Guff：尬服，分享有趣的任何
 - Note：记事本（Markdown 编辑器）
-- 存储：腾讯云 COS、网易云 NOS、七牛云 KODO
 - 备份：自动备份数据库到私有 GitHub、Gitee
 - 管理：文章、留言管理、日志记录、日志统计、键值标签等
 

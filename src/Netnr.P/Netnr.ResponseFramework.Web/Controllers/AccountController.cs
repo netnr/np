@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -70,7 +71,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                     if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != CalcTo.MD5(captcha.ToLower()))
                     {
-                        vm.Set(EnumTo.RTag.fail);
+                        vm.Set(EnumTo.RTag.failure);
                         vm.Msg = "验证码错误或已过期";
                     }
                     else if (string.IsNullOrWhiteSpace(mo.SuName) || string.IsNullOrWhiteSpace(mo.SuPwd))
@@ -80,7 +81,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        outMo = db.SysUser.FirstOrDefault(x => x.SuName == mo.SuName && x.SuPwd == CalcTo.MD5(mo.SuPwd, 32));
+                        outMo = await db.SysUser.FirstOrDefaultAsync(x => x.SuName == mo.SuName && x.SuPwd == CalcTo.MD5(mo.SuPwd, 32));
                     }
                 }
 
@@ -123,8 +124,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            //清空全局缓存
-            CacheTo.RemoveAll();
+            //清空用户缓存
+            var uinfo = IdentityService.Get(HttpContext);
+            if (uinfo != null)
+            {
+                CacheTo.RemoveGroup(uinfo.UserId.ToString());
+            }
 
             return Redirect("/");
         }
@@ -152,7 +157,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public ResultVM UpdateNewPassword(string oldpwd, string newpwd1, string newpwd2)
+        public async Task<ResultVM> UpdateNewPassword(string oldpwd, string newpwd1, string newpwd2)
         {
             var vm = new ResultVM();
 
@@ -172,13 +177,14 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 var uinfo = IdentityService.Get(HttpContext);
 
-                var mo = db.SysUser.Find(uinfo.UserId);
+                var mo = await db.SysUser.FindAsync(uinfo.UserId);
                 if (mo != null && mo.SuPwd == CalcTo.MD5(oldpwd))
                 {
                     mo.SuPwd = CalcTo.MD5(newpwd1);
                     db.SysUser.Update(mo);
 
-                    vm.Set(db.SaveChanges() > 0);
+                    var num = await db.SaveChangesAsync();
+                    vm.Set(num > 0);
                 }
                 else
                 {

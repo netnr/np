@@ -2,40 +2,48 @@
     ViewData["Title"] = "我的文章";
 }
 
-<div class="container-fluid">
-    <div class="row mt-2">
+<div class="@QuoteTo.PanelClass1">
+    <div class="row">
         <div class="col-auto mb-2">
-            <sl-button size="small" variant="primary">我的文章</sl-button>
-            <sl-button size="small" href="/user/write/laud" outline variant="primary">我的点赞</sl-button>
-            <sl-button size="small" href="/user/write/mark" outline variant="primary">我的收藏</sl-button>
+            <a class="btn btn-sm btn-primary" href="/user/write">我的文章</a>
+            <a class="btn btn-sm btn-outline-info" href="/user/write/laud">我的点赞</a>
+            <a class="btn btn-sm btn-outline-info" href="/user/write/mark">我的收藏</a>
         </div>
         <div class="col-auto mb-2">
-            <sl-button size="small" variant="primary" href="/home/write">新增</sl-button>
-            <sl-button size="small" variant="warning" class="nr-btn-edit">编辑</sl-button>
-            <sl-button size="small" variant="danger" class="nr-btn-del">删除</sl-button>
+            <a class="btn btn-sm btn-primary" href="/home/write">新增</a>
+            <button class="nrg-btn-edit btn btn-sm btn-warning">编辑</button>
+            <button class="nrg-btn-del btn btn-sm btn-danger">删除</button>
         </div>
-        <div class="nr-grid col-12"></div>
+        <div class="col-auto mb-2">
+            <input class="nrg-txt-filter form-control form-control-sm" placeholder="search" />
+        </div>
+        <div class="nrg-grid col-12"></div>
     </div>
 </div>
 
-<sl-dialog label="编辑文章" class="nr-dialog-form" style="--width: 96vw;">
-    <div class="row">
-        <div class="col-auto mb-2">
-            <sl-button class="nr-btn-save" variant="warning" title="Ctrl + S 快捷保存">保存</sl-button>
-        </div>
-        <div class="col mb-2">
-            <sl-input class="nr-txt-title" maxlength="200" placeholder="标题：简单的一句话"></sl-input>
-        </div>
-        <div class="col-md-4 mb-2">
-            <div class="nr-tags"></div>
-        </div>
-        <div class="col-12">
-            <div class="nr-editor">Loading ...</div>
+<div class="nrg-modal-form modal">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">编辑文章</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-auto mb-2">
+                        <button class="nrg-btn-save btn btn-lg btn-warning" title="Ctrl + S 快捷保存">保存</button>
+                    </div>
+                    <div class="col mb-2">
+                        <input class="nrg-txt-title form-control form-control-lg" maxlength="200" placeholder="标题：简单的一句话" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <select class="nrg-se-tags form-select form-select-lg" placeholder="标签"></select>
+                    </div>
+                    <div class="col-12">
+                        <div class="nrg-editor">Loading ...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</sl-dialog>
-
-@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd-ace.js,netnrmd.js,ag-grid-enterprise.js,xm-select.js"))
-
-<script src="/js/home/write.js" asp-append-version="true"></script>
-<script src="/js/user/write.js" asp-append-version="true"></script>
+</div>

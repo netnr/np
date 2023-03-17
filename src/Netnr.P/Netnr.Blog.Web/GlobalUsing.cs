@@ -6,5 +6,6 @@ global using Netnr.Blog.Application.Datas;
 global using Netnr.Blog.Application.Services;
 global using Netnr.Blog.Web.Filters;
 global using Netnr.Blog.Web.Services;
+global using AgGrid.InfiniteRowModel;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Authorization;

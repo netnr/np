@@ -3,7 +3,3 @@
 Database tools, database table query, export, generate SQL, DDL, code, etc.
 
 https://github.com/netnr/np/releases  
-
-Demo  
-https://ss.netnr.com/app/dk/  
-https://ss.js.org/app/dk/

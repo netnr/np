@@ -5,13 +5,11 @@
 
 @Html.AntiForgeryToken()
 
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-md-12">
-            <input type="hidden" class="nr-hid-duration" value="@duration" />
-            <pre class="nr-SystemStatus">Loading ...</pre>
+            <input type="hidden" class="nrg-hid-duration" value="@duration" />
+            <pre class="nrg-system-status">Loading ...</pre>
         </div>
     </div>
 </div>
-
-<script src="/js/mix/about.js" asp-append-version="true"></script>

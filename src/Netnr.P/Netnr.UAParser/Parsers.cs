@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
-using System;
+using System.Text;
 
 namespace Netnr.UAParser;
 
@@ -243,17 +245,25 @@ public class Parsers
     }
 
     /// <summary>
-    /// 生成 XML（序列化）
+    /// 序列化，对象转为 XML 字符串
     /// </summary>
-    /// <param name="obj"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj">对象</param>
+    /// <param name="indent">缩进</param>
     /// <returns></returns>
-    public static string ToXml(object obj)
+    public static string ToXml<T>(T obj, bool indent = false)
     {
         if (obj == null) return null;
 
         using var sw = new StringWriter();
-        var serializer = new XmlSerializer(obj.GetType());
-        serializer.Serialize(sw, obj);
+        using var xtw = new XmlTextWriter(sw)
+        {
+            Formatting = indent ? Formatting.Indented : Formatting.None
+        };
+
+        var xs = new XmlSerializer(typeof(T));
+        xs.Serialize(xtw, obj);
+
         return sw.ToString();
     }
 

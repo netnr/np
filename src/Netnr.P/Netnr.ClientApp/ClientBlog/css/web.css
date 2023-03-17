@@ -1,0 +1,8 @@
+/*链接下划线*/
+a {
+    text-decoration: none;
+}
+a:not(.btn):not(.dropdown-item):hover {
+    text-decoration: underline;
+    text-underline-position: under;
+}

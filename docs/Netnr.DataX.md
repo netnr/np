@@ -4,54 +4,60 @@ Database import and export, migration, full-text search, common tool integration
 
 https://github.com/netnr/np/releases
 
-### Data -> 数据
- - Full Text Search -> 全文检索
- - Execute SQL -> 执行 SQL
- - Generate Table DDL -> 生成 DDL
- - Generate Column Mapping -> 生成 列映射(读=>写)
- - Generate Table Mapping -> 生成 表映射(读=>写)
- - Excel Import -> Excel 导入
- - Excel Export -> Excel 导出
- - Data Migrate -> 数据迁移
- - Data Import -> 数据导入
- - Data Export -> 数据导出
- - Parameter Optimization (SQLite MySQL) -> 参数优化
- - Connection Test -> 连接测试
+### Data 数据
+ - Connection Test 连接测试
+ - Parameter Optimization (SQLite MySQL) 参数优化
+ -
+ - Data Export 数据导出
+ - Data Import 数据导入
+ - Data Migrate 数据迁移
+ - Excel Export Excel 导出
+ - Excel Import Excel 导入
+ - 
+ - Generate Table Mapping 生成 表映射(读=>写)
+ - Generate Column Mapping 生成 列映射(读=>写)
+ - Generate Table DDL 生成 DDL
+ - 
+ - Execute SQL 执行 SQL
+ - Full Text Search 全文检索
 
-### Silent -> 静默
-- scopy (Safe Copy) -> 安全拷贝
-- npmi (npm install no deps) -> npm 安装不含依赖包
-- clearmemory (Clear Memory) -> 清理内存（仅限 Windows）
-- aes (AES encryption and decryption) -> AES加密解密
-- ddel (deep delete) -> 深度删除指定文件
-- tec (Text encoding conversion) -> 文本编码转换
-- base64 (Base64) -> Base64编码解码
-- hash (File HASH) -> HASH计算
-- ocr (OCR) -> 识别图片文字, 默认Windows截图
-- snow (Generate Snowflake) -> 生成雪花ID
-- uuid (Generate UUID) -> 生成UUID
-- sming (System Monitor) -> 系统监控
-- ss (System Information) -> 系统信息
-- serve (Serve) -> 启动服务
-- dni (Domain Name Information) -> 域名信息查询（合集）
-- ssl (SSL) -> 证书信息
-- icp (ICP) -> ICP查询
-- ip (IP) -> IP查询
-- whois (Whois) -> Whois查询
-- dns (DNS Resolve) -> DNS解析
-- traceroute (Trace Route) -> 路由追踪
-- devicescan (Device Scan) -> 设备扫描
-- tcpscan (TCP Port Scan) -> TCP端口扫描（1-65535）
-- tcping (TCP Port Probing) -> TCP端口探测
-- work (Work) -> 作业, 以 Work_ 开头
+### Silent 静默
+- work (Work) 作业, 以 Work_ 开头
+- 
+- tcping (TCP Port Probing) TCP端口探测
+- tcpscan (TCP Port Scan) TCP端口扫描（1-65535）
+- portinfo (Port Info) 端口占用信息
+- killport (Kill Port) 端口杀进程
+- devicescan (Device Scan) 设备扫描
+- traceroute (Trace Route) 路由追踪
+- dns (DNS Resolve) DNS解析
+- whois (Whois) Whois查询
+- ip (IP) IP查询
+- icp (ICP) ICP查询
+- ssl (SSL) 证书信息
+- dni (Domain Name Information) 域名信息查询（合集）
+- ss (System Status) 系统状态
+- sming (System Monitor) 系统监控
+- 
+- serve (Serve) 启动服务
+- 
+- uuid (Generate UUID) 生成UUID
+- snow (Generate Snowflake) 生成雪花ID
+- tail (Tail) 读取文件最新内容
+- tec (Text encoding conversion) 文本编码转换
+- ddel (deep delete) 深度删除指定文件
+- clearmemory (Clear Memory) 清理内存（仅限 Windows）
+- gitpull (Git Pull) 批量拉取
+- scopy (Safe Copy) 安全拷贝
 
-### Mix -> 综合
-- Set environment variables -> 设置环境变量
-- Open the hub directory -> 打开 hub 目录
-- GC -> 清理
-- Console encoding -> 控制台编码
-- Check for updates -> 检查更新
-- View version -> 查看版本
+### Mix 综合
+- View version 查看版本
+- Check for updates 检查更新
+- Console encoding 控制台编码
+- GC 清理
+- 
+- Open the hub directory 打开 hub 目录
+- Set environment variables 设置环境变量
 
 ### Q&A
 - 支持 SQLite、MySQL、Oracle、SQLServer、PostgreSQL

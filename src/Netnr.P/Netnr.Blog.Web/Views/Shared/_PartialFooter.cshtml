@@ -5,35 +5,33 @@
 }
 <hr />
 
-<div class="container-fluid">
-    <div class="row my-5">
-        <div class="col-12 px-4">
-            <h5>
-                链接<a class="text-muted small float-end" data-action="back-to-top" href="javascript:void(0);">返回顶部</a>
-            </h5>
+<div class="@QuoteTo.PanelClass2">
+    <div class="row">
+        <div class="col-12">
+            <h5>链接</h5>
         </div>
-        <div class="col-md-6 px-4 mb-3">
-            <a class="me-3 lh-lg text-nowrap" href="https://github.com/@adminGitHub">GitHub</a>
+        <div class="col-lg-6 mb-3">
+            <a class="me-3 lh-lg" href="https://github.com/@adminGitHub">GitHub</a>
             @foreach (var item in links)
             {
                 var list = item.Split(' ');
                 if (list.Length == 2)
                 {
-                    <a class="me-3 lh-lg text-nowrap" href="@list.First()">@list.Last()</a>
+                    <a class="me-3 lh-lg" href="@list.First()">@list.Last()</a>
                 }
             }
-            <a class="me-3 lh-lg text-nowrap" target="_blank" href="/swagger">API</a>
+            <a class="me-3 lh-lg" target="_blank" href="/swagger">API</a>
         </div>
-        <div class="col-md-6 px-4 small">
+        <div class="col-lg-6 mb-3">
             @{
                 var fd = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-                var os = SystemStatusTo.GetOSPlatform();
+                var osName = SystemStatusTo.GetOSName();
             }
-            <a class="text-muted me-3 lh-lg" href="https://dot.net">Powered by @fd ❤ @os</a>
-            <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/about">About</a>
-            <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/faq">FAQ</a>
-            <a class="text-muted text-nowrap me-3 lh-lg" href="/mix/terms">Terms</a>
-            <a class="text-muted text-nowrap me-3 lh-lg" href="@mirror" title="不定时备份到镜像只读站点">Mirror</a>
+            <a class="text-muted me-3 lh-lg" href="https://dot.net">Powered by @fd ❤ @osName</a>
+            <a class="text-muted me-3 lh-lg" href="/mix/about">About</a>
+            <a class="text-muted me-3 lh-lg" href="/mix/faq">FAQ</a>
+            <a class="text-muted me-3 lh-lg" href="/mix/terms">Terms</a>
+            <a class="text-muted me-3 lh-lg" href="@mirror" title="不定时备份到镜像只读站点">Mirror</a>
             <span class="text-muted">&copy; @AppTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
         </div>
     </div>

@@ -8,10 +8,10 @@ namespace Netnr.DataX.Menu;
 /// </summary>
 public partial class MenuDataService
 {
-    [Display(Name = "Back to menu", Description = "返回菜单")]
+    [Display(Name = "Back to menu", Description = "返回菜单", GroupName = "\r\n")]
     public static void BackToMenu() => DXService.InvokeMenu(typeof(MenuMainService));
 
-    [Display(Name = "Connection Test", Description = "连接测试", GroupName = "\r\n")]
+    [Display(Name = "Connection Test", Description = "连接测试")]
     public static void ConnectionTest()
     {
         //配置
@@ -21,17 +21,15 @@ public partial class MenuDataService
         if (cc.ListConnectionInfo.Count > 0)
         {
             var badConn = 0;
-            cc.ListConnectionInfo.AsParallel().ForAll(ci =>
+            cc.ListConnectionInfo.ForEach(ci =>
             {
-                var connInfo = new List<string> { $"{ci.ConnectionRemark} -> {ci.ConnectionType} => {ci.ConnectionString}" };
-                var isSuccess = false;
+                DXService.Log($"\r\n\r\n{ci.ConnectionRemark} -> {ci.ConnectionType}://{ci.ConnectionString}");
                 using var dbConn = DbHelper.DbConn(ci.ConnectionType, ci.ConnectionString);
                 try
                 {
                     dbConn.Open();
 
-                    isSuccess = true;
-                    connInfo.Insert(0, $"\nTest connection is successful ({ci.ConnectionType} {dbConn.ServerVersion})");
+                    DXService.Log("successfully connected", ConsoleColor.Green);
 
                     var qv = string.Empty;
                     switch (ci.ConnectionType)
@@ -49,7 +47,7 @@ public partial class MenuDataService
                     if (!string.IsNullOrWhiteSpace(qv))
                     {
                         var db = new DbHelper(dbConn);
-                        connInfo.Add(db.SqlExecuteScalar(qv).ToString());
+                        DXService.Log(db.SqlExecuteScalar(qv).ToString());
                     }
 
                     if (dbConn.State != ConnectionState.Closed)
@@ -60,16 +58,13 @@ public partial class MenuDataService
                 catch (Exception ex)
                 {
                     badConn++;
-                    connInfo.Insert(0, "\nTest connection failed");
-                    connInfo.Add(ex.ToJson(true));
+                    DXService.Log("failed to connect", ConsoleColor.Red);
+                    DXService.Log(ex.ToJson(true));
                 }
-
-                connInfo.Add($"Drive: {dbConn.GetType().Assembly.FullName}");
-
-                DXService.Log(string.Join(Environment.NewLine, connInfo), isSuccess ? ConsoleColor.Green : ConsoleColor.Red);
+                DXService.Log($"Drive: {dbConn.GetType().Assembly.FullName}");
             });
 
-            DXService.Log($"\nSuccessful: {cc.ListConnectionInfo.Count - badConn}, Failed: {badConn}");
+            DXService.Log($"\r\nsuccessfully: {cc.ListConnectionInfo.Count - badConn}, failed: {badConn}");
         }
         else
         {
@@ -77,7 +72,7 @@ public partial class MenuDataService
         }
     }
 
-    [Display(Name = "Parameter Optimization (SQLite MySQL)", Description = "参数优化")]
+    [Display(Name = "Parameter Optimization (SQLite MySQL)", Description = "参数优化", GroupName = "\r\n")]
     public static void ParameterOptimization()
     {
         //配置
@@ -114,7 +109,7 @@ public partial class MenuDataService
         }
     }
 
-    [Display(Name = "Data Export", Description = "数据导出", GroupName = "\r\n")]
+    [Display(Name = "Data Export", Description = "数据导出")]
     public static void DataExport()
     {
         //配置
@@ -212,7 +207,7 @@ public partial class MenuDataService
                 WriteConnectionInfo = mdt.WriteConnectionInfo,
                 WriteDeleteData = DXService.ConsoleReadBool("写入前清空表数据")
             };
-            mdt = mdb.AsMigrateDataTable();
+            mdt = mdb.AsMigrateDataTable(cc.MapingMatchPattern != "Same");
         }
         else
         {
@@ -296,14 +291,14 @@ public partial class MenuDataService
                 sheets.Add(sntn, reader);
             }
 
-            var st = new TimingVM();
+            var sw = Stopwatch.StartNew();
             DXService.Log("正在导出 ...");
             MiniExcel.SaveAs(edt.PackagePath, sheets, overwriteFile: true);
-            DXService.Log($"导出完成，耗时：{st.PartTimeFormat()}");
+            DXService.Log($"导出完成，耗时：{sw.Elapsed}");
         });
     }
 
-    [Display(Name = "Excel Import", Description = "Excel 导入")]
+    [Display(Name = "Excel Import", Description = "Excel 导入", GroupName = "\r\n")]
     public static void ExcelImport()
     {
         //配置
@@ -367,15 +362,15 @@ public partial class MenuDataService
                     var batchIndex = 0;
                     var batchRows = 0;
                     var rows = MiniExcel.Query(idb.PackagePath, sheetName: sheetName, useHeaderRow: true);
-                    foreach (IDictionary<string, object> row in rows)
+                    foreach (var row in rows)
                     {
                         //填充行
                         var drWrite = dtWrite.NewRow();
                         foreach (DataColumn dc in dtWrite.Columns)
                         {
-                            if (row.ContainsKey(dc.ColumnName))
+                            if (row.TryGetValue(dc.ColumnName, out object value))
                             {
-                                var val = row[dc.ColumnName]?.ToString();
+                                var val = value?.ToString();
                                 try
                                 {
                                     if (dc.DataType == typeof(string))
@@ -435,7 +430,7 @@ public partial class MenuDataService
         });
     }
 
-    [Display(Name = "Generate Table Mapping", Description = "生成 表映射(读=>写)", GroupName = "\r\n")]
+    [Display(Name = "Generate Table Mapping", Description = "生成 表映射(读=>写)")]
     public static void GenerateTableMapping()
     {
         //配置
@@ -445,7 +440,7 @@ public partial class MenuDataService
         var ciRead = DXService.ConsoleReadDatabase(cc, "读取库");
         var ciWrite = DXService.ConsoleReadDatabase(cc, "写入库");
 
-        DXService.Log($"{ciRead.ConnectionType} => {ciWrite.ConnectionType}");
+        DXService.Log($"{ciRead.ConnectionType}://{ciWrite.ConnectionType}");
         DXService.Log($"正在读取表信息");
 
         var tableRead = DataKitTo.Init(ciRead).GetTable();
@@ -468,10 +463,7 @@ public partial class MenuDataService
             {
                 //模式相同
                 var vmWrite = listWrite.FirstOrDefault(x => x.SchemaName == itemRead.SchemaName);
-                if (vmWrite == null)
-                {
-                    vmWrite = listWrite[0];
-                }
+                vmWrite ??= listWrite[0];
                 mo.WriteTableName = DbHelper.SqlSNTN(vmWrite.TableName, vmWrite.SchemaName);
                 DXService.Log($"{cc.MapingMatchPattern} Mapping {mo.ReadTableName} => {mo.WriteTableName}");
             }
@@ -480,7 +472,7 @@ public partial class MenuDataService
             {
                 foreach (var itemWrite in tableWrite)
                 {
-                    if (DXService.SimilarMatch(itemWrite.TableName, itemRead.TableName))
+                    if (DataKitTo.SimilarMatch(itemWrite.TableName, itemRead.TableName))
                     {
                         mo.WriteTableName = DbHelper.SqlSNTN(itemWrite.TableName, itemWrite.SchemaName);
                         DXService.Log($"{cc.MapingMatchPattern} Mapping {mo.ReadTableName} => {mo.WriteTableName}");
@@ -520,7 +512,7 @@ public partial class MenuDataService
         var ciRead = DXService.ConsoleReadDatabase(cc, "读取库");
         var ciWrite = DXService.ConsoleReadDatabase(cc, "写入库");
 
-        DXService.Log($"{ciRead.ConnectionType} => {ciWrite.ConnectionType}");
+        DXService.Log($"{ciRead.ConnectionType}://{ciWrite.ConnectionType}");
 
         var tableMapPath = DXService.ConsoleReadPath("表映射文件");
         var rws = File.ReadAllText(tableMapPath).DeJson<DataKitTransferVM.ReadWriteItem[]>();
@@ -553,7 +545,7 @@ public partial class MenuDataService
                 {
                     foreach (var itemWrite in igWrite)
                     {
-                        if (DXService.SimilarMatch(itemWrite.ColumnName, itemRead.ColumnName))
+                        if (DataKitTo.SimilarMatch(itemWrite.ColumnName, itemRead.ColumnName))
                         {
                             newField = itemWrite.ColumnName;
                             DXService.Log($"{cc.MapingMatchPattern} Mapping {itemRead.TableName}.{itemRead.ColumnName}:{itemWrite.TableName}.{newField}");
@@ -576,7 +568,7 @@ public partial class MenuDataService
         FileTo.WriteText(rws.ToJson(true), tableMapPath, false);
     }
 
-    [Display(Name = "Generate Table DDL", Description = "生成 DDL")]
+    [Display(Name = "Generate Table DDL", Description = "生成 DDL", GroupName = "\r\n")]
     public static void GenerateTableDDL()
     {
         //配置
@@ -646,7 +638,7 @@ public partial class MenuDataService
         DXService.Log($"\r\nDone! Saved to {saveFile}");
     }
 
-    [Display(Name = "Execute SQL", Description = "执行 SQL", GroupName = "\r\n")]
+    [Display(Name = "Execute SQL", Description = "执行 SQL")]
     public static void ExecuteSQL()
     {
         //配置
@@ -664,13 +656,13 @@ public partial class MenuDataService
         }
 
         //跑表
-        var st = new TimingVM();
+        var sw = Stopwatch.StartNew();
 
         var db = cdb.NewDbHelper();
         try
         {
             var er = db.SqlExecuteReader(sqlOrPath, openTransaction: DXService.ConsoleReadBool("开启事务"));
-            DXService.Log($"执行结束，受影响行数：{er.Item2}，耗时：{st.PartTimeFormat()}");
+            DXService.Log($"执行结束，受影响行数：{er.Item2}，耗时：{sw.Elapsed}");
         }
         catch (Exception ex)
         {
@@ -708,7 +700,7 @@ public partial class MenuDataService
         DXService.Log($"输入 {keys.Count} 个关键词，开始检索数据库");
 
         //跑表
-        var st = new TimingVM();
+        var sw = Stopwatch.StartNew();
 
         var dk = DataKitTo.Init(cdb);
         var listTables = dk.GetTable();
@@ -773,6 +765,6 @@ public partial class MenuDataService
         DXService.Log(dbShow);
         FileTo.WriteText(dbShow, savePath);
 
-        DXService.Log($"执行结束，共耗时：{st.TotalTimeFormat()}");
+        DXService.Log($"执行结束，共耗时：{sw.Elapsed}");
     }
 }

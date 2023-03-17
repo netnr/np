@@ -2,33 +2,43 @@
     ViewData["Title"] = "键值标签";
 }
 
-<div class="container-fluid px-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
+        <div class="col-lg-4 mb-3">
+            <div class="card">
+                <div class="card-header">KeyValues Grab（抓取百科）</div>
+                <div class="card-body">
+                    <button class="nrg-btn-run1 btn btn-warning mb-2">执行抓取 Grab</button>
+                    <textarea class="nrg-txt1 form-control" rows="5" placeholder="请输入 KeyNames；换行处理批量；无新增 有修改；"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-3">
+            <div class="card">
+                <div class="card-header">KeyValues Synonym（同义词处理）</div>
+                <div class="card-body">
+                    <button class="nrg-btn-run2 btn btn-warning mb-2">处理同义词 Synonym</button>
+                    <textarea class="nrg-txt2 form-control" rows="5" placeholder="请输入 主 KeyName；后面是同义词，主 key 在第一行，如：@(Environment.NewLine)javascript@(Environment.NewLine)js"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-3">
+            <div class="card">
+                <div class="card-header">Tags（新增并刷新）</div>
+                <div class="card-body">
+                    <button class="nrg-btn-run3 btn btn-warning mb-2">新增标签 Tags</button>
+                    <textarea class="nrg-txt3 form-control" rows="5" placeholder="请输入 TagName；换行处理批量；存在不新增；"></textarea>
+                </div>
+            </div>
+        </div>
+
         <div class="col-12">
-            <sl-tab-group>
-                <sl-tab slot="nav" panel="nr-tab-panel1">KeyValues Grab（抓取百科）</sl-tab>
-                <sl-tab slot="nav" panel="nr-tab-panel2">KeyValues Synonym（同义词处理）</sl-tab>
-                <sl-tab slot="nav" panel="nr-tab-panel3">Tags（新增并刷新）</sl-tab>
-
-                <sl-tab-panel name="nr-tab-panel1">
-                    <sl-button class="nr-btn-run1 mb-2">执行抓取 Grab</sl-button>
-                    <sl-textarea class="nr-txt1" placeholder="请输入 KeyNames；换行处理批量；无新增 有修改；"></sl-textarea>
-                </sl-tab-panel>
-
-                <sl-tab-panel name="nr-tab-panel2">
-                    <sl-button class="nr-btn-run2 mb-2">处理同义词 Synonym</sl-button>
-                    <sl-textarea class="nr-txt2" placeholder="请输入 主 KeyName；后面是同义词，主 key 在第一行，如：@(Environment.NewLine)javascript@(Environment.NewLine)js"></sl-textarea>
-                </sl-tab-panel>
-
-                <sl-tab-panel name="nr-tab-panel3">
-                    <sl-button class="nr-btn-run3 mb-2">新增标签 Tags</sl-button>
-                    <sl-textarea class="nr-txt3" placeholder="请输入 TagName；换行处理批量；存在不新增；"></sl-textarea>
-                </sl-tab-panel>
-            </sl-tab-group>
-            
-            <sl-textarea label="处理结果" class="nr-txt-result" rows="5" readonly></sl-textarea>
+            <div class="form-floating">
+                <textarea class="nrg-txt-result form-control" placeholder="处理结果" style="height: 100px" readonly></textarea>
+                <label>处理结果</label>
+            </div>
         </div>
     </div>
 </div>
-
-<script src="/js/admin/keyvalues.js" asp-append-version="true"></script>

@@ -21,21 +21,22 @@ namespace Netnr.Blog.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 10)]
-        public ResultVM AboutServerStatus()
+        public async Task<ResultVM> AboutServerStatus()
         {
             var vm = new ResultVM();
 
             try
             {
-                var ckss = "Global_SystemStatus";
-                var ss = CacheTo.Get<string>(ckss);
-                if (ss == null)
+                var ckey = "SystemStatus";
+                var cval = CacheTo.Get<string>(ckey);
+                if (cval == null)
                 {
-                    ss = new SystemStatusTo().ToView();
-                    CacheTo.Set(ckss, ss, 10, false);
+                    var ss = new SystemStatusTo();
+                    cval = await ss.ToView();
+                    CacheTo.Set(ckey, cval, 10, false);
                 }
 
-                vm.Data = ss;
+                vm.Data = cval;
                 vm.Set(EnumTo.RTag.success);
             }
             catch (Exception ex)

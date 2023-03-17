@@ -1,0 +1,64 @@
+@model PageVM
+
+<div class="@QuoteTo.PanelClass2">
+
+    @if (Model.Other != null)
+    {
+        <!--列表-->
+        <div class="row">
+            <div class="col-12">
+                <a class="btn btn-sm btn-outline-info" href="/user/write">我的文章</a>
+
+                @switch (Model.Other?.ToString().ToLower())
+                {
+                    case "laud":
+                        ViewData["title"] = "我的点赞";
+                        <a class="btn btn-sm btn-primary" href="/user/write/laud">我的点赞 @Model.Pag.Total</a>
+                        <a class="btn btn-sm btn-outline-info" href="/user/write/mark">我的收藏</a>
+                        break;
+                    case "mark":
+                        ViewData["title"] = "我的收藏";
+                        <a class="btn btn-sm btn-outline-info" href="/user/write/laud">我的点赞</a>
+                        <a class="btn btn-sm btn-primary" href="/user/write/mark">我的收藏 @Model.Pag.Total</a>
+                        break;
+                }
+            </div>
+            <partial name="~/Views/Home/_PartialWritingItem.cshtml" model="Model.Rows" />
+        </div>
+
+        <!--分页-->
+        <div class="row">
+            <partial name="_PartialPaging" />
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <!--标签分类-->
+            @if (Model.Temp != null)
+            {
+                var tagObj = Model.Temp.ToJson().DeJson();
+
+                <div class="col-12 small">
+                    <partial name="~/Views/Home/_PartialTagItem.cshtml" model="@tagObj.GetValue("tag")" />
+                    <span class="opacity-75">@tagObj.GetValue("baike_abstract")</span>
+                    <a class="text-nowrap" href="@tagObj.GetValue("baike_url")" target="_blank">[More]</a>
+                </div>
+            }
+            else
+            {
+                <partial name="~/Views/Home/_PartialTagNav.cshtml" />
+            }
+        </div>
+
+        <!--列表-->
+        <div class="row my-4">
+            <partial name="~/Views/Home/_PartialWritingItem.cshtml" model="Model.Rows" />
+        </div>
+
+        <!--分页-->
+        <div class="row">
+            <partial name="_PartialPaging" />
+        </div>
+    }
+</div>

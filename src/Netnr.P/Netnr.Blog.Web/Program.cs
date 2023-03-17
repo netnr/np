@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,12 +55,10 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 {
     //cookie存储需用户同意，欧盟新标准，暂且关闭，否则用户没同意无法写入
     options.CheckConsentNeeded = context => false;
-    if (!AppTo.GetValue<bool>("ReadOnly"))
-    {
-        //允许其他站点携带授权Cookie访问，会出现伪造
-        //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
-        options.MinimumSameSitePolicy = SameSiteMode.None;
-    }
+
+    //允许其他站点携带授权Cookie访问，会出现伪造
+    //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
+    //options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
 builder.Services.AddControllersWithViews(options =>
@@ -76,19 +73,21 @@ builder.Services.AddControllersWithViews(options =>
 //授权访问信息
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    if (!AppTo.GetValue<bool>("ReadOnly"))
-    {
-        //允许其他站点携带授权Cookie访问，会出现伪造
-        //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
-        options.Cookie.SameSite = SameSiteMode.None;
-    }
+    //允许其他站点携带授权Cookie访问，会出现伪造
+    //Chrome新版本必须启用HTTPS，安装命令：dotnet dev-certs https
+    //options.Cookie.SameSite = SameSiteMode.None;
 
     options.Cookie.Name = "netnr_auth";
     options.LoginPath = "/account/login";
 });
 
 //session
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); //有效期
+    options.Cookie.HttpOnly = true; //服务端访问
+    options.Cookie.IsEssential = true; //绕过同意使用
+});
 
 //数据库连接池
 builder.Services.AddDbContextPool<ContextBase>(options =>
@@ -117,50 +116,52 @@ if (!(GlobalTo.IsDev = app.Environment.IsDevelopment()))
     app.UseHsts();
 }
 
-//定时任务 https://github.com/fluentscheduler/FluentScheduler
-if (!AppTo.GetValue<bool>("ReadOnly"))
-{
-    FluentScheduler.JobManager.Initialize();
-
-    var sc = new Netnr.Blog.Web.Controllers.ServiceController();
-
-    //Gist 同步任务
-    FluentScheduler.JobManager.AddJob(() => sc.GistSync(), s =>
-    {
-        s.WithName("Job_GistSync");
-        s.ToRunEvery(8).Hours();
-    });
-
-    //处理操作记录
-    FluentScheduler.JobManager.AddJob(() => sc.HandleOperationRecord(), s => s.ToRunEvery(6).Hours());
-
-    //数据库备份到 Git
-    FluentScheduler.JobManager.AddJob(() => sc.DatabaseBackupToGit(), s => s.ToRunEvery(5).Days().At(16, 16));
-
-    //监控
-    FluentScheduler.JobManager.AddJob(() => sc.Monitor("http"), s => s.ToRunEvery(1).Minutes());
-    FluentScheduler.JobManager.AddJob(() => sc.Monitor("tcp"), s => s.ToRunEvery(1).Minutes());
-    FluentScheduler.JobManager.AddJob(() => sc.Monitor("ssl"), s => s.ToRunEvery(1).Days().At(10, 10));
-}
-
-//数据库初始化
+//获取注入对象
 using (var scope = app.Services.CreateScope())
 {
+    //数据库初始化
     var db = scope.ServiceProvider.GetRequiredService<ContextBase>();
-
-    var createScript = db.Database.GenerateCreateScript();
-    if (AppTo.TDB == EnumTo.TypeDB.PostgreSQL)
-    {
-        createScript = createScript.Replace(" datetime ", " timestamp ");
-    }
-    Console.WriteLine(createScript);
 
     //数据库不存在则创建，创建后返回true
     if (db.Database.EnsureCreated())
     {
+        var createScript = db.Database.GenerateCreateScript();
+        if (AppTo.TDB == EnumTo.TypeDB.PostgreSQL)
+        {
+            createScript = createScript.Replace(" datetime ", " timestamp ");
+        }
+        Console.WriteLine(createScript);
+
         //导入数据库示例数据
         var vm = new Netnr.Blog.Web.Controllers.ServiceController().DatabaseImport("db/backup_demo.zip");
         Console.WriteLine(vm.ToJson(true));
+    }
+
+
+    //定时任务 https://github.com/fluentscheduler/FluentScheduler
+    if (!AppTo.GetValue<bool>("ReadOnly") && AppTo.GetValue<bool>("Common:EnableTask"))
+    {
+        FluentScheduler.JobManager.Initialize();
+
+        var sc = new Netnr.Blog.Web.Controllers.ServiceController();
+
+        //Gist 同步任务
+        FluentScheduler.JobManager.AddJob(() => sc.GistSync(), s =>
+        {
+            s.WithName("Job_GistSync");
+            s.ToRunEvery(8).Hours();
+        });
+
+        //处理操作记录
+        FluentScheduler.JobManager.AddJob(() => sc.HandleOperationRecord(), s => s.ToRunEvery(6).Hours());
+
+        //数据库备份到 Git
+        FluentScheduler.JobManager.AddJob(() => sc.DatabaseBackupToGit(), s => s.ToRunEvery(5).Days().At(16, 16));
+
+        //监控
+        FluentScheduler.JobManager.AddJob(() => sc.Monitor("http"), s => s.ToRunEvery(1).Minutes());
+        FluentScheduler.JobManager.AddJob(() => sc.Monitor("tcp"), s => s.ToRunEvery(1).Minutes());
+        FluentScheduler.JobManager.AddJob(() => sc.Monitor("ssl"), s => s.ToRunEvery(1).Days().At(10, 10));
     }
 }
 
@@ -219,12 +220,12 @@ app.UseAuthentication();
 //身份验证·授权访问校验
 app.UseAuthorization();
 
-//session
+// Call UseSession after UseRouting and before MapRazorPages and MapDefaultControllerRoute 
 app.UseSession();
 
 //default index.html
-//https://docs.microsoft.com/en-us/aspnet/core/tutorials/min-web-api
-app.Map("/app/{appName}/", (string appName) => Results.File($"{AppTo.WebRootPath}/app/{appName}/index.html", "text/html; charset=utf-8"));
+//https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
+app.MapGet("/app/{appName}/", (string appName) => Results.File($"{AppTo.WebRootPath}/app/{appName}/index.html", "text/html; charset=utf-8"));
 
 //app.Map("/{xid:int}", (int xid) => Results.Ok(xid));
 app.Map("/generate_200", () => Results.Ok());
@@ -233,6 +234,41 @@ app.Map("/generate_400", () => Results.BadRequest());
 app.Map("/generate_401", () => Results.Unauthorized());
 app.Map("/generate_404", () => Results.NotFound());
 app.Map("/generate_418", () => Results.StatusCode(418));
+
+Console.WriteLine(CommonService.StaticResourcePath("AvatarPath"));
+
+//curl HOST -T file.txt
+if (AppTo.GetValue<bool>("ReadOnly"))
+{
+    app.MapPut("/{id}", async ([FromRoute] string id, HttpContext context) =>
+    {
+        string msg = string.Empty;
+        try
+        {
+            //接收文件
+            using var ms = new MemoryStream();
+
+            var tmpDir = Path.Combine(AppTo.WebRootPath, "tmp");
+            if (!Directory.Exists(tmpDir))
+            {
+                Directory.CreateDirectory(tmpDir);
+            }
+            var fileName = $"{RandomTo.NewString()}{Path.GetExtension(id)}";
+            using var stream = File.OpenWrite(Path.Combine(tmpDir, fileName));
+            await context.Request.Body.CopyToAsync(stream);
+
+            var download = $"wget {context.Request.Scheme}://{context.Request.Host}/tmp/{fileName}";
+            msg = $"uploaded successfully\r\n\r\n{download}";
+        }
+        catch (Exception ex)
+        {
+            context.Response.StatusCode = 500;
+            msg = $"upload failed\r\n\r\n{ex.Message}";
+        }
+
+        await context.Response.Body.WriteAsync($"\r\n\r\n{msg}\r\n".ToByte());
+    });
+}
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(name: "sid", pattern: "{controller=Home}/{action=Index}/{id?}/{sid?}");

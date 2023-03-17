@@ -18,6 +18,10 @@ namespace Netnr
             Headers = context.Request.HttpContext.Request.Headers;
 
             var address = context.Request.HttpContext.Connection.RemoteIpAddress;
+            if (address.IsIPv4MappedToIPv6)
+            {
+                address = address.MapToIPv4();
+            }
             IP = address.ToString();
 
             //X-Forwarded-For: <client>, <proxy1>, <proxy2>

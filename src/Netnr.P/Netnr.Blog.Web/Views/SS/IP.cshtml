@@ -1,21 +1,27 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-12">
-            <div class="mb-3">
-                <a href="https://pv.sohu.com/cityjson" target="_blank">搜狐</a>
-                <sl-input class="nr-txt-ip2" placeholder="Loading..." size="large"></sl-input>
+            <div class="mb-4">
+                <input class="nrg-txt-taobao form-control form-control-lg" readonly placeholder="loading ..." />
+                <div class="form-text">
+                    淘宝 <a class="form-label" href="https://www.taobao.com/help/getip.php" target="_blank">https://www.taobao.com/help/getip.php</a>
+                </div>
             </div>
-            <div class="mb-3">
-                <a href="https://vv.video.qq.com/checktime?otype=json" target="_blank">腾讯</a>
-                <sl-input class="nr-txt-ip3" placeholder="Loading..." size="large"></sl-input>
+            <div class="mb-4">
+                <input class="nrg-txt-qq form-control form-control-lg" readonly placeholder="loading ..." />
+                <div class="form-text">
+                    腾讯 <a class="form-label" href="https://vv.video.qq.com/checktime?otype=json" target="_blank">https://vv.video.qq.com/checktime?otype=json</a>
+                </div>
             </div>
-            <div class="mb-3">
-                <a href="https://netnr.zme.ink/api/v1/IP" target="_blank">https://netnr.zme.ink/api/v1/IP</a>
-                <sl-input class="nr-txt-ip1" placeholder="Loading..." size="large"></sl-input>
+            <div class="mb-4">
+                <input class="nrg-txt-cloudflare form-control form-control-lg" readonly placeholder="loading ..." />
+                <div class="form-text">
+                    Cloudflare <a class="form-label" href="https://js.org/cdn-cgi/trace" target="_blank">https://js.org/cdn-cgi/trace</a>
+                </div>
             </div>
             <div>
                 更多：
-                <a href="https://api.ip.sb/ip" target="_blank">IP.SB</a>
+                <a href="https://pv.sohu.com/cityjson" target="_blank">搜狐</a>
                 &nbsp;
                 <a href="http://resolver.gslb.mi-idc.com/gslb/gslb/getbucket.asp" target="_blank">小米</a>
                 &nbsp;
@@ -26,18 +32,3 @@
         </div>
     </div>
 </div>
-
-<script src="https://pv.sohu.com/cityjson"></script>
-<script src="https://vv.video.qq.com/checktime?otype=json"></script>
-<script>
-    nr.onReady = function () {
-        try {
-            fetch(`${ss.apiServer}/api/v1/IP`).then(resp => resp.text()).then(res => {
-                nr.domTxtIp1.value = res.split(',')[0];
-            });
-
-            nr.domTxtIp2.value = returnCitySN.cip;
-            nr.domTxtIp3.value = QZOutputJson.ip;
-        } catch (e) { }
-    }
-</script>

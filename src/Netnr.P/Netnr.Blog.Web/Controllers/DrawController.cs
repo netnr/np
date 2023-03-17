@@ -13,307 +13,240 @@
         }
 
         /// <summary>
-        /// Draw 图形
+        /// Draw 新增表单
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         public IActionResult Index()
         {
-            return View("/Views/Draw/_PartialGraphEditor.cshtml");
+            return View("/Views/Draw/_PartialDrawForm.cshtml");
         }
 
         /// <summary>
-        /// Draw 脑图
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult BPMN()
-        {
-            return View("/Views/Draw/_PartialBPMNEditor.cshtml");
-        }
-
-        /// <summary>
-        /// Draw 脑图
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Mind()
-        {
-            return View("/Views/Draw/_PartialMindEditor.cshtml");
-        }
-
-        /// <summary>
-        /// Draw
+        /// 编辑表单
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="sid"></param>
-        /// <param name="code">分享码</param>
-        /// <param name="filename"></param>
-        /// <param name="xml"></param>
-        /// <param name="mof"></param>
         /// <returns></returns>
-        public IActionResult Code([FromRoute] string id, [FromRoute] string sid, string code, string filename, string xml, Draw mof)
+        [Authorize]
+        public async Task<IActionResult> Edit([FromRoute] string id)
         {
-            id ??= "";
-            sid ??= "";
-
-            var kid = string.Empty;
-            if (id.Length == 20)
-            {
-                kid = id;
-            }
-            else if (sid.Length == 20)
-            {
-                kid = sid;
-            }
-            if (!string.IsNullOrEmpty(kid))
-            {
-                var sck = "SharedCode_" + kid;
-                //有分享码
-                if (!string.IsNullOrWhiteSpace(code))
-                {
-                    Response.Cookies.Append(sck, code);
-                }
-                else
-                {
-                    code = Request.Cookies[sck]?.ToString();
-                }
-            }
-
             var uinfo = IdentityService.Get(HttpContext);
 
-            if (!string.IsNullOrWhiteSpace(filename))
+            var mo = await db.Draw.FirstOrDefaultAsync(x => x.DrId == id && x.Uid == uinfo.UserId);
+            if (mo != null)
             {
-                filename = filename.ToUrlDecode();
+                return View("/Views/Draw/_PartialDrawForm.cshtml", mo);
             }
-            if (!string.IsNullOrWhiteSpace(xml))
+            else
             {
-                xml = xml.ToUrlDecode();
+                return Unauthorized("401");
             }
+        }
 
-            //新增、编辑内容
-            if (id == "open")
+        /// <summary>
+        /// 删除一条
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            var uinfo = IdentityService.Get(HttpContext);
+
+            var num = await db.Draw.Where(x => x.DrId == id && x.Uid == uinfo.UserId).ExecuteDeleteAsync();
+            if (num > 0)
             {
-                //编辑
-                if (!string.IsNullOrWhiteSpace(sid))
-                {
-                    var vm = new ResultVM();
-                    var mo = db.Draw.Find(sid);
-
-                    //分享码
-                    var isShare = !string.IsNullOrWhiteSpace(mo?.Spare1) && mo?.Spare1 == code;
-                    if (mo?.DrOpen == 1 || mo?.Uid == uinfo?.UserId || isShare)
-                    {
-                        vm.Set(EnumTo.RTag.success);
-                        vm.Data = mo;
-                    }
-                    else
-                    {
-                        vm.Set(EnumTo.RTag.unauthorized);
-                    }
-                    return Content(vm.ToJson());
-                }
-                return Ok();
+                return Redirect($"/draw/user/{uinfo.UserId}");
             }
-            //新增、编辑表单
-            else if (id == "form")
+            else
             {
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return Redirect("/account/login?ReturnUrl=" + Request.Path.ToString().ToUrlEncode());
-                }
-
-                if (!string.IsNullOrWhiteSpace(sid))
-                {
-                    var mo = db.Draw.Find(sid);
-                    if (mo.Uid == uinfo?.UserId)
-                    {
-                        return View("/Views/Draw/_PartialDrawForm.cshtml", mo);
-                    }
-                }
-
-                return View("/Views/Draw/_PartialDrawForm.cshtml");
+                return BadRequest();
             }
-            //保存标题等信息
-            else if (id == "saveform")
+        }
+
+        /// <summary>
+        /// 保存表单
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Authorize, HttpPost]
+        public async Task<IActionResult> Save([FromForm] Draw model)
+        {
+            var uinfo = IdentityService.Get(HttpContext);
+
+            var vm = IdentityService.CompleteInfoValid(HttpContext);
+            if (vm.Code == 200)
             {
-                var vm = IdentityService.CompleteInfoValid(HttpContext);
-                if (vm.Code == 200)
+                int num = 0;
+
+                //新增
+                if (string.IsNullOrWhiteSpace(model.DrId))
                 {
-                    int num = 0;
-                    if (string.IsNullOrWhiteSpace(mof.DrId))
-                    {
-                        mof.DrId = mof.DrType[0] + UniqueTo.LongId().ToString();
-                        mof.DrCreateTime = DateTime.Now;
-                        mof.Uid = uinfo?.UserId;
-                        mof.DrOrder = 100;
-                        mof.DrStatus = 1;
+                    model.DrId = model.DrType[0] + UniqueTo.LongId().ToString();
+                    model.DrCreateTime = DateTime.Now;
+                    model.Uid = uinfo?.UserId;
+                    model.DrOrder = 100;
+                    model.DrStatus = 1;
 
-                        db.Draw.Add(mof);
-                        num = db.SaveChanges();
-                    }
-                    else
-                    {
-                        var newmo = db.Draw.Find(mof.DrId);
-                        if (newmo.Uid != uinfo.UserId)
-                        {
-                            vm.Set(EnumTo.RTag.unauthorized);
-                        }
-                        else
-                        {
-                            newmo.DrRemark = mof.DrRemark;
-                            newmo.DrName = mof.DrName;
-                            newmo.DrOpen = mof.DrOpen;
-                            newmo.Spare1 = mof.Spare1;
-
-                            db.Draw.Update(newmo);
-                            num = db.SaveChanges();
-                        }
-                    }
+                    await db.Draw.AddAsync(model);
+                    num = await db.SaveChangesAsync();
 
                     //推送通知
-                    _ = PushService.PushAsync("网站消息（Draw）", $"{mof.DrName}");
-
-                    vm.Set(num > 0);
-                }
-
-                if (vm.Code == 200)
-                {
-                    return Redirect("/draw/user/" + uinfo?.UserId);
+                    _ = PushService.PushAsync("网站消息（Draw）", $"{model.DrName}");
                 }
                 else
                 {
-                    return Content(vm.Msg);
-                }
-            }
-            //保存内容
-            else if (id == "save")
-            {
-                var vm = IdentityService.CompleteInfoValid(HttpContext);
-                if (vm.Code == 200)
-                {
-                    //新增
-                    if (string.IsNullOrWhiteSpace(sid))
-                    {
-                        var mo = new Draw
-                        {
-                            DrName = filename,
-                            DrContent = xml,
-
-                            DrId = mof.DrType[0] + UniqueTo.LongId().ToString(),
-                            DrType = mof.DrType,
-                            DrCreateTime = DateTime.Now,
-                            DrOpen = 1,
-                            DrOrder = 100,
-                            DrStatus = 1,
-                            Uid = uinfo?.UserId
-                        };
-
-                        db.Draw.Add(mo);
-
-                        var num = db.SaveChanges();
-                        vm.Set(num > 0);
-                        vm.Data = mo.DrId;
-                    }
-                    else
-                    {
-                        var mo = db.Draw.Find(sid);
-                        if (mo?.Uid == uinfo?.UserId)
-                        {
-                            mo.DrName = filename;
-                            mo.DrContent = xml;
-
-                            db.Draw.Update(mo);
-
-                            var num = db.SaveChanges();
-                            vm.Set(num > 0);
-                        }
-                        else
-                        {
-                            vm.Set(EnumTo.RTag.unauthorized);
-                        }
-                    }
+                    num = await db.Draw.Where(x => x.DrId == model.DrId && x.Uid == uinfo.UserId).ExecuteUpdateAsync(x => x
+                    .SetProperty(p => p.DrRemark, model.DrRemark)
+                    .SetProperty(p => p.DrName, model.DrName)
+                    .SetProperty(p => p.DrOpen, model.DrOpen)
+                    .SetProperty(p => p.Spare1, model.Spare1));
                 }
 
-                return Content(vm.ToJson());
+                vm.Set(num > 0);
             }
-            //删除
-            else if (id == "delete")
+
+            if (vm.Code == 200)
             {
-                var vm = new ResultVM();
+                return Redirect($"/draw/user/{uinfo.UserId}");
+            }
+            else
+            {
+                return BadRequest(vm);
+            }
+        }
 
-                if (User.Identity.IsAuthenticated)
+        /// <summary>
+        /// Draw 查看
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="code">分享码</param>
+        /// <returns></returns>
+        public IActionResult Code([FromRoute] string id, string code)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return Redirect("/draw/discover");
+            }
+            else
+            {
+                var idAsType = "Graph";
+                switch (id[0])
                 {
-                    var mo = db.Draw.Find(sid);
-                    if (mo.Uid == uinfo?.UserId)
-                    {
-                        db.Remove(mo);
-                        int num = db.SaveChanges();
+                    case 'm': idAsType = "Mind"; break;
+                    case 'b': idAsType = "BPMN"; break;
+                }
 
-                        vm.Set(num > 0);
-                    }
-                    else
-                    {
-                        vm.Set(EnumTo.RTag.unauthorized);
-                    }
+                //有分享码（存储）
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    var sharedCode = $"SharedCode_{id}"; //根据主键存储
+                    Response.Cookies.Append(sharedCode, code);
+                }
+
+                return View($"/Views/Draw/_Partial{idAsType}Editor.cshtml");
+            }
+        }
+
+        /// <summary>
+        /// 编辑器打开
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ResultVM> EditorOpen([FromRoute] string id)
+        {
+            var vm = new ResultVM();
+
+            try
+            {
+                var uinfo = IdentityService.Get(HttpContext);
+
+                var sharedCode = $"SharedCode_{id}";
+                var code = Request.Cookies[sharedCode]?.ToString();
+
+                var mo = await db.Draw.FindAsync(id);
+                if (mo == null)
+                {
+                    vm.Set(EnumTo.RTag.failure);
+                }
+                else if (mo.DrOpen == 1 || mo.Uid == uinfo?.UserId || (!string.IsNullOrWhiteSpace(mo.Spare1) && mo.Spare1 == code))
+                {
+                    vm.Data = mo;
+                    vm.Set(EnumTo.RTag.success);
                 }
                 else
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
                 }
-
-                if (vm.Code == 200)
-                {
-                    return Redirect("/draw/user/" + uinfo?.UserId);
-                }
-                else
-                {
-                    return Content(vm.ToJson());
-                }
             }
-            //插入图片
-            else if (id == "upload")
+            catch (Exception ex)
             {
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized("Not Authorized");
-                }
-
-                var errno = -1;
-                var msg = "fail";
-                var url = "";
-
-                var subdir = AppTo.GetValue("StaticResource:DrawPath");
-                var vm = api.APIController.UploadCheck(Request.Form.Files[0], null, "", subdir);
-                if (vm.Code == 200)
-                {
-                    var jd = vm.Data.ToJson().DeJson();
-                    url = jd.GetValue("server") + jd.GetValue("path");
-                    errno = 0;
-                    msg = "ok";
-                }
-
-                //推送通知
-                PushService.PushAsync("网站消息（Upload）", $"{url}");
-
-                return Content(new
-                {
-                    errno,
-                    msg,
-                    data = new
-                    {
-                        url
-                    }
-                }.ToJson());
+                vm.Set(ex);
             }
 
-            ViewData["vid"] = id;
+            return vm;
+        }
 
-            var idAsType = "Graph";
-            switch (id[0])
+        /// <summary>
+        /// 编辑器保存
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="xml"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<ResultVM> EditorSave([FromRoute] string id, [FromForm] string xml, [FromForm] string filename)
+        {
+            var vm = new ResultVM();
+
+            try
             {
-                case 'm': idAsType = "Mind"; break;
-                case 'b': idAsType = "BPMN"; break;
+                var uinfo = IdentityService.Get(HttpContext);
+
+                var num = await db.Draw.Where(x => x.DrId == id && x.Uid == uinfo.UserId).ExecuteUpdateAsync(x => x
+                .SetProperty(p => p.DrContent, xml)
+                .SetProperty(p => p.DrName, filename));
+
+                vm.Set(num > 0);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
             }
 
-            return View($"/Views/Draw/_Partial{idAsType}Editor.cshtml");
+            return vm;
+        }
+
+        /// <summary>
+        /// Mind Upload
+        /// </summary>
+        /// <returns></returns>
+        [Authorize, HttpPost]
+        public IActionResult MindUpload()
+        {
+            var errno = -1;
+            var msg = "fail";
+            var url = "";
+
+            var subdir = AppTo.GetValue("StaticResource:DrawPath");
+            var vm = api.APIController.UploadCheck(Request.Form.Files[0], null, "", subdir);
+            if (vm.Code == 200)
+            {
+                var jd = vm.Data.ToJson().DeJson();
+                url = Path.Combine(AppTo.GetValue("StaticResource:Server"), jd.GetValue("path"));
+                errno = 0;
+                msg = "ok";
+            }
+
+            return Content(new
+            {
+                errno,
+                msg,
+                data = new
+                {
+                    url
+                }
+            }.ToJson());
         }
 
         /// <summary>
@@ -323,11 +256,11 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ResponseCache(Duration = 10)]
-        public IActionResult Discover(string k, int page = 1)
+        public async Task<IActionResult> Discover(string k, int page = 1)
         {
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.DrawQuery(k, 0, userId, page);
+            var ps = await CommonService.DrawQuery(k, 0, userId, page);
             ps.Route = Request.Path;
             return View("/Views/Draw/_PartialDrawList.cshtml", ps);
         }
@@ -340,7 +273,7 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ActionName("User")]
-        public IActionResult Id([FromRoute] string id, string k, int page = 1)
+        public async Task<IActionResult> Id([FromRoute] string id, string k, int page = 1)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -349,7 +282,7 @@
 
             int uid = Convert.ToInt32(id);
 
-            var mu = db.UserInfo.Find(uid);
+            var mu = await db.UserInfo.FindAsync(uid);
             if (mu == null)
             {
                 return Content("Account is empty");
@@ -358,7 +291,7 @@
 
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.DrawQuery(k, uid, userId, page);
+            var ps = await CommonService.DrawQuery(k, uid, userId, page);
             ps.Route = Request.Path;
             return View("/Views/Draw/_PartialDrawList.cshtml", ps);
         }

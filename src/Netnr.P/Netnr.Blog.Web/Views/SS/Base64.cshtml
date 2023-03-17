@@ -1,28 +1,33 @@
-<div class="nr-card-box invisible container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-12 mb-3">
-            <div>选择文件（支持拖拽、粘贴）</div>
-            <input class="nr-txt-file w-100" type="file" />
+        <div class="col-12 mb-2">
+            <label class="form-label">选择文件（支持拖拽、粘贴）</label>
+            <input class="nrg-txt-file form-control" type="file" />
+        </div>
+        <div class="col-12 mb-2">
+            <div class="nrg-editor border" style="height:12em"></div>
+            <div class="nrg-card-info form-text">&nbsp;</div>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <button class="nrg-btn-tofile btn btn-warning">Base64 转文件</button>
+                <input class="nrg-txt-mime form-control" placeholder="指定 MIME-Type" />
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="btn-group">
+                <button class="nrg-btn-decode btn btn-success">Base64 解码</button>
+                <button class="nrg-btn-encode btn btn-primary">Base64 编码</button>
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="nrg-dd-detect dropdown">
+                <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false">检测 Base64 MIME</button>
+                <ul class="dropdown-menu"></ul>
+            </div>
         </div>
         <div class="col-12">
-            <div class="nr-editor"></div>
-            <div class="nr-card-info mb-3 small"></div>
-            <sl-button class="nr-btn-tofile mb-3" variant="warning">Base64 转文件</sl-button>
-            <sl-input class="nr-txt-mime mb-3 d-inline-block me-4" placeholder="指定 MIME-Type"></sl-input>
-            <sl-button-group class="mb-3">
-                <sl-button class="nr-btn-decode" variant="success">解码</sl-button>
-                <sl-button class="nr-btn-encode" variant="primary">编码</sl-button>
-            </sl-button-group>
-            <sl-dropdown class="nr-dd-detect mb-3">
-                <sl-button slot="trigger" caret variant="warning">检测 Base64 MIME</sl-button>
-                <sl-menu>
-                    <sl-menu-item>未知</sl-menu-item>
-                </sl-menu>
-            </sl-dropdown>
-            <div class="nr-card-result"></div>
+            <div class="nrg-card-result mb-2"></div>
         </div>
     </div>
 </div>
-
-<script src="/app/browserify/dist/magic-bytes.min.js" asp-append-version="true"></script>
-@Html.Raw(Netnr.QuoteTo.Html("monaco-editor"))

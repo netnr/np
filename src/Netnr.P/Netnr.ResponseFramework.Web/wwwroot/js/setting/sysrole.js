@@ -125,7 +125,7 @@ z.button('del', function () {
             url: "/Setting/DelSysRole?id=" + rowData.SrId,
             dataType: 'json',
             success: function (data) {
-                if (data.code == 97) {
+                if (data.code == 409) {
                     art('角色下有用户，不能删除');
                 } else if (data.code == 200) {
                     gd1.load();

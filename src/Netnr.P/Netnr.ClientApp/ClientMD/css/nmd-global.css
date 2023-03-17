@@ -1,0 +1,19 @@
+﻿/* light */
+:root {
+    --nmd-bg: #ffffff;
+    --nmd-color: #212529;
+    --nmd-border: #dee2e6;
+}
+
+/* dark */
+.netnrmd-dark {
+    color-scheme: dark;
+
+    --nmd-bg: #212529;
+    --nmd-color: #adb5bd;
+    --nmd-border: #495057;
+}
+
+.netnrmd-dark body {
+    background-color: var(--nmd-bg);
+}

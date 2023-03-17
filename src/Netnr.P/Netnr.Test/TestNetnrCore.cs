@@ -164,12 +164,16 @@ namespace Netnr.Test
         public void CmdTo_2()
         {
             var result = string.Empty;
+
             var psi = CmdTo.PSInfo("-V", @"curl");
+
             CmdTo.Execute(psi, (process, cr) =>
             {
                 process.Start();
+
                 result = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
+
                 process.Close();
             });
 
@@ -180,16 +184,23 @@ namespace Netnr.Test
         public void CmdTo_3_FFmpeg()
         {
             var result = string.Empty;
-            CmdTo.Execute(CmdTo.PSInfo(@"-i", "ffmpeg"), (process, cr) =>
+
+            var psi = CmdTo.PSInfo(@"-i", "ffmpeg");
+            psi.StandardErrorEncoding = Encoding.UTF8;
+
+            CmdTo.Execute(psi, (process, cr) =>
             {
+                //错误信息输出
                 process.ErrorDataReceived += (sender, output) =>
                 {
                     result += output.Data;
                 };
 
                 process.Start();//启动线程
-                process.BeginErrorReadLine();//开始异步读取
+
+                process.BeginErrorReadLine();//开始异步读取错误信息
                 process.WaitForExit();//阻塞等待进程结束
+
                 process.Close();//关闭进程
                 process.Dispose();
             });
@@ -401,12 +412,58 @@ namespace Netnr.Test
                     ToMail = new List<string> { "netnr@tempmail.cn", "netnr@bccto.cc" },
                     CcMail = new List<string> { "netnr@teml.net", "netnr@nqmo.com" }
                 };
+
                 await MailTo.Send(model);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
             }
+        }
+
+        [Fact]
+        public async void MonitorTo_1_HTTP()
+        {
+            var url = "https://www.baidu.com";
+            var result = await MonitorTo.HTTP(url, HttpMethod.Get);
+            Debug.WriteLine(result.ToJson(true));
+            Assert.True(result.Code == 200);
+        }
+
+        [Fact]
+        public void MonitorTo_2_SSL()
+        {
+            var uri = new Uri("https://expired.badssl.com/");
+            var result = MonitorTo.SSL(uri);
+            Debug.WriteLine(result.ToJson(true));
+            Assert.True(result.Code == 200);
+        }
+
+        [Fact]
+        public async void MonitorTo_3_DNS()
+        {
+            var host = "www.baidu.com";
+            var result = await MonitorTo.DNS(host);
+            Debug.WriteLine(result.ToJson(true));
+            Assert.True(result.Code == 200);
+        }
+
+        [Fact]
+        public void MonitorTo_4_TCPort()
+        {
+            var host = "www.baidu.com";
+            var result = MonitorTo.TCPort(host, 443);
+            Debug.WriteLine(result.ToJson(true));
+            Assert.True(result.Code == 200);
+        }
+
+        [Fact]
+        public void MonitorTo_5_PING()
+        {
+            var host = "www.baidu.com";
+            var result = MonitorTo.PING(host);
+            Debug.WriteLine(result.ToJson(true));
+            Assert.True(result.Code == 200);
         }
 
         [Fact]
@@ -471,7 +528,7 @@ namespace Netnr.Test
         [Fact]
         public void SnowflakeTo_1()
         {
-            var st = new TimingVM();
+            var sw = Stopwatch.StartNew();
 
             var hs = new HashSet<long>();
             for (int i = 0; i < 1_999_999; i++)
@@ -482,21 +539,54 @@ namespace Netnr.Test
                     throw new Exception("same");
                 }
             }
-            Debug.WriteLine($"Snowflake 1_999_999: {st.PartTimeFormat()}");
+            Debug.WriteLine($"Snowflake 1_999_999: {sw.Elapsed}");
         }
 
         [Fact]
-        public void SystemStatusTo_1()
+        public void SnowflakeTo_2()
+        {
+            var sw = Stopwatch.StartNew();
+
+            var hs = new HashSet<long>();
+            for (int i = 0; i < 1_999_999; i++)
+            {
+                //12位序列
+                if (hs.Count % 4096 == 0)
+                {
+                    Thread.Sleep(0);
+                }
+
+                var val = Snowflake53To.Id();
+                if (!hs.Add(val))
+                {
+                    throw new Exception($"same，count：{hs.Count}，time：{sw.Elapsed}");
+                }
+            }
+            Debug.WriteLine($"Snowflake 1_999_999: {sw.Elapsed}");
+        }
+
+        [Fact]
+        public async void SystemStatusTo_1()
         {
             var ss = new SystemStatusTo();
-            Assert.NotEmpty(ss.ToJson());
-            Assert.NotEmpty(ss.ToView());
+            Assert.NotEmpty(await ss.ToView());
+            Debug.WriteLine(ss.ToJson(true));
+        }
+
+        [Fact]
+        public async void SystemStatusTo_2()
+        {
+            var list1 = await SystemStatusTo.GetAddressList();
+            Debug.WriteLine(list1.ToJson(true));
+
+            var endPoint = await SystemStatusTo.GetAddressInterNetwork();
+            Debug.WriteLine(endPoint.ToJson(true));
         }
 
         [Fact]
         public void UniqueTo_1()
         {
-            var st = new TimingVM();
+            var sw = Stopwatch.StartNew();
             var hs = new HashSet<long>();
             for (int i = 0; i < 1_999_999; i++)
             {
@@ -506,7 +596,7 @@ namespace Netnr.Test
                     throw new Exception("same");
                 }
             }
-            Debug.WriteLine($"UniqueTo 1_999_999: {st.PartTimeFormat()}");
+            Debug.WriteLine($"UniqueTo 1_999_999: {sw.Elapsed}");
         }
 
         [Fact]

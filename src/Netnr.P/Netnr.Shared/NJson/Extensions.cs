@@ -17,7 +17,7 @@ public static partial class Extensions
     /// <param name="isSpace">缩进输出</param>
     /// <param name="DateTimeFormat">时间格式化</param>
     /// <returns></returns>
-    public static string ToJson(this JContainer obj, bool isSpace = false, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
+    public static string ToNJson(this object obj, bool isSpace = false, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
     {
         Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new()
         {
@@ -31,7 +31,7 @@ public static partial class Extensions
     /// </summary>
     /// <param name="json">JSON字符串</param>
     /// <returns>JObject对象</returns>
-    public static JObject ToJObject(this string json)
+    public static JObject DeJObject(this string json)
     {
         return JObject.Parse(json);
     }
@@ -41,7 +41,7 @@ public static partial class Extensions
     /// </summary>
     /// <param name="json">JSON字符串</param>
     /// <returns>JArray对象</returns>
-    public static JArray ToJArray(this string json)
+    public static JArray DeJArray(this string json)
     {
         return JArray.Parse(json);
     }

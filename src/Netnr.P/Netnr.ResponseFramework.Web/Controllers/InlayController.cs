@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -25,12 +26,10 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public QueryDataOutputVM QueryConfigTable(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QueryConfigTable(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
             var query = db.SysTableConfig.Where(x => x.ColHide != 2);
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
+            var ovm = await CommonService.QueryJoin(query, ivm, db);
 
             return ovm;
         }
@@ -42,13 +41,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="tablename">虚拟表名</param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveConfigTable(string rows, string tablename)
+        public async Task<ResultVM> SaveConfigTable(string rows, string tablename)
         {
             var vm = new ResultVM();
 
             var ja = rows.DeJson().EnumerateArray();
 
-            var listRow = db.SysTableConfig.Where(x => x.TableName == tablename).ToList();
+            var listRow = await db.SysTableConfig.Where(x => x.TableName == tablename).ToListAsync();
 
             int order = 0;
             foreach (var jt in ja)
@@ -69,7 +68,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             db.SysTableConfig.UpdateRange(listRow);
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             vm.Set(num > 0);
 
             return vm;
@@ -86,13 +85,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="tablename">虚拟表名</param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveConfigForm(string rows, string tablename)
+        public async Task<ResultVM> SaveConfigForm(string rows, string tablename)
         {
             var vm = new ResultVM();
 
             var ja = rows.DeJson().EnumerateArray();
 
-            var listRow = db.SysTableConfig.Where(x => x.TableName == tablename).ToList();
+            var listRow = await db.SysTableConfig.Where(x => x.TableName == tablename).ToListAsync();
 
             int order = 0;
             foreach (var jt in ja)
@@ -108,7 +107,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             db.SysTableConfig.UpdateRange(listRow);
 
-            int num = db.SaveChanges();
+            int num = await db.SaveChangesAsync();
             vm.Set(num > 0);
 
             return vm;

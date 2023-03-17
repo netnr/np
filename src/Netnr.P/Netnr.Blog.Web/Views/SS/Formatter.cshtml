@@ -1,25 +1,89 @@
-<div class="nr-card-box invisible container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-auto mb-3">
-            <sl-button class="nr-btn-format" variant="warning" title="Shift+Alt+F 快捷格式化">格式化</sl-button>
+        <div class="nrg-card-left invisible col-xxl-2 col-lg-3">
+            <div class="input-group input-group-lg mb-4">
+                <select class="nrg-se-to form-select">
+                    <option value="sql">SQL</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="json">JSON</option>
+                </select>
+                <button class="nrg-btn-to btn btn-warning">格式化</button>
+            </div>
+
+            <div class="nrg-switch mb-3">
+                <div data-value="sql">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">类型</span>
+                        <select class="form-select flag-sql">
+                            <option value="sql">SQL</option>
+                            <option value="redshift">AWS Redshift</option>
+                            <option value="bigquery">BigQuery</option>
+                            <option value="db2">DB2</option>
+                            <option value="hive">Hive</option>
+                            <option value="mariadb">MariaDB</option>
+                            <option value="mysql">MySQL</option>
+                            <option value="n1ql">N1QL</option>
+                            <option value="plsql">PL/SQL</option>
+                            <option value="postgresql">PostgreSQL</option>
+                            <option value="spark">Spark</option>
+                            <option value="sqlite">SQLite</option>
+                            <option value="tsql">Transact-SQL</option>
+                            <option value="trino">Trino</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">大写</span>
+                        <select class="form-select flag-uppercase">
+                            <option value="preserve">不处理</option>
+                            <option value="upper">转大写</option>
+                            <option value="lower">转小写</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">缩进</span>
+                        <select class="form-select flag-indented">
+                            <option value="standard">默认（标准）</option>
+                            <option value="tabularLeft">靠左</option>
+                            <option value="tabularRight">靠右</option>
+                        </select>
+                    </div>
+                    <div class="list-group mt-4">
+                        <a class="list-group-item list-group-item-action" target="_blank" href="https://sqlformat.darold.net">pgFormatter</a>
+                        <a class="list-group-item list-group-item-action" target="_blank" href="http://sql-format.com">Devart For SQLServer</a>
+                        <a class="list-group-item list-group-item-action" target="_blank" href="https://www.red-gate.com/website/sql-formatter">Reg-Data For SQLServer</a>
+                    </div>
+                </div>
+                <div class="d-none" data-value="javascript">
+                    <div class="input-group">
+                        <span class="input-group-text">缩进</span>
+                        <input class="form-control flag-indented" type="number" placeholder="缩进" value="4" min="0" max="9" step="1" />
+                    </div>
+                </div>
+                <div class="d-none" data-value="html">
+                    <div class="input-group">
+                        <span class="input-group-text">缩进</span>
+                        <input class="form-control flag-indented" type="number" placeholder="缩进" value="4" min="0" max="9" step="1" />
+                    </div>
+                </div>
+                <div class="d-none" data-value="css">
+                    <div class="input-group">
+                        <span class="input-group-text">缩进</span>
+                        <input class="form-control flag-indented" type="number" placeholder="缩进" value="4" min="0" max="9" step="1" />
+                    </div>
+                </div>
+                <div class="d-none" data-value="json">
+                    <div class="input-group">
+                        <span class="input-group-text">缩进</span>
+                        <input class="form-control flag-indented" type="number" placeholder="缩进" value="4" min="0" max="9" step="1" />
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-auto mb-3">
-            <sl-select class="nr-se-language" value="javascript" style="width:10em">
-                <sl-menu-item value="javascript">JavaScript</sl-menu-item>
-                <sl-menu-item value="html">HTML</sl-menu-item>
-                <sl-menu-item value="css">CSS</sl-menu-item>
-            </sl-select>
-        </div>
-        <div class="col-auto mb-3">
-            <sl-input class="nr-txt-number" placeholder="间隔" type="number" value="4" min="1" max="9" step="1"></sl-input>
-        </div>
-        <div class="col-auto mb-3">
-            <input class="nr-txt-file" type="file" />
-        </div>
-        <div class="col-12">
-            <div class="nr-editor"></div>
+
+        <div class="col-xxl-10 col-lg-9">
+            <div class="nrg-editor"></div>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("js-beautify,monaco-editor"))

@@ -5,42 +5,42 @@
 }
 
 <form method="post" action="/guff/save">
-    <div class="container-fluid p-4">
+    <div class="@QuoteTo.PanelClass2">
         <div class="row">
             <div class="col-12">
                 <span class="fs-4">@ViewData["Title"]</span>
-                <hr/>
+                <hr />
             </div>
             <div class="col-12 mb-3">
-                <sl-textarea label="内容" name="GrContent" value="@mo.GrContent" placeholder="写点什么呢..."></sl-textarea>
+                <textarea class="form-control" name="GrContent" placeholder="写点什么呢...">@mo.GrContent</textarea>
             </div>
             <div class="col-md-4 mb-3">
-                <sl-input label="图片链接 多个逗号分隔" placeholder="图片链接" name="GrImage" value="@mo.GrImage"></sl-input>
+                <input class="form-control" placeholder="图片链接 多个逗号分隔" name="GrImage" value="@mo.GrImage" />
             </div>
             <div class="col-md-4 mb-3">
-                <sl-input label="音频链接 多个逗号分隔" placeholder="音频链接" name="GrAudio" value="@mo.GrAudio"></sl-input>
+                <input class="form-control" placeholder="音频链接 多个逗号分隔" name="GrAudio" value="@mo.GrAudio" />
             </div>
             <div class="col-md-4 mb-3">
-                <sl-input label="视频链接 多个逗号分隔" placeholder="视频链接" name="GrVideo" value="@mo.GrVideo"></sl-input>
+                <input class="form-control" placeholder="视频链接 多个逗号分隔" name="GrVideo" value="@mo.GrVideo" />
             </div>
             <div class="col-12 mb-3">
-                <sl-input label="结束语 或 神回复" name="GrRemark" value="@mo.GrRemark"></sl-input>
+                <input class="form-control" placeholder="结束语 或 神回复" name="GrRemark" value="@mo.GrRemark" />
             </div>
             <div class="col-md-4 mb-3">
-                <sl-input label="分类" placeholder="如：电影" name="GrTypeName" value="@mo.GrTypeName"></sl-input>
+                <input class="form-control" placeholder="分类（如：电影）" name="GrTypeName" value="@mo.GrTypeName" />
             </div>
             <div class="col-md-4 mb-3">
-                <sl-input label="值" placeholder="如：功夫" name="GrTypeValue" value="@mo.GrTypeValue"></sl-input>
+                <input class="form-control" placeholder="值（如：功夫）" name="GrTypeValue" value="@mo.GrTypeValue" />
             </div>
             <div class="col-md-4 mb-3">
-                <sl-input label="对象" placeholder="如：周星驰" name="GrObject" value="@mo.GrObject"></sl-input>
+                <input class="form-control" placeholder="对象（如：周星驰）" name="GrObject" value="@mo.GrObject" />
             </div>
             <div class="col-12 mb-3">
-                <sl-input label="标签 多个逗号分隔" placeholder="如：心灵鸡汤,优秀" name="GrTag" value="@mo.GrTag" required ></sl-input>
+                <input class="form-control" placeholder="标签 如：心灵鸡汤,优秀" name="GrTag" value="@mo.GrTag" required />
             </div>
-            <div class="col-12 mb-3">
+            <div class="col-12">
                 <input type="hidden" name="GrId" value="@mo.GrId" />
-                <sl-button class="nr-btn-save" type="submit" variant="warning">Save guff</sl-button>
+                <button class="btn btn-warning" type="submit">Save guff</button>
             </div>
         </div>
     </div>

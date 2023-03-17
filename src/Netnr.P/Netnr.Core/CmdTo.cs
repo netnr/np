@@ -43,7 +43,7 @@ public class CmdTo
     }
 
     /// <summary>
-    /// 执行（简单）
+    /// 执行（简单，获取标准输出和错误）
     /// </summary>
     /// <param name="Arguments">参数命令</param>
     /// <param name="FileName">执行程序，Windows默认cmd，Linux默认bash</param>
@@ -108,7 +108,7 @@ public class CmdTo
     public static void KillProcess(int[] ports)
     {
         var listPortInfo = GetPortInfo();
-        var listPid = listPortInfo.Where(x => ports.Contains(x.Port)).Select(x => x.ProcessId).ToList();
+        var listPid = listPortInfo.Where(x => ports.Contains(x.Port)).Select(x => x.ProcessId).Distinct().ToList();
         listPid.ForEach(pid =>
         {
             try
@@ -126,8 +126,9 @@ public class CmdTo
     /// <summary>
     /// 获取端口信息
     /// </summary>
+    /// <param name="isAll">全部，默认仅出监听 LISTEN</param>
     /// <returns></returns>
-    public static List<PortInfo> GetPortInfo()
+    public static List<PortInfo> GetPortInfo(bool isAll = false)
     {
         var result = new List<PortInfo>();
 
@@ -140,6 +141,12 @@ public class CmdTo
                 var tokens = Regex.Split(row, "\\s+");
                 if (tokens.Length > 4 && (tokens[1].Equals("UDP") || tokens[1].Equals("TCP")))
                 {
+                    var state = tokens[4];
+                    if (!isAll && state != "LISTENING")
+                    {
+                        continue;
+                    }
+
                     var proto = tokens[1].ToLower();
                     var ipAndPort = tokens[2];
                     var ipv6AndPort = ipAndPort.Split("]:");
@@ -147,8 +154,13 @@ public class CmdTo
                     var pi = new PortInfo
                     {
                         Protocol = proto,
+                        State = state,
                         ProcessId = Convert.ToInt32(tokens[proto == "udp" ? 4 : 5])
                     };
+                    if (pi.State == "LISTENING")
+                    {
+                        pi.State = "LISTEN";
+                    }
 
                     //ipv6
                     if (ipv6AndPort.Length == 2)
@@ -186,6 +198,12 @@ public class CmdTo
 
                 if ((proto.StartsWith("tcp") || proto.StartsWith("udp")) && tokens.Length > 7 && tokens[5] == "LISTEN")
                 {
+                    var state = tokens[5];
+                    if (!isAll && state != "LISTEN")
+                    {
+                        continue;
+                    }
+
                     var ipAndPort = tokens[3];
                     var ipsIndex = ipAndPort.LastIndexOf(':');
                     var pipn = tokens[6].Split('/').ToList();
@@ -224,6 +242,10 @@ public class CmdTo
         /// tcp udp tcp6 udp6
         /// </summary>
         public string Protocol { get; set; }
+        /// <summary>
+        /// 状态：LISTEN
+        /// </summary>
+        public string State { get; set; }
         /// <summary>
         /// 进程名称
         /// </summary>

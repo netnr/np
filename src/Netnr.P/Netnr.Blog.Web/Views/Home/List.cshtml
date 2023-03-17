@@ -10,18 +10,16 @@
     var avatarUrl = AppTo.GetValue("Common:Gravatar");
 }
 
-<input class="nr-hid-write-id" type="hidden" value="@uw.UwId" />
-<input class="nr-hid-user-id" type="hidden" value="@uw.Uid" />
+<input class="nrg-hid-write-id" type="hidden" value="@uw.UwId" />
+<input class="nrg-hid-user-id" type="hidden" value="@uw.Uid" />
 
-@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css"))
-
-<div class="container-fluid px-4">
+<div class="@QuoteTo.PanelClass2">
 
     <!--标题-->
     <div class="row">
-        <div class="col-12 mt-4 mb-2">
+        <div class="col-12 mb-2">
             <a class="fs-4 text-break" href="/home/list/@uw.UwId">@uw.UwTitle</a>
-            <partial name="_PartialTag" model="@uw.Spare1" />
+            <partial name="~/Views/Home/_PartialTagItem.cshtml" model="@uw.Spare1" />
         </div>
     </div>
 
@@ -34,40 +32,32 @@
             {
                 <small class="me-2 d-none d-sm-inline-block" title="更新于">@VisualFormatService.Duration(uw.UwUpdateTime.Value)</small>
             }
-            <small class="me-2" title="阅读量"><sl-icon class="align-middle" name="eye"></sl-icon> @VisualFormatService.Count(uw.UwReadNum.Value)</small>
-            <small class="me-2" title="回复数"><sl-icon class="align-middle" name="reply"></sl-icon> @uw.UwReplyNum.Value</small>
+            <small class="me-2" title="阅读量">👁@VisualFormatService.Count(uw.UwReadNum.Value)</small>
+            <small class="me-2" title="回复数">💬@uw.UwReplyNum.Value</small>
         </div>
         <div class="col-auto d-none d-sm-inline">
-            <sl-button-group>
+            <div class="btn-group">
                 @if (mark)
                 {
-                    <sl-button title="取消收藏" variant="primary" size="small" class="nr-btn-mark">
-                        <sl-icon name="bookmark-plus"></sl-icon>
-                    </sl-button>
+                    <button title="取消收藏" class="nrg-btn-mark btn btn-sm btn-outline-info">❤</button>
                 }
                 else
                 {
-                    <sl-button title="收藏" outline size="small" class="nr-btn-mark">
-                        <sl-icon name="bookmark-plus"></sl-icon>
-                    </sl-button>
+                    <button title="收藏" class="nrg-btn-mark btn btn-sm btn-outline-info">❤</button>
                 }
-                <sl-button size="small">@uw.UwMark</sl-button>
-            </sl-button-group>
-            <sl-button-group>
+                <button class="btn btn-sm btn-outline-info">@uw.UwMark</button>
+            </div>
+            <div class="btn-group">
                 @if (laud)
                 {
-                    <sl-button title="取消点赞" variant="primary" size="small" class="nr-btn-laud">
-                        <sl-icon name="hand-thumbs-up"></sl-icon>
-                    </sl-button>
+                    <button title="取消点赞" class="nrg-btn-laud btn btn-sm btn-outline-info">👍</button>
                 }
                 else
                 {
-                    <sl-button title="点赞" outline size="small" class="nr-btn-laud">
-                        <sl-icon name="hand-thumbs-up"></sl-icon>
-                    </sl-button>
+                    <button title="点赞" class="nrg-btn-laud btn btn-sm btn-outline-info">👍</button>
                 }
-                <sl-button size="small">@uw.UwLaud</sl-button>
-            </sl-button-group>
+                <button class="btn btn-sm btn-outline-info">@uw.UwLaud</button>
+            </div>
         </div>
         <div class="col-12"><hr /></div>
     </div>
@@ -77,12 +67,12 @@
         <div class="col-12">
             @if (uw.UwStatus != 1)
             {
-                <h2 class="bg-warning text-white text-center py-3">受 限 制 的 文 章</h2>
+                <h2 class="alert alert-warning text-center">受限制的文章</h2>
             }
         </div>
 
         <div class="col-12 mb-5">
-            <div class="markdown-body">
+            <div class="markdown-body lh-base">
                 @Html.Raw(uw.UwContent)
             </div>
         </div>
@@ -147,7 +137,7 @@
                         <a href="#no_@lv" class="float-end">#@lv</a>
 
                         <div class="mt-2">
-                            <span class="badge bg-dark">Block</span>
+                            <em class="badge bg-dark">Block</em>
                         </div>
                     }
                 </div>
@@ -163,18 +153,15 @@
 
     @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && !AppTo.GetValue<bool>("ReadOnly"))
     {
-        <div class="row my-5">
+        <div class="row mt-5">
             <!--回复帖子-->
             <div class="col-md-12">
-                <h4>回复<sl-button size="small" class="nr-btn-preview ms-2">预览</sl-button></h4>
-                <sl-textarea class="nr-editor mb-3" placeholder="支持 Markdown 语法"></sl-textarea>
-                <div class="nr-preview mb-3"></div>
-                <sl-button variant="warning" class="nr-btn-reply">回复</sl-button>
+                <h4>回复<button class="nrg-btn-preview btn btn-sm btn-outline-success ms-2">预览</button></h4>
+                <textarea class="nrg-editor form-control mb-3" rows="5" placeholder="支持 Markdown 语法"></textarea>
+                <div class="nrg-preview mb-3"></div>
+                <button class="nrg-btn-reply btn btn-warning">回复</button>
             </div>
         </div>
     }
 
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("netnrmd.js"))
-<script src="/js/home/list.js" asp-append-version="true"></script>

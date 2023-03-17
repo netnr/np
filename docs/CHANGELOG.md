@@ -1,7 +1,8 @@
 # Change Log
 
-### 2022-09
-- 调整 npm 资源为自建代理，仅限白名单包名访问
+### 2023-06
+- 升级 个站前端去除 shoelace-style 组件库，因为 bootstrap-5.3 已经开始支持暗黑主题，使用 webpack 打包
+- 删除 站点对象存储接入（使用次数较少）
 
 ### 2022-08
 - 调整 Newtonsoft.Json 组件为 System.Text.Json

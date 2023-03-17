@@ -28,7 +28,7 @@ public class SnowflakeTo
     /// <summary>序列号，取12位。进程内静态，避免多个实例生成重复Id</summary>
     public int Sequence => _Sequence;
 
-    /// <summary>全局机器Id。若设置，所有雪花实例都将使用该Id，可以由星尘配置中心提供本应用全局唯一机器码，且跨多环境唯一</summary>
+    /// <summary>全局机器Id。若设置，所有雪花实例都将使用该Id</summary>
     public static int GlobalWorkerId { get; set; }
 
     private long _msStart;

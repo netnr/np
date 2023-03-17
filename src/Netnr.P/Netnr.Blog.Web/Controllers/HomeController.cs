@@ -18,13 +18,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="k">搜索</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public IActionResult Index(string k, int page = 1)
+        public async Task<IActionResult> Index(string k, int page = 1)
         {
             var ckey = $"Writing-Page-{page}";
             PageVM vm = CacheTo.Get<PageVM>(ckey);
             if (vm == null || !string.IsNullOrWhiteSpace(k))
             {
-                vm = CommonService.UserWritingQuery(k, page);
+                vm = await CommonService.UserWritingQuery(k, page);
                 vm.Route = Request.Path;
 
                 //仅缓存不搜索页面
@@ -34,7 +34,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
             }
 
-            return View("_PartialWritingList", vm);
+            return View("~/Views/Home/_PartialWritingList.cshtml", vm);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page">页码</param>
         /// <returns></returns>
         [ResponseCache(Duration = 5)]
-        public IActionResult Type([FromRoute] string id, string k, int page = 1)
+        public async Task<IActionResult> Type([FromRoute] string id, string k, int page = 1)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -53,10 +53,10 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                var vm = CommonService.UserWritingQuery(k, page, id);
+                var vm = await CommonService.UserWritingQuery(k, page, id);
                 vm.Route = Request.Path;
 
-                return View("_PartialWritingList", vm);
+                return View("~/Views/Home/_PartialWritingList.cshtml", vm);
             }
         }
 
@@ -64,9 +64,9 @@ namespace Netnr.Blog.Web.Controllers
         /// 标签
         /// </summary>
         /// <returns></returns>
-        public IActionResult Tags()
+        public async Task<IActionResult> Tags()
         {
-            var tags = CommonService.TagsQuery().Select(x => new
+            var tags = (await CommonService.TagsQuery()).Select(x => new
             {
                 x.TagName,
                 x.TagIcon
@@ -91,10 +91,15 @@ namespace Netnr.Blog.Web.Controllers
         /// 标签
         /// </summary>
         /// <returns></returns>
-        public List<Tags> TagSelect()
+        public async Task<ResultVM> TagSelect()
         {
-            var list = CommonService.TagsQuery();
-            return list;
+            var vm = new ResultVM
+            {
+                Data = await CommonService.TagsQuery()
+            };
+            vm.Set(EnumTo.RTag.success);
+
+            return vm;
         }
 
         /// <summary>
@@ -104,9 +109,11 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="TagIds">标签，多个逗号分割</param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
+        public async Task<ResultVM> WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 vm = IdentityService.CompleteInfoValid(HttpContext);
                 if (vm.Code == 200)
@@ -115,7 +122,7 @@ namespace Netnr.Blog.Web.Controllers
 
                     var lisTagId = new List<int>();
                     TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-                    var lisTagName = CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
+                    var lisTagName = (await CommonService.TagsQuery()).Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                     mo.Uid = uinfo?.UserId;
                     mo.UwCreateTime = DateTime.Now;
@@ -129,8 +136,8 @@ namespace Netnr.Blog.Web.Controllers
                     mo.UwMark = 0;
                     mo.UwStatus = 1;
 
-                    db.UserWriting.Add(mo);
-                    db.SaveChanges();
+                    await db.UserWriting.AddAsync(mo);
+                    await db.SaveChangesAsync();
 
                     var listwt = new List<UserWritingTags>();
                     foreach (var tag in lisTagId)
@@ -144,15 +151,13 @@ namespace Netnr.Blog.Web.Controllers
 
                         listwt.Add(wtmo);
                     }
-                    db.UserWritingTags.AddRange(listwt);
+                    await db.UserWritingTags.AddRangeAsync(listwt);
+                    await db.SaveChangesAsync();
 
                     //标签热点+1
                     var listTagId = listwt.Select(x => x.TagId.Value);
-                    var listTags = db.Tags.Where(x => listTagId.Contains(x.TagId)).ToList();
-                    listTags.ForEach(x => x.TagHot += 1);
-                    db.Tags.UpdateRange(listTags);
-
-                    int num = db.SaveChanges();
+                    var num = await db.Tags.Where(x => listTagId.Contains(x.TagId))
+                        .ExecuteUpdateAsync(x => x.SetProperty(p => p.TagHot, p => p.TagHot + 1));
 
                     //推送通知
                     _ = PushService.PushAsync("网站消息（文章）", $"文章ID：{mo.UwId}\r\n{mo.UwTitle}");
@@ -160,9 +165,13 @@ namespace Netnr.Blog.Web.Controllers
                     vm.Data = mo.UwId;
                     vm.Set(num > 0);
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -172,12 +181,12 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [ResponseCache(Duration = 5)]
-        public IActionResult List([FromRoute] int id, int page = 1)
+        public async Task<IActionResult> List([FromRoute] int id, int page = 1)
         {
             if (id > 0)
             {
                 //查询一条
-                var uwo = CommonService.UserWritingOneQuery(id);
+                var uwo = await CommonService.UserWritingOneQuery(id);
                 if (uwo == null)
                 {
                     return Redirect("/");
@@ -192,7 +201,7 @@ namespace Netnr.Blog.Web.Controllers
                 var vm = new PageVM()
                 {
                     //查询回复
-                    Rows = CommonService.ReplyOneQuery(ReplyType.UserWriting, id.ToString(), pag),
+                    Rows = await CommonService.ReplyOneQuery(ReplyType.UserWriting, id.ToString(), pag),
                     Pag = pag,
                     Temp = uwo,
                     Route = $"/home/list/{id}"
@@ -202,7 +211,7 @@ namespace Netnr.Blog.Web.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var uinfo = IdentityService.Get(HttpContext);
-                    var listuc = db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == ConnectionType.UserWriting.ToString() && x.UconnTargetId == id.ToString()).ToList();
+                    var listuc = await db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == ConnectionType.UserWriting.ToString() && x.UconnTargetId == id.ToString()).ToListAsync();
 
                     ViewData["uca1"] = listuc.Any(x => x.UconnAction == 1) ? "yes" : "";
                     ViewData["uca2"] = listuc.Any(x => x.UconnAction == 2) ? "yes" : "";
@@ -295,58 +304,64 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="a">动作</param>
         /// <returns></returns>
         [Authorize, HttpGet]
-        public ResultVM ConnSave([FromRoute] int id, int a)
+        public async Task<ResultVM> ConnSave([FromRoute] int id, int a)
         {
             var vm = new ResultVM();
 
-            var uinfo = IdentityService.Get(HttpContext);
-
-            var modelWriting = db.UserWriting.Find(id);
-
-            var modelConn = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetId == id.ToString() && x.UconnAction == a);
-            if (modelConn == null)
+            try
             {
-                modelConn = new UserConnection()
-                {
-                    UconnId = UniqueTo.LongId().ToString(),
-                    UconnAction = a,
-                    UconnCreateTime = DateTime.Now,
-                    UconnTargetId = id.ToString(),
-                    UconnTargetType = ConnectionType.UserWriting.ToString(),
-                    Uid = uinfo.UserId
-                };
-                db.UserConnection.Add(modelConn);
-                if (a == 1)
-                {
-                    modelWriting.UwLaud += 1;
-                }
-                if (a == 2)
-                {
-                    modelWriting.UwMark += 1;
-                }
-                db.UserWriting.Update(modelWriting);
+                var uinfo = IdentityService.Get(HttpContext);
+                var num = 0;
 
-                vm.Data = "1";
+                var modelConn = await db.UserConnection.FirstOrDefaultAsync(x => x.Uid == uinfo.UserId && x.UconnTargetId == id.ToString() && x.UconnAction == a);
+                if (modelConn == null)
+                {
+                    modelConn = new UserConnection()
+                    {
+                        UconnId = UniqueTo.LongId().ToString(),
+                        UconnAction = a,
+                        UconnCreateTime = DateTime.Now,
+                        UconnTargetId = id.ToString(),
+                        UconnTargetType = ConnectionType.UserWriting.ToString(),
+                        Uid = uinfo.UserId
+                    };
+                    await db.UserConnection.AddAsync(modelConn);
+                    if (a == 1)
+                    {
+                        num += await db.UserWriting.Where(x => x.UwId == id)
+                            .ExecuteUpdateAsync(x => x.SetProperty(p => p.UwLaud, p => p.UwLaud + 1));
+                    }
+                    if (a == 2)
+                    {
+                        num += await db.UserWriting.Where(x => x.UwId == id)
+                            .ExecuteUpdateAsync(x => x.SetProperty(p => p.UwMark, p => p.UwMark + 1));
+                    }
+                    vm.Data = "1";
+                }
+                else
+                {
+                    db.UserConnection.Remove(modelConn);
+                    if (a == 1)
+                    {
+                        num += await db.UserWriting.Where(x => x.UwId == id)
+                            .ExecuteUpdateAsync(x => x.SetProperty(p => p.UwLaud, p => p.UwLaud - 1));
+                    }
+                    if (a == 2)
+                    {
+                        num += await db.UserWriting.Where(x => x.UwId == id)
+                            .ExecuteUpdateAsync(x => x.SetProperty(p => p.UwMark, p => p.UwMark - 1));
+                    }
+                    vm.Data = "0";
+                }
+
+                num += await db.SaveChangesAsync();
+                vm.Set(num > 0);
             }
-            else
+            catch (Exception ex)
             {
-                db.UserConnection.Remove(modelConn);
-                if (a == 1)
-                {
-                    modelWriting.UwLaud -= 1;
-                }
-                if (a == 2)
-                {
-                    modelWriting.UwMark -= 1;
-                }
-                db.UserWriting.Update(modelWriting);
-
-                vm.Data = "0";
+                vm.Set(ex);
             }
 
-            int num = db.SaveChanges();
-
-            vm.Set(num > 0);
             return vm;
         }
 
@@ -355,15 +370,10 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         [HttpGet]
-        public IActionResult ReadPlus([FromRoute] int id)
+        public async Task<IActionResult> ReadPlus([FromRoute] int id)
         {
-            var mo = db.UserWriting.Find(id);
-            if (mo != null)
-            {
-                mo.UwReadNum += 1;
-                db.UserWriting.Update(mo);
-                db.SaveChanges();
-            }
+            await db.UserWriting.Where(x => x.UwId == id)
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.UwReadNum, p => p.UwReadNum + 1));
 
             return Ok();
         }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Net.Http;
 using System.Text.RegularExpressions;
 
 namespace Netnr.DataX.Menu;
@@ -8,10 +8,10 @@ namespace Netnr.DataX.Menu;
 /// </summary>
 public partial class MenuMixService
 {
-    [Display(Name = "Back to main menu", Description = "返回主菜单")]
+    [Display(Name = "Back to main menu", Description = "返回主菜单", GroupName = "\r\n")]
     public static void BackToMainMenu() => DXService.InvokeMenu(typeof(MenuMainService));
 
-    [Display(Name = "View version", Description = "查看版本", GroupName = "\r\n")]
+    [Display(Name = "View version", Description = "查看版本")]
     public static void ViewVersion() => DXService.Log(ConfigInit.Version);
 
     [Display(Name = "Check for updates", Description = "检查更新")]
@@ -27,7 +27,9 @@ public partial class MenuMixService
             var osPlatform = GlobalTo.IsWindows ? "win-x64" : "linux-x64";
             string pattern = @$"ndx-(\d+.\d+.\d+)-{osPlatform}.zip";
 
-            var result = HttpTo.Get(curi);
+            var hc = new HttpClient();
+            hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Netnr");
+            var result = hc.GetStringAsync(curi).ToResult();
             var assets = result.DeJson().GetProperty("assets").EnumerateArray();
             var isFound = false;
 
@@ -56,7 +58,7 @@ public partial class MenuMixService
                     }
                     else
                     {
-                        DXService.Log($"already the latest version", ConsoleColor.Cyan);
+                        DXService.Log($"already the latest version v{ConfigInit.Version}", ConsoleColor.Cyan);
                     }
                     break;
                 }
@@ -87,7 +89,7 @@ public partial class MenuMixService
         }
     }
 
-    [Display(Name = "GC", Description = "清理")]
+    [Display(Name = "GC", Description = "清理", GroupName = "\r\n")]
     public static void GarbageCleanup()
     {
         DXService.Log($"Use Physical Memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
@@ -96,7 +98,7 @@ public partial class MenuMixService
         DXService.Log($"Use Physical Memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
     }
 
-    [Display(Name = "Open the hub directory", Description = "打开 hub 目录", GroupName = "\r\n")]
+    [Display(Name = "Open the hub directory", Description = "打开 hub 目录")]
     public static void OpenTheHubDirectory()
     {
         //配置

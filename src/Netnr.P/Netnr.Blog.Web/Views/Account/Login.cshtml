@@ -6,12 +6,8 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 text-center">
-            <div class="my-4">
-                <a href="/">
-                    <sl-animation name="jello" easing="ease-in-out" duration="5000" play>
-                        <img src="/favicon.svg" alt="@AppTo.GetValue("Common:EnglishName")" />
-                    </sl-animation>
-                </a>
+            <div class="my-5">
+                <a href="/"><img src="/favicon.svg" alt="@AppTo.GetValue("Common:EnglishName")" /></a>
             </div>
             <h4 class="my-3">Sign in to @AppTo.GetValue("Common:EnglishName")</h4>
         </div>
@@ -23,20 +19,13 @@
 
                     @if (!string.IsNullOrWhiteSpace(Model?.Msg))
                     {
-                        <sl-alert class="mb-3" open variant="danger" duration="8000" closable>
-                            <sl-icon slot="icon" name="info-circle"></sl-icon>
-                            @Model?.Msg
-                        </sl-alert>
+                        <div class="alert alert-warning mb-3">@Model?.Msg</div>
                     }
 
-                    <sl-input class="mb-3" type="text" required label="Username or email address" name="UserName" maxlength="50" placeholder="netnr@@netnr.com" autocomplete="off" clearable autofocus>
-                        <sl-icon name="envelope" slot="prefix"></sl-icon>
-                    </sl-input>
-                    <sl-input class="mb-3" type="password" required label="Password" name="UserPwd" maxlength="20" placeholder="******" toggle-password autocomplete="off">
-                        <sl-icon name="key" slot="prefix"></sl-icon>
-                    </sl-input>
+                    <input class="form-control mb-4" type="text" required name="UserName" maxlength="50" placeholder="netnr@@netnr.com" autofocus autocomplete="off" />
+                    <input class="form-control mb-4" type="password" required name="UserPwd" maxlength="20" placeholder="******" autocomplete="off" />
 
-                    <sl-button style="width:100%" type="submit" variant="warning">Sign in</sl-button>
+                    <button class="btn btn-warning w-100" type="submit">Sign in</button>
                 </form>
 
                 @if (AppTo.GetValue<bool>("OAuthLogin:enable"))

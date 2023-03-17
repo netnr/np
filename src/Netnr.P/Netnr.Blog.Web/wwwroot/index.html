@@ -1,947 +1,759 @@
-﻿<!--
+<!--
 https://github.com/netnr
-2022-11
+2023-03
 -->
 
 <!DOCTYPE html>
-<html lang="zh-cn" class='sl-theme-light netnrmd-light'>
+<html lang="zh-cn" data-bs-theme='light' class="netnrmd-light">
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <meta name='keywords' content='NET牛人,Netnr,脚本服务' />
             <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱' />
+        <!--静态页面主题响应-->
+        <script>
+            if (document.cookie.includes(".theme=dark")) {
+                let domHtml = document.documentElement;
+                domHtml.dataset.bsTheme = "dark";
+                domHtml.className = domHtml.className.replace('light', 'dark');
+            }
+        </script>
 
     <title>&#x811A;&#x672C;&#x670D;&#x52A1; NET牛人</title>
 
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-<link href='https://ss.netnr.com/bootstrap@5.2.2/dist/css/bootstrap.min.css' rel='stylesheet' async />
+<link href='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet' />
+<script src='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js' async ></script>
 
-    <link href="/app/blog/dist/all.css?v=_0J1Z05gYDHZvs0TcVouj90G3JcLkWwwo_3smoSKH-k" rel="stylesheet" />
-    <script src="/app/blog/dist/all.js?v=ZJk4lDdkYK4pkI98GjHlLoeVMxQ7We-jWcr7_71CujM"></script>
+
+    <link href='/dist/main.css?v=sEk5A0XatshzzERVWqyQrEIJHD7OQes2wQlyRfFNS2s' rel='stylesheet' />
+    <script src="/dist/main.js?v=8CMcogf7Psxu60HQ5KYezaBoMW0q-EoOfmBWFZup9qQ" async></script>
+
 </head>
 <body>
+
         
-    <nav class="nr-navbar navbar navbar-expand-lg navbar-light bg-light">
+        <input type="hidden" id="hid_is_build_html" />
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand text-decoration-none" href="https://www.netnr.com">
                 <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
                 <span class="d-none d-sm-inline-block">Netnr</span>
             </a>
-            <a class='small d-block d-lg-none' href="/index" title='&#x811A;&#x672C;&#x670D;&#x52A1;'>
-                <b style="color:var(--sl-color-warning-600)">&#x811A;&#x672C;&#x670D;&#x52A1;</b>
-            </a>
 
-            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
-                <sl-animation easing="ease-in-out" duration="1500" play>
-                    <span class="navbar-toggler-icon"></span>
-                </sl-animation>
-            </button>
 
+            <!--PC-->
             <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
+
+                <!--left-->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item mx-2">
-                        <a class='nav-link active' href="/" title="ss.js.org">
-                            <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
-                                <div class="fw-bold">SS</div>
-                            </sl-animation>
-                        </a>
+                        <a class="nav-link active" href="/" title="ss.js.org">SS</a>
                     </li>
-                            <li class="nav-item mx-2 pt-1">
-                                <sl-input placeholder="Search..." size="small" class="nr-txt-search"></sl-input>
-                            </li>
+
+
+                    <!--搜索-->
+                        <li class="nav-item mx-2">
+                            <input class="nrg-txt-search form-control me-1" type="search" placeholder="Search">
+                        </li>
                 </ul>
 
+                <!--right-->
                 <ul class="navbar-nav">
+
                     <li class="nav-item">
-                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                        <a class="nav-link text-decoration-none" href="javascript:void(0)" data-action="theme" title="主题">🎨</a>
                     </li>
                 </ul>
+
             </div>
 
-            <!--mobile-->
-            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
-                <sl-menu>
-                    <sl-menu-item data-href="/">SS</sl-menu-item>
+            <!--Mobile-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#nr_navbar_mobile" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end d-lg-none" id="nr_navbar_mobile" style="--bs-offcanvas-width:15em;">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">Netnr</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">SS</a>
+                        </li>
+                        <!--搜索-->
+                            <li class="nav-item my-2">
+                                <input class="nrg-txt-search form-control me-1" type="search" placeholder="Search">
+                            </li>
 
-                    <sl-divider></sl-divider>
-                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
-                </sl-menu>
-            </sl-drawer>
+                        <li class="nav-item my-2">
+                            <a class="nav-link text-decoration-none" href="javascript:void(0);" data-action="theme" title="主题">🎨 主题</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </nav>
 
-    <input type="hidden" class="nr-hid-icon" value="/images/icon.svg?e6a9b761c7435e14a6b3f629b64b66f2" />
+
+    <input type="hidden" class="nrg-hid-icon" value="/images/icon.svg?866641f5baf957fdcb9ee82cee456dc5" />
 
 <style>
-    .nr-card-nav a:hover {
+    .nrg-card-link a:hover {
         border-color: orange !important;
     }
 </style>
 
-<div class="container-fluid p-4 pt-0">
-    <div class="nr-card-nav">
-            <div class="row">
-                <h4 class="mt-4">&#x70ED;&#x95E8;</h4>
+<div class="nrg-card-link container-fluid p-lg-5 py-4">
+        <div class="row">
+            <h4 class="mt-4">&#x5E38;&#x7528;</h4>
 
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/wallpaper" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#wallpaper"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">壁纸</div>
-                                <div class="opacity-75 text-truncate">源于网络</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/free" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#free"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">免费</div>
-                                <div class="opacity-75 text-truncate">免费的资源</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/ps" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#ps"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Photoshop</div>
-                                <div class="opacity-75 text-truncate">在线 PS</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/tv" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#tv"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">在线电视</div>
-                                <div class="opacity-75 text-truncate">m3u8 源播放</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/qrcode" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#qrcode"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">生成二维码</div>
-                                <div class="opacity-75 text-truncate">识别二维码</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/speedtest" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#dashboard"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">网络测速</div>
-                                <div class="opacity-75 text-truncate">资源下载速率</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/idcard" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#idcard"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">身份证号码查询</div>
-                                <div class="opacity-75 text-truncate">查询地区、性别，纠正尾数</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/zoning" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#zoning"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">行政区划</div>
-                                <div class="opacity-75 text-truncate">五级行政区划</div>
-                            </div>
-                        </a>
-                    </div>
-            </div>
-            <div class="row">
-                <h4 class="mt-4">&#x5F00;&#x53D1;</h4>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/wallpaper" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#wallpaper"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">壁纸</div>
+                            <div class="opacity-75 text-truncate">源于网络</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/free" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#free"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">免费</div>
+                            <div class="opacity-75 text-truncate">免费的资源</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/ps" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#ps"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Photoshop</div>
+                            <div class="opacity-75 text-truncate">在线 PS</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/tv" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#tv"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">在线电视</div>
+                            <div class="opacity-75 text-truncate">m3u8 源播放</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/qrcode" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#qrcode"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">生成二维码</div>
+                            <div class="opacity-75 text-truncate">识别二维码</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/speedtest" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#dashboard"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">网络测速</div>
+                            <div class="opacity-75 text-truncate">资源下载速率</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/idcard" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#idcard"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">身份证号码查询</div>
+                            <div class="opacity-75 text-truncate">查询地区、性别，纠正尾数</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/zoning" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#zoning"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">行政区划</div>
+                            <div class="opacity-75 text-truncate">五级行政区划</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/datadict" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#pdm"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">数据字典</div>
+                            <div class="opacity-75 text-truncate">数据字典</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/icp" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#icp"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">ICP 备案查询</div>
+                            <div class="opacity-75 text-truncate">ICP 备案查询</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/randomcode" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#key"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">生成随机密码</div>
+                            <div class="opacity-75 text-truncate">生成随机密码</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/randommatch" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#dice"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">随机匹配</div>
+                            <div class="opacity-75 text-truncate">随机数生成、随机分组</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/emoji" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#emoji"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Emoji 符号</div>
+                            <div class="opacity-75 text-truncate">Emoji 表情</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/symbol" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#symbol"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">特殊符号</div>
+                            <div class="opacity-75 text-truncate">特殊符号</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/rmb" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#rmb"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">人民币转大写</div>
+                            <div class="opacity-75 text-truncate">人民币转大写</div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+        <div class="row">
+            <h4 class="mt-4">&#x5F00;&#x53D1;</h4>
 
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/code" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#lock"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">加密转码</div>
-                                <div class="opacity-75 text-truncate">加密、解密、编码、转码</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/vscode" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#vsc"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">VSCode 编辑器</div>
-                                <div class="opacity-75 text-truncate">Monaco Editor 编辑器</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/diff" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#diff"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">文本对比</div>
-                                <div class="opacity-75 text-truncate">Monaco Editor 文件对比</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://md.js.org" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#markdown"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Markdown 编辑器</div>
-                                <div class="opacity-75 text-truncate">Markdown 编辑器</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://je.js.org" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#json"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">JSON 编辑器</div>
-                                <div class="opacity-75 text-truncate">JSON 编辑器</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/nginx" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#nginx"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Nginx 编辑器</div>
-                                <div class="opacity-75 text-truncate">Nginx 配置文件格式化</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/base64" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#code"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Base64</div>
-                                <div class="opacity-75 text-truncate">Base64 解码、编码</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/jsontocsharp" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#csharp"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">JSON 生成 C# 实体类</div>
-                                <div class="opacity-75 text-truncate">根据 JSON 生成 Model</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/jsontoxml" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#xml"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">JSON 转换 XML</div>
-                                <div class="opacity-75 text-truncate">JSON 与 XML 相互转换</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/pdm" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#pdm"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">PDM 查看</div>
-                                <div class="opacity-75 text-truncate">PowerDesigner 查看</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/zerotier" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#p2p"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">ZeroTier</div>
-                                <div class="opacity-75 text-truncate">ZeroTier 管理</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/jscss" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#js"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">JS、CSS 工具</div>
-                                <div class="opacity-75 text-truncate">JS 压缩、CSS 压缩</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/formatter" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#formatter"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">代码格式化</div>
-                                <div class="opacity-75 text-truncate">JS、CSS、HTML</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/sqlformatter" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#sql"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">SQL 格式化</div>
-                                <div class="opacity-75 text-truncate">美化 SQL 语句</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://zijian.aliyun.com" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#detect"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">域名检测</div>
-                                <div class="opacity-75 text-truncate">检测域名状态、DNS、站点</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://whois.aliyun.com" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#find"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Whois 查询</div>
-                                <div class="opacity-75 text-truncate">域名信息查询</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://check-host.net" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#host"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">检测主机</div>
-                                <div class="opacity-75 text-truncate">CHECK-HOST</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/ip" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#ip"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">IP</div>
-                                <div class="opacity-75 text-truncate">客户端 IP 地址</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://ping.pe" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#ping"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Ping</div>
-                                <div class="opacity-75 text-truncate">Ping 测试</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/pingcloud" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#ping"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Ping 云</div>
-                                <div class="opacity-75 text-truncate">Ping 各大云服务节点</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://www.chinassl.net/ssltools/convert-ssl.html" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#safe"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">SSL 证书转换</div>
-                                <div class="opacity-75 text-truncate">格式转换</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://getman.cn" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#http"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">HTTP 请求</div>
-                                <div class="opacity-75 text-truncate">在线 HTTP 请求</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/useragent" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#info"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">UserAgent</div>
-                                <div class="opacity-75 text-truncate">客户端信息</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/icp" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#icp"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">ICP 备案查询</div>
-                                <div class="opacity-75 text-truncate">ICP 备案查询</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/regex" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#regex"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">正则表达式</div>
-                                <div class="opacity-75 text-truncate">正则表达式</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://www.iconfont.cn" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#vector"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">阿里矢量图标</div>
-                                <div class="opacity-75 text-truncate">矢量图标库</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/svgo" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#chain"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">SVG 雪碧图</div>
-                                <div class="opacity-75 text-truncate">优化合并 SVG</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/textoimage" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#textoimage"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">文本转图片</div>
-                                <div class="opacity-75 text-truncate">图片转文本</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/swaggerto" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#swagger"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">SwaggerTo</div>
-                                <div class="opacity-75 text-truncate">Swagger 转换生成</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/identicon" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#grid"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">身份图标</div>
-                                <div class="opacity-75 text-truncate">生成哈希头像</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/bed" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#img"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">图床</div>
-                                <div class="opacity-75 text-truncate">图床大集合</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/gitstorage" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#gitpush"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">GitStorage</div>
-                                <div class="opacity-75 text-truncate">GitHub push</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/brush" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#brush"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">画笔</div>
-                                <div class="opacity-75 text-truncate">画板</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/bpmn" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#graph"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">BPMN Editor</div>
-                                <div class="opacity-75 text-truncate">BPMN 流程图</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/graph" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#graph"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Graph Editor</div>
-                                <div class="opacity-75 text-truncate">mxGraph 流程图</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/mind" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#mind"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Mind Editor</div>
-                                <div class="opacity-75 text-truncate">kityminder 脑图</div>
-                            </div>
-                        </a>
-                    </div>
-            </div>
-            <div class="row">
-                <h4 class="mt-4">&#x751F;&#x6D3B;</h4>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/code" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#lock"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">加密转码</div>
+                            <div class="opacity-75 text-truncate">加密、解密、编码、转码</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/base64" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#code"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Base64</div>
+                            <div class="opacity-75 text-truncate">Base64 解码、编码</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/vscode" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#vsc"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">VSCode 编辑器</div>
+                            <div class="opacity-75 text-truncate">Monaco Editor 编辑器</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/diff" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#diff"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">文本对比</div>
+                            <div class="opacity-75 text-truncate">Monaco Editor 文件对比</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://md.js.org" target=''>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#markdown"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Markdown 编辑器</div>
+                            <div class="opacity-75 text-truncate">Markdown 编辑器</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://je.js.org" target=''>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#json"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">JSON 编辑器</div>
+                            <div class="opacity-75 text-truncate">JSON 编辑器</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/nginx" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#nginx"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Nginx 格式化</div>
+                            <div class="opacity-75 text-truncate">Nginx 配置格式化</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/formatter" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#formatter"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">格式化</div>
+                            <div class="opacity-75 text-truncate">JS、CSS、HTML、SQL</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/jscss" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#js"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">JS、CSS 工具</div>
+                            <div class="opacity-75 text-truncate">JS 压缩、CSS 压缩</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/jsonto" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#convert"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">JSON 转</div>
+                            <div class="opacity-75 text-truncate">转 XML、生成 Model</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/pdm" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#pdm"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">PDM 查看</div>
+                            <div class="opacity-75 text-truncate">PowerDesigner 查看</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/zerotier" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#p2p"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">ZeroTier</div>
+                            <div class="opacity-75 text-truncate">ZeroTier 管理</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/pingcloud" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#ping"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Ping 云</div>
+                            <div class="opacity-75 text-truncate">Ping 各大云服务节点</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/ip" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#ip"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">IP</div>
+                            <div class="opacity-75 text-truncate">客户端 IP 地址</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/useragent" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#info"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">UserAgent</div>
+                            <div class="opacity-75 text-truncate">客户端信息</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/swaggerto" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#swagger"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">SwaggerTo</div>
+                            <div class="opacity-75 text-truncate">Swagger 转换生成</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/gitstorage" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#gitpush"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">GitStorage</div>
+                            <div class="opacity-75 text-truncate">GitHub push</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/svgo" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#chain"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">SVG 雪碧图</div>
+                            <div class="opacity-75 text-truncate">优化合并 SVG</div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+        <div class="row">
+            <h4 class="mt-4">&#x751F;&#x6D3B;</h4>
 
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://kms.zme.ink" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#microsoft"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">KMS 服务</div>
-                                <div class="opacity-75 text-truncate">激活 Windows 系统</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/officeview" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#office"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Office 文档查看</div>
-                                <div class="opacity-75 text-truncate">Word、Excel、PPT</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/pdf" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#pdf"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">PDF</div>
-                                <div class="opacity-75 text-truncate">PDF 工具</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/emoji" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#emoji"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Emoji 符号</div>
-                                <div class="opacity-75 text-truncate">Emoji 表情</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/symbol" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#symbol"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">特殊符号</div>
-                                <div class="opacity-75 text-truncate">特殊符号</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/tiny" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#tiny"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">图片压缩</div>
-                                <div class="opacity-75 text-truncate">图片压缩</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/seal" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#seal"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">印</div>
-                                <div class="opacity-75 text-truncate">添加水印、印章</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/lottery" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#lottery"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">彩票查询</div>
-                                <div class="opacity-75 text-truncate">彩票查询</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://vv.zme.ink" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#video"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">VIP 视频解析</div>
-                                <div class="opacity-75 text-truncate">免费看会员视频</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/express" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#express"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">快递查询</div>
-                                <div class="opacity-75 text-truncate">一键查询快递</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/weather" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#weather"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">天气预报</div>
-                                <div class="opacity-75 text-truncate">天气预报</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/rmb" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#rmb"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">人民币转大写</div>
-                                <div class="opacity-75 text-truncate">人民币转大写</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/randomcode" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#key"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">生成随机密码</div>
-                                <div class="opacity-75 text-truncate">生成随机密码</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/randommatch" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#dice"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">随机匹配</div>
-                                <div class="opacity-75 text-truncate">随机数生成、随机分组</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/bmi" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#bmi"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">BMI 体重标准</div>
-                                <div class="opacity-75 text-truncate">中国成人超重和肥胖标准</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/purine" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#food"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">食物嘌呤含量</div>
-                                <div class="opacity-75 text-truncate">食物嘌呤含量</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/gc" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#gc"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">垃圾分类</div>
-                                <div class="opacity-75 text-truncate">垃圾分类查询</div>
-                            </div>
-                        </a>
-                    </div>
-            </div>
-            <div class="row">
-                <h4 class="mt-4">AI</h4>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://kms.zme.ink" target=''>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#microsoft"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">KMS 服务</div>
+                            <div class="opacity-75 text-truncate">激活 Windows 系统</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/officeview" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#office"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Office 文档查看</div>
+                            <div class="opacity-75 text-truncate">Word、Excel、PPT</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/pdf" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#pdf"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">PDF</div>
+                            <div class="opacity-75 text-truncate">PDF 工具</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/lottery" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#lottery"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">彩票查询</div>
+                            <div class="opacity-75 text-truncate">彩票查询</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://vv.zme.ink" target=''>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#video"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">VIP 视频解析</div>
+                            <div class="opacity-75 text-truncate">免费看会员视频</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/express" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#express"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">快递查询</div>
+                            <div class="opacity-75 text-truncate">一键查询快递</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/bmi" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#bmi"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">BMI 体重标准</div>
+                            <div class="opacity-75 text-truncate">中国成人超重和肥胖标准</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/zidian" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#dictionary"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">新华字典</div>
+                            <div class="opacity-75 text-truncate">查询字、词、成语</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/chat" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#message"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">聊天</div>
+                            <div class="opacity-75 text-truncate">在线聊天</div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+        <div class="row">
+            <h4 class="mt-4">&#x56FE;&#x753B;</h4>
 
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/ocr" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#ocr"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">OCR</div>
-                                <div class="opacity-75 text-truncate">识别图片内容</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/nsfw" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#nsfw"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">图片审查</div>
-                                <div class="opacity-75 text-truncate">绘画、变态、中立、色情、性感</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/nlp" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#nlp"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">自然语言处理</div>
-                                <div class="opacity-75 text-truncate">分词</div>
-                            </div>
-                        </a>
-                    </div>
-            </div>
-            <div class="row">
-                <h4 class="mt-4">&#x5B50;&#x7AD9;</h4>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/brush" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#brush"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">画笔</div>
+                            <div class="opacity-75 text-truncate">画板</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/bpmn" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#graph"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">BPMN Editor</div>
+                            <div class="opacity-75 text-truncate">BPMN 流程图</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/graph" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#graph"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Graph Editor</div>
+                            <div class="opacity-75 text-truncate">mxGraph 流程图</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/mind" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#mind"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Mind Editor</div>
+                            <div class="opacity-75 text-truncate">kityminder 脑图</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/identicon" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#grid"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">身份图标</div>
+                            <div class="opacity-75 text-truncate">生成哈希头像</div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+        <div class="row">
+            <h4 class="mt-4">AI</h4>
 
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/boot/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#boot"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">站点引导</div>
-                                <div class="opacity-75 text-truncate">站点引导</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/chat/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#message"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">聊天</div>
-                                <div class="opacity-75 text-truncate">在线聊天</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/dk/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#db"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">NDK</div>
-                                <div class="opacity-75 text-truncate">数据库工具及代码构建</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/fa/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#fa"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Font-Awesome</div>
-                                <div class="opacity-75 text-truncate">Font-Awesome 4 镜像</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/jcute/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#js"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">jCute Library</div>
-                                <div class="opacity-75 text-truncate">JavaScript Library</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/je/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#json"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">JSON Editor</div>
-                                <div class="opacity-75 text-truncate">JSON 编辑器</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/jz/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#js"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">Jz</div>
-                                <div class="opacity-75 text-truncate">JS 弹窗插件</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/md/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#markdown"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">NetnrMD</div>
-                                <div class="opacity-75 text-truncate">Markdown 编辑器</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/oldbrowser/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#browser"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">旧浏览器</div>
-                                <div class="opacity-75 text-truncate">浏览器升级提示</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/zidian/" target='_blank'>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#dictionary"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">字典</div>
-                                <div class="opacity-75 text-truncate">字、词、成语</div>
-                            </div>
-                        </a>
-                    </div>
-            </div>
-            <div class="row">
-                <h4 class="mt-4">&#x5173;&#x4E8E;</h4>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/ocr" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#ocr"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">OCR</div>
+                            <div class="opacity-75 text-truncate">识别图片内容</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/nsfw" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#nsfw"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">图片审查</div>
+                            <div class="opacity-75 text-truncate">绘画、变态、中立、色情、性感</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/nlp" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#nlp"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">自然语言处理</div>
+                            <div class="opacity-75 text-truncate">分词</div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+        <div class="row">
+            <h4 class="mt-4">&#x5B50;&#x7AD9;</h4>
 
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/message" >
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#message"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">留言</div>
-                                <div class="opacity-75 text-truncate">匿名留言</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://zme.ink" target=''>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#love"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">联系赞助</div>
-                                <div class="opacity-75 text-truncate">Sponsors</div>
-                            </div>
-                        </a>
-                    </div>
-            </div>
-    </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/boot/" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#boot"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">站点引导</div>
+                            <div class="opacity-75 text-truncate">站点引导</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/fa/" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#fa"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Font-Awesome</div>
+                            <div class="opacity-75 text-truncate">Font-Awesome 4 镜像</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/jcute/" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#js"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">jCute Library</div>
+                            <div class="opacity-75 text-truncate">JavaScript Library</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/app/jz/" target='_blank'>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#js"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">Jz</div>
+                            <div class="opacity-75 text-truncate">JS 弹窗插件</div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+        <div class="row">
+            <h4 class="mt-4">&#x5173;&#x4E8E;</h4>
+
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="/message" >
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#message"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">留言</div>
+                            <div class="opacity-75 text-truncate">匿名留言</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="https://zme.ink" target=''>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#love"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">联系赞助</div>
+                            <div class="opacity-75 text-truncate">Sponsors</div>
+                        </div>
+                    </a>
+                </div>
+        </div>
 </div>
-            <script src="/js/ss/index.js?v=zeXrCMSa7_6jRm_wHm4GfEWojr-loGHdjUHp8YaYjc0"></script>
+
+
 </body>
 </html>

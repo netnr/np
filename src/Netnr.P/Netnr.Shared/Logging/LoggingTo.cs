@@ -638,7 +638,15 @@ namespace Netnr
 
                 var query = db.SafeConn(() =>
                 {
-                    db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
+                    try
+                    {
+                        db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+
                     return db.GetCommand(sql).ExecuteDataOnly().First().Value;
                 });
 
@@ -652,7 +660,7 @@ namespace Netnr
                                 {
                                     time = x.Key.Split(' ')[1] + ":00",
                                     pv = x.Count(),
-                                    ip = x.Select(p => p["LogIp"].ToString().Split(',').First()).Distinct().Count()
+                                    uv = x.Select(p => p["LogIp"].ToString().Split(',').First()).Distinct().Count()
                                 }).ToList();
                         }
                         break;
@@ -663,7 +671,7 @@ namespace Netnr
                                 {
                                     time = x.Key,
                                     pv = x.Count(),
-                                    ip = x.Select(p => p["LogIp"].ToString().Split(',').First()).Distinct().Count()
+                                    uv = x.Select(p => p["LogIp"].ToString().Split(',').First()).Distinct().Count()
                                 }).ToList();
                         }
                         break;
@@ -720,6 +728,15 @@ namespace Netnr
 
                     var dt = db.SafeConn(() =>
                     {
+                        try
+                        {
+                            db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+
                         return db.GetCommand(sql).ExecuteDataOnly().First().Value;
                     });
 

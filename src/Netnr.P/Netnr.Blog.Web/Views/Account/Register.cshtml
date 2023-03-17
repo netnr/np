@@ -6,12 +6,8 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 text-center">
-            <div class="my-4">
-                <a href="/">
-                    <sl-animation name="swing" easing="ease-in-out" duration="5000" play>
-                        <img src="/favicon.svg" alt="@AppTo.GetValue("Common:EnglishName")" />
-                    </sl-animation>
-                </a>
+            <div class="my-5">
+                <a href="/"><img src="/favicon.svg" alt="@AppTo.GetValue("Common:EnglishName")" /></a>
             </div>
             <h4 class="my-3">Join @AppTo.GetValue("Common:EnglishName")</h4>
         </div>
@@ -23,35 +19,23 @@
 
                     @if (!string.IsNullOrWhiteSpace(Model?.Msg))
                     {
-                        <sl-alert class="mb-3" open variant="@(Model.Code == 200?"success":"danger")" duration="8000" closable>
-                            <sl-icon slot="icon" name="info-circle"></sl-icon>
-                            @Model?.Msg
-                        </sl-alert>
-
+                        <div class="alert alert-@(Model.Code == 200?"success":"danger") mb-3">@Model?.Msg</div>
                         if (Model.Code == 200)
                         {
                             <script>setTimeout(function () { location.href = "/account/login" }, 1000 * 3)</script>
                         }
                     }
 
-                    <sl-input class="mb-3" type="text" required label="Email" name="UserName" maxlength="50" placeholder="netnr@@netnr.com" value='@ViewData["UserName"]' autocomplete="off" clearable autofocus>
-                        <sl-icon name="envelope" slot="prefix"></sl-icon>
-                    </sl-input>
-                    <sl-input class="mb-3" type="password" required label="Password" name="UserPwd" maxlength="20" placeholder="******" toggle-password autocomplete="off">
-                        <sl-icon name="key" slot="prefix"></sl-icon>
-                    </sl-input>
-                    <div class="row m-0 mb-3">
-                        <div class="col-6 p-0">
-                            <sl-input style="width:100%" type="text" required label="Verify" name="RegisterCode" maxlength="4" autocomplete="off">
-                                <sl-icon name="robot" slot="prefix"></sl-icon>
-                            </sl-input>
-                        </div>
-                        <div class="col-6 p-0" style="display: flex;flex-direction: row-reverse;align-items: flex-end;">
-                            <img class="border rounded" src="/account/registercode" role="button" onclick="this.src = '/account/registercode?' + new Date().valueOf()" />
-                        </div>
+                    <input class="form-control mb-4" type="text" required name="UserName" maxlength="50" placeholder="netnr@@netnr.com" value='@ViewData["UserName"]' autocomplete="off" autofocus />
+                    <input class="form-control mb-4" type="password" required name="UserPwd" maxlength="20" placeholder="******" autocomplete="off" />
+                    <div class="input-group mb-3">
+                        <input class="form-control" type="text" required name="RegisterCode" maxlength="4" autocomplete="off">
+                        <span class="input-group-text p-0">
+                            <img class="rounded rounded-1" src="/account/registercode" role="button" onclick="this.src = '/account/registercode?' + Date.now()" />
+                        </span>
                     </div>
 
-                    <sl-button style="width:100%" type="submit" variant="warning">Create an account</sl-button>
+                    <button type="submit" class="btn btn-warning w-100">Create an account</button>
                 </form>
             </div>
 

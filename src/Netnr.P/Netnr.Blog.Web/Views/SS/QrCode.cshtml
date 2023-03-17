@@ -1,20 +1,19 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-md mb-4">
-            <div class="d-flex align-items-end mb-3">
-                <sl-textarea class="nr-txt-content w-100" rows="1" label="生成二维码" placeholder="内容：网址、邮箱等"></sl-textarea>
-                <sl-button class="nr-btn-config ms-1">配置</sl-button>
+        <div class="col-md mb-5">
+            <label class="form-label">生成二维码</label>
+            <div class="input-group mb-2">
+                <textarea class="nrg-txt-content form-control" rows="1" placeholder="内容：网址、邮箱等"></textarea>
+                <button class="nrg-btn-config btn btn-outline-secondary">配置</button>
             </div>
-            <sl-textarea class="nr-txt-config mb-3 d-none" rows="11" label="生成二维码配置"></sl-textarea>
-            <div class="nr-card-result1"></div>
+            <textarea class="nrg-txt-config mb-2 form-control d-none" rows="11" label="生成二维码配置"></textarea>
+            <div class="nrg-card-result1 mb-2"></div>
         </div>
         <div class="col-md-1"></div>
         <div class="col-md">
-            <div>识别二维码（支持拖拽、粘贴）</div>
-            <input type="file" class="nr-txt-file w-100 mb-3" accept="image/*" />
-            <sl-textarea class="nr-txt-result2 d-none" label="识别结果"></sl-textarea>
+            <label class="form-label">识别二维码（支持拖拽、粘贴）</label>
+            <input type="file" class="nrg-txt-file form-control mb-2" accept="image/*" />
+            <textarea class="nrg-txt-result2 d-none form-control" placeholder="识别结果" rows="5"></textarea>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("qrcode.js,jsqr.js"))

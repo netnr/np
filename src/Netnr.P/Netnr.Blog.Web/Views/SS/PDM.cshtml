@@ -1,18 +1,16 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-auto mb-3">
-            <input type="file" class="nr-txt-file" multiple accept="*">
+        <div class="col-auto mb-2">
+            <input type="file" class="nrg-txt-file form-control" multiple accept="*">
         </div>
-        <div class="col-auto mb-3">
-            <sl-input class="nr-txt-filter" placeholder="Search..."></sl-input>
+        <div class="col-auto mb-2">
+            <input class="nrg-txt-filter form-control" placeholder="Search..." />
         </div>
-        <div class="col-auto mb-3">
-            <sl-button class="nr-btn-demo" variant="neutral">Demo</sl-button>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-demo btn btn-secondary">Demo</button>
         </div>
         <div class="col-12">
-            <div class="nr-grid"></div>
+            <div class="nrg-grid"></div>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("ag-grid-enterprise.js"))

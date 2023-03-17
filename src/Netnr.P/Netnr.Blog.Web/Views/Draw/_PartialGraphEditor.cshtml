@@ -1,7 +1,6 @@
 @{
     Layout = null;
-
-    var baseServer = "/app/mxgraph";
+    var baseServer = "/file/mxgraph";
 }
 
 <!DOCTYPE html>
@@ -41,14 +40,13 @@
     </style>
 </head>
 <body>
-
-    @Html.Raw(Netnr.QuoteTo.Html("loading"))
+    @Html.Raw(QuoteTo.Html("loading"))
 
     <input type="hidden" id="mxBaseServer" value='@baseServer' />
-    <input type="hidden" id="vid" value='@ViewData["vid"]' />
 
     <link href="@baseServer/grapheditor/styles/grapheditor.css" rel="stylesheet" />
-    <script src="/js/draw/mxg.js" asp-append-version="true"></script>
+
+    <script src="/file/draw-graph.js" asp-append-version="true"></script>
 
     <script type="text/javascript" src="@baseServer/grapheditor/deflate/pako.min.js"></script>
     <script type="text/javascript" src="@baseServer/grapheditor/deflate/base64.js"></script>

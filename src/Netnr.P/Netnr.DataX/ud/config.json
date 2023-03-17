@@ -11,17 +11,17 @@
     },
     {
       "ConnectionType": "MySQL",
-      "ConnectionString": "Server=local.host;uid=root;pwd=Abc123....",
+      "ConnectionString": "Server=local.host;uid=root;pwd=Abc1230..",
       "ConnectionRemark": "local MySQL"
     },
     {
       "ConnectionType": "SQLServer",
-      "ConnectionString": "Server=local.host;uid=sa;pwd=Abc123....",
+      "ConnectionString": "Server=local.host;uid=sa;pwd=Abc1230..",
       "ConnectionRemark": "local SQLServer"
     },
     {
       "ConnectionType": "PostgreSQL",
-      "ConnectionString": "Server=local.host;Port=5432;User Id=postgres;Password=Abc123....",
+      "ConnectionString": "Server=local.host;Port=5432;User Id=postgres;Password=Abc1230..",
       "ConnectionRemark": "local PostgreSQL"
     },
     {

@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
+		<!--<InvariantGlobalization>true</InvariantGlobalization>-->
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	</PropertyGroup>
@@ -18,15 +19,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Include="..\..\..\docs\Netnr.Blog.md"></None>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
-		<PackageReference Include="Markdig" Version="0.30.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
+		<PackageReference Include="Markdig" Version="0.31.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.4">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Netease.Cloud.Nos" Version="1.0.0.11" />
-		<PackageReference Include="Qiniu" Version="8.2.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="SkiaSharp" Version="2.88.3">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
@@ -43,8 +46,12 @@
 		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\file\clean-css\" />
+	</ItemGroup>
+
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
-	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" wwwroot_4app_4blog_4package_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -5,6 +5,16 @@ namespace Netnr.Test
     public class TestNetnrBase
     {
         [Fact]
+        public void ResultVM_1()
+        {
+            var sw = Stopwatch.StartNew();
+            var vm = new ResultVM();
+            Thread.Sleep(500);
+            Debug.WriteLine(sw.Elapsed);
+            Debug.WriteLine(vm.ToJson(true));
+        }
+
+        [Fact]
         public void Extensions_1_Json()
         {
             var vm = new ResultVM();

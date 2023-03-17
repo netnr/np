@@ -16,7 +16,6 @@ netnr@netnr.com
 **Proxy**
 &nbsp; 跨域请求
 &nbsp; https://cors.eu.org
-&nbsp; https://seep.eu.org
 
 **KMS**
 &nbsp; KMS 激活服务，slmgr 命令激活 Windows 系统、Office
@@ -24,7 +23,7 @@ netnr@netnr.com
 
 **uuid**
 &nbsp; 一个基于 Git 托管去中心化的收藏夹，书签
-&nbsp; https://uuid.fun
+&nbsp; https://uu.zme.ink
 
 **ScriptService**
 &nbsp; 脚本服务
@@ -50,7 +49,7 @@ netnr@netnr.com
 
 [Sponsor list](SPONSORS.md)
 
-[扫码进群](https://s1.netnr.com/tmp/weixin_group.jpg)
+[扫码进群](https://ss.netnr.com/tmp/weixin_group.jpg)
 
 
 ### Up

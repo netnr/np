@@ -1,13 +1,16 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-auto">
-            <sl-button class="nr-btn-query" variant="warning">查询</sl-button>
+            <button class="nrg-btn-query btn btn-warning">查询</button>
         </div>
         <div class="col">
-            <sl-input class="nr-txt-query" placeholder="请输入顶级域名，不带http、www" autofocus></sl-input>            
+            <input class="nrg-txt-query form-control" type="search" placeholder="请输入顶级域名，不带 http、www" autofocus />
         </div>
-        <div class="col-12 mt-3">
-            <div class="nr-card-result"></div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" href="https://beian.miit.gov.cn/">ICP</a>
+        </div>
+        <div class="col-12 mt-4">
+            <div class="nrg-card-result"></div>
         </div>
     </div>
 </div>

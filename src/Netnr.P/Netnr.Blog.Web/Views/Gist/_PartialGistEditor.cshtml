@@ -3,7 +3,7 @@
     var mo = Model ?? new Gist();
 }
 
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
         <div class="col-12 d-none d-sm-inline-block">
             @if (Model != null)
@@ -14,34 +14,31 @@
             else
             {
                 ViewData["Title"] = "Create a new Gist";
-                <sl-animation name="headShake" duration="8000" play>
-                    <p class="text-center">Instantly share code, notes, and snippets.</p>
-                </sl-animation>
+                <p class="text-center">Instantly share code, notes, and snippets.</p>
             }
         </div>
-        <div class="col-12 mb-2">
-            <sl-input class="nr-txt-remark" placeholder="Gist description" maxlength="200" value="@mo.GistRemark">
-                <sl-icon name="pencil-square" slot="prefix"></sl-icon>
-            </sl-input>
-        </div>
-        <div class="col-md-auto col-xs mb-2">
-            <sl-select class="nr-se-language" placeholder="Choose a language" style="min-width:15em" value="@mo.GistLanguage"></sl-select>
-        </div>
-        <div class="col mb-2">
-            <sl-input class="nr-txt-filename" title="支持终端录屏 asciinema-player 语言选择 shell 文件名格式为 *.cast" placeholder="Filename including extension" value="@mo.GistFilename" maxlength="50">
-                <sl-icon name="file-earmark-code" slot="prefix"></sl-icon>
-            </sl-input>
-        </div>
-        <div class="col-12">
-            <div class="nr-editor border rounded mb-2"></div>
-            <input type="hidden" class="nr-hid-content" value="@(string.IsNullOrWhiteSpace(mo.GistContent)?"console.log(\"Hello world!\");":mo.GistContent)" />
-            <input type="hidden" class="nr-hid-code" value="@mo.GistCode" />
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-save btn btn-warning">Save gist</button>
         </div>
         <div class="col-auto mb-2">
-            <sl-button class="nr-btn-save d-none" variant="warning">Save gist</sl-button>
+            <div class="input-group">
+                <span class="input-group-text">Language</span>
+                <select class="nrg-se-language form-select" placeholder="Choose a language" style="min-width:12em" data-value="@mo.GistLanguage"></select>
+            </div>
+        </div>
+        <div class="col-md mb-2">
+            <div class="input-group">
+                <span class="input-group-text">FileName</span>
+                <input class="nrg-txt-filename form-control" title="支持终端录屏 asciinema-player 语言选择 shell 文件名格式为 *.cast" placeholder="name.sh" value="@mo.GistFilename" maxlength="50" />
+            </div>
+        </div>
+        <div class="col-12 mb-2">
+            <input class="nrg-txt-remark form-control" placeholder="description" maxlength="200" value="@mo.GistRemark" />
+        </div>
+        <div class="col-12">
+            <div class="nrg-editor rounded"></div>
+            <input type="hidden" class="nrg-hid-content" value="@(string.IsNullOrWhiteSpace(mo.GistContent)?"console.log(\"Hello world!\");":mo.GistContent)" />
+            <input type="hidden" class="nrg-hid-code" value="@mo.GistCode" />
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("monaco-editor"))
-<script src="/js/gist/edit.js" asp-append-version="true"></script>

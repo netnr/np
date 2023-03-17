@@ -1,0 +1,70 @@
+/*全屏*/
+.nrg-fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/*loading*/
+.nrg-loading {
+    position: relative;
+    visibility: hidden !important;
+}
+
+.nrg-loading-wait {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    width: 100%;
+    color: var(--bs-body-color);
+    visibility: visible !important;
+    transform: translate(-50%, -50%);
+    background-color: var(--bs-body-bg);
+}
+
+/* modal header button */
+.nrg-modal-header-btn {
+    --bs-btn-padding-y: 0;
+    --bs-btn-padding-x: 0.5em;
+    vertical-align: bottom;
+}
+
+/* ag-grid border */
+.nrg-grid-b0 .ag-root-wrapper {
+    border: none !important;
+}
+
+/* js-tree */
+.nrg-tree {
+    background-color: transparent !important;
+}
+
+/* pre>code 右上角显示语言 */
+pre.nrg-code-language code::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 80%;
+    padding: 3px 6px;
+    content: attr(data-language);
+    color: deeppink;
+}
+
+/* pre 代码预览与 monaco-editor 靠齐 */
+.nrg-pre-code-edit {
+    font-family: Consolas, Courier New, monospace;
+    font-size: 18px;
+    line-height: 24px;
+    padding: 0 0 0 75px;
+}
+
+/* markdown 内容底部标签底部间距清除 */
+.nrg-clear-bottom>*:last-child {
+    margin-bottom: 0px!important;
+}

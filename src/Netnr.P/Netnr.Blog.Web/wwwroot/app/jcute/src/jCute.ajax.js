@@ -109,7 +109,7 @@ jCute.ajax = function (settings) {
     //open
     settings.xhr.open(settings.type, settings.url, settings.async);
 
-    //设置header,非FromData
+    //设置header,非FormData
     if (!isfd) {
         settings.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         settings.contentType && settings.xhr.setRequestHeader("Content-Type", settings.contentType);

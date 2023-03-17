@@ -1,26 +1,46 @@
-<div class="nr-card-box container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-sm-auto mb-3">
-            <sl-button class="nr-btn-build" variant="warning">生成</sl-button>
-            <sl-button class="nr-btn-reset">重置</sl-button>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-build btn btn-warning">生成</button>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-button variant="text">包含</sl-button>
-            <sl-checkbox class="nr-chk-upper mt-2 me-2" value="A" checked>ABC</sl-checkbox>
-            <sl-checkbox class="nr-chk-lower mt-2 me-2" value="a" checked>abc</sl-checkbox>
-            <sl-checkbox class="nr-chk-number mt-2 me-2" value="0" checked>123</sl-checkbox>
-            <sl-checkbox class="nr-chk-symbol mt-2 me-2" value="!" checked>!@@#</sl-checkbox>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-reset btn btn-secondary">重置</button>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-button variant="text">长度</sl-button>
-            <sl-input class="nr-txt-length d-inline-block" placeholder="长度" type="number" value="16" min="1" max="99" step="1"></sl-input>
+        <div class="col-auto">
+            <div class="input-group mb-2" style="user-select:none">
+                <span class="input-group-text me-3">包含</span>
+                <div class="mt-2 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="flag-upper" checked value="A">
+                    <label class="form-check-label" for="flag-upper">ABC</label>
+                </div>
+                <div class="mt-2 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="flag-lower" checked value="a">
+                    <label class="form-check-label" for="flag-lower">abc</label>
+                </div>
+                <div class="mt-2 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="flag-number" checked value="0">
+                    <label class="form-check-label" for="flag-number">123</label>
+                </div>
+                <div class="mt-2 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="flag-symbol" checked value="!">
+                    <label class="form-check-label" for="flag-symbol">!@@#</label>
+                </div>
+            </div>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-button variant="text">排除</sl-button>
-            <sl-input class="nr-txt-exclude d-inline-block" value="0oOiI1l" placeholder="排除字符，如：0oOiIlL1"></sl-input>
+        <div class="col-auto">
+            <div class="input-group mb-2">
+                <span class="input-group-text">长度</span>
+                <input class="nrg-txt-length form-control" id="flag-length" placeholder="长度" type="number" value="16" min="1" max="99" step="1" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="input-group mb-2">
+                <span class="input-group-text">排除</span>
+                <input class="nrg-txt-exclude form-control" id="flag-exclude" value="0oOiI1l" placeholder="排除字符，如：0oOiIlL1" />
+            </div>
         </div>
         <div class="col-12">
-            <sl-textarea class="nr-txt-result" size="large" rows="9" label="生成结果" placeholder="输出"></sl-textarea>
+            <textarea class="nrg-txt-result form-control form-control-lg" rows="9" placeholder="输出"></textarea>
         </div>
     </div>
 </div>

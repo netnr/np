@@ -24,7 +24,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <param name="title">标题，文件名</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM Export(QueryDataInputVM ivm, string title = "export")
+        public async Task<ResultVM> Export(QueryDataInputVM ivm, string title = "export")
         {
             var vm = new ResultVM();
 
@@ -55,7 +55,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     case "sysrole":
                         {
                             using var ctl = new SettingController(db);
-                            dtReport = ExportService.ModelsMapping(ivm, ctl.QuerySysRole(ivm));
+                            dtReport = ExportService.ModelsMapping(ivm, await ctl.QuerySysRole(ivm));
                         }
                         break;
 
@@ -63,7 +63,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     case "sysuser":
                         {
                             using var ctl = new SettingController(db);
-                            dtReport = ExportService.ModelsMapping(ivm, ctl.QuerySysUser(ivm));
+                            dtReport = ExportService.ModelsMapping(ivm, await ctl.QuerySysUser(ivm));
                         }
                         break;
 
@@ -71,7 +71,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     case "syslog":
                         {
                             using var ctl = new SettingController(db);
-                            dtReport = ExportService.ModelsMapping(ivm, ctl.QuerySysLog(ivm));
+                            dtReport = ExportService.ModelsMapping(ivm, await ctl.QuerySysLog(ivm));
                         }
                         break;
 
@@ -79,7 +79,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     case "sysdictionary":
                         {
                             using var ctl = new SettingController(db);
-                            dtReport = ExportService.ModelsMapping(ivm, ctl.QuerySysDictionary(ivm));
+                            dtReport = ExportService.ModelsMapping(ivm, await ctl.QuerySysDictionary(ivm));
                         }
                         break;
                 }
@@ -99,7 +99,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        vm.Set(EnumTo.RTag.fail);
+                        vm.Set(EnumTo.RTag.failure);
                     }
                 }
             }

@@ -1,14 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AgGrid.InfiniteRowModel;
-
-namespace Netnr.Blog.Web.Controllers
+﻿namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 后台管理
     /// </summary>
     [Authorize]
     [FilterConfigs.IsAdmin]
-    public class AdminController : Controller
+    public class AdminController : WebController
     {
         public ContextBase db;
 
@@ -40,34 +37,44 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 文章列表
         /// </summary>
-        /// <param name="grp"></param>
         /// <returns></returns>
         [HttpGet]
-        public object WriteList(string grp)
+        public async Task<ResultVM> WriteList()
         {
-            var query = from a in db.UserWriting
-                        join b in db.UserInfo on a.Uid equals b.UserId
-                        select new
-                        {
-                            a.UwId,
-                            a.UwTitle,
-                            a.UwCreateTime,
-                            a.UwUpdateTime,
-                            a.UwReadNum,
-                            a.UwReplyNum,
-                            a.UwOpen,
-                            a.UwStatus,
-                            a.UwLaud,
-                            a.UwMark,
-                            a.UwCategory,
+            var vm = new ResultVM();
 
-                            b.UserId,
-                            b.Nickname,
-                            b.UserName,
-                            b.UserMail
-                        };
+            try
+            {
+                var query = from a in db.UserWriting
+                            join b in db.UserInfo on a.Uid equals b.UserId
+                            select new
+                            {
+                                a.UwId,
+                                a.UwTitle,
+                                a.UwCreateTime,
+                                a.UwUpdateTime,
+                                a.UwReadNum,
+                                a.UwReplyNum,
+                                a.UwOpen,
+                                a.UwStatus,
+                                a.UwLaud,
+                                a.UwMark,
+                                a.UwCategory,
 
-            return query.GetInfiniteRowModelBlock(grp);
+                                b.UserId,
+                                b.Nickname,
+                                b.UserName,
+                                b.UserMail
+                            };
+                vm.Data = await query.ToListAsync();
+                vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
         }
 
         /// <summary>
@@ -76,27 +83,20 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM WriteSave([FromForm] UserWriting mo)
+        public async Task<ResultVM> WriteSave([FromForm] UserWriting mo)
         {
             var vm = new ResultVM();
 
-            var model = db.UserWriting.FirstOrDefault(x => x.UwId == mo.UwId);
-            if (model != null)
-            {
-                model.UwTitle = mo.UwTitle;
-                model.UwStatus = mo.UwStatus;
-                model.UwReplyNum = mo.UwReplyNum;
-                model.UwReadNum = mo.UwReadNum;
-                model.UwLaud = mo.UwLaud;
-                model.UwMark = mo.UwMark;
-                model.UwOpen = mo.UwOpen;
-
-                db.UserWriting.Update(model);
-
-                int num = db.SaveChanges();
-
-                vm.Set(num > 0);
-            }
+            var num = await db.UserWriting.Where(x => x.UwId == mo.UwId)
+                .ExecuteUpdateAsync(x => x
+                .SetProperty(p => p.UwTitle, mo.UwTitle)
+                .SetProperty(p => p.UwStatus, mo.UwStatus)
+                .SetProperty(p => p.UwReplyNum, mo.UwReplyNum)
+                .SetProperty(p => p.UwReadNum, mo.UwReadNum)
+                .SetProperty(p => p.UwLaud, mo.UwLaud)
+                .SetProperty(p => p.UwMark, mo.UwMark)
+                .SetProperty(p => p.UwOpen, mo.UwOpen));
+            vm.Set(num > 0);
 
             return vm;
         }
@@ -117,39 +117,49 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 查询回复
         /// </summary>
-        /// <param name="grp"></param>
         /// <returns></returns>
         [HttpGet]
-        public object ReplyList(string grp)
+        public async Task<ResultVM> ReplyList()
         {
-            var query = from a in db.UserReply
-                        join b1 in db.UserInfo on a.Uid equals b1.UserId into bg
-                        from b in bg.DefaultIfEmpty()
-                        select new
-                        {
-                            a.UrId,
-                            a.Uid,
-                            a.UrAnonymousName,
-                            a.UrAnonymousLink,
-                            a.UrAnonymousMail,
-                            a.UrTargetType,
-                            a.UrTargetId,
-                            a.UrContent,
-                            a.UrContentMd,
-                            a.UrCreateTime,
-                            a.UrStatus,
-                            a.UrTargetPid,
-                            a.Spare1,
-                            a.Spare2,
-                            a.Spare3,
+            var vm = new ResultVM();
 
-                            UserId = b == null ? 0 : b.UserId,
-                            Nickname = b == null ? null : b.Nickname,
-                            UserName = b == null ? null : b.UserName,
-                            UserMail = b == null ? null : b.UserMail
-                        };
+            try
+            {
+                var query = from a in db.UserReply
+                            join b1 in db.UserInfo on a.Uid equals b1.UserId into bg
+                            from b in bg.DefaultIfEmpty()
+                            select new
+                            {
+                                a.UrId,
+                                a.Uid,
+                                a.UrAnonymousName,
+                                a.UrAnonymousLink,
+                                a.UrAnonymousMail,
+                                a.UrTargetType,
+                                a.UrTargetId,
+                                a.UrContent,
+                                a.UrContentMd,
+                                a.UrCreateTime,
+                                a.UrStatus,
+                                a.UrTargetPid,
+                                a.Spare1,
+                                a.Spare2,
+                                a.Spare3,
 
-            return query.GetInfiniteRowModelBlock(grp);
+                                UserId = b == null ? 0 : b.UserId,
+                                Nickname = b == null ? null : b.Nickname,
+                                UserName = b == null ? null : b.UserName,
+                                UserMail = b == null ? null : b.UserMail
+                            };
+                vm.Data = await query.ToListAsync();
+                vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
         }
 
         /// <summary>
@@ -158,28 +168,18 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM ReplySave([FromForm] UserReply mo)
+        public async Task<ResultVM> ReplySave([FromForm] UserReply mo)
         {
             var vm = new ResultVM();
 
-            var model = db.UserReply.FirstOrDefault(x => x.UrId == mo.UrId);
-            if (model != null)
-            {
-                model.UrAnonymousName = mo.UrAnonymousName;
-                model.UrAnonymousMail = mo.UrAnonymousMail;
-                model.UrAnonymousLink = mo.UrAnonymousLink;
-
-                model.UrContent = mo.UrContent;
-                model.UrContentMd = mo.UrContentMd;
-
-                model.UrStatus = mo.UrStatus;
-
-                db.UserReply.Update(model);
-
-                int num = db.SaveChanges();
-
-                vm.Set(num > 0);
-            }
+            var num = await db.UserReply.Where(x => x.UrId == mo.UrId).ExecuteUpdateAsync(x => x
+                .SetProperty(p => p.UrAnonymousName, mo.UrAnonymousName)
+                .SetProperty(p => p.UrAnonymousMail, mo.UrAnonymousMail)
+                .SetProperty(p => p.UrAnonymousLink, mo.UrAnonymousLink)
+                .SetProperty(p => p.UrContent, mo.UrContent)
+                .SetProperty(p => p.UrContentMd, mo.UrContentMd)
+                .SetProperty(p => p.UrStatus, mo.UrStatus));
+            vm.Set(num > 0);
 
             return vm;
         }
@@ -410,70 +410,6 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 vm.Set(EnumTo.RTag.success);
-                return vm;
-            });
-        }
-
-        #endregion
-
-        #region 表管理
-
-        public IActionResult Table()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public ResultVM TableQuery(string queryAllSql, string queryLimitSql)
-        {
-            return ResultVM.Try(vm =>
-            {
-                var conn = db.Database.GetDbConnection();
-                if (conn.State != ConnectionState.Open)
-                {
-                    conn.Open();
-                }
-
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = queryLimitSql;
-                var reader = cmd.ExecuteReader();
-                var table = new DataTable();
-                table.Load(reader);
-
-                cmd.CommandText = queryAllSql;
-                var count = cmd.ExecuteScalar();
-
-                if (conn.State != ConnectionState.Closed)
-                {
-                    conn.Close();
-                }
-
-                vm.Data = new { table, count };
-                vm.Set(EnumTo.RTag.success);
-
-                return vm;
-            });
-        }
-
-        [HttpGet]
-        public ResultVM TableMeta(string name, string tableName)
-        {
-            return ResultVM.Try(vm =>
-            {
-                var conn = db.Database.GetDbConnection();
-                var dk = new DataKitTo(AppTo.TDB, conn);
-
-                switch (name)
-                {
-                    case "table":
-                        vm.Data = dk.GetTable();
-                        vm.Log.Add(AppTo.TDB);
-                        break;
-                    case "column": vm.Data = dk.GetColumn(tableName); break;
-                }
-
-                vm.Set(EnumTo.RTag.success);
-
                 return vm;
             });
         }

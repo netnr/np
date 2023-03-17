@@ -56,14 +56,15 @@ namespace Netnr.ResponseFramework.Application.Services
         /// <param name="query"></param>
         /// <param name="ivm"></param>
         /// <param name="db"></param>
-        /// <param name="ovm"></param>
-        public static void QueryJoin<T>(IQueryable<T> query, QueryDataInputVM ivm, ContextBase db, ref QueryDataOutputVM ovm)
+        public static async Task<QueryDataOutputVM> QueryJoin<T>(IQueryable<T> query, QueryDataInputVM ivm, ContextBase db)
         {
+            var ovm = new QueryDataOutputVM();
+
             //条件
             query = QueryWhere(query, ivm);
 
             //总条数
-            ovm.Total = query.Count();
+            ovm.Total = await query.CountAsync();
 
             //排序
             if (!string.IsNullOrWhiteSpace(ivm.Sort))
@@ -81,7 +82,7 @@ namespace Netnr.ResponseFramework.Application.Services
             ovm.QuerySql = query.ToQueryString();
 
             //数据
-            var data = query.ToList();
+            var data = await query.ToListAsync();
             ovm.Data = data;
             //导出时，存储数据表格
             if (ivm.HandleType == "export")
@@ -92,8 +93,10 @@ namespace Netnr.ResponseFramework.Application.Services
             //列
             if (ivm.ColumnsExists != 1)
             {
-                ovm.Columns = db.SysTableConfig.Where(x => x.TableName == ivm.TableName).OrderBy(x => x.ColOrder).ToList();
+                ovm.Columns = await db.SysTableConfig.Where(x => x.TableName == ivm.TableName).OrderBy(x => x.ColOrder).ToListAsync();
             }
+
+            return ovm;
         }
 
         /// <summary>
@@ -196,34 +199,22 @@ namespace Netnr.ResponseFramework.Application.Services
             /// <summary>
             /// 菜单缓存KEY
             /// </summary>
-            public const string SysMenu = "GlobalSysMenu";
+            public const string SysMenu = "SysMenu";
 
             /// <summary>
             /// 角色缓存KEY
             /// </summary>
-            public const string SysRole = "GlobalSysRole";
+            public const string SysRole = "SysRole";
 
             /// <summary>
             /// 按钮缓存KEY
             /// </summary>
-            public const string SysButton = "GlobalSysButton";
+            public const string SysButton = "SysButton";
         }
 
         #endregion
 
         #region 查询
-
-        /// <summary>
-        /// 查询配置信息
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public static List<SysTableConfig> QuerySysTableConfigList(Expression<Func<SysTableConfig, bool>> predicate)
-        {
-            using var db = ContextBaseFactory.CreateDbContext();
-            var list = db.SysTableConfig.Where(predicate).OrderBy(x => x.ColOrder).ToList();
-            return list;
-        }
 
         /// <summary>
         /// 查询菜单

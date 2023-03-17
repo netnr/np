@@ -9,6 +9,11 @@ namespace Netnr.Blog.Application.Services
     public class CommonService
     {
         /// <summary>
+        /// 页量
+        /// </summary>
+        public static int PageSize { get; set; } = 12;
+
+        /// <summary>
         /// 静态资源链接
         /// </summary>
         /// <param name="typePath"></param>
@@ -26,20 +31,36 @@ namespace Netnr.Blog.Application.Services
         }
 
         /// <summary>
-        /// 静态资源路径
+        /// 完整物理路径
         /// </summary>
-        /// <param name="typePath"></param>
-        /// <param name="args"></param>
+        /// <param name="typePath">分类配置，默认为空</param>
+        /// <param name="args">追加路径</param>
         /// <returns></returns>
-        public static string StaticResourcePath(string typePath, params string[] args)
+        public static string StaticResourcePath(string typePath = null, params string[] args)
         {
-            var paths = new List<string> { AppTo.WebRootPath };
-            new List<string> { "PhysicalRootPath", typePath }.ForEach(item =>
+            return PathTo.Combine(AppTo.WebRootPath, UrlRelativePath(typePath, args));
+        }
+
+        /// <summary>
+        /// URL 相对路径
+        /// </summary>
+        /// <param name="typePath">分类配置，默认为空</param>
+        /// <param name="args">追加路径</param>
+        /// <returns></returns>
+        public static string UrlRelativePath(string typePath = null, params string[] args)
+        {
+            var listPath = new List<string>
             {
-                paths.Add(AppTo.GetValue($"StaticResource:{item}"));
-            });
-            paths.AddRange(args);
-            return PathTo.Combine(paths.ToArray());
+                AppTo.GetValue("StaticResource:PhysicalRootPath")
+            };
+
+            if (!string.IsNullOrWhiteSpace(typePath))
+            {
+                listPath.Add(AppTo.GetValue($"StaticResource:{typePath}"));
+            }
+
+            listPath.AddRange(args);
+            return PathTo.Combine(listPath.ToArray());
         }
 
         /// <summary>
@@ -47,14 +68,16 @@ namespace Netnr.Blog.Application.Services
         /// </summary>
         /// <param name="cacheFirst">默认取缓存</param>
         /// <returns></returns>
-        public static List<Tags> TagsQuery(bool cacheFirst = true)
+        public static async Task<List<Tags>> TagsQuery(bool cacheFirst = true)
         {
-            var result = CacheTo.Get<List<Tags>>("Table_Tags_List");
+            var ckey = $"Tags";
+
+            var result = CacheTo.Get<List<Tags>>(ckey);
             if (cacheFirst == false || result == null)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
-                result = db.Tags.Where(x => x.TagStatus == 1).OrderByDescending(x => x.TagHot).ToList();
-                CacheTo.Set("Table_Tags_List", result, 300, false);
+                result = await db.Tags.Where(x => x.TagStatus == 1).OrderByDescending(x => x.TagHot).ToListAsync();
+                CacheTo.Set(ckey, result, 300, false);
             }
             return result;
         }
@@ -64,9 +87,11 @@ namespace Netnr.Blog.Application.Services
         /// </summary>
         /// <param name="cacheFirst"></param>
         /// <returns></returns>
-        public static Dictionary<string, int> UserWritingByTagCountQuery(bool cacheFirst = true)
+        public static async Task<Dictionary<string, int>> UserWritingByTagCountQuery(bool cacheFirst = true)
         {
-            var result = CacheTo.Get<Dictionary<string, int>>("Table_WritingTags_GroupBy");
+            var ckey = $"WritingTags-Group";
+
+            var result = CacheTo.Get<Dictionary<string, int>>(ckey);
             if (cacheFirst == false || result == null)
             {
                 using var db = ContextBaseFactory.CreateDbContext();
@@ -78,7 +103,7 @@ namespace Netnr.Blog.Application.Services
                                 m.Key,
                                 total = m.Count()
                             };
-                var qs = query.Take(28).OrderByDescending(x => x.total).ToList();
+                var qs = await query.Take(28).OrderByDescending(x => x.total).ToListAsync();
 
                 var dic = new Dictionary<string, int>();
                 foreach (var item in qs)
@@ -87,7 +112,7 @@ namespace Netnr.Blog.Application.Services
                 }
 
                 result = dic;
-                CacheTo.Set("Table_WritingTags_GroupBy", result, 300, false);
+                CacheTo.Set(ckey, result, 300, false);
             }
             return result;
         }
@@ -99,7 +124,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="page"></param>
         /// <param name="TagName"></param>
         /// <returns></returns>
-        public static PageVM UserWritingQuery(string KeyWords, int page, string TagName = "")
+        public static async Task<PageVM> UserWritingQuery(string KeyWords, int page, string TagName = "")
         {
             var vm = new PageVM();
 
@@ -108,7 +133,7 @@ namespace Netnr.Blog.Application.Services
             var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 18
+                PageSize = PageSize
             };
 
             var dicQs = new Dictionary<string, string> { { "k", KeyWords } };
@@ -127,30 +152,32 @@ namespace Netnr.Blog.Application.Services
 
             if (!string.IsNullOrWhiteSpace(KeyWords))
             {
-                var kws = new JiebaSegmenter().Cut(KeyWords).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+                var kws = new List<string>();
+                kws.AddRange(KeyWords.Split(' '));
                 kws.Add(KeyWords);
+                kws = kws.Distinct().ToList();
 
                 var inner = PredicateTo.False<UserWriting>();
                 switch (AppTo.TDB)
                 {
                     case EnumTo.TypeDB.SQLite:
-                        kws.ForEach(k => inner = inner.Or(x => EF.Functions.Like(x.UwTitle, $"%{k}%")));
+                        kws.ForEach(k => inner = inner.Or(x => EF.Functions.Like(x.UwTitle, $"%{k}%") || EF.Functions.Like(x.UwContentMd, $"%{k}%")));
                         break;
                     case EnumTo.TypeDB.PostgreSQL:
-                        kws.ForEach(k => inner = inner.Or(x => EF.Functions.ILike(x.UwTitle, $"%{k}%")));
+                        kws.ForEach(k => inner = inner.Or(x => EF.Functions.ILike(x.UwTitle, $"%{k}%") || EF.Functions.ILike(x.UwContentMd, $"%{k}%")));
                         break;
                     default:
-                        kws.ForEach(k => inner = inner.Or(x => x.UwTitle.Contains(k)));
+                        kws.ForEach(k => inner = inner.Or(x => x.UwTitle.Contains(k) || x.UwContentMd.Contains(k)));
                         break;
                 }
                 query = query.Where(inner);
             }
 
-            pag.Total = query.Count();
+            pag.Total = await query.CountAsync();
 
             query = query.OrderByDescending(x => x.UwId).Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize);
 
-            var list = query.ToList();
+            var list = await query.ToListAsync();
 
             //文章ID
             var listUwId = list.Select(x => x.UwId).ToList();
@@ -166,13 +193,13 @@ namespace Netnr.Blog.Application.Services
                                 a.TagName,
                                 b.TagIcon
                             };
-            var listUwTags = queryTags.ToList();
+            var listUwTags = await queryTags.ToListAsync();
 
             //文章人员ID
             var listUwUid = list.Select(x => x.UwLastUid).Concat(list.Select(x => x.Uid)).Distinct();
 
             //文章人员ID对应的信息
-            var listUwUserInfo = db.UserInfo.Where(x => listUwUid.Contains(x.UserId)).Select(x => new { x.UserId, x.Nickname }).ToList();
+            var listUwUserInfo = await db.UserInfo.Where(x => listUwUid.Contains(x.UserId)).Select(x => new { x.UserId, x.Nickname }).ToListAsync();
 
             //把信息赋值到文章表的备用字段上
             foreach (var item in list)
@@ -200,7 +227,8 @@ namespace Netnr.Blog.Application.Services
             {
                 try
                 {
-                    var jt = KeyValuesQuery(new List<string> { TagName }).FirstOrDefault()?.KeyValue.DeJson();
+                    var kvs = await KeyValuesQuery(new List<string> { TagName });
+                    var jt = kvs.FirstOrDefault()?.KeyValue.DeJson();
                     if (jt != null)
                     {
                         vm.Temp = new
@@ -228,12 +256,12 @@ namespace Netnr.Blog.Application.Services
         /// <param name="action">动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static PageVM UserConnWritingQuery(int OwnerId, ConnectionType connectionType, int action, int page)
+        public static async Task<PageVM> UserConnWritingQuery(int OwnerId, ConnectionType connectionType, int action, int page)
         {
             var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 18
+                PageSize = PageSize
             };
 
             using var db = ContextBaseFactory.CreateDbContext();
@@ -257,31 +285,31 @@ namespace Netnr.Blog.Application.Services
                 return null;
             }
 
-            pag.Total = query.Count();
+            pag.Total = await query.CountAsync();
 
             query = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize);
 
-            var list = query.ToList();
+            var list = await query.ToListAsync();
 
             //文章ID
             var listUwId = list.Select(x => x.UwId).ToList();
 
             //文章的所有的标签
-            var listUwTags = (from a in db.Tags
-                              join b in db.UserWritingTags on a.TagName equals b.TagName
-                              where listUwId.Contains(b.UwId)
-                              select new
-                              {
-                                  b.UwId,
-                                  b.TagName,
-                                  a.TagIcon
-                              }).ToList();
+            var listUwTags = await (from a in db.Tags
+                                    join b in db.UserWritingTags on a.TagName equals b.TagName
+                                    where listUwId.Contains(b.UwId)
+                                    select new
+                                    {
+                                        b.UwId,
+                                        b.TagName,
+                                        a.TagIcon
+                                    }).ToListAsync();
 
             //文章人员ID
             var listUwUid = list.Select(x => x.UwLastUid).Concat(list.Select(x => x.Uid)).Distinct();
 
             //文章人员ID对应的信息
-            var listUwUserInfo = db.UserInfo.Where(x => listUwUid.Contains(x.UserId)).Select(x => new { x.UserId, x.Nickname }).ToList();
+            var listUwUserInfo = await db.UserInfo.Where(x => listUwUid.Contains(x.UserId)).Select(x => new { x.UserId, x.Nickname }).ToListAsync();
 
             //把信息赋值到文章表的备用字段上
             foreach (var item in list)
@@ -314,7 +342,7 @@ namespace Netnr.Blog.Application.Services
         /// </summary>
         /// <param name="UwId"></param>
         /// <returns></returns>
-        public static UserWriting UserWritingOneQuery(int UwId)
+        public static async Task<UserWriting> UserWritingOneQuery(int UwId)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var one = db.UserWriting.Find(UwId);
@@ -324,18 +352,18 @@ namespace Netnr.Blog.Application.Services
             }
 
             //标签
-            var onetags = (from a in db.UserWritingTags
-                           join b in db.Tags on a.TagName equals b.TagName
-                           where a.UwId == one.UwId
-                           select new
-                           {
-                               a.TagName,
-                               b.TagIcon
-                           }).ToList();
+            var onetags = await (from a in db.UserWritingTags
+                                 join b in db.Tags on a.TagName equals b.TagName
+                                 where a.UwId == one.UwId
+                                 select new
+                                 {
+                                     a.TagName,
+                                     b.TagIcon
+                                 }).ToListAsync();
             one.Spare1 = onetags.ToJson();
 
             //昵称
-            var usermo = db.UserInfo.FirstOrDefault(x => x.UserId == one.Uid);
+            var usermo = await db.UserInfo.FirstOrDefaultAsync(x => x.UserId == one.Uid);
             one.Spare2 = usermo?.Nickname;
 
             return one;
@@ -348,7 +376,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UrTargetId">回复目标ID</param>
         /// <param name="pag">分页信息</param>
         /// <returns></returns>
-        public static List<UserReply> ReplyOneQuery(ReplyType replyType, string UrTargetId, PaginationVM pag)
+        public static async Task<List<UserReply>> ReplyOneQuery(ReplyType replyType, string UrTargetId, PaginationVM pag)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserReply
@@ -373,11 +401,11 @@ namespace Netnr.Blog.Application.Services
                             Spare2 = b1 == null ? null : b1.UserPhoto
                         };
 
-            pag.Total = query.Count();
+            pag.Total = await query.CountAsync();
 
             query = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize);
 
-            var list = query.ToList();
+            var list = await query.ToListAsync();
 
             return list;
         }
@@ -387,10 +415,10 @@ namespace Netnr.Blog.Application.Services
         /// </summary>
         /// <param name="ListKeyName"></param>
         /// <returns></returns>
-        public static List<KeyValues> KeyValuesQuery(List<string> ListKeyName)
+        public static async Task<List<KeyValues>> KeyValuesQuery(List<string> ListKeyName)
         {
             using var db = ContextBaseFactory.CreateDbContext();
-            var listKv = db.KeyValues.Where(x => ListKeyName.Contains(x.KeyName)).ToList();
+            var listKv = await db.KeyValues.Where(x => ListKeyName.Contains(x.KeyName)).ToListAsync();
             if (listKv.Count != ListKeyName.Count)
             {
                 var hasK = listKv.Select(x => x.KeyName).ToList();
@@ -404,11 +432,11 @@ namespace Netnr.Blog.Application.Services
                 }
                 if (noK.Count > 0)
                 {
-                    var listKvs = db.KeyValueSynonym.Where(x => noK.Contains(x.KsName)).ToList();
+                    var listKvs = await db.KeyValueSynonym.Where(x => noK.Contains(x.KsName)).ToListAsync();
                     if (listKvs.Count > 0)
                     {
                         var appendKey = listKvs.Select(x => x.KeyName).ToList();
-                        var appendKv = db.KeyValues.Where(x => appendKey.Contains(x.KeyName)).ToList();
+                        var appendKv = await db.KeyValues.Where(x => appendKey.Contains(x.KeyName)).ToListAsync();
                         foreach (var item in appendKv)
                         {
                             var mc = listKvs.Where(x => x.KeyName == item.KeyName).FirstOrDefault();
@@ -433,7 +461,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="action">消息动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static PageVM MessageQuery(int UserId, MessageType? messageType, int? action, int page = 1)
+        public static async Task<PageVM> MessageQuery(int UserId, MessageType? messageType, int? action, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserMessage
@@ -459,17 +487,16 @@ namespace Netnr.Blog.Application.Services
             var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 18,
-                Total = query.Count()
+                PageSize = PageSize,
+                Total = await query.CountAsync()
             };
 
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
-
+            var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
             if (list.Count > 0)
             {
                 //分类：根据ID查询对应的标题
                 var listUwId = list.Where(x => x.a.UmType == MessageType.UserWriting.ToString()).Select(x => Convert.ToInt32(x.a.UmTargetId)).ToList();
-                var listUw = db.UserWriting.Where(x => listUwId.Contains(x.UwId)).Select(x => new { x.UwId, x.UwTitle }).ToList();
+                var listUw = await db.UserWriting.Where(x => listUwId.Contains(x.UwId)).Select(x => new { x.UwId, x.UwTitle }).ToListAsync();
 
                 foreach (var item in list)
                 {
@@ -502,19 +529,20 @@ namespace Netnr.Blog.Application.Services
                 return 0;
             }
 
-            var ck = $"NewMessage_{UserId}";
+            var ckey = "NewMessage";
+            var gkey = UserId.ToString();
 
-            var num = CacheTo.Get<int?>(ck);
+            var num = CacheTo.Get<int?>(ckey, gkey);
             if (num == null)
             {
-                CacheTo.Set(ck, 0, 30, false);
+                CacheTo.Set(ckey, 0, 30, false, gkey);
                 Task.Run(() =>
                 {
                     try
                     {
                         using var db = ContextBaseFactory.CreateDbContext();
                         var num2 = db.UserMessage.Where(x => x.Uid == UserId && x.UmStatus == 1).Count();
-                        CacheTo.Set(ck, num2, 30, false);
+                        CacheTo.Set(ckey, num2, 30, false, gkey);
                     }
                     catch (Exception ex)
                     {
@@ -535,7 +563,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static async Task<PageVM> GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
 
@@ -658,8 +686,8 @@ namespace Netnr.Blog.Application.Services
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
 
-            pag.Total = query.Count();
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
+            pag.Total = await query.CountAsync();
+            var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
 
             PageVM pageSet = new()
             {
@@ -671,7 +699,13 @@ namespace Netnr.Blog.Application.Services
             //显示词云 Spare1=1
             if (string.IsNullOrWhiteSpace(q) && pag.Total > 0)
             {
-                pageSet.Temp = db.Gist.Select(x => new { x.GistCode, x.GistFilename, x.GistRemark, x.GistCreateTime, x.GistOpen, x.GistStatus, x.Spare1 }).Where(x => x.GistOpen == 1 && x.GistStatus == 1 && x.Spare1 == "1").OrderByDescending(x => x.GistCreateTime).ToList().ToJson();
+                var result = await db.Gist
+                    .Select(x => new { x.GistCode, x.GistFilename, x.GistRemark, x.GistCreateTime, x.GistOpen, x.GistStatus, x.Spare1 })
+                    .Where(x => x.GistOpen == 1 && x.GistStatus == 1 && x.Spare1 == "1")
+                    .OrderByDescending(x => x.GistCreateTime)
+                    .ToListAsync();
+
+                pageSet.Temp = result.ToJson();
             }
 
             return pageSet;
@@ -685,7 +719,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM DocQuery(string q, int OwnerId, int UserId, int page = 1)
+        public static async Task<PageVM> DocQuery(string q, int OwnerId, int UserId, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.DocSet
@@ -735,13 +769,13 @@ namespace Netnr.Blog.Application.Services
             var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 18
+                PageSize = PageSize
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
 
-            pag.Total = query.Count();
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
+            pag.Total = await query.CountAsync();
+            var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
 
             PageVM pageSet = new()
             {
@@ -761,7 +795,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static async Task<PageVM> RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Run
@@ -812,13 +846,13 @@ namespace Netnr.Blog.Application.Services
             var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 18
+                PageSize = PageSize
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
 
-            pag.Total = query.Count();
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
+            pag.Total = await query.CountAsync();
+            var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
 
             PageVM pageSet = new()
             {
@@ -838,7 +872,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static async Task<PageVM> DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Draw
@@ -892,13 +926,13 @@ namespace Netnr.Blog.Application.Services
             var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 18
+                PageSize = PageSize
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
 
-            pag.Total = query.Count();
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
+            pag.Total = await query.CountAsync();
+            var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
 
             PageVM pageSet = new()
             {
@@ -922,7 +956,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static PageVM GuffQuery(string category, string q, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
+        public static async Task<PageVM> GuffQuery(string category, string q, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
         {
             var ctype = ConnectionType.GuffRecord.ToString();
 
@@ -1127,20 +1161,20 @@ namespace Netnr.Blog.Application.Services
             var pag = new PaginationVM
             {
                 PageNumber = Math.Max(page, 1),
-                PageSize = 18
+                PageSize = PageSize
             };
 
             var dicQs = new Dictionary<string, string> { { "q", q } };
 
-            pag.Total = query.Count();
-            var list = query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToList();
+            pag.Total = await query.CountAsync();
+            var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
 
             var listid = list.Select(x => x.GrId).ToList();
 
             //点赞查询
             if (category != "melaud")
             {
-                var listtid = db.UserConnection.Where(x => listid.Contains(x.UconnTargetId) && x.Uid == UserId && x.UconnTargetType == ctype && x.UconnAction == 1).Select(x => x.UconnTargetId).ToList();
+                var listtid = await db.UserConnection.Where(x => listid.Contains(x.UconnTargetId) && x.Uid == UserId && x.UconnTargetType == ctype && x.UconnAction == 1).Select(x => x.UconnTargetId).ToListAsync();
                 foreach (var item in list)
                 {
                     if (listtid.Contains(item.GrId))
@@ -1162,8 +1196,8 @@ namespace Netnr.Blog.Application.Services
                     OrCreateTime = DateTime.Now,
                     OrMark = "default"
                 };
-                db.OperationRecord.Add(ormo);
-                db.SaveChanges();
+                await db.OperationRecord.AddAsync(ormo);
+                await db.SaveChangesAsync();
             }
 
             PageVM pageSet = new()
@@ -1175,6 +1209,5 @@ namespace Netnr.Blog.Application.Services
 
             return pageSet;
         }
-
     }
 }

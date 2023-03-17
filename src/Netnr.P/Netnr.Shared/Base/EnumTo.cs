@@ -39,7 +39,11 @@ public class EnumTo
         /// <summary>
         /// PostgreSQL
         /// </summary>
-        PostgreSQL
+        PostgreSQL,
+        /// <summary>
+        /// 达梦
+        /// </summary>
+        DM
     }
 
     /// <summary>
@@ -58,7 +62,7 @@ public class EnumTo
         /// <summary>
         /// 失败
         /// </summary>
-        fail = 400,
+        failure = 400,
         /// <summary>
         /// 错误
         /// </summary>
@@ -74,11 +78,11 @@ public class EnumTo
         /// <summary>
         /// 存在
         /// </summary>
-        exist = 97,
+        exist = 409,
         /// <summary>
         /// 无效
         /// </summary>
-        invalid = 95,
+        invalid = 412,
         /// <summary>
         /// 缺省
         /// </summary>

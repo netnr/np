@@ -1,12 +1,11 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-12">
-            <sl-input class="nr-txt-query" label="User-Agent" placeholder="请粘贴 User-Agent 信息"></sl-input>            
-        </div>
-        <div class="col-12 mt-3">
-            <div class="nr-card-result"></div>
+            <div class="mb-3">
+                <label class="form-label">User-Agent</label>
+                <input type="search" class="nrg-txt-query form-control" placeholder="请粘贴 User-Agent 信息">
+            </div>
+            <div class="nrg-card-result"></div>
         </div>
     </div>
 </div>
-
-<script src="/app/browserify/dist/device-detector-js.min.js" asp-append-version="true"></script>

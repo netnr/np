@@ -4,7 +4,7 @@
     /// Netnr.DataKit API
     /// </summary>
     [Route("api/v1/dk/[action]")]
-    [FilterConfigs.IsCors]
+    [FilterAllowCORS]
     public class DKController : DataKitController
     {
 

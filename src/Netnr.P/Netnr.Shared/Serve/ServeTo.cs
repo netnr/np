@@ -13,7 +13,7 @@ public class ServeTo
     /// <summary>
     /// 启动参数
     /// </summary>
-    public static List<string> Args { get; set; } = Environment.GetCommandLineArgs().ToList();
+    public static List<string> StartArgs { get; set; } = Environment.GetCommandLineArgs().ToList();
 
     /// <summary>
     /// 获取启动参数值
@@ -22,10 +22,10 @@ public class ServeTo
     /// <returns></returns>
     public static string GetArgsVal(string key)
     {
-        var keyIndex = Args.IndexOf(key);
-        if (keyIndex != -1 && ++keyIndex < Args.Count)
+        var keyIndex = StartArgs.IndexOf(key);
+        if (keyIndex != -1 && ++keyIndex < StartArgs.Count)
         {
-            var val = Args[keyIndex];
+            var val = StartArgs[keyIndex];
             if (!val.StartsWith("--"))
             {
                 return val;
@@ -34,7 +34,7 @@ public class ServeTo
         return null;
     }
 
-    public const string Version = "1.0.1"; // 2022-08-08
+    public const string Version = "1.1.0";
 
     public HttpListener Listener;
     public ServeOptions so;
@@ -94,7 +94,8 @@ public class ServeTo
         /// </summary>
         /// <param name="response"></param>
         /// <param name="file"></param>
-        public void OutputFile(HttpListenerResponse response, FileInfo file)
+        /// <param name="request"></param>
+        public void OutputFile(HttpListenerResponse response, FileInfo file, HttpListenerRequest request)
         {
             response.ContentType = GetMIMEType(file.Extension);
 
@@ -107,14 +108,50 @@ public class ServeTo
                 response.ContentType = $"{response.ContentType}; charset={Charset}";
             }
 
-            //output stream
-            using var fs = File.OpenRead(file.FullName);
-            fs.Position = 0;
-            byte[] buffer = new byte[2048];
-            int bytesRead;
-            while ((bytesRead = fs.Read(buffer, 0, buffer.Length)) > 0)
+            using Stream stream = File.Open(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+            //文件范围请求（主要为媒体文件）
+            var headRange = request.Headers["Range"];
+            if (!string.IsNullOrWhiteSpace(headRange))
             {
-                response.OutputStream.Write(buffer, 0, bytesRead);
+                string[] range = headRange.Split(new char[] { '=', '-' });
+
+                long byteSize = file.Length;
+                long startBytes = Convert.ToInt64(range[1]); ;
+                long endBytes = byteSize - 1;
+
+                if (range.Length > 2 && !string.IsNullOrEmpty(range[2]))
+                {
+                    endBytes = Convert.ToInt64(range[2]);
+                }
+                long totalBytes = endBytes - startBytes + 1;
+
+                response.StatusCode = 206;
+                response.ContentLength64 = totalBytes;
+                response.Headers.Add("Content-Range", string.Format("bytes {0}-{1}/{2}", startBytes, endBytes, byteSize));
+
+                stream.Seek(startBytes, SeekOrigin.Begin);
+                byte[] buffer = new byte[1024 * 8];
+
+                int bytesRead;
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0 && totalBytes > 0)
+                {
+                    response.OutputStream.Write(buffer, 0, bytesRead);
+                    totalBytes -= bytesRead;
+                }
+            }
+            else
+            {
+                response.StatusCode = 200;
+                response.ContentLength64 = file.Length;
+
+                stream.Seek(0, SeekOrigin.Begin);
+                byte[] buffer = new byte[1024 * 8];
+                int bytesRead;
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    response.OutputStream.Write(buffer, 0, bytesRead);
+                }
             }
         }
 
@@ -160,7 +197,7 @@ public class ServeTo
             options.Suffix = ".html";
         }
 
-        Console.WriteLine(string.Join("\r\n", Args));
+        Console.WriteLine(string.Join("\r\n", StartArgs));
         if (!string.IsNullOrWhiteSpace(options.Headers))
         {
             Console.WriteLine(options.Headers);
@@ -341,7 +378,7 @@ public class ServeTo
                                 var file = so.RootDir.GetFiles(path).FirstOrDefault();
                                 if (file != null)
                                 {
-                                    so.OutputFile(response, file);
+                                    so.OutputFile(response, file, request);
                                 }
                                 else if (so.RootDir.GetDirectories(path).Any())
                                 {
@@ -386,34 +423,29 @@ public class ServeTo
                         }
                         break;
                     case "DELETE":
+                        if (!string.IsNullOrWhiteSpace(path))
                         {
-                            if (!string.IsNullOrWhiteSpace(path))
-                            {
-                                //delete directory
+                            //delete directory
 
-                                if (pathname.EndsWith('/') && request.Url.Query == "?force")
+                            if (pathname.EndsWith('/') && request.Url.Query == "?force")
+                            {
+                                var delPath = so.RootDir.GetDirectories(path, SearchOption.AllDirectories).FirstOrDefault();
+                                delPath?.Delete(true);
+                            }
+                            else
+                            {
+                                //delete file
+
+                                var delPath = Path.Combine(so.RootDir.FullName, path);
+                                if (File.Exists(delPath))
                                 {
-                                    var delPath = so.RootDir.GetDirectories(path, SearchOption.AllDirectories).FirstOrDefault();
-                                    if (delPath != null)
-                                    {
-                                        delPath.Delete(true);
-                                    }
+                                    File.Delete(delPath);
+
+                                    OutputText(response, $"\r\nDeleted {request.Url}");
                                 }
                                 else
                                 {
-                                    //delete file
-
-                                    var delPath = Path.Combine(so.RootDir.FullName, path);
-                                    if (File.Exists(delPath))
-                                    {
-                                        File.Delete(delPath);
-
-                                        OutputText(response, $"\r\nDeleted {request.Url}");
-                                    }
-                                    else
-                                    {
-                                        throw new DirectoryNotFoundException();
-                                    }
+                                    throw new DirectoryNotFoundException();
                                 }
                             }
                         }
@@ -437,7 +469,7 @@ public class ServeTo
 
                     if (file != null)
                     {
-                        so.OutputFile(response, file);
+                        so.OutputFile(response, file, request);
                     }
                 }
             }
@@ -466,6 +498,7 @@ public class ServeTo
 
         //response.OutputStream.Write(Array.Empty<byte>(), 0, 0);
         response.OutputStream.Close();
+        response.Close();
 
         Receive();
     }
@@ -484,7 +517,7 @@ public class ServeTo
         var options = new ServeOptions();
 
         //静默
-        if (Args.Count > 1)
+        if (StartArgs.Count > 1)
         {
             options.Urls = GetArgsVal("--urls");
             options.Root = GetArgsVal("--root");

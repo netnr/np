@@ -10,7 +10,7 @@ namespace Netnr.Blog.Web.Controllers.api
     /// 公共接口
     /// </summary>
     [Route("api/v1/[action]")]
-    [FilterConfigs.IsCors]
+    [FilterAllowCORS]
     public partial class APIController : ControllerBase
     {
         /// <summary>
@@ -43,17 +43,16 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <param name="title"></param>
         /// <param name="content"></param>
+        /// <param name="touser">可选</param>
         /// <returns></returns>
         [HttpPost]
-        [FilterConfigs.IsCors]
-        public async Task<IActionResult> PushAsync([FromForm] string title = "", [FromForm] string content = "")
+        public async Task<ResultVM> PushAsync([FromForm] string title = "", [FromForm] string content = "", [FromForm] string touser = "@all")
         {
-            await PushService.PushAsync(title, content);
-            return NoContent();
+            return await PushService.PushAsync(title, content, touser);
         }
 
         /// <summary>
-        /// 上传检测（已登录）
+        /// 上传检测
         /// </summary>
         /// <param name="file">文件</param>
         /// <param name="content">文件内容</param>
@@ -61,7 +60,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="subdir">输出完整物理路径，用于存储</param>
         /// <returns></returns>
         [ApiExplorerSettings(IgnoreApi = true)]
-        public static ResultVM UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
+        internal static ResultVM UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
         {
             var vm = new ResultVM();
 
@@ -87,12 +86,11 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
                 else
                 {
-                    //物理根路径
-                    var prp = AppTo.GetValue("StaticResource:PhysicalRootPath");
                     //虚拟路径
-                    var vpath = PathTo.Combine(subdir, now.ToString("yyyy"));
+                    var vpath = CommonService.UrlRelativePath(null, subdir, now.ToString("yyyy"));
+
                     //物理路径
-                    var ppath = PathTo.Combine(AppTo.WebRootPath, prp, vpath);
+                    var ppath = PathTo.Combine(AppTo.WebRootPath, vpath);
                     //创建物理目录
                     if (!Directory.Exists(ppath))
                     {
@@ -114,10 +112,9 @@ namespace Netnr.Blog.Web.Controllers.api
                     //输出
                     vm.Data = new
                     {
-                        server = AppTo.GetValue("StaticResource:Server"),
-                        prp,
                         path = PathTo.Combine(vpath, filename)
                     };
+
                     vm.Set(EnumTo.RTag.success);
                 }
             }
@@ -133,7 +130,6 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [FilterConfigs.IsCors]
         public ResultVM Upload(IFormFile file, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
@@ -166,7 +162,6 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [FilterConfigs.IsCors]
         public ResultVM UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
@@ -203,7 +198,6 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        [FilterConfigs.IsCors]
         public ResultVM UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             return ResultVM.Try(vm =>
@@ -366,7 +360,7 @@ namespace Netnr.Blog.Web.Controllers.api
             var list = new List<long>();
             for (int i = 0; i < count; i++)
             {
-                list.Add(SnowflakeTo.Id());
+                list.Add(Snowflake53To.Id());
             }
 
             return list;
@@ -633,7 +627,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    vm.Set(EnumTo.RTag.fail);
+                    vm.Set(EnumTo.RTag.failure);
                     vm.Msg = "content 不能为空";
                 }
                 else
@@ -655,7 +649,7 @@ namespace Netnr.Blog.Web.Controllers.api
                                 vm.Log.Add("文章标签");
                                 if (string.IsNullOrWhiteSpace(title))
                                 {
-                                    vm.Set(EnumTo.RTag.fail);
+                                    vm.Set(EnumTo.RTag.failure);
                                     vm.Msg = "title 不能为空";
                                 }
                                 else
@@ -815,7 +809,6 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPatch]
         [HttpDelete]
         [HttpOptions]
-        [FilterConfigs.IsCors]
         public ActionResult Proxy(string url, string charset = "utf-8")
         {
             var outCode = 500;
@@ -837,7 +830,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 {
                     return Ok("Url Invalid");
                 }
-                else if (keywordBlacklist.Any(x => url.Contains(x)))
+                else if (keywordBlacklist.Any(url.Contains))
                 {
                     return BadRequest($"The keyword '{string.Join(" ", keywordBlacklist)}' was blacklisted by the operator of this proxy.");
                 }

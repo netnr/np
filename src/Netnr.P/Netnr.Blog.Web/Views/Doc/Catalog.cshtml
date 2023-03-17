@@ -3,31 +3,52 @@
     var code = ViewContext.RouteData.Values["id"]?.ToString();
 }
 
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
         <div class="col-auto mb-2">
-            <sl-button size="small" class="nr-btn-add" variant="primary">新建</sl-button>
+            <button class="nrg-btn-save btn btn-warning">Save catalog</button>
+            <a class="btn btn-secondary" href="/doc/code/@code">返回</a>
         </div>
         <div class="col mb-2">
-            <input type="hidden" class="nr-hid-code" name="DsCode" value="@code" />
-            <sl-button size="small" class="nr-btn-save" variant="warning">Save catalog</sl-button>
-            <sl-button size="small" href="/doc/code/@code">返回</sl-button>
+            <button class="nrg-btn-add btn btn-primary">新增</button>
         </div>
         <div class="col-12">
-            <div class="nr-tree overflow-auto border rounded"></div>
+            <div class="nrg-tree overflow-auto border rounded"></div>
         </div>
     </div>
 </div>
 
-<sl-dialog class="nr-dialog-form" label="新建">
-    <sl-select class="nr-se-type mb-3" label="类型">
-        <sl-menu-item value="">目录</sl-menu-item>
-        <sl-menu-item value="file">文件</sl-menu-item>
-    </sl-select>
-    <sl-select class="nr-se-pid mb-3" label="父级"></sl-select>
-    <sl-input class="nr-txt-title mb-3" label="名称"></sl-input>
-    <sl-button class="nr-btn-confirm" variant="warning">确定</sl-button>
-</sl-dialog>
-
-@Html.Raw(Netnr.QuoteTo.Html("jquery3.js,jstree"))
-<script src="/js/doc/catalog.js" asp-append-version="true"></script>
+<div class="nrg-modal-form modal">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新建</h5>
+                <div>
+                    <button class="nrg-btn-save-form nrg-modal-header-btn btn btn-warning" data-action="save-form">确定</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">类型</span>
+                        <select class="nrg-se-type form-select" name="DsdType">
+                            <option value="">目录</option>
+                            <option value="file">页面</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">父级</span>
+                        <select class="nrg-se-pid form-select" readonly name="DsdPid">
+                            <option value="#" selected>根目录</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">名称</span>
+                        <input class="nrg-se-type form-control" name="DsdTitle" maxlength="50" required autocomplete="off" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

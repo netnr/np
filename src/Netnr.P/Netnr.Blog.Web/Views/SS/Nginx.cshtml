@@ -1,15 +1,13 @@
-<div class="nr-card-box invisible container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-auto mb-3">
-            <sl-button class="nr-btn-format" variant="warning" title="Shift+Alt+F 快捷格式化">格式化</sl-button>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-format btn btn-warning" title="Shift+Alt+F 快捷格式化">格式化</button>
         </div>
-        <div class="col-auto mb-3">
-            <sl-button href="https://ssl-config.mozilla.org" target="_blank">SSL Config</sl-button>
+        <div class="col-auto mb-2">
+            <a href="https://ssl-config.mozilla.org" class="btn btn-secondary" target="_blank">SSL Config</a>
         </div>
         <div class="col-12">
-            <div class="nr-editor"></div>
+            <div class="nrg-editor"></div>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("nginxbeautifier,monaco-editor"))

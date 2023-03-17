@@ -4,7 +4,7 @@
     /// 尬服 guff.ltd 提供所有接口支持
     /// </summary>
     [Route("api/v1/guff/[action]")]
-    [FilterConfigs.IsCors]
+    [FilterAllowCORS]
     public class GuffController : ControllerBase
     {
         public ContextBase db;
@@ -26,9 +26,11 @@
         /// <param name="page">页码</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM List(string category, string q, int uid, string nv, string tag, string obj, int page = 1)
+        public async Task<ResultVM> List(string category, string q, int uid, string nv, string tag, string obj, int page = 1)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 //所属用户
                 var OwnerId = 0;
@@ -53,7 +55,7 @@
                             OwnerId = uinfo.UserId;
                         }
 
-                        var pvm = CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
+                        var pvm = await CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
                         vm.Data = pvm;
 
                         vm.Set(EnumTo.RTag.success);
@@ -61,14 +63,19 @@
                 }
                 else
                 {
-                    var pvm = CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
+                    var pvm = await CommonService.GuffQuery(category, q, nv, tag, obj, OwnerId, uinfo.UserId, page);
                     vm.Data = pvm;
 
                     vm.Set(EnumTo.RTag.success);
                 }
 
-                return vm;
-            });
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
         }
 
         /// <summary>
@@ -475,9 +482,11 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM ReplyList(string id, int page = 1)
+        public async Task<ResultVM> ReplyList(string id, int page = 1)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 var pag = new PaginationVM
                 {
@@ -485,7 +494,7 @@
                     PageSize = 10
                 };
 
-                var list = CommonService.ReplyOneQuery(ReplyType.GuffRecord, id, pag);
+                var list = await CommonService.ReplyOneQuery(ReplyType.GuffRecord, id, pag);
                 //匿名用户，生成邮箱MD5加密用于请求头像
                 foreach (var item in list)
                 {
@@ -503,9 +512,13 @@
                 vm.Data = pvm;
 
                 vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>

@@ -1,44 +1,15 @@
-﻿<!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    <title>Mind Editor NET牛人</title>
-    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta name="keywords" content="netnr NET牛人 Mind Editor" />
-    <meta name="description" content="Script Services kityminder 脑图" />
+
+    <title>Mind NET牛人</title>
 </head>
 <body>
-    <link rel="stylesheet" href="https://ss.netnr.com/bootstrap@3.4.1/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://ss.netnr.com/codemirror@5.65.2/lib/codemirror.css" />
-    <link rel="stylesheet" href="https://ss.netnr.com/kityminder-core@1.4.50/dist/kityminder.core.css" />
+    <div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url("/images/loading.svg");background-repeat:no-repeat;background-position:48% 45%'></div>
 
-    <link rel="stylesheet" href="/app/kityminder/hotbox.css?v=AhQAVeVJBeZdqfN6eIayaBuTsRcF9qQ5hRoHwruKHmk" />
-    <link rel="stylesheet" href="/app/kityminder/color-picker.min.css?v=gScVBRT2sJcjnRuePV4sjHuhnkkpotBUZv5O3VK612U" />
-    <link rel="stylesheet" href="/app/kityminder/kityminder.editor.min.css?v=_DSYDgdPXdAkUzPkFTVxGbrVkDTvsFdzYze8RVYCsPw" />
-
-    <script src="https://ss.netnr.com/jquery@3.6.1/dist/jquery.min.js"></script>
-    <script src="https://ss.netnr.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
-    <script src="https://ss.netnr.com/angular@1.8.2/angular.min.js"></script>
-    <script src="https://ss.netnr.com/angular-bootstrap@0.12.2/ui-bootstrap-tpls.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/lib/codemirror.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/mode/xml/xml.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/mode/javascript/javascript.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/mode/css/css.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/mode/htmlmixed/htmlmixed.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/mode/markdown/markdown.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/addon/mode/overlay.js"></script>
-    <script src="https://ss.netnr.com/codemirror@5.65.2/mode/gfm/gfm.js"></script>
-    <script src="https://ss.netnr.com/angular-ui-codemirror@0.3.0/src/ui-codemirror.js"></script>
-    <script src="https://ss.netnr.com/marked@3.0.8/lib/marked.js"></script>
-    <script src="https://ss.netnr.com/kity@2.0.4/dist/kity.min.js"></script>
-    <script src="https://ss.netnr.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script>
-
-    <script src="/app/kityminder/hotbox.min.js?v=3WBdSSHvidg20QRL9GZuL4DgDZU0Wvtc0TI0Cf-LrC0"></script>
-    <script src="/app/kityminder/json-diff.js?v=2EtAqmNTnOk_IqAdFpiKy5dpxur5czQyAX5BVuNT9M8"></script>
-    <script src="/app/kityminder/color-picker.min.js?v=NtnqJTBu56RxEfmIIdsyXN9jyr_4qdQZwED8uuHcnh0"></script>
-    <script src="/app/kityminder/kityminder.editor.min.js?v=WFuUzwNcSjbypHPBQDA6e63q34eekrNgKACiTyFrH54"></script>
 
     <div>
         <!--导出-->
@@ -46,8 +17,8 @@
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
+                        <h5 class="modal-title">导出</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">导出</h4>
                     </div>
                     <div class="modal-body" id="mbef"></div>
                     <div class="modal-footer">
@@ -63,8 +34,8 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
+                        <h5 class="modal-title">导入</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">导入</h4>
                     </div>
                     <div class="modal-body" id="mbim">
                         <label>选择文件（支持拖拽，格式：txt、md、json）</label>
@@ -84,6 +55,38 @@
 
     <kityminder-editor on-init="initEditor(editor, minder)"></kityminder-editor>
 
-    <script src="/js/ss/mind.js?v=z8kM0NUdW1DN0yhqKHNd9vGFuctkkkNiEQ3ERZvhFWM"></script>
+    <link href='https://npmcdn.com/bootstrap@3.4.1/dist/css/bootstrap.min.css' rel='stylesheet' />
+
+    <link rel="stylesheet" href="https://npmcdn.com/codemirror@5.65.2/lib/codemirror.css" />
+    <link rel="stylesheet" href="https://npmcdn.com/kityminder-core@1.4.50/dist/kityminder.core.css" />
+
+    <link rel="stylesheet" href="/file/kityminder/hotbox.css?v=AhQAVeVJBeZdqfN6eIayaBuTsRcF9qQ5hRoHwruKHmk" />
+    <link rel="stylesheet" href="/file/kityminder/color-picker.min.css?v=gScVBRT2sJcjnRuePV4sjHuhnkkpotBUZv5O3VK612U" />
+    <link rel="stylesheet" href="/file/kityminder/kityminder.editor.min.css?v=_DSYDgdPXdAkUzPkFTVxGbrVkDTvsFdzYze8RVYCsPw" />
+
+    <script src='https://npmcdn.com/jquery@3.6.4/dist/jquery.min.js'></script>
+<script src='https://npmcdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js'></script>
+
+    <script src="https://npmcdn.com/angular@1.8.2/angular.min.js"></script>
+    <script src="https://npmcdn.com/angular-bootstrap@0.12.2/ui-bootstrap-tpls.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/lib/codemirror.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/mode/xml/xml.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/mode/javascript/javascript.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/mode/css/css.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/mode/markdown/markdown.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/addon/mode/overlay.js"></script>
+    <script src="https://npmcdn.com/codemirror@5.65.2/mode/gfm/gfm.js"></script>
+    <script src="https://npmcdn.com/angular-ui-codemirror@0.3.0/src/ui-codemirror.js"></script>
+    <script src="https://npmcdn.com/marked@3.0.8/lib/marked.js"></script>
+    <script src="https://npmcdn.com/kity@2.0.4/dist/kity.min.js"></script>
+    <script src="https://npmcdn.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script>
+
+    <script src="/file/kityminder/hotbox.min.js?v=3WBdSSHvidg20QRL9GZuL4DgDZU0Wvtc0TI0Cf-LrC0"></script>
+    <script src="/file/kityminder/json-diff.js?v=2EtAqmNTnOk_IqAdFpiKy5dpxur5czQyAX5BVuNT9M8"></script>
+    <script src="/file/kityminder/color-picker.min.js?v=NtnqJTBu56RxEfmIIdsyXN9jyr_4qdQZwED8uuHcnh0"></script>
+    <script src="/file/kityminder/kityminder.editor.min.js?v=WFuUzwNcSjbypHPBQDA6e63q34eekrNgKACiTyFrH54"></script>
+
+    <script src="/file/ss-mind.js?v=ABO04Yhylo4WRp4Tg7PIaAsfV6c6eH6mCc80NSmcnJE"></script>
 </body>
 </html>

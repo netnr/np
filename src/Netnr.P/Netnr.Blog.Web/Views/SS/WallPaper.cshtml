@@ -1,83 +1,93 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-auto mb-3">
-            <sl-select class="nr-se-vender" value="360" title="提供商" style="width:10em;">
-                <sl-menu-item value="360">360壁纸</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item value="adesk" title="adesk">手机壁纸</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item value="bing">Bing壁纸</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <span class="input-group-text">来源</span>
+                <select class="nrg-se-vender form-select">
+                    <option value="360">360壁纸</option>
+                    <option value="adesk" title="adesk">手机壁纸</option>
+                    <option value="bing">Bing壁纸</option>
+                </select>
+            </div>
         </div>
 
         <!--360-->
-        <div class="col-auto mb-3 nr-vender-360">
-            <sl-select class="nr-se-type" style="width:10em;">
-                <sl-menu-item value="">最新壁纸</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item value="36">4K专区</sl-menu-item>
-                <sl-menu-item value="6">美女模特</sl-menu-item>
-                <sl-menu-item value="30">爱情美图</sl-menu-item>
-                <sl-menu-item value="9">风景大片</sl-menu-item>
-                <sl-menu-item value="15">小清新</sl-menu-item>
-                <sl-menu-item value="26">动漫卡通</sl-menu-item>
-                <sl-menu-item value="11">明星风尚</sl-menu-item>
-                <sl-menu-item value="14">萌宠动物</sl-menu-item>
-                <sl-menu-item value="5">游戏壁纸</sl-menu-item>
-                <sl-menu-item value="12">汽车天下</sl-menu-item>
-                <sl-menu-item value="10">炫酷时尚</sl-menu-item>
-                <sl-menu-item value="22">军事天地</sl-menu-item>
-                <sl-menu-item value="16">劲爆体育</sl-menu-item>
-                <sl-menu-item value="32">纹理</sl-menu-item>
-                <sl-menu-item value="35">文字控</sl-menu-item>
-                <sl-menu-item value="29">月历壁纸</sl-menu-item>
-                <sl-menu-item value="7">影视剧照</sl-menu-item>
-                <sl-menu-item value="13">节日美图</sl-menu-item>
-                <sl-menu-item value="18">BABY秀</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2 flag-vender-360">
+            <div class="input-group">
+                <span class="input-group-text">分类</span>
+                <select class="nrg-se-type-360 form-select">
+                    <option value="">最新壁纸</option>
+                    <option value="36">4K专区</option>
+                    <option value="6">美女模特</option>
+                    <option value="30">爱情美图</option>
+                    <option value="9">风景大片</option>
+                    <option value="15">小清新</option>
+                    <option value="26">动漫卡通</option>
+                    <option value="11">明星风尚</option>
+                    <option value="14">萌宠动物</option>
+                    <option value="5">游戏壁纸</option>
+                    <option value="12">汽车天下</option>
+                    <option value="10">炫酷时尚</option>
+                    <option value="22">军事天地</option>
+                    <option value="16">劲爆体育</option>
+                    <option value="32">纹理</option>
+                    <option value="35">文字控</option>
+                    <option value="29">月历壁纸</option>
+                    <option value="7">影视剧照</option>
+                    <option value="13">节日美图</option>
+                    <option value="18">BABY秀</option>
+                </select>
+            </div>
         </div>
-        <div class="col-auto mb-3 nr-vender-360">
-            <sl-button class="nr-btn-query d-none d-sm-inline-block">搜索</sl-button>
-            <sl-input class="nr-txt-query d-inline-block" placeholder="Search..."></sl-input>
-        </div>
-        <div class="col-auto nr-vender-360">
-            <sl-select class="nr-se-proxy mb-3 d-none d-sm-inline-block" style="width:10em;">
-                <sl-menu-item value="0">不代理</sl-menu-item>
-                <sl-menu-item value="1">代理一</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2 flag-vender-360">
+            <div class="input-group">
+                <button class="nrg-btn-query-360 btn btn-secondary">搜索</button>
+                <input class="nrg-txt-query-360 form-control" type="search" placeholder="Search..." />
+            </div>
         </div>
 
         <!--adesk-->
-        <div class="col-auto mb-3 nr-vender-adesk d-none">
-            <sl-select class="nr-se-type-adesk" style="width:7em;">
-                <sl-menu-item value="">热门</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item value="4e4d610cdf714d2966000000">美女</sl-menu-item>
-                <sl-menu-item value="4e4d610cdf714d2966000003">动漫</sl-menu-item>
-                <sl-menu-item value="4e4d610cdf714d2966000002">风景</sl-menu-item>
-                <sl-menu-item value="4e4d610cdf714d2966000007">游戏</sl-menu-item>
-                <sl-menu-item value="5109e04e48d5b9364ae9ac45">文字</sl-menu-item>
-                <sl-menu-item value="4fb479f75ba1c65561000027">视觉</sl-menu-item>
-                <sl-menu-item value="4ef0a35c0569795756000000">情感</sl-menu-item>
-                <sl-menu-item value="4fb47a195ba1c60ca5000222">设计</sl-menu-item>
-                <sl-menu-item value="5109e05248d5b9368bb559dc">明星</sl-menu-item>
-                <sl-menu-item value="4fb47a465ba1c65561000028">物语</sl-menu-item>
-                <sl-menu-item value="4e4d610cdf714d2966000006">男人</sl-menu-item>
-                <sl-menu-item value="4e4d610cdf714d2966000005">机械</sl-menu-item>
-                <sl-menu-item value="4fb47a305ba1c60ca5000223">城市</sl-menu-item>
-                <sl-menu-item value="4e4d610cdf714d2966000001">动物</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2 flag-vender-adesk d-none">
+            <div class="input-group">
+                <span class="input-group-text">分类</span>
+                <select class="nrg-se-type-adesk form-select">
+                    <option value="">热门</option>
+                    <option value="4e4d610cdf714d2966000000">美女</option>
+                    <option value="4e4d610cdf714d2966000003">动漫</option>
+                    <option value="4e4d610cdf714d2966000002">风景</option>
+                    <option value="4e4d610cdf714d2966000007">游戏</option>
+                    <option value="5109e04e48d5b9364ae9ac45">文字</option>
+                    <option value="4fb479f75ba1c65561000027">视觉</option>
+                    <option value="4ef0a35c0569795756000000">情感</option>
+                    <option value="4fb47a195ba1c60ca5000222">设计</option>
+                    <option value="5109e05248d5b9368bb559dc">明星</option>
+                    <option value="4fb47a465ba1c65561000028">物语</option>
+                    <option value="4e4d610cdf714d2966000006">男人</option>
+                    <option value="4e4d610cdf714d2966000005">机械</option>
+                    <option value="4fb47a305ba1c60ca5000223">城市</option>
+                    <option value="4e4d610cdf714d2966000001">动物</option>
+                </select>
+            </div>
         </div>
-        
+
         <!--bing-->
-        <div class="col-auto mb-3 nr-vender-bing d-none">
-            <sl-select class="nr-se-type-bing" value="random" style="width:7em;">
-                <sl-menu-item value="random">随机</sl-menu-item>
-                <sl-menu-item value="list">列表</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2 flag-vender-bing d-none">
+            <select class="nrg-se-type-bing form-select">
+                <option value="random">随机</option>
+                <option value="list">列表</option>
+            </select>
+        </div>
+
+        <!-- proxy -->
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <span class="input-group-text">代理</span>
+                <select class="nrg-se-proxy form-select">
+                    <option value="0">不代理</option>
+                    <option value="1">代理一</option>
+                </select>
+            </div>
         </div>
     </div>
-    <div class="row nr-wallpaper"></div>
+    <div class="nrg-wallpaper row"></div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("viewer.css,viewer.js"))

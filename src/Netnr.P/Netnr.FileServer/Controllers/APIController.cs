@@ -8,7 +8,7 @@ namespace Netnr.FileServer.Controllers
     /// API接口
     /// </summary>
     [Route("[controller]/[action]")]
-    [Filters.FilterConfigs.AllowCors]
+    [FilterAllowCORS]
     public class APIController : ControllerBase
     {
         /// <summary>
@@ -247,7 +247,9 @@ namespace Netnr.FileServer.Controllers
                 }
                 else
                 {
-                    vm = CacheTo.Get<ResultVM>(AppKey);
+                    var ckey = $"AppKey-{AppKey}";
+                    var gkey = AppId;
+                    vm = CacheTo.Get<ResultVM>(ckey, gkey);
                     if (vm == null)
                     {
                         vm = FileServerService.GetToken(AppId, AppKey);
@@ -255,7 +257,7 @@ namespace Netnr.FileServer.Controllers
                         if (vm.Code == 200)
                         {
                             //Token缓存
-                            CacheTo.Set(AppKey, vm, AppTo.GetValue<int>("Safe:TokenCache"), false);
+                            CacheTo.Set(ckey, vm, AppTo.GetValue<int>("Safe:TokenCache"), false, gkey);
                         }
                     }
                 }
@@ -292,7 +294,7 @@ namespace Netnr.FileServer.Controllers
                 else
                 {
                     var listAm = AuthMethodList().Data as List<string>;
-                    if (!AuthMethod.Split(',').ToList().All(x => listAm.Contains(x)))
+                    if (!AuthMethod.Split(',').ToList().All(listAm.Contains))
                     {
                         vm.Set(EnumTo.RTag.invalid);
                         vm.Msg = "AuthMethod 存在无效接口名";
@@ -514,7 +516,7 @@ namespace Netnr.FileServer.Controllers
                 }
                 else
                 {
-                    var vtkey = "vt-" + token;
+                    var vtkey = $"Upload-Token-{token}";
                     var vt = CacheTo.Get<ResultVM>(vtkey);
                     if (vt == null)
                     {
@@ -553,7 +555,7 @@ namespace Netnr.FileServer.Controllers
                             }
 
                             //记录已上传的分片总数
-                            var ckkey = $"chunk-{ts}";
+                            var ckkey = $"Upload-Chunk-{ts}";
                             var ci = CacheTo.Get<int>(ckkey);
                             ci++;
                             CacheTo.Set(ckkey, ci);

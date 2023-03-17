@@ -25,12 +25,11 @@ public class ConsoleTo
     /// 写入错误信息
     /// </summary>
     /// <param name="ex"></param>
-    public static void Log(Exception ex)
+    /// <param name="tag">标记</param>
+    public static void Log(Exception ex, string tag = null)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"------- Error Message {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-        sb.AppendLine($"{ex.Message}\r\n{ex.StackTrace}\r\n{ex.Source}");
-        Log(sb.ToString());
+        var msg = $"# Exception {tag} {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}\r\n{ex.Message}\r\n\r\n### StackTrace\r\n{ex.StackTrace}";
+        Log(msg);
     }
 
     /// <summary>
@@ -91,14 +90,15 @@ public class ConsoleTo
     /// 输出标题
     /// </summary>
     /// <param name="title">标题</param>
-    /// <param name="content">内容（可选）</param>
-    public static void Title(string title, string content = null)
+    /// <param name="contentArray">内容（可选）</param>
+    public static void Title(string title, params object[] contentArray)
     {
         Console.WriteLine("");
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"------- {title} {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}\r\n");
+        Console.WriteLine($"------- [{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {title}\r\n");
         Console.ForegroundColor = ConsoleColor.White;
-        if (content != null)
+
+        foreach (var content in contentArray)
         {
             Console.WriteLine(content);
         }

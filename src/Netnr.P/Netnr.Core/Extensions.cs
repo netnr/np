@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,22 +19,30 @@ namespace Netnr;
 public static partial class Extensions
 {
     /// <summary>
-    /// 转成 XML（序列化）
+    /// 序列化，对象转为 XML 字符串
     /// </summary>
-    /// <param name="obj"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj">对象</param>
+    /// <param name="indent">缩进</param>
     /// <returns></returns>
-    public static string ToXml(this object obj)
+    public static string ToXml<T>(T obj, bool indent = false)
     {
         if (obj == null) return null;
 
         using var sw = new StringWriter();
-        var serializer = new XmlSerializer(obj.GetType());
-        serializer.Serialize(sw, obj);
+        using var xtw = new XmlTextWriter(sw)
+        {
+            Formatting = indent ? Formatting.Indented : Formatting.None
+        };
+
+        var xs = new XmlSerializer(typeof(T));
+        xs.Serialize(xtw, obj);
+
         return sw.ToString();
     }
 
     /// <summary>
-    /// XML 反序列化
+    /// 反序列化，XML 字符串转为对象
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="xml"></param>
@@ -48,7 +57,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// XML 解析为文档
+    /// 反序列化，XML 字符串转为文档
     /// </summary>
     /// <param name="xml"></param>
     /// <returns></returns>
@@ -142,7 +151,6 @@ public static partial class Extensions
     /// <typeparam name="T">泛型</typeparam>
     /// <param name="table">表</param>
     /// <returns></returns>
-
     public static List<T> ToModel<T>(this DataTable table) where T : class, new()
     {
         var list = new List<T>();
@@ -183,23 +191,29 @@ public static partial class Extensions
     /// 异常转为树
     /// </summary>
     /// <param name="ex"></param>
+    /// <param name="messageOnly">仅消息</param>
     /// <returns></returns>
-    public static Dictionary<string, object> ToTree(this Exception ex)
+    public static Dictionary<string, object> ToTree(this Exception ex, bool messageOnly = false)
     {
-        var tsName = nameof(Exception.TargetSite);
-        var propList = ex.GetType().GetProperties()
-                .Select(uu => new { uu.Name, Value = uu.GetValue(ex) })
-                .Where(uu => uu.Name != tsName).ToList();
-
-        var result = new Dictionary<string, object>();
-        foreach (var item in propList)
+        var result = new Dictionary<string, object>
         {
-            var value = item.Value is not Exception innerEx ? item.Value : innerEx.ToTree();
-            if (!result.ContainsKey(item.Name))
-            {
-                result.Add(item.Name, value);
-            }
+            { "Message", ex.Message },
+        };
+        if (!messageOnly)
+        {
+            result.Add("HResult", ex.HResult);
+            result.Add("StackTrace", ex.StackTrace);
+            result.Add("Source", ex.Source);
         }
+        if (ex.Data.Count > 0)
+        {
+            result.Add("Data", ex.Data);
+        }
+        if (ex.InnerException != null)
+        {
+            result.Add("InnerException", ex.InnerException.ToTree(messageOnly));
+        }
+
         return result;
     }
 
@@ -242,6 +256,14 @@ public static partial class Extensions
     {
         return System.Net.WebUtility.HtmlDecode(value);
     }
+
+    /// <summary>
+    /// 等待获取异步结果（转同步）
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="task"></param>
+    /// <returns></returns>
+    public static T ToResult<T>(this Task<T> task) => task.GetAwaiter().GetResult();
 
     /// <summary>
     /// 按多个字符串分割

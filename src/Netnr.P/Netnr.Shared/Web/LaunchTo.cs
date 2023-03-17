@@ -37,7 +37,7 @@ public static class LaunchTo
     }
 
     /// <summary>
-    /// 配置 JSON
+    /// JSON 序列化配置
     /// </summary>
     /// <param name="builder"></param>
     /// <returns></returns>
@@ -49,11 +49,12 @@ public static class LaunchTo
             options.JsonSerializerOptions.IncludeFields = true; //包含字段 如元组 Tuple
             options.JsonSerializerOptions.PropertyNamingPolicy = null; // 原样输出，首字母不转小写
             options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping; //编码
-
-            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DateTimeJsonConverter()); // 时间格式化
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //枚举字符串
-            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataTableJsonConverter()); //数据表格式化
-            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataSetJsonConverter()); //数据集格式化
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DateTimeJsonConverter()); // DateTime
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //Enum 枚举字符串
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataTableJsonConverter()); //DataTable
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataSetJsonConverter()); //DataSet
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.IPAddressJsonConverter()); //IPAddress
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.IPEndPointJsonConverter()); //IPEndPoint
         });
     }
 
@@ -72,16 +73,8 @@ public static class LaunchTo
             var ex = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
             if (ex != null)
             {
-                try
-                {
-                    errBody = $"{DateTime.Now}\r\n{ex.Error}";
-                    Console.WriteLine(errBody);
-                    ConsoleTo.Log(ex.Error);
-                }
-                catch (Exception ex2)
-                {
-                    Console.WriteLine($"写入错误日志失败：{ex2.Message}");
-                }
+                ConsoleTo.Title(errBody, ex.Error);
+                errBody = $"{DateTime.Now}\r\n{ex.Error}";
             }
 
             await context.Response.WriteAsync(errBody);

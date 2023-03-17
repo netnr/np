@@ -29,14 +29,15 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// 异常
+    /// 序列化，异常对象转为 JSON 字符串
     /// </summary>
     /// <param name="ex"></param>
     /// <param name="indented"></param>
+    /// <param name="messageOnly">仅消息</param>
     /// <returns></returns>
-    public static string ToJson(this Exception ex, bool indented = false)
+    public static string ToJson(this Exception ex, bool indented = false, bool messageOnly = false)
     {
-        return ex.ToTree().ToJson(indented);
+        return ex.ToTree(messageOnly).ToJson(indented);
     }
 
     /// <summary>
@@ -54,7 +55,7 @@ public static partial class Extensions
     public static JsonNode DeJsonNode(this string json) => JsonNode.Parse(json, documentOptions: JsonConverterTo.JDOptions());
 
     /// <summary>
-    /// 反序列化，JSON 字符串转为类型
+    /// 反序列化，JSON 字符串转为对象
     /// </summary>
     /// <typeparam name="T">实体泛型</typeparam>
     /// <param name="json">JSON 字符串</param>

@@ -1,102 +1,82 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-md-6 mb-3">
-            <sl-textarea class="nr-txt-code1" rows="9" autofocus label="内容" value="一二 12 ab &lt;&gt;"></sl-textarea>
+            <label class="form-label">内容</label>
+            <textarea class="nrg-txt-code1 form-control" rows="9" autofocus>一二 12 ab &lt;&gt;</textarea>
         </div>
         <div class="col-md-6 mb-3">
-            <sl-textarea class="nr-txt-code2" rows="9" autofocus label="结果"></sl-textarea>
+            <label class="form-label">结果</label>
+            <textarea class="nrg-txt-code2 form-control" rows="9"></textarea>
         </div>
     </div>
 
     <div class="row my-4" title="散列/哈希">
         <div class="col-auto">
-            <sl-button variant="success" class="mb-1">MD5</sl-button>
+            <button class="btn btn-success mb-1">MD5</button>
         </div>
         <div class="col-auto">
-            <sl-button variant="success" class="mb-1">SHA1</sl-button>
-            <sl-button class="mb-1">224</sl-button>
-            <sl-button class="mb-1">256</sl-button>
-            <sl-button class="mb-1">384</sl-button>
-            <sl-button class="mb-1">512</sl-button>
-            <sl-button class="mb-1">SHA3</sl-button>
+            <button class="btn btn-success mb-1">SHA1</button>
+            <button class="btn btn-outline-success mb-1">224</button>
+            <button class="btn btn-outline-success mb-1">256</button>
+            <button class="btn btn-outline-success mb-1">384</button>
+            <button class="btn btn-outline-success mb-1">512</button>
+            <button class="btn btn-outline-success mb-1">SHA3</button>
         </div>
         <div class="col-auto">
-            <sl-button variant="success" class="mb-1">HmacSHA1</sl-button>
-            <sl-button class="mb-1">224</sl-button>
-            <sl-button class="mb-1">256</sl-button>
-            <sl-button class="mb-1">384</sl-button>
-            <sl-button class="mb-1">512</sl-button>
-            <sl-button class="mb-1">HmacMD5</sl-button>
-            <sl-input class="nr-txt-key1 d-inline-block" placeholder="密钥"></sl-input>
+            <button class="btn btn-success mb-1">HmacSHA1</button>
+            <button class="btn btn-outline-success mb-1">224</button>
+            <button class="btn btn-outline-success mb-1">256</button>
+            <button class="btn btn-outline-success mb-1">384</button>
+            <button class="btn btn-outline-success mb-1">512</button>
+            <button class="btn btn-outline-success mb-1">HmacMD5</button>
+            <input class="nrg-txt-key1 form-control d-inline-block w-auto mb-1" placeholder="密钥" />
         </div>
         <div class="col-auto">
-            <input class="nr-txt-file" type='file' multiple />
+            <input class="nrg-txt-file form-control" type='file' multiple />
         </div>
     </div>
 
     <div class="row my-4" title="加密/解密">
         <div class="col-auto">
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">AES</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">DES</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">RC4</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">Rabbit</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">TripleDES</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-input class="nr-txt-key2 d-inline-block mb-1" placeholder="密钥"></sl-input>
+            @{
+                var endeList = "AES,DES,RC4,Rabbit,TripleDES".Split(',');
+            }
+            @foreach (var item in endeList)
+            {
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-warning">@item</button>
+                    <button class="btn btn-outline-warning">↺</button>
+                </div>
+            }
+            <input class="nrg-txt-key2 form-control d-inline-flex w-auto mb-1" placeholder="密钥" />
         </div>
     </div>
 
     <div class="row my-4" title="编码转换">
         <div class="col-auto">
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">Base64</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">encodeURI</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">encodeURIComponent</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">Unicode</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">ASCII</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">HTMLEncode</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
+            @{
+                var encList = "Base64,encodeURI,encodeURIComponent,Unicode,ASCII,HTMLEncode".Split(',');
+            }
+            @foreach (var item in encList)
+            {
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-primary">@item</button>
+                    <button class="btn btn-outline-primary">↺</button>
+                </div>
+            }
         </div>
     </div>
 
     <div class="row my-4" title="其他">
         <div class="col-auto">
-            <sl-button variant="neutral" class="mb-1">UUID</sl-button>
+            <button class="btn btn-secondary mb-1">UUID</button>
         </div>
         <div class="col-auto">
-            <sl-input class="nr-txt-ascii d-inline-block mb-1" readonly placeholder="按键 输出对应 ASCII"></sl-input>
+            <input class="nrg-txt-ascii form-control mb-1" readonly placeholder="按键 输出对应 ASCII" />
+        </div>
+        <div class="col-auto d-flex">
+            <input type="color" class="nrg-txt-color form-control form-control-color" value="#ffa500" title="Choose your color">
+            <input class="nrg-txt-color-value form-control mb-1" style="width:7em;" value="#ffa500" placeholder="Color" />
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("crypto.js"))

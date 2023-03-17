@@ -22,97 +22,42 @@
         }
 
         /// <summary>
-        /// Run 一条
+        /// 查询 一条
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="sid"></param>
         /// <returns></returns>
-        public IActionResult Code([FromRoute] string id, [FromRoute] string sid)
+        public async Task<IActionResult> Code([FromRoute] string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return Redirect("/run/discover");
             }
 
-            //output json
-            if (!string.IsNullOrWhiteSpace(id) && id.ToLower().Contains(".json"))
-            {
-                id = id.Replace(".json", "");
-                var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.RunOpen == 1 && x.RunStatus == 1);
-                if (mo != null)
-                {
-                    return Content(new
-                    {
-                        code = mo.RunCode,
-                        remark = mo.RunRemark,
-                        datetime = mo.RunCreateTime,
-                        html = mo.RunContent1,
-                        javascript = mo.RunContent2,
-                        css = mo.RunContent3
-                    }.ToJson());
-                }
-            }
-
-            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
-
-            //cmd (Auth)
-            switch (sid?.ToLower())
-            {
-                case "edit":
-                    {
-                        var mo = db.Run.FirstOrDefault(x => x.RunCode == id);
-                        if (mo != null)
-                        {
-                            return View("/Views/Run/_PartialRunEditor.cshtml", mo);
-                        }
-                    }
-                    break;
-                case "delete":
-                    {
-                        if (HttpContext.User.Identity.IsAuthenticated)
-                        {
-                            var mo = db.Run.FirstOrDefault(x => x.RunCode == id && x.Uid == userId);
-                            db.Run.Remove(mo);
-                            int num = db.SaveChanges();
-                            if (num > 0)
-                            {
-                                return Redirect("/run/user/" + userId);
-                            }
-                            else
-                            {
-                                return BadRequest();
-                            }
-                        }
-                        else
-                        {
-                            return Unauthorized("Not Authorized");
-                        }
-                    }
-            }
+            var uinfo = IdentityService.Get(HttpContext);
 
             //view
-            var moout = db.Run.FirstOrDefault(x => x.RunCode == id && x.RunStatus == 1);
-            if (moout == null)
+            var model = await db.Run.FirstOrDefaultAsync(x => x.RunCode == id && x.RunStatus == 1);
+            if (model == null)
             {
                 return NotFound();
             }
-            else if (moout.RunOpen != 1 && moout.Uid != userId)
+            else if (model.RunOpen != 1 && model.Uid != uinfo.UserId)
             {
-                return Unauthorized("Not Authorized");
+                return Unauthorized(401);
             }
             else
             {
-                var html = moout.RunContent1;
+                var html = model.RunContent1;
                 var totalDays = GlobalTo.StartTime.ToUtcTotalDays();
 
-                var injectJS = $"\n<script src='/js/run/oconsole.js?{totalDays}'></script>\n" +
-                    (string.IsNullOrWhiteSpace(moout.RunContent2)
-                    ? "" : $"<script>\n{moout.RunContent2}\n</script>\n");
+                var injectJS = $"\n<script src='/file/run-oconsole.js?{totalDays}'></script>\n" +
+                    (string.IsNullOrWhiteSpace(model.RunContent2)
+                    ? "" : $"<script>\n{model.RunContent2}\n</script>\n");
 
-                var injectCSS = string.IsNullOrWhiteSpace(moout.RunContent3)
-                    ? "" : $"\n<style>\n{moout.RunContent3}\n</style>\n";
+                var injectCSS = string.IsNullOrWhiteSpace(model.RunContent3)
+                    ? "" : $"\n<style>\n{model.RunContent3}\n</style>\n";
 
-                if (moout.RunContent1.Contains("</head>") && moout.RunContent1.Contains("</body>"))
+                if (model.RunContent1.Contains("</head>") && model.RunContent1.Contains("</body>"))
                 {
                     html = html.Replace("</head>", $"{injectCSS}</head>").Replace("</body>", $"{injectJS}</body>");
                 }
@@ -127,6 +72,55 @@
                     ContentType = "text/html; charset=utf-8",
                     Content = html
                 };
+            }
+        }
+
+        /// <summary>
+        /// 编辑
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Edit([FromRoute] string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return Redirect("/run/discover");
+            }
+
+            var mo = await db.Run.FirstOrDefaultAsync(x => x.RunCode == id);
+            if (mo != null)
+            {
+                return View("/Views/Run/_PartialRunEditor.cshtml", mo);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return Redirect("/run/discover");
+            }
+
+            var uinfo = IdentityService.Get(HttpContext);
+
+            var num = await db.Run.Where(x => x.RunCode == id && x.Uid == uinfo.UserId).ExecuteDeleteAsync();
+            if (num > 0)
+            {
+                return Redirect($"/run/user/{uinfo.UserId}");
+            }
+            else
+            {
+                return BadRequest();
             }
         }
 
@@ -158,6 +152,9 @@
 
                     vm.Data = mo.RunCode;
                     vm.Set(num > 0);
+
+                    //推送通知
+                    _ = PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
                 }
                 else
                 {
@@ -178,12 +175,9 @@
                     }
                     else
                     {
-                        vm.Set(EnumTo.RTag.fail);
+                        vm.Set(EnumTo.RTag.failure);
                     }
                 }
-
-                //推送通知
-                _ = PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
             }
 
             return vm;
@@ -196,11 +190,11 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ResponseCache(Duration = 10)]
-        public IActionResult Discover(string k, int page = 1)
+        public async Task<IActionResult> Discover(string k, int page = 1)
         {
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.RunQuery(k, 0, userId, page);
+            var ps = await CommonService.RunQuery(k, 0, userId, page);
             ps.Route = Request.Path;
 
             return View("/Views/Run/_PartialRunList.cshtml", ps);
@@ -214,7 +208,7 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ActionName("User")]
-        public IActionResult Id([FromRoute] string id, string k, int page = 1)
+        public async Task<IActionResult> Id([FromRoute] string id, string k, int page = 1)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -223,7 +217,7 @@
 
             int uid = Convert.ToInt32(id);
 
-            var mu = db.UserInfo.Find(uid);
+            var mu = await db.UserInfo.FindAsync(uid);
             if (mu == null)
             {
                 return Content("Account is empty");
@@ -232,7 +226,7 @@
 
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.RunQuery(k, uid, userId, page);
+            var ps = await CommonService.RunQuery(k, uid, userId, page);
             ps.Route = Request.Path;
 
             return View("/Views/Run/_PartialRunList.cshtml", ps);

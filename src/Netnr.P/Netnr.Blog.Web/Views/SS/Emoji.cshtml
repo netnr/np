@@ -1,9 +1,9 @@
 <style>
-    .nr-emoji ul {
+    .nrg-emoji ul {
         padding: 0;
     }
 
-        .nr-emoji ul li {
+        .nrg-emoji ul li {
             font-size: 2em;
             cursor: pointer;
             min-width: 1.4em;
@@ -12,16 +12,16 @@
             display: inline-block;
         }
 
-            .nr-emoji ul li:hover {
+            .nrg-emoji ul li:hover {
                 transform: scale(1.6);
                 transition: transform .2s linear;
             }
 </style>
 
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-12">
-            <div class="nr-emoji">
+            <div class="nrg-emoji">
                 <div>
                     <span class="fs-5">笑脸和情感</span>
                     <small class="ms-3">点击复制，搜索文字：<code>Ctrl+U</code> 再按 <code>Ctrl+F</code></small>
@@ -1768,18 +1768,5 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.body.addEventListener("click",function (e) {
-        var target = e.target;
-        if (target.nodeName == "LI") {
-            navigator.clipboard.writeText(target.innerText).then(()=>{
-                nr.alert('Copy successfully');
-            }).catch(ex=>{
-                nr.alert('Copy failed');
-            })
-        }
-    },false);
-</script>
 
 <!-- from https://www.emojiall.com -->

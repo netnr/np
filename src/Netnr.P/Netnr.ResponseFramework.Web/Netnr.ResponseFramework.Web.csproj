@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
+		<InvariantGlobalization>true</InvariantGlobalization>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	</PropertyGroup>
@@ -18,18 +19,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="wwwroot\upload\tmp\**" />
-	  <Content Remove="wwwroot\upload\tmp\**" />
-	  <EmbeddedResource Remove="wwwroot\upload\tmp\**" />
-	  <None Remove="wwwroot\upload\tmp\**" />
+		<None Include="..\..\..\docs\Netnr.ResponseFramework.md"></None>
+		<Compile Remove="wwwroot\upload\tmp\**" />
+		<Content Remove="wwwroot\upload\tmp\**" />
+		<EmbeddedResource Remove="wwwroot\upload\tmp\**" />
+		<None Remove="wwwroot\upload\tmp\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />
 		<PackageReference Include="SkiaSharp" Version="2.88.3" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" />
@@ -42,7 +44,7 @@
 
 	<ItemGroup>
 		<None Update="db\backup.zip">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="db\netnrf.db">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -54,6 +56,10 @@
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
-	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties appsettings_1json__JsonSchema="" />
+		</VisualStudio>
+	</ProjectExtensions>
 
 </Project>

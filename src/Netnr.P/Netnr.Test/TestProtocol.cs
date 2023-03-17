@@ -36,7 +36,7 @@ namespace Netnr.Test
         [Fact]
         public void Protocol_PING()
         {
-            Ping pingSender = new Ping();
+            var pingSender = new Ping();
 
             // Create a buffer of 32 bytes of data to be transmitted.
             string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";

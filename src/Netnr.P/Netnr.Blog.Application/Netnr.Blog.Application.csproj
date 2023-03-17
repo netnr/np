@@ -6,22 +6,21 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile></DocumentationFile>
-		<DefineConstants>$(DefineConstants)TRACE;ImportBase;Base;App;AdoFull;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL;</DefineConstants>
+		<DefineConstants>$(DefineConstants);TRACE;ImportBase;Base;App;AdoAll;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL;Service</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>$(DefineConstants)TRACE;ImportBase;Base;App;AdoFull;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL;</DefineConstants>
+		<DefineConstants>$(DefineConstants);TRACE;ImportBase;Base;App;AdoAll;DbContext;DbContextSQLite;DbContextMySQL;DbContextSQLServer;DbContextPostgreSQL;Service</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
-		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.80" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0-rc.2" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.4" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.90" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>

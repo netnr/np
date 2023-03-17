@@ -15,8 +15,7 @@ public class ResultVM
     /// </summary>
     public ResultVM()
     {
-        sw = new Stopwatch();
-        sw.Start();
+        sw = Stopwatch.StartNew();
     }
 
     /// <summary>
@@ -83,16 +82,8 @@ public class ResultVM
         get
         {
             sw.Stop();
-            return TimeSpan.FromMilliseconds(sw.Elapsed.TotalMilliseconds).ToString(@"hh\:mm\:ss\:fff");
+            return sw.Elapsed.ToString(@"hh\:mm\:ss\.fff");
         }
-    }
-
-    /// <summary>
-    /// 总耗时，可视化
-    /// </summary>
-    public string TotalTimeFormat()
-    {
-        return TimeSpan.FromMilliseconds(sw.Elapsed.TotalMilliseconds).ToString(@"hh\:mm\:ss\:fff");
     }
 
     /// <summary>
@@ -111,7 +102,7 @@ public class ResultVM
     /// </summary>
     /// <param name="format">格式化</param>
     /// <returns></returns>
-    public string PartTimeFormat(string format = @"hh\:mm\:ss\:fff")
+    public string PartTimeFormat(string format = @"hh\:mm\:ss\.fff")
     {
         var pt = sw.Elapsed.TotalMilliseconds - et;
         et = sw.Elapsed.TotalMilliseconds;
@@ -131,16 +122,16 @@ public class ResultVM
     /// <summary>
     /// 设置快捷标签，赋值code、msg
     /// </summary>
-    /// <param name="isyes"></param>
-    public void Set(bool isyes)
+    /// <param name="isSuccess"></param>
+    public void Set(bool isSuccess)
     {
-        if (isyes)
+        if (isSuccess)
         {
             Set(EnumTo.RTag.success);
         }
         else
         {
-            Set(EnumTo.RTag.fail);
+            Set(EnumTo.RTag.failure);
         }
     }
 
@@ -167,7 +158,7 @@ public class ResultVM
 
         try
         {
-            vm = func(vm);
+            vm = func.Invoke(vm);
         }
         catch (Exception ex)
         {

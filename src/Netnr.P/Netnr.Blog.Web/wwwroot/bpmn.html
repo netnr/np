@@ -1,16 +1,14 @@
-﻿<!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    <title>BPMN Editor NET牛人</title>
-    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta name="keywords" content="netnr NET牛人 BPMN Editor" />
-    <meta name="description" content="Script Services BPMN 流程图" />
+
+    <title>BPMN NET牛人</title>
 
     <style>
-        html, body, .nr-bpmn {
+        html, body, .nrg-bpmn {
             height: 100%;
             padding: 0;
             margin: 0;
@@ -27,24 +25,28 @@
             z-index: 1;
         }
 
-            .bjs-tool span {
+            .bjs-tool * {
                 cursor: pointer;
                 margin-right: 0.5em;
             }
     </style>
 </head>
 <body>
+    <div id='LoadingMask' style='position:fixed;top:0;left:0;bottom:0;right:0;background-color:white;z-index:19999;background-image:url("/images/loading.svg");background-repeat:no-repeat;background-position:48% 45%'></div>
+
+
     <div class="bjs-tool">
-        <span data-action="new">新建</span>
         <span data-action="import">导入</span>
         <span data-action="export">导出</span>
         <span data-action="svg">SVG</span>
     </div>
-    <link href='https://ss.netnr.com/bpmn-js@10.2.1/dist/assets/diagram-js.css' rel='stylesheet' async />
-<link href='https://ss.netnr.com/bpmn-js@10.2.1/dist/assets/bpmn-js.css' rel='stylesheet' async />
-<link href='https://ss.netnr.com/bpmn-js@10.2.1/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet' async />
-<script src='https://ss.netnr.com/bpmn-js@10.2.1/dist/bpmn-modeler.production.min.js'></script>
 
-    <script src="/js/ss/bpmn.js?v=T_M0eN48m-z7D2ii1xDmFkrEluDtCkoIHeVp4taRFro"></script>
+    <link href='https://npmcdn.com/bpmn-js@11.5.0/dist/assets/diagram-js.css' rel='stylesheet'/>
+<link href='https://npmcdn.com/bpmn-js@11.5.0/dist/assets/bpmn-js.css' rel='stylesheet'/>
+<link href='https://npmcdn.com/bpmn-js@11.5.0/dist/assets/bpmn-font/css/bpmn.css' rel='stylesheet'/>
+<script src='https://npmcdn.com/bpmn-js@11.5.0/dist/bpmn-modeler.production.min.js'></script>
+
+
+    <script src="/file/ss-bpmn.js?v=FjaSrCWpkWch0PIobmcoV0ZJnYvaSz4TYaXK5cX5gqo" defer></script>
 </body>
 </html>

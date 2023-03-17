@@ -139,7 +139,7 @@ namespace Netnr.Test
         /// </summary>
         [Fact]
         public void GetLocalIPAddress_Internet()
-        {
+        {            
             using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
             socket.Connect("114.114.114.114", 65530);
             IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;

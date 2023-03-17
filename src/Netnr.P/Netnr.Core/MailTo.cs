@@ -27,8 +27,8 @@ public class MailTo
         {
             From = new MailAddress(model.FromMail, model.FromName, model.Coding)
         };
-        model.ToMail.ForEach(item => message.To.Add(item));
-        model.CcMail.ForEach(item => message.CC.Add(item));
+        model.ToMail.ForEach(message.To.Add);
+        model.CcMail.ForEach(message.CC.Add);
 
         message.Subject = model.Subject;
         message.SubjectEncoding = model.Coding;

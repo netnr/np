@@ -1,21 +1,25 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-sm-auto mb-3">
-            <sl-input class="nr-txt-token" label="Token" placeholder="请粘贴 API Token" maxlength="32"></sl-input>
+        <div class="col-sm-auto">
+            <div class="input-group mb-2">
+                <span class="input-group-text">Token</span>
+                <input class="nrg-txt-token form-control" placeholder="请粘贴 API Token" maxlength="32" />
+            </div>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-input class="nr-txt-networkid" label="NetworkID" placeholder="请粘贴 NetworkID" maxlength="16"></sl-input>
+        <div class="col-sm-auto">
+            <div class="input-group mb-2">
+                <span class="input-group-text">NetworkID</span>
+                <input class="nrg-txt-networkid form-control" placeholder="请粘贴 NetworkID" maxlength="16" />
+            </div>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-input class="nr-txt-filter" label="Search" placeholder="Search..."></sl-input>
+        <div class="col-sm-auto">
+            <input class="nrg-txt-filter form-control mb-2" placeholder="Search..." />
         </div>
-        <div class="col-auto mb-3 d-flex align-items-end">
-            <sl-button target="_blank" href="https://my.zerotier.com">ZeroTier</sl-button>
+        <div class="col-auto mb-2">
+            <a class="btn btn-secondary" target="_blank" href="https://my.zerotier.com">ZeroTier</a>
         </div>
         <div class="col-12">
-            <div class="nr-grid"></div>
+            <div class="nrg-grid"></div>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("ag-grid-enterprise.js"))

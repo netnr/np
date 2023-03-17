@@ -5,29 +5,27 @@
 
 @if (Pag.PageTotal > 1)
 {
-    <sl-button-group class="pagination justify-content-center my-3">
+    <ul class="pagination justify-content-center my-3">
         @if (Pag.PageNumber > 2)
         {
-            <sl-button href="@Model.Page(1)">1</sl-button>
-            <a class="d-none" href="@Model.Page(1)">1</a>
+            <li class="page-item"><a class="page-link" href="@Model.Page(1)">1</a></li>
         }
 
         @if (Pag.PageNumber - 1 > 0)
         {
-            <sl-button href="@Model.Page(Pag.PageNumber - 1)">@(Pag.PageNumber - 1)</sl-button>
-            <a class="d-none" href="@Model.Page(Pag.PageNumber - 1)">@(Pag.PageNumber - 1)</a>
+            <li class="page-item"><a class="page-link" href="@Model.Page(Pag.PageNumber - 1)">@(Pag.PageNumber - 1)</a></li>
         }
-        <sl-button variant="primary" href="@Model.Page(Pag.PageNumber)">@Pag.PageNumber</sl-button>
+
+        <li class="page-item active"><span class="page-link">@Pag.PageNumber</span></li>
+
         @if (Pag.PageNumber + 1 <= Pag.PageTotal)
         {
-            <sl-button href="@Model.Page(Pag.PageNumber + 1)">@(Pag.PageNumber + 1)</sl-button>
-            <a class="d-none" href="@Model.Page(Pag.PageNumber + 1)">@(Pag.PageNumber + 1)</a>
+            <li class="page-item"><a class="page-link" href="@Model.Page(Pag.PageNumber + 1)">@(Pag.PageNumber + 1)</a></li>
         }
 
         @if (Pag.PageNumber + 1 < Pag.PageTotal)
         {
-            <sl-button href="@Model.Page(Pag.PageTotal)" title="@Pag.PageTotal">@Pag.PageTotal</sl-button>
-            <a class="d-none" href="@Model.Page(Pag.PageNumber)" title="@Pag.PageTotal">@Pag.PageTotal</a>
+            <li class="page-item"><a class="page-link" href="@Model.Page(Pag.PageTotal)">@Pag.PageTotal</a></li>
         }
-    </sl-button-group>
+    </ul>
 }

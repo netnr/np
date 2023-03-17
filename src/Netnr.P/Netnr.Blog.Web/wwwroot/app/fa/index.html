@@ -12,7 +12,7 @@
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/site.css">
     <link rel="stylesheet" href="assets/css/pygments.css">
-    <link rel="stylesheet" href="https://ss.netnr.com/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link href="https://npmcdn.com/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="assets/libs/toastr/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/fix.css">
 </head>
@@ -1832,8 +1832,8 @@
         </div>
     </div>
 
-    <script src="https://ss.netnr.com/jquery@1.12.4/dist/jquery.min.js"></script>
-    <script src="https://ss.netnr.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://npmcdn.com/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script src="https://npmcdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
 
     <script src="assets/js/jquery.nav.min.js"></script>
     <script src="assets/libs/toastr/toastr.min.js"></script>
@@ -1848,11 +1848,11 @@
             });
         } else {
             $('.fa-hover').each(function (i, e) {
-                var tempEle = $(this);
+                let tempEle = $(this);
                 tempEle.append("<span class='clipboard text-muted' style='line-height: 32px;'><i class='fa fa-clipboard'></i></span>");
 
                 tempEle.find('.clipboard').click(function () {
-                    var copyText = "fa-" + tempEle.text().substr(12).replace(" (alias)", "")
+                    let copyText = "fa-" + tempEle.text().substr(12).replace(" (alias)", "")
                     navigator.clipboard.writeText(copyText).then(() => {
                         toastr.warning('已成功复制标签，请直接粘贴')
                     })

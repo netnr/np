@@ -1,0 +1,36 @@
+/* light */
+:root {
+    --global-border: #d8dee4;
+    --global-color: #000000;
+    --global-bg: #ffffff;
+}
+
+/* dark */
+.sl-theme-dark {
+    --global-border: #585b60;
+    --global-color: #d4d4d4;
+    --global-bg: #0d1117;
+}
+
+.sl-theme-dark body {
+    color: var(--global-color);
+    background-color: var(--global-bg);
+}
+
+/*link*/
+.sl-theme-dark a,
+.sl-theme-dark .markdown-body a {
+    text-decoration: none;
+    color: var(--sl-color-primary-600);
+}
+
+.sl-theme-dark a:hover,
+.sl-theme-dark .markdown-body a:hover {
+    text-decoration: underline;
+    color: var(--sl-color-primary-700);
+}
+
+/*ag-grid*/
+.sl-theme-dark .ag-theme-alpine-dark {
+    --ag-foreground-color: var(--global-color);
+}

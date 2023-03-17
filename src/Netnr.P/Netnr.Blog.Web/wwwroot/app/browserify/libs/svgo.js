@@ -1,1 +1,0 @@
-global.svgo = require('svgo');

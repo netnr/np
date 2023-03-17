@@ -46,9 +46,6 @@
             }
             else
             {
-                //推送通知
-                _ = PushService.PushAsync("网站消息（Guff）", $"新增或修改");
-
                 var now = DateTime.Now;
 
                 //add
@@ -79,6 +76,9 @@
                     int num = db.SaveChanges();
                     if (num > 0)
                     {
+                        //推送通知
+                        _ = PushService.PushAsync("网站消息（Guff）", $"新增一条");
+
                         return Redirect($"/guff/code/{mo.GrId}");
                     }
                     else
@@ -136,11 +136,11 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ResponseCache(Duration = 10)]
-        public IActionResult Discover([FromRoute] string id, string k, int page = 1)
+        public async Task<IActionResult> Discover([FromRoute] string id, string k, int page = 1)
         {
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var vm = CommonService.GuffQuery(category: id, k, null, null, null, OwnerId: 0, UserId: userId, page);
+            var vm = await CommonService.GuffQuery(category: id, k, null, null, null, OwnerId: 0, UserId: userId, page);
             vm.Route = Request.Path;
             return View("/Views/Guff/_PartialGuffList.cshtml", vm);
         }
@@ -154,14 +154,14 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ActionName("User")]
-        public IActionResult Id([FromRoute] int id, [FromRoute] string sid, string k, int page = 1)
+        public async Task<IActionResult> Id([FromRoute] int id, [FromRoute] string sid, string k, int page = 1)
         {
             if (id == 0)
             {
                 return Redirect("/guff");
             }
 
-            var mu = db.UserInfo.Find(id);
+            var mu = await db.UserInfo.FindAsync(id);
             if (mu == null)
             {
                 return NotFound();
@@ -170,7 +170,7 @@
 
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var vm = CommonService.GuffQuery(category: sid, k, null, null, null, OwnerId: 0, UserId: userId, page);
+            var vm = await CommonService.GuffQuery(category: sid, k, null, null, null, OwnerId: 0, UserId: userId, page);
             vm.Route = Request.Path;
             return View("/Views/Guff/_PartialGuffList.cshtml", vm);
         }
@@ -182,7 +182,7 @@
         /// <param name="sid">命令</param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Code([FromRoute] string id, [FromRoute] string sid)
+        public async Task<IActionResult> Code([FromRoute] string id, [FromRoute] string sid)
         {
             var uinfo = IdentityService.Get(HttpContext);
 
@@ -192,81 +192,63 @@
             }
             else if (sid == "edit")
             {
-                var mo = db.GuffRecord.Find(id);
-
-                if (mo.Uid != uinfo?.UserId)
+                GuffRecord guffRecord = null;
+                if (uinfo == null || (guffRecord = await db.GuffRecord.FindAsync(id)).Uid != uinfo.UserId)
                 {
                     return Unauthorized("Not Authorized");
                 }
                 else
                 {
-                    return View("/Views/Guff/_PartialGuffEditor.cshtml", mo);
+                    return View("/Views/Guff/_PartialGuffEditor.cshtml", guffRecord);
                 }
             }
             else if (sid == "delete")
             {
-                if (uinfo.UserId != 0)
+                if (uinfo == null)
                 {
-                    var mo = db.GuffRecord.Find(id);
-
-                    if (mo.Uid != uinfo.UserId)
-                    {
-                        return Unauthorized("Not Authorized");
-                    }
-                    else if (mo.GrStatus == -1)
-                    {
-                        return BadRequest();
-                    }
-                    else
-                    {
-                        db.Remove(mo);
-                        int num = db.SaveChanges();
-                        if (num > 0)
-                        {
-                            return Redirect($"/guff/user/{uinfo.UserId}");
-                        }
-                        else
-                        {
-                            return BadRequest();
-                        }
-                    }
+                    return Unauthorized("Not Authorized");
                 }
                 else
                 {
-                    return Unauthorized("Not Authorized");
+                    var num = await db.GuffRecord.Where(x => x.GrId == id && x.Uid == uinfo.UserId && x.GrStatus != -1).ExecuteDeleteAsync();
+                    if (num > 0)
+                    {
+                        return Redirect($"/guff/user/{uinfo.UserId}");
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
                 }
             }
             else // view
             {
-                var ctype = ConnectionType.GuffRecord.ToString();
-
-                var query = from a in db.GuffRecord
-                            join b in db.UserInfo on a.Uid equals b.UserId
-                            join c in db.UserConnection.Where(x => x.UconnTargetType == ctype && x.UconnAction == 1 && x.Uid == uinfo.UserId) on a.GrId equals c.UconnTargetId into cg
-                            from c1 in cg.DefaultIfEmpty()
-                            where a.GrId == id
-                            select new
-                            {
-                                a,
-                                UconnTargetId = c1 == null ? null : c1.UconnTargetId,
-                                b.Nickname
-                            };
-                var qm = query.FirstOrDefault();
-                var mo = qm?.a;
-                if (mo == null)
-                {
-                    return NotFound();
-                }
-                else if (mo.GrOpen == 1 || uinfo.UserId == mo.Uid)
+                var query1 = from a in db.GuffRecord
+                             join b in db.UserInfo on a.Uid equals b.UserId
+                             where a.GrId == id
+                             select new
+                             {
+                                 a,
+                                 b.Nickname
+                             };
+                var result1 = await query1.FirstOrDefaultAsync();
+                var mo = result1.a;
+                if (mo != null && (mo.GrOpen == 1 || uinfo?.UserId == mo.Uid))
                 {
                     // 阅读 +1
                     mo.GrReadNum += 1;
                     db.Update(mo);
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
 
-                    mo.Spare1 = string.IsNullOrEmpty(qm.UconnTargetId) ? "" : "laud";
-                    mo.Spare2 = (uinfo.UserId == mo.Uid) ? "owner" : "";
-                    mo.Spare3 = qm.Nickname;
+                    if (uinfo != null)
+                    {
+                        var ctype = ConnectionType.GuffRecord.ToString();
+                        var result2 = await db.UserConnection.FirstOrDefaultAsync(x => x.UconnTargetType == ctype && x.UconnAction == 1 && x.Uid == uinfo.UserId && x.UconnTargetId == mo.GrId);
+
+                        mo.Spare1 = string.IsNullOrEmpty(result2?.UconnTargetId) ? "" : "laud";
+                        mo.Spare2 = (uinfo.UserId == mo.Uid) ? "owner" : "";
+                    }
+                    mo.Spare3 = result1.Nickname;
 
                     return View(mo);
                 }
@@ -349,9 +331,11 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM ReplyList(string id, int page = 1)
+        public async Task<ResultVM> ReplyList(string id, int page = 1)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 var pag = new PaginationVM
                 {
@@ -359,7 +343,7 @@
                     PageSize = 10
                 };
 
-                var list = CommonService.ReplyOneQuery(ReplyType.GuffRecord, id, pag);
+                var list = await CommonService.ReplyOneQuery(ReplyType.GuffRecord, id, pag);
                 //匿名用户，生成邮箱MD5加密用于请求头像
                 foreach (var item in list)
                 {
@@ -377,9 +361,13 @@
                 vm.Data = pvm;
 
                 vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
     }
 }

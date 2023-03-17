@@ -1,0 +1,152 @@
+<!--
+https://github.com/netnr
+2023-03
+-->
+
+<!DOCTYPE html>
+<html lang="zh-cn" data-bs-theme='light' class="netnrmd-light">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <meta name='keywords' content='NET牛人,Netnr,新华字典' />
+            <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,查询字、词、成语' />
+        <!--静态页面主题响应-->
+        <script>
+            if (document.cookie.includes(".theme=dark")) {
+                let domHtml = document.documentElement;
+                domHtml.dataset.bsTheme = "dark";
+                domHtml.className = domHtml.className.replace('light', 'dark');
+            }
+        </script>
+
+    <title>&#x65B0;&#x534E;&#x5B57;&#x5178; NET牛人</title>
+
+    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+<link href='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet' />
+<script src='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js' async ></script>
+
+
+    <link href='/dist/main.css?v=sEk5A0XatshzzERVWqyQrEIJHD7OQes2wQlyRfFNS2s' rel='stylesheet' />
+    <script src="/dist/main.js?v=8CMcogf7Psxu60HQ5KYezaBoMW0q-EoOfmBWFZup9qQ" async></script>
+
+</head>
+<body>
+
+        
+        <input type="hidden" id="hid_is_build_html" />
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand text-decoration-none" href="https://www.netnr.com">
+                <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
+                <span class="d-none d-sm-inline-block">Netnr</span>
+            </a>
+
+                <!--ss mobile title-->
+                <a class='small d-block d-lg-none text-decoration-none' href="/ss/zidian" title='&#x65B0;&#x534E;&#x5B57;&#x5178;'>
+                    <b class="text-warning-emphasis">&#x65B0;&#x534E;&#x5B57;&#x5178;</b>
+                </a>
+
+            <!--PC-->
+            <div class="collapse navbar-collapse">
+
+                <!--left-->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link active" href="/" title="ss.js.org">SS</a>
+                    </li>
+
+                        <!--ss pc title-->
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/zidian" title='&#x65B0;&#x534E;&#x5B57;&#x5178;'>
+                                <b class="text-warning-emphasis">&#x65B0;&#x534E;&#x5B57;&#x5178;</b>
+                            </a>
+                        </li>
+
+                    <!--搜索-->
+                </ul>
+
+                <!--right-->
+                <ul class="navbar-nav">
+
+                    <li class="nav-item">
+                        <a class="nav-link text-decoration-none" href="javascript:void(0)" data-action="theme" title="主题">🎨</a>
+                    </li>
+                </ul>
+
+            </div>
+
+            <!--Mobile-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#nr_navbar_mobile" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end d-lg-none" id="nr_navbar_mobile" style="--bs-offcanvas-width:15em;">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">Netnr</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">SS</a>
+                        </li>
+                        <!--搜索-->
+
+                        <li class="nav-item my-2">
+                            <a class="nav-link text-decoration-none" href="javascript:void(0);" data-action="theme" title="主题">🎨 主题</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <div class="container-fluid p-lg-5 py-4">
+    <div class="row">
+        <div class="col-md-auto mb-3">
+            <div class="input-group">
+                <input class="form-control" data-type="ci" data-search="1" placeholder="搜索词语" maxlength="20" />
+                <button class="btn btn-outline-secondary">搜索</button>
+            </div>
+        </div>
+        <div class="col-md-auto mb-3">
+            <div class="input-group">
+                <input class="form-control" data-type="idiom" data-search="1" placeholder="搜索成语" maxlength="20" />
+                <button class="btn btn-outline-secondary">搜索</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-auto mb-3">
+            <div class="input-group">
+                <input class="form-control" data-type="word" data-search="0" placeholder="如：爱" maxlength="1" />
+                <button class="btn btn-outline-secondary">查询汉字</button>
+            </div>
+        </div>
+        <div class="col-md-auto mb-3">
+            <div class="input-group">
+                <input class="form-control" data-type="ci" data-search="0" placeholder="如：美丽" maxlength="20" />
+                <button class="btn btn-outline-secondary">查询词语</button>
+            </div>
+        </div>
+        <div class="col-md-auto mb-3">
+            <div class="input-group">
+                <input class="form-control" data-type="idiom" data-search="0" placeholder="如：一言既出，驷马难追" maxlength="20" />
+                <button class="btn btn-outline-secondary">查询成语</button>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header">结果</h5>
+                <div class="nrg-result overflow-auto markdown-body card-body" style="min-height:30em">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

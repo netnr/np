@@ -1,25 +1,25 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-md-auto mb-3">
-            <input class="nr-txt-file w-100" type="file" accept="image/*" />
+        <div class="col-md-auto mb-2">
+            <input class="nrg-txt-file form-control" type="file" accept="image/*" />
         </div>
-        <div class="col-md-auto mb-3">
-            <sl-button class="nr-btn-ocr" variant="warning">识别</sl-button>
-            <sl-button class="nr-btn-rotate-right" title="顺时针旋转 5°">
-                <sl-icon name="arrow-clockwise"></sl-icon>
-            </sl-button>
-            <sl-button class="nr-btn-rotate-left" title="逆时针旋转 5°">
-                <sl-icon name="arrow-counterclockwise"></sl-icon>
-            </sl-button>
-            <sl-button class="nr-btn-reset" title="重置">重置</sl-button>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-ocr btn btn-warning">识别</button>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <button class="nrg-btn-rotate-right btn btn-danger" title="顺时针旋转 5°">右旋转</button>
+                <button class="nrg-btn-rotate-left btn btn-primary" title="逆时针旋转 5°">左旋转</button>
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-reset btn btn-secondary" title="重置">重置</button>
+        </div>
+        <div class="col-12 mb-2">
+            <div class="nrg-card-view w-100"></div>
         </div>
         <div class="col-12 mb-3">
-            <div class="nr-card-view img-container"></div>
-        </div>
-        <div class="col-12">
-            <sl-textarea class="nr-txt-result d-none" rows="9" label="识别结果" placeholder="输出结果"></sl-textarea>
+            <textarea class="nrg-txt-result form-control d-none" rows="9" placeholder="输出结果"></textarea>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("cropperjs"))

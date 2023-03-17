@@ -8,41 +8,37 @@
     var actionName = ViewContext.RouteData.Values["action"].ToString().ToLower();
     var path = $"/guff/{actionName}" + (actionName == "user" ? "/" + ViewContext.RouteData.Values["id"].ToString() : "");
 }
-<div class="container-fluid">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-12 p-4">
-            <div class="">
-                <a class="me-3" href="@path">全部</a>
-                <a class="me-3" href="@path/image">图片</a>
-                <a class="me-3" href="@path/audio">声音</a>
-                <a class="me-3" href="@path/video">视频</a>
-                <a class="me-3" href="@path/top">热门</a>
-            </div>
+        <div class="col-12 mb-4 fs-5">
+            <a class="me-3" href="@path">全部</a>
+            <a class="me-3" href="@path/image">图片</a>
+            <a class="me-3" href="@path/audio">声音</a>
+            <a class="me-3" href="@path/video">视频</a>
+            <a class="me-3" href="@path/top">热门</a>
         </div>
+
         @if (rows.Count == 0)
         {
             <div class="text-center my-5 py-5">
                 <h4>咣</h4>
-                <sl-animation name="jello" duration="5000" play>
-                    <sl-button href="/guff" size="small">Add guff</sl-button>
-                </sl-animation>
+                <a href="/guff">Add guff</a>
             </div>
         }
         else
         {
-            <div class="col-12 px-4">
-                <span class="me-3 fs-4 align-middle"><b>@Model.Pag.Total.ToString("N0")</b> guffs results</span>
-                <sl-animation name="jello" duration="5000" play>
-                    <sl-button href="/guff" size="small">Add guff</sl-button>
-                </sl-animation>
+            <div class="col-12 mb-3 fs-5">
+                <span class="me-3"><b>@Model.Pag.Total.ToString("N0")</b> guffs results</span>
+                <a href="/guff">Add guff</a>
             </div>
+
             @foreach (var item in rows)
             {
-                <div class="col-12 px-4">
-                    <hr class="my-4" />
+                <div class="col-12">
+                    <hr class="mb-4" />
                     @if (!string.IsNullOrWhiteSpace(item.GrContent))
                     {
-                        <div class="mb-3">@item.GrContent</div>
+                        <div class="mb-3 fs-5">@item.GrContent</div>
                     }
                     @if (!string.IsNullOrWhiteSpace(item.GrImage))
                     {
@@ -76,32 +72,32 @@
                     }
                     @if (!string.IsNullOrWhiteSpace(item.GrRemark))
                     {
-                        <div class="mb-3">@item.GrRemark</div>
+                        <div class="mb-3 fs-5">@item.GrRemark</div>
                     }
 
                     <div class="small">
-                        <a href="" class="me-3 text-nowrap lh-lg d-none" title='@(item.Spare1 == "laud" ? "取消点赞" : "点赞")'>
-                            <sl-icon class="align-middle" name="hand-thumbs-up"></sl-icon>@item.GrLaud
+                        <a href="" class="me-2 text-nowrap lh-lg d-none" title='@(item.Spare1 == "laud" ? "取消点赞" : "点赞")'>
+                            👍@item.GrLaud
                         </a>
-                        <a href="" class="me-3 text-nowrap lh-lg d-none" title="回复数">
-                            <sl-icon class="align-middle" name="reply"></sl-icon>@item.GrReplyNum.Value
+                        <a href="" class="me-2 text-nowrap lh-lg d-none" title="回复数">
+                            💬@item.GrReplyNum.Value
                         </a>
-                        <a href="/guff/user/@item.Uid" class="me-3 text-nowrap lh-lg">@item.Spare3</a>
-                        <small class="me-3 d-none d-sm-inline-block opacity-75" title="创建于">@VisualFormatService.Duration(item.GrCreateTime.Value)</small>
+                        <a href="/guff/user/@item.Uid" class="me-2 text-nowrap lh-lg">@item.Spare3</a>
+                        <small class="me-2 d-none d-sm-inline-block opacity-75" title="创建于">@VisualFormatService.Duration(item.GrCreateTime.Value)</small>
 
                         @if (!string.IsNullOrWhiteSpace(item.GrTypeName) && !string.IsNullOrWhiteSpace(item.GrTypeValue))
                         {
                             <!--分类-->
-                            <a class="me-3 text-nowrap lh-lg text-decoration-none opacity-75" title="分类名/分类值">
-                                <sl-icon class="align-middle" name="diagram-2"></sl-icon>@(item.GrTypeName + '/' + item.GrTypeValue)
+                            <a class="me-2 text-nowrap lh-lg text-decoration-none opacity-75" title="分类名/分类值">
+                                🔖@(item.GrTypeName + '/' + item.GrTypeValue)
                             </a>
                         }
 
                         @if (!string.IsNullOrWhiteSpace(item.GrObject))
                         {
                             <!--对象-->
-                            <a class="me-3 text-nowrap lh-lg text-decoration-none opacity-75" title="对象">
-                                <sl-icon class="align-middle" name="person"></sl-icon>@item.GrObject
+                            <a class="me-2 text-nowrap lh-lg text-decoration-none opacity-75" title="对象">
+                                😀@item.GrObject
                             </a>
                         }
 
@@ -111,29 +107,30 @@
                             foreach (var tag in tags)
                             {
                                 <!--标签-->
-                                <a class="me-3 text-nowrap lh-lg text-decoration-none opacity-75" title="标签">
-                                    <sl-icon class="align-middle" name="tag"></sl-icon>@tag
+                                <a class="me-2 text-nowrap lh-lg text-decoration-none opacity-75" title="标签">
+                                    🏷@tag
                                 </a>
                             }
                         }
 
                         <!--查看-->
-                        <a href="/guff/code/@item.GrId" class="lh-lg text-decoration-none me-3" title="查看这一条">
-                            <sl-icon class="align-middle" name="eye"></sl-icon>
+                        <a href="/guff/code/@item.GrId" class="lh-lg text-decoration-none me-2" title="查看这一条">
+                            👁
                         </a>
                         @if (item.Spare2 == "owner")
                         {
                             <!--编辑、删除-->
-                            <a href="/guff/code/@item.GrId/edit" class="me-3 lh-lg text-decoration-none" title="编辑">
-                                <sl-icon class="align-middle" name="pencil-square"></sl-icon>
+                            <a href="/guff/code/@item.GrId/edit" class="me-2 lh-lg text-decoration-none" title="编辑">
+                                📝
                             </a>
-                            <a href="/guff/code/@item.GrId/delete" class="me-3 lh-lg text-decoration-none" title="删除" onclick="return confirm('confirm delete?')">
-                                <sl-icon class="align-middle" name="trash"></sl-icon>
+                            <a href="/guff/code/@item.GrId/delete" class="me-2 lh-lg text-decoration-none" title="删除" onclick="return confirm('confirm delete?')">
+                                ✖
                             </a>
                         }
                     </div>
                 </div>
             }
+
             <div class="col-12">
                 <partial name="_PartialPaging" model="Model" />
             </div>

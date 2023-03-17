@@ -2,46 +2,32 @@
     ViewData["Title"] = "后台管理";
 }
 
-<div class="container-fluid">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-12 mt-3">
-            <sl-button class="m-3" variant="primary" size="large" outline href="/admin/write">
-                文章管理
-            </sl-button>
-            <sl-button class="m-3" variant="primary" size="large" outline href="/admin/reply">
-                回复管理
-            </sl-button>
-            <sl-button class="m-3" variant="success" size="large" outline href="/admin/keyvalues">
-                键值标签
-            </sl-button>
-            <sl-button class="m-3" variant="neutral" size="large" outline href="/admin/log">
-                日志列表
-            </sl-button>
-            <sl-button class="m-3" variant="neutral" size="large" outline href="/admin/logchart">
-                日志图表
-            </sl-button>
-            <sl-button class="m-3" variant="warning" size="large" outline href="/admin/table">
-                表查询
-            </sl-button>
-            <sl-button class="m-3" variant="danger" size="large" outline href="/admin/clearcache">
-                清理全局缓存
-            </sl-button>
-        </div>
         <div class="col-12">
-            <sl-button class="m-3" variant="primary" size="large" outline href="/storage/qiniu">
-                KODO
-            </sl-button>
-            <sl-button class="m-3" variant="primary" size="large" outline href="/storage/netease">
-                NOS
-            </sl-button>
-            <sl-button class="m-3" variant="primary" size="large" outline href="/storage/tencent">
-                COS
-            </sl-button>
+            <a class="btn mb-3 me-3 btn-outline-info" href="/admin/write">
+                文章管理
+            </a>
+            <a class="btn mb-3 me-3 btn-outline-info" href="/admin/reply">
+                回复管理
+            </a>
+            <a class="btn mb-3 me-3 btn-outline-success" href="/admin/keyvalues">
+                键值标签
+            </a>
+            <a class="btn mb-3 me-3 btn-outline-info" href="/admin/log">
+                日志列表
+            </a>
+            <a class="btn mb-3 me-3 btn-outline-info" href="/admin/logchart">
+                日志图表
+            </a>
+            <a class="btn mb-3 me-3 btn-outline-danger" href="/admin/clearcache">
+                清理全局缓存
+            </a>
         </div>
         <div class="col-12 mb-3">
-            <sl-button class="m-3" variant="primary" size="large" outline href="/swagger">
+            <a class="btn mb-3 me-3 btn-outline-info" href="/swagger">
                 API
-            </sl-button>
+            </a>
         </div>
     </div>
 </div>

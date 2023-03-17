@@ -8,12 +8,12 @@
     var avatarUrl = AppTo.GetValue("Common:Gravatar");
 }
 
-<input type="hidden" class="nr-hid-isme" value='@(isme?1:0)' />
-<input type="hidden" class="nr-hid-gravatar-url" value='@avatarUrl' />
+<input type="hidden" class="nrg-hid-isme" value='@(isme?1:0)' />
+<input type="hidden" class="nrg-hid-gravatar-url" value='@avatarUrl' />
 
-<div class="container-fluid p-4">
-    <div class="row">
-        <div class="col-md-3 mb-3 text-center">
+<div class="@QuoteTo.PanelClass2">
+    <div class="row mt-3">
+        <div class="col-lg-4 mb-3 text-center">
             @{
                 var avatar = "/favicon.svg";
                 if (!string.IsNullOrWhiteSpace(Model.UserPhoto))
@@ -23,60 +23,68 @@
 
                 Model.UserSay = string.IsNullOrEmpty(Model.UserSay) ? "暂无简介 ^_^ " : Model.UserSay;
             }
-            <img class="nr-img-avatar rounded-circle mw-100" src="@avatar" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
+            <img class="nrg-img-avatar rounded-circle mw-100" src="@avatar" onerror="this.src = '/favicon.svg'; this.onerror = null;" />
         </div>
-        <div class="col-md-3 mb-3">
+        <div class="col-lg-8 my-4">
             <h2>@Model.Nickname</h2>
             @if (Model.UserName == Model.OpenId1 || Model.UserName == Model.OpenId2 || Model.UserName == Model.OpenId3 || Model.UserName == Model.OpenId4 || Model.UserName == Model.OpenId5 || Model.UserName == Model.OpenId5 || Model.UserName == Model.OpenId6)
             {
-                <h5>第三方登录</h5>
+                <p>第三方登录</p>
             }
             else
             {
-                <a class="h5" href="/user/id/@Model.UserId">@Model.UserName</a>
+                <p>😀 <a href="/user/id/@Model.UserId">@Model.UserName</a></p>
             }
-            <sl-divider></sl-divider>
-            <p>@Model.UserCreateTime.Value.ToString("yyyy-MM-dd") 加入</p>
-            <p><a href="mailto:@Model.UserMail">@Model.UserMail</a></p>
+            <p>🕑 @Model.UserCreateTime.Value.ToString("yyyy-MM-dd") 加入</p>
+            <p>📧 <a href="mailto:@Model.UserMail">@Model.UserMail</a></p>
             <p>
                 @if (!string.IsNullOrWhiteSpace(Model.UserUrl))
                 {
+                    <span>🔗</span>
                     <a href='@(Model.UserUrl.Contains("//")?Model.UserUrl:"http://"+Model.UserUrl)'>@Model.UserUrl</a>
                 }
             </p>
-        </div>
-        <div class="col-md-6">
-            <sl-card style="width:100%">
-                <div slot="header">
-                    <span class="badge rounded-pill bg-danger">&nbsp;</span>
-                    <span class="badge rounded-pill bg-warning">&nbsp;</span>
-                    <span class="badge rounded-pill bg-success">&nbsp;</span>
-                    <sl-icon name="pencil-square" role="button" label="编辑" class="nr-btn-edit-say mt-1 d-none float-end"></sl-icon>
-                </div>
-                <div class="nr-card-say1 text-break" style="height:22em">@Model.UserSay</div>
-                <div class="nr-card-say2 d-none">
-                    <sl-textarea class="nr-txt-say mb-3" rows="12"></sl-textarea>
-                    <sl-button class="nr-btn-save-say" variant="warning">保存</sl-button>
-                    <sl-button class="nr-btn-cancel-say">取消</sl-button>
-                </div>
-            </sl-card>
+
+            <hr />
+            <div class="mb-4">
+                <span class="badge rounded-pill bg-danger">&nbsp;</span>
+                <span class="badge rounded-pill bg-warning">&nbsp;</span>
+                <span class="badge rounded-pill bg-success">&nbsp;</span>
+                <button class="nrg-btn-edit-say btn btn-outline-secondary btn-sm ms-3 d-none" style="--bs-btn-padding-y:0">编辑</button>
+            </div>
+            <pre class="nrg-card-say1 fs-6" style="white-space:pre-wrap">@Model.UserSay</pre>
+            <div class="nrg-card-say2 d-none">
+                <textarea class="nrg-txt-say mb-3 form-control" rows="7"></textarea>
+                <button class="nrg-btn-save-say btn btn-warning">保存</button>
+                <button class="nrg-btn-cancel-say btn btn-secondary">取消</button>
+            </div>
         </div>
     </div>
 </div>
 
-<sl-dialog label="编辑头像" class="nr-dialog-form">
-    <label>根据邮箱从 <a href="https://gravatar.com" target="_blank" title="全球公认的头像">gravatar</a> 获得头像</label>
-    <sl-input class="nr-txt-email mb-3" type="email" maxlength="50" placeholder="@Model.UserMail" value="@Model.UserMail" autocomplete="off" clearable>
-        <sl-icon name="envelope" slot="prefix"></sl-icon>
-    </sl-input>
-    <sl-button class="nr-btn-get-avatar">获取头像</sl-button>
-    <sl-divider></sl-divider>
-    <div class="text-center">
-        <img class="nr-img-preview-avatar rounded-circle mw-100" src="@avatar" onerror="this.src = '/favicon.svg';" />
+<div class="nrg-modal-avatar modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">编辑头像</h5>
+                <div>
+                    <button class="nrg-btn-save-avatar nrg-modal-header-btn btn btn-warning" disabled>保存</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">根据电子邮箱从 <a href="https://gravatar.com" target="_blank" title="全球公认的头像">gravatar</a> 获得头像</label>
+                    <input type="email" class="nrg-txt-email form-control" maxlength="50" placeholder="@Model.UserMail" value="@Model.UserMail" autocomplete="off">
+                </div>
+
+                <button class="nrg-btn-get-avatar btn btn-secondary">获取头像</button>
+                <hr />
+
+                <div class="text-center">
+                    <img class="nrg-img-preview-avatar rounded-circle mw-100" src="@avatar" onerror="this.src = '/favicon.svg';" />
+                </div>
+            </div>
+        </div>
     </div>
-
-    <sl-button class="nr-btn-save-avatar" disabled slot="footer" variant="warning">保存</sl-button>
-</sl-dialog>
-
-@Html.Raw(Netnr.QuoteTo.Html("md5.js"))
-<script src="/js/user/index.js" asp-append-version="true"></script>
+</div>

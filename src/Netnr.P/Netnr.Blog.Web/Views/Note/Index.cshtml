@@ -2,34 +2,27 @@
     ViewData["Title"] = "记事本";
 }
 
-<div class="container-fluid">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-auto my-2">
-            <sl-button size="small" variant="primary" class="nr-btn-add">New</sl-button>
-            <sl-button size="small" variant="warning" class="nr-btn-edit">Edit</sl-button>
-            <sl-button size="small" variant="danger" class="nr-btn-del">Del</sl-button>
+        <div class="col-lg-3 col-md-4">
+            <div class="input-group mb-2">
+                <button class="nrg-btn-add btn btn-sm btn-primary">新增</button>
+                <button class="nrg-btn-del btn btn-sm btn-danger">删除</button>
+                <input class="nrg-txt-filter form-control form-control-sm" placeholder="Search" />
+            </div>
+            <div class="nrg-grid"></div>
         </div>
-        <div class="nr-grid col-12"></div>
+        <div class="nrg-card-form invisible col-lg-9 col-md-8 mt-md-0 mt-3">
+            <div class="input-group input-group-sm">
+                <button class="nrg-btn-save btn btn-warning" title="Ctrl + S 快捷保存">保存</button>
+                <input class="nrg-txt-title form-control" maxlength="200" placeholder="标题：简单的一句话" />
+            </div>
+            <div class="form-text">
+                <span class="nrg-time-info me-3"></span>
+                <span class="nrg-word-count">共 <b>0</b> 个字</span>
+            </div>
+
+            <div class="nrg-editor mt-2">Loading</div>
+        </div>
     </div>
 </div>
-
-<sl-dialog label="编辑记事本" class="nr-dialog-form" style="--width: 96vw;">
-    <div class="row">
-        <div class="col-auto mb-2">
-            <sl-button class="nr-btn-save" variant="warning" title="Ctrl + S 快捷保存">保存</sl-button>
-        </div>
-        <div class="col mb-2">
-            <sl-input class="nr-txt-title" maxlength="200" placeholder="标题：简单的一句话"></sl-input>
-        </div>
-        <div class="col-12">
-            <div class="nr-editor">Loading ...</div>
-        </div>
-        <div class="col-sm-12 small opacity-75">
-            <span class="nr-word-count me-3">共 <b>0</b> 个字</span>
-            <span class="nr-time-info"></span>
-        </div>
-    </div>
-</sl-dialog>
-
-@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd-ace.js,netnrmd.js,ag-grid-enterprise.js"))
-<script src="/js/note/index.js" asp-append-version="true"></script>

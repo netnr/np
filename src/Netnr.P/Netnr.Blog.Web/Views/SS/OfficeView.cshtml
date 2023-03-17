@@ -1,22 +1,23 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-md mb-3">
-            <sl-input label="公网文档链接" class="nr-txt-url" placeholder="请粘贴公网文档链接地址"></sl-input>
-        </div>
-        <div class="col-1"></div>
-        <div class="col-md mb-3">
-            <div>上传 Office 文档</div>
-            <div class="d-flex">
-                <input class="nr-txt-file w-100" type="file" />
-                <div class="nr-loading nrc-loading ms-3 d-none"></div>
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text">链接</span>
+                <input class="nrg-txt-url form-control" placeholder="粘贴公网文档链接地址" type="url" />
             </div>
         </div>
-        <div class="col-12 invisible small">
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text">上传</span>
+                <input class="nrg-txt-file form-control" placeholder="上传 Office 文档" type="file" />
+            </div>
+        </div>
+        <div class="col-12 invisible form-text mb-2">
             <span>全屏完整链接：</span>
-            <a target="_blank" class="nr-aurl text-break" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
+            <a target="_blank" class="nrg-aurl text-break" href="javascript:void(0)">https://view.officeapps.live.com/op/embed.aspx?src=</a>
         </div>
         <div class="col-12">
-            <iframe src="about:blank" class="nr-iframe invisible w-100"></iframe>
+            <iframe src="about:blank" class="nrg-iframe invisible w-100"></iframe>
         </div>
     </div>
 </div>

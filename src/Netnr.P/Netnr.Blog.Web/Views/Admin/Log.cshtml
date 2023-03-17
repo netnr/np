@@ -2,13 +2,12 @@
     ViewData["Title"] = "日志列表";
 }
 
-<div class="container-fluid">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-12 mt-3">
-            <div class="nr-grid"></div>
+        <div class="col-auto mb-2">
+            <a href="/admin/log" class="btn btn-sm btn-primary">日志列表</a>
+            <a href="/admin/logchart" class="btn btn-sm btn-outline-info">日志图表</a>
         </div>
+       <div class="nrg-grid col-12"></div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("ag-grid-enterprise.js"))
-<script src="/js/admin/log.js" asp-append-version="true"></script>

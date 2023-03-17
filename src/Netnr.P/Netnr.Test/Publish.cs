@@ -15,6 +15,11 @@ namespace Netnr.Test
         public static string ReleaseRoot { get; set; } = @"D:\tmp\release";
 
         /// <summary>
+        /// 批处理
+        /// </summary>
+        public static string BatPath { get; set; } = Path.Combine(Path.GetTempPath(), "_build.bat");
+
+        /// <summary>
         /// 项目根目录
         /// </summary>
         public static string ProjectRoot { get; set; } = new DirectoryInfo(ReadyTo.ProjectRootPath).Parent.FullName;
@@ -22,22 +27,16 @@ namespace Netnr.Test
         [Fact]
         public void ReleaseAll()
         {
-            NetnrDataKit_Client_Online();
+            NetnrDataX();
+            NetnrServe();
+            NetnrFileServer();
+
+            NetnrDataKit();
 
             NetnrBlogBuildSS();
             NetnrBlog();
 
             NetnrResponseFramework();
-
-            NetnrFileServer();
-
-            NetnrDataKit();
-
-            NetnrDataX();
-
-            NetnrServe();
-
-            NetnrDataKit_Client_Online();
         }
 
         [Fact]
@@ -46,7 +45,7 @@ namespace Netnr.Test
             var projectName = "Netnr.Blog.Web";
             var projectDir = Path.Combine(ProjectRoot, projectName);
             var launchSettings = File.ReadAllText(Path.Combine(projectDir, "Properties/launchSettings.json"));
-            var uri = launchSettings.DeJson().GetProperty("profiles").GetProperty(projectName).GetValue("applicationUrl").Split(';').FirstOrDefault(x => x.StartsWith("https"));
+            var uri = launchSettings.DeJson().GetProperty("profiles").GetProperty(projectName).GetValue("applicationUrl").Split(';').FirstOrDefault();
 
             //带参数 模式启动，用于授权
             Task.Run(() =>
@@ -117,6 +116,9 @@ namespace Netnr.Test
             Release("Netnr.Blog.Web", "blog");
         }
 
+        /// <summary>
+        /// 拷贝项目
+        /// </summary>
         [Fact]
         public void NetnrProjectCopy()
         {
@@ -125,11 +127,19 @@ namespace Netnr.Test
             //目标目录
             var targetPath = @"D:\site\np";
             //忽略文件夹
-            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.SMS,Netnr.XOps";
+            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.Admin.XOps,Netnr.SMS";
 
             //删除旧文件夹
-            Directory.Delete(Path.Combine(targetPath, "docs"), true);
-            Directory.Delete(Path.Combine(targetPath, "src"), true);
+            var docsFolder = Path.Combine(targetPath, "docs");
+            if (Directory.Exists(docsFolder))
+            {
+                Directory.Delete(docsFolder, true);
+            }
+            var srcFolder = Path.Combine(targetPath, "src");
+            if (Directory.Exists(srcFolder))
+            {
+                Directory.Delete(srcFolder, true);
+            }
 
             FileTo.CopyDirectory(sourcePath, targetPath, ignoreForder.Split(','));
             Debug.WriteLine("Copy completed!");
@@ -203,34 +213,6 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void NetnrDataKit_Client_Online()
-        {
-            var projectName = "Netnr.DataKit";
-            var projectDir = Path.Combine(ProjectRoot, projectName);
-            var clientDir = new DirectoryInfo(projectDir).GetDirectories("*Client*").First().FullName;
-            var wwwroot = Path.Combine(projectDir, "wwwroot");
-
-            var dkBlog = Path.Combine(ProjectRoot, "Netnr.Blog.Web/wwwroot/app/dk");
-            var dkRF = Path.Combine(ProjectRoot, "Netnr.ResponseFramework.Web/wwwroot/libs/dk");
-
-            var batPath = Path.Combine(Path.GetTempPath(), "_build.bat");
-
-            Debug.WriteLine("构建在线资源版到\r\nNetnr.Blog.Web/wwwroot/app/dk\r\nNetnr.ResponseFramework.Web/wwwroot/libs/dk");
-            File.WriteAllText(batPath, $"npm run prod_online --prefix {clientDir} && exit");
-            Debug.WriteLine(CmdTo.Execute($"start {batPath}").CrOutput);
-            if (Directory.Exists(dkBlog))
-            {
-                Directory.Delete(dkBlog, true);
-            }
-            FileTo.CopyDirectory(wwwroot, dkBlog);
-            if (Directory.Exists(dkRF))
-            {
-                Directory.Delete(dkRF, true);
-            }
-            FileTo.CopyDirectory(wwwroot, dkRF);
-        }
-
-        [Fact]
         public void NetnrDataKit()
         {
             var projectName = "Netnr.DataKit";
@@ -242,9 +224,8 @@ namespace Netnr.Test
 
             //npm build
             Debug.WriteLine("构建本地资源版");
-            var batPath = Path.Combine(Path.GetTempPath(), "_build.bat");
-            File.WriteAllText(batPath, $"npm run prod --prefix {clientDir} && exit");
-            Debug.WriteLine(CmdTo.Execute($"start {batPath}").CrOutput);
+            File.WriteAllText(BatPath, $"npm run prod --prefix {clientDir} && exit");
+            CmdTo.Execute($"start {BatPath}");
 
             var platform = "linux-x64";
             var zipFile = $"{shortName}-{version}-{platform}.zip";
@@ -537,7 +518,7 @@ namespace Netnr.Test
         /// <summary>
         /// 是否剪裁
         /// </summary>
-        public string PublishTrimmed { get; set; } = "true";
+        public string PublishTrimmed { get; set; } = "false";
         /// <summary>
         /// 是否包含运行时
         /// </summary>
@@ -562,7 +543,6 @@ namespace Netnr.Test
 
             var cddir = Path.GetDirectoryName(csproj.FullName);
             var run = $"cd {cddir} && dotnet publish {csproj.Name} -p:PublishSingleFile={model.PublishSingleFile} -p:PublishTrimmed={model.PublishTrimmed} -c Release -r {model.Platform} --self-contained {model.SelfContained} -o {model.OutputDir}";
-            Debug.WriteLine(run);
 
             Debug.WriteLine($"重建输出目录 {model.OutputDir}");
             if (Directory.Exists(model.OutputDir))
@@ -571,10 +551,8 @@ namespace Netnr.Test
             }
             Directory.CreateDirectory(model.OutputDir);
 
-            var cer = CmdTo.Execute(run);
-
-            Debug.WriteLine(cer.CrOutput);
-            Debug.WriteLine(cer.CrError);
+            File.WriteAllText(Publish.BatPath, $"{run} && exit");
+            CmdTo.Execute($"start {Publish.BatPath}");
 
             Debug.WriteLine($"打包文件 {model.PackagePath}");
             if (File.Exists(model.PackagePath))

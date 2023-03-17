@@ -28,7 +28,7 @@ public class ConfigInit
     /// <summary>
     /// 版本号（TDB）
     /// </summary>
-    public const string Version = "1.0.1"; //2022-09
+    public const string Version = "1.0.2";
 
     /// <summary>
     /// 枢纽

@@ -1,0 +1,51 @@
+/* sl-dialog */
+sl-dialog sl-button[slot="header-actions"],
+sl-dialog sl-button-group[slot="header-actions"] {
+    margin-top: 1.26em;
+}
+
+/*ag-grid*/
+.ag-cell {
+    line-height: normal !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ag-cell-wrapper>*:not(.ag-cell-value):not(.ag-group-value) {
+    height: auto !important;
+}
+
+.ag-root-wrapper {
+    /*边框颜色*/
+    --ag-border-color: var(--global-border);
+}
+
+.ag-popup-child {
+    /*右键菜单叠堆高度*/
+    z-index: 909 !important;
+}
+
+.ag-paging-panel {
+    /*分页组件高度自适应*/
+    height: auto !important;
+    min-height: 48px !important;
+}
+
+@media (max-width: 576px) {
+    /*分页组件自动换行*/
+    .ag-paging-panel {
+        line-height: 2.5;
+        flex-direction: column !important;
+    }
+}
+
+div.ag-rich-select .ag-rich-select-list {
+    /*编辑高度自适应*/
+    width: 100%;
+    min-width: 200px;
+    height: 100% !important;
+}
+.ag-cell-inline-editing {
+    /*编辑单元格*/
+    height: 100% !important;
+}

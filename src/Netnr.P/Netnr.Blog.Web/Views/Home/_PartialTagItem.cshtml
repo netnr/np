@@ -1,0 +1,11 @@
+@model string
+@{
+    //接收数组标签 [{}]
+    var tagJarray = Model.DeJson().EnumerateArray();
+}
+@foreach (var tags in tagJarray)
+{
+    var TagName = tags.GetValue("TagName");
+    var TagIcon = tags.GetValue("TagIcon");
+    <a class="btn btn-outline-success align-text-bottom" href="/home/type/@TagName.ToUrlEncode()" style="--bs-btn-padding-y:0">@TagName</a>
+}

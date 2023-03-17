@@ -143,14 +143,15 @@ namespace Netnr.Blog.Web.Services
             if (uinfo != null && !AppTo.GetValue<bool>("ReadOnly"))
             {
                 //查询登录标记（缓存||数据库）
-                var ckey = $"UserSign-{uinfo.UserId}";
-                var cval = CacheTo.Get<string>(ckey);
+                var ckey = "UserSign";
+                var gkey = uinfo.UserId.ToString();
+                var cval = CacheTo.Get<string>(ckey, gkey);
                 if (string.IsNullOrEmpty(cval))
                 {
                     using var db = ContextBaseFactory.CreateDbContext();
                     var userInfo = db.UserInfo.Find(uinfo.UserId);
                     cval = userInfo.UserSign;
-                    CacheTo.Set(ckey, cval, 5 * 60, false);
+                    CacheTo.Set(ckey, cval, 5 * 60, false, gkey);
                 }
 
                 var signSession = uinfo.UserSign.Split(':');

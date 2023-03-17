@@ -1,6 +1,6 @@
 ﻿#if Full || Base
 
-using System.Text.Unicode;
+using System.Net;
 using System.Text.Encodings.Web;
 
 namespace Netnr;
@@ -126,7 +126,7 @@ public class JsonConverterTo
                         byte[] value => key => writer.WriteBase64String(key, value),
 
                         // null
-                        DBNull value => key => writer.WriteNull(key),
+                        DBNull value => writer.WriteNull,
 
                         _ => key => writer.WriteString(key, row[column].ToString())
                     };
@@ -300,6 +300,77 @@ public class JsonConverterTo
     }
 
     /// <summary>
+    /// IPAddress
+    /// </summary>
+    public class IPAddressJsonConverter : JsonConverter<IPAddress>
+    {
+        /// <summary>
+        /// 读取
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="typeToConvert"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public override IPAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return IPAddress.Parse(reader.GetString());
+        }
+
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="options"></param>
+        public override void Write(Utf8JsonWriter writer, IPAddress value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString());
+        }
+    }
+
+    /// <summary>
+    /// IPEndPoint
+    /// </summary>
+    public class IPEndPointJsonConverter : JsonConverter<IPEndPoint>
+    {
+        /// <summary>
+        /// 读取
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="typeToConvert"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public override IPEndPoint Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using var jsonDoc = JsonDocument.ParseValue(ref reader);
+            JsonElement rootElement = jsonDoc.RootElement;
+
+            var address = IPAddress.Parse(rootElement.GetProperty("Address").ToString());
+            var port = Convert.ToInt32(rootElement.GetProperty("port").ToString());
+
+            return new IPEndPoint(address, port);
+        }
+
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="options"></param>
+        public override void Write(Utf8JsonWriter writer, IPEndPoint value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WritePropertyName("AddressFamily");
+            writer.WriteStringValue(value.AddressFamily.ToString());
+            writer.WritePropertyName("Address");
+            writer.WriteStringValue(value.Address.ToString());
+            writer.WritePropertyName("Port");
+            writer.WriteNumberValue(value.Port);
+            writer.WriteEndObject();
+        }
+    }
+
+    /// <summary>
     /// 构建 JSON 序列化选项
     /// </summary>
     /// <param name="formatter">时间格式</param>
@@ -326,7 +397,9 @@ public class JsonConverterTo
                 new DateTimeJsonConverter(formatter), //时间格式化
                 new JsonStringEnumConverter(), //枚举字符串
                 new DataTableJsonConverter(), //数据表格式化
-                new DataSetJsonConverter() //数据集格式化
+                new DataSetJsonConverter(), //数据集格式化
+                new IPAddressJsonConverter(), //IPAddress
+                new IPEndPointJsonConverter(), //IPEndPoint
             }
         };
 

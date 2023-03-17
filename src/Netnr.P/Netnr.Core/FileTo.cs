@@ -83,7 +83,7 @@ public class FileTo
             return;
         }
 
-        if (ignoreFolder != null && ignoreFolder.Any(x => target.Name.EndsWith(x)))
+        if (ignoreFolder != null && ignoreFolder.Any(target.Name.EndsWith))
         {
             return;
         }

@@ -20,7 +20,7 @@ namespace Netnr.DataX
             }
 
             //参数模式（静默）
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 MenuSilenceService.Run();
             }

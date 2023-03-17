@@ -1,181 +1,215 @@
-﻿<!--
+<!--
 https://github.com/netnr
-2022-11
+2023-03
 -->
 
 <!DOCTYPE html>
-<html lang="zh-cn" class='sl-theme-light netnrmd-light'>
+<html lang="zh-cn" data-bs-theme='light' class="netnrmd-light">
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <meta name='keywords' content='NET牛人,Netnr,加密转码' />
             <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,加密、解密、编码、转码' />
+        <!--静态页面主题响应-->
+        <script>
+            if (document.cookie.includes(".theme=dark")) {
+                let domHtml = document.documentElement;
+                domHtml.dataset.bsTheme = "dark";
+                domHtml.className = domHtml.className.replace('light', 'dark');
+            }
+        </script>
 
     <title>&#x52A0;&#x5BC6;&#x8F6C;&#x7801; NET牛人</title>
 
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-<link href='https://ss.netnr.com/bootstrap@5.2.2/dist/css/bootstrap.min.css' rel='stylesheet' async />
+<link href='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet' />
+<script src='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js' async ></script>
 
-    <link href="/app/blog/dist/all.css?v=_0J1Z05gYDHZvs0TcVouj90G3JcLkWwwo_3smoSKH-k" rel="stylesheet" />
-    <script src="/app/blog/dist/all.js?v=ZJk4lDdkYK4pkI98GjHlLoeVMxQ7We-jWcr7_71CujM"></script>
+
+    <link href='/dist/main.css?v=sEk5A0XatshzzERVWqyQrEIJHD7OQes2wQlyRfFNS2s' rel='stylesheet' />
+    <script src="/dist/main.js?v=8CMcogf7Psxu60HQ5KYezaBoMW0q-EoOfmBWFZup9qQ" async></script>
+
 </head>
 <body>
+
         
-    <nav class="nr-navbar navbar navbar-expand-lg navbar-light bg-light">
+        <input type="hidden" id="hid_is_build_html" />
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand text-decoration-none" href="https://www.netnr.com">
                 <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
                 <span class="d-none d-sm-inline-block">Netnr</span>
             </a>
-            <a class='small d-block d-lg-none' href="/code" title='&#x52A0;&#x5BC6;&#x8F6C;&#x7801;'>
-                <b style="color:var(--sl-color-warning-600)">&#x52A0;&#x5BC6;&#x8F6C;&#x7801;</b>
-            </a>
 
-            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
-                <sl-animation easing="ease-in-out" duration="1500" play>
-                    <span class="navbar-toggler-icon"></span>
-                </sl-animation>
-            </button>
+                <!--ss mobile title-->
+                <a class='small d-block d-lg-none text-decoration-none' href="/ss/code" title='&#x52A0;&#x5BC6;&#x8F6C;&#x7801;'>
+                    <b class="text-warning-emphasis">&#x52A0;&#x5BC6;&#x8F6C;&#x7801;</b>
+                </a>
 
+            <!--PC-->
             <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
+
+                <!--left-->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item mx-2">
-                        <a class='nav-link active' href="/" title="ss.js.org">
-                            <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
-                                <div class="fw-bold">SS</div>
-                            </sl-animation>
-                        </a>
+                        <a class="nav-link active" href="/" title="ss.js.org">SS</a>
                     </li>
-                            <li class="nav-item mx-2">
-                                <a class='nav-link' href="/code" title='&#x52A0;&#x5BC6;&#x8F6C;&#x7801;'>
-                                    <b style="color:var(--sl-color-warning-600)">&#x52A0;&#x5BC6;&#x8F6C;&#x7801;</b>
-                                </a>
-                            </li>
+
+                        <!--ss pc title-->
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/code" title='&#x52A0;&#x5BC6;&#x8F6C;&#x7801;'>
+                                <b class="text-warning-emphasis">&#x52A0;&#x5BC6;&#x8F6C;&#x7801;</b>
+                            </a>
+                        </li>
+
+                    <!--搜索-->
                 </ul>
 
+                <!--right-->
                 <ul class="navbar-nav">
+
                     <li class="nav-item">
-                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                        <a class="nav-link text-decoration-none" href="javascript:void(0)" data-action="theme" title="主题">🎨</a>
                     </li>
                 </ul>
+
             </div>
 
-            <!--mobile-->
-            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
-                <sl-menu>
-                    <sl-menu-item data-href="/">SS</sl-menu-item>
+            <!--Mobile-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#nr_navbar_mobile" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end d-lg-none" id="nr_navbar_mobile" style="--bs-offcanvas-width:15em;">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">Netnr</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">SS</a>
+                        </li>
+                        <!--搜索-->
 
-                        <sl-menu-item data-href="/code">&#x52A0;&#x5BC6;&#x8F6C;&#x7801;</sl-menu-item>
-                    <sl-divider></sl-divider>
-                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
-                </sl-menu>
-            </sl-drawer>
+                        <li class="nav-item my-2">
+                            <a class="nav-link text-decoration-none" href="javascript:void(0);" data-action="theme" title="主题">🎨 主题</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </nav>
 
-    <div class="container-fluid p-4">
+
+    <div class="container-fluid p-lg-5 py-4">
     <div class="row">
         <div class="col-md-6 mb-3">
-            <sl-textarea class="nr-txt-code1" rows="9" autofocus label="内容" value="一二 12 ab &lt;&gt;"></sl-textarea>
+            <label class="form-label">内容</label>
+            <textarea class="nrg-txt-code1 form-control" rows="9" autofocus>一二 12 ab &lt;&gt;</textarea>
         </div>
         <div class="col-md-6 mb-3">
-            <sl-textarea class="nr-txt-code2" rows="9" autofocus label="结果"></sl-textarea>
+            <label class="form-label">结果</label>
+            <textarea class="nrg-txt-code2 form-control" rows="9"></textarea>
         </div>
     </div>
 
     <div class="row my-4" title="散列/哈希">
         <div class="col-auto">
-            <sl-button variant="success" class="mb-1">MD5</sl-button>
+            <button class="btn btn-success mb-1">MD5</button>
         </div>
         <div class="col-auto">
-            <sl-button variant="success" class="mb-1">SHA1</sl-button>
-            <sl-button class="mb-1">224</sl-button>
-            <sl-button class="mb-1">256</sl-button>
-            <sl-button class="mb-1">384</sl-button>
-            <sl-button class="mb-1">512</sl-button>
-            <sl-button class="mb-1">SHA3</sl-button>
+            <button class="btn btn-success mb-1">SHA1</button>
+            <button class="btn btn-outline-success mb-1">224</button>
+            <button class="btn btn-outline-success mb-1">256</button>
+            <button class="btn btn-outline-success mb-1">384</button>
+            <button class="btn btn-outline-success mb-1">512</button>
+            <button class="btn btn-outline-success mb-1">SHA3</button>
         </div>
         <div class="col-auto">
-            <sl-button variant="success" class="mb-1">HmacSHA1</sl-button>
-            <sl-button class="mb-1">224</sl-button>
-            <sl-button class="mb-1">256</sl-button>
-            <sl-button class="mb-1">384</sl-button>
-            <sl-button class="mb-1">512</sl-button>
-            <sl-button class="mb-1">HmacMD5</sl-button>
-            <sl-input class="nr-txt-key1 d-inline-block" placeholder="密钥"></sl-input>
+            <button class="btn btn-success mb-1">HmacSHA1</button>
+            <button class="btn btn-outline-success mb-1">224</button>
+            <button class="btn btn-outline-success mb-1">256</button>
+            <button class="btn btn-outline-success mb-1">384</button>
+            <button class="btn btn-outline-success mb-1">512</button>
+            <button class="btn btn-outline-success mb-1">HmacMD5</button>
+            <input class="nrg-txt-key1 form-control d-inline-block w-auto mb-1" placeholder="密钥" />
         </div>
         <div class="col-auto">
-            <input class="nr-txt-file" type='file' multiple />
+            <input class="nrg-txt-file form-control" type='file' multiple />
         </div>
     </div>
 
     <div class="row my-4" title="加密/解密">
         <div class="col-auto">
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">AES</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">DES</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">RC4</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">Rabbit</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="warning">TripleDES</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-input class="nr-txt-key2 d-inline-block mb-1" placeholder="密钥"></sl-input>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-warning">AES</button>
+                    <button class="btn btn-outline-warning">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-warning">DES</button>
+                    <button class="btn btn-outline-warning">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-warning">RC4</button>
+                    <button class="btn btn-outline-warning">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-warning">Rabbit</button>
+                    <button class="btn btn-outline-warning">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-warning">TripleDES</button>
+                    <button class="btn btn-outline-warning">↺</button>
+                </div>
+            <input class="nrg-txt-key2 form-control d-inline-flex w-auto mb-1" placeholder="密钥" />
         </div>
     </div>
 
     <div class="row my-4" title="编码转换">
         <div class="col-auto">
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">Base64</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">encodeURI</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">encodeURIComponent</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">Unicode</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">ASCII</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
-            <sl-button-group class="mb-1">
-                <sl-button variant="primary">HTMLEncode</sl-button>
-                <sl-button>↺</sl-button>
-            </sl-button-group>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-primary">Base64</button>
+                    <button class="btn btn-outline-primary">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-primary">encodeURI</button>
+                    <button class="btn btn-outline-primary">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-primary">encodeURIComponent</button>
+                    <button class="btn btn-outline-primary">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-primary">Unicode</button>
+                    <button class="btn btn-outline-primary">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-primary">ASCII</button>
+                    <button class="btn btn-outline-primary">↺</button>
+                </div>
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-primary">HTMLEncode</button>
+                    <button class="btn btn-outline-primary">↺</button>
+                </div>
         </div>
     </div>
 
     <div class="row my-4" title="其他">
         <div class="col-auto">
-            <sl-button variant="neutral" class="mb-1">UUID</sl-button>
+            <button class="btn btn-secondary mb-1">UUID</button>
         </div>
         <div class="col-auto">
-            <sl-input class="nr-txt-ascii d-inline-block mb-1" readonly placeholder="按键 输出对应 ASCII"></sl-input>
+            <input class="nrg-txt-ascii form-control mb-1" readonly placeholder="按键 输出对应 ASCII" />
+        </div>
+        <div class="col-auto d-flex">
+            <input type="color" class="nrg-txt-color form-control form-control-color" value="#ffa500" title="Choose your color">
+            <input class="nrg-txt-color-value form-control mb-1" style="width:7em;" value="#ffa500" placeholder="Color" />
         </div>
     </div>
 </div>
 
-<script src='https://ss.netnr.com/crypto-js@4.1.1/crypto-js.js'></script>
 
-            <script src="/js/ss/code.js?v=Wgou0isfwscrC2ciDx081iIa3I-6Qx1oQWhS81avsSI"></script>
 </body>
 </html>

@@ -1,31 +1,34 @@
-﻿<div class="container-fluid p-4">
+﻿<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-auto mb-3">
-            <sl-input class="nr-txt-sign" label="标识" placeholder="身份（昵称、标识等）" autofocus autocomplete="off"></sl-input>
+        <div class="col-auto">
+            <div class="input-group mb-2">
+                <span class="input-group-text">标识</span>
+                <input type="search" class="nrg-txt-sign form-control" placeholder="身份（昵称、标识等）" autofocus autocomplete="off">
+            </div>
         </div>
-        <div class="col-auto mb-3">
-            <sl-input class="nr-txt-size" label="大小" type="number" value="240" min="2" max="99999" step="2"></sl-input>
+        <div class="col-auto">
+            <div class="input-group mb-2">
+                <span class="input-group-text">大小</span>
+                <input type="number" class="nrg-txt-size form-control" value="240" min="2" max="99999" step="2">
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-auto d-none mt-3 mb-3">
-            <div class="nr-card-view1 d-inline-block mb-3"></div>
-            <div>
+    <div class="row mt-4">
+        <div class="col-auto d-none mb-3">
+            <div class="nrg-card-view1 d-inline-block"></div>
+            <div class="form-text">
                 <a href="javascript:void(0)" data-action="svg1">下载 SVG</a>
-                <a href="javascript:void(0)" data-action="image1" class="mx-2" >下载 JPG</a>
+                <a href="javascript:void(0)" data-action="image1" class="mx-2">下载 PNG</a>
                 <a href="https://github.com/stewartlord/identicon.js" class="opacity-75" target="_blank">GitHub-style</a>
             </div>
         </div>
-        <div class="col-auto d-none mt-3">
-            <div class="nr-card-view2 d-inline-block mb-3"></div>
-            <div>
+        <div class="col-auto d-none mb-3">
+            <div class="nrg-card-view2 d-inline-block"></div>
+            <div class="form-text">
                 <a href="javascript:void(0)" data-action="svg2">下载 SVG</a>
-                <a href="javascript:void(0)" data-action="image2" class="mx-2" >下载 JPG</a>
+                <a href="javascript:void(0)" data-action="image2" class="mx-2">下载 PNG</a>
                 <a href="https://github.com/dmester/jdenticon" class="opacity-75" target="_blank">jdenticon</a>
             </div>
         </div>
     </div>
 </div>
-
-<script src="/app/identicon/identicon.min.js" asp-append-version="true"></script>
-@Html.Raw(Netnr.QuoteTo.Html("jdenticon.js,html2canvas.js"))

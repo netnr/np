@@ -1,13 +1,13 @@
-<div class="nr-card-box invisible container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-12">
-            <sl-select class="nr-se-language d-inline-block" style="width:12em;max-width:50vw;"></sl-select>
-            <sl-button class="nr-btn-run d-none">Run</sl-button>
+        <div class="col-auto mb-2">
+            <select class="nrg-se-language invisible form-select"></select>
         </div>
-        <div class="col-12 mt-3">
-            <div class="nr-editor"></div>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-run btn btn-warning d-none">Run</button>
+        </div>
+        <div class="col-12">
+            <div class="nrg-editor"></div>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("monaco-editor"))

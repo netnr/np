@@ -1,20 +1,17 @@
 @{
     Layout = null;
 }
+
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta name="keywords" content="netnr NET牛人 BPMN Editor" />
-    <meta name="description" content="Script Services BPMN 流程图" />
 
-    <title>BPMN Editor NET牛人</title>
-
-    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+    <title>BPMN @Html.Raw(AppTo.GetValue("Common:ChineseName"))</title>
 
     <style>
-        html, body, .nr-bpmn {
+        html, body, .nrg-bpmn {
             height: 100%;
             padding: 0;
             margin: 0;
@@ -38,16 +35,18 @@
     </style>
 </head>
 <body>
-    <input type="hidden" id="vid" value='@ViewData["vid"]' />
+    @Html.Raw(QuoteTo.Html("loading"))
 
     <div class="bjs-tool">
-        <input placeholder="标题" class="nr-txt-title" />
+        <input placeholder="标题" class="nrg-txt-title" />
         <span data-action="save">保存</span>
         <span data-action="import">导入</span>
         <span data-action="export">导出</span>
         <span data-action="svg">SVG</span>
     </div>
-    @Html.Raw(Netnr.QuoteTo.Html("bpmn-js"))
-    <script src="/js/draw/bpmn.js" asp-append-version="true"></script>
+
+    @Html.Raw(QuoteTo.Html("bpmn-js"))
+
+    <script src="/file/draw-bpmn.js" defer asp-append-version="true"></script>
 </body>
 </html>

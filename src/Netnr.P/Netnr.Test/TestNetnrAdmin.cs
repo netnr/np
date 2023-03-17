@@ -76,7 +76,7 @@ namespace Netnr.Test
                                 body.Add(col, newTime);
                                 break;
                             default:
-                                body.Add(col, $"{SnowflakeTo.Id()}-{Guid.NewGuid()}-<b>B<b><em>EM</em>");
+                                body.Add(col, $"{Snowflake53To.Id()}-{Guid.NewGuid()}-<b>B<b><em>EM</em>");
                                 break;
                         }
                     });

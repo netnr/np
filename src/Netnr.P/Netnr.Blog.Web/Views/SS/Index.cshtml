@@ -7,54 +7,52 @@
     var navs = ScriptService.NavArray;
     var iconMD5 = CalcTo.MD5(File.ReadAllText(AppTo.WebRootPath + "/images/icon.svg"));
 }
-<input type="hidden" class="nr-hid-icon" value="/images/icon.svg?@iconMD5" />
+<input type="hidden" class="nrg-hid-icon" value="/images/icon.svg?@iconMD5" />
 
 <style>
-    .nr-card-nav a:hover {
+    .nrg-card-link a:hover {
         border-color: orange !important;
     }
 </style>
 
-<div class="container-fluid p-4 pt-0">
-    <div class="nr-card-nav">
-        @foreach (var ng in navs)
-        {
-            var group = ng.GetValue("group");
-            var items = ng.GetProperty("items").EnumerateArray();
+<div class="nrg-card-link @QuoteTo.PanelClass2">
+    @foreach (var ng in navs)
+    {
+        var group = ng.GetValue("group");
+        var items = ng.GetProperty("items").EnumerateArray();
 
-            <div class="row">
-                <h4 class="mt-4">@group</h4>
+        <div class="row">
+            <h4 class="mt-4">@group</h4>
 
-                @foreach (var item in items)
+            @foreach (var item in items)
+            {
+                var url = item.GetValue("url");
+                var icon = item.GetValue("icon");
+                var title = item.GetValue("title");
+                var remark = item.GetValue("remark") ?? title;
+                var target = item.GetValue("target");
+
+                if (!isBuildHtml && url.StartsWith('/') && group != "子站")
                 {
-                    var url = item.GetValue("url");
-                    var icon = item.GetValue("icon");
-                    var title = item.GetValue("title");
-                    var remark = item.GetValue("remark") ?? title;
-                    var target = item.GetValue("target");
-
-                    if (!isBuildHtml && url.StartsWith('/') && group != "子站")
-                    {
-                        url = $"/{ctrl}{url}";
-                    }
-                    if (!string.IsNullOrWhiteSpace(target) || url.StartsWith("http"))
-                    {
-                        target = $"target='{target}'";
-                    }
-
-                    <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
-                        <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="@url" @Html.Raw(target)>
-                            <div class="ms-1 me-2" style="height:3em;width:3em;">
-                                <svg class="w-100 h-100"><use xlink:href="#@item.GetValue("icon")"></use></svg>
-                            </div>
-                            <div class="w-75">
-                                <div class="fs-5 text-truncate">@Html.Raw(title)</div>
-                                <div class="opacity-75 text-truncate">@Html.Raw(remark)</div>
-                            </div>
-                        </a>
-                    </div>
+                    url = $"/{ctrl}{url}";
                 }
-            </div>
-        }
-    </div>
+                if (!string.IsNullOrWhiteSpace(target) || url.StartsWith("http"))
+                {
+                    target = $"target='{target}'";
+                }
+
+                <div class="col-xxl-2 col-xl-3 col-md-4 col-sm-6 mb-3">
+                    <a class="text-decoration-none border rounded py-2 ps-2 d-flex align-items-center" href="@url" @Html.Raw(target)>
+                        <div class="ms-1 me-2" style="height:3em;width:3em;">
+                            <svg class="w-100 h-100"><use xlink:href="#@item.GetValue("icon")"></use></svg>
+                        </div>
+                        <div class="w-75">
+                            <div class="fs-5 text-truncate">@Html.Raw(title)</div>
+                            <div class="opacity-75 text-truncate">@Html.Raw(remark)</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
 </div>

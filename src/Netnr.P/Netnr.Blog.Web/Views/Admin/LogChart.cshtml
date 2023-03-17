@@ -2,31 +2,32 @@
     ViewData["Title"] = "日志图表";
 }
 
-<div class="container-fluid py-4">
-    <div class="row mb-3">
-        <div class="col-xxl-2 col-lg-3 col-md-4 col-7 mb-2">
-            <sl-select class="nr-se-date" value="-7">
-                <sl-menu-item value="0">Today</sl-menu-item>
-                <sl-menu-item value="-1">Yesterday</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item value="-7">Last 7 days</sl-menu-item>
-                <sl-menu-item value="-30">Last 30 days</sl-menu-item>
-            </sl-select>
+<div class="@QuoteTo.PanelClass1">
+    <div class="row">
+        <div class="col-auto mb-2">
+            <a href="/admin/log" class="btn btn-sm btn-outline-info">日志列表</a>
+            <a href="/admin/logchart" class="btn btn-sm btn-primary">日志图表</a>
         </div>
-        <div class="col-xxl-2 col-lg-3 col-md-4 col-5 mb-2">
-            <sl-select class="nr-se-group" value="1">
-                <sl-menu-item value="">All</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item value="1">User</sl-menu-item>
-                <sl-menu-item value="2">Bot</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item value="-1">Error</sl-menu-item>
-                <sl-menu-item value="9">Record</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2">
+            <select class="nrg-se-date form-select form-select-sm">
+                <option value="0">Today</option>
+                <option value="-1">Yesterday</option>
+                <option disabled></option>
+                <option value="-7" selected>Last 7 days</option>
+                <option value="-30">Last 30 days</option>
+            </select>
+        </div>
+        <div class="col-auto mb-2">
+            <select class="nrg-se-group form-select form-select-sm">
+                <option value="">All</option>
+                <option disabled></option>
+                <option value="1" selected>User</option>
+                <option value="2">Bot</option>
+                <option disabled></option>
+                <option value="-1">Error</option>
+                <option value="9">Record</option>
+            </select>
         </div>
     </div>
-    <div class="nr-stats row"></div>
+    <div class="nrg-stats row"></div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("highcharts.js"))
-<script src="/js/admin/logchart.js" asp-append-version="true"></script>

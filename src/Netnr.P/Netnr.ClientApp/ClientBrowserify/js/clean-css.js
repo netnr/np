@@ -1,0 +1,1 @@
+Object.assign(window, { CleanCSS: require('clean-css') })

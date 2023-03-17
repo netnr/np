@@ -1,6 +1,6 @@
 ﻿@{
     var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
-    var themeClass = theme == "dark" ? "sl-theme-dark netnrmd-dark" : "sl-theme-light netnrmd-light";
+    theme = theme == "dark" ? "dark" : "light";
 
     var rdv = ViewContext.RouteData.Values;
     var ctrl = rdv["controller"].ToString().ToLower();
@@ -8,7 +8,7 @@
     var ca = ctrl + "/" + actionName;
 
     var canav = "account/,mix/terms".Split(',');
-    var cafooter = "account/,admin/,home/completeinfo,home/write,storage/,ss/,user/write,user/message,user/verify,user/setting,mix/terms,note/,run/index,run/code,gist/index,gist/code,draw/index,draw/code,doc/index,doc/form,doc/item,doc/catalog,guff/code,guff/index".Split(',');
+    var cafooter = "account/,admin/,home/completeinfo,home/write,storage/,ss/,user/write,user/message,user/verify,user/setting,mix/terms,note/,run/index,run/code,run/edit,gist/index,gist/code,gist/edit,draw/index,draw/code,draw/edit,doc/index,doc/edit,doc/item,doc/catalog,guff/code,guff/index".Split(',');
 
     if (ctrl == "ss")
     {
@@ -22,8 +22,9 @@
 }
 @Html.Raw(QuoteTo.Html("the"))
 <!DOCTYPE html>
-<html lang="zh-cn" class='@themeClass'>
+<html lang="zh-cn" data-bs-theme='@theme' class="netnrmd-@theme">
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @if (ctrl == "run")
@@ -57,6 +58,15 @@
             <meta name='keywords' content='NET牛人,Netnr,脚本服务' />
             <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱' />
         }
+
+        <!--静态页面主题响应-->
+        <script>
+            if (document.cookie.includes(".theme=dark")) {
+                let domHtml = document.documentElement;
+                domHtml.dataset.bsTheme = "dark";
+                domHtml.className = domHtml.className.replace('light', 'dark');
+            }
+        </script>
     }
     else
     {
@@ -66,11 +76,16 @@
 
     <title>@ViewData["Title"] @Html.Raw(AppTo.GetValue("Common:ChineseName"))</title>
 
-    @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css"))
-    <link href="/app/blog/dist/all.css" rel="stylesheet" asp-append-version="true" />
-    <script src="/app/blog/dist/all.js" asp-append-version="true"></script>
+    @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css,bootstrap5.js"))
+
+    <link href='/dist/main.css' rel='stylesheet' asp-append-version="true" />
+    <script src="/dist/main.js" async asp-append-version="true"></script>
+
+    @*<link href='http://localhost:775/main.css' rel='stylesheet' asp-append-version="true" />
+    <script src="http://localhost:775/main.js" async asp-append-version="true"></script>*@
 </head>
 <body>
+
     @if (!canav.Any(x => ca.StartsWith(x)))
     {
         if (AppTo.GetValue<bool>("ReadOnly"))
@@ -81,18 +96,13 @@
         }
         <partial name="_PartialNav" />
     }
+
     @RenderBody()
-    @if (ctrl == "ss")
-    {
-        var ownjs = $"/js/{ca}.js";
-        if (File.Exists(AppTo.WebRootPath + ownjs))
-        {
-            <script src="@ownjs" asp-append-version="true"></script>
-        }
-    }
+
     @if (!cafooter.Any(x => ca.StartsWith(x)))
     {
         <partial name="_PartialFooter" />
     }
+
 </body>
 </html>

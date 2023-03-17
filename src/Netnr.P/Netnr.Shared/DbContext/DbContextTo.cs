@@ -1,8 +1,9 @@
-﻿# if Full || DbContext
+﻿#if Full || DbContext
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace Netnr
 {
@@ -103,6 +104,32 @@ namespace Netnr
                 return conn;
             }
             return null;
+        }
+
+        /// <summary>
+        /// 获取实体映射的表名、列名
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public static ValueTuple<string, Dictionary<string, string>> GetEntityMap<T>(DbContext db)
+        {
+            var dict = new Dictionary<string, string>();
+
+            var entityType = db.Model.FindEntityType(typeof(T));
+            var tableName = entityType.GetTableName();
+
+            var tableMaps = entityType.GetTableMappings();
+            foreach (var tableMap in tableMaps)
+            {
+                foreach (var columnMap in tableMap.ColumnMappings)
+                {
+                    //别名:列名
+                    dict.Add(columnMap.Property.Name, columnMap.Column.Name);
+                }
+            }
+
+            return new(tableName, dict);
         }
     }
 }

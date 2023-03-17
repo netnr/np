@@ -2,13 +2,13 @@
     ViewData["Title"] = "标签";
 }
 
-<div class="container-fluid">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-12 p-4">
+        <div class="col-12">
             <h4>Tags</h4>
             <p>标签是最有效的内容组织形式，正确的使用标签能更快的找到信息</p>
             <div class="fs-5">
-                <partial name="_PartialTag" model="@ViewData["tags"]" />
+                <partial name="~/Views/Home/_PartialTagItem.cshtml" model="@ViewData["tags"]" />
             </div>
         </div>
     </div>

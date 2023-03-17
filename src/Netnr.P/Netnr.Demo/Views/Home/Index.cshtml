@@ -1,25 +1,9 @@
-﻿@model Dictionary<string, List<string>>
-@{
-    ViewData["Title"] = "Demo";
+﻿@{
+    ViewData["Title"] = "Index";
 }
 
-<ul>
-    @foreach (var c in Model.Keys)
-    {
-        var ctrl = c.Replace("Controller", "");
+<base target="_blank" />
 
-        <li>
-            <a href="/@ctrl">@c</a>
-        </li>
-        <li>
-            <ul>
-                @foreach (var m in Model[c])
-                {
-                    <li>
-                        <a href="/@ctrl/@m">@m</a>
-                    </li>
-                }
-            </ul>
-        </li>
-    }
-</ul>
+<a href="/swagger">swagger</a>
+<hr />
+<a href="/Graph">Graph 图像</a>

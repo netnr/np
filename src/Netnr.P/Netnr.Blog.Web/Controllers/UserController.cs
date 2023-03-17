@@ -1,5 +1,4 @@
 using Netnr.Login;
-using AgGrid.InfiniteRowModel;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 
@@ -8,7 +7,7 @@ namespace Netnr.Blog.Web.Controllers
     /// <summary>
     /// 个人用户
     /// </summary>
-    public class UserController : Controller
+    public class UserController : WebController
     {
         public ContextBase db;
 
@@ -29,22 +28,18 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult Message(int page = 1)
+        public async Task<IActionResult> Message(int page = 1)
         {
             var uinfo = IdentityService.Get(HttpContext);
 
-            var vm = CommonService.MessageQuery(uinfo.UserId, MessageType.UserWriting, null, page);
+            var vm = await CommonService.MessageQuery(uinfo.UserId, MessageType.UserWriting, null, page);
             vm.Route = Request.Path;
 
             if (page == 1)
             {
-                var listum = db.UserMessage.Where(x => x.UmType == MessageType.UserWriting.ToString() && x.UmAction == 2 && x.UmStatus == 1).ToList();
-                if (listum.Count > 0)
-                {
-                    listum.ForEach(x => x.UmStatus = 2);
-                    db.UserMessage.UpdateRange(listum);
-                    db.SaveChanges();
-                }
+                var mType = MessageType.UserWriting.ToString();
+                await db.UserMessage.Where(x => x.UmType == mType && x.UmAction == 2 && x.UmStatus == 1)
+                    .ExecuteUpdateAsync(x => x.SetProperty(p => p.UmStatus, 2));
             }
 
             return View(vm);
@@ -56,7 +51,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult DelMessage([FromRoute] string id)
+        public async Task<IActionResult> DelMessage([FromRoute] string id)
         {
             var vm = new ResultVM();
 
@@ -64,22 +59,8 @@ namespace Netnr.Blog.Web.Controllers
             {
                 var uinfo = IdentityService.Get(HttpContext);
 
-                var um = db.UserMessage.Find(id);
-                if (um == null)
-                {
-                    vm.Set(EnumTo.RTag.lack);
-                }
-                else if (um?.Uid != uinfo.UserId)
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                }
-                else
-                {
-                    db.UserMessage.Remove(um);
-                    int num = db.SaveChanges();
-
-                    vm.Set(num > 0);
-                }
+                var num = await db.UserMessage.Where(x => x.UmId == id && x.Uid == uinfo.UserId).ExecuteDeleteAsync();
+                vm.Set(num > 0);
             }
 
             if (vm.Code == 200)
@@ -101,11 +82,11 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult Id([FromRoute] int id)
+        public async Task<IActionResult> Id([FromRoute] int id)
         {
             if (id > 0)
             {
-                var userInfo = db.UserInfo.Find(id);
+                var userInfo = await db.UserInfo.FindAsync(id);
                 if (userInfo != null)
                 {
                     return View(userInfo);
@@ -121,19 +102,14 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="UserSay"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM UpdateUserSay([FromForm] string UserSay)
+        public async Task<ResultVM> UpdateUserSay([FromForm] string UserSay)
         {
             var vm = IdentityService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
             {
                 var uinfo = IdentityService.Get(HttpContext);
 
-                var currmo = db.UserInfo.Find(uinfo.UserId);
-                currmo.UserSay = UserSay;
-                db.UserInfo.Update(currmo);
-
-                int num = db.SaveChanges();
-
+                var num = await db.UserInfo.Where(x => x.UserId == uinfo.UserId).ExecuteUpdateAsync(x => x.SetProperty(p => p.UserSay, UserSay));
                 vm.Set(num > 0);
             }
 
@@ -147,7 +123,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="source"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM UpdateUserAvatar([FromForm] string type, [FromForm] string source)
+        public async Task<ResultVM> UpdateUserAvatar([FromForm] string type, [FromForm] string source)
         {
             var vm = new ResultVM();
 
@@ -180,14 +156,14 @@ namespace Netnr.Blog.Web.Controllers
                                 byte[] bytes = Convert.FromBase64String(source);
                                 System.IO.File.WriteAllBytes(PathTo.Combine(ppath, upname), bytes);
 
-                                var userInfo = db.UserInfo.Find(uinfo.UserId);
+                                var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
                                 userInfo.UserPhoto = npnew;
                                 db.UserInfo.Update(userInfo);
-                                int num = db.SaveChanges();
+                                int num = await db.SaveChangesAsync();
                                 if (num > 0)
                                 {
                                     //写入授权
-                                    IdentityService.Set(HttpContext, userInfo).Wait();
+                                    await IdentityService.Set(HttpContext, userInfo);
                                 }
 
                                 vm.Set(EnumTo.RTag.success);
@@ -195,16 +171,16 @@ namespace Netnr.Blog.Web.Controllers
                             break;
                         case "link":
                             {
-                                HttpTo.DownloadSave(source, PathTo.Combine(ppath, upname));
+                                await Task.Run(() => HttpTo.DownloadSave(source, PathTo.Combine(ppath, upname)));
 
-                                var userInfo = db.UserInfo.Find(uinfo.UserId);
+                                var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
                                 userInfo.UserPhoto = npnew;
                                 db.UserInfo.Update(userInfo);
-                                int num = db.SaveChanges();
+                                int num = await db.SaveChangesAsync();
                                 if (num > 0)
                                 {
                                     //写入授权
-                                    IdentityService.Set(HttpContext, userInfo).Wait();
+                                    await IdentityService.Set(HttpContext, userInfo);
                                 }
 
                                 vm.Set(EnumTo.RTag.success);
@@ -245,7 +221,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM SaveUserInfo([FromForm] UserInfo mo)
+        public async Task<ResultVM> SaveUserInfo([FromForm] UserInfo mo)
         {
             var vm = new ResultVM();
 
@@ -277,14 +253,14 @@ namespace Netnr.Blog.Web.Controllers
 
             var uinfo = IdentityService.Get(HttpContext);
 
-            var userInfo = db.UserInfo.Find(uinfo.UserId);
+            var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
             var log = new List<object>() { new UserInfo().ToCopy(userInfo) };
 
             //变更账号
             if (!string.IsNullOrWhiteSpace(mo.UserName) && userInfo.UserNameChange != 1 && userInfo.UserName != mo.UserName)
             {
                 //账号重复
-                if (db.UserInfo.Any(x => x.UserName == mo.UserName))
+                if (await db.UserInfo.AnyAsync(x => x.UserName == mo.UserName))
                 {
                     vm.Set(EnumTo.RTag.exist);
                     vm.Msg = "账号已经存在";
@@ -313,7 +289,7 @@ namespace Netnr.Blog.Web.Controllers
 
                         return vm;
                     }
-                    else if (db.UserInfo.Any(x => x.UserMail == mo.UserMail))
+                    else if (await db.UserInfo.AnyAsync(x => x.UserMail == mo.UserMail))
                     {
                         vm.Set(EnumTo.RTag.exist);
                         vm.Msg = "邮箱已经存在";
@@ -339,10 +315,10 @@ namespace Netnr.Blog.Web.Controllers
             LoggingTo.Add(logModel);
 
             db.UserInfo.Update(userInfo);
-            var num = db.SaveChanges();
+            var num = await db.SaveChangesAsync();
 
             //更新授权信息
-            IdentityService.Set(HttpContext, userInfo).Wait();
+            await IdentityService.Set(HttpContext, userInfo);
 
             vm.Set(num > 0);
 
@@ -367,35 +343,35 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult RidOAuth([FromRoute] LoginWhich? id)
+        public async Task<IActionResult> RidOAuth([FromRoute] LoginWhich? id)
         {
             var uinfo = IdentityService.Get(HttpContext);
-            var mo = db.UserInfo.Find(uinfo.UserId);
 
-            switch (id)
+            if (id.HasValue && ThirdLoginService.OpenIdMap.TryGetValue(id.Value, out string propertyName))
             {
-                case LoginWhich.QQ:
-                    mo.OpenId1 = "";
-                    break;
-                case LoginWhich.Weibo:
-                    mo.OpenId2 = "";
-                    break;
-                case LoginWhich.GitHub:
-                    mo.OpenId3 = "";
-                    break;
-                case LoginWhich.Taobao:
-                    mo.OpenId4 = "";
-                    break;
-                case LoginWhich.Microsoft:
-                    mo.OpenId5 = "";
-                    break;
-                case LoginWhich.DingTalk:
-                    mo.OpenId6 = "";
-                    break;
+                var query = db.UserInfo.Where(x => x.UserId == uinfo.UserId);
+                switch (id)
+                {
+                    case LoginWhich.QQ:
+                        await query.ExecuteUpdateAsync(x => x.SetProperty(p => p.OpenId1, ""));
+                        break;
+                    case LoginWhich.Weibo:
+                        await query.ExecuteUpdateAsync(x => x.SetProperty(p => p.OpenId2, ""));
+                        break;
+                    case LoginWhich.GitHub:
+                        await query.ExecuteUpdateAsync(x => x.SetProperty(p => p.OpenId3, ""));
+                        break;
+                    case LoginWhich.Taobao:
+                        await query.ExecuteUpdateAsync(x => x.SetProperty(p => p.OpenId4, ""));
+                        break;
+                    case LoginWhich.Microsoft:
+                        await query.ExecuteUpdateAsync(x => x.SetProperty(p => p.OpenId5, ""));
+                        break;
+                    case LoginWhich.DingTalk:
+                        await query.ExecuteUpdateAsync(x => x.SetProperty(p => p.OpenId6, ""));
+                        break;
+                }
             }
-
-            db.UserInfo.Update(mo);
-            db.SaveChanges();
 
             return Redirect("/user/setting");
         }
@@ -428,8 +404,8 @@ namespace Netnr.Blog.Web.Controllers
                         //注销
                         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-                        //清空全局缓存
-                        CacheTo.RemoveAll();
+                        //清空用户缓存
+                        CacheTo.RemoveGroup(uinfo.UserId.ToString());
                     }
 
                     vm.Set(num > 0);
@@ -459,7 +435,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult Write([FromRoute] string id, int? page)
+        public async Task<IActionResult> Write([FromRoute] string id, int? page)
         {
             if (!string.IsNullOrWhiteSpace(id))
             {
@@ -470,11 +446,11 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 var uinfo = IdentityService.Get(HttpContext);
-                var vm = CommonService.UserConnWritingQuery(uinfo.UserId, ConnectionType.UserWriting, action, page ?? 1);
+                var vm = await CommonService.UserConnWritingQuery(uinfo.UserId, ConnectionType.UserWriting, action, page ?? 1);
                 vm.Route = Request.Path;
                 vm.Other = id;
 
-                return View("_PartialWritingList", vm);
+                return View("~/Views/Home/_PartialWritingList.cshtml", vm);
             }
 
             return View();
@@ -483,12 +459,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 文章列表
         /// </summary>
-        /// <param name="grp"></param>
         /// <returns></returns>
         [Authorize, HttpGet]
-        public ResultVM WriteList(string grp)
+        public async Task<ResultVM> WriteList()
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 var uinfo = IdentityService.Get(HttpContext);
 
@@ -509,12 +486,15 @@ namespace Netnr.Blog.Web.Controllers
                                 a.UwMark,
                                 a.UwCategory
                             };
-
-                vm.Data = query.GetInfiniteRowModelBlock(grp);
+                vm.Data = await query.ToListAsync();
                 vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -523,14 +503,14 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public ResultVM WriteOne(int id)
+        public async Task<ResultVM> WriteOne(int id)
         {
             var vm = new ResultVM();
 
             var uinfo = IdentityService.Get(HttpContext);
 
-            var mo = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == id);
-            var listTags = db.UserWritingTags.Where(x => x.UwId == id).ToList();
+            var mo = await db.UserWriting.FirstOrDefaultAsync(x => x.Uid == uinfo.UserId && x.UwId == id);
+            var listTags = await db.UserWritingTags.Where(x => x.UwId == id).ToListAsync();
 
             vm.Data = new
             {
@@ -549,54 +529,55 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="TagIds"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
+        public async Task<ResultVM> WriteSave([FromForm] UserWriting mo, [FromForm] string TagIds)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 var lisTagId = new List<int>();
                 TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
-                var lisTagName = CommonService.TagsQuery().Where(x => lisTagId.Contains(x.TagId)).ToList();
+                var lisTagName = (await CommonService.TagsQuery()).Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                 var uinfo = IdentityService.Get(HttpContext);
 
-                var oldmo = db.UserWriting.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UwId == mo.UwId);
-                if (oldmo?.UwStatus == -1)
+                //更新文章
+                var num = await db.UserWriting
+                    .Where(x => x.Uid == uinfo.UserId && x.UwId == mo.UwId && x.UwStatus != -1)
+                    .ExecuteUpdateAsync(x => x
+                    .SetProperty(p => p.UwTitle, mo.UwTitle)
+                    .SetProperty(p => p.UwCategory, mo.UwCategory)
+                    .SetProperty(p => p.UwContentMd, mo.UwContentMd)
+                    .SetProperty(p => p.UwContent, mo.UwContent)
+                    .SetProperty(p => p.UwUpdateTime, DateTime.Now));
+
+                //删除标签
+                num += await db.UserWritingTags.Where(x => x.UwId == mo.UwId).ExecuteDeleteAsync();
+
+                //新增标签
+                var listwt = new List<UserWritingTags>();
+                foreach (var tag in lisTagId)
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                }
-                else if (oldmo != null)
-                {
-                    oldmo.UwTitle = mo.UwTitle;
-                    oldmo.UwCategory = mo.UwCategory;
-                    oldmo.UwContentMd = mo.UwContentMd;
-                    oldmo.UwContent = mo.UwContent;
-                    oldmo.UwUpdateTime = DateTime.Now;
-
-                    db.UserWriting.Update(oldmo);
-
-                    var wt = db.UserWritingTags.Where(x => x.UwId == mo.UwId).ToList();
-                    db.UserWritingTags.RemoveRange(wt);
-
-                    var listwt = new List<UserWritingTags>();
-                    foreach (var tag in lisTagId)
+                    var wtmo = new UserWritingTags
                     {
-                        var wtmo = new UserWritingTags
-                        {
-                            UwId = mo.UwId,
-                            TagId = tag,
-                            TagName = lisTagName.Where(x => x.TagId == tag).FirstOrDefault().TagName
-                        };
+                        UwId = mo.UwId,
+                        TagId = tag,
+                        TagName = lisTagName.Where(x => x.TagId == tag).FirstOrDefault().TagName
+                    };
 
-                        listwt.Add(wtmo);
-                    }
-                    db.UserWritingTags.AddRange(listwt);
-
-                    int num = db.SaveChanges();
-                    vm.Set(num > 0);
+                    listwt.Add(wtmo);
                 }
+                await db.UserWritingTags.AddRangeAsync(listwt);
+                num += await db.SaveChangesAsync();
 
-                return vm;
-            });
+                vm.Set(num > 0);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
         }
 
         /// <summary>
@@ -605,28 +586,30 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [Authorize, HttpGet]
-        public ResultVM WriteDel(string ids)
+        public async Task<ResultVM> WriteDel(string ids)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 var uinfo = IdentityService.Get(HttpContext);
                 var listKeyId = ids.Split(',').Select(x => Convert.ToInt32(x)).ToList();
                 var listKeys = listKeyId.Select(x => x.ToString()).ToList();
 
-                var listMo = db.UserWriting.Where(x => x.Uid == uinfo.UserId && x.UwStatus != -1 && listKeyId.Contains(x.UwId)).ToList();
-                db.UserWriting.RemoveRange(listMo);
+                var num = await db.UserWriting
+                    .Where(x => x.Uid == uinfo.UserId && x.UwStatus != -1 && listKeyId.Contains(x.UwId))
+                    .ExecuteDeleteAsync();
+                num += await db.UserWritingTags.Where(x => listKeyId.Contains(x.UwId)).ExecuteDeleteAsync();
+                num += await db.UserReply.Where(x => listKeys.Contains(x.UrTargetId)).ExecuteDeleteAsync();
 
-                var mo2 = db.UserWritingTags.Where(x => listKeyId.Contains(x.UwId)).ToList();
-                db.UserWritingTags.RemoveRange(mo2);
-
-                var mo3 = db.UserReply.Where(x => listKeys.Contains(x.UrTargetId)).ToList();
-                db.UserReply.RemoveRange(mo3);
-
-                var num = db.SaveChanges();
                 vm.Set(num > 0);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         #endregion
@@ -638,7 +621,7 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult Verify([FromRoute] string id)
+        public async Task<IActionResult> Verify([FromRoute] string id)
         {
             var vm = new ResultVM();
 
@@ -656,7 +639,7 @@ namespace Netnr.Blog.Web.Controllers
                             {
                                 var uinfo = IdentityService.Get(HttpContext);
 
-                                var userInfo = db.UserInfo.Find(uinfo.UserId);
+                                var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
                                 if (userInfo.UserMailValid == 1)
                                 {
                                     vm.Msg = "邮箱已经完成验证";
@@ -667,15 +650,16 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
-                                    var cacheKey = "Global_VerifyMail_" + userInfo.UserId;
-                                    var issend = CacheTo.Get<bool>(cacheKey);
+                                    var ckey = "VerifyMail";
+                                    var gkey = userInfo.UserId.ToString();
+                                    var issend = CacheTo.Get<bool>(ckey, gkey);
                                     if (issend == true)
                                     {
                                         vm.Msg = "5分钟内只能发送一次验证信息";
                                     }
                                     else
                                     {
-                                        var mcs = System.IO.File.ReadAllLines(Path.Combine(AppTo.WebRootPath, "file/mailchecker/list.txt"));
+                                        var mcs = await System.IO.File.ReadAllLinesAsync(Path.Combine(AppTo.WebRootPath, "file/mailchecker/list.txt"));
                                         if (mcs.Contains(userInfo.UserMail.Split('@').LastOrDefault().ToLower()))
                                         {
                                             vm.Msg = "该邮箱已被屏蔽";
@@ -709,11 +693,11 @@ namespace Netnr.Blog.Web.Controllers
 
                                             try
                                             {
-                                                MailTo.Send(sendModel).Wait();
+                                                await MailTo.Send(sendModel);
 
                                                 vm.Set(EnumTo.RTag.success);
                                                 vm.Msg = "已发送成功";
-                                                CacheTo.Set(cacheKey, true, 300, false);
+                                                CacheTo.Set(ckey, true, 300, false, gkey);
                                             }
                                             catch (Exception ex)
                                             {
@@ -744,7 +728,7 @@ namespace Netnr.Blog.Web.Controllers
                                 }
                                 else
                                 {
-                                    var userInfo = db.UserInfo.FirstOrDefault(x => x.UserMail == mail);
+                                    var userInfo = await db.UserInfo.FirstOrDefaultAsync(x => x.UserMail == mail);
                                     if (userInfo != null)
                                     {
                                         if (userInfo.UserMailValid == 1)
@@ -754,10 +738,9 @@ namespace Netnr.Blog.Web.Controllers
                                         else
                                         {
                                             userInfo.UserMailValid = 1;
-
                                             db.UserInfo.Update(userInfo);
 
-                                            int num = db.SaveChanges();
+                                            int num = await db.SaveChangesAsync();
 
                                             vm.Set(num > 0);
                                             if (vm.Code == 200)

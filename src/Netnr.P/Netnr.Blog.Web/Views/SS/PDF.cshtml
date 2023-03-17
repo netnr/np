@@ -1,51 +1,42 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
-        <div class="col-auto">
-            <input class="nr-txt-file d-inline-block mb-3" type="file" accept="application/pdf" />
+        <div class="col-md-3 mb-2">
+            <input class="nrg-txt-file form-control" type="file" accept="application/pdf" />
         </div>
-        <div class="col-auto">
-            <sl-dropdown class="nr-btn-export-image">
-                <sl-button slot="trigger" caret variant="warning">导出图片</sl-button>
-                <sl-menu>
-                    <sl-menu-item data-action="export-image-page">当前页面</sl-menu-item>
-                    <sl-menu-item data-action="export-image-all">全部页面</sl-menu-item>
-                </sl-menu>
-            </sl-dropdown>
+        <div class="col-auto mb-2 me-md-5">
+            <button class="nrg-btn-demo btn btn-secondary">Demo</button>
         </div>
-        <div class="col-auto">
-            <sl-button class="nr-btn-demo mb-3" variant="neutral">Demo</sl-button>
-        </div>
-        <div class="col-12">
-            <div>
-                <div class="nr-card-tool d-none m-auto" style="width:fit-content">
-                    <sl-button-group class="mb-3">
-                        <sl-button class="nr-btn-prev" size="small">
-                            <sl-icon name="arrow-up"></sl-icon>
-                        </sl-button>
-                        <sl-button class="nr-btn-next" size="small">
-                            <sl-icon name="arrow-down"></sl-icon>
-                        </sl-button>
-                    </sl-button-group>
-                    <sl-button-group class="mb-3">
-                        <sl-input class="nr-txt-number d-inline-block" size="small" type="number" value="1" min="1" max="9999"></sl-input>
-                        <sl-button class="nr-btn-last" variant="text" size="small">/ 0</sl-button>
-                    </sl-button-group>
-                    <sl-select class="nr-se-scale mb-3 d-inline-block" value="1" size="small" style="width:6em">
-                        <sl-menu-item value="0.5">50%</sl-menu-item>
-                        <sl-menu-item value="0.75">75%</sl-menu-item>
-                        <sl-menu-item value="1">100%</sl-menu-item>
-                        <sl-menu-item value="2">200%</sl-menu-item>
-                        <sl-menu-item value="3">300%</sl-menu-item>
-                        <sl-menu-item value="auto">页宽</sl-menu-item>
-                    </sl-select>
-                    <sl-button class="nr-btn-rotate mb-3" size="small">
-                        <sl-icon name="arrow-clockwise"></sl-icon>
-                    </sl-button>
-                </div>
+        <div class="col-auto mb-2">
+            <div class="dropdown d-none flag-hide">
+                <button class="nrg-btn-dd-export btn btn-warning dropdown-toggle" data-bs-toggle="dropdown">导出图片</button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" type="button" data-action="export-image-page">当前页面</button></li>
+                    <li><button class="dropdown-item" type="button" data-action="export-image-all">全部页面</button></li>
+                </ul>
             </div>
-            <div class="nr-card-view text-center"></div>
         </div>
+        <div class="col-auto d-none flag-hide mb-2">
+            <div class="input-group">
+                <button class="nrg-btn-prev btn btn-secondary">&laquo;</button>
+                <button class="nrg-btn-next btn btn-secondary">&raquo;</button>
+                <input class="nrg-txt-number form-control" type="number" value="1" min="1" max="9999" />
+                <button class="nrg-btn-last btn btn-secondary">/ 0</button>
+            </div>
+        </div>
+        <div class="col-auto d-none flag-hide mb-2">
+            <select class="nrg-se-scale form-select">
+                <option value="0.5">50%</option>
+                <option value="0.75">75%</option>
+                <option value="1" selected>100%</option>
+                <option value="2">200%</option>
+                <option value="3">300%</option>
+                <option value="auto">页宽</option>
+            </select>
+        </div>
+        <div class="col-auto d-none flag-hide">
+            <button class="nrg-btn-rotate btn btn-secondary">旋转</button>
+        </div>
+
+        <div class="nrg-card-view text-center col-12 my-3"></div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("pdf.js,jszip.js"))

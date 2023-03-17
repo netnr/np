@@ -9,7 +9,7 @@
         {
             get
             {
-                var fullPath = Path.Combine(AppTo.WebRootPath, "file/ss/nav.json");
+                var fullPath = Path.Combine(AppTo.WebRootPath, "file/data-nav.json");
                 return File.ReadAllText(fullPath).DeJson().EnumerateArray();
             }
         }

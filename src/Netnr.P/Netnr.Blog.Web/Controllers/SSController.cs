@@ -1,9 +1,10 @@
 using System.Collections.Concurrent;
+using System.Net.Http;
 
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
-    /// 脚本服务
+    /// 脚本服务 ScriptService
     /// </summary>
     public class SSController : Controller
     {
@@ -21,15 +22,6 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult WallPaper()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 天气预报
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Weather()
         {
             return View();
         }
@@ -80,15 +72,6 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 图床
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Bed()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 加密转码
         /// </summary>
         /// <returns></returns>
@@ -98,19 +81,10 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// JSON转C#实体
+        /// JSON转
         /// </summary>
         /// <returns></returns>
-        public IActionResult JsonToCsharp()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// JSON转XML
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult JsonToXml()
+        public IActionResult JsonTo()
         {
             return View();
         }
@@ -233,10 +207,10 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 食物嘌呤含量
+        /// 数据字典
         /// </summary>
         /// <returns></returns>
-        public IActionResult Purine()
+        public IActionResult DataDict()
         {
             return View();
         }
@@ -269,6 +243,24 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
+        /// 新华字典
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Zidian()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 聊天
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Chat()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// ZeroTier Web Manager
         /// </summary>
         /// <returns></returns>
@@ -291,15 +283,6 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult RandomMatch()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 垃圾分类
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult GC()
         {
             return View();
         }
@@ -386,42 +369,6 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 格式化
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult SqlFormatter()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 图片压缩
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Tiny()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 印
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Seal()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 文本转图片
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult TexToImage()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// PowerDesigner
         /// </summary>
         /// <returns></returns>
@@ -467,15 +414,6 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 正则
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Regex()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 流程图
         /// </summary>
         /// <returns></returns>
@@ -508,14 +446,14 @@ namespace Netnr.Blog.Web.Controllers
         /// 【管理员】构建静态文件
         /// </summary>
         /// <returns></returns>
-        public ResultVM Build()
+        public async Task<ResultVM> Build()
         {
             var vm = new ResultVM();
 
             //是管理员 或 带参数
             if (IdentityService.IsAdmin(HttpContext) || Environment.GetCommandLineArgs().Contains("--admin"))
             {
-                vm = BuildHtml<SSController>();
+                vm = await BuildHtml<SSController>();
             }
             else
             {
@@ -530,7 +468,7 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private ResultVM BuildHtml<T>() where T : Controller
+        private async Task<ResultVM> BuildHtml<T>() where T : Controller
         {
             var vm = new ResultVM();
 
@@ -550,15 +488,18 @@ namespace Netnr.Blog.Web.Controllers
                 var urlPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ctrlName}/";
 
                 var cbs = new ConcurrentBag<string>();
+                var hc = new HttpClient();
                 //请求
-                methods.ForEach(mh =>
+                await Parallel.ForEachAsync(methods, async (mh, token) =>
                 {
                     Console.WriteLine(mh.Name);
 
                     cbs.Add(mh.Name);
-                    string html = HttpTo.Get(urlPrefix + mh.Name);
+
+                    var html = await hc.GetStringAsync(urlPrefix + mh.Name, token);
                     var savePath = $"{AppTo.WebRootPath}/{mh.Name.ToLower()}.html";
-                    FileTo.WriteText(html, savePath, false);
+
+                    await System.IO.File.WriteAllTextAsync(savePath, html, token);
                 });
                 vm.Log.AddRange(cbs);
                 Console.WriteLine("\r\nDone!");

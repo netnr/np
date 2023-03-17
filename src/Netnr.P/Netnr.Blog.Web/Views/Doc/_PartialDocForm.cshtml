@@ -1,28 +1,30 @@
 @model DocSet
 @{
     ViewData["Title"] = Model == null ? "Add doc" : "Editing doc";
+    var isOpen = Model == null ? "" : Model.DsOpen == 1 ? "1" : "2";
 }
 
-<div class="container p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-12">
-            <form method="post" action="/doc/saveform">
-                <sl-input class="mb-3" label="标题" size="large" required name="DsName" value="@Model?.DsName" placeholder="标题名称" maxlength="50" autofocus></sl-input>
-                <sl-textarea class="mb-3" label="描述" name="DsRemark" placeholder="描述" maxlength="200" rows="5" value="@Model?.DsRemark"></sl-textarea>
+            <form method="post" action="/doc/save">
+                <input class="mb-3 form-control form-control-lg" required name="DsName" value="@Model?.DsName" placeholder="标题名称" maxlength="50" autofocus />
+                <textarea class="mb-3 form-control" name="DsRemark" placeholder="描述" maxlength="200" rows="5">@Model?.DsRemark</textarea>
                 <div class="row">
                     <div class="col-md-6">
-                        <sl-select label="分享" required name="DsOpen" value='@(Model?.DsOpen==2?"2":"1")'>
-                            <sl-menu-item value="1">公开（只读）</sl-menu-item>
-                            <sl-menu-item value="2">私有（可分享码查看）</sl-menu-item>
-                        </sl-select>
+                        <select class="form-select" required name="DsOpen" data-value='@isOpen'>
+                            <option value="">（请选择）</option>
+                            <option value="1">公开（只读）</option>
+                            <option value="2">私有（可分享码查看）</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
-                        <sl-input label="分享码" type="password" name="Spare1" value="@Model?.Spare1" placeholder="分享码，不需要分享可不填写" maxlength="20" toggle-password autocomplete="off"></sl-input>
+                        <input class="form-control" name="Spare1" value="@Model?.Spare1" placeholder="分享码，不需要分享可不填写" maxlength="20" autocomplete="off" />
                     </div>
                 </div>
                 <p class="small opacity-75">私有时，可根据分享码 <b>查看</b>，4 - 20 位</p>
                 <input type="hidden" name="DsCode" value="@Model?.DsCode" />
-                <sl-button type="submit" variant="warning">Save doc</sl-button>
+                <button type="submit" class="btn btn-warning">Save doc</button>
             </form>
         </div>
     </div>

@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -663,7 +662,7 @@ namespace Netnr.Blog.Web.Controllers
                                 {
                                     case "http":
                                         {
-                                            var ckey = $"monitor:{type}:{item}";
+                                            var ckey = $"Monitor:{type}:{item}";
                                             var lm = item.Split(' ');
 
                                             var client = new HttpClient();
@@ -702,7 +701,7 @@ namespace Netnr.Blog.Web.Controllers
                                         break;
                                     case "tcp":
                                         {
-                                            var ckey = $"monitor:{type}:{item}";
+                                            var ckey = $"Monitor:{type}:{item}";
 
                                             var hp = item.Split(' ');
                                             var client = new TcpClient();

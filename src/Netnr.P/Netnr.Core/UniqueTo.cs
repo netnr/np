@@ -8,7 +8,7 @@ namespace Netnr;
 public class UniqueTo
 {
     /// <summary>
-    /// 根据Guid获取唯一数字序列，19位
+    /// 根据Guid获取唯一数字序列
     /// </summary>
     /// <returns></returns>
     public static long LongId()

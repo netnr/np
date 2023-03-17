@@ -28,13 +28,9 @@
         /// </summary>
         /// <param name="ivm"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QueryTempExample(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QueryTempExample(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.TempExample;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.TempExample, ivm, db);
             return ovm;
         }
 
@@ -56,13 +52,9 @@
         /// </summary>
         /// <param name="ivm"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QuerySysTableConfig(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysTableConfig(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysTableConfig;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysTableConfig, ivm, db);
             return ovm;
         }
 
@@ -107,13 +99,9 @@
         /// </summary>
         /// <param name="ivm"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QuerySysMenu(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QuerySysMenu(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysMenu;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysMenu, ivm, db);
             return ovm;
         }
 
@@ -135,13 +123,9 @@
         /// </summary>
         /// <param name="ivm"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QueryGridChange1(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QueryGridChange1(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysRole;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysRole, ivm, db);
             return ovm;
         }
 
@@ -150,13 +134,9 @@
         /// </summary>
         /// <param name="ivm"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QueryGridChange2(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QueryGridChange2(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.SysUser;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.SysUser, ivm, db);
             return ovm;
         }
 
@@ -204,13 +184,9 @@
         /// </summary>
         /// <param name="ivm"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QueryInvoiceMain(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QueryInvoiceMain(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
-            var query = db.TempInvoiceMain;
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
-
+            var ovm = await CommonService.QueryJoin(db.TempInvoiceMain, ivm, db);
             return ovm;
         }
 
@@ -219,10 +195,8 @@
         /// </summary>
         /// <param name="ivm"></param>
         /// <returns></returns>
-        public QueryDataOutputVM QueryInvoiceDetail(QueryDataInputVM ivm)
+        public async Task<QueryDataOutputVM> QueryInvoiceDetail(QueryDataInputVM ivm)
         {
-            var ovm = new QueryDataOutputVM();
-
             var query = from a in db.TempInvoiceDetail select a;
             if (string.IsNullOrWhiteSpace(ivm.Pe1))
             {
@@ -232,8 +206,7 @@
             {
                 query = query.Where(x => x.TimId == ivm.Pe1);
             }
-
-            CommonService.QueryJoin(query, ivm, db, ref ovm);
+            var ovm = await CommonService.QueryJoin(query, ivm, db);
 
             return ovm;
         }

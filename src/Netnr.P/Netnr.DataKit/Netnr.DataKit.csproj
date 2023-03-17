@@ -17,22 +17,26 @@
 	</Target>
 	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;Base;Web;App;DataKit;DKController;AdoFull</DefineConstants>
+	  <DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;Base;Web;App;DataKit;DKController;AdoAll</DefineConstants>
 	  <NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;Base;Web;App;DataKit;DKController;AdoFull</DefineConstants>
+	  <DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;Base;Web;App;DataKit;DKController;AdoAll</DefineConstants>
 	  <NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0" />
-		<PackageReference Include="MySqlConnector" Version="2.2.0" />
-		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.80" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
-		<PackageReference Include="Npgsql" Version="7.0.0-rc.2" />
+		<None Include="..\..\..\docs\Netnr.DataKit.md"></None>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
+		<PackageReference Include="MySqlConnector" Version="2.3.0-beta.1" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.90" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
+		<PackageReference Include="Npgsql" Version="7.0.2" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

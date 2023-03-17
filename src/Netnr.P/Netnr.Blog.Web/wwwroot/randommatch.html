@@ -1,109 +1,148 @@
-﻿<!--
+<!--
 https://github.com/netnr
-2022-11
+2023-03
 -->
 
 <!DOCTYPE html>
-<html lang="zh-cn" class='sl-theme-light netnrmd-light'>
+<html lang="zh-cn" data-bs-theme='light' class="netnrmd-light">
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <meta name='keywords' content='NET牛人,Netnr,随机匹配' />
             <meta name='description' content='NET牛人,Netnr,脚本服务,Script Services,工具箱,随机数生成、随机分组' />
+        <!--静态页面主题响应-->
+        <script>
+            if (document.cookie.includes(".theme=dark")) {
+                let domHtml = document.documentElement;
+                domHtml.dataset.bsTheme = "dark";
+                domHtml.className = domHtml.className.replace('light', 'dark');
+            }
+        </script>
 
     <title>&#x968F;&#x673A;&#x5339;&#x914D; NET牛人</title>
 
     <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-<link href='https://ss.netnr.com/bootstrap@5.2.2/dist/css/bootstrap.min.css' rel='stylesheet' async />
+<link href='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet' />
+<script src='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js' async ></script>
 
-    <link href="/app/blog/dist/all.css?v=_0J1Z05gYDHZvs0TcVouj90G3JcLkWwwo_3smoSKH-k" rel="stylesheet" />
-    <script src="/app/blog/dist/all.js?v=ZJk4lDdkYK4pkI98GjHlLoeVMxQ7We-jWcr7_71CujM"></script>
+
+    <link href='/dist/main.css?v=sEk5A0XatshzzERVWqyQrEIJHD7OQes2wQlyRfFNS2s' rel='stylesheet' />
+    <script src="/dist/main.js?v=8CMcogf7Psxu60HQ5KYezaBoMW0q-EoOfmBWFZup9qQ" async></script>
+
 </head>
 <body>
+
         
-    <nav class="nr-navbar navbar navbar-expand-lg navbar-light bg-light">
+        <input type="hidden" id="hid_is_build_html" />
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand text-decoration-none" href="https://www.netnr.com">
                 <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
                 <span class="d-none d-sm-inline-block">Netnr</span>
             </a>
-            <a class='small d-block d-lg-none' href="/randommatch" title='&#x968F;&#x673A;&#x5339;&#x914D;'>
-                <b style="color:var(--sl-color-warning-600)">&#x968F;&#x673A;&#x5339;&#x914D;</b>
-            </a>
 
-            <button class="nr-navbar-toggler navbar-toggler" aria-label="navbar toggler">
-                <sl-animation easing="ease-in-out" duration="1500" play>
-                    <span class="navbar-toggler-icon"></span>
-                </sl-animation>
-            </button>
+                <!--ss mobile title-->
+                <a class='small d-block d-lg-none text-decoration-none' href="/ss/randommatch" title='&#x968F;&#x673A;&#x5339;&#x914D;'>
+                    <b class="text-warning-emphasis">&#x968F;&#x673A;&#x5339;&#x914D;</b>
+                </a>
 
+            <!--PC-->
             <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
+
+                <!--left-->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item mx-2">
-                        <a class='nav-link active' href="/" title="ss.js.org">
-                            <sl-animation class="nr-sla-ss" name="tada" easing="ease-in-out" duration="10000" play>
-                                <div class="fw-bold">SS</div>
-                            </sl-animation>
-                        </a>
+                        <a class="nav-link active" href="/" title="ss.js.org">SS</a>
                     </li>
-                            <li class="nav-item mx-2">
-                                <a class='nav-link' href="/randommatch" title='&#x968F;&#x673A;&#x5339;&#x914D;'>
-                                    <b style="color:var(--sl-color-warning-600)">&#x968F;&#x673A;&#x5339;&#x914D;</b>
-                                </a>
-                            </li>
+
+                        <!--ss pc title-->
+                        <li class="nav-item mx-2">
+                            <a class='nav-link' href="/randommatch" title='&#x968F;&#x673A;&#x5339;&#x914D;'>
+                                <b class="text-warning-emphasis">&#x968F;&#x673A;&#x5339;&#x914D;</b>
+                            </a>
+                        </li>
+
+                    <!--搜索-->
                 </ul>
 
+                <!--right-->
                 <ul class="navbar-nav">
+
                     <li class="nav-item">
-                        <sl-icon-button class="mt-1" name="cloud-moon" data-action="theme"></sl-icon-button>
+                        <a class="nav-link text-decoration-none" href="javascript:void(0)" data-action="theme" title="主题">🎨</a>
                     </li>
                 </ul>
+
             </div>
 
-            <!--mobile-->
-            <sl-drawer label="Netnr" class="nr-navbar-drawer" style="--size: 14em;--body-spacing: 0;display: none">
-                <sl-menu>
-                    <sl-menu-item data-href="/">SS</sl-menu-item>
+            <!--Mobile-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#nr_navbar_mobile" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end d-lg-none" id="nr_navbar_mobile" style="--bs-offcanvas-width:15em;">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">Netnr</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">SS</a>
+                        </li>
+                        <!--搜索-->
 
-                        <sl-menu-item data-href="/randommatch">&#x968F;&#x673A;&#x5339;&#x914D;</sl-menu-item>
-                    <sl-divider></sl-divider>
-                    <sl-menu-item data-action="theme"><sl-icon name="cloud-moon" slot="prefix"></sl-icon>Dark mode</sl-menu-item>
-                </sl-menu>
-            </sl-drawer>
+                        <li class="nav-item my-2">
+                            <a class="nav-link text-decoration-none" href="javascript:void(0);" data-action="theme" title="主题">🎨 主题</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </nav>
 
-    <div class="nr-card-box container-fluid p-4">
+
+    <div class="container-fluid p-lg-5 py-4">
     <div class="row">
-        <div class="col-sm-auto mb-3">
-            <sl-button class="nr-btn-build" variant="warning">生成</sl-button>
-            <sl-button class="nr-btn-reset">重置</sl-button>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-build btn btn-warning">生成</button>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-button variant="text">范围</sl-button>
-            <sl-input class="nr-txt-range1 d-inline-block" placeholder="开始值" type="number" value="1" min="-999999" max="999999" step="1"></sl-input>
-            -
-            <sl-input class="nr-txt-range2 d-inline-block" placeholder="结束值" type="number" value="10" min="-999999" max="999999" step="1"></sl-input>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-reset btn btn-secondary">重置</button>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-button variant="text">个数</sl-button>
-            <sl-input class="nr-txt-count d-inline-block" placeholder="随机个数" type="number" value="10" min="1" max="999999" step="1"></sl-input>
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <span class="input-group-text">范围</span>
+                <input class="nrg-txt-range1 form-control" placeholder="开始值" type="number" value="1" min="-999999" max="999999" step="1" />
+                <span class="input-group-text">-</span>
+                <input class="nrg-txt-range2 form-control" placeholder="结束值" type="number" value="10" min="-999999" max="999999" step="1" />
+            </div>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-button variant="text">分组</sl-button>
-            <sl-input class="nr-txt-group d-inline-block" placeholder="自动换行（分组）" type="number" value="5" min="1" max="999999" step="1"></sl-input>
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <span class="input-group-text">个数</span>
+                <input class="nrg-txt-count form-control" placeholder="随机个数" type="number" value="10" min="1" max="999999" step="1" />
+            </div>
         </div>
-        <div class="col-sm-auto mb-3">
-            <sl-select class="nr-se-only" value="1">
-                <sl-menu-item value="1">不重复</sl-menu-item>
-                <sl-menu-item value="2">可重复</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <span class="input-group-text">分组</span>
+                <input class="nrg-txt-group form-control" placeholder="自动换行（分组）" type="number" value="5" min="1" max="999999" step="1" />
+            </div>
+        </div>
+        <div class="col-auto mb-3">
+            <select class="nrg-se-unique form-select">
+                <option value="1">不重复</option>
+                <option value="2">可重复</option>
+            </select>
         </div>
         <div class="col-12">
-            <sl-textarea class="nr-txt-result" size="large" rows="9" label="生成结果" placeholder="输出"></sl-textarea>
+            <textarea class="nrg-txt-result form-control form-control-lg" rows="9" placeholder="输出"></textarea>
         </div>
     </div>
 </div>
-            <script src="/js/ss/randommatch.js?v=SWSl5z8BAFDjNeLCNtz0sVZ_zTJEfpG_UlBAnq8zuoE"></script>
+
+
 </body>
 </html>

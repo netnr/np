@@ -1,27 +1,24 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-auto mb-3">
-            <sl-select class="nr-se-type" value="1">
-                <sl-menu-item value="1">合并</sl-menu-item>
-                <sl-menu-item value="0">优化</sl-menu-item>
-            </sl-select>
+        <div class="col-auto mb-2">
+            <input class="nrg-txt-file form-control" type="file" multiple accept="*">
         </div>
-        <div class="col-auto mb-3">
-            <input type="file" class="nr-txt-file" multiple accept="*">
+        <div class="col-auto mb-2">
+            <div class="input-group">
+                <button class="nrg-btn-merge btn btn-info">合并</button>
+                <button class="nrg-btn-optimize btn btn-success">优化</button>
+            </div>
         </div>
-        <div class="col-auto mb-3">
-            <sl-button class="nr-btn-download" variant="warning">下载</sl-button>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-download btn btn-secondary">下载</button>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="nr-editor invisible"></div>
+            <div class="nrg-editor invisible"></div>
         </div>
         <div class="col-md-6">
-            <div class="nr-card-preview invisible border rounded overflow-auto text-break"></div>
+            <div class="nrg-card-preview invisible border rounded overflow-auto text-break"></div>
         </div>
     </div>
 </div>
-
-<script src="/app/browserify/dist/svgo.min.js" asp-append-version="true"></script>
-@Html.Raw(Netnr.QuoteTo.Html("jszip.js,monaco-editor"))

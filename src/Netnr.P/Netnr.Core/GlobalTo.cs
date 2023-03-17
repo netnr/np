@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Diagnostics;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Netnr;
@@ -27,10 +29,29 @@ public partial class GlobalTo
     /// <summary>
     /// 启动参数
     /// </summary>
-    public static string[] StartArgs { get; set; } = Environment.GetCommandLineArgs();
+    public static List<string> StartArgs { get; set; } = Environment.GetCommandLineArgs().ToList();
 
     /// <summary>
     /// 启动带参数
     /// </summary>
-    public static bool StartWithArgs { get; set; } = StartArgs.Length > 1;
+    public static bool IsStartWithArgs { get; set; } = StartArgs.Count > 1;
+
+    /// <summary>
+    /// 获取启动参数值
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public static string GetArgsVal(string key)
+    {
+        var keyIndex = StartArgs.IndexOf(key);
+        if (keyIndex != -1 && ++keyIndex < StartArgs.Count)
+        {
+            var val = StartArgs[keyIndex];
+            if (!val.StartsWith("-"))
+            {
+                return val;
+            }
+        }
+        return null;
+    }
 }

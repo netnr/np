@@ -31,7 +31,7 @@ namespace Netnr.Test
         {
             // SQLServer
             {
-                var conn = "Server=local.host;uid=sa;pwd=Abc123....;database=netnr;TrustServerCertificate=True;";
+                var conn = "Server=local.host;uid=sa;pwd=Abc1230..;database=netnr;TrustServerCertificate=True;";
                 var sql = "print newid()";
                 var dbc = new SqlConnection(conn);
                 dbc.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Message}");
@@ -42,7 +42,7 @@ namespace Netnr.Test
 
             // PostgreSQL
             {
-                var conn = "Server=local.host;Port=5432;User Id=postgres;Password=Abc123....;database=netnr;";
+                var conn = "Server=local.host;Port=5432;User Id=postgres;Password=Abc1230..;database=netnr;";
                 var sql = @"DO $$
 BEGIN
     RAISE NOTICE '当前日期时间：%', now();
@@ -57,7 +57,7 @@ $$;";
             }
 
             {
-                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=Abc123....";
+                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=Abc1230..";
                 var sql = @"";
                 var dbc = new Oracle.ManagedDataAccess.Client.OracleConnection(conn);
                 dbc.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Message}");

@@ -8,7 +8,7 @@
     var AdminGitee = AppTo.GetValue("Common:AdminGitee");
 }
 
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col">
             <div>
@@ -21,68 +21,34 @@
             </div>
         </div>
         <div class='col-auto d-none d-sm-inline-flex align-items-end'>
-            <div style="--sl-input-height-small:2em;">
-                <sl-button-group class='me-2 @(IsMe?"":"d-none")'>
-                    <sl-button variant="warning" outline size="small" href="/gist/code/@Model.GistCode/edit">
-                        <sl-icon slot="prefix" name="pencil-square"></sl-icon>Edit
-                    </sl-button>
-                    <sl-button variant="danger" outline size="small" href="/gist/code/@Model.GistCode/delete" onclick="return confirm('confirm delete?')">
-                        <sl-icon slot="prefix" name="trash"></sl-icon>Delete
-                    </sl-button>
-                </sl-button-group>
-                <sl-button-group>
-                    <sl-button size="small" href="/gist/raw/@Model.GistCode">Raw</sl-button>
-                    <sl-button size="small" href="/gist/raw/@Model.GistCode/download">Download</sl-button>
-                </sl-button-group>
+            <div class="btn-group me-2 @(IsMe?"":"d-none")">
+                <a class="btn btn-sm py-0 btn-outline-warning" href="/gist/edit/@Model.GistCode">Edit</a>
+                <a class="btn btn-sm py-0 btn-outline-danger" href="/gist/delete/@Model.GistCode" onclick="return confirm('confirm delete?')">Delete</a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-sm py-0 btn-outline-secondary" href="/gist/raw/@Model.GistCode">Raw</a>
+                <a class="btn btn-sm py-0 btn-outline-secondary" href="/gist/raw/@Model.GistCode/download">Download</a>
             </div>
         </div>
         <div class="col-12">
             @if (Model.GistLanguage == "shell" && Model.GistFilename.EndsWith(".cast"))
             {
-                @Html.Raw(Netnr.QuoteTo.Html("asciinema-player"))
-
-                <sl-divider></sl-divider>
+                <hr />
                 <div style="height:75vh">
-                    <asciinema-player title="@Model.GistFilename"></asciinema-player>
+                    <asciinema-player data-source="/gist/raw/@Model.GistCode/download"></asciinema-player>
                 </div>
-                <script>
-                    const player = AsciinemaPlayer.create('/gist/raw/@Model.GistCode/download', document.querySelector('asciinema-player'), {
-                        poster: "npt:0:44",
-                        fit: "height"
-                    });
-                </script>
             }
             else if (Model.GistLanguage == "markdown")
             {
-                <sl-divider></sl-divider>
-                <div class="markdown-body position-relative"><pre>@Model.GistContent</pre></div>
-                <sl-divider></sl-divider>
-
-                @Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd.js"))
-                <script>
-                    let mb = document.querySelector('.markdown-body');
-                    mb.innerHTML = netnrmd.render(mb.querySelector('pre').innerHTML);
-                </script>
+                <hr />
+                <div class="markdown-body position-relative" data-language="@Model.GistLanguage"><pre class="p-3 fs-6 lh-base">@Model.GistContent</pre></div>
+                <hr />
             }
             else
             {
                 <div class="markdown-body position-relative mt-2">
-                    <pre><code contenteditable language="@Model.GistLanguage">@Model.GistContent</code></pre>
+                    <pre class="nrg-code-language p-3 fs-6 lh-base"><code data-language="@Model.GistLanguage">@Model.GistContent</code></pre>
                 </div>
-                
-                @Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd.js"))
-                <style>
-                    pre code::after {
-                        position: absolute;
-                        top: 0;
-                        right: 0;
-                        font-size: 80%;
-                        padding: 3px 6px;
-                        content: attr(language);
-                        color: var(--sl-color-warning-600);
-                    }
-                </style>
-                <script>netnrmd.hljs.highlightAll()</script>
             }
         </div>
 
@@ -91,7 +57,9 @@
             @if (!string.IsNullOrWhiteSpace(Model.Spare1) && IsAdmin)
             {
                 <p>
-                    <sl-icon class="align-middle" name="github"></sl-icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                    </svg>
                     <a title="GitHub 镜像" class="text-break small" href="https://gist.github.com/@AdminGitHub/@Model.Spare1">
                         https://gist.github.com/@AdminGitHub/@Model.Spare1
                     </a>
@@ -100,7 +68,9 @@
             @if (!string.IsNullOrWhiteSpace(Model.Spare2) && IsAdmin)
             {
                 <p>
-                    <sl-icon class="align-middle" name="git"></sl-icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M15.698 7.287 8.712.302a1.03 1.03 0 0 0-1.457 0l-1.45 1.45 1.84 1.84a1.223 1.223 0 0 1 1.55 1.56l1.773 1.774a1.224 1.224 0 0 1 1.267 2.025 1.226 1.226 0 0 1-2.002-1.334L8.58 5.963v4.353a1.226 1.226 0 1 1-1.008-.036V5.887a1.226 1.226 0 0 1-.666-1.608L5.093 2.465l-4.79 4.79a1.03 1.03 0 0 0 0 1.457l6.986 6.986a1.03 1.03 0 0 0 1.457 0l6.953-6.953a1.031 1.031 0 0 0 0-1.457" />
+                    </svg>
                     <a title="Gitee 镜像" class="text-break small" href="https://gitee.com/@AdminGitee/codes/@Model.Spare2">
                         https://gitee.com/@AdminGitee/codes/@Model.Spare2
                     </a>

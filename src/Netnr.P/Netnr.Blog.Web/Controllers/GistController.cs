@@ -23,67 +23,17 @@
         }
 
         /// <summary>
-        /// Gist 一条
+        /// 查询一条
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="sid"></param>
         /// <returns></returns>
-        public IActionResult Code([FromRoute] string id, [FromRoute] string sid)
+        public async Task<IActionResult> Code([FromRoute] string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return Redirect("/gist");
-            }
-
-            //Auth
-            var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
-            switch (sid?.ToLower())
-            {
-                case "edit":
-                    {
-                        if (!User.Identity.IsAuthenticated)
-                        {
-                            return Unauthorized("Not Authorized");
-                        }
-
-                        var mo = db.Gist.Where(x => x.GistCode == id).FirstOrDefault();
-                        //有记录且为当前用户
-                        if (mo != null && mo.Uid == userId)
-                        {
-                            return View("/Views/Gist/_PartialGistEditor.cshtml", mo);
-                        }
-                        else
-                        {
-                            return Unauthorized("Not Authorized");
-                        }
-                    }
-                case "delete":
-                    {
-                        if (!User.Identity.IsAuthenticated)
-                        {
-                            return Unauthorized("Not Authorized");
-                        }
-
-                        var mo = db.Gist.Where(x => x.GistCode == id && x.Uid == userId).FirstOrDefault();
-                        db.Gist.Remove(mo);
-                        int num = db.SaveChanges();
-                        if (num > 0)
-                        {
-                            return Redirect("/gist/user/" + userId);
-                        }
-                        else
-                        {
-                            return BadRequest();
-                        }
-                    }
-            }
-
-            //view
             var query = from a in db.Gist
                         join b in db.GistSync on a.GistCode equals b.GistCode into bg
                         from b in bg.DefaultIfEmpty()
                         join c in db.UserInfo on a.Uid equals c.UserId
-                        where a.GistCode == id && a.GistStatus == 1 && a.GistOpen == 1
+                        where a.GistCode == id
                         select new Gist
                         {
                             GistId = a.GistId,
@@ -105,9 +55,58 @@
                             Spare2 = b == null ? null : b.GsGiteeId,
                             Spare3 = c.Nickname
                         };
-            var moout = query.FirstOrDefault();
 
-            return View(moout);
+            var uinfo = IdentityService.Get(HttpContext);
+            if (uinfo == null)
+            {
+                query = query.Where(x => x.GistOpen == 1 && x.GistStatus == 1);
+            }
+
+            var model = await query.FirstOrDefaultAsync();
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// 编辑一条
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<IActionResult> Edit([FromRoute] string id)
+        {
+            var uinfo = IdentityService.Get(HttpContext);
+
+            var mo = await db.Gist.FirstOrDefaultAsync(x => x.GistCode == id && x.Uid == uinfo.UserId);
+            if (mo != null)
+            {
+                return View("/Views/Gist/_PartialGistEditor.cshtml", mo);
+            }
+            else
+            {
+                return Unauthorized("401");
+            }
+        }
+
+        /// <summary>
+        /// 删除一条
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            var uinfo = IdentityService.Get(HttpContext);
+
+            var num = await db.Gist.Where(x => x.GistCode == id && x.Uid == uinfo.UserId).ExecuteDeleteAsync();
+            if (num > 0)
+            {
+                return Redirect($"/gist/user/{uinfo.UserId}");
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -116,7 +115,7 @@
         /// <param name="mo"></param>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public ResultVM Save([FromForm] Gist mo)
+        public async Task<ResultVM> Save([FromForm] Gist mo)
         {
             var vm = IdentityService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
@@ -133,41 +132,32 @@
                     mo.Uid = uinfo?.UserId;
 
                     mo.GistCode = UniqueTo.LongId().ToString();
-                    db.Gist.Add(mo);
-                    db.SaveChanges();
+                    await db.Gist.AddAsync(mo);
+                    var num = await db.SaveChangesAsync();
 
+                    vm.Set(num > 0);
                     vm.Data = mo.GistCode;
-                    vm.Set(EnumTo.RTag.success);
+
+                    //推送通知
+                    _ = PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
                 }
                 else
                 {
-                    var oldmo = db.Gist.FirstOrDefault(x => x.GistCode == mo.GistCode);
-                    if (oldmo?.Uid == uinfo?.UserId)
-                    {
-                        oldmo.GistRemark = mo.GistRemark;
-                        oldmo.GistFilename = mo.GistFilename;
-                        oldmo.GistLanguage = mo.GistLanguage;
-                        oldmo.GistTheme = mo.GistTheme;
-                        oldmo.GistContent = mo.GistContent;
-                        oldmo.GistContentPreview = mo.GistContentPreview;
-                        oldmo.GistRow = mo.GistRow;
-                        oldmo.GistOpen = mo.GistOpen;
-                        oldmo.GistUpdateTime = DateTime.Now;
+                    var num = await db.Gist.Where(x => x.GistCode == mo.GistCode && x.Uid == uinfo.UserId)
+                        .ExecuteUpdateAsync(x => x
+                        .SetProperty(p => p.GistRemark, mo.GistRemark)
+                        .SetProperty(p => p.GistFilename, mo.GistFilename)
+                        .SetProperty(p => p.GistLanguage, mo.GistLanguage)
+                        .SetProperty(p => p.GistTheme, mo.GistTheme)
+                        .SetProperty(p => p.GistContent, mo.GistContent)
+                        .SetProperty(p => p.GistContentPreview, mo.GistContentPreview)
+                        .SetProperty(p => p.GistRow, mo.GistRow)
+                        .SetProperty(p => p.GistOpen, mo.GistOpen)
+                        .SetProperty(p => p.GistUpdateTime, DateTime.Now));
 
-                        db.Gist.Update(oldmo);
-                        db.SaveChanges();
-
-                        vm.Data = mo.GistCode;
-                        vm.Set(EnumTo.RTag.success);
-                    }
-                    else
-                    {
-                        vm.Set(EnumTo.RTag.fail);
-                    }
+                    vm.Set(num > 0);
+                    vm.Data = mo.GistCode;
                 }
-
-                //推送通知
-                _ = PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
             }
 
             return vm;
@@ -181,13 +171,11 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ResponseCache(Duration = 10)]
-        public IActionResult Discover(string k, string lang, int page = 1)
+        public async Task<IActionResult> Discover(string k, string lang, int page = 1)
         {
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-
-
-            var ps = CommonService.GistQuery(k, lang, 0, userId, page);
+            var ps = await CommonService.GistQuery(k, lang, 0, userId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             return View("/Views/Gist/_PartialGistList.cshtml", ps);
@@ -202,7 +190,7 @@
         /// <param name="page"></param>
         /// <returns></returns>
         [ActionName("User")]
-        public IActionResult Id([FromRoute] string id, string k, string lang, int page = 1)
+        public async Task<IActionResult> Id([FromRoute] string id, string k, string lang, int page = 1)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -211,7 +199,7 @@
 
             int uid = Convert.ToInt32(id);
 
-            var mu = db.UserInfo.Find(uid);
+            var mu = await db.UserInfo.FindAsync(uid);
             if (mu == null)
             {
                 return Content("Account is empty");
@@ -220,7 +208,7 @@
 
             var userId = IdentityService.Get(HttpContext)?.UserId ?? 0;
 
-            var ps = CommonService.GistQuery(k, lang, uid, userId, page);
+            var ps = await CommonService.GistQuery(k, lang, uid, userId, page);
             ps.Route = Request.Path;
             ViewData["lang"] = lang;
             return View("/Views/Gist/_PartialGistList.cshtml", ps);
@@ -233,14 +221,14 @@
         /// <param name="sid"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Raw([FromRoute] string id, [FromRoute] string sid)
+        public async Task<IActionResult> Raw([FromRoute] string id, [FromRoute] string sid)
         {
             string result = string.Empty;
-
             string filename = string.Empty;
+
             if (!string.IsNullOrWhiteSpace(id))
             {
-                var mo = db.Gist.FirstOrDefault(x => x.GistCode == id && x.GistStatus == 1 && x.GistOpen == 1);
+                var mo = await db.Gist.FirstOrDefaultAsync(x => x.GistCode == id && x.GistStatus == 1 && x.GistOpen == 1);
                 if (mo != null)
                 {
                     result = mo.GistContent;

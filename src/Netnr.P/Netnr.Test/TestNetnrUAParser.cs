@@ -28,32 +28,29 @@ namespace Netnr.Test
                 {
                     var pathClient = Path.Combine(regexesDir, "client", clientFile);
                     var yamlClient = deserializer.Deserialize<List<Hashtable>>(new StreamReader(pathClient));
-                    if (yamlClient != null)
+                    yamlClient?.ForEach(item =>
                     {
-                        yamlClient.ForEach(item =>
+                        var modelClient = new UAParser.Entities.ClientEntity
                         {
-                            var modelClient = new UAParser.Entities.ClientEntity
+                            Type = string.Join(" ", clientFile.Split('.')[0].Split('_')),
+                            Regex = item["regex"].ToString(),
+                            Name = item["name"].ToString()
+                        };
+                        if (item.ContainsKey("version"))
+                        {
+                            modelClient.Version = item["version"]?.ToString() ?? "";
+                        }
+                        if (item.ContainsKey("engine"))
+                        {
+                            var engineObj = (Dictionary<object, object>)item["engine"];
+                            if (engineObj.TryGetValue("default", out object value))
                             {
-                                Type = string.Join(" ", clientFile.Split('.')[0].Split('_')),
-                                Regex = item["regex"].ToString(),
-                                Name = item["name"].ToString()
-                            };
-                            if (item.ContainsKey("version"))
-                            {
-                                modelClient.Version = item["version"]?.ToString() ?? "";
+                                modelClient.Engine = value.ToString();
                             }
-                            if (item.ContainsKey("engine"))
-                            {
-                                var engineObj = (Dictionary<object, object>)item["engine"];
-                                if (engineObj.ContainsKey("default"))
-                                {
-                                    modelClient.Engine = engineObj["default"].ToString();
-                                }
-                            }
+                        }
 
-                            result.ListClient.Add(modelClient);
-                        });
-                    }
+                        result.ListClient.Add(modelClient);
+                    });
                 });
 
                 #endregion
@@ -108,9 +105,7 @@ namespace Netnr.Test
 
                 var pathBot = Path.Combine(regexesDir, "bots.yml");
                 var yamlBot = deserializer.Deserialize<List<Hashtable>>(new StreamReader(pathBot));
-                if (yamlBot != null)
-                {
-                    yamlBot.ForEach(item =>
+                yamlBot?.ForEach(item =>
                     {
                         var modelBot = new UAParser.Entities.BotEntity
                         {
@@ -128,7 +123,6 @@ namespace Netnr.Test
 
                         result.ListBot.Add(modelBot);
                     });
-                }
 
                 #endregion
 
@@ -136,9 +130,7 @@ namespace Netnr.Test
 
                 var pathOs = Path.Combine(regexesDir, "oss.yml");
                 var yamlOs = deserializer.Deserialize<List<Hashtable>>(new StreamReader(pathOs));
-                if (yamlOs != null)
-                {
-                    yamlOs.ForEach(item =>
+                yamlOs?.ForEach(item =>
                     {
                         var modelOS = new UAParser.Entities.OSEntity
                         {
@@ -152,7 +144,6 @@ namespace Netnr.Test
 
                         result.ListOS.Add(modelOS);
                     });
-                }
 
                 #endregion
 
@@ -170,12 +161,12 @@ namespace Netnr.Test
                 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+                "Mozilla/5.0 (Linux; Android 12; Redmi K30 5G) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.104 Mobile Safari/537.36",
                 "mozilla/5.0 (linux; u; android 4.1.2; zh-cn; mi-one plus build/jzo54k) applewebkit/534.30 (khtml, like gecko) version/4.0 mobile safari/534.30 micromessenger/5.0.1.352",
-                "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
             };
 
             var listMsg = new List<string>();
-            var st = new TimingVM();
+            var sw = Stopwatch.StartNew();
 
             listUserAgent.ForEach(userAgent =>
             {
@@ -190,7 +181,8 @@ namespace Netnr.Test
                 var osEntity = uap.GetOS();
                 var botEntity = uap.GetBot();
 
-                listMsg.Add($"UAP: {st.PartTimeFormat()}");
+                listMsg.Add($"UAP: {sw.Elapsed}");
+                sw.Restart();
                 Debug.WriteLine(clientEntity.ToJson());
                 Debug.WriteLine(deviceEntity.ToJson());
                 Debug.WriteLine(osEntity.ToJson());
@@ -208,7 +200,7 @@ namespace Netnr.Test
                     var botEntity = uap.GetBot();
                 });
             }
-            listMsg.Add($"UAP: {st.PartTimeFormat()}");
+            listMsg.Add($"UAP: {sw.Elapsed}");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -88,7 +88,7 @@
             </div>
             <div class="footer">
                 <div class="foot">
-                    <small>© 2015 - Now &nbsp; <a href="https://beian.miit.gov.cn" target="_blank">渝ICP备15000995号-4</a></small>
+                    <small>© 2015 - Now</small>
                 </div>
             </div>
         </div>
@@ -104,13 +104,13 @@
         audio.volume = dv;
 
         function audioPlaySwitch() {
-            var volume = audio.volume * 100;
+            let volume = audio.volume * 100;
             if (audio.paused) {
                 (function () {
                     audio.play();
                     if (volume++ < dv * 100) {
                         audio.volume = volume / 100;
-                        var sfn = arguments.callee;
+                        let sfn = arguments.callee;
                         setTimeout(function () {
                             sfn()
                         }, 8)
@@ -120,7 +120,7 @@
                 (function () {
                     if (volume-- > 0) {
                         audio.volume = volume / 100;
-                        var sfn = arguments.callee;
+                        let sfn = arguments.callee;
                         setTimeout(function () {
                             sfn()
                         }, 8)

@@ -130,7 +130,11 @@ namespace AgGrid.InfiniteRowModel
 
                 { FilterType: FilterModelFilterType.Set } when options.CaseInsensitive => new object[] { filterModel.Values.Select(v => v?.ToLower()).ToList() },
                 { FilterType: FilterModelFilterType.Set } when colType == typeof(int?) => new object[] { filterModel.Values.Select(x => int.TryParse(x, out int xv) ? new int?(xv) : null).ToList() },
-                { FilterType: FilterModelFilterType.Set } when colType == typeof(int) => new object[] { filterModel.Values.Select(x => int.Parse(x)).ToList() },
+                { FilterType: FilterModelFilterType.Set } when colType == typeof(int) => new object[] { filterModel.Values.Select(int.Parse).ToList() },
+                { FilterType: FilterModelFilterType.Set } when colType == typeof(long?) => new object[] { filterModel.Values.Select(x => long.TryParse(x, out long xv) ? new long?(xv) : null).ToList() },
+                { FilterType: FilterModelFilterType.Set } when colType == typeof(long) => new object[] { filterModel.Values.Select(long.Parse).ToList() },
+                { FilterType: FilterModelFilterType.Set } when colType == typeof(decimal?) => new object[] { filterModel.Values.Select(x => decimal.TryParse(x, out decimal xv) ? new decimal?(xv) : null).ToList() },
+                { FilterType: FilterModelFilterType.Set } when colType == typeof(decimal) => new object[] { filterModel.Values.Select(decimal.Parse).ToList() },
                 { FilterType: FilterModelFilterType.Set } => new object[] { filterModel.Values },
 
                 _ => throw new ArgumentException($"Unable to determine predicate arguments for {colId}. Most likely {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}) is unsupported. Supported values: {string.Join(", ", FilterModelFilterType.All)}.")

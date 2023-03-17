@@ -1,56 +1,53 @@
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
 
-        <div class="col-auto mb-3">
-            <sl-button-group>
-                <sl-dropdown class="nr-btn-convert" placement="top-start">
-                    <sl-button slot="trigger" variant="primary" caret>
-                        <sl-visually-hidden>More options</sl-visually-hidden>
-                    </sl-button>
-                    <sl-menu>
-                        <sl-menu-item>YAML → JSON</sl-menu-item>
-                        <sl-menu-item>JSON → YAML</sl-menu-item>
-                        <sl-divider></sl-divider>
-                        <sl-menu-item>Swagger → OpenAPI</sl-menu-item>
-                    </sl-menu>
-                </sl-dropdown>
-                <sl-button variant="primary">SwaggerUI</sl-button>
-            </sl-button-group>
+        <div class="col-auto mb-2">
+            <div class="btn-group">
+                <button class="nrg-btn-swaggerui btn btn-primary">SwaggerUI</button>
+                <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-reference="parent">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" data-action="yaml-json">YAML → JSON</button></li>
+                    <li><button class="dropdown-item" data-action="json-yaml">JSON → YAML</button></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><button class="dropdown-item" data-action="swagger-openapi">Swagger → OpenAPI</button></li>
+                </ul>
+            </div>
         </div>
 
-        <div class="col-auto mb-3">
-            <sl-button variant="warning">转文档</sl-button>
-            <sl-select class="nr-se-onlyjson d-inline-block" value="1" style="width:9em;">
-                <sl-menu-item value="1">仅JSON</sl-menu-item>
-                <sl-menu-item value="0">不处理</sl-menu-item>
-            </sl-select>
-            <sl-dropdown class="nr-btn-download">
-                <sl-button slot="trigger" caret>下载</sl-button>
-                <sl-menu>
-                    <sl-menu-item>Markdown</sl-menu-item>
-                    <sl-menu-item>Word</sl-menu-item>
-                    <sl-menu-item>HTML</sl-menu-item>
-                    <sl-menu-item>PNG</sl-menu-item>
-                    <sl-menu-item>PDF</sl-menu-item>
-                </sl-menu>
-            </sl-dropdown>
+        <div class="col-auto d-flex mb-2">
+            <div class="input-group">
+                <button class="nrg-btn-todoc btn btn-warning">转文档</button>
+                <select class="nrg-se-onlyjson form-select">
+                    <option value="1">仅JSON</option>
+                    <option value="0">不处理</option>
+                </select>
+            </div>
+            <div class="dropdown ms-1">
+                <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">下载</button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" data-action="download-markdown">Markdown</button></li>
+                    <li><button class="dropdown-item" data-action="download-word">Word</button></li>
+                    <li><button class="dropdown-item" data-action="download-html">HTML</button></li>
+                    <li><button class="dropdown-item" data-action="download-png">PNG</button></li>
+                    <li><button class="dropdown-item" data-action="download-pdf">PDF</button></li>
+                </ul>
+            </div>
         </div>
 
-        <div class="col-auto mb-3">
-            <sl-button class="nr-btn-demo" variant="neutral">Demo</sl-button>
+        <div class="col-auto mb-2">
+            <button class="nrg-btn-demo btn btn-secondary">Demo</button>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="nr-editor1"></div>
+            <div class="nrg-editor1"></div>
         </div>
         <div class="col-md-6">
-            <div class="nr-editor2 d-none"></div>
-            <div class="nr-swaggerui d-none overflow-auto"></div>
-            <div class="nr-markdown d-none"></div>
+            <div class="nrg-editor2 d-none"></div>
+            <div class="nrg-swaggerui d-none overflow-auto" style="background-color:var(--bs-light)"></div>
+            <div class="nrg-markdown d-none"></div>
         </div>
     </div>
 </div>
-
-<script src="/app/browserify/dist/js-yaml.min.js" asp-append-version="true"></script>
-@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd-ace.js,netnrmd.js,api-spec-converter.js,swagger-ui-dist.css,swagger-ui-dist.js,xml2json.js,monaco-editor"))

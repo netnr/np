@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.ResponseFramework.Web.Controllers
 {
@@ -120,7 +121,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public List<ValueTextVM> QueryRole()
+        public async Task<List<ValueTextVM>> QueryRole()
         {
             var query = from a in db.SysRole
                         where a.SrStatus == 1
@@ -130,7 +131,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                             Value = a.SrId,
                             Text = a.SrName
                         };
-            var list = query.ToList();
+            var list = await query.ToListAsync();
             return list;
         }
 
@@ -140,13 +141,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [HttpPost]
-        public List<ValueTextVM> QueryDictionaryDemo()
+        public async Task<List<ValueTextVM>> QueryDictionaryDemo()
         {
-            var list = db.SysDictionary.Where(x => x.SdType == "SysDictionary:SdType" && x.SdStatus == 1).Select(x => new ValueTextVM
+            var list = await db.SysDictionary.Where(x => x.SdType == "SysDictionary:SdType" && x.SdStatus == 1).Select(x => new ValueTextVM
             {
                 Value = x.SdId,
                 Text = x.SdValue
-            }).ToList();
+            }).ToListAsync();
 
             return list;
         }

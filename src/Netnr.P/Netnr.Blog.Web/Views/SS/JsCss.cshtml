@@ -1,20 +1,26 @@
-<div class="nr-card-box invisible container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-md-6">
-            <sl-button class="nr-btn-minify-js mb-3" variant="warning" title="Terser">压缩 JS</sl-button>
-            <sl-button class="nr-btn-minify-css mb-3" variant="success" title="Clean-CSS">压缩 CSS</sl-button>
-            <input class="nr-txt-file mb-3" type="file" />
-            <div class="nr-editor1"></div>
-            <div class="nr-card-info1 small"></div>
+        <div class="col-lg-6">
+            <div class="row">
+                <div class="col-lg-auto">
+                    <button class="nrg-btn-minify-js btn btn-warning mb-2" title="Terser">压缩 JS</button>
+                    <button class="nrg-btn-minify-css btn btn-success mb-2" title="Clean-CSS">压缩 CSS</button>
+                </div>
+                <div class="col-lg">
+                    <input class="nrg-txt-file mb-2 form-control" type="file" />
+                </div>
+                <div class="col-12">
+                    <div class="nrg-editor1"></div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 invisible">
-            <sl-button class="nr-btn-download mb-3">下载文件</sl-button>
-            <sl-input class="nr-txt-filename d-inline-block mb-3" placeholder="（可选）自定义文件名"></sl-input>
-            <div class="nr-editor2"></div>
-            <div class="nr-card-info2 small"></div>
+        <div class="nrg-card-right col-lg-6 invisible mt-lg-0 mt-3">
+            <div class="input-group">
+                <button class="nrg-btn-download mb-2 btn btn-secondary">下载文件</button>
+                <input class="nrg-txt-filename mb-2 form-control" placeholder="（可选）自定义文件名" />
+            </div>
+            <div class="nrg-card-info2 form-text">&nbsp;</div>
+            <div class="nrg-editor2"></div>
         </div>
     </div>
 </div>
-
-<script src="/app/browserify/dist/clean-css.min.js" asp-append-version="true"></script>
-@Html.Raw(Netnr.QuoteTo.Html("terser.js,monaco-editor"))

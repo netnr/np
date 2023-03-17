@@ -6,7 +6,6 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Collections.Concurrent;
 using System.Security.Cryptography.X509Certificates;
-using HtmlAgilityPack;
 
 namespace Netnr.DataX.Menu
 {
@@ -18,24 +17,9 @@ namespace Netnr.DataX.Menu
         /// <summary>
         /// 启动参数
         /// </summary>
-        static List<string> Args { get; set; } = GlobalTo.StartArgs.ToList();
+        static List<string> Args { get; set; } = GlobalTo.StartArgs;
 
-        /// <summary>
-        /// 获取启动参数值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static string GetArgsVal(string key)
-        {
-            var keyIndex = Args.IndexOf(key);
-            if (keyIndex != -1 && ++keyIndex < Args.Count)
-            {
-                return Args[keyIndex];
-            }
-            return null;
-        }
-
-        [Display(Name = "Back to menu", Description = "返回菜单")]
+        [Display(Name = "Back to menu", Description = "返回菜单", GroupName = "\r\n")]
         public static void BackToMenu() => DXService.InvokeMenu(typeof(MenuMainService));
 
         /// <summary>
@@ -67,9 +51,9 @@ namespace Netnr.DataX.Menu
                 }
             }
 
-            if (dicSilent.ContainsKey(action))
+            if (dicSilent.TryGetValue(action, out MethodInfo value))
             {
-                var method = dicSilent[action];
+                var method = value;
                 Console.WriteLine("");
                 method.Invoke(ctype, null);
             }
@@ -111,7 +95,7 @@ namespace Netnr.DataX.Menu
             {
                 DXService.Log("没找到作业配置");
             }
-            else if (GlobalTo.StartWithArgs)
+            else if (GlobalTo.IsStartWithArgs)
             {
                 working = Args;
             }
@@ -205,7 +189,7 @@ namespace Netnr.DataX.Menu
                                             }
                                         }
 
-                                        DataKitTo.MigrateDataTable(mo.AsMigrateDataTable(), le => DXService.Log(le.NewItems[0].ToString()));
+                                        DataKitTo.MigrateDataTable(mo.AsMigrateDataTable(cc.MapingMatchPattern != "Same"), le => DXService.Log(le.NewItems[0].ToString()));
                                     }
                                     break;
                                 case "MigrateDataTable":
@@ -275,12 +259,12 @@ namespace Netnr.DataX.Menu
         }
 
         [Display(Name = "TCP Port Probing", Description = "TCP端口探测",
-            ShortName = "tcping [hostname] [port]", Prompt = "ndx tcping zme.ink 443 -t", GroupName = "\r\n")]
+            ShortName = "tcping [hostname] [port]", Prompt = "ndx tcping zme.ink 443 -t")]
         public static void TCPortProbing()
         {
             int count = 4;
             string hostnameAndPort;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 if (Args.Contains("-t"))
                 {
@@ -306,9 +290,9 @@ namespace Netnr.DataX.Menu
             {
                 var client = new TcpClient();
 
-                var st = new TimingVM();
+                var sw = Stopwatch.StartNew();
                 var result = client.ConnectAsync(address, port).Wait(2001);
-                var time = st.PartTime();
+                var time = sw.ElapsedMilliseconds;
 
                 DXService.Log($"Probing {address}:{port}/tcp - {(result ? "Port is open" : "No response")} - time={time}ms");
 
@@ -327,7 +311,7 @@ namespace Netnr.DataX.Menu
             var dvports = "22,80,443,3306,9000-9100";
             string hostnameAndPorts;
 
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 hostnameAndPorts = string.Join(" ", Args).Trim();
             }
@@ -346,14 +330,14 @@ namespace Netnr.DataX.Menu
             var address = Dns.GetHostAddresses(hap.Item1).First();
 
             var listPort = new ConcurrentQueue<int>();
-            hap.Item2.ForEach(port => listPort.Enqueue(port));
+            hap.Item2.ForEach(listPort.Enqueue);
 
             if (!listPort.IsEmpty)
             {
                 DXService.Log($"扫描 {address} 端口(共 {listPort.Count} 个)");
                 var result = new ConcurrentBag<int>();
 
-                var st = new TimingVM();
+                var sw = Stopwatch.StartNew();
 
                 int scanMax = 20;
                 int scanCount = 0;
@@ -402,7 +386,7 @@ namespace Netnr.DataX.Menu
                 {
                     if (listPort.IsEmpty && scanCount == 0)
                     {
-                        DXService.Log($"\r\n扫描完成, 耗时 {st.PartTimeFormat()}, 发现 {result.Count} 个端口");
+                        DXService.Log($"\r\n扫描完成, 耗时 {sw.Elapsed}, 发现 {result.Count} 个端口");
                         DXService.Log($"{string.Join(" ", result.ToList())}", ConsoleColor.Green);
                         break;
                     }
@@ -418,16 +402,19 @@ namespace Netnr.DataX.Menu
             ShortName = "portinfo", Prompt = "ndx portinfo")]
         public static void PortInfo()
         {
-            var list = CmdTo.GetPortInfo();
-            DXService.Log(list.ToJson(true));
+            var listPortInfo = CmdTo.GetPortInfo();
+            listPortInfo.ForEach(item =>
+            {
+                DXService.Log(item.ToJson());
+            });
         }
 
-        [Display(Name = "Port Kill", Description = "端口杀进程",
-            ShortName = "portkill [ports]", Prompt = "ndx portkill 80,443")]
-        public static void PortKill()
+        [Display(Name = "Kill Port", Description = "端口杀进程",
+            ShortName = "killport [ports]", Prompt = "ndx killport 80,443")]
+        public static void KillPort()
         {
             string ports;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 ports = string.Join(',', Args);
             }
@@ -451,6 +438,7 @@ namespace Netnr.DataX.Menu
                         }
                         else
                         {
+                            pinfo = pinfo.DistinctBy(x => x.ProcessId).ToList();
                             DXService.Log($"{port} 端口找到 {pinfo.Count} 个进程");
                             pinfo.ForEach(x =>
                             {
@@ -476,7 +464,7 @@ namespace Netnr.DataX.Menu
         public static void DeviceScan()
         {
             string scanIps = string.Empty;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 scanIps = string.Join(" ", Args).Trim();
             }
@@ -546,7 +534,7 @@ namespace Netnr.DataX.Menu
         public static void TraceRoute()
         {
             string hostname;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 hostname = string.Join("", Args);
             }
@@ -612,7 +600,7 @@ namespace Netnr.DataX.Menu
         public static void DNSResolve()
         {
             string hostname;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 hostname = string.Join("", Args);
             }
@@ -657,7 +645,7 @@ namespace Netnr.DataX.Menu
         public static void Whois()
         {
             string domain;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 domain = string.Join("", Args);
             }
@@ -672,25 +660,39 @@ namespace Netnr.DataX.Menu
             {
                 try
                 {
-                    var url = $"https://whois.west.cn/{domain}";
-                    var html = HttpTo.Get(url, "gbk");
-                    var htmlDoc = new HtmlDocument();
-                    htmlDoc.LoadHtml(html);
-                    var table = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='info-us jsdata']");
-                    if (table.OuterHtml.Length > 10)
+                    var hc = new HttpClient();
+                    hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Netnr");
+                    hc.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+
+                    var url = $"http://m.west.cn/web/whois/whoisinfo?domain={domain}&server=&refresh=0";
+                    var stream = hc.GetStreamAsync(url).ToResult();
+                    var html = new StreamReader(stream, Encoding.GetEncoding("gbk")).ReadToEnd();
+                    var jsonData = html.DeJson();
+
+                    var keyMap = new Dictionary<string, string>
                     {
-                        var keys = new[] { "Registrar URL:", "Domain Name:", "Registrar:", "Creation Date:", "Registry Expiry Date:", "Domain Status:", "Name Server:" };
-                        table.InnerHtml.Split("<br>").ToList().ForEach(item =>
+                        {"registrer","注 册 商" },
+                        {"regdate","注册时间" },
+                        {"expdate","到期时间" },
+                        {"status","域名状态" },
+                        {"nameserver","Name Server" }
+                    };
+
+                    foreach (var key in keyMap.Keys)
+                    {
+                        var val = jsonData.GetValue(key);
+
+                        if (key == "nameserver")
                         {
-                            if (keys.Any(x => item.Contains(x)))
+                            val.Split(',').ToList().ForEach(ns =>
                             {
-                                DXService.Log(item.Trim());
-                            }
-                        });
-                    }
-                    else
-                    {
-                        DXService.Log("Not found", ConsoleColor.Red);
+                                DXService.Log($"{keyMap[key]}: {ns}");
+                            });
+                        }
+                        else
+                        {
+                            DXService.Log($"{keyMap[key]}: {val}");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -709,7 +711,7 @@ namespace Netnr.DataX.Menu
         public static void IP()
         {
             string domainOrIP;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 domainOrIP = string.Join("", Args);
             }
@@ -732,7 +734,7 @@ namespace Netnr.DataX.Menu
         public static void ICP()
         {
             string domain;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 domain = string.Join("", Args);
             }
@@ -751,24 +753,32 @@ namespace Netnr.DataX.Menu
             {
                 try
                 {
-                    var url = $"https://whois.west.cn/icp/{domain}";
-                    var html = HttpTo.Get(url, "gbk");
-                    var htmlDoc = new HtmlDocument();
-                    htmlDoc.LoadHtml(html);
-                    var table = htmlDoc.DocumentNode.SelectSingleNode("//table[@class='info-table']");
-                    if (table == null)
+                    var url = $"https://micp.chinaz.com/Handle/AjaxHandler.ashx?action=GetPermit&callback=fn&query={domain.ToUrlEncode()}&type=host&_={DateTime.Now.ToTimestamp()}";
+
+                    var hc = new HttpClient();
+                    hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Netnr");
+                    var html = hc.GetStringAsync(url).ToResult();
+                    if (html.Length > 10)
                     {
-                        DXService.Log("Not found", ConsoleColor.Red);
+                        html = html[4..^3];
+                        var items = html.Split(',').ToList();
+                        var keyMap = new Dictionary<string, string>
+                        {
+                            {"ComName","主办单位名称" },
+                            {"Typ","主办单位性质" },
+                            {"Permit","网站备案号" },
+                            {"WebName","网站名称" },
+                        };
+
+                        foreach (var key in keyMap.Keys)
+                        {
+                            var val = items.FirstOrDefault(x => x.Contains(key)).Split(':').Last().Trim('"').Trim();
+                            DXService.Log($"{keyMap[key]}: {val}");
+                        }
                     }
                     else
                     {
-                        htmlDoc.LoadHtml(table.OuterHtml);
-                        var tdsName = table.SelectNodes("//tr/td[@class='table-left']");
-                        var tdsValue = table.SelectNodes("//tr/td[@class='table-right']");
-                        for (int i = 0; i < tdsName.Count; i++)
-                        {
-                            DXService.Log($"{tdsName[i].InnerText.Trim()}: {tdsValue[i].InnerText.Trim()}");
-                        }
+                        DXService.Log("Not found", ConsoleColor.Red);
                     }
                 }
                 catch (Exception ex)
@@ -787,7 +797,7 @@ namespace Netnr.DataX.Menu
         public static void SSL()
         {
             string hostnameAndPort;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 hostnameAndPort = string.Join(":", Args);
             }
@@ -854,7 +864,7 @@ namespace Netnr.DataX.Menu
         public static void DomainNameInformation()
         {
             var isRestore = false;
-            if (GlobalTo.StartWithArgs == false)
+            if (GlobalTo.IsStartWithArgs == false)
             {
                 Console.Write($"domain: ");
                 var domain = Console.ReadLine().Trim();
@@ -862,7 +872,7 @@ namespace Netnr.DataX.Menu
                 isRestore = true;
                 Args.Clear();
                 Args.Add(domain);
-                GlobalTo.StartWithArgs = true;
+                GlobalTo.IsStartWithArgs = true;
             }
 
             DXService.OutputTitle("DNS");
@@ -878,51 +888,86 @@ namespace Netnr.DataX.Menu
             if (isRestore)
             {
                 Args.Clear();
-                GlobalTo.StartWithArgs = false;
+                GlobalTo.IsStartWithArgs = false;
             }
         }
 
-        [Display(Name = "Serve", Description = "启动服务",
-            ShortName = "serve --urls [urls] --root [root] --index [index] --404 [404] --suffix [suffix] --charset [charset] --headers [headers] --auth [auth]",
-            Prompt = "ndx serve --urls http://*:713;http://*:81 --root ./ --index index.html --404 404.html --suffix .html --charset utf-8 --headers access-control-allow-headers:*||access-control-allow-origin:* --auth user:pass\r\nndx serve",
-            GroupName = "\r\n")]
-        public static void Serve()
+        [Display(Name = "System Status", Description = "系统状态",
+            ShortName = "ss [-j]|[-s url]", Prompt = "ndx ss\r\nndx ss -j\r\nndx ss -s http://zme.ink")]
+        public static void SystemStatus()
         {
-            ServeTo.FastStart();
-        }
-
-        [Display(Name = "System Information", Description = "系统信息",
-            ShortName = "ss", Prompt = "ndx ss", GroupName = "\r\n")]
-        public static void SystemInfo()
-        {
-            bool isJson;
-            if (GlobalTo.StartWithArgs)
+            var wType = "view";
+            var uri = string.Empty;
+            if (GlobalTo.IsStartWithArgs)
             {
-                isJson = string.Join("", Args).StartsWith("-j");
+                if (Args.Any(x => x == "-j"))
+                {
+                    wType = "json";
+                }
+                else if (Args.Any(x => x == "-s" || x == "--send"))
+                {
+                    wType = "send";
+                    uri = Args.FirstOrDefault(x => x.StartsWith("http"));
+                }
             }
             else
             {
-                isJson = DXService.ConsoleReadBool("输出为JSON");
+                var wItems = "view,json,send".Split(',');
+                var wNum = DXService.ConsoleReadItem("输出为", wItems);
+                wType = wItems[wNum - 1];
+                if (wType == "send")
+                {
+                    Console.Write("Uri: ");
+                    uri = Console.ReadLine();
+                }
             }
 
             var ss = new SystemStatusTo();
-            if (isJson)
+            ss.Init().ToResult();
+            switch (wType)
             {
-                DXService.Log(ss.ToJson(true));
-            }
-            else
-            {
-                DXService.Log(ss.ToView());
+                case "json":
+                    DXService.Log(ss.ToJson(true));
+                    break;
+                case "send":
+                    {
+                        DXService.Log($"curl -X POST '{uri}' -H 'Content-Type: multipart/form-data' -F 'paramsJson={{}}'");
+
+                        //https://stackoverflow.com/questions/12553277
+                        var handler = new HttpClientHandler
+                        {
+                            ClientCertificateOptions = ClientCertificateOption.Manual,
+                            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                        };
+                        using var client = new HttpClient(handler);
+
+                        var req = new HttpRequestMessage(HttpMethod.Post, uri);
+                        req.Headers.Add("UserAgent", ConfigInit.ShortName);
+                        req.Content = new MultipartFormDataContent
+                        {
+                            { new StringContent(ss.ToJson()), "paramsJson" }
+                        };
+                        var resp = client.Send(req);
+
+                        DXService.Log($"StatusCode: {resp.StatusCode}");
+                        var result = resp.Content.ReadAsStringAsync().ToResult();
+                        DXService.Log($"Result: {result}");
+                    }
+                    break;
+                default:
+                    DXService.Log(ss.ToView().ToResult());
+                    break;
             }
         }
 
         [Display(Name = "System Monitor", Description = "系统监控",
-            ShortName = "sming", Prompt = "ndx sming")]
+            ShortName = "sming", Prompt = "ndx sming", GroupName = "\r\n")]
         public static void SystemMonitor()
         {
             DXService.Log("Starting System Monitor ...");
 
-            var isStop = false;
+            var ss = new SystemStatusTo();
+            var mw = new SystemStatusTo.MonitorWork();
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 string line;
@@ -931,17 +976,34 @@ namespace Netnr.DataX.Menu
                     Console.WriteLine($"Enter \"exit\" stop");
                 }
 
-                isStop = true;
+                mw.Stop();
             });
-            SystemStatusTo.SystemMonitor(ref isStop);
+
+            mw.Start((elapsed, receivedSpeed, sentSpeed) =>
+            {
+                Console.Clear();
+                Console.WriteLine($"\r\n Received Speed: {ParsingTo.FormatByteSize(receivedSpeed)}/s");
+                Console.Write($"\r\n Sent Speed: {ParsingTo.FormatByteSize(sentSpeed)}/s");
+                if (elapsed % 5000 == 0)
+                {
+                    _ = ss.Init(true);
+                }
+                Console.WriteLine(ss.ToView().ToResult());
+            });
         }
+
+        [Display(Name = "Serve", Description = "启动服务",
+            ShortName = "serve --urls [urls] --root [root] --index [index] --404 [404] --suffix [suffix] --charset [charset] --headers [headers] --auth [auth]",
+            Prompt = "ndx serve --urls http://*:713;http://*:81 --root ./ --index index.html --404 404.html --suffix .html --charset utf-8 --headers access-control-allow-headers:*||access-control-allow-origin:* --auth user:pass\r\nndx serve",
+            GroupName = "\r\n")]
+        public static void Serve() => ServeTo.FastStart();
 
         [Display(Name = "Generate UUID", Description = "生成UUID",
             ShortName = "uuid [count]", Prompt = "ndx uuid\r\nndx uuid 9")]
         public static void GenerateUUID()
         {
             int count = 1;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 if (int.TryParse(Args.FirstOrDefault(), out int val))
                 {
@@ -966,7 +1028,7 @@ namespace Netnr.DataX.Menu
         public static void GenerateSnowflake()
         {
             int count = 1;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 if (int.TryParse(Args.FirstOrDefault(), out int val))
                 {
@@ -982,195 +1044,65 @@ namespace Netnr.DataX.Menu
 
             for (int i = 0; i < count; i++)
             {
-                DXService.Log(SnowflakeTo.Id().ToString());
+                DXService.Log(Snowflake53To.Id().ToString());
             }
         }
 
-        [Display(Name = "OCR", Description = "识别图片文字, 默认Windows截图",
-            ShortName = "ocr [path]", Prompt = "ndx ocr image.jpg", GroupName = "\r\n")]
-        public static void OCR()
+        [Display(Name = "Tail", Description = "读取文件最新内容",
+            ShortName = "tail [file]", Prompt = "ndx tail access.log")]
+        public static void Tail()
         {
-            string path;
-            if (GlobalTo.StartWithArgs)
+            string filePath;
+            if (GlobalTo.IsStartWithArgs)
             {
-                path = string.Join("", Args);
+                filePath = Args.FirstOrDefault();
             }
             else
             {
-                path = DXService.ConsoleReadPath("图片路径", mustExist: false);
+                filePath = DXService.ConsoleReadPath("文件路径", 1);
             }
 
-            //windows clipboard image
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            if (File.Exists(filePath))
             {
-                if (GlobalTo.IsWindows)
+                using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var sr = new StreamReader(fs);
+                //初次读取末尾少量内容
+                if (fs.Length > 0)
                 {
-                    var saveFile = Path.Combine(Path.GetTempPath(), "ndx_gci.png");
-                    CmdTo.Execute($"(Get-Clipboard -Format Image).Save('{saveFile}')", "powershell");
-                    if (File.Exists(saveFile))
-                    {
-                        path = saveFile;
-                    }
-                }
-            }
+                    Console.WriteLine(Environment.NewLine);
 
-            if (File.Exists(path))
-            {
-                try
-                {
-                    var hc = new HttpClient();
-                    var form = new MultipartFormDataContent
+                    var startIndex = Math.Max(0, fs.Length - 9999);
+                    fs.Position = startIndex;
+                    var lastContent = sr.ReadToEnd().Split('\n').TakeLast(15);
+                    foreach (var row in lastContent)
                     {
-                        { new ByteArrayContent(File.ReadAllBytes(path)), "file", "ndx_gci.png" }
-                    };
-                    var response = hc.PostAsync("https://www.netnr.com/api/v1/OCR", form);
-                    var respResult = response.Result.Content.ReadAsStringAsync();
-                    respResult.Wait();
-                    var result = respResult.Result.ToString();
-                    var jo = result.DeJson();
-                    if (jo.GetValue("code") == "200")
-                    {
-                        Console.WriteLine("");
-                        var items = jo.GetProperty("code").GetProperty("words_result").EnumerateArray();
-                        foreach (var item in items)
-                        {
-                            DXService.Log(item.GetValue("words"));
-                        }
-                    }
-                    else
-                    {
-                        DXService.Log(result);
+                        Console.WriteLine(row);
                     }
                 }
-                catch (Exception ex)
+
+                sr.BaseStream.Seek(fs.Length, SeekOrigin.Begin);
+
+                while (true)
                 {
-                    DXService.Log(ex);
+                    //小于等于全文
+                    if (fs.Length < fs.Position)
+                    {
+                        fs.Position = fs.Length;
+                    }
+
+                    // 实时读取文件内容
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        Console.WriteLine(line);
+                    }
+
+                    Thread.Sleep(500);
                 }
             }
             else
             {
-                DXService.Log("Image Not found", ConsoleColor.Red);
-            }
-        }
-
-        [Display(Name = "File HASH", Description = "HASH计算",
-            ShortName = "hash [-md5|-sha1|-sha256|-sha512] [content|file]",
-            Prompt = "ndx hash abc123\r\nndx hash -md5 abc123\r\nndx hash -sha256 ./ndx")]
-        public static void FileHash()
-        {
-            if (GlobalTo.StartWithArgs)
-            {
-                var hashType = CalcTo.HashType.MD5;
-                string cp;
-                if (Args.Count == 2)
-                {
-                    if (Enum.TryParse(Args[0].Replace("-", ""), true, out CalcTo.HashType ht))
-                    {
-                        hashType = ht;
-                    }
-                    cp = Args.LastOrDefault();
-                }
-                else
-                {
-                    cp = Args.FirstOrDefault();
-                }
-
-                var st = new TimingVM();
-                string result;
-                if (File.Exists(cp))
-                {
-                    var stream = File.OpenRead(cp);
-                    result = CalcTo.HashString(hashType, stream);
-                    cp = $"file: {cp}";
-                }
-                else
-                {
-                    result = CalcTo.HashString(hashType, cp.ToStream());
-                    cp = $"content: {cp}";
-                }
-                DXService.Log($"{cp}\r\n{hashType}({st.PartTimeFormat()})\r\n{result}");
-            }
-            else
-            {
-                var listPath = new List<string>();
-                var readPath = DXService.ConsoleReadPath("选择文件(夹)", 0, mustExist: false);
-
-                if (File.Exists(readPath))
-                {
-                    listPath.Add(readPath);
-                }
-                else if (Directory.Exists(readPath))
-                {
-                    var files = Directory.GetFiles(readPath, "*", SearchOption.AllDirectories);
-                    listPath.AddRange(files);
-                }
-
-                foreach (var path in listPath)
-                {
-                    DXService.Log($"\r\n{path}");
-                    using var fs = File.OpenRead(path);
-                    var st = new TimingVM();
-                    fs.Position = 0;
-                    var md5Hash = CalcTo.HashString(CalcTo.HashType.MD5, fs);
-                    DXService.Log($"MD5({st.PartTimeFormat()})\r\n{md5Hash}");
-                    fs.Position = 0;
-                    var sha1Hash = CalcTo.HashString(CalcTo.HashType.SHA1, fs);
-                    DXService.Log($"SHA1({st.PartTimeFormat()})\r\n{sha1Hash}");
-                    fs.Position = 0;
-                    var sha256Hash = CalcTo.HashString(CalcTo.HashType.SHA256, fs);
-                    DXService.Log($"SHA256({st.PartTimeFormat()})\r\n{sha256Hash}");
-                    fs.Position = 0;
-                    var sha512Hash = CalcTo.HashString(CalcTo.HashType.SHA512, fs);
-                    DXService.Log($"SHA512({st.PartTimeFormat()})\r\n{sha512Hash}");
-                }
-            }
-        }
-
-        [Display(Name = "Base64", Description = "Base64编码解码",
-            ShortName = "base64 [-en|-de] [content|file]",
-            Prompt = "ndx base64 -en abc123\r\nndx base64 -de YWJjMTIz")]
-        public static void Base64()
-        {
-            int type = 0;
-            string content;
-
-            if (GlobalTo.StartWithArgs)
-            {
-                if (Args.Contains("-en"))
-                {
-                    type = 1;
-                    Args.Remove("-en");
-                }
-                if (Args.Contains("-de"))
-                {
-                    type = 2;
-                    Args.Remove("-de");
-                }
-
-                content = string.Join("", Args);
-            }
-            else
-            {
-                type = DXService.ConsoleReadItem("Please choose", "Encode 编码,Decode 解码".Split(','), 1);
-
-                Console.Write($"请输入内容: ");
-                content = Console.ReadLine();
-                Console.WriteLine("");
-            }
-
-            try
-            {
-                var result = type switch
-                {
-                    2 => content.ToBase64Decode(),
-                    _ => content.ToBase64Encode(),
-                };
-
-                DXService.Log(result);
-            }
-            catch (Exception ex)
-            {
-                DXService.Log(ex);
+                DXService.Log("file not found");
             }
         }
 
@@ -1187,7 +1119,7 @@ namespace Netnr.DataX.Menu
         {
             string ddFilter;
             string ddDir = string.Empty;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 ddFilter = Args[0];
                 if (Args.Count > 1)
@@ -1288,60 +1220,8 @@ namespace Netnr.DataX.Menu
             }
         }
 
-        [Display(Name = "AES encryption and decryption", Description = "AES加密解密",
-            ShortName = "aes [-en|-de] [content] [password]",
-            Prompt = "ndx aes -en abc123 pwd\r\nndx aes -de U2FsdGVkX1+dZtDNRG01xJ0x8oZ5FFnNdZx6d036deo= pwd")]
-        public static void AESEncryptionAndDecryption()
-        {
-            int type = 0;
-            string content;
-            string password;
-
-            if (GlobalTo.StartWithArgs)
-            {
-                if (Args.Contains("-en"))
-                {
-                    type = 1;
-                    Args.Remove("-en");
-                }
-                if (Args.Contains("-de"))
-                {
-                    type = 2;
-                    Args.Remove("-de");
-                }
-
-                content = Args.FirstOrDefault();
-                password = Args.Count > 1 ? Args.Last() : "";
-            }
-            else
-            {
-                type = DXService.ConsoleReadItem("Please choose", "Encrypt 加密,Decrypt 解密".Split(','), 1);
-
-                Console.Write($"请输入内容: ");
-                content = Console.ReadLine();
-                Console.Write($"请输入密码: ");
-                password = Console.ReadLine();
-                Console.WriteLine("");
-            }
-
-            try
-            {
-                var result = type switch
-                {
-                    2 => CalcTo.AESDecrypt(content, password),
-                    _ => CalcTo.AESEncrypt(content, password)
-                };
-
-                DXService.Log(result);
-            }
-            catch (Exception ex)
-            {
-                DXService.Log(ex);
-            }
-        }
-
         [Display(Name = "Clear Memory", Description = "清理内存（仅限 Windows）",
-            ShortName = "clearmemory", Prompt = "ndx clearmemory", GroupName = "\r\n")]
+            ShortName = "clearmemory", Prompt = "ndx clearmemory")]
         public static void ClearMemory()
         {
             if (DXService.ConsoleReadBool("清理有风险，是否继续"))
@@ -1350,100 +1230,12 @@ namespace Netnr.DataX.Menu
             }
         }
 
-        [Display(Name = "npm install no deps", Description = "npm 安装不含依赖包",
-            ShortName = "npmi [package@version]", Prompt = "ndx npmi @tensorflow/tfjs@2.8.6")]
-        public static void NpmInstallNoDeps()
-        {
-            string npv;
-            if (GlobalTo.StartWithArgs)
-            {
-                npv = string.Join("", Args);
-            }
-            else
-            {
-                Console.Write("请输入包名及版本号: ");
-                npv = Console.ReadLine();
-            }
-
-            string npmNamespace = string.Empty;
-            string npmPackage;
-            string npmVersion = string.Empty;
-            if (npv.StartsWith('@'))
-            {
-                var npvs = npv.Split('/');
-                npmNamespace = npvs[0];
-
-                var pvs = npvs[1].Split('@');
-                npmPackage = pvs[0];
-                if (pvs.Length == 2)
-                {
-                    npmVersion = pvs[1];
-                }
-            }
-            else
-            {
-                var pvs = npv.Split('@');
-                npmPackage = pvs[0];
-                if (pvs.Length == 2)
-                {
-                    npmVersion = pvs[1];
-                }
-            }
-            var npmNP = $"{npmNamespace}/{npmPackage}".Trim('/');
-
-            if (string.IsNullOrEmpty(npmVersion))
-            {
-                var pkgInfo = HttpTo.Get($"https://registry.npmmirror.com/{npmNP}");
-                npmVersion = pkgInfo.DeJson().GetProperty("dist-tags").GetValue("latest");
-            }
-
-            var filename = $"{npmPackage}-{npmVersion}.tgz";
-            var durl = $"https://registry.npmmirror.com/{npmNP}/-/{filename}";
-            DXService.Log($"downloading {durl}");
-
-            var savePath = Path.Combine(Environment.CurrentDirectory, filename);
-
-            HttpTo.DownloadSave(durl, savePath);
-            DXService.Log($"Save to {savePath}");
-
-            if (GlobalTo.IsWindows)
-            {
-                //Bandizip v6
-                var er = CmdTo.Execute($"cd {Environment.CurrentDirectory} && bc e {filename}");
-                DXService.Log(er.CrError + er.CrOutput);
-
-                //create npm
-                var npmPath = Path.Combine(Environment.CurrentDirectory, "npm");
-                if (!Directory.Exists(npmPath))
-                {
-                    Directory.CreateDirectory(npmPath);
-                }
-
-                //create namespace
-                if (!string.IsNullOrEmpty(npmNamespace))
-                {
-                    var namespacePath = Path.Combine(npmPath, npmNamespace);
-                    if (!Directory.Exists(namespacePath))
-                    {
-                        Directory.CreateDirectory(namespacePath);
-                    }
-                }
-
-                //移动
-                var extractPath = Path.Combine(Environment.CurrentDirectory, "package");
-                new DirectoryInfo(extractPath).MoveTo(Path.Combine(npmPath, $"{npmNP}@{npmVersion}"));
-
-                //删除包
-                File.Delete(savePath);
-            }
-        }
-
-        [Display(Name = "Git Pull", Description = "",
+        [Display(Name = "Git Pull", Description = "批量拉取",
             ShortName = "gitpull [path]", Prompt = "ndx gitpull ./")]
         public static void GitPull()
         {
             string path;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 path = string.Join("", Args);
             }
@@ -1508,7 +1300,7 @@ namespace Netnr.DataX.Menu
             string sourcePath;
             string targetPath;
             string ignoreForder = string.Empty;
-            if (GlobalTo.StartWithArgs)
+            if (GlobalTo.IsStartWithArgs)
             {
                 sourcePath = Args[0];
                 targetPath = Args[1];

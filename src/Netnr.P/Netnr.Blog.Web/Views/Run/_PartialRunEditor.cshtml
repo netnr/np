@@ -1,6 +1,10 @@
 ﻿@model Run
 @{
     var mo = Model ?? new Run();
+
+    var hc = ViewContext.HttpContext;
+    bool IsLogin = hc.User.Identity.IsAuthenticated;
+    bool IsMe = IsLogin && IdentityService.Get(hc)?.UserId == mo.Uid;
 }
 
 @if (Model != null)
@@ -27,64 +31,44 @@ else
         "</html>"
     });
 }
-<input type="hidden" class="nr-hid-code" value="@mo.RunCode" />
+<input type="hidden" class="nrg-hid-code" value="@mo.RunCode" />
 
-<div class="container-fluid">
-    <div class="row mt-2">
+<div class="container-fluid mt-2">
+    <div class="row">
         <div class="col-auto mb-2">
-            <sl-button size="small" variant="success" outline class="nr-btn-run">Run</sl-button>
-
-            @{
-                var hc = ViewContext.HttpContext;
-                bool IsLogin = hc.User.Identity.IsAuthenticated;
-                bool IsMe = IsLogin && IdentityService.Get(hc)?.UserId == mo.Uid;
-            }
-
-            <sl-button size="small" variant="primary" outline class='nr-btn-save @(IsLogin?"":"d-none")'>Save</sl-button>
-            <sl-button size="small" variant="danger" outline class='nr-btn-delete @(IsMe?"":"d-none")'>Delete</sl-button>
-            <sl-button size="small" variant="primary" outline href="/run/code/@mo.RunCode" class='@(IsMe?"":"d-none")'>View</sl-button>
+            <button class="nrg-btn-run btn btn-sm btn-outline-success">Run</button>
+            <button class="nrg-btn-save btn btn-sm btn-outline-info @(IsLogin?"":"d-none")">Save</button>
+            <a class="nrg-btn-delete btn btn-sm btn-outline-danger @(IsMe?"":"d-none")" href="/run/delete/@mo.RunCode" onclick="return confirm('Confirm to delete?')">delete</a>
+            <a class="btn btn-sm btn-outline-info @(IsMe?"":"d-none")" href="/run/code/@mo.RunCode">View</a>
         </div>
         <div class="col-auto d-none d-sm-inline-block mb-2">
-            <sl-input class="nr-txt-description" placeholder="Description" size="small" value="@mo.RunRemark" maxlength="200"></sl-input>
+            <input class="nrg-txt-description form-control form-control-sm" placeholder="Description" value="@mo.RunRemark" maxlength="150" />
         </div>
         <div class="col-auto d-none d-sm-inline-block mb-2">
-            <sl-dropdown class="nr-dd-library">
-                <sl-button slot="trigger" caret size="small" class="nr-btn-library">Library</sl-button>
-                <sl-input class="nr-txt-search-library" placeholder="Search NPM" size="small"></sl-input>
-                <sl-menu class="nr-se-library">
-                    <sl-menu-item disabled>jquery</sl-menu-item>
-                    <sl-menu-item disabled>jquery@3.6.0</sl-menu-item>
-                </sl-menu>
-            </sl-dropdown>
+            <div class="dropdown">
+                <button type="button" class="nrg-btn-library btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside">Library</button>
+                <div class="nrg-dd-library dropdown-menu p-1 overflow-auto" style="--bs-dropdown-min-width:20em">
+                    <input class="nrg-txt-search-library form-control form-control-sm mb-2" placeholder="Search NPM" />
+                    <div class="nrg-list-library list-group">
+                        <button type="button" class="list-group-item list-group-item-action px-2 py-1">jquery</button>
+                        <button type="button" class="list-group-item list-group-item-action px-2 py-1">jquery@3.6.3</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<sl-split-panel vertical style="--divider-width: 4px; border-top: 1px solid var(--sl-color-neutral-200)" position="60" class="nr-card0 nr-pre-init invisible overflow-hidden">
-    <sl-icon slot="handle" name="grip-horizontal"></sl-icon>
-    <div slot="start">
-        <sl-split-panel position="60" style="--divider-width: 4px;" class="nr-card1">
-            <sl-icon slot="handle" name="grip-vertical"></sl-icon>
-            <div slot="start">
-                <sl-split-panel position="60" style="--divider-width: 4px;" class="nr-card2">
-                    <sl-icon slot="handle" name="grip-vertical"></sl-icon>
-                    <div slot="start">
-                        <pre class="nr-pre-html overflow-hidden position-relative" data-lang="html">@(string.IsNullOrWhiteSpace(mo.RunContent1) ? "" : mo.RunContent1)</pre>
-                    </div>
-                    <div slot="end">
-                        <pre class="nr-pre-css overflow-hidden position-relative" data-lang="css">@(string.IsNullOrWhiteSpace(mo.RunContent3) ? "" : mo.RunContent3)</pre>
-                    </div>
-                </sl-split-panel>
-            </div>
-            <div slot="end">
-                <pre class="nr-pre-js overflow-hidden position-relative" data-lang="javascript">@(string.IsNullOrWhiteSpace(mo.RunContent2) ? "" : mo.RunContent2)</pre>
-            </div>
-        </sl-split-panel>
+<div class="nrg-card0 nrc-split-vertical border-top invisible" style="--nrc-divider-color:var(--bs-border-color)">
+    <div class="nrg-card1 nrc-split-horizontal">
+        <div class="nrg-card2 nrc-split-horizontal">
+            <pre class="nrg-pre-html m-0 nrg-pre-code-edit" data-language="html">@(string.IsNullOrWhiteSpace(mo.RunContent1) ? "" : mo.RunContent1)</pre>
+            <div class="nrc-split-divider"></div>
+            <pre class="nrg-pre-css m-0 nrg-pre-code-edit" data-language="css">@(string.IsNullOrWhiteSpace(mo.RunContent3) ? "" : mo.RunContent3)</pre>
+        </div>
+        <div class="nrc-split-divider"></div>
+        <pre class="nrg-pre-js m-0 nrg-pre-code-edit" data-language="javascript">@(string.IsNullOrWhiteSpace(mo.RunContent2) ? "" : mo.RunContent2)</pre>
     </div>
-    <div slot="end">
-        <div class="nr-preview overflow-hidden position-relative"></div>
-    </div>
-</sl-split-panel>
-
-@Html.Raw(Netnr.QuoteTo.Html("js-beautify,monaco-editor"))
-<script src="/js/run/edit.js" asp-append-version="true"></script>
+    <div class="nrc-split-divider"></div>
+    <div class="nrg-preview"></div>
+</div>

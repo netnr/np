@@ -5,7 +5,7 @@
 /// </summary>
 public partial class MenuMainService
 {
-    [Display(Name = "Exit", Description = "退出")]
+    [Display(Name = "Exit", Description = "退出", GroupName = "\r\n")]
     public static void Exit() => Environment.Exit(0);
 
     [Display(Name = "Mix", Description = "综合", GroupName = "\r\n")]
@@ -14,6 +14,6 @@ public partial class MenuMainService
     [Display(Name = "Data", Description = "数据", GroupName = "\r\n")]
     public static void Data() => DXService.InvokeMenu(typeof(MenuDataService), false);
 
-    [Display(Name = "Silent", Description = "静默", GroupName = "\r\n")]
+    [Display(Name = "Silent", Description = "静默")]
     public static void Silent() => DXService.InvokeMenu(typeof(MenuSilenceService), false);
 }

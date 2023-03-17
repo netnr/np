@@ -16,8 +16,7 @@ namespace Netnr.ResponseFramework.Web.Filters
 
             public override void OnActionExecuting(ActionExecutingContext context)
             {
-                swAsync.Reset();
-                swAsync.Start();
+                swAsync.Restart();
 
                 var hc = context.HttpContext;
                 string controller = context.RouteData.Values["controller"].ToString().ToLower();
@@ -96,7 +95,7 @@ namespace Netnr.ResponseFramework.Web.Filters
                         int cacheLogTime = AppTo.GetValue<int>("logs:CacheWriteSecond");
 
                         //上次写入的时间
-                        var cacheLogWriteKey = "Global_Logs_Write";
+                        var cacheLogWriteKey = "Logs-Write";
                         var cacheLogWrite = CacheTo.Get<DateTime?>(cacheLogWriteKey);
                         if (cacheLogWrite == null)
                         {

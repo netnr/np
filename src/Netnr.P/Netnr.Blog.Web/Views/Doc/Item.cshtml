@@ -3,36 +3,48 @@
     ViewData["Title"] = AppTo.GetValue("Common:EnglishName") + " Doc";
 }
 
-<div class="container-fluid p-4">
+<div class="@QuoteTo.PanelClass1">
     <div class="row">
-        <div class="col-md-auto mb-2 d-flex">
-            <sl-button variant="text">标题</sl-button>
-            <sl-input class="nr-txt-title w-100" style="min-width:30vw" placeholder="标题" name="DsdTitle" value="@Model.DsdTitle"></sl-input>
+        <div class="col-lg-5 mb-2">
+            <div class="input-group">
+                <span class="input-group-text">标题</span>
+                <input class="nrg-txt-title form-control" name="DsdTitle" value="@Model.DsdTitle">
+            </div>
         </div>
-        <div class="col-md-auto mb-2 d-flex">
-            <sl-button variant="text">目录</sl-button>
-            <sl-select class="nr-se-pid w-100" style="min-width:30vw;" placeholder="父级目录" name="DsdPid" value="@Model.DsdPid"></sl-select>
+        <div class="col-lg-4 mb-2">
+            <div class="input-group">
+                <span class="input-group-text">目录</span>
+                <select class="nrg-se-pid form-select" placeholder="父级目录" name="DsdPid" data-value="@Model.DsdPid"></select>
+            </div>
         </div>
-        <div class="col-md-auto mb-2 d-flex">
-            <sl-button variant="text">序号</sl-button>
-            <sl-input type="number" class="nr-txt-order w-100" style="min-width:10vw" placeholder="序号" name="DsdOrder" value="@Model.DsdOrder"></sl-input>
+        <div class="col-lg-3 mb-2">
+            <div class="input-group">
+                <span class="input-group-text">序号</span>
+                <input type="number" class="nrg-txt-order form-control" name="DsdOrder" value="@Model.DsdOrder">
+            </div>
         </div>
     </div>
-    <div class="row mt-3">
+    <div class="row mt-2">
         <div class="col-auto mb-2">
-            <input type="hidden" class="nr-hid-code" name="DsCode" value="@Model.DsCode" />
-            <input type="hidden" class="nr-hid-id" name="DsdId" value="@Model.DsdId" />
+            <input type="hidden" class="nrg-hid-code" name="DsCode" value="@Model.DsCode" />
+            <input type="hidden" class="nrg-hid-id" name="DsdId" value="@Model.DsdId" />
 
-            <sl-button class="nr-btn-save" variant="warning">保存</sl-button>
-            <sl-button class="nr-btn-template-api d-none d-sm-inline-block">插入 API 接口模版</sl-button>
-            <sl-button class="nr-btn-template-dic d-none d-sm-inline-block">插入数据字典模版</sl-button>
-            <sl-button href="/doc/code/@(Model.DsCode+"/"+Model.DsdId)">返回</sl-button>
+            <button class="nrg-btn-save btn btn-warning">保存</button>
+            <a class="btn btn-secondary" href="/doc/code/@(Model.DsCode+"/"+Model.DsdId)">返回</a>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    插入
+                </button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" data-action="template-api">API 接口模版</button></li>
+                    <li><button class="dropdown-item" data-action="template-dic">数据字典模版</button></li>
+                </ul>
+            </div>
         </div>
         <div class="col-12">
-            <div class="nr-editor" data-value="@Model.DsdContentMd"></div>
+            <div class="nrg-editor" data-value="@Model.DsdContentMd">Loading</div>
         </div>
     </div>
 </div>
-
-@Html.Raw(Netnr.QuoteTo.Html("netnrmd.css,netnrmd-ace.js,netnrmd.js"))
-<script src="/js/doc/item.js" asp-append-version="true"></script>

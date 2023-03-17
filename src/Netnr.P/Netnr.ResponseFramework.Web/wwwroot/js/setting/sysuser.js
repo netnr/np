@@ -104,7 +104,7 @@ $('#fv_save_1').click(function () {
             data: $("#fv_form_1").serialize(),
             dataType: 'json',
             success: function (data) {
-                if (data.code == 97) {
+                if (data.code == 409) {
                     art('账号已经存在');
                 } else if (data.code == 200) {
                     //新增成功，重新载入

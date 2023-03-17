@@ -1,12 +1,10 @@
-using AgGrid.InfiniteRowModel;
-
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 记事本
     /// </summary>
     [Authorize]
-    public class NoteController : Controller
+    public class NoteController : WebController
     {
         public ContextBase db;
 
@@ -27,12 +25,13 @@ namespace Netnr.Blog.Web.Controllers
         /// <summary>
         /// 查询
         /// </summary>
-        /// <param name="grp"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM NoteList(string grp)
+        public async Task<ResultVM> NoteList()
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 var uinfo = IdentityService.Get(HttpContext);
 
@@ -48,12 +47,15 @@ namespace Netnr.Blog.Web.Controllers
                                 NoteUpdateTime = a.NoteUpdateTime,
                                 Uid = a.Uid,
                             };
-
-                vm.Data = query.GetInfiniteRowModelBlock(grp);
+                vm.Data = await query.ToListAsync();
                 vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="mo"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultVM SaveNote([FromForm] Notepad mo)
+        public async Task<ResultVM> SaveNote([FromForm] Notepad mo)
         {
             var vm = IdentityService.CompleteInfoValid(HttpContext);
             if (vm.Code == 200)
@@ -84,34 +86,21 @@ namespace Netnr.Blog.Web.Controllers
 
                         db.Notepad.Add(mo);
 
-                        int num = db.SaveChanges();
+                        int num = await db.SaveChangesAsync();
                         vm.Set(num > 0);
                         vm.Data = mo.NoteId;
                     }
                     else
                     {
-                        var currmo = db.Notepad.Find(mo.NoteId);
-                        if (currmo.Uid == uinfo.UserId)
-                        {
-                            currmo.NoteTitle = mo.NoteTitle;
-                            currmo.NoteContent = mo.NoteContent;
-                            currmo.NoteUpdateTime = now;
+                        var num = await db.Notepad.Where(x => x.NoteId == mo.NoteId && x.Uid == uinfo.UserId)
+                            .ExecuteUpdateAsync(x => x.SetProperty(p => p.NoteTitle, mo.NoteTitle)
+                           .SetProperty(p => p.NoteContent, mo.NoteContent)
+                           .SetProperty(p => p.NoteUpdateTime, now));
 
-                            db.Notepad.Update(currmo);
-
-                            int num = db.SaveChanges();
-
-                            vm.Set(num > 0);
-                        }
-                        else
-                        {
-                            vm.Set(EnumTo.RTag.unauthorized);
-                        }
+                        vm.Set(num > 0);
                     }
                 }
-
             }
-
             return vm;
         }
 
@@ -121,29 +110,24 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM QueryNoteOne(int id)
+        public async Task<ResultVM> QueryNoteOne(int id)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            var uinfo = IdentityService.Get(HttpContext);
+
+            var mo = await db.Notepad.FirstOrDefaultAsync(x => x.NoteId == id && x.Uid == uinfo.UserId);
+            if (mo == null)
             {
-                var uinfo = IdentityService.Get(HttpContext);
+                vm.Set(EnumTo.RTag.invalid);
+            }
+            else
+            {
+                vm.Set(EnumTo.RTag.success);
+                vm.Data = mo;
+            }
 
-                var mo = db.Notepad.Find(id);
-                if (mo == null)
-                {
-                    vm.Set(EnumTo.RTag.invalid);
-                }
-                else if (mo.Uid == uinfo.UserId)
-                {
-                    vm.Set(EnumTo.RTag.success);
-                    vm.Data = mo;
-                }
-                else
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                }
-
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -152,28 +136,24 @@ namespace Netnr.Blog.Web.Controllers
         /// <param name="ids">多个逗号分隔</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM DelNote(string ids)
+        public async Task<ResultVM> DelNote(string ids)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 var uinfo = IdentityService.Get(HttpContext);
                 var listKeyId = ids.Split(',').Select(x => Convert.ToInt32(x)).ToList();
 
-                var listMo = db.Notepad.Where(x => listKeyId.Contains(x.NoteId) && x.Uid == uinfo.UserId).ToList();
-                if (listMo.Count > 0)
-                {
-                    db.Notepad.RemoveRange(listMo);
-                    int num = db.SaveChanges();
+                var num = await db.Notepad.Where(x => listKeyId.Contains(x.NoteId) && x.Uid == uinfo.UserId).ExecuteDeleteAsync();
+                vm.Set(num > 0);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                    vm.Set(num > 0);
-                }
-                else
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                }
-
-                return vm;
-            });
+            return vm;
         }
     }
 }

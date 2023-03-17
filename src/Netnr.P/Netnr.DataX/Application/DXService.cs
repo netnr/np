@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace Netnr.DataX.Application
 {
@@ -27,7 +29,7 @@ namespace Netnr.DataX.Application
             for (int i = 0; i < cms.Count; i++)
             {
                 var mi = cms[i];
-                var nameArgs = mi.CustomAttributes.LastOrDefault().NamedArguments;
+                var nameArgs = mi.CustomAttributes.LastOrDefault()?.NamedArguments;
                 if (nameArgs != null)
                 {
                     var attrGroupName = nameArgs.FirstOrDefault(x => x.MemberName == "GroupName").TypedValue.Value?.ToString();
@@ -39,7 +41,7 @@ namespace Netnr.DataX.Application
                         attrName = $"{attrShortName.Split(' ')[0]} ({attrName})";
                     }
 
-                    dicMethod.Add($"{attrName} -> {attrDescription}{attrGroupName}", mi);
+                    dicMethod.Add($"{attrName} {attrDescription}{attrGroupName}", mi);
                 }
             }
             var listSilent = dicMethod.Keys.ToList();
@@ -86,19 +88,6 @@ namespace Netnr.DataX.Application
         }
 
         /// <summary>
-        /// 相似匹配
-        /// </summary>
-        /// <param name="s1"></param>
-        /// <param name="s2"></param>
-        /// <returns></returns>
-        public static bool SimilarMatch(string s1, string s2)
-        {
-            s1 = s1.Replace("-", "").Replace("_", "").Replace(" ", "").ToLower();
-            s2 = s2.Replace("-", "").Replace("_", "").Replace(" ", "").ToLower();
-            return s1 == s2;
-        }
-
-        /// <summary>
         /// 提示符号
         /// </summary>
         /// <param name="tip"></param>
@@ -142,7 +131,7 @@ namespace Netnr.DataX.Application
         Flag1:
             var allDbConns = model.ListConnectionInfo;
 
-            var ckey = "tmp_Database_Conns";
+            var ckey = "Database-Conns";
             var tmpDbConns = CacheTo.Get<List<DataKitTransferVM.ConnectionInfo>>(ckey);
             if (tmpDbConns != null)
             {
@@ -157,7 +146,7 @@ namespace Netnr.DataX.Application
             for (int i = 0; i < allDbConns.Count; i++)
             {
                 var obj = allDbConns[i];
-                Console.WriteLine($"{i + 1,5}. {obj.ConnectionRemark} -> {obj.ConnectionType} => {obj.ConnectionString}");
+                Console.WriteLine($"{i + 1,5}. {obj.ConnectionRemark} -> {obj.ConnectionType}://{obj.ConnectionString}");
             }
             Console.Write(TipSymbol(tip));
 
@@ -166,8 +155,8 @@ namespace Netnr.DataX.Application
             if (rdi && ed == 0)
             {
             Flag2:
-                Console.Write(TipSymbol("数据库连接信息（MySQL => Conn）"));
-                var tcs = Console.ReadLine().Trim().Split(" => ");
+                Console.Write(TipSymbol("数据库连接信息（MySQL://Conn）"));
+                var tcs = Console.ReadLine().Trim().Split("://");
                 var tctype = tcs[0].Split(" -> ").Last();
                 if (Enum.TryParse(tctype, true, out EnumTo.TypeDB tdb))
                 {
@@ -193,7 +182,7 @@ namespace Netnr.DataX.Application
             }
             else if (ed > 0 && ed <= allDbConns.Count)
             {
-                mo = allDbConns[ed - 1];
+                mo.ToCopy(allDbConns[ed - 1]);
             }
             else
             {
@@ -223,7 +212,7 @@ namespace Netnr.DataX.Application
                     break;
             }
 
-            Log($"\n已选择 {mo.ConnectionType} => {mo.ConnectionString}\n", ConsoleColor.Cyan);
+            Log($"\n已选择 {mo.ConnectionType}://{mo.ConnectionString}\n", ConsoleColor.Cyan);
 
             return mo;
         }
@@ -271,7 +260,7 @@ namespace Netnr.DataX.Application
             {
                 isAgain = false;
                 Console.WriteLine("");
-                for (int j = items.Count - 1; j >= 0; j--)
+                for (int j = 0; j < items.Count; j++)
                 {
                     Console.WriteLine($"{j + 1,5}. {items[j]}");
                 }
@@ -393,7 +382,7 @@ namespace Netnr.DataX.Application
 
             var san = cert.Extensions.FirstOrDefault(x => x.Oid.Value == "2.5.29.17").RawData.ToText(Encoding.Latin1);
             san = Regex.Replace(san, @"\p{C}+", " ");
-            san = string.Join(" ", san.Split(' ').Where(x => x.Length > 3).Select(x => RemoveSpecialCharacters(x)));
+            san = string.Join(" ", san.Split(' ').Where(x => x.Length > 3).Select(RemoveSpecialCharacters));
             Log($"备用名称: {san}");
             Log($"版本: {cert.Version}");
             Log($"序列号: {cert.SerialNumber}");
@@ -486,10 +475,13 @@ namespace Netnr.DataX.Application
 
             try
             {
+                var hc = new HttpClient();
+                hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Netnr");
+
                 //空，获取本地公网出口IP
                 if (string.IsNullOrWhiteSpace(domainOrIP))
                 {
-                    var res = HttpTo.Get("https://api.bilibili.com/x/web-interface/zone");
+                    var res = hc.GetStringAsync("https://api.bilibili.com/x/web-interface/zone").ToResult();
                     var data = res.DeJson().GetProperty("data");
                     result.Add(data.GetValue("addr"), $"{data.GetValue("country")} {data.GetValue("province")} {data.GetValue("isp")}");
                 }
@@ -517,14 +509,14 @@ namespace Netnr.DataX.Application
                             if (addr.AddressFamily == AddressFamily.InterNetworkV6)
                             {
                                 var url = $"https://ip.useragentinfo.com/ipv6/{addr}";
-                                var res = HttpTo.Get(url);
+                                var res = hc.GetStringAsync(url).ToResult();
                                 var data = res.DeJson();
                                 result.Add(data.GetValue("ipv6"), $"{data.GetValue("country")} {data.GetValue("region")} {data.GetValue("city")}");
                             }
                             else
                             {
                                 var url = $"https://opendata.baidu.com/api.php?query={item}&resource_id=6006&oe=utf8";
-                                var res = HttpTo.Get(url);
+                                var res = hc.GetStringAsync(url).ToResult();
                                 var data = res.DeJson().GetProperty("data").EnumerateArray().First();
                                 result.Add(data.GetValue("origipquery"), data.GetValue("location"));
                             }

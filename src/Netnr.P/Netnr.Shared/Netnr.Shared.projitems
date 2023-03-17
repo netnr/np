@@ -9,30 +9,30 @@
     <Import_RootNamespace>Netnr</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperFast.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperAll.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\JsonConverterTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\TreeTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\ValueTextVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NJson\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Service\EWeChatAppService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\FilterAllowCORS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\LaunchTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitScript.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\ViewModel\DataKitTransferVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serve\ServeTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Import\ImportTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\TimingVM.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperExtend.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ado\SQLiteHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ado\OracleHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperSQLite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperOracle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\QuoteTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ado\MySQLHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ado\PostgreSQLHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ado\SQLServerHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperMySQL.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperPostgreSQL.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbHelperSQLServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\ClientInfoTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Compile\CompileTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitExtend.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\ViewModel\DataKitDatabaseVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App\AppTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\ImageTo.cs" />
@@ -49,7 +49,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Npoi\NpoiTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pinyin\PinyinTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\ReadyTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)XOps\MonitorTo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Import\" />
