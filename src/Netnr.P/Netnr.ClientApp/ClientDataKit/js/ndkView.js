@@ -118,7 +118,7 @@ var ndkView = {
                 { field: 'id', headerName: ndkVary.emoji.id, width: 140, editable: false },
                 { field: 'conn', headerName: ndkI18n.lg.connConnection, width: 600, cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: 999 } },
                 {
-                    headerName: ndkI18n.lg.connControl, pinned: 'right', width: 100, hide: true, filter: false, sortable: false, editable: false, menuTabs: false,
+                    headerName: ndkI18n.lg.connControl, pinned: 'right', width: 100, hide: true, filter: false, sortable: false, editable: false, menuTabs: [],
                     cellRenderer: class {
                         init(params) {
                             this.eGui = document.createElement('div');
@@ -1165,10 +1165,15 @@ var ndkView = {
                                         var arows = nrGrid.getAllRows(ndkVary.gridOpsColumn);
                                         ndkFunction.groupBy(arows, x => x.TableName).forEach(tableName => {
                                             var frows = arows.filter(x => x.TableName == tableName);
+
+                                            let tableTitle = `### ${tableName}`;
                                             var tableComment = ndkFunction.markdownEncode(frows[0].TableComment);
+                                            if (tableComment != null) {
+                                                tableTitle += `\n${tableComment}`;
+                                            }
 
                                             var md = ndkFunction.rowsToMarkdown(frows, headers);
-                                            mds.push(`### ${tableName}\n${tableComment}\n\n` + md);
+                                            mds.push(`${tableTitle}\n\n${md}`);
                                         });
                                         ndkVary.pasteContent = mds.join('\n\n');
                                     } else {
@@ -1206,7 +1211,7 @@ var ndkView = {
         switch (ctype) {
             case "SQLite":
                 remoteItem = [
-                    'DatabaseOwner', 'DatabaseSpace', 'DatabaseCollation', 'DatabaseLogLength', 'DatabaseIndexLength', 'DatabaseLogPath',
+                    'TableRows', 'DatabaseOwner', 'DatabaseSpace', 'DatabaseCollation', 'DatabaseLogLength', 'DatabaseIndexLength', 'DatabaseLogPath',
                     'TableDataLength', 'TableIndexLength', 'TableCollation', 'TableCreateTime', 'TableModifyTime', 'TableEngine', 'SchemaName', 'TableOwner', 'TableSpace', 'TableType',
                     'TableComment', 'ColumnComment'
                 ]

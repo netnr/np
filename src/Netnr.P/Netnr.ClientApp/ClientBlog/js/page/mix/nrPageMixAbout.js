@@ -9,12 +9,7 @@ let nrPage = {
     },
 
     reqSystemStatus: async () => {
-
-        let fd = new FormData();
-        fd.append('__nolog', 'true');
-        fd.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
-
-        let vm = await nrcBase.fetch('/Mix/AboutServerStatus', { method: "POST", body: fd });
+        let vm = await nrcBase.fetch('/Mix/AboutServerStatus');
 
         if (vm.error || vm.resp.ok == false) {
             nrVary.domSystemStatus.innerHTML = '<h4 class="text-danger">获取服务器信息异常</h4>';

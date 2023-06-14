@@ -30,8 +30,6 @@
         public async Task<IActionResult> Code([FromRoute] string id)
         {
             var query = from a in db.Gist
-                        join b in db.GistSync on a.GistCode equals b.GistCode into bg
-                        from b in bg.DefaultIfEmpty()
                         join c in db.UserInfo on a.Uid equals c.UserId
                         where a.GistCode == id
                         select new Gist
@@ -51,8 +49,6 @@
                             GistTags = a.GistTags,
                             GistTheme = a.GistTheme,
 
-                            Spare1 = b == null ? null : b.GsGitHubId,
-                            Spare2 = b == null ? null : b.GsGiteeId,
                             Spare3 = c.Nickname
                         };
 
@@ -139,7 +135,7 @@
                     vm.Data = mo.GistCode;
 
                     //推送通知
-                    _ = PushService.PushAsync("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
+                    _ = PushService.PushWeChat("网站消息（Gist）", $"{mo.GistRemark}\r\n{mo.GistFilename}");
                 }
                 else
                 {

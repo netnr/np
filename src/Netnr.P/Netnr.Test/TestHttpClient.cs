@@ -8,7 +8,7 @@ namespace Netnr.Test
     public class TestHttpClient
     {
         [Fact]
-        public async void HttpClient_1_GET()
+        public async Task HttpClient_1_GET()
         {
             //https://stackoverflow.com/questions/12553277
             var handler = new HttpClientHandler
@@ -29,11 +29,10 @@ namespace Netnr.Test
             }
         }
 
-
         [Fact]
-        public async void HttpClient_2_GBK()
+        public async Task HttpClient_2_GBK()
         {
-            ReadyTo.EncodingReg();
+            BaseTo.ReadyEncoding();
 
             var hc = new HttpClient();
             hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Netnr");
@@ -46,7 +45,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void HttpClient_3_POST()
+        public async Task HttpClient_3_POST()
         {
             var hc = new HttpClient();
 
@@ -62,7 +61,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void HttpClient_4_POST()
+        public async Task HttpClient_4_POST()
         {
             var hc = new HttpClient();
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -81,7 +80,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void HttpClient_5_POST()
+        public async Task HttpClient_5_POST()
         {
             var hc = new HttpClient();
             var content = new MultipartFormDataContent
@@ -97,6 +96,38 @@ namespace Netnr.Test
                 var read = await resp.Content.ReadAsStringAsync();
                 Debug.WriteLine(read);
             }
+        }
+
+        [Fact]
+        public async Task HttpClient_6_Download()
+        {
+            var url = "https://github.com/netnr/np/releases/download/dist/ndx-1.0.2-win-x64.zip";
+            var savePath = @"D:\tmp\res\try\download.bin";
+
+            var client = new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(5)
+            };
+            await client.DownloadAsync(url, savePath, (rlen, total) =>
+            {
+                Debug.WriteLine($"{rlen}/{total} {rlen * 1.0 / total * 100:F2}%");
+            });
+        }
+
+        [Fact]
+        public async Task HttpClient_7()
+        {
+            var url = "http://192.168.6.167:8592/site/platformLogin.do";
+            var savePath = @"D:\tmp\res\try\download.bin";
+
+            var client = new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(5)
+            };
+            await client.DownloadAsync(url, savePath, (rlen, total) =>
+            {
+                Debug.WriteLine($"{rlen}/{total} {rlen * 1.0 / total * 100:F2}%");
+            });
         }
     }
 }

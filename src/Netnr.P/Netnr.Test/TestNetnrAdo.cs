@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
-using System.Data;
 using Xunit;
 
 namespace Netnr.Test
@@ -8,14 +7,77 @@ namespace Netnr.Test
     public class TestNetnrAdo
     {
         [Fact]
-        public void SQLiteAttach()
+        public async Task DbKitTransaction()
+        {
+            var connOption = new DbKitConnectionOption
+            {
+                ConnectionType = EnumTo.TypeDB.SQLServer,
+                ConnectionString = "Server=local.host,1433;uid=sa;pwd=Abc1230..;database=xops"
+            };
+            var dbk = connOption.CreateInstance();
+            dbk.ConnOption.AutoClose = false;
+
+            var sql1 = "update base_user set user_phone='123' where user_account='xops'";
+            var sql2 = "update base_user set user_mark='456' where user_account='xops'";
+            var sql3 = "select * from base_user";
+
+            await dbk.SafeConn(async () =>
+            {
+                var edo = await dbk.SqlExecuteDataOnly(sql3);
+                var rows = edo.Datas.Tables[0];
+                Debug.WriteLine(rows.ToJson());
+
+                var eds = await dbk.SqlExecuteDataSet(sql3);
+                Debug.WriteLine(eds.Datas.Tables[0].ToJson());
+
+                var num = 0;
+
+                var cmdOption = dbk.CommandCreate();
+                await cmdOption.OpenTransactionAsync();
+                cmdOption.AutoCommit = false;
+
+                cmdOption.Command.CommandText = sql1;
+                num += await cmdOption.Command.ExecuteNonQueryAsync();
+                Debug.WriteLine(num);
+
+                cmdOption.Command.CommandText = sql2;
+                num += await cmdOption.Command.ExecuteNonQueryAsync();
+                Debug.WriteLine(num);
+
+                await cmdOption.CommitAsync();
+                return num;
+            });
+        }
+
+        [Fact]
+        public async Task SQLiteSchema()
+        {
+            var connOption = new DbKitConnectionOption
+            {
+                ConnectionType = EnumTo.TypeDB.SQLite,
+                ConnectionString = @"Data Source=D:\tmp\res\tmp.db"
+            };
+            var dbk = connOption.CreateInstance();
+
+            var st = Stopwatch.StartNew();
+            var edo = await dbk.SqlExecuteDataOnly("select * from stats_zoning limit 100");
+            Debug.WriteLine(st.Elapsed);
+            st.Restart();
+
+            //查询 Schema 极慢，耗时 7 秒
+            var eds = await dbk.SqlExecuteDataSet("select * from stats_zoning limit 100");
+            Debug.WriteLine(st.Elapsed);
+        }
+
+        [Fact]
+        public async Task SQLiteAttach()
         {
             var c1 = @"Data Source=D:\tmp\res\tmp.db";
             var conn = new SqliteConnection(c1);
             conn.Open();
             var sql1 = "PRAGMA database_list";
             var cmd1 = new SqliteCommand(sql1, conn);
-            Debug.WriteLine(cmd1.ExecuteDataOnly().ToJson(true));
+            Debug.WriteLine((await cmd1.ReaderDataOnlyAsync()).ToJson(true));
 
             var sql2 = @"ATTACH DATABASE 'D:\tmp\res\netnrf.db' AS nr";
             var cmd2 = new SqliteCommand(sql2, conn);
@@ -23,21 +85,29 @@ namespace Netnr.Test
 
             conn.Close();
             conn.Open();
-            Debug.WriteLine(cmd1.ExecuteDataOnly().ToJson(true));
+            Debug.WriteLine((await cmd1.ReaderDataOnlyAsync()).ToJson(true));
         }
 
         [Fact]
-        public void InfoMessage()
+        public async Task InfoMessage()
         {
             // SQLServer
             {
-                var conn = "Server=local.host;uid=sa;pwd=Abc1230..;database=netnr;TrustServerCertificate=True;";
-                var sql = "print newid()";
-                var dbc = new SqlConnection(conn);
-                dbc.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Message}");
+                var conn = DbKitExtensions.PreCheckConn(EnumTo.TypeDB.SQLServer, "Server=local.host;uid=sa;pwd=Abc1230..;");
+                var csb = new SqlConnectionStringBuilder(conn);
+                csb.InitialCatalog = "xops";
+                var dbConn = new SqlConnection(csb.ConnectionString);
+                dbConn.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbConn)} InfoMessage: {e.Message}");
 
-                var db = new DbHelper(dbc);
-                var result = db.SqlExecuteReader(sql);
+                var connOption = new DbKitConnectionOption
+                {
+                    ConnectionType = EnumTo.TypeDB.SQLServer,
+                    Connection = dbConn
+                };
+                var dbk = new DbKit(connOption);
+
+                var sql = "print newid()";
+                var result = await dbk.SqlExecuteDataOnly(sql);
             }
 
             // PostgreSQL
@@ -49,28 +119,42 @@ BEGIN
     RAISE NOTICE '版本信息：%', version();
 END
 $$;";
-                var dbc = new Npgsql.NpgsqlConnection(conn);
-                dbc.Notice += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Notice.MessageText}");
+                var dbConn = new Npgsql.NpgsqlConnection(conn);
+                dbConn.Notice += (s, e) => Debug.WriteLine($"{nameof(dbConn)} InfoMessage: {e.Notice.MessageText}");
 
-                var db = new DbHelper(dbc);
-                var result = db.SqlExecuteReader(sql);
+                var connOption = new DbKitConnectionOption
+                {
+                    ConnectionType = EnumTo.TypeDB.PostgreSQL,
+                    Connection = dbConn,
+                    AutoClose = false
+                };
+                var dbk = new DbKit(connOption);
+
+                var result = await dbk.SqlExecuteDataOnly(sql);
             }
 
             {
-                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=Abc1230..";
-                var sql = @"";
-                var dbc = new Oracle.ManagedDataAccess.Client.OracleConnection(conn);
-                dbc.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbc)} InfoMessage: {e.Message}");
+                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQSME;Password=Abc1230..";
+                var sql = @"SELECT SYS_GUID() FROM dual";
+                var dbConn = new Oracle.ManagedDataAccess.Client.OracleConnection(conn);
+                dbConn.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbConn)} InfoMessage: {e.Message}");
 
-                var db = new DbHelper(dbc);
-                var result = db.SqlExecuteReader(sql);
+                var connOption = new DbKitConnectionOption
+                {
+                    ConnectionType = EnumTo.TypeDB.Oracle,
+                    Connection = dbConn,
+                    AutoClose = false
+                };
+                var dbk = new DbKit(connOption);
+
+                var result = await dbk.SqlExecuteDataOnly(sql);
             }
         }
 
         [Fact]
         public void OracleReader()
         {
-            var connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=123";
+            var connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQSME;Password=Abc1320..";
 
             var conn = new Oracle.ManagedDataAccess.Client.OracleConnection(connectionString);
             conn.Open();

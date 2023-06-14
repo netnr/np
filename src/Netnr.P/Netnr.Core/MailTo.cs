@@ -37,7 +37,7 @@ public class MailTo
         message.IsBodyHtml = true;
         message.BodyEncoding = model.Coding;
 
-        await client.SendMailAsync(message);
+        await client.SendMailAsync(message).ConfigureAwait(false);
     }
 
     /// <summary>

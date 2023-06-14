@@ -93,14 +93,14 @@ namespace Netnr
             if (tdb != EnumTo.TypeDB.InMemory)
             {
                 var pwd = AppTo.GetValue("ConnectionStrings:Password");
-                conn = DbHelper.SqlConnEncryptOrDecrypt(conn, pwd);
+                conn = DbKitExtensions.SqlConnEncryptOrDecrypt(conn, pwd);
 
                 if (tdb == EnumTo.TypeDB.SQLite)
                 {
                     conn = conn.Replace("~", AppTo.ContentRootPath);
                 }
 
-                conn = DbHelper.SqlConnPreCheck(tdb, conn);
+                conn = DbKitExtensions.PreCheckConn(tdb, conn);
                 return conn;
             }
             return null;

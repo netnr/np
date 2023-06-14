@@ -1,13 +1,38 @@
-<div class="@QuoteTo.PanelClass1">
-    <div class="row">
-        <div class="col-auto mb-2">
-            <select class="nrg-se-language invisible form-select"></select>
+﻿<div class="@QuoteTo.PanelClass1">
+    <div class="d-flex">
+        <div style="width:15em;margin-right:2em">
+
+            <div class="btn-group mb-2 w-100">
+                <button class="nrg-btn-new btn btn-outline-secondary">新建 New</button>
+
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        更多
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="nrg-btn-export dropdown-item">导出当前</button></li>
+                        <li><button class="nrg-btn-export-all dropdown-item">导出全部</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            <ol class="nrg-list-file list-group list-group-numbered overflow-auto" role="button"></ol>
         </div>
-        <div class="col-auto mb-2">
-            <button class="nrg-btn-run btn btn-warning d-none">Run</button>
-        </div>
-        <div class="col-12">
-            <div class="nrg-editor"></div>
+        <div class="position-relative" style="width:calc(100% - 17em)">
+            <span class="nrg-btn-fold badge text-bg-secondary d-none" role="button" style="position:absolute;top:50%;z-index:1;left:-1em">↔</span>
+
+            <div class="row">
+                <div class="col-auto mb-2">
+                    <select class="nrg-se-language invisible form-select"></select>
+                </div>
+                <div class="nrg-card-active col-auto mb-2">
+                    <button class="nrg-btn-run btn btn-warning d-none">Run</button>
+                    <button class="nrg-btn-preview btn btn-warning d-none">Preview</button>
+                </div>
+                <div class="col-12">
+                    <div class="nrg-editor"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

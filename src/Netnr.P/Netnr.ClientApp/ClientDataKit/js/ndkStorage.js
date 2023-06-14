@@ -14,8 +14,8 @@ var ndkStorage = {
     // 初始化
     init: async () => {
         //存储初始化
-        ndkStorage.instanceConfig = await new nrcIndexedDB().init({ name: "ndk-config" });
-        ndkStorage.instanceCache = await new nrcIndexedDB().init({ name: "ndk-cache" });
+        ndkStorage.instanceConfig = await new nrcIndexedDB({ name: "ndk-config" }).init();
+        ndkStorage.instanceCache = await new nrcIndexedDB({ name: "ndk-cache" }).init();
     },
 
     //键配置

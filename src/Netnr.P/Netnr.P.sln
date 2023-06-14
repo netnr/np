@@ -59,6 +59,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "80 Single", "80 Single", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.Admin.XOps", "Netnr.Admin.XOps\Netnr.Admin.XOps.csproj", "{8E1D202C-7676-4A62-99D8-5602937C1E98}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netnr.IPQuery", "Netnr.IPQuery\Netnr.IPQuery.csproj", "{2E2CC86E-4289-4EE9-BC8E-EB3B9A4BC3A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,10 @@ Global
 		{8E1D202C-7676-4A62-99D8-5602937C1E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E1D202C-7676-4A62-99D8-5602937C1E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E1D202C-7676-4A62-99D8-5602937C1E98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E2CC86E-4289-4EE9-BC8E-EB3B9A4BC3A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E2CC86E-4289-4EE9-BC8E-EB3B9A4BC3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E2CC86E-4289-4EE9-BC8E-EB3B9A4BC3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E2CC86E-4289-4EE9-BC8E-EB3B9A4BC3A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,6 +180,7 @@ Global
 		{0FC1488F-05B9-47A8-BA2A-BD2C804F6ADB} = {B3F4B929-300F-42B3-BEF2-2C3310568B3F}
 		{25636B8A-44D3-41BE-A812-25BCAA4E4F58} = {29BB9882-4408-476B-9856-4E1235DBEB4A}
 		{8E1D202C-7676-4A62-99D8-5602937C1E98} = {ED275630-B723-440F-9127-BE05985ED126}
+		{2E2CC86E-4289-4EE9-BC8E-EB3B9A4BC3A1} = {29BB9882-4408-476B-9856-4E1235DBEB4A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B711FAC-2268-4B27-A2F4-98670D151C91}

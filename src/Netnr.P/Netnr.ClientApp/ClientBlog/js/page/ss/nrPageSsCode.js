@@ -1,14 +1,42 @@
 import { nrcFile } from "../../../../frame/nrcFile";
 import { nrcBase } from "../../../../frame/nrcBase";
-import { nrVary } from "../../nrVary";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
 import { nrcRely } from "../../../../frame/nrcRely";
+import { nrVary } from "../../nrVary";
 
 let nrPage = {
     pathname: "/ss/code",
 
     init: async () => {
-        await nrcRely.remote('crypto.js')
+        await nrcRely.remote('crypto.js');
+
+        let modeArr = Object.keys(CryptoJS.mode);
+        modeArr.sort();
+        document.querySelectorAll('.flag-mode').forEach(dom => {
+            modeArr.forEach(item => {
+                let domOption = document.createElement('option');
+                domOption.value = item;
+                domOption.innerHTML = item;
+                if (item == "CBC") {
+                    domOption.selected = true;
+                }
+                dom.appendChild(domOption);
+            });
+        });
+
+        let padArr = Object.keys(CryptoJS.pad);
+        padArr.sort();
+        document.querySelectorAll('.flag-pad').forEach(dom => {
+            padArr.forEach(item => {
+                let domOption = document.createElement('option');
+                domOption.value = item;
+                domOption.innerHTML = item;
+                if (item == "Pkcs7") {
+                    domOption.selected = true;
+                }
+                dom.appendChild(domOption);
+            });
+        })
 
         nrPage.bindEvent();
     },
@@ -63,6 +91,9 @@ let nrPage = {
                                     case "HTMLEncode":
                                         nrVary.domTxtCode1.value = nrcBase.htmlDecode(code2);
                                         break;
+                                    case "escape":
+                                        nrVary.domTxtCode1.value = window['' + 'unescape'](code2);
+                                        break;
                                 }
                             }
                             break;
@@ -99,18 +130,6 @@ let nrPage = {
                             }
                             break;
 
-                        case "AES":
-                        case "DES":
-                        case "RC4":
-                        case "Rabbit":
-                        case "TripleDES":
-                            {
-                                let key2 = nrVary.domTxtKey2.value;
-                                let result = CryptoJS[action].encrypt(code1, key2);
-                                nrVary.domTxtCode2.value = result;
-                            }
-                            break;
-
                         case "encodeURI":
                             nrVary.domTxtCode2.value = encodeURI(code1);
                             break;
@@ -132,6 +151,9 @@ let nrPage = {
                         case "HTMLEncode":
                             nrVary.domTxtCode2.value = nrcBase.htmlEncode(code1);
                             break;
+                        case "escape":
+                            nrVary.domTxtCode2.value = window['' + 'escape'](code1);
+                            break;
 
                         case "UUID":
                             {
@@ -148,6 +170,82 @@ let nrPage = {
                 }
             }
         });
+
+        //AES
+        nrVary.domCardAes.addEventListener('click', function (e) {
+            let target = e.target;
+
+            if (target.nodeName == "BUTTON") {
+                let mode = this.querySelector('.flag-mode').value;
+                const padding = CryptoJS.pad[this.querySelector('.flag-pad').value];
+                const keySize = this.querySelector('.flag-keysize').value * 1;
+                let key = this.querySelector('.flag-key').value;
+                let iv = this.querySelector('.flag-iv').value;
+
+                if (keySize == 128 && key.length != 16) {
+                    nrApp.toast('密钥 Key 长度为 16 个字符')
+                } else if (keySize == 192 && key.length != 24) {
+                    nrApp.toast('密钥 Key 长度为 24 个字符')
+                } else if (keySize == 256 && key.length != 32) {
+                    nrApp.toast('密钥 Key 长度为 32 个字符')
+                } else if (mode != "ECB" && iv.length != 16) {
+                    nrApp.toast('初始化向量 IV 长度为 16 个字符')
+                } else {
+                    mode = CryptoJS.mode[mode];
+                    key = CryptoJS.enc.Utf8.parse(key);
+                    iv = CryptoJS.enc.Utf8.parse(iv);
+
+                    if (target.classList.contains('flag-encrypt')) {
+                        let code1 = nrVary.domTxtCode1.value;
+                        let result = CryptoJS.AES.encrypt(code1, key, {
+                            keySize, iv, mode, padding
+                        });
+                        nrVary.domTxtCode2.value = result;
+                    } else if (target.classList.contains('flag-decrypt')) {
+                        let code2 = nrVary.domTxtCode2.value;
+                        let result = CryptoJS.AES.decrypt(code2, key, {
+                            keySize, iv, mode, padding
+                        }).toString(CryptoJS.enc.Utf8);
+                        nrVary.domTxtCode1.value = result;
+                    }
+                }
+            }
+        })
+        //DES
+        nrVary.domCardDes.addEventListener('click', function (e) {
+            let target = e.target;
+
+            if (target.nodeName == "BUTTON") {
+                let mode = this.querySelector('.flag-mode').value;
+                const padding = CryptoJS.pad[this.querySelector('.flag-pad').value];
+                let key = this.querySelector('.flag-key').value;
+                let iv = this.querySelector('.flag-iv').value;
+
+                if (key.length != 8) {
+                    nrApp.toast('密钥 Key 长度为 8 个字符')
+                } else if (mode != "ECB" && iv.length != 8) {
+                    nrApp.toast('初始化向量 IV 长度为 8 个字符')
+                } else {
+                    mode = CryptoJS.mode[mode];
+                    key = CryptoJS.enc.Utf8.parse(key);
+                    iv = CryptoJS.enc.Utf8.parse(iv);
+
+                    if (target.classList.contains('flag-encrypt')) {
+                        let code1 = nrVary.domTxtCode1.value;
+                        let result = CryptoJS.DES.encrypt(code1, key, {
+                            iv, mode, padding
+                        });
+                        nrVary.domTxtCode2.value = result;
+                    } else if (target.classList.contains('flag-decrypt')) {
+                        let code2 = nrVary.domTxtCode2.value;
+                        let result = CryptoJS.DES.decrypt(code2, key, {
+                            iv, mode, padding
+                        }).toString(CryptoJS.enc.Utf8);
+                        nrVary.domTxtCode1.value = result;
+                    }
+                }
+            }
+        })
 
         //接收文件
         nrcFile.init(async (files) => {

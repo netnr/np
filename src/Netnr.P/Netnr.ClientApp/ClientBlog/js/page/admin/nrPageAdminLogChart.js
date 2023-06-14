@@ -48,6 +48,8 @@ let nrPage = {
         let result = await nrWeb.reqServer(url);
 
         let data = result.RowData || [];
+        //按时间升序
+        data.sort((a, b) => a.time.localeCompare(b.time));
 
         let totalPV = 0;
         let totalUV = 0;

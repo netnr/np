@@ -115,7 +115,7 @@ namespace Netnr.Blog.Web.Controllers
                 num = await db.SaveChangesAsync();
 
                 //推送通知
-                _ = PushService.PushAsync("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
+                _ = PushService.PushWeChat("网站消息（Doc）", $"{mo.DsName}\r\n{mo.DsRemark}");
             }
             else
             {
@@ -421,7 +421,7 @@ namespace Netnr.Blog.Web.Controllers
                         vm.Data = mo.DsdId;
 
                         //推送通知
-                        _ = PushService.PushAsync("网站消息（Doc-item）", $"{mo.DsdTitle}");
+                        _ = PushService.PushWeChat("网站消息（Doc-item）", $"{mo.DsdTitle}");
                     }
                     else
                     {

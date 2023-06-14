@@ -12,12 +12,18 @@
 
 /* form */
 .nrg-dialog-form {
-    --width: 50em;
+    --width: 60em;
 }
 
 /* sl-card */
 sl-card.nrg-card-p0::part(body) {
     --padding: 0;
+}
+
+/* ag-grid watermark */
+.ag-root-wrapper .ag-watermark {
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .nrg-grid-b0 .ag-root-wrapper {

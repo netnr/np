@@ -4,8 +4,8 @@ using Netnr;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ReadyTo.EncodingReg();
-ReadyTo.LegacyTimestamp();
+BaseTo.ReadyEncoding();
+BaseTo.ReadyLegacyTimestamp();
 
 //（上传）主体大小限制
 builder.SetMaxRequestData();
@@ -60,7 +60,7 @@ var app = builder.Build();
 app.UseExceptionHandler(options => options.SetExceptionHandler());
 
 // Configure the HTTP request pipeline.
-if (!(GlobalTo.IsDev = app.Environment.IsDevelopment()))
+if (!(BaseTo.IsDev = app.Environment.IsDevelopment()))
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -80,24 +80,32 @@ using (var scope = app.Services.CreateScope())
         {
             createScript = createScript.Replace(" datetime ", " timestamp ");
         }
-        Console.WriteLine(createScript);
+        ConsoleTo.Title("GenerateCreateScript", createScript);
 
         //重置数据库
-        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController().DatabaseReset();
+        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db).DatabaseReset();
         Console.WriteLine(vm.ToJson(true));
     }
 
 
     //定时任务 https://github.com/fluentscheduler/FluentScheduler
     FluentScheduler.JobManager.Initialize();
-    var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController();
 
     //每2天在2:2 重置数据库
-    FluentScheduler.JobManager.AddJob(() =>
+    FluentScheduler.JobManager.AddJob(async () =>
     {
-        var vm = sc.DatabaseReset();
-        Console.WriteLine(vm.ToJson(true));
-        ConsoleTo.Log(vm.ToJson());
+        try
+        {
+            var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
+            var vm = await sc.DatabaseReset();
+            var result = vm.ToJson();
+
+            ConsoleTo.Title(result, "重置数据库");
+        }
+        catch (Exception ex)
+        {
+            ConsoleTo.Log(ex, "重置数据库");
+        }
     }, s =>
     {
         s.WithName("Job_DatabaseReset");
@@ -107,9 +115,17 @@ using (var scope = app.Services.CreateScope())
     //每2天在3:3 清理临时目录
     FluentScheduler.JobManager.AddJob(() =>
     {
-        var vm = sc.ClearTmp();
-        Console.WriteLine(vm.ToJson(true));
-        ConsoleTo.Log(vm.ToJson());
+        try
+        {
+            var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
+            var vm = sc.ClearTmp();
+            var result = vm.ToJson();
+            ConsoleTo.Log(result);
+        }
+        catch (Exception ex)
+        {
+            ConsoleTo.Log(ex, "清理临时目录");
+        }
     }, s => s.ToRunEvery(2).Days().At(3, 3));
 }
 

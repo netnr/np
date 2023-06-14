@@ -28,12 +28,12 @@
 
                     <input class="form-control mb-4" type="text" required name="UserName" maxlength="50" placeholder="netnr@@netnr.com" value='@ViewData["UserName"]' autocomplete="off" autofocus />
                     <input class="form-control mb-4" type="password" required name="UserPwd" maxlength="20" placeholder="******" autocomplete="off" />
-                    <div class="input-group mb-3">
+                    @*<div class="input-group mb-3">
                         <input class="form-control" type="text" required name="RegisterCode" maxlength="4" autocomplete="off">
                         <span class="input-group-text p-0">
                             <img class="rounded rounded-1" src="/account/registercode" role="button" onclick="this.src = '/account/registercode?' + Date.now()" />
                         </span>
-                    </div>
+                    </div>*@
 
                     <button type="submit" class="btn btn-warning w-100">Create an account</button>
                 </form>

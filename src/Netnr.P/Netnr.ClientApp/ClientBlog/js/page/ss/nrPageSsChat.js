@@ -290,6 +290,7 @@ let nrPage = {
 
                     if (!nrPage.chatConfig.mute) {
                         nrcBase.voice(`有新消息`);
+                        nrcBase.notify({ body: '有新消息', icon: '/favicon.ico' });
                     }
                     domMessage.innerHTML = `
                     <div class="row">

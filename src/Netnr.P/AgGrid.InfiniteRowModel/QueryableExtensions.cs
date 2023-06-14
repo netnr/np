@@ -1,19 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AgGrid.InfiniteRowModel
 {
     public static class QueryableExtensions
     {
-        public static InfiniteRowModelResult<T> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, string getRowsParamsJson, InfiniteRowModelOptions options = null, Action<IQueryable<T>> queryCall = null)
-            => GetInfiniteRowModelBlock(queryable, InfiniteScroll.DeserializeGetRowsParams(getRowsParamsJson), options, queryCall);
-
-        public static InfiniteRowModelResult<T> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams, InfiniteRowModelOptions options = null, Action<IQueryable<T>> queryCall = null)
+        public static async Task<InfiniteRowModelResult<T>> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, string getRowsParamsJson, InfiniteRowModelOptions options = null, Func<IQueryable<T>, Task<List<T>>> queryCall = null)
         {
+            var getRowsParams = InfiniteScroll.DeserializeGetRowsParams(getRowsParamsJson);
             var query = InfiniteScroll.ToQueryableRows(queryable, getRowsParams, options, out IQueryable<T> queryableCount);
-            queryCall?.Invoke(query);
 
-            var rows = query.ToList();
+            var rows = await queryCall.Invoke(query);
+
             return InfiniteScroll.ToRowModelResult(getRowsParams, rows, queryableCount);
         }
     }

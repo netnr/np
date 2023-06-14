@@ -25,14 +25,14 @@
         <div class="col-lg-6 mb-3">
             @{
                 var fd = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-                var osName = SystemStatusTo.GetOSName();
+                var osName = SystemStatusTo.GetOSType();
             }
-            <a class="text-muted me-3 lh-lg" href="https://dot.net">Powered by @fd ❤ @osName</a>
-            <a class="text-muted me-3 lh-lg" href="/mix/about">About</a>
-            <a class="text-muted me-3 lh-lg" href="/mix/faq">FAQ</a>
-            <a class="text-muted me-3 lh-lg" href="/mix/terms">Terms</a>
-            <a class="text-muted me-3 lh-lg" href="@mirror" title="不定时备份到镜像只读站点">Mirror</a>
-            <span class="text-muted">&copy; @AppTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
+            <a class="me-3 lh-lg" href="https://dot.net">Powered by @fd ❤ @osName</a>
+            <a class="me-3 lh-lg" href="/mix/about">About</a>
+            <a class="me-3 lh-lg" href="/mix/faq">FAQ</a>
+            <a class="me-3 lh-lg" href="/mix/terms">Terms</a>
+            <a class="me-3 lh-lg" href="@mirror" title="不定时备份到镜像只读站点">Mirror</a>
+            <span>&copy; @AppTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
         </div>
     </div>
 </div>

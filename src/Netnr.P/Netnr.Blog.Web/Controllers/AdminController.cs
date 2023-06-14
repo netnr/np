@@ -1,4 +1,6 @@
-﻿namespace Netnr.Blog.Web.Controllers
+﻿using System.Net.Http;
+
+namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 后台管理
@@ -203,10 +205,10 @@
         /// <param name="queryAllSql"></param>
         /// <param name="queryLimitSql"></param>
         /// <returns></returns>
-        [ResponseCache(Duration = 10), HttpGet]
-        public LoggingResultVM QueryLog(string queryAllSql, string queryLimitSql)
+        [HttpGet]
+        public async Task<LoggingResultVM> QueryLog(string queryAllSql, string queryLimitSql)
         {
-            return LoggingTo.Query(queryAllSql, queryLimitSql);
+            return await LoggingTo.Query(queryAllSql, queryLimitSql);
         }
 
         /// <summary>
@@ -224,8 +226,8 @@
         /// <param name="days">类型</param>
         /// <param name="LogGroup">分组</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 10), HttpGet]
-        public LoggingResultVM QueryLogStatsPVUV(int? days, string LogGroup)
+        [HttpGet]
+        public async Task<LoggingResultVM> QueryLogStatsPVUV(int? days, string LogGroup)
         {
             var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
@@ -236,7 +238,7 @@
                 };
             }
 
-            var vm = LoggingTo.StatsPVUV(days ?? 0, listWhere);
+            var vm = await LoggingTo.StatsPVUV(days ?? 0, listWhere);
             return vm;
         }
 
@@ -247,8 +249,8 @@
         /// <param name="field">属性字段</param>
         /// <param name="LogGroup">分组</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 10), HttpGet]
-        public LoggingResultVM QueryLogStatsTop(int? days, string field, string LogGroup)
+        [HttpGet]
+        public async Task<LoggingResultVM> QueryLogStatsTop(int? days, string field, string LogGroup)
         {
             var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
@@ -259,7 +261,7 @@
                 };
             }
 
-            var vm = LoggingTo.StatsTop(days ?? 0, field, listWhere);
+            var vm = await LoggingTo.StatsTop(days ?? 0, field, listWhere);
             return vm;
         }
 
@@ -283,25 +285,28 @@
         /// <param name="keys"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM KeyVal([FromRoute] string id, string keys)
+        public async Task<ResultVM> KeyVal([FromRoute] string id, string keys)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
-                var listKey = string.IsNullOrWhiteSpace(keys) ? new List<string>() : keys.Split(',').ToList();
+                var listKey = string.IsNullOrWhiteSpace(keys) ? Array.Empty<string>() : keys.Split(',');
 
                 switch (id?.ToLower())
                 {
                     case "grab":
                         {
-                            listKey.ForEach(key =>
+                            foreach (var key in listKey)
                             {
                                 string api = $"https://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key={key.ToUrlEncode()}&bk_length=600";
                                 try
                                 {
-                                    var result = HttpTo.Get(api);
+                                    var hc = new HttpClient();
+                                    var resp = await hc.GetAsync(api);
+                                    var result = await resp.Content.ReadAsStringAsync();
                                     if (result.Length > 100)
                                     {
-                                        var mo = db.KeyValues.FirstOrDefault(x => x.KeyName == key);
+                                        var mo = await db.KeyValues.FirstOrDefaultAsync(x => x.KeyName == key);
                                         if (mo == null)
                                         {
                                             mo = new KeyValues
@@ -318,7 +323,7 @@
                                             db.KeyValues.Update(mo);
                                         }
 
-                                        var num = db.SaveChanges();
+                                        var num = await db.SaveChangesAsync();
                                         vm.Log.Add($"Done {key} {num}");
                                     }
                                     else
@@ -331,42 +336,41 @@
                                     Console.WriteLine(ex);
                                     vm.Log.Add($"{key} Error {ex.Message}");
                                 }
-                            });
+                            }
                         }
                         break;
                     case "synonym":
                         {
                             string mainKey = listKey.First().ToLower();
-                            listKey.RemoveAt(0);
 
                             var listkvs = new List<KeyValueSynonym>();
-                            listKey.ForEach(key =>
+                            for (int i = 1; i < listKey.Length; i++)
                             {
                                 var kvs = new KeyValueSynonym
                                 {
                                     KsId = Guid.NewGuid().ToString(),
                                     KeyName = mainKey,
-                                    KsName = key.ToLower()
+                                    KsName = listKey[i].ToLower()
                                 };
                                 listkvs.Add(kvs);
-                            });
+                            }
 
-                            var mo = db.KeyValueSynonym.FirstOrDefault(x => x.KeyName == mainKey);
+                            var mo = await db.KeyValueSynonym.FirstOrDefaultAsync(x => x.KeyName == mainKey);
                             if (mo != null)
                             {
                                 db.KeyValueSynonym.Remove(mo);
                             }
-                            db.KeyValueSynonym.AddRange(listkvs);
+                            await db.KeyValueSynonym.AddRangeAsync(listkvs);
 
-                            int num = db.SaveChanges();
+                            int num = await db.SaveChangesAsync();
                             vm.Log.Add($"Done {mainKey} {num}");
                         }
                         break;
                     case "tag":
                         {
-                            if (listKey.Count > 0)
+                            if (listKey.Length > 0)
                             {
-                                var mt = db.Tags.Where(x => listKey.Contains(x.TagName)).ToList();
+                                var mt = await db.Tags.Where(x => listKey.Contains(x.TagName)).ToListAsync();
                                 if (mt.Count == 0)
                                 {
                                     var listMo = new List<Tags>();
@@ -389,10 +393,10 @@
                                     tagHs.Clear();
 
                                     //新增&刷新缓存
-                                    db.Tags.AddRange(listMo);
-                                    var num = db.SaveChanges();
+                                    await db.Tags.AddRangeAsync(listMo);
+                                    var num = await db.SaveChangesAsync();
 
-                                    CommonService.TagsQuery(false);
+                                    await CommonService.TagsQuery(false);
                                     vm.Log.Add($"Done 已刷新缓存 {num}");
                                 }
                                 else
@@ -402,7 +406,7 @@
                             }
                             else
                             {
-                                CommonService.TagsQuery(false);
+                                await CommonService.TagsQuery(false);
                                 vm.Log.Add($"Done 已刷新缓存");
                             }
                         }
@@ -410,8 +414,13 @@
                 }
 
                 vm.Set(EnumTo.RTag.success);
-                return vm;
-            });
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
         }
 
         #endregion

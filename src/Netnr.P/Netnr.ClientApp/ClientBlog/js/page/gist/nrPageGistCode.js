@@ -21,7 +21,11 @@ let nrPage = {
                     let domPre = domCode.parentElement;
                     if (domCode.dataset.language != "markdown") {
                         let domV = document.createElement("div");
-                        domV.innerHTML = netnrmd.render('```\r\n' + domCode.innerText + '\r\n```');
+                        let mdLang = '\r\n';
+                        if (domCode.dataset.language == 'shell') {
+                            mdLang = 'bash\r\n';
+                        }
+                        domV.innerHTML = netnrmd.render('```' + mdLang + domCode.innerText + '\r\n```');
 
                         domPre.innerHTML = domV.children[0].innerHTML;
                         domPre.children[0].contentEditable = true;

@@ -1,6 +1,7 @@
 using Netnr.Login;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using System.Net.Http;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -171,7 +172,18 @@ namespace Netnr.Blog.Web.Controllers
                             break;
                         case "link":
                             {
-                                await Task.Run(() => HttpTo.DownloadSave(source, PathTo.Combine(ppath, upname)));
+                                var maxLength = 1024 * 1024 * 5;
+                                var client = new HttpClient
+                                {
+                                    Timeout = TimeSpan.FromMinutes(1)
+                                };
+                                await client.DownloadAsync(source, PathTo.Combine(ppath, upname), (rlen, total) =>
+                                {
+                                    if (total > maxLength || rlen > maxLength)
+                                    {
+                                        throw new Exception($"{source} Size exceeds limit(max {ParsingTo.FormatByteSize(maxLength)})");
+                                    }
+                                });
 
                                 var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
                                 userInfo.UserPhoto = npnew;
@@ -254,7 +266,7 @@ namespace Netnr.Blog.Web.Controllers
             var uinfo = IdentityService.Get(HttpContext);
 
             var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
-            var log = new List<object>() { new UserInfo().ToCopy(userInfo) };
+            var log = new List<object>() { new UserInfo().ToDeepCopy(userInfo) };
 
             //变更账号
             if (!string.IsNullOrWhiteSpace(mo.UserName) && userInfo.UserNameChange != 1 && userInfo.UserName != mo.UserName)
@@ -679,29 +691,10 @@ namespace Netnr.Blog.Web.Controllers
                                             var verifyLink = string.Format(vcurl, vcode);
                                             var body = $"<div style='margin:1em auto;word-wrap:break-word'><div>验证您的邮箱：<b>{toMail}</b></div><br/>点击链接验证：<a href='{verifyLink}'>{verifyLink}</a></div>";
 
-                                            var sendModel = new MailTo.SendModel()
+                                            vm = await PushService.SendEmail("验证您的邮箱", body, toMail);
+                                            if (vm.Code == 200)
                                             {
-                                                Host = AppTo.GetValue("ApiKey:Mail:Host"),
-                                                Port = AppTo.GetValue<int>("ApiKey:Mail:Port"),
-                                                FromMail = AppTo.GetValue("ApiKey:Mail:FromMail"),
-                                                FromPassword = AppTo.GetValue("ApiKey:Mail:FromPassword"),
-                                                FromName = AppTo.GetValue("Common:EnglishName"),
-                                                Subject = "验证您的邮箱",
-                                                Body = body,
-                                                ToMail = new List<string> { toMail }
-                                            };
-
-                                            try
-                                            {
-                                                await MailTo.Send(sendModel);
-
-                                                vm.Set(EnumTo.RTag.success);
-                                                vm.Msg = "已发送成功";
                                                 CacheTo.Set(ckey, true, 300, false, gkey);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                vm.Set(ex);
                                             }
                                         }
                                     }

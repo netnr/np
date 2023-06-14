@@ -140,7 +140,7 @@ let nrApp = {
      * @param {any} title 标题
      * @param {any} width
      */
-    alert: (content, title, width = "50em") => {
+    alert: (content, title, width = "60em") => {
         if (nrApp.domAlert == null) {
             nrApp.domAlert = document.createElement('div');
             nrApp.domAlert.innerHTML = `
@@ -169,10 +169,17 @@ let nrApp = {
         domBody.innerHTML = "";
 
         try {
-            let code = JSON.stringify(JSON.parse(content), null, 2);
+            if (typeof content == "string") {
+                content = JSON.stringify(JSON.parse(content), null, 2);
+            } else {
+                content = JSON.stringify(content, null, 2);
+            }
+
             let dom = document.createElement("pre");
-            dom.className = "m-0";
-            dom.innerText = code;
+            dom.className = "m-0 fs-6";
+            dom.style.whiteSpace = 'pre-wrap';
+            dom.innerText = content;
+            
             domBody.appendChild(dom);
         } catch (error) {
             domBody.innerHTML = content;

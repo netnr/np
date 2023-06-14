@@ -36,7 +36,7 @@ let nrcDocsify = {
 
         let d = new Date();
         d.setFullYear(d.getFullYear() + 1);
-        document.cookie = `.theme=${theme};path=/;expires=${d.toGMTString()}`;
+        document.cookie = `.theme=${theme};Path=/;Expires=${d.toGMTString()}`;
 
         nrcDocsify.setThemeIcon(theme);
     },

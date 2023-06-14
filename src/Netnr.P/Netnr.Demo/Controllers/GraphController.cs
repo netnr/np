@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Netnr.Demo.Controllers.GraphDemo;
+﻿using Netnr.Demo.Controllers.GraphDemo;
 
 namespace Netnr.Demo.Controllers
 {

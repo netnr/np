@@ -1,6 +1,7 @@
 import { nrcBase } from '../../frame/nrcBase';
 import { nrGrid } from '../../frame/nrGrid';
 import { ndkAction } from './ndkAction';
+import { ndkEditor } from './ndkEditor';
 import { ndkFunction } from './ndkFunction';
 import { ndkI18n } from './ndkI18n';
 import { ndkRequest } from './ndkRequest';
@@ -14,6 +15,7 @@ import { ndkView } from './ndkView';
 let ndkInit = {
     init: async () => {
         await ndkStorage.init();
+        ndkEditor.extend();
 
         // 初始化语言
         var sobj = await ndkStorage.stepsGet();
@@ -40,7 +42,7 @@ let ndkInit = {
         ['nrg-load0', 'nrg-dark0'].forEach(c => document.body.classList.remove(c));
         ndkVary.domMain.style.removeProperty('visibility');
         // console.clear();
-        console.debug(`${ndkVary.name} v${ndkVary.version}`);
+        console.debug(`${ndkVary.name} v${nrcBase.version}`);
     },
 
     render: () => {

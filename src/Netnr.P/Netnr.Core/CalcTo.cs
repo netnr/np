@@ -18,19 +18,21 @@ public class CalcTo
     /// <summary>
     /// AES 构建
     /// </summary>
-    /// <param name="key">密钥，keySize/8=32位，不足填充空字符串</param>
-    /// <param name="iv">向量，blockSize/8=16位，不足填充空字符串</param>
-    /// <param name="keySize">密钥大小，默认 256</param>
-    /// <param name="blockSize">块，默认 128</param>
+    /// <param name="key">密钥，keySize/8=32个字符，不足填充空字符串</param>
+    /// <param name="iv">向量，128位/8=16字节，不足填充空字符串，相同向量加密后的密文一样，但降低了安全性</param>
+    /// <param name="keySize">密钥大小，可选 128 192 默认256位 除以8 密钥位数16、24、32个字符</param>
     /// <param name="mode">模式，默认 CBC</param>
     /// <param name="padding">填充模式，默认 PKCS7</param>
     /// <returns></returns>
-    public static Aes AESBuild(string key = "", string iv = "", int keySize = 256, int blockSize = 128, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
+    public static Aes AESBuild(string key = "", string iv = "", int keySize = 256, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
     {
-        //填充空格32
+        //密钥位数16、24、32字节，不足填充空字符
         byte[] bKey = new byte[keySize / 8];
         Array.Copy(encoding.GetBytes(key.PadRight(bKey.Length)), bKey, bKey.Length);
-        //填充空格16
+
+        //块大小固定为 128 位，所以 IV 长度需要为 128/8=16 个字符（ECB 模式不用 IV）
+        int blockSize = 128;
+        //IV 向量 16字节，不足填充空字符
         byte[] bIV = new byte[blockSize / 8];
         Array.Copy(encoding.GetBytes(iv.PadRight(bIV.Length)), bIV, bIV.Length);
 

@@ -243,7 +243,7 @@ ORDER BY
         switch (tdb)
         {
             case EnumTo.TypeDB.SQLite:
-                result = $@"SELECT tbl_name AS TableName FROM {databaseName}.sqlite_master WHERE type = 'table' ORDER BY tbl_name"; ;
+                result = $@"SELECT tbl_name AS TableName FROM {databaseName}.sqlite_master WHERE type = 'table' ORDER BY tbl_name";
                 break;
             case EnumTo.TypeDB.MySQL:
             case EnumTo.TypeDB.MariaDB:
@@ -1541,7 +1541,7 @@ LEFT JOIN sys.extended_properties ep1
 LEFT JOIN sys.extended_properties ep2
   ON ep2.major_id = c.object_id
   AND ep2.minor_id = c.column_id
-WHERE o.type IN ('U', 'V') {where}
+WHERE o.type = 'U' {where}
 ORDER BY SCHEMA_NAME(o.schema_id), o.name, c.column_id
             ";
                 break;

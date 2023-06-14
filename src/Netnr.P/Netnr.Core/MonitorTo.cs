@@ -186,15 +186,7 @@ public partial class MonitorTo
             ClientCertificateOptions = ClientCertificateOption.Manual,
             ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
             {
-                if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateNotAvailable)
-                {
-                    model.Logs.Add($"{sslPolicyErrors} 证书不可用");
-                }
-                else if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateNameMismatch)
-                {
-                    model.Logs.Add($"{sslPolicyErrors} 证书名称不匹配");
-                }
-                else if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+                if (sslPolicyErrors != default)
                 {
                     model.Logs.Add($"{sslPolicyErrors}");
                 }
@@ -202,7 +194,7 @@ public partial class MonitorTo
                 return true;
             }
         };
-        var client = new HttpClient(handler);
+        using var client = new HttpClient(handler);
 
         try
         {
@@ -216,16 +208,16 @@ public partial class MonitorTo
                 headers.ForEach(h => request.Headers.Add(h.Key, h.Value));
             }
 
-            var respMessage = await client.SendAsync(request);
+            var respMessage = await client.SendAsync(request).ConfigureAwait(false);
             model.Code = (int)respMessage.StatusCode;
 
-            model.Data = await respMessage.Content.ReadAsStringAsync();
+            var result = await respMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            model.Data = result;
         }
         catch (Exception ex)
         {
             model.Set(ex);
         }
-        client.Dispose();
 
         return model;
     }
@@ -380,7 +372,7 @@ public partial class MonitorTo
         var model = new MonitorModel();
         try
         {
-            var has = await Dns.GetHostAddressesAsync(host);
+            var has = await Dns.GetHostAddressesAsync(host).ConfigureAwait(false);
             model.Code = 200;
             model.Data = has;
         }
@@ -402,7 +394,7 @@ public partial class MonitorTo
     {
         var model = new MonitorModel();
 
-        var client = new TcpClient();
+        using var client = new TcpClient();
         try
         {
             var result = client.BeginConnect(host, port, null, null);
@@ -413,7 +405,6 @@ public partial class MonitorTo
         {
             model.Set(ex);
         }
-        client.Dispose();
 
         return model;
     }

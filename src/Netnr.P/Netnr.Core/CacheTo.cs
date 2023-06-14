@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -21,14 +20,9 @@ public class CacheTo
     /// </summary>
     private static Stopwatch ExpiredStopwatch { get; set; } = new Stopwatch();
     /// <summary>
-    /// 过期计数
-    /// </summary>
-    private static int ExpiredCount { get; set; } = 0;
-    /// <summary>
     /// 过期任务
     /// </summary>
-    private static Task ExpiredTask { get; set; }
-
+    private static Thread ExpiredThread { get; set; }
     /// <summary>
     /// 缓存规则，key, 跑表开始时间（毫秒）, 有效时间（秒），相对过期
     /// </summary>
@@ -49,8 +43,8 @@ public class CacheTo
                 ExpiredStopwatch.Start();
                 CacheDictionary_ = new();
 
-                //定时清理
-                ExpiredTask = Task.Run(() =>
+                //新线程后台运行清理
+                ExpiredThread = new Thread(() =>
                 {
                     while (true)
                     {
@@ -58,7 +52,6 @@ public class CacheTo
                         Thread.Sleep(60000);
 
                         ExpiredStopwatch.Restart();
-                        ExpiredCount = 0;
 
                         foreach (var key in CacheRule.Keys)
                         {
@@ -73,15 +66,21 @@ public class CacheTo
                             }
                         }
                     }
-                });
+                })
+                {
+                    IsBackground = true
+                };
+
+                ExpiredThread.Start();
+                GC.KeepAlive(ExpiredThread);
             }
 
-            //重启清理任务
-            if (ExpiredStopwatch.ElapsedMilliseconds > 90000 && ExpiredCount++ > 3)
+            //尝试重启清理任务
+            if (ExpiredStopwatch.ElapsedMilliseconds > 90000)
             {
                 try
                 {
-                    ExpiredTask.Start();
+                    ExpiredThread.Start();
                 }
                 catch (Exception ex)
                 {

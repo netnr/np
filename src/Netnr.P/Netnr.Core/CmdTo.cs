@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace Netnr;
@@ -12,6 +12,11 @@ namespace Netnr;
 /// </summary>
 public class CmdTo
 {
+    /// <summary>
+    /// 是 Windows
+    /// </summary>
+    public static bool IsWindows { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
     /// <summary>
     /// ProcessStartInfo
     /// </summary>
@@ -30,8 +35,8 @@ public class CmdTo
 
         if (string.IsNullOrWhiteSpace(FileName))
         {
-            psi.FileName = GlobalTo.IsWindows ? "cmd.exe" : "bash";
-            psi.Arguments = GlobalTo.IsWindows ? $"/C \"{Arguments}\"" : $"-c \"{Arguments}\"";
+            psi.FileName = IsWindows ? "cmd.exe" : "bash";
+            psi.Arguments = IsWindows ? $"/C \"{Arguments}\"" : $"-c \"{Arguments}\"";
         }
         else
         {
@@ -132,7 +137,7 @@ public class CmdTo
     {
         var result = new List<PortInfo>();
 
-        if (GlobalTo.IsWindows)
+        if (IsWindows)
         {
             var er = Execute("-ano", "netstat");
             var rows = Regex.Split(er.CrOutput, "\r\n");

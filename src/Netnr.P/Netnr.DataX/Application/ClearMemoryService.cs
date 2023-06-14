@@ -16,7 +16,7 @@ namespace Netnr.DataX.Application
         /// <param name="isAll">清理全部</param>
         public static void CleanUp(bool isAll = true)
         {
-            if (GlobalTo.IsWindows)
+            if (CmdTo.IsWindows)
             {
                 var listProcesses = new List<Process>();
                 if (isAll)

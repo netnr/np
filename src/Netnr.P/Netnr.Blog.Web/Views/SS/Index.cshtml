@@ -6,6 +6,8 @@
 
     var navs = ScriptService.NavArray;
     var iconMD5 = CalcTo.MD5(File.ReadAllText(AppTo.WebRootPath + "/images/icon.svg"));
+
+    var gi = 0;
 }
 <input type="hidden" class="nrg-hid-icon" value="/images/icon.svg?@iconMD5" />
 
@@ -22,7 +24,7 @@
         var items = ng.GetProperty("items").EnumerateArray();
 
         <div class="row">
-            <h4 class="mt-4">@group</h4>
+            <h4 class="@(gi++ == 0 ? "" : "mt-4")">@group</h4>
 
             @foreach (var item in items)
             {

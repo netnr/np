@@ -1,10 +1,10 @@
 <!--
 https://github.com/netnr
-2023-03
+2023-06
 -->
 
 <!DOCTYPE html>
-<html lang="zh-cn" data-bs-theme='light' class="netnrmd-light">
+<html lang="zh-cn" data-bs-theme='light' class="netnrmd-light" >
 <head>
 
     <meta charset="utf-8" />
@@ -22,13 +22,13 @@ https://github.com/netnr
 
     <title>&#x52A0;&#x5BC6;&#x8F6C;&#x7801; NET牛人</title>
 
-    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-<link href='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet' />
-<script src='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js' async ></script>
+    <link rel='icon' href='/favicon.ico'>
+<link href='https://npmcdn.com/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+<script src='https://npmcdn.com/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' async ></script>
 
 
-    <link href='/dist/main.css?v=sEk5A0XatshzzERVWqyQrEIJHD7OQes2wQlyRfFNS2s' rel='stylesheet' />
-    <script src="/dist/main.js?v=8CMcogf7Psxu60HQ5KYezaBoMW0q-EoOfmBWFZup9qQ" async></script>
+    <link href='/dist/main.css?v=-QYXkBuVGj_o2f297IPomfjvKxEiiuqLtpvqzWD_meE' rel='stylesheet' />
+    <script src="/dist/main.js?v=jHvvmyOgBbK1XOP9yRpfTcXGMR_aONxZ--_sUHJY4JA" async></script>
 
 </head>
 <body>
@@ -141,58 +141,145 @@ https://github.com/netnr
         </div>
     </div>
 
-    <div class="row my-4" title="加密/解密">
-        <div class="col-auto">
+    <div class="row my-4" title="编码转换">
+            <div class="col-auto">
                 <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-warning">AES</button>
-                    <button class="btn btn-outline-warning">↺</button>
+                    <button class="btn btn-info">Base64</button>
+                    <button class="btn btn-outline-info">↺</button>
                 </div>
+            </div>
+            <div class="col-auto">
                 <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-warning">DES</button>
-                    <button class="btn btn-outline-warning">↺</button>
+                    <button class="btn btn-info">encodeURI</button>
+                    <button class="btn btn-outline-info">↺</button>
                 </div>
+            </div>
+            <div class="col-auto">
                 <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-warning">RC4</button>
-                    <button class="btn btn-outline-warning">↺</button>
+                    <button class="btn btn-info">encodeURIComponent</button>
+                    <button class="btn btn-outline-info">↺</button>
                 </div>
+            </div>
+            <div class="col-auto">
                 <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-warning">Rabbit</button>
-                    <button class="btn btn-outline-warning">↺</button>
+                    <button class="btn btn-info">Unicode</button>
+                    <button class="btn btn-outline-info">↺</button>
                 </div>
+            </div>
+            <div class="col-auto">
                 <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-warning">TripleDES</button>
-                    <button class="btn btn-outline-warning">↺</button>
+                    <button class="btn btn-info">ASCII</button>
+                    <button class="btn btn-outline-info">↺</button>
                 </div>
-            <input class="nrg-txt-key2 form-control d-inline-flex w-auto mb-1" placeholder="密钥" />
-        </div>
+            </div>
+            <div class="col-auto">
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-info">HTMLEncode</button>
+                    <button class="btn btn-outline-info">↺</button>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="input-group mb-1 w-auto d-inline-flex">
+                    <button class="btn btn-info">escape</button>
+                    <button class="btn btn-outline-info">↺</button>
+                </div>
+            </div>
     </div>
 
-    <div class="row my-4" title="编码转换">
-        <div class="col-auto">
-                <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-primary">Base64</button>
-                    <button class="btn btn-outline-primary">↺</button>
+    <div class="row my-4" title="加密/解密">
+        <div class="col-12">
+            <ul class="nav nav-pills mb-1">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-aes" type="button">AES</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-des" type="button">DES</button>
+                </li>
+            </ul>
+            <div class="tab-content border rounded p-3">
+                <div class="tab-pane fade show active" id="pills-aes">
+                    <div class="nrg-card-aes row">
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">密码模式 CipherMode</span>
+                                <select class="form-select flag-mode"></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">填充模式 PaddingMode</span>
+                                <select class="form-select flag-pad"></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">密钥大小 KeySize</span>
+                                <select class="form-select flag-keysize">
+                                    <option value="128" selected>128位</option>
+                                    <option value="192">192位</option>
+                                    <option value="256">256位</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">密钥 Key</span>
+                                <input class="form-control flag-key" placeholder="KeySize/8=16 24 32字符" style="width:15em" maxlength="32" />
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">初始化向量 IV</span>
+                                <input class="form-control flag-iv" placeholder="128位/8=16字符" maxlength="16" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary mb-2 flag-encrypt">AES 加密</button>
+                            <button class="btn btn-primary mb-2 flag-decrypt">AES 解密</button>
+                            <div class="alert alert-secondary mb-0">
+                                AES 数据块长度为 128 位，所以 IV 长度需要为 128/8=16 个字符（ECB 模式不用 IV）<br />
+                                密钥根据密钥大小（128、192、256位）分别为 16、24、32 个字符
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-primary">encodeURI</button>
-                    <button class="btn btn-outline-primary">↺</button>
+                <div class="tab-pane" id="pills-des">
+                    <div class="nrg-card-des row">
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">密码模式 CipherMode</span>
+                                <select class="form-select flag-mode"></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">填充模式 PaddingMode</span>
+                                <select class="form-select flag-pad"></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">密钥 Key</span>
+                                <input class="form-control flag-key" placeholder="64位/8=8字符" maxlength="8" />
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">初始化向量 IV</span>
+                                <input class="form-control flag-iv" placeholder="64位/8=8字符" maxlength="8" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary mb-2 flag-encrypt">DES 加密</button>
+                            <button class="btn btn-primary mb-2 flag-decrypt">DES 解密</button>
+                            <div class="alert alert-secondary mb-0">
+                                DES 数据块长度为 64 位，所以 IV 长度需要为 64/8=8 个字符（ECB 模式不用 IV）<br />
+                                密钥长度 64 位，所以密钥 64/8=8 个字符
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-primary">encodeURIComponent</button>
-                    <button class="btn btn-outline-primary">↺</button>
-                </div>
-                <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-primary">Unicode</button>
-                    <button class="btn btn-outline-primary">↺</button>
-                </div>
-                <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-primary">ASCII</button>
-                    <button class="btn btn-outline-primary">↺</button>
-                </div>
-                <div class="input-group mb-1 w-auto d-inline-flex">
-                    <button class="btn btn-primary">HTMLEncode</button>
-                    <button class="btn btn-outline-primary">↺</button>
-                </div>
+            </div>
         </div>
     </div>
 

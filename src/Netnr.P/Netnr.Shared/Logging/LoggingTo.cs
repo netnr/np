@@ -1,7 +1,6 @@
 ﻿#if Full || Logging
 
 using System.Collections.Concurrent;
-using Microsoft.Data.Sqlite;
 
 namespace Netnr
 {
@@ -63,19 +62,22 @@ namespace Netnr
         /// </summary>
         public static ConcurrentQueue<LoggingModel> CurrentCacheLog { get; set; } = new ConcurrentQueue<LoggingModel>();
 
-        /// <summary>
-        /// 写入标记
-        /// </summary>
-        static readonly object WriteMark = new();
+        static EventWaitHandle WriteEvent = null;
 
         /// <summary>
-        /// 路径转连接字符串
+        /// 获取连接配置
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string PathToConn(string path)
+        public static DbKitConnectionOption GetConnOption(string path)
         {
-            return $"Data Source={path}";
+            var connOption = new DbKitConnectionOption
+            {
+                ConnectionType = EnumTo.TypeDB.SQLite,
+                ConnectionString = $"Data Source={path}"
+            };
+
+            return connOption;
         }
 
         /// <summary>
@@ -105,7 +107,7 @@ namespace Netnr
         /// 创建数据库
         /// </summary>
         /// <param name="path"></param>
-        public static void CreateDatabase(string path)
+        public static async Task CreateDatabase(string path)
         {
             File.WriteAllBytes(path, Array.Empty<byte>());
 
@@ -149,58 +151,73 @@ namespace Netnr
                 );
             ";
 
-            new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecuteNonQuery(createTableSql);
-        }
-
-        /// <summary>
-        /// 新增（队列+锁）
-        /// </summary>
-        /// <param name="logs">日志实体</param>
-        public static void Add(IEnumerable<LoggingModel> logs)
-        {
-            ThreadPool.QueueUserWorkItem(_ =>
-            {
-                //当前缓存的日志
-                logs.AsParallel().ForAll(log => CurrentCacheLog.Enqueue(log));
-
-                //锁
-                if (Monitor.TryEnter(WriteMark))
-                {
-                wmark:
-
-                    //写入日志
-                    var listLog = new List<LoggingModel>();
-                    while (CurrentCacheLog.TryDequeue(out LoggingModel deobj))
-                    {
-                        listLog.Add(deobj);
-                    }
-                    AddNow(listLog);
-
-                    if (!CurrentCacheLog.IsEmpty)
-                    {
-                        goto wmark;
-                    }
-
-                    Monitor.Exit(WriteMark);
-                }
-            });
+            var dbk = GetConnOption(path).CreateInstance();
+            await dbk.SqlExecuteNonQuery(createTableSql);
         }
 
         /// <summary>
         /// 新增
         /// </summary>
-        /// <param name="log">日志实体</param>
-        public static void Add(LoggingModel log)
+        /// <param name="logs">日志</param>
+        public static void Add(IEnumerable<LoggingModel> logs)
         {
-            Add(new List<LoggingModel> { log });
+            foreach (var log in logs)
+            {
+                CurrentCacheLog.Enqueue(log);
+            }
+
+            if (WriteEvent == null)
+            {
+                WriteEvent = new AutoResetEvent(false);
+
+                //新线程后台运行
+                var thread = new Thread(async () =>
+                {
+                    // 阻止线程，直到出现信号
+                    while (WriteEvent.WaitOne())
+                    {
+                        var listLog = new List<LoggingModel>();
+                        while (CurrentCacheLog.TryDequeue(out LoggingModel deobj))
+                        {
+                            listLog.Add(deobj);
+
+                            if (listLog.Count >= short.MaxValue)
+                            {
+                                await AddNow(listLog);
+                                listLog.Clear();
+                            }
+                        }
+
+                        // 剩余写入
+                        if (listLog.Any())
+                        {
+                            await AddNow(listLog);
+                            listLog.Clear();
+                        }
+                    }
+                })
+                {
+                    IsBackground = true
+                };
+                thread.Start();
+            }
+
+            //发送信号
+            WriteEvent.Set();
         }
+
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="log">日志</param>
+        public static void Add(LoggingModel log) => Add(new[] { log });
 
         /// <summary>
         /// 新增（实时）
         /// </summary>
         /// <param name="logs">日志实体</param>
         /// <param name="autoMakeUp">自动补齐信息，默认true</param>
-        public static int AddNow(IEnumerable<LoggingModel> logs, bool autoMakeUp = true)
+        private static async Task<int> AddNow(IEnumerable<LoggingModel> logs, bool autoMakeUp = true)
         {
             var num = 0;
 
@@ -217,10 +234,10 @@ namespace Netnr
 
                 if (!File.Exists(dp))
                 {
-                    CreateDatabase(dp);
+                    await CreateDatabase(dp);
                 }
 
-                if (InsertAll(dp, logs) > 0)
+                if (await InsertAll(dp, logs) > 0)
                 {
                     num += logs.Count();
                 }
@@ -243,10 +260,10 @@ namespace Netnr
                     //拷贝空数据库
                     if (!File.Exists(dp))
                     {
-                        CreateDatabase(dp);
+                        await CreateDatabase(dp);
                     }
 
-                    if (InsertAll(dp, ig) > 0)
+                    if (await InsertAll(dp, ig) > 0)
                     {
                         num += ig.Count();
                     }
@@ -290,18 +307,18 @@ namespace Netnr
         /// <param name="isBot"></param>
         public static void UserAgentParser(string userAgent, out string browserName, out string systemName, out bool isBot)
         {
-            var uap = new UAParser.Parsers(userAgent);
-            var clientEntity = uap.GetClient();
-            var osEntity = uap.GetOS();
-            var botEntity = uap.GetBot();
+            var uap = new UAParsers(userAgent);
+            var clientModel = uap.GetClient();
+            var osModel = uap.GetOS();
+            var botModel = uap.GetBot();
 
-            browserName = clientEntity != null
-                ? $"{clientEntity.Name} {clientEntity.Version}"
+            browserName = clientModel != null
+                ? $"{clientModel.Name} {clientModel.Version}"
                 : "";
-            systemName = osEntity != null
-                ? $"{osEntity.Name} {osEntity.Version}"
+            systemName = osModel != null
+                ? $"{osModel.Name} {osModel.Version}"
                 : "";
-            isBot = botEntity != null;
+            isBot = botModel != null;
         }
 
         /// <summary>
@@ -310,7 +327,7 @@ namespace Netnr
         /// <param name="path"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static int InsertAll(string path, IEnumerable<LoggingModel> list)
+        private static async Task<int> InsertAll(string path, IEnumerable<LoggingModel> list)
         {
             var listSql = new List<string>();
 
@@ -345,7 +362,9 @@ namespace Netnr
                 listSql.Add($"insert into {OptionsDbTableName} ({fields}) values ('{values}')");
             }
 
-            return new DbHelper(new SqliteConnection(PathToConn(path))).SqlExecuteNonQuery(listSql);
+            var dbk = GetConnOption(path).CreateInstance();
+            var num = await dbk.SqlExecuteNonQuery(listSql);
+            return num;
         }
 
         /// <summary>
@@ -406,25 +425,24 @@ namespace Netnr
         /// </summary>
         /// <param name="begin">开始时间</param>
         /// <param name="end">结束时间</param>
-        /// <param name="db">数据库对象</param>
+        /// <param name="dbk">数据库对象</param>
         /// <param name="lost">丢失数据库文件</param>
         /// <param name="listPreSql">前置SQL</param>
         /// <returns></returns>
-        public static string GetSqlForQuery(DateTime begin, DateTime end, out DbHelper db, out int lost, out List<string> listPreSql)
+        public static string GetSqlForQuery(DateTime begin, DateTime end, out DbKit dbk, out int lost, out List<string> listPreSql)
         {
             var listPath = GetDbPath(begin, end);
 
             if (listPath.Count == 0)
             {
-                db = null;
+                dbk = null;
                 lost = 0;
                 listPreSql = null;
 
                 return null;
             }
 
-            var mpath = PathToConn(listPath.FirstOrDefault());
-            db = new DbHelper(new SqliteConnection(mpath));
+            dbk = GetConnOption(listPath.FirstOrDefault()).CreateInstance();
 
             var listSql = new List<string>() { "select * from " + OptionsDbTableName };
             listPreSql = new List<string>();
@@ -513,11 +531,11 @@ namespace Netnr
         /// <param name="rows">页量</param>
         /// <param name="listWhere">条件：键、关系符、值1、值2</param>
         /// <returns></returns>
-        public static LoggingResultVM Query(DateTime begin, DateTime end, int page = 1, int rows = 30, List<List<string>> listWhere = null)
+        public static async Task<LoggingResultVM> Query(DateTime begin, DateTime end, int page = 1, int rows = 30, List<List<string>> listWhere = null)
         {
             var vm = new LoggingResultVM();
 
-            var sql = GetSqlForQuery(begin, end, out DbHelper db, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(begin, end, out DbKit dbk, out int lost, out List<string> listPreSql);
             if (sql != null)
             {
                 var whereSql = ListWhereJoin(listWhere);
@@ -529,20 +547,21 @@ namespace Netnr
                 var totalSql = $"select count(1) as Total from ({sql}) as a {whereSql}";
                 sql = $"select * from ({sql}) as a {whereSql} order by LogCreateTime desc limit " + rows + " offset " + (page - 1) * rows;
 
-                db.SafeConn(() =>
+                //预执行
+                try
                 {
-                    try
-                    {
-                        db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-
-                    vm.RowCount = Convert.ToInt32(db.GetCommand(totalSql).ExecuteScalar());
-                    vm.RowData = db.GetCommand(sql).ExecuteDataOnly().First().Value;
-                });
+                    dbk.ConnOption.AutoClose = false;
+                    await dbk.SqlExecuteNonQuery(listPreSql);
+                    dbk.ConnOption.AutoClose = true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                //查询数据
+                var edo = await dbk.SqlExecuteDataOnly($"{totalSql};{sql}");
+                vm.RowCount = Convert.ToInt32(edo.Datas.Tables[0].Rows[0][0]);
+                vm.RowData = edo.Datas.Tables[1];
 
                 vm.Lost = lost;
             }
@@ -556,12 +575,12 @@ namespace Netnr
         /// <param name="queryAllSql"></param>
         /// <param name="queryLimitSql"></param>
         /// <returns></returns>
-        public static LoggingResultVM Query(string queryAllSql, string queryLimitSql)
+        public static async Task<LoggingResultVM> Query(string queryAllSql, string queryLimitSql)
         {
             var vm = new LoggingResultVM();
 
             var now = DateTime.Now;
-            var sql = GetSqlForQuery(now.AddYears(-5), now, out DbHelper db, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(now.AddYears(-5), now, out DbKit dbk, out int lost, out List<string> listPreSql);
             if (sql != null)
             {
                 queryAllSql = queryAllSql.Replace("(TABLE)", "(" + sql + ") as t");
@@ -569,20 +588,21 @@ namespace Netnr
 
                 var totalSql = $"select count(1) as Total from ({queryAllSql}) as a";
 
-                db.SafeConn(() =>
+                //预执行
+                try
                 {
-                    try
-                    {
-                        db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-
-                    vm.RowCount = Convert.ToInt32(db.GetCommand(totalSql).ExecuteScalar());
-                    vm.RowData = db.GetCommand(queryLimitSql).ExecuteDataOnly().First().Value;
-                });
+                    dbk.ConnOption.AutoClose = false;
+                    await dbk.SqlExecuteNonQuery(listPreSql);
+                    dbk.ConnOption.AutoClose = true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                //查询数据
+                var edo = await dbk.SqlExecuteDataOnly($"{totalSql};{queryLimitSql}");
+                vm.RowCount = Convert.ToInt32(edo.Datas.Tables[0].Rows[0][0]);
+                vm.RowData = edo.Datas.Tables[1];
 
                 vm.Lost = lost;
             }
@@ -596,7 +616,7 @@ namespace Netnr
         /// <param name="days">0：今天，-1：昨天，-7：最近7天，-30：最近30天</param>
         /// <param name="listWhere">条件：键、关系符、值1、值2</param>
         /// <returns></returns>
-        public static LoggingResultVM StatsPVUV(int days, List<List<string>> listWhere = null)
+        public static async Task<LoggingResultVM> StatsPVUV(int days, List<List<string>> listWhere = null)
         {
             var vm = new LoggingResultVM();
 
@@ -624,7 +644,7 @@ namespace Netnr
                     break;
             }
 
-            var sql = GetSqlForQuery(begin, end, out DbHelper db, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(begin, end, out DbKit dbk, out int lost, out List<string> listPreSql);
             vm.Lost = lost;
 
             if (sql != null)
@@ -636,19 +656,20 @@ namespace Netnr
                 }
                 sql = $"select LogCreateTime,LogIp from ({sql}) where {whereSql} LogCreateTime>=" + begin.Date.Ticks + " and LogCreateTime<=" + end.Ticks;
 
-                var query = db.SafeConn(() =>
+                //预执行
+                try
                 {
-                    try
-                    {
-                        db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-
-                    return db.GetCommand(sql).ExecuteDataOnly().First().Value;
-                });
+                    dbk.ConnOption.AutoClose = false;
+                    await dbk.SqlExecuteNonQuery(listPreSql);
+                    dbk.ConnOption.AutoClose = true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                //查询数据
+                var edo = await dbk.SqlExecuteDataOnly(sql);
+                var query = edo.Datas.Tables[0].AsEnumerable();
 
                 switch (days)
                 {
@@ -688,7 +709,7 @@ namespace Netnr
         /// <param name="field">字段列</param>
         /// <param name="listWhere">条件：键、关系符、值1、值2</param>
         /// <returns></returns>
-        public static LoggingResultVM StatsTop(int days, string field, List<List<string>> listWhere = null)
+        public static async Task<LoggingResultVM> StatsTop(int days, string field, List<List<string>> listWhere = null)
         {
             var vm = new LoggingResultVM();
 
@@ -713,7 +734,7 @@ namespace Netnr
                     break;
             }
 
-            var sql = GetSqlForQuery(begin, end, out DbHelper db, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(begin, end, out DbKit dbk, out int lost, out List<string> listPreSql);
             if (sql != null)
             {
                 var listName = new LoggingModel().GetType().GetProperties().ToList().Select(x => x.Name).ToList();
@@ -726,26 +747,23 @@ namespace Netnr
                     }
                     sql = $"select {field} as field,count({field}) as total from ({sql}) where {whereSql} LogCreateTime>={begin.Date.Ticks} and LogCreateTime<={end.Ticks} group by {field} order by total desc";
 
-                    var dt = db.SafeConn(() =>
+                    //预执行
+                    try
                     {
-                        try
-                        {
-                            db.GetCommand(string.Join(";", listPreSql)).ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                        }
-
-                        return db.GetCommand(sql).ExecuteDataOnly().First().Value;
-                    });
-
-                    if (dt.Count > 50)
-                    {
-                        dt = dt.Take(50).ToList();
+                        dbk.ConnOption.AutoClose = false;
+                        await dbk.SqlExecuteNonQuery(listPreSql);
+                        dbk.ConnOption.AutoClose = true;
                     }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                    //查询数据
+                    var edo = await dbk.SqlExecuteDataOnly(sql);
+                    var dt = edo.Datas.Tables[0];
+                    vm.RowData = dt.Rows.Count > 50 ? dt.AsEnumerable().Take(50).CopyToDataTable() : dt;
+
                     vm.Lost = lost;
-                    vm.RowData = dt;
                 }
             }
 

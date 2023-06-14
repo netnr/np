@@ -22,7 +22,56 @@ namespace Netnr.Test
         /// <summary>
         /// 项目根目录
         /// </summary>
-        public static string ProjectRoot { get; set; } = new DirectoryInfo(ReadyTo.ProjectRootPath).Parent.FullName;
+        public static string ProjectRoot { get; set; } = new DirectoryInfo(BaseTo.ProjectRootPath).Parent.FullName;
+
+        /// <summary>
+        /// 拷贝项目
+        /// </summary>
+        [Fact]
+        public void NetnrProjectCopy()
+        {
+            //源目录
+            var sourcePath = @"D:\site\npp";
+            //目标目录
+            var targetPath = @"D:\site\np";
+            //忽略文件夹
+            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.Admin.XOps,ClientAdmin,Netnr.SMS";
+
+            //删除旧文件夹
+            var docsFolder = Path.Combine(targetPath, "docs");
+            if (Directory.Exists(docsFolder))
+            {
+                Directory.Delete(docsFolder, true);
+            }
+            var srcFolder = Path.Combine(targetPath, "src");
+            if (Directory.Exists(srcFolder))
+            {
+                Directory.Delete(srcFolder, true);
+            }
+
+            FileTo.CopyDirectory(sourcePath, targetPath, ignoreForder.Split(','));
+            Debug.WriteLine("Copy completed!");
+
+            //需要处理的项目名称
+            var listEp = "Netnr.Blog.Web".ToLower().Split(",").ToList();
+
+            var filesPath = Directory.GetFiles(targetPath, "appsettings.json", SearchOption.AllDirectories);
+            for (int i = 0; i < filesPath.Length; i++)
+            {
+                var filePath = filesPath[i];
+                if (!listEp.Any(x => filePath.ToLower().Contains(x)))
+                {
+                    continue;
+                }
+
+                var jo = File.ReadAllText(filePath).DeJsonNode();
+                ClearJsonObject(jo);
+
+                FileTo.WriteText(jo.ToJson(true), filePath, false);
+            }
+
+            Debug.WriteLine("Done!");
+        }
 
         [Fact]
         public void ReleaseAll()
@@ -116,55 +165,6 @@ namespace Netnr.Test
             Release("Netnr.Blog.Web", "blog");
         }
 
-        /// <summary>
-        /// 拷贝项目
-        /// </summary>
-        [Fact]
-        public void NetnrProjectCopy()
-        {
-            //源目录
-            var sourcePath = @"D:\site\npp";
-            //目标目录
-            var targetPath = @"D:\site\np";
-            //忽略文件夹
-            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.Admin.XOps,Netnr.SMS";
-
-            //删除旧文件夹
-            var docsFolder = Path.Combine(targetPath, "docs");
-            if (Directory.Exists(docsFolder))
-            {
-                Directory.Delete(docsFolder, true);
-            }
-            var srcFolder = Path.Combine(targetPath, "src");
-            if (Directory.Exists(srcFolder))
-            {
-                Directory.Delete(srcFolder, true);
-            }
-
-            FileTo.CopyDirectory(sourcePath, targetPath, ignoreForder.Split(','));
-            Debug.WriteLine("Copy completed!");
-
-            //需要处理的项目名称
-            var listEp = "Netnr.Blog.Web".ToLower().Split(",").ToList();
-
-            var filesPath = Directory.GetFiles(targetPath, "appsettings.json", SearchOption.AllDirectories);
-            for (int i = 0; i < filesPath.Length; i++)
-            {
-                var filePath = filesPath[i];
-                if (!listEp.Any(x => filePath.ToLower().Contains(x)))
-                {
-                    continue;
-                }
-
-                var jo = File.ReadAllText(filePath).DeJsonNode();
-                ClearJsonObject(jo);
-
-                FileTo.WriteText(jo.ToJson(true), filePath, false);
-            }
-
-            Debug.WriteLine("Done!");
-        }
-
         [Fact]
         public void NetnrResponseFramework()
         {
@@ -175,12 +175,10 @@ namespace Netnr.Test
         public void NetnrFileServer()
         {
             var projectName = "Netnr.FileServer";
-            var versionContent = File.ReadAllText(Path.Combine(ProjectRoot, projectName, "appsettings.json"));
-            var version = versionContent.DeJson().GetValue("Version");
 
             var shortName = "nfs";
             var platform = "win-x64";
-            var zipFile = $"{shortName}-{version}-{platform}.zip";
+            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
 
             Release(projectName, shortName, platform, zipFile);
@@ -194,7 +192,7 @@ namespace Netnr.Test
             }
 
             platform = "linux-x64";
-            zipFile = $"{shortName}-{version}-{platform}.zip";
+            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
 
             Release(projectName, shortName, platform, zipFile);
@@ -217,18 +215,9 @@ namespace Netnr.Test
         {
             var projectName = "Netnr.DataKit";
             var shortName = "ndk";
-            var projectDir = Path.Combine(ProjectRoot, projectName);
-            var clientDir = new DirectoryInfo(projectDir).GetDirectories("*Client*").First().FullName;
-            var versionContent = File.ReadAllText(Path.Combine(clientDir, "src/js/ndkVary.js"));
-            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains("version:")).Split('"')[1];
-
-            //npm build
-            Debug.WriteLine("构建本地资源版");
-            File.WriteAllText(BatPath, $"npm run prod --prefix {clientDir} && exit");
-            CmdTo.Execute($"start {BatPath}");
 
             var platform = "linux-x64";
-            var zipFile = $"{shortName}-{version}-{platform}.zip";
+            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
             Release(projectName, shortName, platform, zipFile);
             if (File.Exists(zipPath))
@@ -245,7 +234,7 @@ namespace Netnr.Test
             }
 
             platform = "win-x64";
-            zipFile = $"{shortName}-{version}-{platform}.zip";
+            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
             Release(projectName, shortName, platform, zipFile);
             if (File.Exists(zipPath))
@@ -264,12 +253,8 @@ namespace Netnr.Test
             var projectName = "Netnr.DataX";
             var shortName = "ndx";
 
-            var projectDir = Path.Combine(ProjectRoot, projectName);
-            var versionContent = File.ReadAllText(Path.Combine(projectDir, "Domain/ConfigInit.cs"));
-            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
-
             var platform = "win-x64";
-            var zipFile = $"{shortName}-{version}-{platform}.zip";
+            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
 
             Release(projectName, shortName, platform, zipFile);
@@ -307,7 +292,7 @@ namespace Netnr.Test
             }
 
             platform = "linux-x64";
-            zipFile = $"{shortName}-{version}-{platform}.zip";
+            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
 
             Release(projectName, shortName, platform, zipFile);
@@ -350,11 +335,9 @@ namespace Netnr.Test
         {
             var projectName = "Netnr.Serve";
             var shortName = "ns";
-            var versionContent = File.ReadAllText(Path.Combine(ProjectRoot, "Netnr.Shared/Serve/ServeTo.cs"));
-            var version = versionContent.Split("\r\n").ToList().FirstOrDefault(x => x.Contains(" Version ")).Split('"')[1];
 
             var platform = "win-x64";
-            var zipFile = $"{shortName}-{version}-{platform}.zip";
+            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
 
             Release(projectName, shortName, platform, zipFile);
@@ -382,7 +365,7 @@ namespace Netnr.Test
             }
 
             platform = "linux-x64";
-            zipFile = $"{shortName}-{version}-{platform}.zip";
+            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
             zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
 
             Release(projectName, shortName, platform, zipFile);
@@ -417,7 +400,7 @@ namespace Netnr.Test
         /// <param name="shortName"></param>
         private static void Release(string projectName, string shortName, string platform = "linux-x64", string zipFile = "publish.zip")
         {
-            var model = new ReleaseService
+            var model = new ReleaseOption
             {
                 ProjectDir = Path.Combine(ProjectRoot, projectName),
                 ProjectShortName = shortName,
@@ -425,7 +408,7 @@ namespace Netnr.Test
                 PackagePath = Path.Combine(ReleaseRoot, shortName, zipFile),
                 Platform = platform
             };
-            ReleaseService.ReleasePackage(model);
+            ReleaseOption.ReleasePackage(model);
         }
 
         /// <summary>
@@ -493,7 +476,7 @@ namespace Netnr.Test
         }
     }
 
-    public class ReleaseService
+    public class ReleaseOption
     {
         /// <summary>
         /// 项目目录
@@ -518,7 +501,7 @@ namespace Netnr.Test
         /// <summary>
         /// 是否剪裁
         /// </summary>
-        public string PublishTrimmed { get; set; } = "false";
+        public string PublishTrimmed { get; set; } = "true";
         /// <summary>
         /// 是否包含运行时
         /// </summary>
@@ -530,13 +513,13 @@ namespace Netnr.Test
         /// <summary>
         /// 打包排除
         /// </summary>
-        public List<string> PackageExclusion = new() { "appsettings.json" };
+        public List<string> PackageExclusion { get; set; } = new() { "appsettings.json" };
 
         /// <summary>
         /// 发布打包
         /// </summary>
         /// <param name="model"></param>
-        public static void ReleasePackage(ReleaseService model)
+        public static void ReleasePackage(ReleaseOption model)
         {
             Debug.WriteLine($"Release {model.ProjectShortName}");
             var csproj = new DirectoryInfo(model.ProjectDir).GetFiles("*.csproj", SearchOption.TopDirectoryOnly).First();

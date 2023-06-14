@@ -69,55 +69,51 @@ let nrPage = {
         let gridOptions = nrGrid.gridOptionsClient({
             suppressFieldDotNotation: false,
             columnDefs: [
-                {
-                    field: "online", headerName: "在线状态", width: 150, enableRowGroup: true, valueFormatter: (params) => {
-                        if (params.data) {
-                            return params.value ? '✅' : '⛔'
-                        }
-                    }
-                },
                 { field: "nodeId", headerName: "节点ID", width: 150, },
-                {
-                    field: "name", headerName: "名称", width: 220, cellRenderer: function (params) {
-                        if (params.data) {
-                            let val = params.value;
-                            if (params.data.description != "") {
-                                val += "（" + params.data.description + "）";
-                            }
-                            return val;
-                        }
-                    }
-                },
+                { field: "name", headerName: "名称" },
+                { field: "description", headerName: "备注", },
                 { field: "config.ipAssignments", headerName: "托管IP" },
                 {
                     field: "config.noAutoAssignIps", headerName: "自动分配IP", width: 150, valueFormatter: (params) => {
                         if (params.data) {
-                            return params.value ? '✅' : '⛔'
+                            return params.value ? '✅' : '🛑'
                         }
                     }
                 },
                 { field: "physicalAddress", headerName: "公网IP" },
                 {
-                    field: "config.creationTime", headerName: "创建时间", width: 220, valueFormatter: (params) => {
-                        if (params.data) {
-                            return new Date(params.data.config.creationTime + 8 * 3600 * 1000).toISOString().replace("T", " ").substring(0, 19);
+                    field: "lastOnline", headerName: "最后在线时间", width: 220,
+                    valueFormatter: (params) => {
+                        if (params.value > 0) {
+                            return nrcBase.formatDateTime('datetime', params.value);
+                        }
+                    },
+                    cellStyle: (params) => {
+                        if (params.value != null) {
+                            let pastTime = new Date() - new Date(params.value);
+
+                            if (pastTime > 1000 * 120) {
+                                //超 2 分钟
+                                return { 'color': 'var(--bs-info)' };
+                            } else if (pastTime > 1000 * 3600) {
+                                //超 1 小时
+                                return { 'color': 'var(--bs-danger)' };
+                            }
                         }
                     }
                 },
                 {
-                    field: "lastOnline", headerName: "最后在线时间", width: 220, valueFormatter: (params) => {
-                        if (params.data) {
-                            if (params.value != 0) {
-                                return new Date(params.value + 8 * 3600 * 1000).toISOString().replace("T", " ").substring(0, 19);
-                            }
-                            return '';
+                    field: "config.creationTime", headerName: "创建时间", width: 220,
+                    valueFormatter: (params) => {
+                        if (params.value > 0) {
+                            return nrcBase.formatDateTime('datetime', params.value);
                         }
                     }
                 },
                 {
                     field: "config.authorized", headerName: "授权", width: 150, valueFormatter: (params) => {
                         if (params.data) {
-                            return params.value ? '✅' : '⛔'
+                            return params.value ? '✅' : '🛑'
                         }
                     }
                 },

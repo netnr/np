@@ -5,34 +5,6 @@ import { ndkRequest } from "./ndkRequest";
 
 // monaco editor
 var ndkEditor = {
-    init: (meRequire) => {
-        if (meRequire) {
-            //提取脚本连接        
-            var melsrc, ops = { paths: {} }
-            for (var i = 0; i < document.scripts.length; i++) {
-                var script = document.scripts[i];
-                if (script.src.includes("monaco-editor")) {
-                    melsrc = script.src;
-                    break;
-                }
-            }
-            ops.paths["vs"] = melsrc.replace("/loader.js", "");
-
-            // 本地化
-            if (ndkI18n.languageGet() == "zh-CN") {
-                ops['vs/nls'] = { availableLanguages: { '*': 'zh-cn' } };
-            }
-            meRequire.config(ops);
-
-            //编辑器资源载入
-            meRequire(['vs/editor/editor.main'], function () {
-                ndkEditor.extend();
-            });
-        } else {
-            ndkEditor.extend();
-        }
-    },
-
     // 拓展
     extend: () => {
         //xml formatter

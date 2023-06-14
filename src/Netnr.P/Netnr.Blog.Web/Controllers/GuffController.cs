@@ -77,7 +77,7 @@
                     if (num > 0)
                     {
                         //推送通知
-                        _ = PushService.PushAsync("网站消息（Guff）", $"新增一条");
+                        _ = PushService.PushWeChat("网站消息（Guff）", $"新增一条");
 
                         return Redirect($"/guff/code/{mo.GrId}");
                     }

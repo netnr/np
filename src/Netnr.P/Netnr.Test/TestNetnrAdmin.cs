@@ -5,7 +5,7 @@ namespace Netnr.Test
     public class TestNetnrAdmin
     {
         [Fact]
-        public async void FastDataFake()
+        public async Task FastDataFake()
         {
             var host = "https://localhost:9931";
 

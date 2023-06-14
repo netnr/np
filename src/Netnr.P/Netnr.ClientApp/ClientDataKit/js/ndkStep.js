@@ -445,7 +445,6 @@ var ndkStep = {
 
             ndkStorage.stepsGet().then(sobj => ndkStep.stepItemRun([
                 "step-theme",
-                "step-theme",
                 "step-spliter-body-size",
                 "step-api-server",
                 "step-parameter-config",
@@ -456,14 +455,16 @@ var ndkStep = {
                 ndkStep.stepLog(`${ndkI18n.lg.test} ${ndkVary.apiServer}${ndkVary.apiServiceStatus}`);
                 ndkRequest.reqServiceStatus().then(isOk => {
                     if (isOk) {
-                        ndkStep.stepItemRun([
-                            "step-view-database",
-                            "step-view-table",
-                            "step-view-column"
-                        ], sobj).then(() => {
-                            ndkStep.stepStatus(2);
-                            resolve()
-                        })
+                        ndkStep.stepStatus(2);
+                        resolve();
+                        // ndkStep.stepItemRun([
+                        //     "step-view-database",
+                        //     "step-view-table",
+                        //     "step-view-column"
+                        // ], sobj).then(() => {
+                        //     ndkStep.stepStatus(2);
+                        //     resolve()
+                        // })
                     } else {
                         ndkFunction.alert(`${ndkVary.apiServer}${ndkVary.apiServiceStatus}<hr/>${ndkI18n.lg.menu} > ${ndkI18n.lg.setting} > ${ndkI18n.lg.setServerTitle}`, ndkI18n.lg.serverError);
                         ndkStep.stepStatus(2);
@@ -621,13 +622,7 @@ var ndkStep = {
      * @param {*} content 
      */
     stepLog: (content) => {
-        if (!ndkVary.domStepLog) {
-            ndkVary.domStepLog = document.createElement("small");
-            ndkVary.domLoading.appendChild(ndkVary.domStepLog);
-        }
-        var domItem = document.createElement("div");
-        domItem.innerHTML = content;
-        ndkVary.domStepLog.appendChild(domItem);
+        console.debug(content);
     },
 }
 

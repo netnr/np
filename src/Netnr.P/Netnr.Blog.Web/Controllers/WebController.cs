@@ -33,8 +33,11 @@
                 //默认分页
                 paramsJson ??= "{\"startRow\":0,\"endRow\":30}";
 
-                var result = await Task.Run(() => query.GetInfiniteRowModelBlock(paramsJson, queryCall: query => LogSql(query.ToQueryString())));
-                vm.Data = result;
+                vm.Data = await query.GetInfiniteRowModelBlock(paramsJson, queryCall: query =>
+                {
+                    LogSql(query.ToQueryString());
+                    return query.ToListAsync();
+                });
 
                 vm.Set(EnumTo.RTag.success);
             }

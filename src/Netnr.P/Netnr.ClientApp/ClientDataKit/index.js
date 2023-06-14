@@ -18,13 +18,13 @@ import { ndkVary } from './js/ndkVary';
 import { ndkView } from './js/ndkView';
 
 import { ndkInit } from './js/ndkInit';
-import { nrcBase } from '../frame/nrcBase';
 import { nrGrid } from '../frame/nrGrid';
+import { nrcBase } from '../frame/nrcBase';
 
 let init = async () => {
   await import('bootstrap/dist/css/bootstrap.css');
 
-  const sqlFormatter = (await import('sql-formatter')).format;
+  const sqlFormatter = await import('sql-formatter');
   const JSZip = (await import('jszip')).default;
   const magicBytes = await import('magic-bytes.js');
 
@@ -52,14 +52,14 @@ let init = async () => {
       await import('ag-grid-enterprise/styles/ag-grid.css')
       await import('ag-grid-enterprise/styles/ag-theme-alpine.css')
       agGrid = await import('ag-grid-enterprise');
-      agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }
-      Object.assign(window, { agGrid })
+      Object.assign(window, { agGrid });
+      nrGrid.err();
     }
   };
   await nrGrid.init();
 
   Object.assign(window, {
-    sqlFormatter, JSZip, magicBytes, monaco, ndkInit, nrGrid,
+    sqlFormatter, JSZip, magicBytes, monaco, ndkInit, nrGrid, nrcBase,
     ndkAction, ndkEditor, ndkExecute, ndkFunction, ndkGenerateCode, ndkGenerateSQL, ndkGenerateDDL, ndkI18n, ndkRequest, ndkNoteSQL, ndkStep, ndkStorage, ndkTab, ndkVary, ndkView
   });
 

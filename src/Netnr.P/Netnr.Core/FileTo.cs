@@ -50,7 +50,7 @@ public class FileTo
     }
 
     /// <summary>
-    /// 遍历目录
+    /// 遍历目录及文件
     /// </summary>
     /// <param name="rootPath"></param>
     /// <param name="handler"></param>
@@ -136,43 +136,23 @@ public class FileTo
 
         int nulCount = 0;
 
-        using (var streamReader = new StreamReader(filePath))
+        using var streamReader = new StreamReader(filePath);
+        for (var i = 0; i < charsToCheck; i++)
         {
-            for (var i = 0; i < charsToCheck; i++)
-            {
-                if (streamReader.EndOfStream)
-                    return false;
+            if (streamReader.EndOfStream)
+                return false;
 
-                if ((char)streamReader.Read() == nulChar)
-                {
-                    if (++nulCount >= consecutiveNul)
-                        return true;
-                }
-                else
-                {
-                    nulCount = 0;
-                }
+            if ((char)streamReader.Read() == nulChar)
+            {
+                if (++nulCount >= consecutiveNul)
+                    return true;
+            }
+            else
+            {
+                nulCount = 0;
             }
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// 删除乱码
-    /// </summary>
-    /// <param name="content">内容</param>
-    /// <returns></returns>
-    public static string RemoveSpecialCharacters(string content)
-    {
-        var sb = new StringBuilder();
-        foreach (char c in content)
-        {
-            if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
-            {
-                sb.Append(c);
-            }
-        }
-        return sb.ToString();
     }
 }

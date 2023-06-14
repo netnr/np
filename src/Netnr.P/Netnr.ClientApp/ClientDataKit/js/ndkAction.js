@@ -132,7 +132,7 @@ var ndkAction = {
                 break;
             case "about":
                 {
-                    ndkFunction.alert(`<div style="font-size:var(--sl-font-size-x-large)">${ndkVary.name} <sl-badge variant="warning">v${ndkVary.version}</sl-badge></div>
+                    ndkFunction.alert(`<div style="font-size:var(--sl-font-size-x-large)">${ndkVary.name} <sl-badge variant="warning">v${nrcBase.version}</sl-badge></div>
 <p><a href="https://github.com/netnr/np" target="_blank">https://github.com/netnr/np</a></p>
 <a href="https://zme.ink" target="_blank">Sponsors</a>`, ndkI18n.lg.about, '25vw');
                 }
@@ -163,7 +163,7 @@ var ndkAction = {
                     //导出项
                     var keys = [], parr = [], configObj = {
                         date: ndkFunction.now(),
-                        version: ndkVary.version
+                        version: nrcBase.version
                     };
                     ndkVary.domConfigExportItems.querySelectorAll('sl-checkbox').forEach(item => {
                         if (item.checked) {

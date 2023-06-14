@@ -1,6 +1,7 @@
 import { nrWeb } from "../../nrWeb";
 import { nrVary } from "../../nrVary";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
+import { nrcRely } from "../../../../frame/nrcRely";
 
 let nrPage = {
     pathname: "/ss/nlp",
@@ -18,7 +19,7 @@ let nrPage = {
 
                 let segm = new Intl.Segmenter('cn', { granularity: 'word' });
                 let vals = Array.from(segm.segment(val));
-                nrVary.domTxtResult.value = JSON.stringify(vals.map(x => x.segment), null, 2);
+                nrVary.domTxtResult.value = vals.map(x => x.segment).join('    ');
             });
         }
 
@@ -27,20 +28,17 @@ let nrPage = {
             if (val == "") {
                 nrVary.domTxtResult.value = "";
             } else {
-                nrApp.setLoading(this);
+                if (!nrPage.segmentit) {
+                    nrApp.setLoading(this);
 
-                let fd = new FormData();
-                fd.append('content', val);
+                    await nrcRely.remote('segmentit.js');
+                    nrPage.segmentit = Segmentit.useDefault(new Segmentit.Segment());
 
-                let url = 'https://netnr.zme.ink/api/v1/Analysis'
-                let result = await nrWeb.reqServer(url, { method: 'POST', body: fd });
-                nrApp.setLoading(this, true);
-
-                if (result.code == 200) {
-                    nrVary.domTxtResult.value = JSON.stringify(result.data, null, 2);
-                } else {
-                    nrVary.alert(result.msg);
+                    nrApp.setLoading(this, true);
                 }
+                let result = nrPage.segmentit.doSegment(val);
+                console.debug(result)
+                nrVary.domTxtResult.value = result.map(x => x.w).join('    ');
             }
         });
     },

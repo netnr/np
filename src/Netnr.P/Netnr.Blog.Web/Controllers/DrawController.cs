@@ -92,7 +92,7 @@
                     num = await db.SaveChangesAsync();
 
                     //推送通知
-                    _ = PushService.PushAsync("网站消息（Draw）", $"{model.DrName}");
+                    _ = PushService.PushWeChat("网站消息（Draw）", $"{model.DrName}");
                 }
                 else
                 {
@@ -222,14 +222,14 @@
         /// </summary>
         /// <returns></returns>
         [Authorize, HttpPost]
-        public IActionResult MindUpload()
+        public async Task<IActionResult> MindUpload()
         {
             var errno = -1;
             var msg = "fail";
             var url = "";
 
             var subdir = AppTo.GetValue("StaticResource:DrawPath");
-            var vm = api.APIController.UploadCheck(Request.Form.Files[0], null, "", subdir);
+            var vm = await api.APIController.UploadCheck(Request.Form.Files[0], null, "", subdir);
             if (vm.Code == 200)
             {
                 var jd = vm.Data.ToJson().DeJson();

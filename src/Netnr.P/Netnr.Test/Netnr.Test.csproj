@@ -15,30 +15,33 @@
 
 	<ItemGroup>
 		<PackageReference Include="dmdbms.DmProvider" Version="1.1.3" />
+		<PackageReference Include="Hardware.Info" Version="11.1.0" />
 		<PackageReference Include="MaxMind.Db" Version="4.0.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.7" />
 		<PackageReference Include="MySqlConnector" Version="2.3.0-beta.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.90" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
-		<PackageReference Include="Npgsql" Version="7.0.2" />
-		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.5.0" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.100" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+		<PackageReference Include="Npgsql" Version="7.0.4" />
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.6.0" />
+		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.2" />
 		<PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
 		<PackageReference Include="xunit" Version="2.4.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="coverlet.collector" Version="3.2.0">
+		<PackageReference Include="coverlet.collector" Version="6.0.0">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="YamlDotNet" Version="13.0.2" />
+		<PackageReference Include="YamlDotNet" Version="13.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
+		<ProjectReference Include="..\Netnr.IPQuery\Netnr.IPQuery.csproj" />
 		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 	</ItemGroup>
 

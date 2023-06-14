@@ -6,29 +6,18 @@
     public class PushService
     {
         /// <summary>
-        /// 推送
+        /// 企业微信应用消息推送
         /// </summary>
-        /// <param name="title"></param>
+        /// <param name="title">标题</param>
         /// <param name="content">内容</param>
         /// <param name="touser">可选</param>
         /// <returns></returns>
-        public async static Task<ResultVM> PushAsync(string title, string content = "", string touser = "@all")
+        public async static Task<ResultVM> PushWeChat(string title, string content, string touser = "@all")
         {
             var vm = new ResultVM();
 
             try
             {
-                var list = new List<string>();
-                if (!string.IsNullOrWhiteSpace(title))
-                {
-                    list.Add(title);
-                }
-                list.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    list.Add("\r\n" + content);
-                }
-
                 var corpId = AppTo.GetValue("ApiKey:EWeixinApp:CorpId");
                 var corpSecret = AppTo.GetValue("ApiKey:EWeixinApp:CorpSecret");
                 var agentId = AppTo.GetValue("ApiKey:EWeixinApp:AgentId");
@@ -38,7 +27,45 @@
                 }
 
                 var accessToken = await EWeChatAppService.GetToken(corpId, corpSecret);
-                vm = await EWeChatAppService.MessageSend(accessToken, touser, agentId, string.Join("\r\n", list));
+                vm = await EWeChatAppService.MessageSend(accessToken, touser, agentId, content, title);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 发送邮件
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="content">内容</param>
+        /// <param name="toMails">接收邮箱，多个逗号分割</param>
+        /// <returns></returns>
+        public async static Task<ResultVM> SendEmail(string title, string content, string toMails)
+        {
+            var vm = new ResultVM();
+
+            try
+            {
+                var sendModel = new MailTo.SendModel()
+                {
+                    Host = AppTo.GetValue("ApiKey:Mail:Host"),
+                    Port = AppTo.GetValue<int>("ApiKey:Mail:Port"),
+                    FromMail = AppTo.GetValue("ApiKey:Mail:FromMail"),
+                    FromPassword = AppTo.GetValue("ApiKey:Mail:FromPassword"),
+                    FromName = AppTo.GetValue("Common:EnglishName"),
+                    Subject = title ?? AppTo.GetValue("Common:EnglishName"),
+                    Body = content.Replace("\r\n", "<br/>"),
+                    ToMail = toMails.Split(',').ToList()
+                };
+
+                await MailTo.Send(sendModel);
+
+                vm.Set(EnumTo.RTag.success);
+                vm.Msg = "已发送";
             }
             catch (Exception ex)
             {

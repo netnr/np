@@ -3,7 +3,6 @@ import { nrcFile } from "../../../../frame/nrcFile";
 import { nrVary } from "../../nrVary";
 import { nrcBase } from "../../../../frame/nrcBase";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
-import { nrcRely } from "../../../../frame/nrcRely";
 
 let nrPage = {
     pathname: "/ss/jsonto",
@@ -12,6 +11,8 @@ let nrPage = {
         //编辑器
         nrVary.domEditor1.innerHTML = nrApp.tsLoadingHtml;
         nrVary.domEditor2.innerHTML = nrApp.tsLoadingHtml;
+
+        window["jsyaml"] = await import('js-yaml');
         await nrEditor.init();
         nrVary.domEditor1.innerHTML = '';
         nrVary.domEditor2.innerHTML = '';
@@ -81,6 +82,12 @@ let nrPage = {
                         nrEditor.setLanguage(nrPage.editor2, 'xml');
                     }
                     break;
+                case "json-to-yaml":
+                case "yaml-to-json":
+                    if (nrEditor.getLanguage(nrPage.editor2) != "yaml") {
+                        nrEditor.setLanguage(nrPage.editor2, 'yaml');
+                    }
+                    break;
             }
         });
 
@@ -121,6 +128,112 @@ let nrPage = {
                             let FastXmlParser = await import('fast-xml-parser');
                             let result = new FastXmlParser.XMLParser().parse(nrPage.editor2.getValue());
                             nrEditor.keepSetValue(nrPage.editor1, JSON.stringify(result, null, 2));
+                        }
+                        break;
+                    case "json-to-yaml":
+                        {
+                            let json = JSON.parse(nrPage.editor1.getValue());
+                            let result = jsyaml.dump(json);
+                            nrEditor.keepSetValue(nrPage.editor2, result);
+                        }
+                        break;
+                    case "yaml-to-json":
+                        {
+                            let result = jsyaml.load(nrPage.editor2.getValue());
+                            nrEditor.keepSetValue(nrPage.editor1, JSON.stringify(result, null, 2));
+                        }
+                        break;
+                    case "array-to-excel":
+                        {
+                            let arr = JSON.parse(nrPage.editor1.getValue());
+                            if (nrcBase.type(arr) == "Array") {
+                                let headers = Object.keys(arr[0]);
+                                let mds = [];
+                                arr.forEach(row => {
+                                    let cols = [];
+                                    for (const key in row) {
+                                        let col = row[key];
+                                        cols.push(col == null ? "" : col);
+                                    }
+                                    mds.push(cols.join('\t'));
+                                })
+
+                                let result = `${headers.join('\t')}\r\n${mds.join('\r\n')}`;
+                                nrEditor.keepSetValue(nrPage.editor2, result);
+                            } else {
+                                nrApp.alert('数据源不是数组');
+                            }
+                        }
+                        break;
+                    case "excel-to-array":
+                        {
+                            let txt2 = nrPage.editor2.getValue();
+                            let keys = [];
+                            let result = [];
+                            txt2.split('\n').forEach(row => {
+                                if (row.trim() != "") {
+                                    let cols = row.split('\t');
+                                    if (keys.length == 0) {
+                                        keys = cols.map(x => x.trim());
+                                    } else {
+                                        let row = {};
+                                        for (let index = 0; index < cols.length; index++) {
+                                            let col = cols[index].trim();
+                                            if (col == "") {
+                                                col = null;
+                                            } else if (parseFloat(col).toString() == col) {
+                                                col = parseFloat(col);
+                                            }
+                                            row[keys[index]] = col;
+                                        }
+                                        result.push(row);
+                                    }
+                                }
+                            });
+
+                            nrEditor.keepSetValue(nrPage.editor1, JSON.stringify(result, null, 2));
+                        }
+                        break;
+                    case "array-to-md":
+                        {
+                            let arr = JSON.parse(nrPage.editor1.getValue());
+                            if (nrcBase.type(arr) == "Array") {
+                                let headers = Object.keys(arr[0]);
+                                let mds = [];
+                                arr.forEach(row => {
+                                    let cols = [];
+                                    for (const key in row) {
+                                        let col = row[key];
+                                        cols.push(col == null ? "" : `${col}`.replace(/\|/g, "\\|"));
+                                    }
+                                    mds.push(cols.join(' | '));
+                                })
+
+                                let result = `${headers.join(' | ')}\r\n${headers.map(x => '---').join(' | ')}\r\n${mds.join('\r\n')}`;
+                                nrEditor.keepSetValue(nrPage.editor2, result);
+                            } else {
+                                nrApp.alert('数据源不是数组');
+                            }
+                        }
+                        break;
+                    case "excel-to-md":
+                        {
+                            let txt1 = nrPage.editor1.getValue();
+                            let headers = [];
+                            let mds = [];
+                            txt1.split('\n').forEach(row => {
+                                if (row.trim() != "") {
+                                    let cols = row.split('\t');
+                                    if (headers.length == 0) {
+                                        headers = cols.map(x => x.trim());
+                                    } else {
+                                        mds.push(cols.map(x => x == null ? "" : x.replace(/\|/g, "\\|")).join(' | '));
+                                    }
+                                }
+                            });
+
+                            let result = `${headers.join(' | ')}\r\n${headers.map(x => '---').join(' | ')}\r\n${mds.join('\r\n')}`;
+                            nrEditor.keepSetValue(nrPage.editor2, result);
                         }
                         break;
                 }

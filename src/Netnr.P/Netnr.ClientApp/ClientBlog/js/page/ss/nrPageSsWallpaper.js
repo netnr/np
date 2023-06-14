@@ -302,7 +302,7 @@ let nrPage = {
                         }
                         break;
                 }
-                
+
                 nrPage.wpConfig.loading = false;
             }
         } catch (ex) {

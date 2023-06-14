@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using JiebaNet.Segmenter;
 
 namespace Netnr.Blog.Application.Services
 {

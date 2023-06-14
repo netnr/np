@@ -24,8 +24,6 @@ public partial class ContextBase : DbContext
 
     public virtual DbSet<Gist> Gist { get; set; }
 
-    public virtual DbSet<GistSync> GistSync { get; set; }
-
     public virtual DbSet<GuffRecord> GuffRecord { get; set; }
 
     public virtual DbSet<KeyValueSynonym> KeyValueSynonym { get; set; }
@@ -340,43 +338,6 @@ public partial class ContextBase : DbContext
                 .HasComment("主题");
             entity.Property(e => e.GistUpdateTime)
                 .HasComment("修改时间")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Spare1)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasComment("备用");
-            entity.Property(e => e.Spare2)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasComment("备用");
-            entity.Property(e => e.Spare3)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasComment("备用");
-            entity.Property(e => e.Uid).HasComment("所属用户");
-        });
-
-        modelBuilder.Entity<GistSync>(entity =>
-        {
-            entity.HasKey(e => e.GistCode).HasName("GistSync_GitCode_PK");
-
-            entity.ToTable(tb => tb.HasComment("代码片段同步"));
-
-            entity.Property(e => e.GistCode).HasMaxLength(50);
-            entity.Property(e => e.GistFilename)
-                .HasMaxLength(50)
-                .HasComment("文件名");
-            entity.Property(e => e.GsGitHubId)
-                .HasMaxLength(50)
-                .HasComment("GitHub的ID");
-            entity.Property(e => e.GsGitHubTime)
-                .HasComment("GitHub最后同步时间，对应修改时间")
-                .HasColumnType("datetime");
-            entity.Property(e => e.GsGiteeId)
-                .HasMaxLength(50)
-                .HasComment("Gitee的ID");
-            entity.Property(e => e.GsGiteeTime)
-                .HasComment("Gitee最后同步时间")
                 .HasColumnType("datetime");
             entity.Property(e => e.Spare1)
                 .HasMaxLength(50)

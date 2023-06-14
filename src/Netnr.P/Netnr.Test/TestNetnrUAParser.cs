@@ -16,7 +16,7 @@ namespace Netnr.Test
             {
                 var deserializer = new Deserializer();
 
-                var result = new UAParser.Entities();
+                var result = new UAModels();
 
                 #region Client
 
@@ -30,7 +30,7 @@ namespace Netnr.Test
                     var yamlClient = deserializer.Deserialize<List<Hashtable>>(new StreamReader(pathClient));
                     yamlClient?.ForEach(item =>
                     {
-                        var modelClient = new UAParser.Entities.ClientEntity
+                        var modelClient = new UAModels.ClientModel
                         {
                             Type = string.Join(" ", clientFile.Split('.')[0].Split('_')),
                             Regex = item["regex"].ToString(),
@@ -71,7 +71,7 @@ namespace Netnr.Test
                         {
                             var item = yamlDevice[brand];
 
-                            var modelDevice = new UAParser.Entities.DeviceEntity
+                            var modelDevice = new UAModels.DeviceModel
                             {
                                 Type = string.Join(" ", deviceFile.Split('.')[0].Split('_')),
                                 Regex = item["regex"].ToString(),
@@ -107,7 +107,7 @@ namespace Netnr.Test
                 var yamlBot = deserializer.Deserialize<List<Hashtable>>(new StreamReader(pathBot));
                 yamlBot?.ForEach(item =>
                     {
-                        var modelBot = new UAParser.Entities.BotEntity
+                        var modelBot = new UAModels.BotModel
                         {
                             Regex = item["regex"].ToString(),
                             Name = item["name"].ToString()
@@ -132,7 +132,7 @@ namespace Netnr.Test
                 var yamlOs = deserializer.Deserialize<List<Hashtable>>(new StreamReader(pathOs));
                 yamlOs?.ForEach(item =>
                     {
-                        var modelOS = new UAParser.Entities.OSEntity
+                        var modelOS = new UAModels.OSModel
                         {
                             Regex = item["regex"].ToString(),
                             Name = item["name"].ToString()
@@ -147,8 +147,8 @@ namespace Netnr.Test
 
                 #endregion
 
-                var xmlContent = UAParser.Parsers.ToXml(result);
-                xmlContent = UAParser.Parsers.NodeConvert(xmlContent, true);
+                var xmlContent = UAParsers.ToXml(result);
+                xmlContent = UAParsers.NodeConvert(xmlContent, true);
                 File.WriteAllText(Path.Combine(regexesDir, "regexes.xml"), xmlContent);
             }
         }
@@ -158,6 +158,8 @@ namespace Netnr.Test
         {
             var listUserAgent = new List<string>
             {
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534+ (KHTML, like Gecko) BingPreview/1.0b",
+                "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.64 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
                 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
@@ -170,36 +172,41 @@ namespace Netnr.Test
 
             listUserAgent.ForEach(userAgent =>
             {
-                var uap = new UAParser.Parsers(userAgent);
+                var uap = new UAParsers(userAgent);
 
-                var clientEntity = uap.GetClient();
-                var deviceEntity = uap.GetDevice();
-                if (deviceEntity == null && userAgent.Contains("Windows"))
+                var botModel = uap.GetBot();
+                var clientModel = uap.GetClient();
+                var deviceModel = uap.GetDevice();
+                if (deviceModel == null && userAgent.Contains("Windows"))
                 {
-                    Console.WriteLine("device type: desktop");
+                    Debug.WriteLine("device type: desktop");
                 }
-                var osEntity = uap.GetOS();
-                var botEntity = uap.GetBot();
+                var osModel = uap.GetOS();
 
                 listMsg.Add($"UAP: {sw.Elapsed}");
                 sw.Restart();
-                Debug.WriteLine(clientEntity.ToJson());
-                Debug.WriteLine(deviceEntity.ToJson());
-                Debug.WriteLine(osEntity.ToJson());
-                Debug.WriteLine(botEntity.ToJson());
+                Debug.WriteLine(clientModel.ToJson());
+                Debug.WriteLine(deviceModel.ToJson());
+                Debug.WriteLine(osModel.ToJson());
+                Debug.WriteLine(botModel.ToJson());
             });
-            for (int i = 0; i < 2; i++)
-            {
-                listUserAgent.ForEach(userAgent =>
-                {
-                    var uap = new UAParser.Parsers(userAgent);
 
-                    var clientEntity = uap.GetClient();
-                    var deviceEntity = uap.GetDevice();
-                    var osEntity = uap.GetOS();
-                    var botEntity = uap.GetBot();
-                });
+            var largeUA = new List<string>();
+            for (int i = 0; i < 999; i++)
+            {
+                largeUA.AddRange(listUserAgent);
             }
+
+            largeUA.AsParallel().ForAll(ua =>
+            {
+                var uap = new UAParsers(ua);
+
+                var clientModel = uap.GetClient();
+                var deviceModel = uap.GetDevice();
+                var osModel = uap.GetOS();
+                var botModel = uap.GetBot();
+            });
+
             listMsg.Add($"UAP: {sw.Elapsed}");
         }
     }

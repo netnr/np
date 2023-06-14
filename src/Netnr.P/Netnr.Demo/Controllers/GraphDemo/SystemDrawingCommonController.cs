@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Netnr.Demo.Controllers.GraphDemo;
 

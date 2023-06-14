@@ -3,13 +3,11 @@
     var duration = Math.Ceiling((DateTime.Now - new DateTime(2015, 5, 1)).TotalDays);
 }
 
-@Html.AntiForgeryToken()
-
 <div class="@QuoteTo.PanelClass2">
     <div class="row">
         <div class="col-md-12">
             <input type="hidden" class="nrg-hid-duration" value="@duration" />
-            <pre class="nrg-system-status">Loading ...</pre>
+            <pre class="nrg-system-status mb-0">Loading ...</pre>
         </div>
     </div>
 </div>

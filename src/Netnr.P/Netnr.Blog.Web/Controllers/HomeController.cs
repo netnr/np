@@ -160,7 +160,7 @@ namespace Netnr.Blog.Web.Controllers
                         .ExecuteUpdateAsync(x => x.SetProperty(p => p.TagHot, p => p.TagHot + 1));
 
                     //推送通知
-                    _ = PushService.PushAsync("网站消息（文章）", $"文章ID：{mo.UwId}\r\n{mo.UwTitle}");
+                    _ = PushService.PushWeChat("网站消息（文章）", $"文章ID：{mo.UwId}\r\n{mo.UwTitle}");
 
                     vm.Data = mo.UwId;
                     vm.Set(num > 0);
@@ -288,7 +288,7 @@ namespace Netnr.Blog.Web.Controllers
                     int num = db.SaveChanges();
 
                     //推送通知
-                    _ = PushService.PushAsync("网站消息（留言）", $"类别：{mo.UrTargetType}\r\n{mo.UrContentMd}");
+                    _ = PushService.PushWeChat("网站消息（留言）", $"类别：{mo.UrTargetType}\r\n{mo.UrContentMd}");
 
                     vm.Set(num > 0);
                 }

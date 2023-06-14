@@ -11,7 +11,17 @@ let nrGrid = {
      */
     init: async () => {
         await nrcRely.remote('agGrid');
-        agGrid.LicenseManager.prototype.outputMissingLicenseKey = _ => { }
+        nrGrid.err();
+    },
+
+    err: () => {
+        console.err = console.error;
+        console.error = function () {
+            let arg0 = arguments[0];
+            if (!(arguments.length == 1 && typeof arg0 == "string" && arg0.startsWith('*'))) {
+                console.err.apply(this, arguments);
+            }
+        }
     },
 
     /**
@@ -103,12 +113,20 @@ let nrGrid = {
      * @param {any} ops
      * @returns
      */
-    newColumnLineNumber: ops => Object.assign({
-        field: "#line_number", headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 100, maxWidth: 180,
-        checkboxSelection: true, headerCheckboxSelection: true,
-        headerCheckboxSelectionFilteredOnly: true, //仅全选过滤的数据行
-        sortable: false, filter: false, menuTabs: false
-    }, ops),
+    newColumnLineNumber: ops => {
+        let newCol = Object.assign({
+            field: "#line_number", headerName: "🆔", valueGetter: "node.rowIndex + 1", width: 100, maxWidth: 180,
+            checkboxSelection: true, headerCheckboxSelection: true,
+            sortable: false, filter: false, menuTabs: []
+        }, ops);
+
+        //仅全选过滤的数据行
+        if (newCol.checkboxSelection && newCol.headerCheckboxSelection && newCol.headerCheckboxSelectionFilteredOnly == null) {
+            newCol.headerCheckboxSelectionFilteredOnly = true;
+        }
+
+        return newCol;
+    },
 
     /**
      * 水平柱状图百分比
@@ -138,7 +156,62 @@ let nrGrid = {
                 formatter: (params) => {
                     const { yValue } = params;
                     let ctype = 'success';
-                    if (yValue > 59) {
+                    if (yValue > 49) {
+                        ctype = 'primary';
+                    }
+                    if (yValue > 79) {
+                        ctype = 'warning';
+                    }
+                    if (yValue > 89) {
+                        ctype = 'danger';
+                    }
+                    return {
+                        fill: nrcBase.cssvar(document.body, `--sl-color-${ctype}-400`)
+                    };
+                }
+            },
+        }
+    }, ops),
+
+    /**
+     * 列柱状图百分比
+     * @param {any} ops
+     * @returns
+     */
+    newColumnChartCol: (ops) => Object.assign({
+        cellRenderer: 'agSparklineCellRenderer',
+        cellRendererParams: {
+            sparklineOptions: {
+                type: 'column',
+                //固定显示
+                label: {
+                    enabled: true,
+                    color: nrcBase.cssvar(document.body, `--global-color`),
+                    fontSize: 12, placement: "insideBase",
+                    formatter: (params) => `${params.value}%`,
+                },
+                //鼠标显示
+                tooltip: {
+                    renderer: (params) => {
+                        return {
+                            content: `${params.yValue}%`,
+                        };
+                    }
+                },
+                paddingOuter: 0,
+                padding: {
+                    top: 0,
+                    bottom: 0,
+                },
+                valueAxisDomain: [0, 100],
+                axis: {
+                    strokeWidth: 0,
+                },
+                //图表格式化
+                formatter: (params) => {
+                    const { yValue } = params;
+                    let ctype = 'success';
+                    if (yValue > 49) {
                         ctype = 'primary';
                     }
                     if (yValue > 79) {

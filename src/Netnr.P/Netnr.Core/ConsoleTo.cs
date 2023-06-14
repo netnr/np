@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Netnr;
 
@@ -28,7 +29,12 @@ public class ConsoleTo
     /// <param name="tag">标记</param>
     public static void Log(Exception ex, string tag = null)
     {
-        var msg = $"# Exception {tag} {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}\r\n{ex.Message}\r\n\r\n### StackTrace\r\n{ex.StackTrace}";
+        if (tag != null)
+        {
+            Title(tag, ex);
+        }
+
+        var msg = $"\r\n## Exception {tag} {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}\r\n{ex.Message}\r\n### StackTrace\r\n{ex.StackTrace}";
         Log(msg);
     }
 
@@ -102,5 +108,33 @@ public class ConsoleTo
         {
             Console.WriteLine(content);
         }
+    }
+
+    /// <summary>
+    /// 读取重试
+    /// </summary>
+    /// <param name="readAction">通过返回 True</param>
+    /// <returns></returns>
+    public static async Task ReadRetry(Func<Task<bool>> readAction)
+    {
+        bool ifPass = false;
+        do
+        {
+            try
+            {
+                ifPass = await readAction.Invoke().ConfigureAwait(false);
+                //通过
+                if (!ifPass)
+                {
+                    throw new Exception("dot pass");
+                }
+            }
+            catch (Exception)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                await Console.Out.WriteLineAsync("Invalid entry, please try again");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+        } while (!ifPass);
     }
 }

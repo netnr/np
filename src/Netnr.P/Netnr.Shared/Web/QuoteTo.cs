@@ -42,7 +42,7 @@ public class QuoteTo
                     break;
 
                 case "favicon":
-                    vh.Add("<link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />");
+                    vh.Add("<link rel='icon' href='/favicon.ico'>");
                     break;
 
                 case "fa4.css":
@@ -50,7 +50,7 @@ public class QuoteTo
                     break;
 
                 case "jquery3.js":
-                    vh.Add("<script src='https://npmcdn.com/jquery@3.6.4/dist/jquery.min.js'></script>");
+                    vh.Add("<script src='https://npmcdn.com/jquery@3.7.0/dist/jquery.min.js'></script>");
                     break;
 
                 case "bootstrap3.css":
@@ -60,10 +60,10 @@ public class QuoteTo
                     vh.Add("<script src='https://npmcdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js'></script>");
                     break;
                 case "bootstrap5.css":
-                    vh.Add("<link href='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npmcdn.com/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet' />");
                     break;
                 case "bootstrap5.js":
-                    vh.Add("<script src='https://npmcdn.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js' async ></script>");
+                    vh.Add("<script src='https://npmcdn.com/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' async ></script>");
                     break;
 
                 case "bpmn-js":

@@ -14,12 +14,20 @@ let nrcViewer = {
     MIN_ZOOM: .2,
     ZOOM_STEP: .1,
     DRAW_POS: [0, 0],
+    ANGLE: 0,
 
     image: new Image(),
     loaded: false,
     isShow: false,
     drawPos: [0, 0],
     scale: 1,
+    rotationAngle: 0, // 图片旋转角度
+    /**
+     * 角度转为弧度
+     * @param {*} degrees 
+     * @returns 
+     */
+    degreesToRadians: (degrees) => degrees * Math.PI / 180,
 
     /**
      * 
@@ -40,7 +48,7 @@ let nrcViewer = {
             .nrc-viewer-loading canvas { display:none }
             .nrc-viewer span { position:absolute;top:0.2em;right:0.3em;font-size:1.2em;user-select:none;cursor:pointer; }
             `;
-            nrcViewer.domContainer.innerHTML = `<span title="Click to close or press ESC">❌</span>`;
+            nrcViewer.domContainer.innerHTML = `<span title="Click to close or press ESC\r\nPress the arrow keys to rotate ← ↑ → ↓">❌</span>`;
             document.head.appendChild(domStyle);
 
             document.body.appendChild(nrcViewer.domContainer);
@@ -93,8 +101,17 @@ let nrcViewer = {
                 nrcViewer.view();
             })
             document.body.addEventListener('keydown', function (e) {
+                console.debug(e);
                 if (e.code == "Escape") {
                     nrcViewer.hide();
+                } else if (e.code == "ArrowLeft") {
+                    nrcViewer.rotate(-90);
+                } else if (e.code == "ArrowRight") {
+                    nrcViewer.rotate(-270);
+                } else if (e.code == "ArrowDown") {
+                    nrcViewer.rotate(-180);
+                } else if (e.code == "ArrowUp") {
+                    nrcViewer.rotate(0);
                 }
             })
 
@@ -110,6 +127,7 @@ let nrcViewer = {
                 nrcViewer.DRAW_POS = [nrcViewer.domCanvas.clientWidth / 2, nrcViewer.domCanvas.clientHeight / 2]
                 nrcViewer.drawPos = nrcViewer.DRAW_POS;
                 nrcViewer.scale = nrcViewer.DEFAULT_ZOOM;
+                nrcViewer.rotationAngle = nrcViewer.ANGLE;
 
                 nrcViewer.view();
             }
@@ -126,12 +144,27 @@ let nrcViewer = {
         nrcViewer.context.fillStyle = "#212529";
         nrcViewer.context.fillRect(0, 0, nrcViewer.domCanvas.width, nrcViewer.domCanvas.height);
 
-        //Draw the image
-        let w = nrcViewer.image.width * nrcViewer.scale;
-        let h = nrcViewer.image.height * nrcViewer.scale;
-        let x = nrcViewer.drawPos[0] - (w / 2);
-        let y = nrcViewer.drawPos[1] - (h / 2);
+        // 设置图片旋转
+        let radian = nrcViewer.degreesToRadians(nrcViewer.rotationAngle);
+        nrcViewer.context.setTransform(Math.cos(radian) * nrcViewer.scale, Math.sin(radian) * nrcViewer.scale,
+            -Math.sin(radian) * nrcViewer.scale, Math.cos(radian) * nrcViewer.scale, nrcViewer.drawPos[0], nrcViewer.drawPos[1]);
+
+        // 绘制图片
+        let w = nrcViewer.image.width;
+        let h = nrcViewer.image.height;
+        let x = -(w / 2);
+        let y = -(h / 2);
         nrcViewer.context.drawImage(nrcViewer.image, x, y, w, h);
+
+        // 恢复原始变换矩阵
+        nrcViewer.context.setTransform(1, 0, 0, 1, 0, 0);
+    },
+
+    // 新增的旋转函数
+    rotate: (angle) => {
+        //角度转换为弧度
+        nrcViewer.rotationAngle = angle;
+        nrcViewer.view();
     },
 
     hide: () => {
@@ -144,6 +177,7 @@ let nrcViewer = {
         nrcViewer.DRAW_POS = [nrcViewer.domCanvas.clientWidth / 2, nrcViewer.domCanvas.clientHeight / 2]
         nrcViewer.drawPos = nrcViewer.DRAW_POS;
         nrcViewer.scale = nrcViewer.DEFAULT_ZOOM;
+        nrcViewer.rotationAngle = 0;
 
         nrcViewer.view();
     },

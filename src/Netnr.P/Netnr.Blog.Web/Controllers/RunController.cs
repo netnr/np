@@ -48,7 +48,7 @@
             else
             {
                 var html = model.RunContent1;
-                var totalDays = GlobalTo.StartTime.ToUtcTotalDays();
+                var totalDays = BaseTo.StartTime.ToUtcTotalDays();
 
                 var injectJS = $"\n<script src='/file/run-oconsole.js?{totalDays}'></script>\n" +
                     (string.IsNullOrWhiteSpace(model.RunContent2)
@@ -154,7 +154,7 @@
                     vm.Set(num > 0);
 
                     //推送通知
-                    _ = PushService.PushAsync("网站消息（Run）", $"{mo.RunRemark}");
+                    _ = PushService.PushWeChat("网站消息（Run）", $"{mo.RunRemark}");
                 }
                 else
                 {

@@ -30,13 +30,29 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void ForEachAsync_3()
+        public async Task ForEachAsync_3()
         {
             Debug.WriteLine("ForEachAsync start");
             await Parallel.ForEachAsync(list, async (item, token) =>
             {
                 await Task.Delay(RandomTo.Instance.Next(10, 500), token);
                 Debug.WriteLine($"item: {item}");
+            });
+            Debug.WriteLine("ForEachAsync end");
+        }
+
+        [Fact]
+        public void ForEach_4()
+        {
+            var po = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Math.Max(2, Environment.ProcessorCount / 2)
+            };
+
+            Parallel.ForEach(list, po, (item, token) =>
+            {
+                Console.WriteLine(item);
+                Debug.WriteLine($"item: {item}, task: {Task.CurrentId}");
             });
             Debug.WriteLine("ForEachAsync end");
         }

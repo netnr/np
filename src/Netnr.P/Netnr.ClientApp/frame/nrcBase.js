@@ -1,4 +1,23 @@
 let nrcBase = {
+    /**版本号 */
+    version: "1.705.0",
+
+    /**
+     * 错误处理
+     */
+    globalError: () => {
+        window.addEventListener('error', function (event) {
+            console.debug(event)
+        });
+    },
+
+    /**
+     * 读写 cookie
+     * @param {*} key 
+     * @param {*} value 
+     * @param {*} ms -1 删除
+     * @returns 
+     */
     cookie: function (key, value, ms) {
         if (arguments.length == 1) {
             let arr = document.cookie.match(new RegExp("(^| )" + key + "=([^;]*)(;|$)"));
@@ -7,11 +26,11 @@ let nrcBase = {
             }
             return null;
         } else {
-            let kv = `${key}=${value};path=/`;
+            let kv = `${key}=${value};Path=/`;
             if (ms) {
                 let d = new Date();
                 d.setTime(d.getTime() + ms);
-                kv = `${kv};expires=${d.toGMTString()}`;
+                kv = `${kv};Expires=${d.toGMTString()}`;
             }
             document.cookie = kv;
         }
@@ -27,7 +46,25 @@ let nrcBase = {
     saveTheme: (theme) => {
         let d = new Date();
         d.setFullYear(d.getFullYear() + 1);
-        document.cookie = `.theme=${theme};path=/;expires=${d.toGMTString()}`;
+        document.cookie = `.theme=${theme};Path=/;Expires=${d.toGMTString()}`;
+    },
+
+    /**
+     * 编码
+     * @param {*} text 
+     */
+    encode: (text) => window.btoa(encodeURIComponent(text)),
+
+    /**
+     * 解码
+     * @param {*} text 
+     * @returns 
+     */
+    decode: (text) => {
+        try {
+            text = decodeURIComponent(window.atob(text));
+        } catch (error) { }
+        return text;
     },
 
     /**
@@ -599,6 +636,20 @@ let nrcBase = {
             let ssu = new SpeechSynthesisUtterance(text);
             ssu.lang = 'zh-CN';
             window.speechSynthesis.speak(ssu);
+        }
+    },
+
+    /**
+     * 通知
+     * @param {NotificationOptions} ops
+     */
+    notify: async (ops) => {
+        let permission = await Notification.requestPermission();
+        if (permission == 'granted') {
+            var notification = new Notification(ops.title || "消息", ops);
+            return notification;
+        } else {
+            console.debug(ops);
         }
     },
 

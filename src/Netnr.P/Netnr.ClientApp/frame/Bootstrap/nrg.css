@@ -35,6 +35,12 @@
     vertical-align: bottom;
 }
 
+/* ag-grid watermark */
+.ag-root-wrapper .ag-watermark {
+    visibility: hidden;
+    pointer-events: none;
+}
+
 /* ag-grid border */
 .nrg-grid-b0 .ag-root-wrapper {
     border: none !important;
@@ -66,5 +72,5 @@ pre.nrg-code-language code::after {
 
 /* markdown 内容底部标签底部间距清除 */
 .nrg-clear-bottom>*:last-child {
-    margin-bottom: 0px!important;
+    margin-bottom: 0px !important;
 }

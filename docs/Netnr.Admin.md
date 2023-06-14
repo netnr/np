@@ -100,4 +100,22 @@ export { nrPage };
 - 新增 监控拓扑图
 - 新增 HTTP、Port 记录及图表统计
 - 新增 Database 达梦数据库（DM），为兼容达梦数据库版本长度，更改版本字段长度为 100，共两个字段：`xops_monitor_database.backfill_version` 和 `xops_record_database.rdb_version`
+- 新增 WebHook 推送推送方式，可自定义配置参数
 - 修复 Port、Database 不能修改检测时间
+- 修复 定时任务修改后存在问题
+- 优化 改进 Host、HTTP、Port、SSL、Database 记录表为复合索引，显著提升查询
+
+#### 2023-04
+- 新增 告警策略配置（试运行）
+- 新增 上报客户端设置 15 秒超时，降低单次任务耗时对下次的影响
+- 新增 示例用户数据的导出及初始化数据库自动导入示例数据
+- 新增 任务调度记录上次结果，并可查看结果
+- 新增 双因素认证(2FA)，保护如数据库连接字符串
+- 新增 SSL、Database 记录及图表统计
+- 修复 异步定时任务异常拖挂服务的问题
+- 修复 无数据时查询监控状态出错的问题
+- 调整 取消用户角色表 base_role 两个字段（role_modules、role_methods）的必填规则
+
+#### 2023-05
+- 新增 Database 数据库查询耗时字段
+- 调整 推送服务支持状态，可关闭推送，但任记录

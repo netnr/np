@@ -14,19 +14,8 @@ let nrToy = {
         { msg: "https://github.com/netnr", css: "" }].forEach(item => {
             console.log("%c" + item.msg, item.css);
         })
-
-        //special day
-        let day = (new Date(new Date().valueOf() + 8 * 3600000)).toISOString().substring(5, 10);
-        switch (day) {
-            case "04-05":
-                {
-                    let des = document.documentElement.style;
-                    des["filter"] = "progid: DXImageTransform.Microsoft.BasicImage(grayscale = 1)";
-                    des["-webkit-filter"] = "grayscale(100%)";
-                }
-                break;
-        }
     },
 }
+
 
 export { nrToy }

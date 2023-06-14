@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Netnr.Login;
+using System.Net.Http;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -32,17 +33,16 @@ namespace Netnr.Blog.Web.Controllers
         /// 注册提交
         /// </summary>
         /// <param name="mo">账号、密码</param>
-        /// <param name="RegisterCode">验证码</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Register(UserInfo mo, string RegisterCode)
+        public async Task<IActionResult> Register(UserInfo mo)
         {
             var vm = new ResultVM();
-            if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
-            {
-                vm.Msg = "验证码错误或已过期";
-            }
-            else if (!(mo.UserName?.Length >= 5 && mo.UserPwd?.Length >= 5))
+            //if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
+            //{
+            //    vm.Msg = "验证码错误或已过期";
+            //}
+            if (!(mo.UserName?.Length >= 5 && mo.UserPwd?.Length >= 5))
             {
                 vm.Msg = "账号、密码长度至少 5 位数";
             }
@@ -69,14 +69,14 @@ namespace Netnr.Blog.Web.Controllers
         /// 注册验证码
         /// </summary>
         /// <returns></returns>
-        public FileResult RegisterCode()
-        {
-            //生成验证码
-            string num = RandomTo.NewNumber(4);
-            HttpContext.Session.SetString("RegisterCode", num);
-            byte[] bytes = ImageTo.Captcha(num);
-            return File(bytes, "image/jpeg");
-        }
+        //public FileResult RegisterCode()
+        //{
+        //    //生成验证码
+        //    string num = RandomTo.NewNumber(4);
+        //    HttpContext.Session.SetString("RegisterCode", num);
+        //    byte[] bytes = ImageTo.Captcha(num);
+        //    return File(bytes, "image/jpeg");
+        //}
 
         #endregion
 
@@ -236,7 +236,18 @@ namespace Netnr.Blog.Web.Controllers
                                         Directory.CreateDirectory(ppath);
                                     }
 
-                                    HttpTo.DownloadSave(publicUser.Avatar, PathTo.Combine(ppath, newUser.UserPhoto));
+                                    var maxLength = 1024 * 1024 * 5;
+                                    var client = new HttpClient
+                                    {
+                                        Timeout = TimeSpan.FromMinutes(1)
+                                    };
+                                    await client.DownloadAsync(publicUser.Avatar, PathTo.Combine(ppath, newUser.UserPhoto), (rlen, total) =>
+                                    {
+                                        if (total > maxLength || rlen > maxLength)
+                                        {
+                                            throw new Exception($"{publicUser.Avatar} Size exceeds limit(max {ParsingTo.FormatByteSize(maxLength)})");
+                                        }
+                                    });
                                 }
                                 catch (Exception ex)
                                 {
@@ -380,7 +391,7 @@ namespace Netnr.Blog.Web.Controllers
                 vm.Set(num > 0);
 
                 //推送通知
-                _ = PushService.PushAsync("网站消息（注册）", $"{mo.UserId}");
+                _ = PushService.PushWeChat("网站消息（注册）", $"{mo.UserId}");
             }
 
             return vm;

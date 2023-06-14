@@ -12,7 +12,7 @@ namespace Netnr
         /// <summary>
         /// 锁对象
         /// </summary>
-        public static ConcurrentDictionary<string, object> DicLockObj { get; set; } = new ConcurrentDictionary<string, object>();
+        public static ConcurrentDictionary<string, object> DictLockObj { get; set; } = new ConcurrentDictionary<string, object>();
 
         /// <summary>
         /// 锁运行，不支持异步
@@ -23,7 +23,7 @@ namespace Netnr
         /// <param name="timeoutAction">锁超时执行</param>
         public static void Run(string lockKey, double lockTimeout, Action lockAction, Action timeoutAction = null)
         {
-            var lockObj = DicLockObj.GetOrAdd(lockKey, new object());
+            var lockObj = DictLockObj.GetOrAdd(lockKey, new object());
 
             bool lockTaken = false;
             try

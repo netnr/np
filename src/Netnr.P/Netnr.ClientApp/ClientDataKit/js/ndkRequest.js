@@ -138,7 +138,7 @@ var ndkRequest = {
         url = url || `${ndkVary.apiServer}${ndkVary.apiServiceStatus}`;
         try {
             var resp = await fetch(url);
-            return resp.status == 200;
+            return resp.status == 204;
         } catch (error) {
             return false;
         }

@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Globalization;
-using JiebaNet.Segmenter;
 using SkiaSharp;
 using SkiaSharp.QrCode;
 
@@ -20,22 +19,20 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet]
         public ResultVM UserInfo()
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            var uinfo = IdentityService.Get(HttpContext);
+            if (uinfo != null)
             {
-                var uinfo = IdentityService.Get(HttpContext);
-                if (uinfo != null)
-                {
-                    vm.Data = uinfo;
+                vm.Data = uinfo;
+                vm.Set(EnumTo.RTag.success);
+            }
+            else
+            {
+                vm.Set(EnumTo.RTag.unauthorized);
+            }
 
-                    vm.Set(EnumTo.RTag.success);
-                }
-                else
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                }
-
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -48,7 +45,31 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost]
         public async Task<ResultVM> PushAsync([FromForm] string title = "", [FromForm] string content = "", [FromForm] string touser = "@all")
         {
-            return await PushService.PushAsync(title, content, touser);
+            return await PushService.PushWeChat(title, content, touser);
+        }
+
+        /// <summary>
+        /// 发送邮件
+        /// </summary>
+        /// <param name="title">标题</param>
+        /// <param name="content">消息主体</param>
+        /// <param name="toMails">接收邮箱，多个逗号分割</param>
+        /// <param name="token">授权码</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ResultVM> SendEmail([FromForm] string title, [FromForm] string content, [FromForm] string toMails, [FromForm] string token)
+        {
+            var vm = new ResultVM();
+            if (!string.IsNullOrWhiteSpace(token) && token.Length > 5 && AppTo.GetValue("Common:GlobalKey").Contains(token))
+            {
+                vm = await PushService.SendEmail(title, content, toMails);
+            }
+            else
+            {
+                vm.Set(EnumTo.RTag.unauthorized);
+            }
+
+            return vm;
         }
 
         /// <summary>
@@ -60,7 +81,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="subdir">输出完整物理路径，用于存储</param>
         /// <returns></returns>
         [ApiExplorerSettings(IgnoreApi = true)]
-        internal static ResultVM UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
+        internal static async Task<ResultVM> UploadCheck(IFormFile file, byte[] content, string ext, string subdir)
         {
             var vm = new ResultVM();
 
@@ -100,11 +121,11 @@ namespace Netnr.Blog.Web.Controllers.api
                     using var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew);
                     if (file != null)
                     {
-                        file.CopyTo(fs);
+                        await file.CopyToAsync(fs);
                     }
                     else
                     {
-                        fs.Write(content, 0, content.Length);
+                        await fs.WriteAsync(content);
                     }
                     fs.Flush();
                     fs.Close();
@@ -130,27 +151,31 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        public ResultVM Upload(IFormFile file, [FromForm] string subdir = "/static")
+        public async Task<ResultVM> Upload(IFormFile file, [FromForm] string subdir = "/static")
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
-                    return vm;
                 }
-
-                if (file != null)
-                {
-                    vm = UploadCheck(file, null, "", subdir);
-                }
-                else
+                else if (file == null)
                 {
                     vm.Set(EnumTo.RTag.lack);
                 }
+                else
+                {
+                    vm = await UploadCheck(file, null, "", subdir);
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -162,31 +187,35 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        public ResultVM UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
+        public async Task<ResultVM> UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
-                    return vm;
                 }
-
-                if (content != null)
+                else if (content == null)
+                {
+                    vm.Set(EnumTo.RTag.lack);
+                }
+                else
                 {
                     //删除 “,” 前面的字符串
                     content = content[(content.IndexOf(",") + 1)..].Trim();
                     var bs = Convert.FromBase64String(content);
 
-                    vm = UploadCheck(null, bs, ext, subdir);
+                    vm = await UploadCheck(null, bs, ext, subdir);
                 }
-                else
-                {
-                    vm.Set(EnumTo.RTag.lack);
-                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -198,47 +227,32 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <returns></returns>
         [HttpPost]
         [HttpOptions]
-        public ResultVM UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
+        public async Task<ResultVM> UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
                 {
                     vm.Set(EnumTo.RTag.unauthorized);
-                    return vm;
                 }
-
-                if (content != null)
-                {
-                    var bs = Encoding.UTF8.GetBytes(content);
-
-                    vm = UploadCheck(null, bs, ext, subdir);
-                }
-                else
+                else if (content == null)
                 {
                     vm.Set(EnumTo.RTag.lack);
                 }
-
-                return vm;
-            });
-        }
-
-        /// <summary>
-        /// 内容分词解析
-        /// </summary>
-        /// <param name="content">内容</param>
-        /// <returns></returns>
-        [HttpPost]
-        public ResultVM Analysis([FromForm] string content = "结过婚的和尚未结过婚的")
-        {
-            return ResultVM.Try(vm =>
+                else
+                {
+                    var bs = Encoding.UTF8.GetBytes(content);
+                    vm = await UploadCheck(null, bs, ext, subdir);
+                }
+            }
+            catch (Exception ex)
             {
-                var jb = new JiebaSegmenter();
-                vm.Data = jb.Cut(content);
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -249,16 +263,11 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpGet, Route(""), Route("{timezone}")]
         public ResultVM Clock([FromRoute] int? timezone = 8)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
-                var header = Request.HttpContext.Request.Headers;
-                var client_ip = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                //取代理IP
-                if (header.ContainsKey("X-Forwarded-For"))
-                {
-                    client_ip = header["X-Forwarded-For"].ToString();
-                }
+                var ci = new ClientInfoTo(HttpContext);
+                var client_ip = ci.IP;
 
                 timezone ??= 8;
                 timezone = Math.Min(12, timezone.Value);
@@ -292,9 +301,13 @@ namespace Netnr.Blog.Web.Controllers.api
                     client_ip,
                 };
                 vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -302,29 +315,14 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public string IP()
-        {
-            var header = Request.HttpContext.Request.Headers;
-            var client_ip = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-            //取代理IP
-            if (header.ContainsKey("X-Forwarded-For"))
-            {
-                client_ip = header["X-Forwarded-For"].ToString();
-            }
-
-            return client_ip;
-        }
+        public string IP() => new ClientInfoTo(HttpContext).IP;
 
         /// <summary>
         /// 生成GUID
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public string GUID()
-        {
-            return Guid.NewGuid().ToString();
-        }
+        public string GUID() => Guid.NewGuid().ToString();
 
         /// <summary>
         /// 生成GUID,默认返回一条
@@ -402,7 +400,8 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost]
         public ResultVM OCR(IFormFile file, [FromForm] string url, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
                 var bytes = AipCheck(file, ref API_KEY, ref SECRET_KEY);
                 var ocr = new Baidu.Aip.Ocr.Ocr(API_KEY, SECRET_KEY);
@@ -423,12 +422,16 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
 
                 vm.Log.Add("通用文字识别(百度接口,50000次/天免费,用自己申请的授权信息更稳定不受限制)");
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
-        private Dictionary<string, string> DicOCRType { get; set; } = new Dictionary<string, string>
+        private Dictionary<string, string> DictOCRType { get; set; } = new Dictionary<string, string>
         {
             { "General", "通用文字识别（标准含位置版） 500次/天" },
             { "AccurateBasic", "通用文字识别（高精度版） 500次/天" },
@@ -458,7 +461,7 @@ namespace Netnr.Blog.Web.Controllers.api
         {
             var vm = new ResultVM
             {
-                Data = DicOCRType
+                Data = DictOCRType
             };
             vm.Set(EnumTo.RTag.success);
 
@@ -477,7 +480,8 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost, Route("{type}")]
         public ResultVM OCR([FromRoute] string type, IFormFile file, [FromForm] string side, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
                 var bytes = AipCheck(file, ref API_KEY, ref SECRET_KEY);
                 var ocr = new Baidu.Aip.Ocr.Ocr(API_KEY, SECRET_KEY);
@@ -578,9 +582,13 @@ namespace Netnr.Blog.Web.Controllers.api
                 {
                     vm.Data = vm.Data.ToString().DeJson();
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -620,7 +628,8 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpPost, Route("{type}")]
         public ResultVM NLP([FromRoute] string type, [FromForm] string title, [FromForm] string content, [FromForm] int maxSummaryLen, [FromForm] string API_KEY, [FromForm] string SECRET_KEY)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
                 var bytes = AipCheck(null, ref API_KEY, ref SECRET_KEY);
                 var nlp = new Baidu.Aip.Nlp.Nlp(API_KEY, SECRET_KEY);
@@ -682,9 +691,13 @@ namespace Netnr.Blog.Web.Controllers.api
                 {
                     vm.Data = vm.Data.ToString().DeJson();
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -949,7 +962,8 @@ namespace Netnr.Blog.Web.Controllers.api
         [FilterConfigs.IsAdmin]
         public ResultVM CommandLine(string arguments, string fileName)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
                 if (AppTo.GetValue<bool>("ReadOnly"))
                 {
@@ -964,9 +978,13 @@ namespace Netnr.Blog.Web.Controllers.api
                 {
                     vm.Set(EnumTo.RTag.refuse);
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
     }

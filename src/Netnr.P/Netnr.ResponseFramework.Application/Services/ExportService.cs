@@ -196,12 +196,12 @@ namespace Netnr.ResponseFramework.Application.Services
             /// <summary>
             /// 缓存前缀
             /// </summary>
-            public static string Mck = "CellMapping_";
+            public static string Mck { get; set; } = "CellMapping_";
 
             /// <summary>
             /// 缓存过期时间（单位：秒）
             /// </summary>
-            public static int Mce = 300;
+            public static int Mce { get; set; } = 300;
 
             /// <summary>
             /// 字典映射转换

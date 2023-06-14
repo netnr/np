@@ -3,7 +3,6 @@ import { nrcBase } from "../../../../frame/nrcBase";
 import { nrcFile } from "../../../../frame/nrcFile";
 import { nrVary } from "../../nrVary";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
-import { nrcRely } from "../../../../frame/nrcRely";
 
 let nrPage = {
     pathname: "/ss/base64",

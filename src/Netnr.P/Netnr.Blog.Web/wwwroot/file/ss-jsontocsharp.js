@@ -6,7 +6,7 @@ let jtc = {
     //配置
     config: {
         notes: true,//带注释
-        indent: 6,//间隙
+        indent: 4,//间隙
         typeMapStringToDateTime: true,//类型映射，string时，是时间，则对应datetime
         bigHump: true,//大驼峰
         withPropertyName: false, //属性名

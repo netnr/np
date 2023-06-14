@@ -1,5 +1,4 @@
 ﻿using ImageMagick;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Netnr.Demo.Controllers.GraphDemo;
 

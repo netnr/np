@@ -43,7 +43,11 @@ public class EnumTo
         /// <summary>
         /// 达梦
         /// </summary>
-        DM
+        Dm,
+        /// <summary>
+        /// ClickHouse
+        /// </summary>
+        ClickHouse
     }
 
     /// <summary>

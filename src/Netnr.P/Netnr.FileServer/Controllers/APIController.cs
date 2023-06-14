@@ -28,7 +28,7 @@ namespace Netnr.FileServer.Controllers
                 {
                     vm.Msg = "owner 必填，仅为字母、数字";
                 }
-                else if (owner.ToLower() == AppTo.GetValue("StaticResource:TmpDir").ToLower())
+                else if (owner.Equals(AppTo.GetValue("StaticResource:TmpDir"), StringComparison.OrdinalIgnoreCase))
                 {
                     vm.Msg = "owner 与临时目录冲突";
                 }

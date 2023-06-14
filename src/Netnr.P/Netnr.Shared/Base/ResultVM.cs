@@ -141,8 +141,7 @@ public class ResultVM
     /// <param name="ex"></param>
     public void Set(Exception ex)
     {
-        Debug.WriteLine(ex);
-        Console.WriteLine(ex);
+        ConsoleTo.Title("Exception", ex);
         Set(EnumTo.RTag.exception);
         Msg = ex.ToJson();
     }
@@ -150,15 +149,15 @@ public class ResultVM
     /// <summary>
     /// 通用的异常处理
     /// </summary>
-    /// <param name="func"></param>
+    /// <param name="resTry"></param>
     /// <returns></returns>
-    public static ResultVM Try(Func<ResultVM, ResultVM> func)
+    public static async Task<ResultVM> Try(Func<ResultVM, Task<ResultVM>> resTry)
     {
         var vm = new ResultVM();
 
         try
         {
-            vm = func.Invoke(vm);
+            vm = await resTry.Invoke(vm);
         }
         catch (Exception ex)
         {

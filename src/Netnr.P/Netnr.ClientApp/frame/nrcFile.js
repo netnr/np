@@ -37,14 +37,16 @@ let nrcFile = {
 
         //粘贴
         document.addEventListener('paste', async function (event) {
-            let items = event.clipboardData.items;
-            let files = [];
-            for (let index = 0; index < items.length; index++) {
-                let blob = items[index].getAsFile();
-                blob && files.push(blob);
-            }
-            if (files.length) {
-                await fn(files, 'paste');
+            if (!['INPUT', 'TEXTAREA'].includes(event.target.nodeName)) {
+                let items = event.clipboardData.items;
+                let files = [];
+                for (let index = 0; index < items.length; index++) {
+                    let blob = items[index].getAsFile();
+                    blob && files.push(blob);
+                }
+                if (files.length) {
+                    await fn(files, 'paste');
+                }
             }
         })
     },

@@ -4,10 +4,10 @@ namespace Netnr.DataX
 {
     class Program
     {
-        static void Main()
+        static async Task Main()
         {
-            ReadyTo.EncodingReg();
-            ReadyTo.LegacyTimestamp();
+            BaseTo.ReadyEncoding();
+            BaseTo.ReadyLegacyTimestamp();
 
             //git bash
             if (Console.Out.Encoding.CodePage == 65001)
@@ -16,18 +16,18 @@ namespace Netnr.DataX
             }
             else
             {
-                Console.OutputEncoding = GlobalTo.IsWindows ? Encoding.Unicode : Encoding.UTF8;
+                Console.OutputEncoding = CmdTo.IsWindows ? Encoding.Unicode : Encoding.UTF8;
             }
 
             //参数模式（静默）
-            if (GlobalTo.IsStartWithArgs)
+            if (BaseTo.IsWithArgs)
             {
-                MenuSilenceService.Run();
+                await DXService.RunOfSilence();
             }
             else
             {
-                Console.Title = $"{ConfigInit.ShortName}({MethodBase.GetCurrentMethod().DeclaringType.Namespace}) v{ConfigInit.Version}";
-                DXService.InvokeMenu(typeof(MenuMainService));
+                Console.Title = $"{ConfigInit.ShortName}({MethodBase.GetCurrentMethod().DeclaringType.Namespace}) v{BaseTo.Version}";
+                await DXService.RunOfConsole();
             }
         }
     }

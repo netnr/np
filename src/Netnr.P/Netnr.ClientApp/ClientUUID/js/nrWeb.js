@@ -25,9 +25,9 @@ let nrWeb = {
         Object.assign(window, { bootstrap, nrcBase, nrStorage, nrApp, nrWeb, nrVary });
 
         //存储初始化
-        nrStorage.localforage = await new nrcIndexedDB().init({ name: "nr-cache" });
+        nrStorage.localforage = await new nrcIndexedDB({ name: "nr-cache" }).init();
         //用户实例
-        nrStorage.instanceUser = await new nrcIndexedDB().init({ name: "nr-user" });
+        nrStorage.instanceUser = await new nrcIndexedDB({ name: "nr-user" }).init();
 
         //渲染
         await nrWeb.render();

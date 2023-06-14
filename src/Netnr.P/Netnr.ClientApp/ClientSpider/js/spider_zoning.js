@@ -351,11 +351,11 @@
 
 //参数配置
 sz.config = {
-    //下载名称：统计用区划和城乡划分代码 http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/
+    //下载名称：统计用区划和城乡划分代码 http://www.stats.gov.cn/sj/
     fileName: "stats-zoning",
 
     //索引目录
-    indexList: "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022/index.html",
+    indexList: "http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2022/index.html",
     //最大深度（1-5）
     maxDeep: 5,
     //抓指定编码，为空时抓所有

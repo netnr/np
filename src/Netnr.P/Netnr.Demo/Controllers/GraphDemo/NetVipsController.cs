@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NetVips;
+﻿using NetVips;
 
 namespace Netnr.Demo.Controllers.GraphDemo;
 

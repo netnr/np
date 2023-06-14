@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
-
-namespace Netnr.Demo.Controllers
+﻿namespace Netnr.Demo.Controllers
 {
     public class HomeController : Controller
     {

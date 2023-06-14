@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using Xunit;
 
 namespace Netnr.Test
@@ -15,22 +17,33 @@ namespace Netnr.Test
             foreach (var ni in nis)
             {
                 Debug.WriteLine(ni.ToJson(true));
-                Debug.WriteLine(ni.GetIPStatistics().ToJson(true));
 
                 var ipStats = ni.GetIPStatistics();
+                Debug.WriteLine(ipStats.ToJson(true));
 
-                var dic = new Dictionary<string, object>
+                var dict = new Dictionary<string, object>
                 {
                     { "Bytes Sent", ParsingTo.FormatByteSize(ipStats.BytesSent) },
                     { "Bytes Received", ParsingTo.FormatByteSize(ipStats.BytesReceived) },
-                    { "PhysicalAddress(MAC)", ni.GetPhysicalAddress() },
+                    { "PhysicalAddress(MAC)", ni.GetPhysicalAddress() }
                 };
-                foreach (var key in dic.Keys)
+                foreach (var key in dict.Keys)
                 {
-                    Debug.WriteLine($"{key}: {dic[key]}");
+                    Debug.WriteLine($"{key}: {dict[key]}");
                 }
 
                 Debug.WriteLine("\r\n");
+            }
+        }
+
+        [Fact]
+        public void IPGlobalProp()
+        {
+            var properties = IPGlobalProperties.GetIPGlobalProperties();
+            var tcpListen = properties.GetActiveTcpListeners();
+            foreach (var item in tcpListen)
+            {
+                Debug.WriteLine($"{item.Address}{item.Port}");
             }
         }
 
@@ -139,7 +152,7 @@ namespace Netnr.Test
         /// </summary>
         [Fact]
         public void GetLocalIPAddress_Internet()
-        {            
+        {
             using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
             socket.Connect("114.114.114.114", 65530);
             IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;

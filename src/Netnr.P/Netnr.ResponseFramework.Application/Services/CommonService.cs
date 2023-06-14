@@ -26,7 +26,7 @@ namespace Netnr.ResponseFramework.Application.Services
                 var sort = listSort[i];
                 var order = i < listOrder.Count ? listOrder[i] : "asc";
 
-                var property = typeof(T).GetProperties().Where(x => x.Name.ToLower() == sort.ToLower()).First();
+                var property = typeof(T).GetProperties().Where(x => x.Name.Equals(sort, StringComparison.OrdinalIgnoreCase)).First();
 
                 var parameter = Expression.Parameter(typeof(T), "p");
                 var propertyAccess = Expression.MakeMemberAccess(parameter, property);
@@ -282,7 +282,7 @@ namespace Netnr.ResponseFramework.Application.Services
             var ia = false;
 
             //是配置的菜单
-            var menuMo = QuerySysMenuList(x => x.SmUrl?.ToLower() == url.ToLower()).FirstOrDefault();
+            var menuMo = QuerySysMenuList(x => url.Equals(x.SmUrl, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
             if (menuMo != null)
             {
                 //检测该角色是否勾选菜单

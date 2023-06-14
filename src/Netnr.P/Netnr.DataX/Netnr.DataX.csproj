@@ -30,6 +30,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Application\MenuMainService.cs" />
+	  <Compile Remove="Application\MenuSilenceService.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="..\..\..\docs\Netnr.DataX.md"></None>
 		<None Update="ud\config.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -38,19 +43,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<TrimmableAssembly Include="System.StubHelpers.InterfaceMarshaler" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
-		<PackageReference Include="MiniExcel" Version="1.30.2" />
+		<PackageReference Include="ClickHouse.Client" Version="6.6.0" />
+		<PackageReference Include="Hardware.Info" Version="11.1.0" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.7" />
+		<PackageReference Include="MiniExcel" Version="1.31.0" />
 		<PackageReference Include="MySqlConnector" Version="2.3.0-beta.1" />
-		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.90" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
-		<PackageReference Include="Npgsql" Version="7.0.2" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.100" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+		<PackageReference Include="Npgsql" Version="7.0.4" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
+		<ProjectReference Include="..\Netnr.IPQuery\Netnr.IPQuery.csproj" />
+		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -15,7 +15,6 @@ CmdTo.cs | 执行命令，支持 Windows、Linux
 ConsoleTo.cs | 输出日志、错误信息
 Extensions.cs | 常用方法拓展
 FileTo.cs | 读写文件
-GlobalTo.cs | 全局对象
 HttpTo.cs | HTTP 请求（GET、POST 等，可设置 `HttpWebRequest` 对象）
 LockTo.cs | 锁
 MailTo.cs | 邮件
@@ -27,5 +26,6 @@ RandomTo.cs | 生成随机码（验证码）
 Snowflake53To.cs | 雪花 ID （兼容 JS）
 SnowflakeTo.cs | 雪花 ID
 SystemStatusTo.cs | 系统状态信息
+TextMiningTo.cs | 文本挖掘
 UniqueTo.cs | 生成唯一的标识（GUID 转成 long）
 ZipTo.cs | ZIP 压缩、解压缩

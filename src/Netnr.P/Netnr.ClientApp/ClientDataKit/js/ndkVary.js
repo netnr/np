@@ -2,7 +2,6 @@ import { ndkI18n } from "./ndkI18n";
 
 // 变量
 var ndkVary = {
-    version: "1.1.4",
     name: "NDK",
 
     theme: "light", //主题 light dark
@@ -131,7 +130,7 @@ var ndkVary = {
 
     apiServer: location.origin, //指定接口服务
 
-    apiServiceStatus: "/DK/ServiceStatus", // 服务状态检测 200
+    apiServiceStatus: "/DK/ServiceStatus", // 服务状态检测 204
     apiGetDatabaseName: "/DK/GetDatabaseName",
     apiGetDatabaseInfo: "/DK/GetDatabase",
     apiGetTable: "/DK/GetTable",

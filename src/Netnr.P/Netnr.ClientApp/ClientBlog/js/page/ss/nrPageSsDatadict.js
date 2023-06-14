@@ -1,8 +1,8 @@
 import { nrcBase } from "../../../../frame/nrcBase";
 import { nrGrid } from "../../../../frame/nrGrid";
 import { nrStorage } from "../../../../frame/nrStorage";
-import { nrVary } from "../../nrVary";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
+import { nrVary } from "../../nrVary";
 import { nrWeb } from "../../nrWeb";
 
 let nrPage = {

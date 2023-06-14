@@ -17,7 +17,7 @@
             var listBtn = new List<SysButton>();
 
             //根据路由反查页面对应的菜单
-            var moMenu = CommonService.QuerySysMenuList(x => x.SmUrl?.ToLower() == current_url.ToLower()).FirstOrDefault();
+            var moMenu = CommonService.QuerySysMenuList(x => current_url.Equals(x.SmUrl, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
             if (moMenu != null)
             {
                 //登录用户的角色信息

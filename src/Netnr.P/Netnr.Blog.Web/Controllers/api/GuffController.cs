@@ -84,9 +84,10 @@
         /// <param name="id">ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM Detail(string id)
+        public async Task<ResultVM> Detail(string id)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
@@ -109,7 +110,7 @@
                                     UconnTargetId = c1 == null ? null : c1.UconnTargetId,
                                     b.Nickname
                                 };
-                    var qm = query.FirstOrDefault();
+                    var qm = await query.FirstOrDefaultAsync();
                     if (qm == null)
                     {
                         vm.Set(EnumTo.RTag.invalid);
@@ -121,7 +122,7 @@
                             // 阅读 +1
                             qm.a.GrReadNum += 1;
                             db.Update(qm.a);
-                            db.SaveChanges();
+                            await db.SaveChangesAsync();
 
                             qm.a.Spare1 = string.IsNullOrEmpty(qm.UconnTargetId) ? "" : "laud";
                             qm.a.Spare2 = (uid == qm.a.Uid) ? "owner" : "";
@@ -137,9 +138,13 @@
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -300,9 +305,10 @@
         /// <param name="id">ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM Connection(string type, int ac, string id)
+        public async Task<ResultVM> Connection(string type, int ac, string id)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
                 var uinfo = IdentityService.Get(HttpContext);
 
@@ -324,7 +330,7 @@
                 }
                 else
                 {
-                    var currMo = db.GuffRecord.Find(id);
+                    var currMo = await db.GuffRecord.FindAsync(id);
 
                     if (currMo == null)
                     {
@@ -337,7 +343,7 @@
                         {
                             case "add":
                                 {
-                                    if (db.UserConnection.Any(x => x.Uid == uinfo.UserId && x.UconnTargetType == ctype && x.UconnTargetId == id && x.UconnAction == ac))
+                                    if (await db.UserConnection.AnyAsync(x => x.Uid == uinfo.UserId && x.UconnTargetType == ctype && x.UconnTargetId == id && x.UconnAction == ac))
                                     {
                                         vm.Set(EnumTo.RTag.exist);
                                     }
@@ -354,7 +360,7 @@
                                             UconnCreateTime = DateTime.Now
                                         };
 
-                                        db.Add(ucmo);
+                                        await db.AddAsync(ucmo);
 
                                         switch (ac)
                                         {
@@ -367,7 +373,7 @@
                                         }
                                         db.Update(currMo);
 
-                                        int num = db.SaveChanges();
+                                        int num = await db.SaveChangesAsync();
 
                                         vm.Set(num > 0);
                                     }
@@ -376,7 +382,7 @@
 
                             case "cancel":
                                 {
-                                    var curruc = db.UserConnection.FirstOrDefault(x => x.Uid == uinfo.UserId && x.UconnTargetType == ctype && x.UconnTargetId == id && x.UconnAction == ac);
+                                    var curruc = await db.UserConnection.FirstOrDefaultAsync(x => x.Uid == uinfo.UserId && x.UconnTargetType == ctype && x.UconnTargetId == id && x.UconnAction == ac);
                                     if (curruc == null)
                                     {
                                         vm.Set(EnumTo.RTag.invalid);
@@ -396,7 +402,7 @@
                                         }
                                         db.Update(currMo);
 
-                                        int num = db.SaveChanges();
+                                        int num = await db.SaveChangesAsync();
 
                                         vm.Set(num > 0);
                                     }
@@ -405,9 +411,13 @@
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -527,9 +537,10 @@
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM Delete(string id)
+        public async Task<ResultVM> Delete(string id)
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
@@ -540,7 +551,7 @@
                     var uinfo = IdentityService.Get(HttpContext);
                     if (uinfo != null)
                     {
-                        var model = db.GuffRecord.Find(id);
+                        var model = await db.GuffRecord.FindAsync(id);
                         if (model == null)
                         {
                             vm.Set(EnumTo.RTag.invalid);
@@ -558,7 +569,7 @@
                             else
                             {
                                 db.Remove(model);
-                                int num = db.SaveChanges();
+                                int num = await db.SaveChangesAsync();
 
                                 vm.Set(num > 0);
                             }
@@ -569,9 +580,13 @@
                         vm.Set(EnumTo.RTag.unauthorized);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
 
         /// <summary>
@@ -580,18 +595,23 @@
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 60)]
-        public ResultVM HotTag()
+        public async Task<ResultVM> HotTag()
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+            try
             {
-                var listTags = db.GuffRecord.OrderByDescending(x => x.GrCreateTime).Select(x => x.GrTag).Take(1000).ToList();
+                var listTags = await db.GuffRecord.OrderByDescending(x => x.GrCreateTime).Select(x => x.GrTag).Take(1000).ToListAsync();
                 var orderTags = string.Join(",", listTags).Split(',').GroupBy(x => x).OrderByDescending(x => x.Count()).Select(x => x.Key).Take(20).ToList();
 
                 vm.Data = orderTags;
                 vm.Set(EnumTo.RTag.success);
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
     }
 }

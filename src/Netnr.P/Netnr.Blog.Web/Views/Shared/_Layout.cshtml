@@ -10,6 +10,7 @@
     var canav = "account/,mix/terms".Split(',');
     var cafooter = "account/,admin/,home/completeinfo,home/write,storage/,ss/,user/write,user/message,user/verify,user/setting,mix/terms,note/,run/index,run/code,run/edit,gist/index,gist/code,gist/edit,draw/index,draw/code,draw/edit,doc/index,doc/edit,doc/item,doc/catalog,guff/code,guff/index".Split(',');
 
+    var grayStyle = string.Empty;
     if (ctrl == "ss")
     {
         var navs = ScriptService.NavArray;
@@ -19,10 +20,14 @@
             ViewData["Title"] = $"{item.GetValue("title")}";
         }
     }
+    else
+    {
+        grayStyle = DateTime.Now.ToString("MM-dd") == "04-05" ? "style=\"filter:grayscale(100%)\"" : "";
+    }
 }
 @Html.Raw(QuoteTo.Html("the"))
 <!DOCTYPE html>
-<html lang="zh-cn" data-bs-theme='@theme' class="netnrmd-@theme">
+<html lang="zh-cn" data-bs-theme='@theme' class="netnrmd-@theme" @Html.Raw(grayStyle)>
 <head>
 
     <meta charset="utf-8" />

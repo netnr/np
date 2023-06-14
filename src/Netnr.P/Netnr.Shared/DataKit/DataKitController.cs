@@ -15,29 +15,30 @@ public class DataKitController : Controller
     /// <param name="databaseName"></param>
     /// <param name="dkCall"></param>
     /// <returns></returns>
-    private async Task<ResultVM> Entry(EnumTo.TypeDB tdb, string conn, string databaseName, Func<DataKitTo, object> dkCall)
+    private async Task<ResultVM> Entry(EnumTo.TypeDB tdb, string conn, string databaseName, Func<DataKitTo, Task<object>> dkCall)
     {
         var vm = new ResultVM();
 
         try
         {
-            var dk = DataKitTo.Init(tdb, conn, databaseName);
-            if (dk != null)
+            var connOption = new DbKitConnectionOption
             {
-                //终止请求、终止执行
-                HttpContext.RequestAborted.Register(() =>
-                {
-                    dk.db.CommandAbort();
-                    ConsoleTo.Title("Cancellation Requested");
-                });
+                ConnectionType = tdb,
+                ConnectionString = conn,
+                DatabaseName = databaseName
+            };
 
-                vm.Data = await Task.Run(() => dkCall(dk));
-                vm.Set(EnumTo.RTag.success);
-            }
-            else
+            var dk = DataKitTo.CreateDkInstance(connOption);
+
+            //终止请求、终止执行
+            HttpContext.RequestAborted.Register(() =>
             {
-                vm.Set(EnumTo.RTag.error);
-            }
+                dk.DbInstance.CommandAbort();
+                ConsoleTo.Title("Cancellation Requested");
+            });
+
+            vm.Data = await dkCall.Invoke(dk);
+            vm.Set(EnumTo.RTag.success);
         }
         catch (Exception ex)
         {
@@ -48,11 +49,11 @@ public class DataKitController : Controller
     }
 
     /// <summary>
-    /// 服务状态
+    /// 服务状态 204
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public IActionResult ServiceStatus() => Ok();
+    public IActionResult ServiceStatus() => NoContent();
 
     /// <summary>
     /// 获取库名
@@ -63,7 +64,7 @@ public class DataKitController : Controller
     [HttpGet]
     public async Task<ResultVM> GetDatabaseName(EnumTo.TypeDB tdb, string conn)
     {
-        return await Entry(tdb, conn, null, dk => dk.GetDatabaseName());
+        return await Entry(tdb, conn, null, async dk => await dk.GetDatabaseName());
     }
 
     /// <summary>
@@ -76,7 +77,7 @@ public class DataKitController : Controller
     [HttpGet]
     public async Task<ResultVM> GetDatabase(EnumTo.TypeDB tdb, string conn, string filterDatabaseName = null)
     {
-        return await Entry(tdb, conn, null, dk => dk.GetDatabase(filterDatabaseName));
+        return await Entry(tdb, conn, null, async dk => await dk.GetDatabase(filterDatabaseName));
     }
 
     /// <summary>
@@ -90,7 +91,7 @@ public class DataKitController : Controller
     [HttpGet]
     public async Task<ResultVM> GetTable(EnumTo.TypeDB tdb, string conn, string schemaName = null, string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, dk => dk.GetTable(schemaName, databaseName));
+        return await Entry(tdb, conn, databaseName, async dk => await dk.GetTable(schemaName, databaseName));
     }
 
     /// <summary>
@@ -105,7 +106,7 @@ public class DataKitController : Controller
     [HttpGet]
     public async Task<ResultVM> GetTableDDL(EnumTo.TypeDB tdb, string conn, string tableName, string schemaName = null, string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, dk => dk.GetTableDDL(tableName, schemaName, databaseName));
+        return await Entry(tdb, conn, databaseName, async dk => await dk.GetTableDDL(tableName, schemaName, databaseName));
     }
 
     /// <summary>
@@ -119,7 +120,7 @@ public class DataKitController : Controller
     [HttpPost]
     public async Task<ResultVM> GetColumn([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string filterSchemaNameTableName = null, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, dk => dk.GetColumn(filterSchemaNameTableName, databaseName));
+        return await Entry(tdb, conn, databaseName, async dk => await dk.GetColumn(filterSchemaNameTableName, databaseName));
     }
 
     /// <summary>
@@ -135,7 +136,7 @@ public class DataKitController : Controller
     [HttpPost]
     public async Task<ResultVM> SetTableComment([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string tableComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, dk => dk.SetTableComment(tableName, tableComment, schemaName, databaseName));
+        return await Entry(tdb, conn, databaseName, async dk => await dk.SetTableComment(tableName, tableComment, schemaName, databaseName));
     }
 
     /// <summary>
@@ -152,7 +153,7 @@ public class DataKitController : Controller
     [HttpPost]
     public async Task<ResultVM> SetColumnComment([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string columnName, [FromForm] string columnComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, dk => dk.SetColumnComment(tableName, columnName, columnComment, schemaName, databaseName));
+        return await Entry(tdb, conn, databaseName, async dk => await dk.SetColumnComment(tableName, columnName, columnComment, schemaName, databaseName));
     }
 
     /// <summary>
@@ -166,7 +167,7 @@ public class DataKitController : Controller
     [HttpPost]
     public async Task<ResultVM> ExecuteSql([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string sql, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, dk => dk.ExecuteSql(sql));
+        return await Entry(tdb, conn, databaseName, async dk => await dk.ExecuteSql(sql));
     }
 }
 

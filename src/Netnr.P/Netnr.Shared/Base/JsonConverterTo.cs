@@ -360,15 +360,77 @@ public class JsonConverterTo
         public override void Write(Utf8JsonWriter writer, IPEndPoint value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("AddressFamily");
-            writer.WriteStringValue(value.AddressFamily.ToString());
-            writer.WritePropertyName("Address");
-            writer.WriteStringValue(value.Address.ToString());
-            writer.WritePropertyName("Port");
-            writer.WriteNumberValue(value.Port);
+            writer.WriteString("AddressFamily", value.AddressFamily.ToString());
+            writer.WriteString("Address", value.Address.ToString());
+            writer.WriteNumber("Port", value.Port);
             writer.WriteEndObject();
         }
     }
+
+    /// <summary>
+    /// DirectoryInfo
+    /// </summary>
+    public class DirectoryInfoJsonConverter : JsonConverter<DirectoryInfo>
+    {
+        /// <summary>
+        /// 读取
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="typeToConvert"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public override DirectoryInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using var jsonDoc = JsonDocument.ParseValue(ref reader);
+            JsonElement rootElement = jsonDoc.RootElement;
+
+            var fullName = rootElement.GetProperty("FullName").ToString();
+            return new DirectoryInfo(fullName);
+        }
+
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="options"></param>
+        public override void Write(Utf8JsonWriter writer, DirectoryInfo value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("Attributes", value.Attributes.ToString());
+            writer.WriteString("CreationTime", value.CreationTime);
+            writer.WriteString("CreationTimeUtc", value.CreationTimeUtc);
+            writer.WriteBoolean("Exists", value.Exists);
+            writer.WriteString("Extension", value.Extension);
+            writer.WriteString("FullName", value.FullName);
+            writer.WriteString("LastAccessTime", value.LastAccessTime);
+            writer.WriteString("LastAccessTimeUtc", value.LastAccessTimeUtc);
+            writer.WriteString("LastWriteTime", value.LastWriteTime);
+            writer.WriteString("LastWriteTimeUtc", value.LastWriteTimeUtc);
+            writer.WriteString("LinkTarget", value.LinkTarget);
+            writer.WriteString("Name", value.Name);
+            writer.WriteString("UnixFileMode", value.UnixFileMode.ToString());
+            writer.WriteEndObject();
+        }
+    }
+
+    /// <summary>
+    /// IntPtr
+    /// </summary>
+    public class IntPtrJsonConverter : JsonConverter<IntPtr>
+    {
+        public override IntPtr Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null) return IntPtr.Zero;
+            return new IntPtr(reader.GetInt64());
+        }
+
+        public override void Write(Utf8JsonWriter writer, IntPtr value, JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue(value);
+        }
+    }
+
 
     /// <summary>
     /// 构建 JSON 序列化选项
@@ -400,6 +462,8 @@ public class JsonConverterTo
                 new DataSetJsonConverter(), //数据集格式化
                 new IPAddressJsonConverter(), //IPAddress
                 new IPEndPointJsonConverter(), //IPEndPoint
+                new DirectoryInfoJsonConverter(), //DirectoryInfo
+                new IntPtrJsonConverter(), //IntPtr
             }
         };
 

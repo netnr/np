@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SkiaSharp;
+﻿using SkiaSharp;
 using SkiaSharp.QrCode;
 
 namespace Netnr.Demo.Controllers.GraphDemo;
@@ -195,8 +194,7 @@ public class SkiaSharpController : Controller
         {
             ext = "Jpeg";
         }
-        Enum.TryParse(ext, true, out SKEncodedImageFormat eif);
-
+        var eif = ext.DeEnum<SKEncodedImageFormat>();
         var data = image.Encode(eif, quality);
 
         return data.ToArray();
@@ -241,8 +239,7 @@ public class SkiaSharpController : Controller
         {
             ext = "Jpeg";
         }
-        Enum.TryParse(ext, true, out SKEncodedImageFormat eif);
-
+        var eif = ext.DeEnum<SKEncodedImageFormat>();
         var data = image.Encode(eif, 100);
 
         return data.ToArray();

@@ -191,24 +191,20 @@ var ndkFunction = {
     formatNull: () => `<em style="color:var(--sl-color-neutral-400)">(Null)</em>`,
 
     /* 浏览器通知 */
-    notify: (title, options) => {
+    notify: async (title, options) => {
         if (window.Notification) {
-            if (Notification.permission === 'granted') {
+            let permission = Notification.permission;
+            if (permission != 'granted' && permission != 'denied') {
+                permission = await Notification.requestPermission();
+            }
+
+            if (permission == 'granted') {
                 var notification = new Notification(title, options);
+                
                 notification.onclick = function () {
                     window.focus();
                     notification.close();
                 };
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission(function (permission) {
-                    if (permission === 'granted') {
-                        var notification = new Notification(title, options);
-                        notification.onclick = function () {
-                            window.focus();
-                            notification.close();
-                        };
-                    }
-                });
             }
         }
     },

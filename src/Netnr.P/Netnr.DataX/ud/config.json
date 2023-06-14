@@ -26,7 +26,7 @@
     },
     {
       "ConnectionType": "Oracle",
-      "ConnectionString": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EE.Oracle.Docker)));User Id=CQSME;Password=123",
+      "ConnectionString": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQSME;Password=Abc1230..",
       "ConnectionRemark": "local Oracle CQSME"
     }
   ],
@@ -91,7 +91,7 @@
         // 读取数据库名，可选（默认连接配置的数据库名）
         "ReadDatabaseName": "netnr",
         //导出类型（仅数据：dataOnly；结构及数据：all）
-        "Type": "all",
+        "ExportType": "all",
         //导出包完整路径
         "PackagePath": "~/ExportDataTable_{yyyyMMdd_HHmmss}.zip",
         //读取表数据SQL（可带模式名 SchemaName，如 dbo.UserInfo）
@@ -108,7 +108,7 @@
         // 读取数据库名，可选（默认连接配置的数据库名）
         "ReadDatabaseName": "netnr",
         //导出类型（仅数据：dataOnly；结构及数据：all）
-        "Type": "all",
+        "ExportType": "dataOnly",
         //导出包完整路径
         "PackagePath": "~/ExportDatabase_{yyyy}{MMdd}.zip",
         //读取表名（可带模式名 SchemaName），可选，默认全表
@@ -121,11 +121,11 @@
         "RefWriteConnectionInfo": "local PostgreSQL",
         // 写入数据库名，可选（默认连接配置的数据库名）
         "WriteDatabaseName": "netnr",
-        // 写入前删除表数据，仅针对导出类型 Type=dataOnly 时
+        // 写入前删除表数据，仅针对导出类型 ExportType=dataOnly 时
         "WriteDeleteData": true,
         //导入包完整路径
         "PackagePath": "~/ExportDatabase_{yyyy}{MMdd}.zip",
-        //读取表 映射 写入表（可带模式名 SchemaName），仅针对导出类型 Type=dataOnly 时，可选
+        //读取表 映射 写入表（可带模式名 SchemaName），仅针对导出类型 ExportType=dataOnly 时，可选
         "ReadWriteTableMap": {
           "redadTable1": "writeTable1",
           "dbo.redadTable2": "dbo.writeTable2"

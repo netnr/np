@@ -2,8 +2,8 @@ using Netnr;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ReadyTo.EncodingReg();
-ReadyTo.LegacyTimestamp();
+BaseTo.ReadyEncoding();
+BaseTo.ReadyLegacyTimestamp();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().SetJsonConfig();

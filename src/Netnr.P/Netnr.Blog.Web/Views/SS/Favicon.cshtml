@@ -1,0 +1,36 @@
+<div class="@QuoteTo.PanelClass2">
+    <div class="row">
+        <div class="col-12 mb-2">
+            <label class="form-label">选择图片（支持拖拽、粘贴）</label>
+            <input class="nrg-txt-file form-control" type="file" accept="image/*" />
+        </div>
+        <div class="col-12 mb-3">
+            <img class="nrg-img-preview img-thumbnail" style="max-height:62vh;max-width:62vw;" src="/favicon.ico" alt="preview">
+        </div>
+        <div class="col-auto mb-3">
+            <div class="input-group">
+                <span class="input-group-text">选择尺寸</span>
+                <select class="nrg-se-size form-select">
+                    <option value="16">16x16</option>
+                    <option value="32">32x32</option>
+                    <option value="64">64x64</option>
+                    <option value="128">128x128</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-auto mb-3">
+            <button class="nrg-btn-download btn btn-warning">生成并下载 ICO</button>
+        </div>
+        <div class="col-12 mb-3 mt-5">
+            <p>在 head 中引入</p>
+            <p>
+                <b>HTML5（新 推荐）</b><br />
+                <code>&#60;link rel="icon" href="/favicon.ico"&#62;</code>
+            </p>
+            <p>
+                <b>IE（旧）</b><br />
+                <code>&#60;link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /&#62;</code>
+            </p>
+        </div>
+    </div>
+</div>

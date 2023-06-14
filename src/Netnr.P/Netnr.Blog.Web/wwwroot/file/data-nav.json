@@ -9,12 +9,6 @@
         "remark": "源于网络"
       },
       {
-        "url": "/free",
-        "icon": "free",
-        "title": "免费",
-        "remark": "免费的资源"
-      },
-      {
         "url": "/ps",
         "icon": "ps",
         "title": "Photoshop",
@@ -295,6 +289,12 @@
         "icon": "grid",
         "title": "身份图标",
         "remark": "生成哈希头像"
+      },
+      {
+        "url": "/favicon",
+        "icon": "browser",
+        "title": "favicon 图标",
+        "remark": "站点图标 ico"
       }
     ]
   },
@@ -328,13 +328,6 @@
         "url": "/app/boot/",
         "icon": "boot",
         "title": "站点引导",
-        "target": "_blank"
-      },
-      {
-        "url": "/app/fa/",
-        "icon": "fa",
-        "title": "Font-Awesome",
-        "remark": "Font-Awesome 4 镜像",
         "target": "_blank"
       },
       {

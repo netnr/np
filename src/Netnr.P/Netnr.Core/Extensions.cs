@@ -4,12 +4,16 @@ using System.Xml;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Collections;
 
 namespace Netnr;
 
@@ -162,7 +166,7 @@ public static partial class Extensions
             {
                 object drValue = dr[dc.ColumnName];
 
-                var pi = pis.FirstOrDefault(x => x.Name.ToLower() == dc.ColumnName.ToLower());
+                var pi = pis.FirstOrDefault(x => x.Name.Equals(dc.ColumnName, StringComparison.OrdinalIgnoreCase));
                 if (pi != null)
                 {
                     Type type = pi.PropertyType;
@@ -222,40 +226,28 @@ public static partial class Extensions
     /// </summary>
     /// <param name="value">内容</param>
     /// <returns></returns>
-    public static string ToUrlEncode(this string value)
-    {
-        return System.Net.WebUtility.UrlEncode(value);
-    }
+    public static string ToUrlEncode(this string value) => WebUtility.UrlEncode(value);
 
     /// <summary>
     /// URL 解码
     /// </summary>
     /// <param name="value">内容</param>
     /// <returns></returns>
-    public static string ToUrlDecode(this string value)
-    {
-        return System.Net.WebUtility.UrlDecode(value);
-    }
+    public static string ToUrlDecode(this string value) => WebUtility.UrlDecode(value);
 
     /// <summary>
     /// HTML 编码
     /// </summary>
     /// <param name="value">内容</param>
     /// <returns></returns>
-    public static string ToHtmlEncode(this string value)
-    {
-        return System.Net.WebUtility.HtmlEncode(value);
-    }
+    public static string ToHtmlEncode(this string value) => WebUtility.HtmlEncode(value);
 
     /// <summary>
     /// HTML 解码
     /// </summary>
     /// <param name="value">内容</param>
     /// <returns></returns>
-    public static string ToHtmlDecode(this string value)
-    {
-        return System.Net.WebUtility.HtmlDecode(value);
-    }
+    public static string ToHtmlDecode(this string value) => WebUtility.HtmlDecode(value);
 
     /// <summary>
     /// 等待获取异步结果（转同步）
@@ -265,17 +257,20 @@ public static partial class Extensions
     /// <returns></returns>
     public static T ToResult<T>(this Task<T> task) => task.GetAwaiter().GetResult();
 
+#if NETSTANDARD2_0
     /// <summary>
     /// 按多个字符串分割
     /// </summary>
     /// <param name="value"></param>
-    /// <param name="separator"></param>
+    /// <param name="separator">分隔符</param>
+    /// <param name="options">配置</param>
     /// <returns></returns>
-    public static string[] Split(this string value, string separator)
+    public static string[] Split(this string value, string separator, StringSplitOptions options = StringSplitOptions.None)
     {
-        var result = value.Split(new[] { separator }, StringSplitOptions.None);
+        var result = value.Split(new[] { separator }, options);
         return result;
     }
+#endif
 
     /// <summary>
     /// 转 Byte
@@ -337,6 +332,68 @@ public static partial class Extensions
     public static Stream ToStream(this byte[] bytes) => new MemoryStream(bytes) { Position = 0 };
 
     /// <summary>
+    /// 复制流带进度
+    /// </summary>
+    /// <param name="source">源</param>
+    /// <param name="target">写入流</param>
+    /// <param name="progress">进度，单位：byte</param>
+    /// <returns></returns>
+    public static async Task CopyToAsync(this Stream source, Stream target, Action<long> progress = null)
+    {
+        int readLength;
+        long receiveLength = 0;
+        var buffer = new byte[81920];
+
+        while ((readLength = await source.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) != 0)
+        {
+            await target.WriteAsync(buffer, 0, readLength).ConfigureAwait(false);
+            receiveLength += readLength;
+            progress?.Invoke(receiveLength);
+        }
+    }
+
+    /// <summary>
+    /// 下载带进度
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="url"></param>
+    /// <param name="saveStream"></param>
+    /// <param name="receiveAndTotalLength"></param>
+    /// <returns></returns>
+    public static async Task DownloadAsync(this HttpClient client, string url, Stream saveStream, Action<long, long?> receiveAndTotalLength = null)
+    {
+        using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+        using var download = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+        var contentLength = response.Content.Headers.ContentLength; //total
+        if (receiveAndTotalLength == null)
+        {
+            await download.CopyToAsync(saveStream);
+        }
+        else
+        {
+            await download.CopyToAsync(saveStream, progress: (p) =>
+            {
+                receiveAndTotalLength.Invoke(p, contentLength);
+            });
+        }
+    }
+
+    /// <summary>
+    /// 下载带进度
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="url"></param>
+    /// <param name="savePath">保存物理路径，文件夹需存在</param>
+    /// <param name="receiveAndTotalLength"></param>
+    /// <returns></returns>
+    public static async Task DownloadAsync(this HttpClient client, string url, string savePath, Action<long, long?> receiveAndTotalLength = null)
+    {
+        var saveStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None);
+        await DownloadAsync(client, url, saveStream, receiveAndTotalLength);
+    }
+
+    /// <summary>
     /// Base64 编码
     /// </summary>
     /// <param name="value">内容</param>
@@ -371,11 +428,51 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// 对象拷贝
+    /// 获取对象属性
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="full">完整的，包含集合</param>
+    /// <returns></returns>
+    public static Dictionary<string, object> ToProps(this object obj, bool full = true)
+    {
+        var dict = new Dictionary<string, object>();
+
+        var pis = obj.GetType().GetProperties();
+        foreach (var pi in pis)
+        {
+            try
+            {
+                if (typeof(ICollection).IsAssignableFrom(pi.PropertyType))
+                {
+                    if (full)
+                    {
+                        var subCollection = (ICollection)pi.GetValue(obj, null);
+                        var subResult = new List<object>();
+                        foreach (var val in subCollection)
+                        {
+                            subResult.Add(val.ToProps());
+                        }
+                        dict.Add(pi.Name, subResult);
+                    }
+                }
+                else
+                {
+                    var val = pi.GetValue(obj, null);
+                    dict.Add(pi.Name, val);
+                }
+            }
+            catch (Exception) { }
+        }
+
+        return dict;
+    }
+
+    /// <summary>
+    /// 深拷贝
     /// </summary>
     /// <param name="target">需要赋值的对象</param>
     /// <param name="source">（读取）源对象</param>
-    public static T ToCopy<T>(this T target, object source) where T : class
+    public static T ToDeepCopy<T>(this T target, object source) where T : class
     {
         var targetPis = target.GetType().GetProperties();
         var sourcePis = source.GetType().GetProperties();
@@ -393,7 +490,7 @@ public static partial class Extensions
                     }
                     else
                     {
-                        targetPi.ToCopy(sourcePiVal);
+                        targetPi.ToDeepCopy(sourcePiVal);
                     }
                     break;
                 }
@@ -440,6 +537,16 @@ public static partial class Extensions
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// 字符串转枚举
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static T DeEnum<T>(this string value)
+    {
+        return (T)Enum.Parse(typeof(T), value, true);
     }
 
     /// <summary>

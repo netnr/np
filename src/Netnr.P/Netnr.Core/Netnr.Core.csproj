@@ -20,6 +20,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="GlobalTo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="..\..\..\docs\Netnr.Core.md">
 		  <Pack>True</Pack>
 		  <PackagePath>\</PackagePath>

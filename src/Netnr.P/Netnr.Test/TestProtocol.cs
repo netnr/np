@@ -86,9 +86,9 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void Protocol_DNS()
+        public async Task Protocol_DNS()
         {
-            var addresses = Dns.GetHostAddresses("zme.ink");
+            var addresses = await Dns.GetHostAddressesAsync("zme.ink");
             Assert.True(addresses.Length > 0);
         }
     }

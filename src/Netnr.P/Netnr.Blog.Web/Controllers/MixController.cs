@@ -18,9 +18,8 @@ namespace Netnr.Blog.Web.Controllers
         /// 服务器状态
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [ResponseCache(Duration = 10)]
+        [HttpGet]
+        [ResponseCache(Duration = 5)]
         public async Task<ResultVM> AboutServerStatus()
         {
             var vm = new ResultVM();
@@ -28,21 +27,26 @@ namespace Netnr.Blog.Web.Controllers
             try
             {
                 var ckey = "SystemStatus";
-                var cval = CacheTo.Get<string>(ckey);
+                var cval = CacheTo.Get<SystemStatusTo>(ckey);
                 if (cval == null)
                 {
-                    var ss = new SystemStatusTo();
-                    cval = await ss.ToView();
-                    CacheTo.Set(ckey, cval, 10, false);
+                    cval = new SystemStatusTo();
+                    await cval.RefreshAll();
+
+                    CacheTo.Set(ckey, cval);
+                }
+                else if ((DateTime.Now - cval.Now).TotalSeconds > 10)
+                {
+                    _ = cval.RefreshAll();
+                    CacheTo.Set(ckey, cval);
                 }
 
-                vm.Data = cval;
+                vm.Data = cval.ToView();
                 vm.Set(EnumTo.RTag.success);
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;

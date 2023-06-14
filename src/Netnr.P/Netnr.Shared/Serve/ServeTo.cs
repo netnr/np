@@ -34,8 +34,6 @@ public class ServeTo
         return null;
     }
 
-    public const string Version = "1.1.0";
-
     public HttpListener Listener;
     public ServeOptions so;
 
@@ -312,7 +310,7 @@ public class ServeTo
                                 var listOut = new List<string>();
 
                                 var ua = request.Headers["User-Agent"]?.ToString();
-                                var isText = ua.StartsWith("curl/") || ua.Contains("WindowsPowerShell/");
+                                var isText = string.IsNullOrWhiteSpace(ua) || ua.StartsWith("curl/") || ua.Contains("WindowsPowerShell/");
                                 if (isText != true)
                                 {
                                     listOut.Add($"<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" /><title>Index of {pathname}</title>");
@@ -511,7 +509,7 @@ public class ServeTo
     /// <param name="user_pass"></param>
     public static void FastStart()
     {
-        var title = $"NS(Netnr.Serve) v{Version}";
+        var title = $"NS(Netnr.Serve)";
         Console.Title = title;
 
         var options = new ServeOptions();
@@ -559,27 +557,21 @@ public class ServeTo
         serve.Start();
 
         var url = serve.Listener.Prefixes.First();
-        Console.WriteLine($"\r\nPlease visit {string.Join(" ", serve.Listener.Prefixes)}");
+        Console.WriteLine($"Please visit {string.Join(" ", serve.Listener.Prefixes)}");
         var authMode = string.IsNullOrWhiteSpace(options.Auth) ? "anonymous" : "Basic " + options.Auth;
         Console.WriteLine($"Authorization mode: {authMode}");
-        Console.WriteLine($"Enter \"exit\" stop\r\n");
 
-        string line;
-        while ((line = Console.ReadLine()) != "exit")
+        Console.WriteLine($"\r\n{title}\r\n");
+        Console.WriteLine($"Silent start\r\n--urls {options.Urls} --root {options.Root} --index {options.Index} --404 {options.Error404} --suffix {options.Suffix} --charset {options.Charset} --headers access-control-allow-headers:*||access-control-allow-origin:* --auth user:pass\r\n");
+        Console.WriteLine($"List\r\ncurl {url}\r\ncurl {url} -u user:pass\r\n(iwr {url}).content\r\n");
+        Console.WriteLine($"Download\r\ncurl {url}/file.exe -O\r\niwr {url}/file.exe -outfile file.exe\r\n");
+        Console.WriteLine($"Upload\r\ncurl {url} -T file.ext\r\ncurl {url}dir/rename.ext -T file.ext\r\n");
+        Console.WriteLine($"Delete\r\ncurl {url}file.ext -X delete\r\ncurl {url}dir/?force -X delete\r\niwr {url}file.ext -method delete\r\n");
+
+        var cts = new CancellationTokenSource();
+        while (!cts.Token.IsCancellationRequested)
         {
-            switch (line.ToLower())
-            {
-                default:
-                    {
-                        Console.WriteLine($"{title}\r\n");
-                        Console.WriteLine($"Silent start\r\n--urls {options.Urls} --root {options.Root} --index {options.Index} --404 {options.Error404} --suffix {options.Suffix} --charset {options.Charset} --headers access-control-allow-headers:*||access-control-allow-origin:* --auth user:pass\r\n");
-                        Console.WriteLine($"List\r\ncurl {url}\r\ncurl {url} -u user:pass\r\n(iwr {url}).content\r\n");
-                        Console.WriteLine($"Download\r\ncurl {url}/file.exe -O\r\niwr {url}/file.exe -outfile file.exe\r\n");
-                        Console.WriteLine($"Upload\r\ncurl {url} -T file.ext\r\ncurl {url}dir/rename.ext -T file.ext\r\n");
-                        Console.WriteLine($"Delete\r\ncurl {url}file.ext -X delete\r\ncurl {url}dir/?force -X delete\r\niwr {url}file.ext -method delete\r\n");
-                    }
-                    break;
-            }
+            Thread.Sleep(10000);
         }
 
         serve.Stop();

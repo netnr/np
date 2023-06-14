@@ -909,7 +909,7 @@ public class LoginTo
                     publicUser.UniqueId = userObj.GetValue("user_id");
                     publicUser.Avatar = userObj.GetValue("avatar");
                     publicUser.Nickname = userObj.GetValue("nick_name");
-                    publicUser.Gender = userObj.GetValue("gender").ToLower() == "m" ? 1 : 2;
+                    publicUser.Gender = userObj.GetValue("gender").Equals("m", StringComparison.OrdinalIgnoreCase) ? 1 : 2;
                     publicUser.Location = $"{userObj.GetValue("province")}{userObj.GetValue("city")}";
                 }
                 break;

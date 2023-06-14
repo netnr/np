@@ -146,7 +146,7 @@ namespace Netnr.Test
         [Fact]
         public void CmdTo_1()
         {
-            if (GlobalTo.IsWindows)
+            if (CmdTo.IsWindows)
             {
                 var val1 = CmdTo.Execute("ver");
                 Assert.Empty(val1.CrError);
@@ -301,7 +301,7 @@ namespace Netnr.Test
                 Code = 2,
                 Msg = "msg"
             };
-            var vm2 = new ResultVM().ToCopy(vm1);
+            var vm2 = new ResultVM().ToDeepCopy(vm1);
             Assert.Equal(vm1.Code, vm2.Code);
             Assert.Equal(vm1.Msg, vm2.Msg);
         }
@@ -396,7 +396,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void MailTo_1()
+        public async Task MailTo_1()
         {
             try
             {
@@ -422,7 +422,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void MonitorTo_1_HTTP()
+        public async Task MonitorTo_1_HTTP()
         {
             var url = "https://www.baidu.com";
             var result = await MonitorTo.HTTP(url, HttpMethod.Get);
@@ -440,7 +440,7 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void MonitorTo_3_DNS()
+        public async Task MonitorTo_3_DNS()
         {
             var host = "www.baidu.com";
             var result = await MonitorTo.DNS(host);
@@ -566,21 +566,35 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public async void SystemStatusTo_1()
+        public async Task SystemStatusTo_1()
         {
             var ss = new SystemStatusTo();
-            Assert.NotEmpty(await ss.ToView());
+            await ss.RefreshAll();
+            Assert.NotEmpty(ss.ToView());
             Debug.WriteLine(ss.ToJson(true));
         }
 
         [Fact]
-        public async void SystemStatusTo_2()
+        public async Task SystemStatusTo_2()
         {
             var list1 = await SystemStatusTo.GetAddressList();
             Debug.WriteLine(list1.ToJson(true));
 
             var endPoint = await SystemStatusTo.GetAddressInterNetwork();
             Debug.WriteLine(endPoint.ToJson(true));
+        }
+
+        [Fact]
+        public void TextMiningTo_1()
+        {
+            var sw = Stopwatch.StartNew();
+            var filePath = @"D:\tmp\txt\¡¶Î÷ÓÎ¼Ç¡·.txt";
+
+            var tm = new TextMiningTo();
+            tm.FromFile(filePath);
+
+            Debug.WriteLine(sw.Elapsed);
+            Debug.WriteLine(tm.TopItems().ToJson());
         }
 
         [Fact]

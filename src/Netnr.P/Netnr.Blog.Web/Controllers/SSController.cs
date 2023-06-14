@@ -216,15 +216,6 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 免费
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Free()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// 在线电视
         /// </summary>
         /// <returns></returns>
@@ -436,6 +427,15 @@ namespace Netnr.Blog.Web.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Mind()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 图标
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Favicon()
         {
             return View();
         }

@@ -2,7 +2,7 @@ using Netnr;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ReadyTo.EncodingReg();
+BaseTo.ReadyEncoding();
 
 //（上传）主体大小限制
 builder.SetMaxRequestData();

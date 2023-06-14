@@ -1,7 +1,5 @@
 /*bootstrap*/
 html[data-bs-theme="dark"] {
-    color-scheme: dark;
-
     --bs-heading-color: #cdd9e5;
 }
 
@@ -15,6 +13,6 @@ html[data-bs-theme="dark"] .choices__list--dropdown {
 }
 
 html[data-bs-theme="dark"] .choices__item--selectable.is-highlighted {
-    color: var(--bs-body-bg) !important;
-    background-color: var(--bs-info-text) !important;
+    color: var(--bs-body-color) !important;
+    background-color: var(--bs-light-bg-subtle) !important;
 }

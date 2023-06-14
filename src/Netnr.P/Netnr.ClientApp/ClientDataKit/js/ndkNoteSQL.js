@@ -287,6 +287,15 @@ SELECT a.PARAMETER,a.VALUE GLOBAL_VALUE,b.VALUE SESSION_VALUE FROM v$NLS_PARAMET
   },
   {
     group: 'default',
+    name: "schema",
+    sql: `-- 查询当前连接 Schema
+SELECT SYS_CONTEXT('USERENV','CURRENT_SCHEMA') FROM DUAL;
+-- 修改当前连接 Schema 为 SCOTT
+ALTER SESSION SET CURRENT_SCHEMA=SCOTT`,
+    desc: '数据库名称'
+  },
+  {
+    group: 'default',
     name: "uuid",
     sql: `select rawtohex(sys_guid()) from dual`,
     desc: '生成 GUID'

@@ -7,11 +7,11 @@ let nrEditor = {
      * 资源依赖，默认远程，可重写为本地
      */
     init: () => new Promise((resolve) => {
-        nrcBase.importScript('https://npmcdn.com/monaco-editor@0.36.1/min/vs/loader.js').then(() => {
+        nrcBase.importScript('https://npmcdn.com/monaco-editor@0.39.0/min/vs/loader.js').then(() => {
             nrcBase.amdInit();
 
             window["require"].config({
-                paths: { vs: 'https://npmcdn.com/monaco-editor@0.36.1/min/vs' },
+                paths: { vs: 'https://npmcdn.com/monaco-editor@0.39.0/min/vs' },
                 'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
             });
 

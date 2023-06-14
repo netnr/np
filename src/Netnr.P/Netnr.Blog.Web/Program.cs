@@ -2,32 +2,11 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-ReadyTo.EncodingReg();
-ReadyTo.LegacyTimestamp();
+BaseTo.ReadyEncoding();
+BaseTo.ReadyLegacyTimestamp();
 
 //（上传）主体大小限制
 builder.SetMaxRequestData();
-
-//结巴词典路径
-var jbPath = Path.Combine(AppTo.ContentRootPath, "db/jieba");
-if (!Directory.Exists(jbPath))
-{
-    Directory.CreateDirectory(jbPath);
-    try
-    {
-        var dhost = "https://raw.githubusercontent.com/anderscui/jieba.NET/master/src/Segmenter/Resources/";
-        "prob_trans.json,prob_emit.json,idf.txt,pos_prob_start.json,pos_prob_trans.json,pos_prob_emit.json,char_state_tab.json".Split(',').ToList().ForEach(file =>
-        {
-            var fullPath = Path.Combine(jbPath, file);
-            HttpTo.DownloadSave(dhost + file, fullPath);
-        });
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex);
-    }
-}
-JiebaNet.Segmenter.ConfigManager.ConfigFileBaseDir = jbPath;
 
 //第三方登录
 if (!AppTo.GetValue<bool>("ReadOnly") && AppTo.GetValue<bool?>("OAuthLogin:enable") == true)
@@ -110,7 +89,7 @@ var app = builder.Build();
 app.UseExceptionHandler(options => options.SetExceptionHandler());
 
 // Configure the HTTP request pipeline.
-if (!(GlobalTo.IsDev = app.Environment.IsDevelopment()))
+if (!(BaseTo.IsDev = app.Environment.IsDevelopment()))
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -133,7 +112,7 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine(createScript);
 
         //导入数据库示例数据
-        var vm = new Netnr.Blog.Web.Controllers.ServiceController().DatabaseImport("db/backup_demo.zip");
+        var vm = new Netnr.Blog.Web.Controllers.ServiceController(db).DatabaseImport("db/backup_demo.zip");
         Console.WriteLine(vm.ToJson(true));
     }
 
@@ -143,25 +122,33 @@ using (var scope = app.Services.CreateScope())
     {
         FluentScheduler.JobManager.Initialize();
 
-        var sc = new Netnr.Blog.Web.Controllers.ServiceController();
-
-        //Gist 同步任务
-        FluentScheduler.JobManager.AddJob(() => sc.GistSync(), s =>
-        {
-            s.WithName("Job_GistSync");
-            s.ToRunEvery(8).Hours();
-        });
-
         //处理操作记录
-        FluentScheduler.JobManager.AddJob(() => sc.HandleOperationRecord(), s => s.ToRunEvery(6).Hours());
+        FluentScheduler.JobManager.AddJob(() =>
+        {
+            try
+            {
+                var sc = new Netnr.Blog.Web.Controllers.ServiceController(ContextBaseFactory.CreateDbContext());
+                sc.HandleOperationRecord();
+            }
+            catch (Exception ex)
+            {
+                ConsoleTo.Log(ex, "HandleOperationRecord");
+            }
+        }, s => s.ToRunEvery(6).Hours());
 
         //数据库备份到 Git
-        FluentScheduler.JobManager.AddJob(() => sc.DatabaseBackupToGit(), s => s.ToRunEvery(5).Days().At(16, 16));
-
-        //监控
-        FluentScheduler.JobManager.AddJob(() => sc.Monitor("http"), s => s.ToRunEvery(1).Minutes());
-        FluentScheduler.JobManager.AddJob(() => sc.Monitor("tcp"), s => s.ToRunEvery(1).Minutes());
-        FluentScheduler.JobManager.AddJob(() => sc.Monitor("ssl"), s => s.ToRunEvery(1).Days().At(10, 10));
+        FluentScheduler.JobManager.AddJob(async () =>
+        {
+            try
+            {
+                var sc = new Netnr.Blog.Web.Controllers.ServiceController(ContextBaseFactory.CreateDbContext());
+                await sc.DatabaseBackupToGit();
+            }
+            catch (Exception ex)
+            {
+                ConsoleTo.Log(ex, "DatabaseBackupToGit");
+            }
+        }, s => s.ToRunEvery(3).Days().At(16, 16));
     }
 }
 
@@ -234,8 +221,6 @@ app.Map("/generate_400", () => Results.BadRequest());
 app.Map("/generate_401", () => Results.Unauthorized());
 app.Map("/generate_404", () => Results.NotFound());
 app.Map("/generate_418", () => Results.StatusCode(418));
-
-Console.WriteLine(CommonService.StaticResourcePath("AvatarPath"));
 
 //curl HOST -T file.txt
 if (AppTo.GetValue<bool>("ReadOnly"))

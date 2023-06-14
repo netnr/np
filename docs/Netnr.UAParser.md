@@ -7,17 +7,17 @@ Install-Package Netnr.UAParser
 ```
 
 ### 使用 (Usage)
-```
-var uap = new UAParser.Parsers(userAgent);
+```csharp
+//（首次预编译耗时约 5 秒）
 
-var clientEntity = uap.GetClient();
-var deviceEntity = uap.GetDevice();
-var osEntity = uap.GetOS();
-var botEntity = uap.GetBot();
-```  
+var uap = new UAParsers(userAgent);
+
+var clientModel = uap.GetClient();
+var deviceModel = uap.GetDevice();
+var osModel = uap.GetOS();
+var botModel = uap.GetBot();
+```
 
 ### 附
 正则：<https://github.com/matomo-org/device-detector>  
-对比：<https://github.com/totpero/DeviceDetector.NET>  
-去除详细型号检测，包精简，轻依赖，预加载正则，相对缓存热数据  
-不命中缓存时，一个耗时 300ms 左右，而 DeviceDetector.NET 需要 3s 左右
+去除详细型号检测，包精简，轻依赖，预编译正则，速度快。

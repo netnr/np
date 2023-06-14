@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Netnr.ResponseFramework.Web.Controllers
 {
     /// <summary>
@@ -6,6 +8,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
     [Route("[controller]/[action]")]
     public class ServicesController : Controller
     {
+        public ContextBase db;
+        public ServicesController(ContextBase cb)
+        {
+            db = cb;
+        }
+
         /// <summary>
         /// 数据库重置
         /// </summary>
@@ -13,31 +21,40 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public ResultVM DatabaseReset(string zipName = "db/backup.zip") => ResultVM.Try(vm =>
+        public async Task<ResultVM> DatabaseReset(string zipName = "db/backup.zip")
         {
-            if (HttpContext != null && new UAParser.Parsers(HttpContext.Request.Headers.UserAgent).GetBot() != null)
-            {
-                vm.Set(EnumTo.RTag.refuse);
-                vm.Msg = "are you human？";
-            }
-            else
-            {
-                var idb = new DataKitTransferVM.ImportDatabase
-                {
-                    WriteConnectionInfo = new DataKitTransferVM.ConnectionInfo
-                    {
-                        ConnectionType = AppTo.TDB,
-                        ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source=")
-                    },
-                    PackagePath = PathTo.Combine(AppTo.ContentRootPath, zipName),
-                    WriteDeleteData = true
-                };
+            var vm = new ResultVM();
 
-                vm = DataKitTo.ImportDatabase(idb);
+            try
+            {
+                if (HttpContext != null && new UAParsers(HttpContext.Request.Headers.UserAgent).GetBot() != null)
+                {
+                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Msg = "are you human？";
+                }
+                else
+                {
+                    var idb = new DataKitTransfer.ImportDatabase
+                    {
+                        WriteConnectionInfo = new DbKitConnectionOption
+                        {
+                            ConnectionType = AppTo.TDB,
+                            Connection = db.Database.GetDbConnection()
+                        },
+                        PackagePath = PathTo.Combine(AppTo.ContentRootPath, zipName),
+                        WriteDeleteData = true
+                    };
+
+                    vm = await DataKitTo.ImportDatabase(idb);
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
             }
 
             return vm;
-        });
+        }
 
         /// <summary>
         /// 数据库导出（开发环境）
@@ -46,31 +63,40 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public ResultVM DatabaseExport(string zipName = "db/backup.zip") => ResultVM.Try(vm =>
+        public async Task<ResultVM> DatabaseExport(string zipName = "db/backup.zip")
         {
-            if (GlobalTo.IsDev)
-            {
-                var edb = new DataKitTransferVM.ExportDatabase
-                {
-                    PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
-                    ReadConnectionInfo = new DataKitTransferVM.ConnectionInfo()
-                    {
-                        ConnectionString = DbContextTo.GetConn().Replace("Filename=", "Data Source="),
-                        ConnectionType = AppTo.TDB
-                    },
-                    Type = "onlyData"
-                };
+            var vm = new ResultVM();
 
-                vm = DataKitTo.ExportDatabase(edb);
-            }
-            else
+            try
             {
-                vm.Set(EnumTo.RTag.refuse);
-                vm.Msg = "仅限开发环境使用";
+                if (BaseTo.IsDev)
+                {
+                    var edb = new DataKitTransfer.ExportDatabase
+                    {
+                        PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
+                        ReadConnectionInfo = new DbKitConnectionOption
+                        {
+                            ConnectionType = AppTo.TDB,
+                            Connection = db.Database.GetDbConnection()
+                        },
+                        ExportType = "onlyData"
+                    };
+
+                    vm = await DataKitTo.ExportDatabase(edb);
+                }
+                else
+                {
+                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Msg = "仅限开发环境使用";
+                }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
             }
 
             return vm;
-        });
+        }
 
         /// <summary>
         /// 清理临时目录
@@ -80,7 +106,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
         [ResponseCache(Duration = 10)]
         public ResultVM ClearTmp()
         {
-            return ResultVM.Try(vm =>
+            var vm = new ResultVM();
+
+            try
             {
                 string directoryPath = PathTo.Combine(AppTo.WebRootPath, AppTo.GetValue("StaticResource:TmpDir"));
 
@@ -132,9 +160,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     vm.Log.Insert(0, $"删除文件{delFileCount}个，删除{delFolderCount}个文件夹");
                     vm.Set(EnumTo.RTag.success);
                 }
+            }
+            catch (Exception ex)
+            {
+                vm.Set(ex);
+            }
 
-                return vm;
-            });
+            return vm;
         }
     }
 }

@@ -23,7 +23,7 @@ let nrApp = {
         let domHtml = document.documentElement;
         ["sl-theme-light", "sl-theme-dark"].forEach(c => domHtml.classList.remove(c));
         domHtml.classList.add(`sl-theme-${theme}`);
-        
+
         nrcBase.saveTheme(theme);
         let isDark = nrcBase.isDark();
 
@@ -146,7 +146,7 @@ let nrApp = {
      * @param {any} title 标题
      * @param {any} width
      */
-    alert: (content, title, width = "50em") => {
+    alert: (content, title, width = "60em") => {
         if (nrApp.domAlert == null) {
             nrApp.domAlert = document.createElement('sl-dialog');
             document.body.appendChild(nrApp.domAlert);
@@ -160,10 +160,17 @@ let nrApp = {
 
         nrApp.domAlert.innerHTML = '';
         try {
-            let code = JSON.stringify(JSON.parse(content), null, 2);
+            if (typeof content == "string") {
+                content = JSON.stringify(JSON.parse(content), null, 2);
+            } else {
+                content = JSON.stringify(content, null, 2);
+            }
+
             let dom = document.createElement("pre");
-            dom.className = "m-0";
-            dom.innerText = code;
+            dom.className = "m-0 fs-6";
+            dom.style.whiteSpace = 'pre-wrap';
+            dom.innerText = content;
+            
             nrApp.domAlert.appendChild(dom);
         } catch (error) {
             nrApp.domAlert.innerHTML = content;
@@ -180,7 +187,7 @@ let nrApp = {
      * @param {any} title 标题
      * @param {any} width
      */
-    confirm: (message, title, width = "50em") => new Promise((resolve) => {
+    confirm: (message, title, width = "60em") => new Promise((resolve) => {
         if (nrApp.domConfirm == null) {
             nrApp.domConfirm = document.createElement('sl-dialog');
             nrApp.domConfirm.innerHTML = `
