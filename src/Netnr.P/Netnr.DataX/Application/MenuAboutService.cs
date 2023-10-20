@@ -13,16 +13,16 @@ public partial class MenuItemService
 
     [Display(Name = "View version", Description = "查看版本", GroupName = "About",
         ShortName = "version", Prompt = "ndx version")]
-    public static void ViewVersion() => DXService.Log(BaseTo.Version);
+    public static void ViewVersion() => ConsoleTo.LogColor(BaseTo.Version);
 
-    [Display(Name = "Check for updates", Description = "检查更新", GroupName = "About")]
-    public static async Task CheckForUpdates()
+    [Display(Name = "Check for update", Description = "检查更新", GroupName = "About")]
+    public static async Task CheckForUpdate()
     {
         var curi = "https://gitee.com/api/v5/repos/netnr/np/releases/latest";
         var puri = "https://gitee.com/netnr/np/releases";
         try
         {
-            DXService.Log($"connect to the server: {curi}");
+            ConsoleTo.LogColor($"connect to the server: {curi}");
 
             //ndx-0.2.0-win-x64.zip
             var osPlatform = CmdTo.IsWindows ? "win-x64" : "linux-x64";
@@ -44,26 +44,43 @@ public partial class MenuItemService
                     isFound = true;
                     var latestVersion = match.Groups[1].ToString();
                     var vc = new Version(latestVersion).CompareTo(new Version(BaseTo.Version));
-                    if (vc > 0)
+                    if (vc <= 0)
                     {
-                        DXService.Log($"new version {BaseTo.Version} => {latestVersion}", ConsoleColor.Green);
+                        ConsoleTo.LogColor($"new version {BaseTo.Version} => {latestVersion}", ConsoleColor.Green);
 
                         var durl = item.GetValue("browser_download_url");
-                        DXService.Log($"downloading {durl}");
+                        ConsoleTo.LogColor($"downloading {durl}");
 
                         var saveZip = Path.Combine(BaseTo.ProjectRootPath, name);
                         var client = new HttpClient
                         {
                             Timeout = TimeSpan.FromMinutes(5)
                         };
-                        await client.DownloadAsync(durl, saveZip);
 
-                        DXService.Log($"Save to {saveZip}");
-                        DXService.Log($"Downloaded, please unzip it manually");
+                        var st = Stopwatch.StartNew();
+                        await client.DownloadAsync(durl, saveZip, (receive, total) =>
+                        {
+                            if (st.ElapsedMilliseconds > 500)
+                            {
+                                if (total.HasValue)
+                                {
+                                    ConsoleTo.LogColor($"{receive * 1m / total * 100:0.00}% downloaded, {ParsingTo.FormatByte(receive)}/{ParsingTo.FormatByte(Convert.ToInt64(total))}");
+                                }
+                                else
+                                {
+                                    ConsoleTo.LogColor($"{ParsingTo.FormatByte(receive)} downloaded");
+                                }
+
+                                st.Restart();
+                            }
+                        });
+
+                        ConsoleTo.LogColor($"Save to {saveZip}", ConsoleColor.Green);
+                        ConsoleTo.LogColor($"Downloaded, please unzip it manually", ConsoleColor.Cyan);
                     }
                     else
                     {
-                        DXService.Log($"already the latest version v{BaseTo.Version}", ConsoleColor.Cyan);
+                        ConsoleTo.LogColor($"already the latest version {BaseTo.Version}>={latestVersion}", ConsoleColor.Cyan);
                     }
                     break;
                 }
@@ -75,15 +92,25 @@ public partial class MenuItemService
         }
         catch (Exception ex)
         {
-            DXService.Log($"Not supported, please visit {puri}", ConsoleColor.Red);
-            DXService.Log(ex);
+            ConsoleTo.LogColor($"Check for updates failed, please visit {puri}", ConsoleColor.Red);
+            ConsoleTo.LogError(ex);
         }
+    }
+
+    [Display(Name = "GC", Description = "清理", GroupName = "About")]
+    public static async Task GarbageCleanup()
+    {
+        ConsoleTo.LogColor($"Use Physical Memory: {ParsingTo.FormatByte(Environment.WorkingSet)}");
+        GC.Collect();
+        await Task.Delay(1000);
+        GC.Collect();
+        ConsoleTo.LogColor($"Use Physical Memory: {ParsingTo.FormatByte(Environment.WorkingSet)}");
     }
 
     [Display(Name = "Console encoding", Description = "控制台编码", GroupName = "About")]
     public static void ConsoleEncoding()
     {
-        DXService.Log($"Current: {Console.OutputEncoding.EncodingName}");
+        ConsoleTo.LogColor($"Current: {Console.OutputEncoding.EncodingName}");
 
         //选择编码
         var cri2 = DXService.ConsoleReadItem("Choose an encoding", "Unicode,UTF-8".Split(','), 1);
@@ -94,19 +121,9 @@ public partial class MenuItemService
         }
     }
 
-    [Display(Name = "GC", Description = "清理", GroupName = "About", AutoGenerateFilter = true)]
-    public static void GarbageCleanup()
-    {
-        DXService.Log($"Use Physical Memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
-        GC.Collect();
-        Thread.Sleep(200);
-        GC.Collect();
-        DXService.Log($"Use Physical Memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
-    }
-
-    [Display(Name = "Open the hub directory", Description = "打开 hub 目录", GroupName = "About",
+    [Display(Name = "Open directory for hub", Description = "打开 hub 目录", GroupName = "About", AutoGenerateFilter = true,
         ShortName = "hub", Prompt = "ndx hub")]
-    public static void OpenTheHubDirectory()
+    public static void OpenDirectoryForHub()
     {
         //配置
         var ci = new ConfigInit();
@@ -117,8 +134,8 @@ public partial class MenuItemService
         }
         else
         {
-            var cr = CmdTo.Execute($"cd {ci.DXHub} && pwd && ls -lh");
-            DXService.Log(cr.CrOutput);
+            var cr = CmdTo.Execute($"ls {ci.DXHub} -lh");
+            ConsoleTo.LogColor(cr.CrOutput);
         }
     }
 }

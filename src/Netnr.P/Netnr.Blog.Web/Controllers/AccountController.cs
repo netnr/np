@@ -33,16 +33,17 @@ namespace Netnr.Blog.Web.Controllers
         /// 注册提交
         /// </summary>
         /// <param name="mo">账号、密码</param>
+        /// <param name="RegisterCode">验证码</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Register(UserInfo mo)
+        public async Task<IActionResult> Register(UserInfo mo, string RegisterCode)
         {
             var vm = new ResultVM();
-            //if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
-            //{
-            //    vm.Msg = "验证码错误或已过期";
-            //}
-            if (!(mo.UserName?.Length >= 5 && mo.UserPwd?.Length >= 5))
+            if (string.IsNullOrWhiteSpace(RegisterCode) || HttpContext.Session.GetString("RegisterCode") != RegisterCode)
+            {
+                vm.Msg = "验证码错误或已过期";
+            }
+            else if (!(mo.UserName?.Length >= 5 && mo.UserPwd?.Length >= 5))
             {
                 vm.Msg = "账号、密码长度至少 5 位数";
             }
@@ -69,14 +70,14 @@ namespace Netnr.Blog.Web.Controllers
         /// 注册验证码
         /// </summary>
         /// <returns></returns>
-        //public FileResult RegisterCode()
-        //{
-        //    //生成验证码
-        //    string num = RandomTo.NewNumber(4);
-        //    HttpContext.Session.SetString("RegisterCode", num);
-        //    byte[] bytes = ImageTo.Captcha(num);
-        //    return File(bytes, "image/jpeg");
-        //}
+        public IActionResult RegisterCode()
+        {
+            //生成验证码
+            string num = RandomTo.NewNumber(4);
+            HttpContext.Session.SetString("RegisterCode", num);
+            byte[] bytes = ImageTo.Captcha(num);
+            return File(bytes, "image/jpeg");
+        }
 
         #endregion
 
@@ -158,7 +159,7 @@ namespace Netnr.Blog.Web.Controllers
                 else
                 {
                     var loginType = id.Value;
-                    ConsoleTo.Title($"{loginType} login authorization callback");
+                    ConsoleTo.WriteCard($"{loginType} login authorization callback");
 
                     var publicUser = LoginTo.Entry(loginType, authResult);
                     Console.WriteLine(publicUser.ToJson(true));
@@ -226,7 +227,7 @@ namespace Netnr.Blog.Web.Controllers
                         {
                             if (!string.IsNullOrWhiteSpace(publicUser.Avatar) && loginType != LoginWhich.Microsoft)
                             {
-                                newUser.UserPhoto = $"{UniqueTo.LongId()}.jpg";
+                                newUser.UserPhoto = $"{Guid.NewGuid().ToLong()}.jpg";
                                 try
                                 {
                                     //物理根路径
@@ -241,11 +242,11 @@ namespace Netnr.Blog.Web.Controllers
                                     {
                                         Timeout = TimeSpan.FromMinutes(1)
                                     };
-                                    await client.DownloadAsync(publicUser.Avatar, PathTo.Combine(ppath, newUser.UserPhoto), (rlen, total) =>
+                                    await client.DownloadAsync(publicUser.Avatar, ParsingTo.Combine(ppath, newUser.UserPhoto), (rlen, total) =>
                                     {
                                         if (total > maxLength || rlen > maxLength)
                                         {
-                                            throw new Exception($"{publicUser.Avatar} Size exceeds limit(max {ParsingTo.FormatByteSize(maxLength)})");
+                                            throw new Exception($"{publicUser.Avatar} Size exceeds limit(max {ParsingTo.FormatByte(maxLength)})");
                                         }
                                     });
                                 }
@@ -339,7 +340,7 @@ namespace Netnr.Blog.Web.Controllers
                 //已绑定其它用户
                 if (await db.UserInfo.AnyAsync(whereEqual))
                 {
-                    vm.Set(EnumTo.RTag.exist);
+                    vm.Set(RCodeTypes.exist);
                     vm.Msg = "已绑定其它用户";
                 }
                 else
@@ -357,7 +358,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                vm.Set(EnumTo.RTag.unauthorized);
+                vm.Set(RCodeTypes.unauthorized);
             }
 
             return vm;
@@ -376,12 +377,12 @@ namespace Netnr.Blog.Web.Controllers
             if (!string.IsNullOrWhiteSpace(mo.UserMail)
                 && await db.UserInfo.AnyAsync(x => x.UserName == mo.UserName || x.UserMail == mo.UserMail))
             {
-                vm.Set(EnumTo.RTag.exist);
+                vm.Set(RCodeTypes.exist);
                 vm.Msg = "该邮箱已经注册";
             }
             else if (await db.UserInfo.AnyAsync(x => x.UserName == mo.UserName))
             {
-                vm.Set(EnumTo.RTag.exist);
+                vm.Set(RCodeTypes.exist);
                 vm.Msg = "该账号已经注册";
             }
             else
@@ -432,12 +433,12 @@ namespace Netnr.Blog.Web.Controllers
 
             if (loginUser == null || loginUser.UserId == 0)
             {
-                vm.Set(EnumTo.RTag.failure);
+                vm.Set(RCodeTypes.failure);
                 vm.Msg = "用户名或密码错误";
             }
             else if (loginUser.LoginLimit == 1)
             {
-                vm.Set(EnumTo.RTag.refuse);
+                vm.Set(RCodeTypes.refuse);
                 vm.Msg = "用户已被禁止登录";
             }
             else
@@ -447,7 +448,7 @@ namespace Netnr.Blog.Web.Controllers
                 loginUser.UserSign = $"{CalcTo.MD5(loginUser.UserPwd, 16)}:{loginUser.UserLoginTime.Value.ToTimestamp()}";
 
                 //刷新登录标记
-                if (!AppTo.GetValue<bool>("ReadOnly"))
+                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
                 {
                     db.UserInfo.Update(loginUser);
                     await db.SaveChangesAsync();
@@ -464,7 +465,7 @@ namespace Netnr.Blog.Web.Controllers
                 //生成Token
                 vm.Data = IdentityService.AccessTokenBuild(loginUser);
 
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
 
             return vm;

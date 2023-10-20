@@ -70,6 +70,7 @@ let nrcDocsify = {
      * @returns 
      */
     importScript: async (src, type) => {
+        src = nrcDocsify.mirrorNPM(src);
         let pout = nrcDocsify.tsLoaded[src];
         if (!pout) {
             nrcDocsify.tsLoaded[src] = pout = new Promise((resolve, reject) => {
@@ -102,6 +103,20 @@ let nrcDocsify = {
             });
         }
         return pout;
+    },
+
+    /**
+     * npm 镜像
+     * @param {*} url 
+     * @returns 
+     */
+    mirrorNPM: (url) => {
+        const regex = /(https?:\/\/[\w.-]+)\/(.*)@([\d.]+)\/(.*)\.(\w+)/;
+        let mr = regex.exec(url);
+        if (mr != null) {
+            url = `https://registry.npmmirror.com/${mr[2]}/${mr[3]}/files/${mr[4]}.${mr[5]}`;
+        }
+        return url;
     },
 }
 

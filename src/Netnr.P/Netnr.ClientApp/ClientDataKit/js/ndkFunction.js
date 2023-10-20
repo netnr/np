@@ -462,7 +462,7 @@ var ndkFunction = {
      */
     clipboard: async (content) => {
         var text;
-        if (ndkFunction.supportClipboard) {
+        if (navigator.clipboard) {
             if (content == null) {
                 text = await navigator.clipboard.readText();
             } else {
@@ -485,9 +485,6 @@ var ndkFunction = {
             return ndkI18n.lg.unsupported;
         }
     },
-
-    //可读写剪贴板内容
-    supportClipboard: window.isSecureContext && navigator.clipboard != null,
 
 }
 

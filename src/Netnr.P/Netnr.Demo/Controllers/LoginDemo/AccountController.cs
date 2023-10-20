@@ -59,25 +59,68 @@ namespace Netnr.Demo.Controllers.LoginDemo
             #region 自动读取 appsettings.json 
 
             /*
-                 {
-                    "OAuthLogin": {
-                        "Redirect_Uri": "https://localhost/account/authcallback/{0}",
-                        "QQ": {
-                            "AppId": "123",
-                            "AppKey": "789789"
-                        },
-                        "DingTalk": {
-                            "AppId": "dingoai",
-                            "AppSecret": "n_xu",
-                            "IsOld": true
-                        },
-                        "Microsoft": {
-                          "ClientId": "uuid",
-                          "ClientSecret": "secret",
-                          "IsOld": true
-                        }
-                   }
+
+              "OAuthLogin": {
+                //是否启用
+                "enable": true,
+                "Redirect_Uri": "https://localhost/account/authcallback/{0}", //回调地址
+                "QQ": {
+                  "AppId": "123",
+                  "AppKey": "456"
+                },
+                "Weixin": {
+                  "AppId": "123",
+                  "AppSecret": "456"
+                },
+                "WeixinMP": {
+                  "AppId": "123",
+                  "AppSecret": "456"
+                },
+                "Weibo": {
+                  "AppKey": "123",
+                  "AppSecret": "456"
+                },
+                "Taobao": {
+                  "AppKey": "123",
+                  "AppSecret": "456"
+                },
+                "Alipay": {
+                  "AppId": "123",
+                  "AppPrivateKey": "456"
+                },
+                "DingTalk": {
+                  "AppId": "123",
+                  "AppSecret": "456",
+                  "IsOld": true
+                },
+                "Feishu": {
+                  "ClientId": "123",
+                  "ClientSecret": "456"
+                },
+                "Gitee": {
+                  "ClientId": "123",
+                  "ClientSecret": "456"
+                },
+                "GitHub": {
+                  "ClientId": "123",
+                  "ClientSecret": "456"
+                },
+                "Microsoft": {
+                  "ClientId": "123",
+                  "ClientSecret": "456",
+                  "IsOld": true
+                },
+                "StackOverflow": {
+                  "ClientId": "123",
+                  "ClientSecret": "456",
+                  "Key": "kkk"
+                },
+                "Google": {
+                  "ClientId": "123",
+                  "ClientSecret": "456"
                 }
+              }
+
             */
 
             // AppTo.GetValue 是从 IConfiguration 对象取值的封装
@@ -146,9 +189,10 @@ namespace Netnr.Demo.Controllers.LoginDemo
             //极简拿到最终用户信息
             var publicUser = LoginTo.Entry(id, authResult);
 
-            Console.WriteLine(publicUser.ToJson(true));
+            var result = publicUser.ToJson(true);
+            Console.WriteLine(result);
 
-            return Json(publicUser);
+            return Ok(result);
         }
 
         /// <summary>
@@ -163,20 +207,16 @@ namespace Netnr.Demo.Controllers.LoginDemo
             //含步骤信息
             (DocModel tokenResult, DocModel openidResult, DocModel userResult, PublicUserResult publicUser) = LoginTo.EntryOfSteps(id, authResult);
 
-            Console.WriteLine(tokenResult.Doc.ToJson(true));
-            if (openidResult != null)
+            var result = new
             {
-                //仅限 QQ
-                Console.WriteLine(openidResult.Doc.ToJson(true));
-            }
-            if (userResult != null)
-            {
-                //Taobao 无用户信息
-                Console.WriteLine(userResult.Doc.ToJson(true));
-            }
-            Console.WriteLine(publicUser.ToJson(true));
+                tokenResult,
+                openidResult,
+                userResult,
+                publicUser
+            }.ToJson(true);
+            Console.WriteLine(result);
 
-            return Json(publicUser);
+            return Ok(result);
         }
 
         /// <summary>
@@ -213,12 +253,15 @@ namespace Netnr.Demo.Controllers.LoginDemo
                     if (!(loginType == LoginWhich.DingTalk && DingTalk.IsOld))
                     {
                         tokenResult = LoginTo.EntryOfStep<AuthorizeResult, object>(loginType, LoginStep.AccessToken, beforeResult: authResult);
+                        Console.WriteLine($"\r\n{nameof(LoginStep.AccessToken)}");
+                        Console.WriteLine(tokenResult.Doc.ToJson(true));
 
                         //step: refresh token （可选，仅支持部分）
                         if (!new[] { LoginWhich.Weibo, LoginWhich.Taobao, LoginWhich.GitHub, LoginWhich.StackOverflow }.Contains(loginType)
                             && !(loginType == LoginWhich.Microsoft && Login.Microsoft.IsOld))
                         {
                             tokenResult = LoginTo.EntryOfStep<DocModel, object>(loginType, LoginStep.RefreshToken, beforeResult: tokenResult);
+                            Console.WriteLine($"\r\n{nameof(LoginStep.RefreshToken)}");
                             Console.WriteLine(tokenResult.Doc.ToJson(true));
                         }
                     }
@@ -236,20 +279,18 @@ namespace Netnr.Demo.Controllers.LoginDemo
                         userResult = LoginTo.EntryOfStep<DocModel, object>(loginType, LoginStep.User, beforeResult: tokenResult);
                     }
 
-                    if (tokenResult != null)
-                    {
-                        Console.WriteLine(tokenResult.Doc.ToJson(true));
-                    }
                     if (openidResult != null)
                     {
+                        Console.WriteLine($"\r\n{nameof(LoginStep.OpenId)}");
                         Console.WriteLine(openidResult.Doc.ToJson(true));
                     }
                     if (userResult != null)
                     {
+                        Console.WriteLine($"\r\n{nameof(LoginStep.User)}");
                         Console.WriteLine(userResult.Doc.ToJson(true));
                     }
 
-                    return Ok();
+                    return Ok("Done!");
                 }
             }
             catch (Exception ex)

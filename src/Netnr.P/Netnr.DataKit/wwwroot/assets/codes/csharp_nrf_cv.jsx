@@ -68,7 +68,7 @@ async () => {
         codes.push('\t\t}');
         codes.push('');
 
-        var pkCol = tableObj.tableColumns.filter(col => col.PrimaryKey == 1)[0];
+        var pkCol = tableObj.tableColumns.find(col => col.PrimaryKey == 1);
         if (pkCol == null) {
             tableObj.tableColumns[0];
         }

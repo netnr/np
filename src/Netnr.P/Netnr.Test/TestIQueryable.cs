@@ -1,7 +1,5 @@
 ﻿using Xunit;
 using System.Linq.Dynamic.Core;
-using System.Linq;
-using YamlDotNet.Core.Tokens;
 
 namespace Netnr.Test
 {
@@ -20,6 +18,8 @@ namespace Netnr.Test
             var v1 = list.AsQueryable().Where("Value == @0 || Value != @1", "2", "4").ToList();
             var v2 = list.AsQueryable().Where("Convert.ToInt32(Value) > @0", 2).ToList();
             var v3 = list.AsQueryable().Where("Convert.ToInt32(Value)*1.0/Convert.ToInt32(Text)*100 > @0", 35).ToList();
+
+            Debug.WriteLine($"{v1.Count} {v2.Count} {v3.Count}");
         }
 
         [Fact]
@@ -43,6 +43,8 @@ namespace Netnr.Test
 
             var v1 = list.AsQueryable().Where("(Date2 - Date1).TotalDays >= @0", 5).ToList();
             var v2 = list.AsQueryable().Where("(Date2 - DateTime.Now).TotalDays >= 4").ToList();
+
+            Debug.WriteLine($"{v1.Count} {v2.Count}");
         }
 
         [Fact]
@@ -58,9 +60,12 @@ namespace Netnr.Test
                 new KeyValuePair<string,string>("account_expired: CQENT","2"),
             };
 
-            var v0 = list.AsQueryable().Where("Key.StartsWith(\"account_expired:\") && Convert.ToDouble(Value) < 7");
+            var v0 = list.AsQueryable().Where("Key.StartsWith(\"account_expired:\") && Convert.ToDouble(Value) < 7").ToList();
             var v1 = list.AsQueryable().Where("Key == @0 || Key.StartsWith(@1)", "version", "version_").ToList();
             var v2 = list.AsQueryable().Where("Key.StartsWith(\"version_\") && Convert.ToInt32(Value) > 8").ToList();
+            var v3 = list.AsQueryable().Where("!Key.Contains(\"version_\")").ToList();
+
+            Debug.WriteLine($"{v0.Count} {v1.Count} {v2.Count} {v3.Count}");
         }
 
         public class TryModel

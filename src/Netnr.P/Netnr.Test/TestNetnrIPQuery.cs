@@ -22,10 +22,13 @@ namespace Netnr.Test
                 "240e:330:18a1:f300:f878:a33f:bfca:f5b0",
                 "2603:c023:8:57e:d6fb:bebc:8c17:4b74",
                 "2408:8764::1:97", "fec0:0:2:1::1",
-            }.ToList().ForEach(ip =>
+            }.ForEach(ip =>
             {
                 var result = ipq.Search(ip);
-                Debug.WriteLine($"{ip} \t Addr: {result.Addr} ,ISP: {result.ISP}");
+                if (result != null)
+                {
+                    Debug.WriteLine($"{ip} \t Addr: {result.Addr} ,ISP: {result.ISP}");
+                }
             });
         }
 

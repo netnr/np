@@ -3,6 +3,7 @@ import { nrcLeanCloud } from "../../../../frame/nrcLeanCloud";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
 import { nrcRely } from "../../../../frame/nrcRely";
 import { nrVary } from "../../nrVary";
+import { nrcSnowflake } from "../../../../frame/nrcSnowflake";
 
 let nrPage = {
     pathname: "/ss/message",
@@ -35,7 +36,7 @@ let nrPage = {
                             method: "POST",
                             path: "/1.1/classes/netnr_message",
                             body: {
-                                nr_id: nrcBase.snow(),
+                                nr_id: nrcSnowflake.id(),
                                 nr_name: nickname,
                                 nr_content: content,
                                 nr_create: nrcLeanCloud.wrapDate(),

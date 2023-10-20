@@ -16,23 +16,6 @@ https://github.com/netnr/np/releases
 - [x] 上传临时文件
 - [x] 清理临时文件
 
-### 接口
-- `/API/CreateApp` 创建 App
-- `/API/GetAppList` 获取 App 列表
-- `/API/GetAppInfo` 获取 App 信息
-- `/API/ResetAll` 清空数据库和上传目录
-- `/API/ClearTmp` 清理临时目录
-- ==== 以上为管理接口，需密码验证，设为空密码可关闭管理接口
-- `/API/GetToken` 根据 AppId、AppKey 请求 Token
-- `/API/CreateFixedToken` 创建 FixedToken
-- `/API/DelFixedToken` 删除 FixedToken
-- `/API/Upload` 上传文件
-- `/API/UploadChunk` 分块上传文件
-- `/API/Copy` 复制已上传的文件
-- `/API/Cover` 上传文件覆盖
-- `/API/Delete` 删除文件
-- `/API/UploadTmp` 上传临时文件
-
 ### 授权
 首先创建 App 得到 AppId 、AppKey，然后根据 AppId、AppKey 请求得到 Token，  
 Token 可根据配置设置有效期，默认 30 分钟有效，缓存 20 分钟（即 20 分钟内请求 Token 返回结果相同）  
@@ -44,10 +27,10 @@ Token 可根据配置设置有效期，默认 30 分钟有效，缓存 20 分钟
 
 ```bash
 # Windows 软链接
-mklink /d 软链接目录 物理目录 # 命令格式
+mklink /d 软链接目录 源目录 # 命令格式
 mklink /d static D:\static # 示例 在当前创建 static 目录 指向 D 盘的 static 目录
 
 # Linux 软链接
-ln -s 源文件 软链接文件 # 命令格式
-ln -s /mnt/static/site/fileserver/wwwroot/static # 示例 static 指向 /mnt/static 目录
+ln -s 源目录 软链接目录 # 命令格式
+ln -s /mnt/static /site/fileserver/wwwroot/static # 示例 static 指向 /mnt/static 目录
 ```

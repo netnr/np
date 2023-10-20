@@ -81,10 +81,10 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// JSON转
+        /// Data To
         /// </summary>
         /// <returns></returns>
-        public IActionResult JsonTo()
+        public IActionResult DataTo()
         {
             return View();
         }
@@ -279,15 +279,6 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// PS
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult PS()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// PDF
         /// </summary>
         /// <returns></returns>
@@ -457,7 +448,7 @@ namespace Netnr.Blog.Web.Controllers
             }
             else
             {
-                vm.Set(EnumTo.RTag.unauthorized);
+                vm.Set(RCodeTypes.unauthorized);
             }
 
             return vm;
@@ -474,7 +465,7 @@ namespace Netnr.Blog.Web.Controllers
 
             try
             {
-                ConsoleTo.Title("Build HTML");
+                ConsoleTo.WriteCard("Build HTML");
 
                 AppContext.SetSwitch("Netnr.BuildHtml", true);
 
@@ -504,7 +495,7 @@ namespace Netnr.Blog.Web.Controllers
                 vm.Log.AddRange(cbs);
                 Console.WriteLine("\r\nDone!");
 
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {

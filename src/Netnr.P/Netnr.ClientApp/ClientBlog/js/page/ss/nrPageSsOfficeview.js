@@ -58,12 +58,11 @@ let nrPage = {
         } else {
             //上传
             let fd = new FormData();
-            fd.append('json', 'true');
             fd.append("file", file);
 
-            let result = await nrWeb.reqServer('https://bashupload.com/', { method: 'POST', body: fd });
-            if (result.file) {
-                nrPage.view(result.file.url);
+            let result = await nrWeb.reqServer('https://file.zme.ink/API/UploadTmp', { method: 'POST', body: fd });
+            if (result.code == 200) {
+                nrPage.view(`https://file.zme.ink${result.data}`);
             } else {
                 nrApp.alert(result.msg);
             }

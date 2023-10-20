@@ -11,7 +11,7 @@ public class ContextBaseFactory : DbContextTo
     /// <returns></returns>
     public static ContextBase CreateDbContext()
     {
-        var cob = CreateDbContextOptionsBuilder<ContextBase>(AppTo.TDB);
+        var cob = CreateDbContextOptionsBuilder<ContextBase>(AppTo.DBT);
         return new ContextBase(cob.Options);
     }
 }

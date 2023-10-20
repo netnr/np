@@ -1,8 +1,8 @@
 ﻿var sz = {
 
     //版本号
-    version: "2.2022.0",
-    date: "2022-12-29",
+    version: "2.2023.0",
+    date: "2023-09-11",
 
     //抓取目录
     dataIndex: [],
@@ -32,11 +32,15 @@
                 data.push({ id: sid, txt: tds[2].innerText.trim(), pid: item.id, sid: sid, spid: item.sid, ct: tds[1].innerText.trim(), num: oi++, url: item.suburl, leaf: 1, deep: item.deep + 1 })
             } else {
                 var aa = tr.getElementsByTagName('a');
+                var href;
                 if (aa.length) {
-                    var href = nrSpider.parsingAttr(aa[0], 'href');
+                    href = nrSpider.parsingAttr(aa[0], 'href');
+                }
+
+                if (href) {
                     data.push({ id: aa[0].innerText.trim(), txt: aa[1].innerText.trim(), pid: item.id, sid: href.split('/').pop().split('.')[0], spid: item.sid || item.id, num: oi++, url: item.suburl, suburl: nrSpider.parsingAttr(aa[0], 'href'), leaf: 0, deep: item.deep + 1 })
                 } else {
-                    //中间级别无下级 http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2021/65/6501.html
+                    //中间级别无下级 http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/13.html
                     var tds = tr.getElementsByTagName('td');
                     var sid = sz.trimEndZero(tds[0].innerText.trim());
                     data.push({ id: tds[0].innerText.trim(), txt: tds[1].innerText.trim(), pid: item.id, sid: sid, spid: item.sid, num: oi++, url: item.suburl, leaf: 1, deep: item.deep + 1 })
@@ -137,7 +141,7 @@
     grabOutland: function () {
         nrSpider.noticeVoice('境外（港澳台）处理中');
         return new Promise((resolve) => {
-            var districtJson = "https://raw.githubusercontent.com/netnr/test/main/tmp/district-20230101.json";
+            var districtJson = "https://ghproxy.com/https://raw.githubusercontent.com/netnr/test/main/tmp/district-latest.json";
             fetch(districtJson).then(x => x.json()).then(res => {
                 console.debug(res);
 
@@ -294,6 +298,7 @@
                 });
                 break;
             case "excel":
+            case "xlsx":
                 if (sz.config.maxDeep == 5) {
                     nrSpider.noticeVoice("5 级数量近 70万，导出 Excel 浏览器可能会崩溃，建议通过 SQLite 导出 Excel 文件");
                 }
@@ -302,7 +307,7 @@
                 });
                 break;
             default:
-                nrSpider.noticeVoice("type Optional: sql、json-split、json-all")
+                nrSpider.noticeVoice("type Optional: sql、json-split、json-all、excel")
         }
     },
 
@@ -355,16 +360,18 @@ sz.config = {
     fileName: "stats-zoning",
 
     //索引目录
-    indexList: "http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2022/index.html",
+    indexList: "http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html",
     //最大深度（1-5）
-    maxDeep: 5,
+    maxDeep: 3,
     //抓指定编码，为空时抓所有
     filterCode: "", //
 };
 
 //下载zip，抓取完成后
-//sz.zip('json-split')
+//
+
 //sz.zip('json-all')
+//sz.zip('json-split')
 //sz.zip('excel')
 //sz.zip('sql')
 

@@ -14,28 +14,28 @@ public static partial class DbKitExtensions
     /// <summary>
     /// SQL引用符号，支持点分隔
     /// </summary>
+    /// <param name="words">关键字</param>
     /// <param name="tdb">数据库类型</param>
-    /// <param name="KeyWord">关键字</param>
     /// <returns></returns>
-    public static string SqlQuote(EnumTo.TypeDB? tdb, string KeyWord)
+    public static string SqlQuote(string words, DBTypes? tdb = null)
     {
-        if (string.IsNullOrWhiteSpace(KeyWord))
+        if (string.IsNullOrWhiteSpace(words))
         {
-            return KeyWord;
+            return words;
         }
 
         return tdb switch
         {
-            EnumTo.TypeDB.SQLite or EnumTo.TypeDB.SQLServer =>
-            string.Join('.', KeyWord.Replace("[", "").Replace("]", "").Split('.').Select(x => $"[{x}]")),
+            DBTypes.SQLite or DBTypes.SQLServer =>
+            string.Join('.', words.Replace("[", "").Replace("]", "").Split('.').Select(x => $"[{x}]")),
 
-            EnumTo.TypeDB.MySQL or EnumTo.TypeDB.MariaDB =>
-            string.Join('.', KeyWord.Replace("`", "").Split('.').Select(x => $"`{x}`")),
+            DBTypes.MySQL or DBTypes.MariaDB or DBTypes.ClickHouse =>
+            string.Join('.', words.Replace("`", "").Split('.').Select(x => $"`{x}`")),
 
-            EnumTo.TypeDB.Oracle or EnumTo.TypeDB.PostgreSQL =>
-            string.Join('.', KeyWord.Replace("\"", "").Split('.').Select(x => $"\"{x}\"")),
+            DBTypes.Oracle or DBTypes.PostgreSQL =>
+            string.Join('.', words.Replace("\"", "").Split('.').Select(x => $"\"{x}\"")),
 
-            _ => KeyWord,
+            _ => words,
         };
     }
 
@@ -46,7 +46,7 @@ public static partial class DbKitExtensions
     /// <param name="schemaName">模式，可选</param>
     /// <param name="tdb">类型</param>
     /// <returns></returns>
-    public static string SqlSNTN(string tableName, string schemaName = null, EnumTo.TypeDB? tdb = null)
+    public static string SqlSNTN(string tableName, string schemaName = null, DBTypes? tdb = null)
     {
         var sntn = tableName;
 
@@ -57,7 +57,7 @@ public static partial class DbKitExtensions
 
         if (tdb != null)
         {
-            sntn = SqlQuote(tdb, sntn);
+            sntn = SqlQuote(sntn, tdb);
         }
 
         return sntn;
@@ -84,27 +84,55 @@ public static partial class DbKitExtensions
     }
 
     /// <summary>
+    /// 判断 是否相等
+    /// </summary>
+    /// <param name="sntn"></param>
+    /// <param name="sntn2"></param>
+    /// <returns></returns>
+    public static bool SqlEqualSNTN(string sntn, string sntn2)
+    {
+        if (sntn == sntn2)
+        {
+            return true;
+        }
+        else
+        {
+            var parts1 = sntn.Split('.', '[', ']', '"', '`').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+            var parts2 = sntn2.Split('.', '[', ']', '"', '`').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
+            if (parts1.Count == parts2.Count)
+            {
+                return string.Join("", parts1) == string.Join("", parts2);
+            }
+            else
+            {
+                return parts1.Last() == parts2.Last();
+            }
+        }
+    }
+
+    /// <summary>
     /// 构建查询空表脚本
     /// </summary>
     /// <param name="table">数据库表名</param>
     /// <param name="tdb">数据库类型，取引用符号</param>
     /// <returns></returns>
-    public static string SqlEmpty(string table, EnumTo.TypeDB? tdb = null)
+    public static string SqlEmpty(string table, DBTypes? tdb = null)
     {
-        return $"SELECT * FROM {SqlQuote(tdb, table)} WHERE 0 = 1";
+        return $"SELECT * FROM {SqlQuote(table, tdb)} WHERE 0 = 1";
     }
 
     /// <summary>
     /// 构建清空表数据脚本
     /// </summary>
-    /// <param name="tdb"></param>
     /// <param name="sntn">模式名.表名</param>
+    /// <param name="tdb"></param>
     /// <returns></returns>
-    public static string SqlClearTable(EnumTo.TypeDB tdb, string sntn)
+    public static string SqlClearTable(string sntn, DBTypes tdb)
     {
-        var fullTableName = SqlQuote(tdb, sntn);
+        var fullTableName = SqlQuote(sntn, tdb);
 
-        if (tdb == EnumTo.TypeDB.SQLite)
+        if (tdb == DBTypes.SQLite)
         {
             return $"DELETE FROM {fullTableName}";
         }
@@ -115,34 +143,46 @@ public static partial class DbKitExtensions
     }
 
     /// <summary>
+    /// 连接字符串常用键名
+    /// </summary>
+    internal static List<string> ListConnCommonKeys { get; set; } = new List<string> { "database", "server", "filename", "source", "user", "host" };
+
+    /// <summary>
     /// SQL连接字符串预检
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
     /// <param name="connectionString">连接字符串</param>
+    /// <param name="tdb">数据库类型</param>
     /// <returns></returns>
-    public static string PreCheckConn(EnumTo.TypeDB? tdb, string connectionString)
+    public static string PreCheckConn(string connectionString, DBTypes? tdb = null)
     {
-        var citem = new Dictionary<string, string>();
-
-        switch (tdb)
+        if (!string.IsNullOrWhiteSpace(connectionString))
         {
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
-                citem.Add("AllowLoadLocalInfile", "true");
-                break;
-            case EnumTo.TypeDB.SQLServer:
-                citem.Add("TrustServerCertificate", "true");
-                citem.Add("MultipleActiveResultSets", "true");
-                break;
-        }
-
-        if (citem.Count > 0)
-        {
-            foreach (var key in citem.Keys)
+            var clow = connectionString.ToLower();
+            if (ListConnCommonKeys.Any(clow.Contains))
             {
-                if (!connectionString.ToLower().Replace(" ", "").Contains(key.ToLower()))
+                var citem = new Dictionary<string, string>();
+
+                switch (tdb)
                 {
-                    connectionString = connectionString.TrimEnd(';') + $";{key}={citem[key]}";
+                    case DBTypes.MySQL:
+                    case DBTypes.MariaDB:
+                        citem.Add("AllowLoadLocalInfile", "true");
+                        break;
+                    case DBTypes.SQLServer:
+                        citem.Add("TrustServerCertificate", "true");
+                        citem.Add("MultipleActiveResultSets", "true");
+                        break;
+                }
+
+                if (citem.Count > 0)
+                {
+                    foreach (var key in citem.Keys)
+                    {
+                        if (!connectionString.ToLower().Replace(" ", "").Contains(key.ToLower()))
+                        {
+                            connectionString = connectionString.TrimEnd(';') + $";{key}={citem[key]}";
+                        }
+                    }
                 }
             }
         }
@@ -165,8 +205,7 @@ public static partial class DbKitExtensions
             if (cval == null)
             {
                 var clow = conn.ToLower();
-                var pts = new List<string> { "database", "server", "filename", "source", "user" };
-                if (!pts.Any(clow.Contains))
+                if (!ListConnCommonKeys.Any(clow.Contains))
                 {
                     conn = CalcTo.AESDecrypt(conn, pwd);
                 }
@@ -179,45 +218,6 @@ public static partial class DbKitExtensions
         {
             return conn = CalcTo.AESEncrypt(conn, pwd);
         }
-    }
-
-    /// <summary>
-    /// URL 连接字符串转换
-    /// 遵循规则：postgres://{username}:{password}@{host}:{port}/{dbname}
-    /// </summary>
-    /// <param name="ev"></param>
-    /// <returns></returns>
-    public static string SqlConnFromURL(string ev)
-    {
-        string conn = string.Empty;
-
-        string pattern = @"(\w+):\/\/(\w+):(\w+)@(.*):(\d+)\/(\w+)";
-        var val = Environment.GetEnvironmentVariable(ev);
-        Match m = Regex.Match(val, pattern);
-        if (m.Success)
-        {
-            string username = m.Groups[2].Value.ToString();
-            string password = m.Groups[3].Value.ToString();
-            string host = m.Groups[4].Value.ToString();
-            string port = m.Groups[5].Value.ToString();
-            string dbname = m.Groups[6].Value.ToString();
-
-            switch (m.Groups[1].ToString().ToLower())
-            {
-                case "postgres":
-                    conn = $"Server={host};Port={port};User Id={username};Password={password};Database={dbname};SslMode=Require;Trust Server Certificate=true;";
-                    break;
-                case "mysql":
-                    conn = $"Server={host};Port={port};Uid={username};Pwd={password};Database={dbname};";
-                    break;
-            }
-        }
-        else
-        {
-            Console.WriteLine($"解析 URL 连接字符串失败，环境变量：{ev}，值：{val}");
-        }
-
-        return conn;
     }
 
     /// <summary>
@@ -485,6 +485,8 @@ public static partial class DbKitExtensions
 
     /// <summary>
     /// 查询读取数据行
+    /// 
+    /// 注意 MySQL 不允许在逐行读取过程中使用当前连接另外执行语句：fix MySqlConnection is already in use. See https://fl.vu/mysql-conn-reuse
     /// </summary>
     /// <param name="dbCommand"></param>
     /// <param name="readRow">读取行</param>
@@ -501,7 +503,7 @@ public static partial class DbKitExtensions
                 var schemaModel = await reader.ReaderSchemaAsync();
                 if (emptyTable != null)
                 {
-                    await emptyTable.Invoke(schemaModel.Table); //空表
+                    await emptyTable.Invoke(schemaModel.Table);
                 }
 
                 while (await reader.ReadAsync())

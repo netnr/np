@@ -2,6 +2,7 @@ import { nrcFile } from "../../../../frame/nrcFile";
 import { nrVary } from "../../nrVary";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
 import { nrcRely } from "../../../../frame/nrcRely";
+import { nrcBase } from "../../../../frame/nrcBase";
 
 let nrPage = {
     pathname: "/ss/nsfw",
@@ -76,7 +77,7 @@ let nrPage = {
             })
             nrPage.modelVersion = 'nsfwjs@2.4.0';
         }
-        return 'https://cdn.staticaly.com/gh/infinitered/nsfwjs/master/example/nsfw_demo/public/quant_nsfw_mobilenet/';
+        return nrcBase.mirrorNPM("https://npmcdn.com/@clicks/nsfwjs@3.0.3/example/nsfw_demo/public/quant_nsfw_mobilenet/model.json");
     },
 }
 

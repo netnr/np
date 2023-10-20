@@ -1,5 +1,6 @@
 import { nrVary } from "../../nrVary";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
+import { nrcUpstream } from "../../../../frame/nrcUpstream";
 
 let nrPage = {
     pathname: "/ss/icp",
@@ -15,56 +16,49 @@ let nrPage = {
             }
         });
 
-        window['fnCall'] = function (json) {
-            if (json) {
-                let htm = [];
-                htm.push(`
-                <div class="mb-3">
-                    <label class="form-label">主办单位</label>
-                    <input class="form-control" readonly value="${json.ComName}" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">单位性质</label>
-                    <input class="form-control" readonly value="${json.Typ}" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">备案号</label>
-                    <input class="form-control" readonly value="${json.Permit}" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">网址名称</label>
-                    <input class="form-control" readonly value="${json.WebName}" />
-                </div>
-                `);
-
-                nrVary.domCardResult.innerHTML = htm.join("");
-            } else {
-                nrVary.domCardResult.innerHTML = `<div class="alert alert-warning">无备案信息（${nrVary.domTxtQuery.value}）</div>`;
-            }
-
-            nrApp.setLoading(nrVary.domBtnQuery, true);
-            nrVary.domTxtQuery.readOnly = false;
-        }
-
         nrVary.domBtnQuery.addEventListener('click', async function () {
-            let val = nrVary.domTxtQuery.value.trim();
+            let domain = nrVary.domTxtQuery.value.trim();
 
-            if (val == "") {
+            if (domain == "") {
                 nrApp.toast("请输入域名");
             } else {
                 nrApp.setLoading(nrVary.domBtnQuery);
                 nrVary.domTxtQuery.readOnly = true;
 
-                if (nrPage.domJsonp) {
-                    nrPage.domJsonp.remove();
+                try {
+                    let url = `https://micp.chinaz.com/${domain}`;
+                    let result = await nrcUpstream.fetch(url);
+                    if (result.includes("主办单位")) {
+                        let dom = document.createElement("div");
+                        dom.innerHTML = result;
+                        var headers = "主办单位,单位性质,备案号,网站名称,审核时间".split(',');
+                        let htm = [];
+                        dom.querySelectorAll("table tr").forEach(tr => {
+                            let tds = tr.querySelectorAll("td");
+                            if (tds.length == 2) {
+                                let key = tds[0].innerText.trim();
+                                let value = tds[1].innerText.trim();
+                                key = headers.find(x => key.startsWith(x));
+                                if (key) {
+                                    htm.push(`<div class="mb-3"><label class="form-label">${key}</label>
+                                    <input class="form-control" readonly value="${value}" /></div>`)
+                                }
+                            }
+                        })
+                        nrVary.domCardResult.innerHTML = htm.join("");
+                    } else {
+                        nrVary.domCardResult.innerHTML = `<div class="alert alert-warning">无备案信息（${nrVary.domTxtQuery.value}）</div>`;
+                    }
+                } catch (error) {
+                    console.debug(error)
+                    nrVary.domCardResult.innerHTML = `<div class="alert alert-warning">查询失败</div>`;
                 }
-                nrPage.domJsonp = document.createElement("script");
-                document.head.appendChild(nrPage.domJsonp);
-                nrPage.domJsonp.src = `https://micp.chinaz.com/Handle/AjaxHandler.ashx?action=GetPermit&callback=fnCall&query=${encodeURIComponent(val)}&type=host&_=${Date.now()}`
+
+                nrApp.setLoading(nrVary.domBtnQuery, true);
+                nrVary.domTxtQuery.readOnly = false;
             }
         });
     },
-
 }
 
 export { nrPage };

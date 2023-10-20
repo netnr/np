@@ -1,4 +1,5 @@
-require.context('../frame/Bootstrap', true, /.css$/);
+require.context('../frame/Shared', true, /.css$/);
+import '../frame/Bootstrap/nrDark.css';
 require.context('./css', true, /.css$/);
 
 import { nrWeb } from './js/nrWeb';

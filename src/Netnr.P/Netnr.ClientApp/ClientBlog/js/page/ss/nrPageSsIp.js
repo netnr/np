@@ -26,7 +26,7 @@ let nrPage = {
         try {
             let resp = await fetch('https://js.org/cdn-cgi/trace');
             let result = await resp.text();
-            let ip = result.split('\n').filter(x => x.startsWith('ip='))[0].substring(3);
+            let ip = result.split('\n').find(x => x.startsWith('ip=')).substring(3);
             nrVary.domTxtCloudflare.value = ip;
         } catch (ex) {
             nrVary.domTxtCloudflare.placeholder = "网络错误";

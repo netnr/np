@@ -9,7 +9,7 @@ namespace Netnr;
 /// <summary>
 /// 缓存
 /// </summary>
-public class CacheTo
+public partial class CacheTo
 {
     /// <summary>
     /// 存储计时
@@ -33,7 +33,7 @@ public class CacheTo
     /// <summary>
     /// key, 数据
     /// </summary>
-    private static ConcurrentDictionary<string, object> CacheDictionary
+    public static ConcurrentDictionary<string, object> CacheDictionary
     {
         get
         {
@@ -84,7 +84,7 @@ public class CacheTo
                 }
                 catch (Exception ex)
                 {
-                    ConsoleTo.Title("Cache Expired Task ERROR", ex);
+                    ConsoleTo.WriteCard("Cache Expired Task ERROR", ex);
                 }
             }
 

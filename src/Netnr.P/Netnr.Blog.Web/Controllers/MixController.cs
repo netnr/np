@@ -42,7 +42,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 vm.Data = cval.ToView();
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {

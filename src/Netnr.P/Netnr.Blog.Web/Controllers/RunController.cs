@@ -146,7 +146,7 @@
                     mo.RunOpen = 1;
                     mo.Uid = uinfo.UserId;
 
-                    mo.RunCode = UniqueTo.LongId().ToString();
+                    mo.RunCode = Guid.NewGuid().ToLongString();
                     db.Run.Add(mo);
                     int num = db.SaveChanges();
 
@@ -175,7 +175,7 @@
                     }
                     else
                     {
-                        vm.Set(EnumTo.RTag.failure);
+                        vm.Set(RCodeTypes.failure);
                     }
                 }
             }

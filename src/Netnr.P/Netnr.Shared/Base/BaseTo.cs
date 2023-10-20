@@ -10,7 +10,7 @@ public partial class BaseTo
     /// <summary>
     /// 版本号
     /// </summary>
-    public static string Version { get; set; } = "1.707.0";
+    public static string Version { get; set; } = $"1.{Environment.Version.ToString().Replace(".", "")}.0";
 
     /// <summary>
     /// 编码注册
@@ -24,7 +24,7 @@ public partial class BaseTo
     public static void ReadyLegacyTimestamp() => AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
     /// <summary>
-    /// 项目根目录（非 WEB 项目）
+    /// 项目根目录（非 WEB 项目，从应用程序根目录截断 bin 及后面的路径）
     /// </summary>
     public static string ProjectRootPath { get; set; } = AppContext.BaseDirectory.Split(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)[0].TrimEnd(Path.DirectorySeparatorChar);
 
@@ -46,7 +46,7 @@ public partial class BaseTo
     /// <summary>
     /// 启动带参数
     /// </summary>
-    public static bool IsWithArgs { get; set; } = CommandLineArgs.Count > 1;
+    public static bool IsCmdArgs { get; set; } = CommandLineArgs.Count > 1;
 }
 
 #endif

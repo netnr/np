@@ -27,14 +27,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.7">
+		<PackageReference Include="FluentScheduler" Version="5.5.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.12">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="SkiaSharp" Version="2.88.6" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.6" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-		<PackageReference Include="FluentScheduler" Version="5.5.1" />
-		<PackageReference Include="SkiaSharp" Version="2.88.3" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,13 +43,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="db\backup.zip">
+		<None Update="static\sample.zip">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="db\netnrf.db">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="logs\README.md">
+		<None Update="static\netnrf.db">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

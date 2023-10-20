@@ -1,11 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http;
-using System.Net.Sockets;
-using ClickHouse.Client.ADO;
-using ClickHouse.Client.Copy;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace Netnr.DataX.Application
 {
@@ -38,21 +36,20 @@ namespace Netnr.DataX.Application
                     for (int i = 0; i < cms.Count; i++)
                     {
                         var mi = cms[i];
-                        var nameArgs = mi.CustomAttributes.LastOrDefault()?.NamedArguments;
-                        if (nameArgs != null)
+                        var dispAttr = mi.GetCustomAttribute<DisplayAttribute>();
+                        if (dispAttr != null)
                         {
                             var model = new MethodModel
                             {
-                                GroupName = nameArgs.FirstOrDefault(x => x.MemberName == "GroupName").TypedValue.Value?.ToString(),
-                                Name = nameArgs.FirstOrDefault(x => x.MemberName == "Name").TypedValue.Value?.ToString(),
-                                ShortName = nameArgs.FirstOrDefault(x => x.MemberName == "ShortName").TypedValue.Value?.ToString(),
-                                Description = nameArgs.FirstOrDefault(x => x.MemberName == "Description").TypedValue.Value?.ToString(),
-                                Prompt = nameArgs.FirstOrDefault(x => x.MemberName == "Prompt").TypedValue.Value?.ToString(),
+                                GroupName = dispAttr.GroupName,
+                                Name = dispAttr.Name,
+                                ShortName = dispAttr.ShortName,
+                                Description = dispAttr.Description,
+                                Prompt = dispAttr.Prompt,
                                 Method = mi
                             };
 
-                            var autoGenerateFilter = nameArgs.FirstOrDefault(x => x.MemberName == "AutoGenerateFilter").TypedValue.Value;
-                            if (autoGenerateFilter != null && (bool)autoGenerateFilter == true)
+                            if (dispAttr.GetAutoGenerateFilter() == true)
                             {
                                 model.NewLine = "\r\n";
                             }
@@ -66,7 +63,7 @@ namespace Netnr.DataX.Application
                     }
 
                     //每组末尾换行
-                    allMethod.GroupBy(x => x.GroupName).ToList().ForEach(ig =>
+                    allMethod.GroupBy(x => x.GroupName).ForEach(ig =>
                     {
                         ig.Last().NewLine = "\r\n";
                     });
@@ -78,7 +75,30 @@ namespace Netnr.DataX.Application
         /// <summary>
         /// 启动参数
         /// </summary>
-        public static List<string> Args { get; set; } = BaseTo.CommandLineArgs;
+        public static List<string> CmdArgs { get; set; } = BaseTo.CommandLineArgs;
+
+        /// <summary>
+        /// 参数转键值对数组
+        /// </summary>
+        /// <param name="args">可指定，默认自动获取</param>
+        /// <returns></returns>
+        public static List<KeyValuePair<string, string>> GetArgsKeyValue(List<string> args = null)
+        {
+            var list = new List<KeyValuePair<string, string>>();
+
+            args ??= CmdArgs;
+            for (int i = 0; i < args.Count; i++)
+            {
+                var key = args[i];
+                if (key.StartsWith("-"))
+                {
+                    var val = i + 1 < args.Count ? args[i + 1] : "";
+                    list.Add(new KeyValuePair<string, string>(key, val.StartsWith("-") ? "" : val));
+                }
+            }
+
+            return list;
+        }
 
         /// <summary>
         /// 获取变量名
@@ -88,25 +108,14 @@ namespace Netnr.DataX.Application
         /// <returns></returns>
         public static string VarName(string name, string tip, IList<string> items = null, int? dv = 1)
         {
-            string result = null;
-            if (BaseTo.IsWithArgs)
+            var result = "";
+            if (BaseTo.IsCmdArgs)
             {
                 var nameArray = name.Split(',');
-                foreach (var nameItem in nameArray)
+                var filter = GetArgsKeyValue().Where(x => nameArray.Contains(x.Key)).ToList();
+                if (filter.Count > 0)
                 {
-                    if (!string.IsNullOrWhiteSpace(nameItem))
-                    {
-                        var keyIndex = Args.IndexOf(nameItem);
-                        if (keyIndex != -1 && ++keyIndex < Args.Count)
-                        {
-                            var val = Args[keyIndex];
-                            if (!val.StartsWith("-"))
-                            {
-                                result = val;
-                                break;
-                            }
-                        }
-                    }
+                    result = filter.First().Value;
                 }
             }
             else if (items != null)
@@ -120,28 +129,7 @@ namespace Netnr.DataX.Application
                 result = Console.ReadLine();
             }
 
-            return result;
-        }
-
-        /// <summary>
-        /// 获取变量
-        /// </summary>
-        /// <param name="index">静默带参索引，从 0 开始</param>
-        /// <param name="tip">输入提示</param>
-        /// <returns></returns>
-        public static string VarString(int index, string tip)
-        {
-            string val;
-            if (BaseTo.IsWithArgs)
-            {
-                val = index < Args.Count ? Args[index] : "";
-            }
-            else
-            {
-                Console.Write(TipSymbol(tip));
-                val = Console.ReadLine();
-            }
-            return val.Trim();
+            return result.Trim();
         }
 
         /// <summary>
@@ -152,19 +140,24 @@ namespace Netnr.DataX.Application
         /// <param name="items">选项</param>
         /// <param name="dv"></param>
         /// <returns></returns>
-        public static string VarString(int index, string tip, IList<string> items, int? dv = 1)
+        public static string VarIndex(int index, string tip, IList<string> items = null, int? dv = 1)
         {
-            string val;
-            if (BaseTo.IsWithArgs)
+            string result;
+            if (BaseTo.IsCmdArgs)
             {
-                val = index < Args.Count ? Args[index] : "";
+                result = index < CmdArgs.Count ? CmdArgs[index] : "";
+            }
+            else if (items != null)
+            {
+                var itemIndex = ConsoleReadItem(tip, items, dv);
+                result = items[itemIndex - 1];
             }
             else
             {
-                var itemIndex = ConsoleReadItem(tip, items, dv);
-                val = items[itemIndex - 1];
+                Console.Write(TipSymbol(tip));
+                result = Console.ReadLine();
             }
-            return val.Trim();
+            return result.Trim();
         }
 
         /// <summary>
@@ -175,16 +168,16 @@ namespace Netnr.DataX.Application
         /// <returns></returns>
         public static bool VarBool(string tip, string has = "-y")
         {
-            bool val;
-            if (BaseTo.IsWithArgs)
+            bool result;
+            if (BaseTo.IsCmdArgs)
             {
-                val = has.Split(',').Any(x => !string.IsNullOrWhiteSpace(x) && Args.Contains(x));
+                result = has.Split(',').Any(x => !string.IsNullOrWhiteSpace(x) && CmdArgs.Contains(x));
             }
             else
             {
-                val = ConsoleReadBool(tip);
+                result = ConsoleReadBool(tip);
             }
-            return val;
+            return result;
         }
 
         /// <summary>
@@ -268,7 +261,7 @@ namespace Netnr.DataX.Application
 
             if (isAgain)
             {
-                Thread.Sleep(1500);
+                await Task.Delay(1500);
                 await RunOfConsole("/", isAgain);
             }
         }
@@ -280,17 +273,17 @@ namespace Netnr.DataX.Application
         public static async Task RunOfSilence()
         {
             //仅保留参数
-            Args.RemoveAt(0);
-            var action = Args[0];
-            Args.RemoveAt(0);
+            CmdArgs.RemoveAt(0);
+            var action = CmdArgs[0];
+            CmdArgs.RemoveAt(0);
 
-            if (action.StartsWith("/") && Args.Count == 0)
+            if (action.StartsWith("/") && CmdArgs.Count == 0)
             {
                 //help group
                 var groupMethod = AllMethod.Where(x => x.GroupName == action.TrimStart('/')).ToList();
                 if (groupMethod.Count == 0)
                 {
-                    Log($"{action} 分组无效");
+                    ConsoleTo.LogColor($"{action} 分组无效");
                 }
                 else
                 {
@@ -305,7 +298,7 @@ namespace Netnr.DataX.Application
                 var mo = AllMethod.FirstOrDefault(x => x.Action == action);
                 if (mo != null)
                 {
-                    if (Args.Count == 1 && new string[] { "?", "/?", "-?", "-h", "/help", "-help", "--help" }.Contains(Args[0]))
+                    if (CmdArgs.Count == 1 && new string[] { "?", "/?", "-?", "-h", "/help", "-help", "--help" }.Contains(CmdArgs[0]))
                     {
                         //help on
                         mo.GetRunPrompt();
@@ -331,43 +324,6 @@ namespace Netnr.DataX.Application
         }
 
         /// <summary>
-        /// 异常
-        /// </summary>
-        /// <param name="ex"></param>
-        public static void Log(Exception ex)
-        {
-            Log(ex.ToJson(true), ConsoleColor.Red);
-        }
-
-        /// <summary>
-        /// 日志
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="cc"></param>
-        public static void Log(string msg, ConsoleColor? cc = null)
-        {
-            if (cc != null)
-            {
-                Console.ForegroundColor = cc.Value;
-                Console.WriteLine(msg);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            else
-            {
-                Console.WriteLine(msg);
-            }
-
-            ConsoleTo.Log(msg);
-        }
-
-        /// <summary>
-        /// 输出标题
-        /// </summary>
-        /// <param name="title">标题</param>
-        /// <returns></returns>
-        public static void OutputTitle(string title) => Log($"\r\n------- {title}", ConsoleColor.Cyan);
-
-        /// <summary>
         /// 提示符号
         /// </summary>
         /// <param name="tip"></param>
@@ -375,7 +331,7 @@ namespace Netnr.DataX.Application
         /// <returns></returns>
         public static string TipSymbol(string tip, string symbol = ": ")
         {
-            return $"\r\n{tip.TrimEnd('：').TrimEnd(':')}{symbol}";
+            return $"\r\n{tip.TrimEnd('：').TrimEnd(':').TrimEnd('?').TrimEnd('？')}{symbol}";
         }
 
         /// <summary>
@@ -396,20 +352,46 @@ namespace Netnr.DataX.Application
         /// <returns></returns>
         public static string ParsePathVar(string str)
         {
-            string pattern = @"({\w+})";
+            var ci = new ConfigInit();
             var now = DateTime.Now;
 
-            var ci = new ConfigInit();
-
+            var pattern = @"({\w+})";
             var path = new Regex(pattern).Replace(str, o =>
             {
                 var format = o.Groups[1].Value[1..^1];
-                return DateTime.Now.ToString(format);
+                return now.ToString(format);
             }).Replace("~", ci.DXHub);
 
             return path;
         }
 
+        /// <summary>
+        /// 弹窗通知
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="content"></param>
+        public static void Notify(string title, string content)
+        {
+            if (CmdTo.IsWindows)
+            {
+                var cmd = $@"
+Add-Type -AssemblyName System.Drawing; # get icon
+Add-Type -AssemblyName System.Windows.Forms;
+
+$ni = New-Object System.Windows.Forms.NotifyIcon;
+$ni.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon(""{Environment.ProcessPath}""); # get icon
+$ni.BalloonTipIcon = ""Info"";
+$ni.BalloonTipTitle = ""{title.Replace("\"", "\"\"").Replace("\r\n", "`n")}"";
+$ni.BalloonTipText = ""{content.Replace("\"", "\"\"").Replace("\r\n", "`n")}"";
+$ni.Visible = $true;
+$ni.ShowBalloonTip(1000);
+";
+                var psFile = Path.Combine(Path.GetTempPath(), $"{ConfigInit.ShortName}_{BaseTo.StartTime.ToTimestamp()}.ps1");
+                File.WriteAllText(psFile, cmd);
+                CmdTo.Execute($"-ExecutionPolicy unrestricted -File \"{psFile}\"", "powershell");
+            }
+        }
+        
         /// <summary>
         /// 重试
         /// </summary>
@@ -423,7 +405,7 @@ namespace Netnr.DataX.Application
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Log(ex.Message);
+                ConsoleTo.LogColor(ex.Message);
 
                 if (ConsoleReadBool("\r\nTry Again"))
                 {
@@ -469,11 +451,11 @@ namespace Netnr.DataX.Application
                     tmpDbConns = new List<DbKitConnectionOption>();
                 }
 
-                Console.WriteLine($"\n{0,5}. 输入数据库连接信息");
+                Console.WriteLine($"\r\n{0,5}. 输入数据库连接信息");
                 for (int i = 0; i < allDbConns.Count; i++)
                 {
                     var obj = allDbConns[i];
-                    Console.WriteLine($"{i + 1,5}. [{obj.ConnectionRemark}]({obj.ConnectionType}://{obj.ConnectionString})");
+                    Console.WriteLine($"{i + 1,5}. [{obj.ConnectionRemark}]({obj.ConnectionType}://{obj.GetSafeConnectionString()})");
                 }
                 Console.Write(TipSymbol(tip));
 
@@ -494,15 +476,17 @@ namespace Netnr.DataX.Application
                             if (mr.Groups.Count == 3)
                             {
                                 connOption.ConnectionRemark = $"TMP_{RandomTo.NewNumber()}";
-                                connOption.ConnectionType = mr.Groups[1].ToString().DeEnum<EnumTo.TypeDB>();
+                                connOption.ConnectionType = mr.Groups[1].ToString().DeEnum<DBTypes>();
                                 connOption.ConnectionString = mr.Groups[2].ToString();
                             }
                             else
                             {
                                 connOption.ConnectionRemark = mr.Groups[1].ToString();
-                                connOption.ConnectionType = mr.Groups[2].ToString().DeEnum<EnumTo.TypeDB>();
+                                connOption.ConnectionType = mr.Groups[2].ToString().DeEnum<DBTypes>();
                                 connOption.ConnectionString = mr.Groups[3].ToString();
                             }
+                            //解密
+                            connOption.ConnectionString = DbKitExtensions.SqlConnEncryptOrDecrypt(connOption.ConnectionString, "");
 
                             //缓存
                             tmpDbConns.Add(connOption);
@@ -518,18 +502,19 @@ namespace Netnr.DataX.Application
                     connOption = allDbConns[connIndex - 1];
                 }
 
+                //深拷贝构建新实例
                 connOption.DeepCopyNewInstance = true;
 
                 //选择数据库名
                 switch (connOption.ConnectionType)
                 {
-                    case EnumTo.TypeDB.MySQL:
-                    case EnumTo.TypeDB.MariaDB:
-                    case EnumTo.TypeDB.SQLServer:
-                    case EnumTo.TypeDB.PostgreSQL:
+                    case DBTypes.MySQL:
+                    case DBTypes.MariaDB:
+                    case DBTypes.SQLServer:
+                    case DBTypes.PostgreSQL:
                         {
-                            var dk = DataKitTo.CreateDkInstance(connOption);
-                            var listDatabaseName = await dk.GetDatabaseName();
+                            var dataKit = DataKitTo.CreateDataKitInstance(connOption);
+                            var listDatabaseName = await dataKit.GetDatabaseName();
 
                             var dv = 1;
                             if (!string.IsNullOrWhiteSpace(connOption.DatabaseName))
@@ -544,12 +529,26 @@ namespace Netnr.DataX.Application
                         break;
                 }
 
-                Log($"\n已选择 [{connOption.ConnectionRemark}]({connOption.ConnectionType}://{connOption.ConnectionString})\n", ConsoleColor.Cyan);
-
+                ConsoleTo.LogColor($"\r\n[{connOption.ConnectionRemark}]({connOption.ConnectionType}://{connOption.GetSafeConnectionString()})\r\n", ConsoleColor.Cyan);
                 return true;
             });
 
-            return connOption;
+            //复制一个新对象返回
+            var newOption = new DbKitConnectionOption();
+            newOption.ToDeepCopy(connOption);
+
+            return newOption;
+        }
+
+        /// <summary>
+        /// 显示读写数据库配置
+        /// </summary>
+        /// <param name="connOptionRead">读取源数据库</param>
+        /// <param name="connOptionWrite">写入目标数据库</param>
+        public static void ViewConnectionOption(DbKitConnectionOption connOptionRead, DbKitConnectionOption connOptionWrite)
+        {
+            ConsoleTo.LogColor($"\r\n[读取]: {connOptionRead.ConnectionType}://{connOptionRead.GetSafeConnectionString()}", ConsoleColor.Green);
+            ConsoleTo.LogColor($"[写入]: {connOptionWrite.ConnectionType}://{connOptionWrite.GetSafeConnectionString()}\r\n", ConsoleColor.Yellow);
         }
 
         /// <summary>
@@ -573,7 +572,7 @@ namespace Netnr.DataX.Application
             {
                 if ((type == 1 && !File.Exists(path)) || (type == 2 && !Directory.Exists(path)) || (type == 0 && !File.Exists(path) && !Directory.Exists(path)))
                 {
-                    Log($"{path} 无效文件（夹）");
+                    ConsoleTo.LogColor($"{path} 无效文件（夹）");
                     goto Flag1;
                 }
             }
@@ -610,7 +609,7 @@ namespace Netnr.DataX.Application
                 //默认项
                 if (dv.HasValue && string.IsNullOrWhiteSpace(ii))
                 {
-                    Log($"\r\nChosen {dv}. {items[dv.Value - 1].Trim()}", ConsoleColor.Cyan);
+                    ConsoleTo.LogColor($"\r\nChosen {dv}. {items[dv.Value - 1].Trim()}", ConsoleColor.Cyan);
                     itemIndex = dv.Value;
                 }
                 else
@@ -618,7 +617,7 @@ namespace Netnr.DataX.Application
                     var si = Convert.ToInt32(ii);
                     if (si > 0 && si <= items.Count)
                     {
-                        Log($"\r\nChosen {si}. {items[si - 1].Trim()}", ConsoleColor.Cyan);
+                        ConsoleTo.LogColor($"\r\nChosen {si}. {items[si - 1].Trim()}", ConsoleColor.Cyan);
                         itemIndex = si;
                     }
                 }
@@ -635,31 +634,23 @@ namespace Netnr.DataX.Application
         /// <param name="tip">提示文字</param>
         public static bool ConsoleReadBool(string tip)
         {
-            Console.Write($"{tip}? [y(1)/N(default)]: ");
+            Console.Write($"{TipSymbol(tip, "?")} [y(1)/N(default)]: ");
             return new[] { "y", "1" }.Contains(Console.ReadLine().ToLower().Trim());
         }
 
         /// <summary>
-        /// 输入数字
+        /// 输入多个 按指定分隔
         /// </summary>
         /// <param name="tip">提示文字</param>
-        /// <param name="dv">默认 1 </param>
-        public static int ConsoleReadNumber(string tip, int dv = 1)
+        /// <param name="delimiter">分隔符，默认逗号</param>
+        public static List<T> ConsoleReadJoin<T>(string tip, string delimiter = ",")
         {
-            Console.Write(TipSymbol(tip, $"(default: {dv}): "));
+            Console.Write($"{tip}: ");
+            var values = Console.ReadLine().Split(delimiter);
 
-            var ii = Console.ReadLine()?.Trim();
-            if (string.IsNullOrWhiteSpace(ii))
-            {
-                Log($"\nNumber {dv}\n", ConsoleColor.Cyan);
-                return dv;
-            }
-            else
-            {
-                _ = int.TryParse(ii, out int i);
-                Log($"\nNumber {i}\n", ConsoleColor.Cyan);
-                return i;
-            }
+            var result = values.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.ToConvert<T>()).ToList();
+            ConsoleTo.LogColor($"\r\n已输入 {result.Count} 个对象\r\n", ConsoleColor.Cyan);
+            return result;
         }
 
         /// <summary>
@@ -674,7 +665,7 @@ namespace Netnr.DataX.Application
         {
             if (rootPath.Exists)
             {
-                var allDirs = rootPath.GetDirectories();
+                var allDirs = rootPath.EnumerateDirectories();
 
                 var searchFiles = listSearch.Select(rootPath.GetFiles);
                 var mergeFiles = new List<FileInfo>();
@@ -684,7 +675,7 @@ namespace Netnr.DataX.Application
                 }
                 mergeFiles = mergeFiles.Distinct().ToList();
 
-                var searchDirs = listSearch.Select(rootPath.GetDirectories);
+                var searchDirs = listSearch.Select(rootPath.EnumerateDirectories);
                 var mergeDirs = new List<DirectoryInfo>();
                 foreach (var dirGroup in searchDirs)
                 {
@@ -703,7 +694,7 @@ namespace Netnr.DataX.Application
                         {
                             fileItem.Delete();
                         }
-                        Log($"{deleteFlag}删除文件: {fileItem.FullName}", isReallyDelete ? ConsoleColor.Red : null);
+                        ConsoleTo.LogColor($"{deleteFlag}删除文件: {fileItem.FullName}", isReallyDelete ? ConsoleColor.Red : null);
                     }
                 }
 
@@ -723,7 +714,7 @@ namespace Netnr.DataX.Application
                             {
                                 subDir.Delete(true);
                             }
-                            Log($"{deleteFlag}删除文件夹: {subDir.FullName}", isReallyDelete ? ConsoleColor.Red : null);
+                            ConsoleTo.LogColor($"{deleteFlag}删除文件夹: {subDir.FullName}", isReallyDelete ? ConsoleColor.Red : null);
                         }
                     }
                     else
@@ -796,27 +787,18 @@ namespace Netnr.DataX.Application
                     {
                         if (IPAddress.TryParse(item, out var addr))
                         {
-                            if (addr.AddressFamily == AddressFamily.InterNetworkV6)
-                            {
-                                var url = $"https://ip.useragentinfo.com/ipv6/{addr}";
-                                var res = await hc.GetStringAsync(url);
-                                var data = res.DeJson();
-                                result.Add(data.GetValue("ipv6"), $"{data.GetValue("country")} {data.GetValue("region")} {data.GetValue("city")}");
-                            }
-                            else
-                            {
-                                var url = $"https://opendata.baidu.com/api.php?query={item}&resource_id=6006&oe=utf8";
-                                var res = await hc.GetStringAsync(url);
-                                var data = res.DeJson().GetProperty("data").EnumerateArray().First();
-                                result.Add(data.GetValue("origipquery"), data.GetValue("location"));
-                            }
+                            var url = $"https://ip.zxinc.org/api.php?type=json&ip={addr}";
+                            var res = await hc.GetStringAsync(url);
+                            var data = res.DeJson();
+
+                            result.Add($"{addr}", data.GetProperty("data").GetValue("location").Replace("\t", " ").Replace("CZ88.NET", "").Trim());
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log(ex.Message);
+                ConsoleTo.LogColor(ex.Message);
             }
 
             return result;
@@ -842,7 +824,7 @@ namespace Netnr.DataX.Application
                 var result = MonitorTo.SSL(uri);
                 result.Logs.ForEach(item =>
                 {
-                    Log($"{item}\r\n", ConsoleColor.Red);
+                    ConsoleTo.LogColor($"{item}\r\n", ConsoleColor.Red);
                 });
                 listSSLModel = result.Data as List<MonitorTo.MonitorSSLModel>;
             }
@@ -854,28 +836,34 @@ namespace Netnr.DataX.Application
                     var sslModel = listSSLModel[i];
                     if (i > 0)
                     {
-                        Log("");
+                        ConsoleTo.LogColor("");
                     }
 
-                    Log($"颁发给: {sslModel.Subject}");
-                    Log($"颁发着: {sslModel.Issuer}");
-                    Log($"有效期: {sslModel.NotBefore} 至 {sslModel.NotAfter} (剩余 {sslModel.AvailableDay} 天)");
+                    ConsoleTo.LogColor($"颁发给: {sslModel.Subject}");
+                    ConsoleTo.LogColor($"颁发着: {sslModel.Issuer}");
+                    ConsoleTo.LogColor($"有效期: {sslModel.NotBefore} 至 {sslModel.NotAfter} (剩余 {sslModel.AvailableDay} 天)");
 
                     var isRevoked = sslModel.ChainStatus.Any(x => x.Status.HasFlag(X509ChainStatusFlags.Revoked))
                         ? string.Join(", ", sslModel.ChainStatus.Select(x => x.Status)) : "正常";
-                    Log($"吊销状态: {isRevoked}");
-                    if (i < 1)
+                    ConsoleTo.LogColor($"吊销状态: {isRevoked}");
+                    if (i < 1 && !string.IsNullOrWhiteSpace(sslModel.AlternativeName))
                     {
-                        Log($"备用名称: {sslModel.AlternativeName}");
+                        ConsoleTo.LogColor($"备用名称: {sslModel.AlternativeName}");
                     }
 
-                    Log($"加密算法: {sslModel.AlgorithmType} {sslModel.AlgorithmSize} bits");
-                    Log($"签名算法: {sslModel.SignatureAlgorithm}");
-                    Log($"SHA1指纹: {sslModel.Thumbprint}");
-                    Log($"SHA256指纹: {sslModel.Thumbprint256}");
+                    // 是根证书
+                    if (sslModel.Subject == sslModel.Issuer)
+                    {
+                        ConsoleTo.LogColor($"根证书: 是");
+                    }
 
-                    Log($"序列号: {sslModel.SerialNumber}");
-                    Log($"版本: {sslModel.Version}");
+                    ConsoleTo.LogColor($"加密算法: {sslModel.AlgorithmType} {sslModel.AlgorithmSize} bits");
+                    ConsoleTo.LogColor($"签名算法: {sslModel.SignatureAlgorithm}");
+                    ConsoleTo.LogColor($"SHA1指纹: {sslModel.Thumbprint}");
+                    ConsoleTo.LogColor($"SHA256指纹: {sslModel.Thumbprint256}");
+
+                    ConsoleTo.LogColor($"序列号: {sslModel.SerialNumber}");
+                    ConsoleTo.LogColor($"版本: {sslModel.Version}");
                 }
             }
         }
@@ -913,14 +901,14 @@ namespace Netnr.DataX.Application
 
                     if (new string[] { "status", "nameserver" }.Contains(key))
                     {
-                        val.Split(',').ToList().ForEach(vi =>
+                        val.Split(',').ForEach(vi =>
                         {
-                            Log($"{keyMap[key]}: {vi}");
+                            ConsoleTo.LogColor($"{keyMap[key]}: {vi}");
                         });
                     }
                     else
                     {
-                        Log($"{keyMap[key]}: {val}");
+                        ConsoleTo.LogColor($"{keyMap[key]}: {val}");
                     }
                 }
 
@@ -928,7 +916,7 @@ namespace Netnr.DataX.Application
             }
             catch (Exception ex)
             {
-                Log(ex);
+                ConsoleTo.LogError(ex);
             }
 
             return false;
@@ -942,39 +930,49 @@ namespace Netnr.DataX.Application
         {
             try
             {
-                var url = $"https://micp.chinaz.com/Handle/AjaxHandler.ashx?action=GetPermit&callback=fn&query={domain.ToUrlEncode()}&type=host&_={DateTime.Now.ToTimestamp()}";
+                var url = $"https://micp.chinaz.com/{domain.ToUrlEncode()}";
 
                 var hc = new HttpClient();
                 hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Netnr");
-                var html = await hc.GetStringAsync(url);
-                if (html.Length > 10)
-                {
-                    html = html[4..^3];
-                    var items = html.Split(',').ToList();
-                    var keyMap = new Dictionary<string, string>
-                    {
-                        {"ComName","主办单位名称" },
-                        {"Typ","主办单位性质" },
-                        {"Permit","网站备案号" },
-                        {"WebName","网站名称" },
-                    };
+                var result = await hc.GetStringAsync(url);
 
-                    foreach (var key in keyMap.Keys)
+                if (result.Contains("主办单位"))
+                {
+                    var s1 = result.IndexOf("<table");
+                    var s2 = result.IndexOf("</table>");
+                    result = result.Substring(s1, s2 - s1 + 8);
+
+                    var headers = "主办单位,单位性质,备案号,网站名称,审核时间".Split(',');
+
+                    var lines = result.Split('\n');
+                    var pattern = @">(.*)<\/td";
+                    for (int i = 0; i < lines.Length; i++)
                     {
-                        var val = items.FirstOrDefault(x => x.Contains(key)).Split(':').Last().Trim('"').Trim();
-                        Log($"{keyMap[key]}: {val}");
+                        var line = lines[i];
+                        var header = headers.FirstOrDefault(x => line.Contains($"{x}："));
+                        if (header != null)
+                        {
+                            var val = lines[i + 1].Trim();
+                            // 使用正则表达式提取内容
+                            var mr = Regex.Match(val, pattern);
+                            if (mr.Success)
+                            {
+                                val = mr.Groups[1].Value;
+                            }
+                            ConsoleTo.LogColor($"{header}: {val}");
+                        }
                     }
 
                     return true;
                 }
                 else
                 {
-                    Log($"Not found {domain}", ConsoleColor.Red);
+                    ConsoleTo.LogColor($"Not found {domain}", ConsoleColor.Red);
                 }
             }
             catch (Exception ex)
             {
-                Log(ex);
+                ConsoleTo.LogError(ex);
             }
 
             return false;
@@ -1142,6 +1140,73 @@ namespace Netnr.DataX.Application
         }
 
         /// <summary>
+        /// 消耗 Network
+        /// </summary>
+        /// <param name="url">下载资源链接</param>
+        /// <param name="working">结束、暂停</param>
+        /// <param name="speed">网速</param>
+        public static async Task ConsumeNetwork(string url, Func<ValueTuple<bool, bool>> working, int speed = 1024 * 1024 * 2)
+        {
+            var handler = new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            };
+            var httpClient = new HttpClient(handler);
+
+            while (working.Invoke().Item1)
+            {
+                try
+                {
+                    //暂停
+                    if (working.Invoke().Item2 == false)
+                    {
+                        await Task.Delay(1000);
+                    }
+                    else
+                    {
+                        using var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            using var download = await response.Content.ReadAsStreamAsync();
+
+                            int readLength;
+                            long receiveLength = 0;
+                            var buffer = new byte[1024];
+
+                            var sw = Stopwatch.StartNew();
+                            while (working.Invoke().Item1 && (readLength = await download.ReadAsync(buffer)) != 0)
+                            {
+                                //暂停
+                                if (working.Invoke().Item2 == false)
+                                {
+                                    break;
+                                }
+
+                                receiveLength += readLength;
+                                if (receiveLength >= speed * 0.1)
+                                {
+                                    receiveLength = 0;
+
+                                    var wait = 100 - (int)sw.ElapsedMilliseconds;
+                                    if (wait > 0)
+                                    {
+                                        await Task.Delay(wait);
+                                    }
+                                    sw.Restart();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    await Task.Delay(1000);
+                }
+            }
+        }
+
+        /// <summary>
         /// 保存
         /// </summary>
         /// <param name="dt"></param>
@@ -1154,15 +1219,17 @@ namespace Netnr.DataX.Application
 
             if (parserUA && dt.Columns.Contains("http_user_agent"))
             {
-                Log($"解析 User-Agent");
-
                 var lockObject = new object();
 
                 var dte = dt.AsEnumerable();
                 var po = new ParallelOptions
                 {
-                    MaxDegreeOfParallelism = Math.Max(2, Environment.ProcessorCount / 2)
+                    MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount / 2)
                 };
+                if (dt.Rows.Count > 100)
+                {
+                    ConsoleTo.LogColor($"正在并行（{po.MaxDegreeOfParallelism}）解析 User-Agent，共 {dt.Rows.Count} 条");
+                }
                 Parallel.ForEach(dte, po, dr =>
                 {
                     var http_user_agent = dr["http_user_agent"].ToString();
@@ -1213,26 +1280,31 @@ namespace Netnr.DataX.Application
                         }
                     }
                 });
-                Log($"解析完成，解析耗时 {st.Elapsed}");
+
+                if (dt.Rows.Count > 100)
+                {
+                    ConsoleTo.LogColor($"解析完成，解析耗时 {st.Elapsed}");
+                }
             }
 
             st.Restart();
-            Log($"分批写 {dt.Rows.Count} 条");
 
-            var dbConn = new ClickHouseConnection(conn);
-
-            using var bulk = new ClickHouseBulkCopy(dbConn)
+            if (dt.Rows.Count > 100)
             {
-                DestinationTableName = dt.TableName,
-                BatchSize = dt.Rows.Count
+                ConsoleTo.LogColor($"开始写入 {dt.Rows.Count} 条");
+            }
+
+            var connOption = new DbKitConnectionOption
+            {
+                ConnectionType = DBTypes.ClickHouse,
+                ConnectionString = conn
             };
+            var dbKit = connOption.CreateDbInstance();
+            var num = await dbKit.BulkCopy(dt);
 
-            var cts = new CancellationTokenSource();
-            await bulk.WriteToServerAsync(dt, cts.Token);
+            ConsoleTo.LogColor($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 已写入 {num} 条，当前写入耗时 {st.Elapsed}");
 
-            Log($"已写入 {bulk.RowsWritten} 条，当前写入耗时 {st.Elapsed}");
-
-            return (int)bulk.RowsWritten;
+            return num;
         }
 
         /// <summary>

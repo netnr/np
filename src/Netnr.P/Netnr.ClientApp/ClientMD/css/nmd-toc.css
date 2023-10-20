@@ -34,7 +34,7 @@
 
         .markdown-container .markdown-toc {
             position: sticky;
-            top: 1em;
+            top: 3em;
             display: block;
             max-width: 20em;
             max-height: 80vh;

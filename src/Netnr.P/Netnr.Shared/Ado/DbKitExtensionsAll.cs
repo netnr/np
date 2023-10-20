@@ -3,6 +3,7 @@
 using Oracle.ManagedDataAccess.Client;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
+using ClickHouse.Client.ADO;
 using MySqlConnector;
 using Npgsql;
 
@@ -18,7 +19,7 @@ public static partial class DbKitExtensions
     /// </summary>
     /// <param name="connOption"></param>
     /// <returns></returns>
-    public static DbKit CreateInstance(this DbKitConnectionOption connOption)
+    public static DbKit CreateDbInstance(this DbKitConnectionOption connOption)
     {
         DbKitConnectionOption newOption;
 
@@ -35,9 +36,9 @@ public static partial class DbKitExtensions
         }
 
         newOption.CreateDbConn();
-        var dbk = new DbKit(newOption);
+        var dbKit = new DbKit(newOption);
 
-        return dbk;
+        return dbKit;
     }
 
     /// <summary>
@@ -58,47 +59,26 @@ public static partial class DbKitExtensions
 
             switch (connOption.ConnectionType)
             {
-                case EnumTo.TypeDB.SQLite:
+                case DBTypes.SQLite:
                     connOption.Connection = new SqliteConnection(connOption.ConnectionString);
                     break;
-                case EnumTo.TypeDB.MySQL:
-                case EnumTo.TypeDB.MariaDB:
+                case DBTypes.MySQL:
+                case DBTypes.MariaDB:
                     connOption.Connection = new MySqlConnection(connOption.ConnectionString);
                     break;
-                case EnumTo.TypeDB.Oracle:
+                case DBTypes.Oracle:
                     connOption.Connection = new OracleConnection(connOption.ConnectionString);
                     break;
-                case EnumTo.TypeDB.SQLServer:
+                case DBTypes.SQLServer:
                     connOption.Connection = new SqlConnection(connOption.ConnectionString);
                     break;
-                case EnumTo.TypeDB.PostgreSQL:
+                case DBTypes.PostgreSQL:
                     connOption.Connection = new NpgsqlConnection(connOption.ConnectionString);
                     break;
+                case DBTypes.ClickHouse:
+                    connOption.Connection = new ClickHouseConnection(connOption.ConnectionString);
+                    break;
             }
-        }
-    }
-
-    /// <summary>
-    /// 手动开启连接
-    /// </summary>
-    /// <param name="connOption"></param>
-    public static async Task Open(this DbKitConnectionOption connOption)
-    {
-        if (connOption.Connection?.State == ConnectionState.Closed)
-        {
-            await connOption.Connection.OpenAsync();
-        }
-    }
-
-    /// <summary>
-    /// 手动关闭连接
-    /// </summary>
-    /// <param name="connOption"></param>
-    public static async Task Close(this DbKitConnectionOption connOption)
-    {
-        if (connOption.Connection?.State == ConnectionState.Open)
-        {
-            await connOption.Connection.CloseAsync();
         }
     }
 
@@ -110,7 +90,7 @@ public static partial class DbKitExtensions
     public static string GetDefaultDatabaseName(this DbKitConnectionOption connOption)
     {
         string databaseName;
-        if (connOption.ConnectionType == EnumTo.TypeDB.Oracle)
+        if (connOption.ConnectionType == DBTypes.Oracle)
         {
             var csb = new OracleConnectionStringBuilder(connOption.ConnectionString);
             databaseName = csb.UserID;
@@ -125,6 +105,122 @@ public static partial class DbKitExtensions
     }
 
     /// <summary>
+    /// 获取连接信息（去密码）
+    /// </summary>
+    /// <param name="connOption"></param>
+    /// <param name="isReplace">替换，默认删除</param>
+    /// <returns></returns>
+    public static string GetSafeConnectionString(this DbKitConnectionOption connOption, bool isReplace = false)
+    {
+        var conn = connOption.ConnectionString;
+        if (string.IsNullOrWhiteSpace(conn) && connOption.Connection != null)
+        {
+            conn = connOption.Connection.ConnectionString;
+        }
+
+        switch (connOption.ConnectionType)
+        {
+            case DBTypes.SQLite:
+                {
+                    var csb = new SqliteConnectionStringBuilder(conn);
+                    if (isReplace)
+                    {
+                        csb.Password = "***";
+                    }
+                    else
+                    {
+                        csb.Remove(nameof(csb.Password));
+                    }
+                    conn = csb.ToString();
+                }
+                break;
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
+                {
+                    var csb = new MySqlConnectionStringBuilder(conn);
+                    if (isReplace)
+                    {
+                        csb.Password = "***";
+                    }
+                    else
+                    {
+                        csb.Remove(nameof(csb.Password));
+                    }
+                    conn = csb.ToString();
+                }
+                break;
+            case DBTypes.Oracle:
+                {
+                    var csb = new OracleConnectionStringBuilder(conn);
+                    if (isReplace)
+                    {
+                        csb.Password = "***";
+                    }
+                    else
+                    {
+                        csb.Remove(nameof(csb.Password));
+                    }
+                    conn = csb.ToString();
+                }
+                break;
+            case DBTypes.SQLServer:
+                {
+                    var csb = new SqlConnectionStringBuilder(conn);
+                    if (isReplace)
+                    {
+                        csb.Password = "***";
+                    }
+                    else
+                    {
+                        csb.Remove(nameof(csb.Password));
+                    }
+                    conn = csb.ToString();
+                }
+                break;
+            case DBTypes.PostgreSQL:
+                {
+                    var csb = new NpgsqlConnectionStringBuilder(conn);
+                    if (isReplace)
+                    {
+                        csb.Password = "***";
+                    }
+                    else
+                    {
+                        csb.Remove(nameof(csb.Password));
+                    }
+                    conn = csb.ToString();
+                }
+                break;
+            case DBTypes.ClickHouse:
+                {
+                    var csb = new ClickHouseConnectionStringBuilder(conn);
+                    if (isReplace)
+                    {
+                        csb.Password = "***";
+                    }
+                    else
+                    {
+                        csb.Remove(nameof(csb.Password));
+                    }
+                    conn = csb.ToString();
+                }
+                break;
+        }
+
+        return conn;
+    }
+
+    /// <summary>
+    /// 获取连接信息项
+    /// </summary>
+    /// <param name="connOption"></param>
+    /// <returns></returns>
+    public static string GetSafeConnectionOption(this DbKitConnectionOption connOption)
+    {
+        return $"[{connOption.ConnectionRemark}]({connOption.ConnectionType}://{connOption.GetSafeConnectionString()})";
+    }
+
+    /// <summary>
     /// 设置连接字符串数据库名（MySQL、SQLServer、PostgreSQL）
     /// </summary>
     /// <param name="connOption"></param>
@@ -136,15 +232,19 @@ public static partial class DbKitExtensions
         {
             connOption.ConnectionString = connOption.ConnectionType switch
             {
-                EnumTo.TypeDB.MySQL or EnumTo.TypeDB.MariaDB => new MySqlConnectionStringBuilder(connOption.ConnectionString)
+                DBTypes.MySQL or DBTypes.MariaDB => new MySqlConnectionStringBuilder(connOption.ConnectionString)
                 {
                     Database = databaseName
                 }.ConnectionString,
-                EnumTo.TypeDB.SQLServer => new SqlConnectionStringBuilder(connOption.ConnectionString)
+                DBTypes.SQLServer => new SqlConnectionStringBuilder(connOption.ConnectionString)
                 {
                     InitialCatalog = databaseName
                 }.ConnectionString,
-                EnumTo.TypeDB.PostgreSQL => new NpgsqlConnectionStringBuilder(connOption.ConnectionString)
+                DBTypes.PostgreSQL => new NpgsqlConnectionStringBuilder(connOption.ConnectionString)
+                {
+                    Database = databaseName
+                }.ConnectionString,
+                DBTypes.ClickHouse => new ClickHouseConnectionStringBuilder(connOption.ConnectionString)
                 {
                     Database = databaseName
                 }.ConnectionString,
@@ -166,8 +266,8 @@ public static partial class DbKitExtensions
         {
             switch (db.ConnOption.ConnectionType)
             {
-                case EnumTo.TypeDB.MySQL:
-                case EnumTo.TypeDB.MariaDB:
+                case DBTypes.MySQL:
+                case DBTypes.MariaDB:
                     {
                         var edo = await db.SqlExecuteDataOnly("SHOW VARIABLES");
                         var dt = edo.Datas.Tables[0];
@@ -224,7 +324,7 @@ public static partial class DbKitExtensions
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\r\n预检出错\r\n{ex.Message}\r\n");
+            Console.WriteLine($"\r\n预执行出错\r\n{ex.Message}\r\n");
             num = -1;
         }
 
@@ -244,21 +344,24 @@ public static partial class DbKitExtensions
 
         switch (db.ConnOption.ConnectionType)
         {
-            case EnumTo.TypeDB.SQLite:
+            case DBTypes.SQLite:
                 num = await db.BulkBatchSQLite(dt);
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 num = isCopy ? await db.BulkCopyMySQL(dt) : await db.BulkBatchMySQL(dt);
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 num = await db.BulkCopyOracle(dt);
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 num = await db.BulkCopySQLServer(dt);
                 break;
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.PostgreSQL:
                 num = await db.BulkKeepIdentityPostgreSQL(dt);
+                break;
+            case DBTypes.ClickHouse:
+                num = await db.BulkCopyClickHouse(dt);
                 break;
         }
 
@@ -278,20 +381,20 @@ public static partial class DbKitExtensions
 
         switch (db.ConnOption.ConnectionType)
         {
-            case EnumTo.TypeDB.SQLite:
+            case DBTypes.SQLite:
                 num = await db.BulkBatchSQLite(dt, sqlEmpty);
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 num = await db.BulkBatchMySQL(dt, sqlEmpty);
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 num = await db.BulkBatchOracle(dt, sqlEmpty);
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 num = await db.BulkBatchSQLServer(dt, sqlEmpty);
                 break;
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.PostgreSQL:
                 num = await db.BulkBatchPostgreSQL(dt, sqlEmpty);
                 break;
         }

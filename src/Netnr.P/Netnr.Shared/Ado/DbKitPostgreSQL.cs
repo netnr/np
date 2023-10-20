@@ -24,7 +24,7 @@ public partial class DbKit
 
             //提取表列类型与数据库类型
             var cb = new NpgsqlCommandBuilder();
-            var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, EnumTo.TypeDB.PostgreSQL);
+            var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, DBTypes.PostgreSQL);
             cb.DataAdapter = new NpgsqlDataAdapter
             {
                 SelectCommand = new NpgsqlCommand($"select * from {sntn} where 0=1", connection)
@@ -33,10 +33,7 @@ public partial class DbKit
             //获取列类型
             var pars = cb.GetInsertCommand(true).Parameters;
             var colDbType = new Dictionary<string, NpgsqlDbType>();
-            foreach (NpgsqlParameter par in pars)
-            {
-                colDbType.Add(par.SourceColumn, par.NpgsqlDbType);
-            }
+            pars.ForEach(x => colDbType.Add(x.SourceColumn, x.NpgsqlDbType));
 
             //获取自增
             var dtSchema = new DataTable();
@@ -113,7 +110,7 @@ public partial class DbKit
             var cb = new NpgsqlCommandBuilder();
             if (string.IsNullOrWhiteSpace(sqlEmpty))
             {
-                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, EnumTo.TypeDB.PostgreSQL);
+                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, DBTypes.PostgreSQL);
                 sqlEmpty = DbKitExtensions.SqlEmpty(sntn);
             }
 

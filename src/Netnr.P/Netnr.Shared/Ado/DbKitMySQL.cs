@@ -63,7 +63,7 @@ public partial class DbKit
             var cb = new MySqlCommandBuilder();
             if (string.IsNullOrWhiteSpace(sqlEmpty))
             {
-                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, EnumTo.TypeDB.MySQL);
+                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, DBTypes.MySQL);
                 sqlEmpty = DbKitExtensions.SqlEmpty(sntn);
             }
 

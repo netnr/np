@@ -138,15 +138,12 @@ let nrPage = {
                     break;
 
                 case "download-markdown":
-                case "download-word":
                 case "download-html":
                 case "download-png":
                 case "download-pdf":
                     {
                         if (nrApp.tsMd && !nrVary.domMarkdown.classList.contains('d-none')) {
-                            nrcBase.amdHide();
                             await nrApp.tsMd.save(action.split('-').pop());
-                            nrcBase.amdReset();
                         } else {
                             nrApp.alert("请先点击 转文档 再下载");
                         }
@@ -165,7 +162,7 @@ let nrPage = {
                 if (nrApp.tsMd == null) {
 
                     //markdown 编辑器
-                    await nrcRely.remote("netnrmdAce.js");
+                    await nrcRely.remote("netnrmdEditor");
                     await nrcRely.remote("netnrmd");
 
                     nrApp.tsMd = netnrmd.init(".nrg-markdown", {
@@ -193,7 +190,7 @@ let nrPage = {
         nrVary.domBtnDemo.addEventListener('click', async function () {
             nrApp.setLoading(this);
 
-            await nrPage.openUrl("https://httpbin.org/spec.json")
+            await nrPage.openUrl("https://petstore.swagger.io/v2/swagger.json")
 
             nrApp.setLoading(this, true);
         });
@@ -259,7 +256,7 @@ let nrPage = {
         let isFirst = !window["swg"];
 
         await nrcRely.remote('swaggerui');
-        await nrcBase.importScript('/file/ss-swaggerto.js');
+        await nrcBase.importScript('/file/ss-swaggerto.js?202307251050');
 
         //首次，重写方法（该方法依赖异步加载组件）
         if (isFirst) {

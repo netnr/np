@@ -108,7 +108,7 @@ let nrPage = {
             } else {
                 nrApp.setLoading(nrVary.domBtnSave);
 
-                let fd = nrcBase.jsonToFormData(obj);
+                let fd = nrcBase.fromKeyToFormData(obj);
 
                 let result = await nrWeb.reqServer("/Gist/Save", { method: "POST", redirect: 'manual', body: fd });
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Netnr;
 
@@ -10,124 +11,93 @@ namespace Netnr;
 /// Timestamp 41位的时间戳，约 69 年
 /// Sequence 12位的序列号
 /// </remarks>
-public class Snowflake53To
+public partial class Snowflake53To
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class StopwatchTimeSource
-    {
-        /// <summary>
-        /// 跑表
-        /// </summary>
-        public static readonly Stopwatch Sw = Stopwatch.StartNew();
+    private static readonly object _genlock = new();
+    private static long _lastTimestamp = -1;
+    private static int _sequence = 0;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public DateTimeOffset Epoch { get; private set; }
+    private static readonly DateTimeOffset DefaultEpoch = new(2022, 6, 6, 0, 0, 0, TimeSpan.Zero);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected TimeSpan Offset { get; private set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public TimeSpan TickDuration { get; private set; }
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        /// <param name="epoch"></param>
-        /// <param name="tickDuration"></param>
-        public StopwatchTimeSource(DateTimeOffset epoch, TimeSpan tickDuration)
-        {
-            Epoch = epoch;
-            Offset = (DateTimeOffset.UtcNow - Epoch);
-            TickDuration = tickDuration;
-        }
-
-        /// <summary>
-        /// 取嘀嗒
-        /// </summary>
-        /// <returns></returns>
-        public long GetTicks() => (Offset.Ticks + Sw.ElapsedTicks) / TickDuration.Ticks;
-    }
+    private static readonly TimeSpan TickDuration = TimeSpan.FromMilliseconds(1);
 
     /// <summary>
-    /// 生成
+    /// 生成ID
     /// </summary>
-    public class IdGenerator
+    /// <returns></returns>
+    public static long Id()
     {
-        /// <summary>
-        /// 首次使用设置，默认 2022-06-06
-        /// </summary>
-        public static DateTime DefaultEpoch = new(2022, 6, 6, 0, 0, 0, DateTimeKind.Utc);
-
-        private static readonly StopwatchTimeSource timesource = new(DefaultEpoch, TimeSpan.FromMilliseconds(1));
-
-        private int _sequence;
-        private long _lastgen = -1;
-
-        private readonly object _genlock = new();
-
-        /// <summary>
-        /// Create
-        /// </summary>
-        /// <returns></returns>
-        public long CreateId()
+        lock (_genlock)
         {
-            lock (_genlock)
+            var timestamp = GetTimestamp();
+
+            if (timestamp == _lastTimestamp)
             {
-                var ticks = timesource.GetTicks();
-                var timestamp = ticks & ((1L << 41) - 1);
+                _sequence++;
 
-                if (timestamp == _lastgen)
+                if (_sequence > 4095)
                 {
-                    _sequence++;
-                }
-                else
-                {
+                    // Wait until next millisecond
+                    while (timestamp <= _lastTimestamp)
+                    {
+                        timestamp = GetTimestamp();
+                        Thread.SpinWait(1000);
+                    }
+
                     _sequence = 0;
-                    _lastgen = timestamp;
+                    _lastTimestamp = timestamp;
                 }
+            }
+            else
+            {
+                _sequence = 0;
+                _lastTimestamp = timestamp;
+            }
 
-                unchecked
-                {
-                    return (timestamp << 12) + _sequence;
-                }
+            unchecked
+            {
+                return (timestamp << 12) + _sequence;
             }
         }
     }
 
-
-    #region 实例
-
-    private static IdGenerator IdGen { get; set; }
-
     /// <summary>
-    /// 实例对象
+    /// 尝试分析
     /// </summary>
-    public static IdGenerator IdGenInstance
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static DateTime? Parse(long id)
     {
-        get
+        var timestampPart = id >> 12;
+
+        if (timestampPart == 0)
         {
-            IdGen ??= new IdGenerator();
-            return IdGen;
+            return null;
         }
-        set
+        else
         {
-            IdGen = value;
+            var timeDiff = TimeSpan.FromTicks(TickDuration.Ticks * timestampPart);
+            var time = DefaultEpoch + timeDiff;
+
+            return time.LocalDateTime;
         }
     }
 
     /// <summary>
-    /// 新ID
+    /// 根据时间获取ID，用于范围查询
     /// </summary>
+    /// <param name="time"></param>
     /// <returns></returns>
-    public static long Id() => IdGenInstance.CreateId();
+    public static long GetId(DateTime time)
+    {
+        time = time.ToUniversalTime();
+        var t = (long)(time - DefaultEpoch).TotalMilliseconds;
+        return t << 12;
+    }
 
-    #endregion
+    private static long GetTimestamp()
+    {
+        var timeDiff = DateTimeOffset.UtcNow - DefaultEpoch;
+        return (long)(timeDiff.TotalMilliseconds / TickDuration.TotalMilliseconds);
+    }
 }

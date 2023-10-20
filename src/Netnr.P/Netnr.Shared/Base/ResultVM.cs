@@ -113,7 +113,7 @@ public class ResultVM
     /// 设置快捷标签，赋值code、msg
     /// </summary>
     /// <param name="tag">快捷标签枚举</param>
-    public void Set(EnumTo.RTag tag)
+    public void Set(RCodeTypes tag)
     {
         Code = Convert.ToInt32(tag);
         Msg = tag.ToString();
@@ -127,11 +127,11 @@ public class ResultVM
     {
         if (isSuccess)
         {
-            Set(EnumTo.RTag.success);
+            Set(RCodeTypes.success);
         }
         else
         {
-            Set(EnumTo.RTag.failure);
+            Set(RCodeTypes.failure);
         }
     }
 
@@ -141,8 +141,8 @@ public class ResultVM
     /// <param name="ex"></param>
     public void Set(Exception ex)
     {
-        ConsoleTo.Title("Exception", ex);
-        Set(EnumTo.RTag.exception);
+        ConsoleTo.WriteCard("Exception", ex);
+        Set(RCodeTypes.exception);
         Msg = ex.ToJson();
     }
 

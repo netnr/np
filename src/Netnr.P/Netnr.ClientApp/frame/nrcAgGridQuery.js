@@ -5,7 +5,7 @@
         }
         return sql
     },
-    typeDB: "SQLite",
+    DBTypes: "SQLite",
 
     buildSql: (request) => {
 
@@ -220,7 +220,7 @@
         const endRow = request.endRow;
         const pageSize = endRow - startRow;
 
-        switch (nrcAgGridQuery.typeDB) {
+        switch (nrcAgGridQuery.DBTypes) {
             case "SQLite":
             case "PostgreSQL":
                 return ` LIMIT ${pageSize} OFFSET ${startRow}`
@@ -235,4 +235,5 @@
     }
 };
 
+Object.assign(window, { nrcAgGridQuery });
 export { nrcAgGridQuery }

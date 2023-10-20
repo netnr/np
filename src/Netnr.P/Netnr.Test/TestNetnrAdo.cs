@@ -11,28 +11,28 @@ namespace Netnr.Test
         {
             var connOption = new DbKitConnectionOption
             {
-                ConnectionType = EnumTo.TypeDB.SQLServer,
+                ConnectionType = DBTypes.SQLServer,
                 ConnectionString = "Server=local.host,1433;uid=sa;pwd=Abc1230..;database=xops"
             };
-            var dbk = connOption.CreateInstance();
-            dbk.ConnOption.AutoClose = false;
+            var dbKit = connOption.CreateDbInstance();
+            dbKit.ConnOption.AutoClose = false;
 
             var sql1 = "update base_user set user_phone='123' where user_account='xops'";
             var sql2 = "update base_user set user_mark='456' where user_account='xops'";
             var sql3 = "select * from base_user";
 
-            await dbk.SafeConn(async () =>
+            await dbKit.SafeConn(async () =>
             {
-                var edo = await dbk.SqlExecuteDataOnly(sql3);
+                var edo = await dbKit.SqlExecuteDataOnly(sql3);
                 var rows = edo.Datas.Tables[0];
                 Debug.WriteLine(rows.ToJson());
 
-                var eds = await dbk.SqlExecuteDataSet(sql3);
+                var eds = await dbKit.SqlExecuteDataSet(sql3);
                 Debug.WriteLine(eds.Datas.Tables[0].ToJson());
 
                 var num = 0;
 
-                var cmdOption = dbk.CommandCreate();
+                var cmdOption = dbKit.CommandCreate();
                 await cmdOption.OpenTransactionAsync();
                 cmdOption.AutoCommit = false;
 
@@ -54,18 +54,18 @@ namespace Netnr.Test
         {
             var connOption = new DbKitConnectionOption
             {
-                ConnectionType = EnumTo.TypeDB.SQLite,
+                ConnectionType = DBTypes.SQLite,
                 ConnectionString = @"Data Source=D:\tmp\res\tmp.db"
             };
-            var dbk = connOption.CreateInstance();
+            var dbKit = connOption.CreateDbInstance();
 
             var st = Stopwatch.StartNew();
-            var edo = await dbk.SqlExecuteDataOnly("select * from stats_zoning limit 100");
+            var edo = await dbKit.SqlExecuteDataOnly("select * from stats_zoning limit 100");
             Debug.WriteLine(st.Elapsed);
             st.Restart();
 
             //查询 Schema 极慢，耗时 7 秒
-            var eds = await dbk.SqlExecuteDataSet("select * from stats_zoning limit 100");
+            _ = await dbKit.SqlExecuteDataSet("select * from stats_zoning limit 100");
             Debug.WriteLine(st.Elapsed);
         }
 
@@ -93,21 +93,23 @@ namespace Netnr.Test
         {
             // SQLServer
             {
-                var conn = DbKitExtensions.PreCheckConn(EnumTo.TypeDB.SQLServer, "Server=local.host;uid=sa;pwd=Abc1230..;");
-                var csb = new SqlConnectionStringBuilder(conn);
-                csb.InitialCatalog = "xops";
+                var conn = DbKitExtensions.PreCheckConn("Server=local.host;uid=sa;pwd=Abc1230..;", DBTypes.SQLServer);
+                var csb = new SqlConnectionStringBuilder(conn)
+                {
+                    InitialCatalog = "xops"
+                };
                 var dbConn = new SqlConnection(csb.ConnectionString);
                 dbConn.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbConn)} InfoMessage: {e.Message}");
 
                 var connOption = new DbKitConnectionOption
                 {
-                    ConnectionType = EnumTo.TypeDB.SQLServer,
+                    ConnectionType = DBTypes.SQLServer,
                     Connection = dbConn
                 };
-                var dbk = new DbKit(connOption);
+                var dbKit = new DbKit(connOption);
 
                 var sql = "print newid()";
-                var result = await dbk.SqlExecuteDataOnly(sql);
+                var result = await dbKit.SqlExecuteDataOnly(sql);
             }
 
             // PostgreSQL
@@ -124,13 +126,13 @@ $$;";
 
                 var connOption = new DbKitConnectionOption
                 {
-                    ConnectionType = EnumTo.TypeDB.PostgreSQL,
+                    ConnectionType = DBTypes.PostgreSQL,
                     Connection = dbConn,
                     AutoClose = false
                 };
-                var dbk = new DbKit(connOption);
+                var dbKit = new DbKit(connOption);
 
-                var result = await dbk.SqlExecuteDataOnly(sql);
+                var result = await dbKit.SqlExecuteDataOnly(sql);
             }
 
             {
@@ -141,13 +143,13 @@ $$;";
 
                 var connOption = new DbKitConnectionOption
                 {
-                    ConnectionType = EnumTo.TypeDB.Oracle,
+                    ConnectionType = DBTypes.Oracle,
                     Connection = dbConn,
                     AutoClose = false
                 };
-                var dbk = new DbKit(connOption);
+                var dbKit = new DbKit(connOption);
 
-                var result = await dbk.SqlExecuteDataOnly(sql);
+                var result = await dbKit.SqlExecuteDataOnly(sql);
             }
         }
 
@@ -213,13 +215,13 @@ $$;";
 
                     if (++rowCount % 10000 == 0)
                     {
-                        Debug.WriteLine($"{rowCount} rows, memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
+                        Debug.WriteLine($"{rowCount} rows, memory: {ParsingTo.FormatByte(Environment.WorkingSet)}");
                         dt.Clear();
                     }
                 }
             } while (reader.NextResult());
 
-            Debug.WriteLine($"Done! memory: {ParsingTo.FormatByteSize(Environment.WorkingSet)}");
+            Debug.WriteLine($"Done! memory: {ParsingTo.FormatByte(Environment.WorkingSet)}");
         }
     }
 }

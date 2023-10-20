@@ -3,6 +3,116 @@
 namespace Netnr;
 
 /// <summary>
+/// 数据库信息
+/// </summary>
+public partial class DataKitDatabaseResult
+{
+    /// <summary>
+    /// 库名
+    /// </summary>
+    public string DatabaseName { get; set; }
+    /// <summary>
+    /// 所属者
+    /// </summary>
+    public string DatabaseOwner { get; set; }
+    /// <summary>
+    /// 表空间
+    /// </summary>
+    public string DatabaseSpace { get; set; }
+    /// <summary>
+    /// 字符集
+    /// </summary>
+    public string DatabaseCharset { get; set; }
+    /// <summary>
+    /// 排序规则
+    /// </summary>
+    public string DatabaseCollation { get; set; }
+    /// <summary>
+    /// 数据路径
+    /// </summary>
+    public string DatabasePath { get; set; }
+    /// <summary>
+    /// 日志路径
+    /// </summary>
+    public string DatabaseLogPath { get; set; }
+    /// <summary>
+    /// 数据大小
+    /// </summary>
+    public long DatabaseDataLength { get; set; }
+    /// <summary>
+    /// 日志大小
+    /// </summary>
+    public long DatabaseLogLength { get; set; }
+    /// <summary>
+    /// 索引大小
+    /// </summary>
+    public long DatabaseIndexLength { get; set; }
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime? DatabaseCreateTime { get; set; }
+}
+
+/// <summary>
+/// 表信息
+/// </summary>
+public partial class DataKitTableResult
+{
+    /// <summary>
+    /// 表名
+    /// </summary>
+    public string TableName { get; set; }
+    /// <summary>
+    /// 模式名
+    /// </summary>
+    public string SchemaName { get; set; }
+    /// <summary>
+    /// 所属
+    /// </summary>
+    public string TableOwner { get; set; }
+    /// <summary>
+    /// 空间
+    /// </summary>
+    public string TableSpace { get; set; }
+    /// <summary>
+    /// 表类型（表、视图）
+    /// </summary>
+    public string TableType { get; set; }
+    /// <summary>
+    /// 引擎
+    /// </summary>
+    public string TableEngine { get; set; }
+    /// <summary>
+    /// 总行数
+    /// </summary>
+    public long TableRows { get; set; }
+    /// <summary>
+    /// 数据大小
+    /// </summary>
+    public long TableDataLength { get; set; }
+    /// <summary>
+    /// 索引大小
+    /// </summary>
+    public long TableIndexLength { get; set; }
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime? TableCreateTime { get; set; }
+    /// <summary>
+    /// 修改时间
+    /// </summary>
+    public DateTime? TableModifyTime { get; set; }
+    /// <summary>
+    /// 排序规则
+    /// </summary>
+    public string TableCollation { get; set; }
+    /// <summary>
+    /// 表注释
+    /// </summary>
+    public string TableComment { get; set; }
+}
+
+/// <summary>
 /// 表列信息
 /// </summary>
 public partial class DataKitColumnResult
@@ -63,116 +173,6 @@ public partial class DataKitColumnResult
     /// 列注释
     /// </summary>
     public string ColumnComment { get; set; }
-}
-
-/// <summary>
-/// 数据库信息
-/// </summary>
-public partial class DataKitDatabaseResult
-{
-    /// <summary>
-    /// 库名
-    /// </summary>
-    public string DatabaseName { get; set; }
-    /// <summary>
-    /// 所属者
-    /// </summary>
-    public string DatabaseOwner { get; set; }
-    /// <summary>
-    /// 表空间
-    /// </summary>
-    public string DatabaseSpace { get; set; }
-    /// <summary>
-    /// 字符集
-    /// </summary>
-    public string DatabaseCharset { get; set; }
-    /// <summary>
-    /// 排序规则
-    /// </summary>
-    public string DatabaseCollation { get; set; }
-    /// <summary>
-    /// 数据路径
-    /// </summary>
-    public string DatabasePath { get; set; }
-    /// <summary>
-    /// 日志路径
-    /// </summary>
-    public string DatabaseLogPath { get; set; }
-    /// <summary>
-    /// 数据大小
-    /// </summary>
-    public long DatabaseDataLength { get; set; }
-    /// <summary>
-    /// 日志大小
-    /// </summary>
-    public long DatabaseLogLength { get; set; }
-    /// <summary>
-    /// 索引大小
-    /// </summary>
-    public long DatabaseIndexLength { get; set; }
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime? DatabaseCreateTime { get; set; }
-}
-
-/// <summary>
-/// 表信息
-/// </summary>
-public partial class DataKitTablResult
-{
-    /// <summary>
-    /// 表名
-    /// </summary>
-    public string TableName { get; set; }
-    /// <summary>
-    /// 模式名
-    /// </summary>
-    public string SchemaName { get; set; }
-    /// <summary>
-    /// 所属
-    /// </summary>
-    public string TableOwner { get; set; }
-    /// <summary>
-    /// 空间
-    /// </summary>
-    public string TableSpace { get; set; }
-    /// <summary>
-    /// 表类型（表、视图）
-    /// </summary>
-    public string TableType { get; set; }
-    /// <summary>
-    /// 引擎
-    /// </summary>
-    public string TableEngine { get; set; }
-    /// <summary>
-    /// 总行数
-    /// </summary>
-    public long TableRows { get; set; }
-    /// <summary>
-    /// 数据大小
-    /// </summary>
-    public long TableDataLength { get; set; }
-    /// <summary>
-    /// 索引大小
-    /// </summary>
-    public long TableIndexLength { get; set; }
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime? TableCreateTime { get; set; }
-    /// <summary>
-    /// 修改时间
-    /// </summary>
-    public DateTime? TableModifyTime { get; set; }
-    /// <summary>
-    /// 排序规则
-    /// </summary>
-    public string TableCollation { get; set; }
-    /// <summary>
-    /// 表注释
-    /// </summary>
-    public string TableComment { get; set; }
 }
 
 /// <summary>
@@ -259,6 +259,11 @@ public partial class DataKitTransfer
         /// </summary>
         public bool WriteDeleteData { get; set; }
         /// <summary>
+        /// 忽略表名（可带模式名 SchemaName）
+        /// </summary>
+        public List<string> ListIgnoreTableName { get; set; } = new List<string>();
+
+        /// <summary>
         /// 转换为
         /// </summary>
         /// <param name="isSimilar">相似匹配，默认是</param>
@@ -268,42 +273,47 @@ public partial class DataKitTransfer
             var mdb = this;
             var mdt = new MigrateDataTable().ToDeepCopy(mdb);
 
-            var readTables = await DataKitTo.CreateDkInstance(mdt.ReadConnectionInfo).GetTable();
-            var writeTables = await DataKitTo.CreateDkInstance(mdt.WriteConnectionInfo).GetTable();
+            var readTables = await DataKitTo.CreateDataKitInstance(mdt.ReadConnectionInfo).GetTable();
+            var writeTables = await DataKitTo.CreateDataKitInstance(mdt.WriteConnectionInfo).GetTable();
 
             if (readTables?.Count > 0 && writeTables?.Count > 0)
             {
                 readTables.ForEach(readTable =>
                 {
-                    //读取库的表名 在 写入库
-                    List<DataKitTablResult> listWriteTable = null;
+                    var readSNTN = DbKitExtensions.SqlSNTN(readTable.TableName, readTable.SchemaName, mdt.ReadConnectionInfo.ConnectionType);
 
-                    //相似匹配
-                    if (isSimilar)
+                    //忽略表名
+                    if (!mdb.ListIgnoreTableName.Any(x => DbKitExtensions.SqlEqualSNTN(x, readSNTN)))
                     {
-                        listWriteTable = writeTables.Where(x => DataKitTo.SimilarMatch(x.TableName, readTable.TableName)).ToList();
-                    }
-                    else
-                    {
-                        listWriteTable = writeTables.Where(x => readTable.TableName == x.TableName).ToList();
-                    }
-                    if (listWriteTable.Count > 0)
-                    {
-                        //尝试匹配模式名 或 取第一条
-                        var writeTable = listWriteTable.FirstOrDefault(x => x.SchemaName == readTable.SchemaName);
-                        writeTable ??= listWriteTable.First();
+                        //读取库的表名 在 写入库
+                        List<DataKitTableResult> listWriteTable = null;
 
-                        var readSNTN = DbKitExtensions.SqlSNTN(readTable.TableName, readTable.SchemaName, mdt.ReadConnectionInfo.ConnectionType);
-                        var writeSNTN = DbKitExtensions.SqlSNTN(writeTable.TableName, writeTable.SchemaName, mdt.WriteConnectionInfo.ConnectionType);
-
-                        var clearTableSql = $"{(mdt.WriteConnectionInfo.ConnectionType == EnumTo.TypeDB.SQLite ? "DELETE FROM" : "TRUNCATE TABLE")} {writeSNTN}";
-
-                        mdt.ListReadWrite.Add(new ReadWriteItem
+                        //相似匹配
+                        if (isSimilar)
                         {
-                            ReadDataSQL = $"SELECT * FROM {readSNTN}",
-                            WriteTableName = DbKitExtensions.SqlSNTN(writeTable.TableName, writeTable.SchemaName),
-                            WriteDeleteSQL = mdb.WriteDeleteData ? clearTableSql : null
-                        });
+                            listWriteTable = writeTables.Where(x => DataKitTo.SimilarMatch(x.TableName, readTable.TableName)).ToList();
+                        }
+                        else
+                        {
+                            listWriteTable = writeTables.Where(x => readTable.TableName == x.TableName).ToList();
+                        }
+                        if (listWriteTable.Count > 0)
+                        {
+                            //尝试匹配模式名 或 取第一条
+                            var writeTable = listWriteTable.FirstOrDefault(x => x.SchemaName == readTable.SchemaName);
+                            writeTable ??= listWriteTable.First();
+
+                            var writeSNTN = DbKitExtensions.SqlSNTN(writeTable.TableName, writeTable.SchemaName, mdt.WriteConnectionInfo.ConnectionType);
+
+                            var clearTableSql = $"{(mdt.WriteConnectionInfo.ConnectionType == DBTypes.SQLite ? "DELETE FROM" : "TRUNCATE TABLE")} {writeSNTN}";
+
+                            mdt.ListReadWrite.Add(new ReadWriteItem
+                            {
+                                ReadDataSQL = $"SELECT * FROM {readSNTN}",
+                                WriteTableName = DbKitExtensions.SqlSNTN(writeTable.TableName, writeTable.SchemaName),
+                                WriteDeleteSQL = mdb.WriteDeleteData ? clearTableSql : null
+                            });
+                        }
                     }
                 });
             }
@@ -334,7 +344,7 @@ public partial class DataKitTransfer
         /// </summary>
         public string ExportType { get; set; } = "all";
         /// <summary>
-        /// 导出包完整路径
+        /// 导出包完整路径（自动创建目录）
         /// </summary>
         public string PackagePath { get; set; }
     }
@@ -359,6 +369,45 @@ public partial class DataKitTransfer
         /// 读取表名（可带模式名 SchemaName）
         /// </summary>
         public List<string> ListReadTableName { get; set; } = new List<string>();
+        /// <summary>
+        /// 忽略表名（可带模式名 SchemaName）
+        /// </summary>
+        public List<string> ListIgnoreTableName { get; set; } = new List<string>();
+
+        /// <summary>
+        /// 转换，导出数据库对象转换为导出数据表对象
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ExportDataTable> AsExportDataTable()
+        {
+            var edb = this;
+
+            // 未指定表名，则获取所有表名
+            if (edb.ListReadTableName.Count == 0)
+            {
+                var dataKit = DataKitTo.CreateDataKitInstance(edb.ReadConnectionInfo);
+                var listTable = await dataKit.GetTable();
+                edb.ListReadTableName = listTable.Select(x => DbKitExtensions.SqlSNTN(x.TableName, x.SchemaName, edb.ReadConnectionInfo.ConnectionType)).ToList();
+            }
+
+            var edt = new ExportDataTable().ToDeepCopy(edb);
+
+            // 构建读取数据的 SQL
+            edt.ListReadDataSQL = new List<string>();
+            foreach (var table in edb.ListReadTableName)
+            {
+                //忽略表名
+                if (edb.ListIgnoreTableName.Any(x => DbKitExtensions.SqlEqualSNTN(x, table)))
+                {
+                    continue;
+                }
+
+                var sql = $"SELECT * FROM {table}";
+                edt.ListReadDataSQL.Add(sql);
+            }
+
+            return edt;
+        }
     }
 
     /// <summary>

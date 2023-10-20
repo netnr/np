@@ -111,7 +111,7 @@ namespace Netnr.ResponseFramework.Web.Services
             }
             catch (Exception ex)
             {
-                ConsoleTo.Title("accessToken 无效", accessToken);
+                ConsoleTo.WriteCard("accessToken 无效", accessToken);
                 Console.WriteLine(ex);
             }
 

@@ -1,6 +1,5 @@
-﻿using Netnr.FileServer.Application;
-using Netnr.FileServer.Domain;
-using Microsoft.AspNetCore.StaticFiles;
+﻿using Microsoft.AspNetCore.StaticFiles;
+using System.Collections.Generic;
 
 namespace Netnr.FileServer.Controllers
 {
@@ -8,149 +7,58 @@ namespace Netnr.FileServer.Controllers
     /// API接口
     /// </summary>
     [Route("[controller]/[action]")]
-    [FilterAllowCORS]
-    public class APIController : ControllerBase
+    public class APIController : Controller
     {
+        #region tmp
+
         /// <summary>
-        /// 【管理】创建App
+        /// 上传临时文件，不记录数据库
         /// </summary>
-        /// <param name="password">密码，必填</param>
-        /// <param name="owner">用户，唯一，文件夹名，推荐小写字母</param>
+        /// <param name="file">文件流</param>
         /// <returns></returns>
-        [HttpGet]
-        public ResultVM CreateApp(string password, string owner)
+        [HttpPost]
+        public ResultVM UploadTmp(IFormFile file)
         {
             var vm = new ResultVM();
 
-            try
+            if (!AppTo.GetValue<bool>("Safe:EnableUploadTmp"))
             {
-                if (!ParsingTo.IsLinkPath(owner))
+                vm.Set(RCodeTypes.refuse);
+                vm.Msg = "该接口已关闭";
+            }
+            else
+            {
+                if (file == null)
                 {
-                    vm.Msg = "owner 必填，仅为字母、数字";
+                    vm.Set(RCodeTypes.failure);
+                    vm.Msg = "未找到上传文件";
                 }
-                else if (owner.Equals(AppTo.GetValue("StaticResource:TmpDir"), StringComparison.OrdinalIgnoreCase))
+                else if (AppService.IsDisableExtension(file.FileName))
                 {
-                    vm.Msg = "owner 与临时目录冲突";
-                }
-                else if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                    vm.Msg = "密码错误或已关闭管理接口";
+                    vm.Set(RCodeTypes.refuse);
+                    vm.Msg = "File extension not supported";
                 }
                 else
                 {
-                    vm = FileServerService.CreateApp(owner);
-                    if (vm.Code == -1 && vm.Msg.Contains("UNIQUE"))
+                    var vpath = AppTo.GetValue("StaticResource:TmpDir");
+                    var ppath = AppService.StaticVrPathAsPhysicalPath(vpath);
+                    if (!Directory.Exists(ppath))
                     {
-                        vm.Set(EnumTo.RTag.exist);
-                        vm.Msg = "owner 用户已经存在";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 【管理】获取App列表
-        /// </summary>
-        /// <param name="password">密码</param>
-        /// <param name="pageNumber">页码，默认1</param>
-        /// <param name="pageSize">页量，默认20</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ResultVM GetAppList(string password, int pageNumber = 1, int pageSize = 20)
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                    vm.Msg = "密码错误或已关闭管理接口";
-                }
-                else
-                {
-                    vm = FileServerService.GetAppList(pageNumber, pageSize);
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 获取App信息
-        /// </summary>
-        /// <param name="AppId">分配的应用ID</param>
-        /// <param name="AppKey">分配的应用密钥</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ResultVM GetAppInfo(string AppId, string AppKey)
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                vm = FileServerService.GetAppInfo(AppId, AppKey);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 【管理】清空数据库和上传文件
-        /// </summary>
-        /// <param name="password">密码，必填</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ResultVM ResetAll(string password)
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                    vm.Msg = "密码错误或已关闭管理接口";
-                }
-                else
-                {
-                    //清空数据库
-                    using var db = new SQLite.SQLiteConnection(FileServerService.SQLiteConn);
-                    db.DeleteAll<SysApp>();
-                    db.DeleteAll<FileRecord>();
-
-                    //删除上传文件
-                    var rootdir = FileServerService.StaticVrPathAsPhysicalPath(AppTo.GetValue("StaticResource:RootDir"));
-                    if (Directory.Exists(rootdir))
-                    {
-                        Directory.Delete(rootdir, true);
+                        Directory.CreateDirectory(ppath);
                     }
 
-                    vm.Set(EnumTo.RTag.success);
+                    var filename = $"{RandomTo.NewString(4)}{Path.GetExtension(file.FileName)}".ToLower();
+
+                    using (var fs = new FileStream(ParsingTo.Combine(ppath, filename), FileMode.CreateNew))
+                    {
+                        file.CopyTo(fs);
+                        fs.Flush();
+                    }
+
+                    vm.Set(RCodeTypes.success);
+                    vm.Data = ParsingTo.Combine(vpath, filename);
+                    vm.Log.Add($"{AppTo.GetValue<int>("StaticResource:TmpExpire")} 分钟后失效");
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -163,65 +71,168 @@ namespace Netnr.FileServer.Controllers
         /// <param name="keepTime">保留最近文件，超过时间被清理，0为全部清理，单位：分</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM ClearTmp(string password, int keepTime = 30)
+        public ResultVM SaClearTmpGet(string password, int keepTime = 30)
         {
             var vm = new ResultVM();
 
-            try
+            if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
             {
-                if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
+                vm.Set(RCodeTypes.unauthorized);
+                vm.Msg = "密码错误或已关闭管理接口";
+            }
+            else
+            {
+                vm = AppService.ClearTmp(keepTime);
+            }
+
+            return vm;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 【管理】创建App
+        /// </summary>
+        /// <param name="password">密码，必填</param>
+        /// <param name="owner">用户，唯一，文件夹名，推荐小写字母</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ResultVM SaAppPost([FromForm] string password, [FromForm] string owner)
+        {
+            var vm = new ResultVM();
+
+            if (!ParsingTo.IsLinkPath(owner))
+            {
+                vm.Msg = "owner 必填，仅为字母、数字";
+            }
+            else if (owner.Equals(AppTo.GetValue("StaticResource:TmpDir"), StringComparison.OrdinalIgnoreCase))
+            {
+                vm.Msg = "owner 与临时目录冲突";
+            }
+            else if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
+            {
+                vm.Set(RCodeTypes.unauthorized);
+                vm.Msg = "密码错误或已关闭管理接口";
+            }
+            else
+            {
+                var model = new BaseApp()
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                    vm.Msg = "密码错误或已关闭管理接口";
+                    AppId = Snowflake53To.Id(),
+                    AppKey = Guid.NewGuid().ToString("N").ToUpper(),
+                    CreateTime = DateTime.Now,
+                    AppOwner = owner,
+                    AppToken = AppService.NewToken(),
+                    AppTokenExpireTime = DateTime.Now.AddMinutes(AppTo.GetValue<int>("Safe:TokenExpired")),
+                    AppRemark = "通过接口创建"
+                };
+
+                try
+                {
+                    AppService.CollSysApp.Insert(model);
+
+                    vm.Data = model;
+                    vm.Set(RCodeTypes.success);
                 }
-                else
+                catch (Exception ex)
                 {
-                    var listDel = new List<string>();
-
-                    //删除临时文件
-                    var tmpdir = FileServerService.StaticVrPathAsPhysicalPath(AppTo.GetValue("StaticResource:TmpDir"));
-                    if (Directory.Exists(tmpdir))
+                    if (ex.Message.Contains("unique", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (keepTime > 0)
-                        {
-                            var now = DateTime.Now;
-                            Directory.GetFiles(tmpdir).ToList().ForEach(item =>
-                            {
-                                var fi = new FileInfo(item);
-                                if ((now - fi.CreationTime).TotalMinutes > keepTime)
-                                {
-                                    fi.Delete();
-                                    listDel.Add(item);
-                                }
-                            });
-
-                            Directory.GetDirectories(tmpdir).ToList().ForEach(item =>
-                            {
-                                var di = new DirectoryInfo(item);
-                                if ((now - di.CreationTime).TotalMinutes > keepTime)
-                                {
-                                    di.Delete(true);
-                                    listDel.Add(item);
-                                }
-                            });
-                        }
-                        else
-                        {
-                            listDel = Directory.GetFileSystemEntries(tmpdir).ToList();
-
-                            Directory.Delete(tmpdir, true);
-                            Directory.CreateDirectory(tmpdir);
-                        }
+                        vm.Set(RCodeTypes.exist);
+                        vm.Msg = "owner 用户已经存在";
+                        vm.Data = ex.ToTree();
                     }
-
-                    vm.Set(EnumTo.RTag.success);
-                    vm.Data = listDel;
                 }
             }
-            catch (Exception ex)
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 【管理】获取App列表
+        /// </summary>
+        /// <param name="password">密码</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ResultVM SaAppGet(string password)
+        {
+            var vm = new ResultVM();
+
+            if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
             {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
+                vm.Set(RCodeTypes.unauthorized);
+                vm.Msg = "密码错误或已关闭管理接口";
+            }
+            else
+            {
+                var result = AppService.CollSysApp.Query().OrderByDescending(x => x.CreateTime).ToList();
+
+                vm.Data = result;
+                vm.Set(RCodeTypes.success);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 【管理】清空数据库和上传文件
+        /// </summary>
+        /// <param name="password">密码，必填</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ResultVM SaResetAllGet(string password)
+        {
+            var vm = new ResultVM();
+
+            if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
+            {
+                vm.Set(RCodeTypes.unauthorized);
+                vm.Msg = "密码错误或已关闭管理接口";
+            }
+            else
+            {
+                //清空数据库
+                AppService.CollSysApp.DeleteAll();
+                AppService.CollFileRecord.DeleteAll();
+
+                //删除上传文件
+                var rootPath = AppService.StaticVrPathAsPhysicalPath(AppTo.GetValue("StaticResource:RootDir"));
+                if (Directory.Exists(rootPath))
+                {
+                    Directory.Delete(rootPath, true);
+                }
+
+                vm.Set(RCodeTypes.success);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 【管理】信息
+        /// </summary>
+        /// <param name="password">密码，必填</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ResultVM SaInfoGet(string password)
+        {
+            var vm = new ResultVM();
+
+            if (string.IsNullOrWhiteSpace(password) || password != AppTo.GetValue("Safe:AdminPassword"))
+            {
+                vm.Set(RCodeTypes.unauthorized);
+                vm.Msg = "密码错误或已关闭管理接口";
+            }
+            else
+            {
+                var ss = new SystemStatusTo();
+                ss.RefreshAll().GetAwaiter().GetResult();
+                vm.Data = new
+                {
+                    DatabaseDrive = AppService.LDB.GetType().Assembly.FullName,
+                    DatabaseSource = "https://github.com/mbdavid/LiteDB",
+                    SystemInfo = ss,
+                };
             }
 
             return vm;
@@ -230,42 +241,54 @@ namespace Netnr.FileServer.Controllers
         /// <summary>
         /// 获取Token
         /// </summary>
-        /// <param name="AppId">分配的应用ID</param>
-        /// <param name="AppKey">分配的应用密钥</param>
+        /// <param name="appId">分配的应用ID</param>
+        /// <param name="appKey">分配的应用密钥</param>
         /// <returns></returns>
-        [HttpGet, ResponseCache(Duration = 30)]
-        public ResultVM GetToken(string AppId, string AppKey)
+        [HttpPost]
+        public ResultVM TokenPost([FromForm] long appId, [FromForm] string appKey)
         {
             var vm = new ResultVM();
 
-            try
+            if (appId < 1 || string.IsNullOrWhiteSpace(appKey))
             {
-                if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey))
+                vm.Set(RCodeTypes.failure);
+                vm.Msg = "参数缺失";
+            }
+            else
+            {
+                var ckey = appKey;
+                var gkey = appId.ToString();
+                vm = CacheTo.Get<ResultVM>(ckey, gkey);
+                if (vm == null)
                 {
-                    vm.Set(EnumTo.RTag.lack);
-                    vm.Msg = "参数缺失";
-                }
-                else
-                {
-                    var ckey = $"AppKey-{AppKey}";
-                    var gkey = AppId;
-                    vm = CacheTo.Get<ResultVM>(ckey, gkey);
-                    if (vm == null)
+                    var model = AppService.CollSysApp.FindOne(x => x.AppId == appId && x.AppKey == appKey);
+                    if (model != null)
                     {
-                        vm = FileServerService.GetToken(AppId, AppKey);
+                        model.AppToken = AppService.NewToken();
+                        model.AppTokenExpireTime = DateTime.Now.AddMinutes(AppTo.GetValue<int>("Safe:TokenExpired"));
 
-                        if (vm.Code == 200)
+                        if (AppService.CollSysApp.Update(model))
                         {
+                            vm.Data = new
+                            {
+                                model.AppToken,
+                                model.AppTokenExpireTime
+                            };
+                            vm.Set(RCodeTypes.success);
+
                             //Token缓存
                             CacheTo.Set(ckey, vm, AppTo.GetValue<int>("Safe:TokenCache"), false, gkey);
                         }
+                        else
+                        {
+                            vm.Set(RCodeTypes.failure);
+                        }
+                    }
+                    else
+                    {
+                        vm.Set(RCodeTypes.unauthorized);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -274,41 +297,69 @@ namespace Netnr.FileServer.Controllers
         /// <summary>
         /// 创建FixedToken
         /// </summary>
-        /// <param name="AppId">分配的应用ID</param>
-        /// <param name="AppKey">分配的应用密钥</param>
+        /// <param name="appId">分配的应用ID</param>
+        /// <param name="appKey">分配的应用密钥</param>
         /// <param name="Name">名称</param>
-        /// <param name="AuthMethod">授权接口名，多个用逗号分割，区分大小写</param>
+        /// <param name="authMethod">授权接口名，多个用逗号分割，区分大小写</param>
         /// <returns></returns>
-        [HttpGet]
-        public ResultVM CreateFixedToken(string AppId, string AppKey, string Name, string AuthMethod)
+        [HttpPost]
+        public ResultVM FixedTokenPost([FromForm] long appId, [FromForm] string appKey, [FromForm] string Name, [FromForm] string authMethod)
         {
             var vm = new ResultVM();
 
-            try
+            if (appId < 1 || string.IsNullOrWhiteSpace(appKey) || string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(authMethod))
             {
-                if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(AuthMethod))
+                vm.Set(RCodeTypes.failure);
+                vm.Msg = "参数缺失";
+            }
+            else
+            {
+                var listAm = AuthMethodGet().Data as List<string>;
+                if (!authMethod.Split(',').ToList().All(listAm.Contains))
                 {
-                    vm.Set(EnumTo.RTag.lack);
-                    vm.Msg = "参数缺失";
+                    vm.Set(RCodeTypes.failure);
+                    vm.Msg = "AuthMethod 存在无效接口名";
                 }
                 else
                 {
-                    var listAm = AuthMethodList().Data as List<string>;
-                    if (!AuthMethod.Split(',').ToList().All(listAm.Contains))
+                    var sk = AppService.CollSysApp.FindOne(x => x.AppId == appId && x.AppKey == appKey);
+                    if (sk != null)
                     {
-                        vm.Set(EnumTo.RTag.invalid);
-                        vm.Msg = "AuthMethod 存在无效接口名";
+                        var listmo = new List<FixedTokenJson>();
+                        if (!string.IsNullOrWhiteSpace(sk.AppFixedToken))
+                        {
+                            listmo = sk.AppFixedToken.DeJson<List<FixedTokenJson>>();
+                        }
+
+                        var fixToken = AppService.NewToken(true);
+                        listmo.Add(new FixedTokenJson()
+                        {
+                            Name = Name,
+                            Token = fixToken,
+                            AuthMethod = authMethod,
+                            CreateTime = DateTime.Now
+                        });
+                        sk.AppFixedToken = listmo.ToJson();
+
+                        if (AppService.CollSysApp.Update(sk))
+                        {
+                            vm.Data = new
+                            {
+                                Token = fixToken,
+                                authMethod
+                            };
+                            vm.Set(RCodeTypes.success);
+                        }
+                        else
+                        {
+                            vm.Set(RCodeTypes.failure);
+                        }
                     }
                     else
                     {
-                        vm = FileServerService.CreateFixedToken(AppId, AppKey, Name, AuthMethod);
+                        vm.Set(RCodeTypes.unauthorized);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -317,31 +368,43 @@ namespace Netnr.FileServer.Controllers
         /// <summary>
         /// 删除FixedToken
         /// </summary>
-        /// <param name="AppId">分配的应用ID</param>
-        /// <param name="AppKey">分配的应用密钥</param>
-        /// <param name="FixedToken">固定 Token</param>
+        /// <param name="appId">分配的应用ID</param>
+        /// <param name="appKey">分配的应用密钥</param>
+        /// <param name="fixedToken">固定 Token</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM DelFixedToken(string AppId, string AppKey, string FixedToken)
+        public ResultVM FixedTokenDelete(long appId, string appKey, string fixedToken)
         {
             var vm = new ResultVM();
 
-            try
+            if (appId < 1 || string.IsNullOrWhiteSpace(appKey) || string.IsNullOrWhiteSpace(fixedToken))
             {
-                if (string.IsNullOrWhiteSpace(AppId) || string.IsNullOrWhiteSpace(AppKey) || string.IsNullOrWhiteSpace(FixedToken))
+                vm.Set(RCodeTypes.failure);
+                vm.Msg = "参数缺失";
+            }
+            else
+            {
+                var model = AppService.CollSysApp.FindOne(x => x.AppId == appId && x.AppKey == appKey);
+                if (model != null)
                 {
-                    vm.Set(EnumTo.RTag.lack);
-                    vm.Msg = "参数缺失";
+                    var listmo = model.AppFixedToken.DeJson<List<FixedTokenJson>>();
+                    if (listmo.Any(x => x.Token == fixedToken))
+                    {
+                        listmo.Remove(listmo.FirstOrDefault(x => x.Token.Contains(fixedToken)));
+                        model.AppFixedToken = listmo.ToJson();
+
+                        vm.Set(AppService.CollSysApp.Update(model));
+                    }
+                    else
+                    {
+                        vm.Set(RCodeTypes.failure);
+                        vm.Msg = "FixedToken 无效";
+                    }
                 }
                 else
                 {
-                    vm = FileServerService.DelFixedToken(AppId, AppKey, FixedToken);
+                    vm.Set(RCodeTypes.unauthorized);
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -352,32 +415,24 @@ namespace Netnr.FileServer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM AuthMethodList()
+        public ResultVM AuthMethodGet()
         {
             var vm = new ResultVM();
 
-            try
-            {
-                var listA = new List<string>();
+            var listA = new List<string>();
 
-                var type = typeof(APIController);
-                var methods = type.GetMethods().Where(x => x.DeclaringType == type).ToList();
-                foreach (var method in methods)
+            var type = typeof(APIController);
+            var methods = type.GetMethods().Where(x => x.DeclaringType == type).ToList();
+            foreach (var method in methods)
+            {
+                if (method.GetParameters().Any(x => x.Name.Equals("token", StringComparison.OrdinalIgnoreCase)))
                 {
-                    if (method.GetParameters().Any(x => x.Name.Equals("token", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        listA.Add(method.Name);
-                    }
+                    listA.Add(method.Name);
                 }
+            }
 
-                vm.Set(EnumTo.RTag.success);
-                vm.Data = listA;
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
-            }
+            vm.Set(RCodeTypes.success);
+            vm.Data = listA;
 
             return vm;
         }
@@ -390,90 +445,87 @@ namespace Netnr.FileServer.Controllers
         /// <param name="subdir">子目录，可选</param>
         /// <param name="oname">原名保存，1原名存储，默认生成新ID</param>
         /// <returns></returns>
-        [HttpPost, HttpOptions]
-        public ResultVM Upload(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir, [FromForm] int oname = 0)
+        [HttpPost]
+        public ResultVM UploadPost(IFormFileCollection files, [FromForm] string token, [FromForm] string subdir, [FromForm] int oname = 0)
         {
             var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
-            try
+
+            if (files == null || files.Count < 1)
             {
-                if (files == null || files.Count < 1)
+                vm.Msg = "未找到上传文件";
+            }
+            else if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
+            {
+                vm.Msg = "subdir 仅为字母、数字";
+            }
+            else
+            {
+                //验证token
+                var vt = AppService.ValidToken(token, mn);
+                if (vt.Code != 200)
                 {
-                    vm.Msg = "未找到上传文件";
-                }
-                else if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
-                {
-                    vm.Msg = "subdir 仅为字母、数字";
+                    vm = vt;
                 }
                 else
                 {
-                    //验证token
-                    var vt = FileServerService.ValidToken(token, mn);
-                    if (vt.Code != 200)
+                    var vtjson = vt.Data as FixedTokenJson;
+                    var now = DateTime.Now;
+
+                    var listFr = new List<BaseFile>();
+
+                    //虚拟路径
+                    var vpath = ParsingTo.Combine(AppTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
+
+                    //物理路径
+                    var ppath = AppService.StaticVrPathAsPhysicalPath(vpath);
+                    if (!Directory.Exists(ppath))
                     {
-                        vm = vt;
+                        Directory.CreateDirectory(ppath);
                     }
-                    else
+
+                    foreach (var file in files)
                     {
-                        var vtjson = vt.Data as FixedTokenJson;
-                        var now = DateTime.Now;
-
-                        var listFr = new List<FileRecord>();
-
-                        //虚拟路径
-                        var vpath = PathTo.Combine(AppTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
-
-                        //物理路径
-                        var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
-                        if (!Directory.Exists(ppath))
+                        if (!AppService.IsDisableExtension(file.FileName))
                         {
-                            Directory.CreateDirectory(ppath);
-                        }
-
-                        foreach (var file in files)
-                        {
-                            var fr = new FileRecord()
+                            var fr = new BaseFile()
                             {
-                                Id = now.ToTimestamp() + RandomTo.NewNumber(),
+                                Id = Snowflake53To.Id(),
                                 OwnerUser = vtjson.Owner,
-                                Name = Path.GetFileName(file.FileName),
-                                Size = file.Length,
-                                Type = file.ContentType,
+                                FileName = Path.GetFileName(file.FileName),
+                                FileSize = file.Length,
+                                ContentType = file.ContentType,
                                 CreateTime = now
                             };
 
-                            var filename = oname == 1 ? fr.Name : fr.Id + Path.GetExtension(file.FileName);
+                            var filename = oname == 1 ? fr.FileName : fr.Id + Path.GetExtension(file.FileName);
 
-                            using (var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew))
+                            using (var fs = new FileStream(ParsingTo.Combine(ppath, filename), FileMode.CreateNew))
                             {
                                 file.CopyTo(fs);
                                 fs.Flush();
                             }
 
-                            fr.Path = PathTo.Combine(vpath, filename);
+                            fr.FilePath = ParsingTo.Combine(vpath, filename);
                             listFr.Add(fr);
                         }
+                    }
 
-                        vm = FileServerService.InsertFile(listFr);
-                        if (vm.Code == 200)
+                    var num = AppService.CollFileRecord.InsertBulk(listFr);
+                    vm.Set(num > 0);
+                    if (num > 0)
+                    {
+                        if (listFr.Count == 1)
                         {
-                            if (listFr.Count == 1)
-                            {
-                                vm.Data = listFr.First();
-                            }
-                            else
-                            {
-                                vm.Data = listFr;
-                            }
+                            vm.Data = listFr.First();
+                        }
+                        else
+                        {
+                            vm.Data = listFr;
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -490,262 +542,133 @@ namespace Netnr.FileServer.Controllers
         /// <param name="chunks">总分片数</param>
         /// <param name="oname">原名保存，1原名存储，默认生成新ID</param>
         /// <returns></returns>
-        [HttpPost, HttpOptions]
-        public ResultVM UploadChunk(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks, [FromForm] int oname = 0)
+        [HttpPost]
+        public ResultVM UploadChunkPost(IFormFile file, [FromForm] string token, [FromForm] string subdir, [FromForm] string ts, [FromForm] int chunk, [FromForm] int chunks, [FromForm] int oname = 0)
         {
             var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
-            try
+
+            if (file == null)
             {
-                if (file == null)
-                {
-                    vm.Msg = "未找到上传文件";
-                }
-                else if (!ParsingTo.IsLinkPath(ts))
-                {
-                    vm.Msg = "ts 仅为字母、数字";
-                }
-                else if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
-                {
-                    vm.Msg = "subdir 仅为字母、数字";
-                }
-                else if (file.Length * (chunks - 1) > AppTo.GetValue<int>("StaticResource:MaxSize") * 1024 * 1024)
-                {
-                    vm.Msg = "文件大小超出限制";
-                }
-                else
-                {
-                    var vtkey = $"Upload-Token-{token}";
-                    var vt = CacheTo.Get<ResultVM>(vtkey);
-                    if (vt == null)
-                    {
-                        vt = FileServerService.ValidToken(token, mn);
-                        //缓存 Token 验证 30 分钟
-                        CacheTo.Set(vtkey, vt, 1800, false);
-                    }
-
-                    if (vt.Code != 200)
-                    {
-                        vm = vt;
-                    }
-                    else
-                    {
-                        //分片
-                        if (chunks > 0)
-                        {
-                            //分片临时虚拟目录
-                            var chunkDir = PathTo.Combine(AppTo.GetValue("StaticResource:TmpDir"), ts);
-
-                            var ext = Path.GetExtension(file.FileName);
-                            //存入分片临时目录（格式：Id_片索引.文件格式后缀）
-                            var chunkName = $"{ts}_{chunk}.{ext}";
-
-                            //保存分片物理路径
-                            var chunkPPath = FileServerService.StaticVrPathAsPhysicalPath(chunkDir);
-                            if (!Directory.Exists(chunkPPath))
-                            {
-                                Directory.CreateDirectory(chunkPPath);
-                            }
-
-                            using (var fs = new FileStream(PathTo.Combine(chunkPPath, chunkName), FileMode.CreateNew))
-                            {
-                                file.CopyTo(fs);
-                                fs.Flush();
-                            }
-
-                            //记录已上传的分片总数
-                            var ckkey = $"Upload-Chunk-{ts}";
-                            var ci = CacheTo.Get<int>(ckkey);
-                            ci++;
-                            CacheTo.Set(ckkey, ci);
-
-                            //所有片已上传完，合并片
-                            if (ci == chunks)
-                            {
-                                var now = DateTime.Now;
-
-                                var vtjson = vt.Data as FixedTokenJson;
-
-                                //虚拟路径
-                                var vpath = PathTo.Combine(AppTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
-
-                                //物理路径
-                                var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
-                                if (!Directory.Exists(ppath))
-                                {
-                                    Directory.CreateDirectory(ppath);
-                                }
-
-                                var fr = new FileRecord()
-                                {
-                                    Id = now.ToTimestamp() + RandomTo.NewNumber(),
-                                    OwnerUser = vtjson.Owner,
-                                    Name = Path.GetFileName(file.FileName),
-                                    Size = file.Length,
-                                    Type = file.ContentType,
-                                    CreateTime = now
-                                };
-                                var filename = oname == 1 ? fr.Name : fr.Id + Path.GetExtension(file.FileName);
-
-                                using var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.Create);
-                                //排序从 0-N Write
-                                var po = Directory.GetFiles(chunkPPath).OrderBy(x => x.Length).ThenBy(x => x).ToList();
-                                foreach (var part in po)
-                                {
-                                    var bytes = System.IO.File.ReadAllBytes(part);
-                                    fs.Write(bytes, 0, bytes.Length);
-                                    bytes = null;
-                                }
-                                //删除分块文件夹
-                                Directory.Delete(chunkPPath, true);
-
-                                fr.Path = PathTo.Combine(vpath, filename);
-
-                                vm = FileServerService.InsertFile(fr);
-                                if (vm.Code == 200)
-                                {
-                                    vm.Data = fr;
-                                }
-                            }
-                            else
-                            {
-                                vm.Code = 201;
-                                vm.Data = PathTo.Combine(chunkDir, chunkName);
-                                vm.Msg = "chunk success";
-                            }
-                        }
-                    }
-                }
+                vm.Msg = "未找到上传文件";
             }
-            catch (Exception ex)
+            else if (!ParsingTo.IsLinkPath(ts))
             {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
+                vm.Msg = "ts 仅为字母、数字";
             }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 查看文件
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        [HttpGet, ResponseCache(Duration = 30)]
-        public ActionResult View(string path, string token)
-        {
-            var vm = new ResultVM();
-
-            var mn = RouteData.Values["Action"].ToString();
-            try
+            else if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
             {
-                var isAuth = false;
-                //公开访问
-                if (AppTo.GetValue<bool>("Safe:PublicAccess"))
-                {
-                    isAuth = true;
-                }
-                else
-                {
-                    isAuth = FileServerService.ValidToken(token, mn).Code == 200;
-                }
-
-                if (isAuth)
-                {
-                    var ppath = FileServerService.StaticVrPathAsPhysicalPath(path);
-                    if (System.IO.File.Exists(ppath))
-                    {
-                        new FileExtensionContentTypeProvider().TryGetContentType(path, out string contentType);
-                        return PhysicalFile(ppath, contentType ?? "application/octet-stream");
-                    }
-                    else
-                    {
-                        vm.Set(EnumTo.RTag.lack);
-                    }
-                }
-                else
-                {
-                    vm.Set(EnumTo.RTag.unauthorized);
-                }
+                vm.Msg = "subdir 仅为字母、数字";
             }
-            catch (Exception ex)
+            else if (file.Length * (chunks - 1) > AppTo.GetValue<int>("StaticResource:MaxSize") * 1024 * 1024)
             {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
+                vm.Msg = "文件大小超出限制";
             }
-
-            return Content(vm.ToJson());
-        }
-
-        /// <summary>
-        /// 复制文件
-        /// </summary>
-        /// <param name="token">token，授权验证，必填</param>
-        /// <param name="path">文件路径或文件ID，必填</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ResultVM Copy(string token, string path)
-        {
-            var vm = new ResultVM();
-
-            var mn = RouteData.Values["Action"].ToString();
-            try
+            else if (AppService.IsDisableExtension(file.FileName))
             {
-                //验证token
-                var vt = FileServerService.ValidToken(token, mn);
+                vm.Msg = "File extension not supported";
+            }
+            else
+            {
+                var vtkey = $"Upload-Token-{token}";
+                var vt = CacheTo.Get<ResultVM>(vtkey);
+                if (vt == null)
+                {
+                    vt = AppService.ValidToken(token, mn);
+                    //缓存 Token 验证 30 分钟
+                    CacheTo.Set(vtkey, vt, 1800, false);
+                }
+
                 if (vt.Code != 200)
                 {
                     vm = vt;
                 }
                 else
                 {
-                    var vtjson = vt.Data as FixedTokenJson;
-
-                    var qf = FileServerService.QueryFile(vtjson.Owner, path);
-                    if (qf.Code != 200)
+                    //分片
+                    if (chunks > 0)
                     {
-                        vm = qf;
-                    }
-                    else
-                    {
-                        //要复制的文件信息
-                        var nowfile = qf.Data as FileRecord;
-                        //要复制的文件虚拟路径
-                        var vpath = nowfile.Path;
+                        //分片临时虚拟目录
+                        var chunkDir = ParsingTo.Combine(AppTo.GetValue("StaticResource:TmpDir"), ts);
 
-                        var now = DateTime.Now;
-                        var fr = new FileRecord()
+                        var ext = Path.GetExtension(file.FileName);
+                        //存入分片临时目录（格式：Id_片索引.文件格式后缀）
+                        var chunkName = $"{ts}_{chunk}.{ext}";
+
+                        //保存分片物理路径
+                        var chunkPPath = AppService.StaticVrPathAsPhysicalPath(chunkDir);
+                        if (!Directory.Exists(chunkPPath))
                         {
-                            Id = now.ToTimestamp() + RandomTo.NewNumber(),
-                            OwnerUser = nowfile.OwnerUser,
-                            Name = nowfile.Name,
-                            Size = nowfile.Size,
-                            Type = nowfile.Type,
-                            CreateTime = DateTime.Now
-                        };
+                            Directory.CreateDirectory(chunkPPath);
+                        }
 
-                        //要复制的物理路径
-                        var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
-                        fr.Path = vpath.Replace(Path.GetFileNameWithoutExtension(vpath), fr.Id);
-                        //复制的新物理路径
-                        var newppath = FileServerService.StaticVrPathAsPhysicalPath(fr.Path);
-
-                        System.IO.File.Copy(ppath, newppath);
-
-                        vm = FileServerService.InsertFile(new List<FileRecord> { fr });
-                        if (vm.Code == 200)
+                        using (var fs = new FileStream(ParsingTo.Combine(chunkPPath, chunkName), FileMode.CreateNew))
                         {
+                            file.CopyTo(fs);
+                            fs.Flush();
+                        }
+
+                        //记录已上传的分片总数
+                        var ckkey = $"Upload-Chunk-{ts}";
+                        var ci = CacheTo.Get<int>(ckkey);
+                        ci++;
+                        CacheTo.Set(ckkey, ci);
+
+                        //所有片已上传完，合并片
+                        if (ci == chunks)
+                        {
+                            var now = DateTime.Now;
+
+                            var vtjson = vt.Data as FixedTokenJson;
+
+                            //虚拟路径
+                            var vpath = ParsingTo.Combine(AppTo.GetValue("StaticResource:RootDir"), vtjson.Owner, subdir, now.ToString("yyyy'/'MM"));
+
+                            //物理路径
+                            var ppath = AppService.StaticVrPathAsPhysicalPath(vpath);
+                            if (!Directory.Exists(ppath))
+                            {
+                                Directory.CreateDirectory(ppath);
+                            }
+
+                            var fr = new BaseFile()
+                            {
+                                Id = Snowflake53To.Id(),
+                                OwnerUser = vtjson.Owner,
+                                FileName = Path.GetFileName(file.FileName),
+                                FileSize = file.Length,
+                                ContentType = file.ContentType,
+                                CreateTime = now
+                            };
+                            var filename = oname == 1 ? fr.FileName : fr.Id + Path.GetExtension(file.FileName);
+
+                            using var fs = new FileStream(ParsingTo.Combine(ppath, filename), FileMode.Create);
+                            //排序从 0-N Write
+                            Directory.EnumerateFiles(chunkPPath).OrderBy(x => x.Length).ThenBy(x => x).ForEach(part =>
+                            {
+                                var bytes = System.IO.File.ReadAllBytes(part);
+                                fs.Write(bytes, 0, bytes.Length);
+                                bytes = null;
+                            });
+                            //删除分块文件夹
+                            Directory.Delete(chunkPPath, true);
+
+                            fr.FilePath = ParsingTo.Combine(vpath, filename);
+
+                            AppService.CollFileRecord.Insert(fr);
+
                             vm.Data = fr;
+                            vm.Set(RCodeTypes.success);
+                        }
+                        else
+                        {
+                            vm.Code = 201;
+                            vm.Data = ParsingTo.Combine(chunkDir, chunkName);
+                            vm.Msg = "chunk success";
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;
@@ -758,72 +681,184 @@ namespace Netnr.FileServer.Controllers
         /// <param name="token">token，授权验证，必填</param>
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
-        [HttpPost, HttpOptions]
-        public ResultVM Cover(IFormFile file, [FromForm] string token, [FromForm] string path)
+        [HttpPost]
+        public ResultVM UploadCoverPost(IFormFile file, [FromForm] string token, [FromForm] string path)
         {
             var vm = new ResultVM();
 
             var mn = RouteData.Values["Action"].ToString();
-            try
+
+            if (file == null)
             {
-                if (file == null)
+                vm.Msg = "没找到上传的文件";
+            }
+            else if (AppService.IsDisableExtension(file.FileName))
+            {
+                vm.Set(RCodeTypes.refuse);
+                vm.Msg = "File extension not supported";
+            }
+            else
+            {
+                //验证token
+                var vt = AppService.ValidToken(token, mn);
+                if (vt.Code != 200)
                 {
-                    vm.Msg = "没找到上传的文件";
+                    vm = vt;
                 }
                 else
                 {
-                    //验证token
-                    var vt = FileServerService.ValidToken(token, mn);
-                    if (vt.Code != 200)
+                    var fixedTokenJson = vt.Data as FixedTokenJson;
+
+                    _ = long.TryParse(fixedTokenJson.Owner, out long id);
+                    var model = AppService.CollFileRecord.FindOne(x => x.Id == id || x.FilePath == path);
+                    if (model == null)
                     {
-                        vm = vt;
+                        vm.Set(RCodeTypes.failure);
+                    }
+                    else if (model.OwnerUser != fixedTokenJson.Owner)
+                    {
+                        vm.Set(RCodeTypes.unauthorized);
                     }
                     else
                     {
-                        var vtjson = vt.Data as FixedTokenJson;
+                        var ppath = AppService.StaticVrPathAsPhysicalPath(model.FilePath);
 
-                        var qf = FileServerService.QueryFile(vtjson.Owner, path);
-
-                        if (qf.Code != 200)
+                        if (System.IO.File.Exists(ppath))
                         {
-                            vm = qf;
+                            System.IO.File.Delete(ppath);
+
+                            using (var fs = new FileStream(ppath, FileMode.CreateNew))
+                            {
+                                file.CopyTo(fs);
+                                fs.Flush();
+                            }
+
+                            //更新信息
+                            model.FileName = file.Name;
+                            model.FileSize = file.Length;
+                            model.ContentType = file.ContentType;
+                            model.CreateTime = DateTime.Now;
+
+                            vm.Set(AppService.CollFileRecord.Update(model));
                         }
                         else
                         {
-                            var nowfile = qf.Data as FileRecord;
-                            var ppath = FileServerService.StaticVrPathAsPhysicalPath(nowfile.Path);
-
-                            if (System.IO.File.Exists(ppath))
-                            {
-                                System.IO.File.Delete(ppath);
-
-                                using (var fs = new FileStream(ppath, FileMode.CreateNew))
-                                {
-                                    file.CopyTo(fs);
-                                    fs.Flush();
-                                }
-
-                                //更新信息
-                                nowfile.Name = file.Name;
-                                nowfile.Size = file.Length;
-                                nowfile.Type = file.ContentType;
-                                nowfile.CreateTime = DateTime.Now;
-
-                                vm = FileServerService.UpdateFile(nowfile);
-                            }
-                            else
-                            {
-                                vm.Set(EnumTo.RTag.invalid);
-                                vm.Msg = "文件路径无效";
-                            }
+                            vm.Set(RCodeTypes.failure);
+                            vm.Msg = "文件路径无效";
                         }
                     }
                 }
             }
-            catch (Exception ex)
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 查看文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ResponseCache(Duration = 600)]
+        public IActionResult FileViewGet(string path, string token)
+        {
+            var vm = new ResultVM();
+
+            var mn = RouteData.Values["Action"].ToString();
+
+            bool isAuth;
+            //公开访问
+            if (AppTo.GetValue<bool>("Safe:PublicAccess"))
             {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
+                isAuth = true;
+            }
+            else
+            {
+                isAuth = AppService.ValidToken(token, mn).Code == 200;
+            }
+
+            if (isAuth)
+            {
+                var ppath = AppService.StaticVrPathAsPhysicalPath(path);
+                if (System.IO.File.Exists(ppath))
+                {
+                    new FileExtensionContentTypeProvider().TryGetContentType(path, out string contentType);
+                    return PhysicalFile(ppath, contentType ?? "application/octet-stream");
+                }
+                else
+                {
+                    vm.Set(RCodeTypes.failure);
+                }
+            }
+            else
+            {
+                vm.Set(RCodeTypes.unauthorized);
+            }
+
+            return Content(vm.ToJson());
+        }
+
+        /// <summary>
+        /// 复制文件
+        /// </summary>
+        /// <param name="token">token，授权验证，必填</param>
+        /// <param name="path">文件路径或文件ID，必填</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ResultVM FileCopyGet(string token, string path)
+        {
+            var vm = new ResultVM();
+
+            var mn = RouteData.Values["Action"].ToString();
+
+            //验证token
+            var vt = AppService.ValidToken(token, mn);
+            if (vt.Code != 200)
+            {
+                vm = vt;
+            }
+            else
+            {
+                var fixedTokenJson = vt.Data as FixedTokenJson;
+
+                _ = long.TryParse(fixedTokenJson.Owner, out long id);
+                var model = AppService.CollFileRecord.FindOne(x => x.Id == id || x.FilePath == path);
+                if (model == null)
+                {
+                    vm.Set(RCodeTypes.failure);
+                }
+                else if (model.OwnerUser != fixedTokenJson.Owner)
+                {
+                    vm.Set(RCodeTypes.unauthorized);
+                }
+                else
+                {
+                    //要复制的文件虚拟路径
+                    var vpath = model.FilePath;
+
+                    var newModel = new BaseFile()
+                    {
+                        Id = Snowflake53To.Id(),
+                        OwnerUser = model.OwnerUser,
+                        FileName = model.FileName,
+                        FileSize = model.FileSize,
+                        ContentType = model.ContentType,
+                        CreateTime = DateTime.Now
+                    };
+
+                    //要复制的物理路径
+                    var ppath = AppService.StaticVrPathAsPhysicalPath(vpath);
+                    newModel.FilePath = vpath.Replace(Path.GetFileNameWithoutExtension(vpath), newModel.Id.ToString());
+                    //复制的新物理路径
+                    var newppath = AppService.StaticVrPathAsPhysicalPath(newModel.FilePath);
+
+                    System.IO.File.Copy(ppath, newppath);
+
+                    AppService.CollFileRecord.Insert(newModel);
+                    vm.Data = newModel;
+                    vm.Set(RCodeTypes.success);
+                }
             }
 
             return vm;
@@ -836,85 +871,36 @@ namespace Netnr.FileServer.Controllers
         /// <param name="path">文件路径或文件ID，必填</param>
         /// <returns></returns>
         [HttpGet]
-        public ResultVM Delete(string token, string path)
+        public ResultVM FileDelete(string token, string path)
         {
-            var vm = new ResultVM();
-
             var mn = RouteData.Values["Action"].ToString();
-            try
+
+            //验证token
+            var vm = AppService.ValidToken(token, mn);
+            if (vm.Code == 200)
             {
-                //验证token
-                var vt = FileServerService.ValidToken(token, mn);
-                if (vt.Code != 200)
+                var fixedTokenJson = vm.Data as FixedTokenJson;
+
+                _ = long.TryParse(path, out long id);
+                var model = AppService.CollFileRecord.FindOne(x => x.Id == id || x.FilePath == path);
+                if (model == null)
                 {
-                    vm = vt;
+                    vm.Set(RCodeTypes.failure);
+                }
+                else if (model.OwnerUser != fixedTokenJson.Owner)
+                {
+                    vm.Set(RCodeTypes.unauthorized);
                 }
                 else
                 {
-                    var vtjson = vt.Data as FixedTokenJson;
-
-                    vm = FileServerService.DeleteFile(vtjson.Owner, path);
-                }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 上传临时文件，不记录数据库
-        /// </summary>
-        /// <param name="file">文件流</param>
-        /// <returns></returns>
-        [HttpPost, HttpOptions]
-        public ResultVM UploadTmp(IFormFile file)
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                if (!AppTo.GetValue<bool>("Safe:EnableUploadTmp"))
-                {
-                    vm.Set(EnumTo.RTag.refuse);
-                    vm.Msg = "该接口已关闭";
-                }
-                else
-                {
-                    if (file == null)
+                    var fp = Path.Combine(AppTo.WebRootPath, model.FilePath);
+                    if (System.IO.File.Exists(fp))
                     {
-                        vm.Set(EnumTo.RTag.lack);
-                        vm.Msg = "未找到上传文件";
+                        System.IO.File.Delete(fp);
                     }
-                    else
-                    {
-                        var vpath = AppTo.GetValue("StaticResource:TmpDir");
-                        var ppath = FileServerService.StaticVrPathAsPhysicalPath(vpath);
-                        if (!Directory.Exists(ppath))
-                        {
-                            Directory.CreateDirectory(ppath);
-                        }
 
-                        var filename = DateTime.Now.ToTimestamp() + RandomTo.NewNumber() + Path.GetExtension(file.FileName);
-
-                        using (var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew))
-                        {
-                            file.CopyTo(fs);
-                            fs.Flush();
-                        }
-
-                        vm.Set(EnumTo.RTag.success);
-                        vm.Data = PathTo.Combine(vpath, filename);
-                    }
+                    vm.Set(AppService.CollFileRecord.Delete(model.Id));
                 }
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-                ConsoleTo.Log(ex);
             }
 
             return vm;

@@ -5,12 +5,11 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.Net.NetworkInformation;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography;
 
 namespace Netnr;
 
@@ -71,7 +70,6 @@ public partial class MonitorTo
             var exp = ex;
             do
             {
-                Console.WriteLine(exp.Message);
                 Logs.Add(exp.Message);
                 exp = exp.InnerException;
             } while (exp != null);
@@ -195,13 +193,14 @@ public partial class MonitorTo
             }
         };
         using var client = new HttpClient(handler);
+        client.Timeout = TimeSpan.FromSeconds(30);
 
         try
         {
             var request = new HttpRequestMessage
             {
                 RequestUri = new Uri(uri),
-                Method = method ?? HttpMethod.Get,
+                Method = method ?? HttpMethod.Get
             };
             if (headers?.Count > 0)
             {
@@ -286,8 +285,6 @@ public partial class MonitorTo
         var model = new MonitorSSLModel
         {
             VerificationTime = chain.ChainPolicy.VerificationTime,
-            AlgorithmType = cert.PublicKey.Key.SignatureAlgorithm,
-            AlgorithmSize = cert.PublicKey.Key.KeySize,
             Subject = cert.Subject,
             Issuer = cert.Issuer,
             SignatureAlgorithm = cert.SignatureAlgorithm.FriendlyName,
@@ -300,14 +297,49 @@ public partial class MonitorTo
             Version = cert.Version,
             SerialNumber = cert.SerialNumber
         };
+        if (cert.PublicKey.Oid.FriendlyName == "ECC")
+        {
+            using var ecdsa = cert.GetECDsaPublicKey();
+            if (ecdsa != null)
+            {
+                model.AlgorithmType = ecdsa.SignatureAlgorithm;
+                model.AlgorithmSize = ecdsa.KeySize;
+            }
+        }
+        else
+        {
+            model.AlgorithmType = cert.PublicKey.Key.SignatureAlgorithm;
+            model.AlgorithmSize = cert.PublicKey.Key.KeySize;
+        }
+
 
         foreach (var item in cert.Extensions)
         {
             //使用者可选名称
             if (item.Oid.Value == "2.5.29.17")
             {
-                model.AlternativeName = Regex.Replace(item.RawData.ToText(Encoding.GetEncoding("iso-8859-1")), @"\p{C}+", " ");
-                model.AlternativeName = string.Join(" ", model.AlternativeName.Split(' ').Where(x => x.Length > 3).Select(RemoveSpecialCharacters));
+                model.AlternativeName = item.Format(true);
+
+                // 解析备用名称，格式有多样性
+                // 常见如 DNS Name=www.baidu.cn\r\nDNS Name = baidu.cn
+                // 谷歌如 DNS:*.google.com, DNS:*.bdn.dev
+                var arr = model.AlternativeName
+                    .Replace(",", Environment.NewLine)
+                    .Split(Environment.NewLine)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Select(x =>
+                    {
+                        if (x.Contains('='))
+                        {
+                            return x.Split('=')[1];
+                        }
+                        else if (x.Contains(':'))
+                        {
+                            return x.Split(':')[1];
+                        }
+                        return x;
+                    });
+                model.AlternativeName = string.Join(" ", arr);
 
                 break;
             }
@@ -342,24 +374,6 @@ public partial class MonitorTo
         }
 
         return list;
-    }
-
-    /// <summary>
-    /// 移除乱码
-    /// </summary>
-    /// <param name="content"></param>
-    /// <returns></returns>
-    public static string RemoveSpecialCharacters(string content)
-    {
-        var sb = new StringBuilder();
-        foreach (char c in content)
-        {
-            if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= 0x20000 && c <= 0xFA2D) || "-_.*@".Contains(c))
-            {
-                sb.Append(c);
-            }
-        }
-        return sb.ToString();
     }
 
     /// <summary>
@@ -399,7 +413,16 @@ public partial class MonitorTo
         {
             var result = client.BeginConnect(host, port, null, null);
             var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(5));
-            model.Code = success ? 200 : 400;
+            if (success)
+            {
+                model.Code = 200;
+                client.EndConnect(result);
+            }
+            else
+            {
+                model.Code = 400;
+                client.Close();
+            }
         }
         catch (Exception ex)
         {
@@ -421,8 +444,9 @@ public partial class MonitorTo
         var pinger = new Ping();
         try
         {
-            var reply = pinger.Send(host);
+            var reply = pinger.Send(host, 5000);
             model.Code = reply.Status == IPStatus.Success ? 200 : 400;
+            model.Data = reply;
         }
         catch (Exception ex)
         {

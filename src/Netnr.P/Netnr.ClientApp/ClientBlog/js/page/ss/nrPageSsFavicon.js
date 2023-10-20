@@ -18,7 +18,7 @@ let nrPage = {
         }, nrVary.domTxtFile);
 
         //下载
-        nrVary.domBtnDownload.addEventListener('click', async function () {
+        nrVary.domBtnDownload.addEventListener('click', function () {
             nrApp.setLoading(this);
 
             let size = nrVary.domSeSize.value * 1;
@@ -32,10 +32,11 @@ let nrPage = {
             domCanvas.toBlob(blob => {
                 nrcBase.download(blob, 'favicon.ico')
             }, 'image/vnd.microsoft.icon', '-moz-parse-options:format=bmp;bpp=32');
-            
+
             nrApp.setLoading(this, true);
         });
-    }
+    },
+
 }
 
 export { nrPage };

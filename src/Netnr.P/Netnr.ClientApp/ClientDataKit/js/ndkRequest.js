@@ -181,7 +181,7 @@ var ndkRequest = {
             if (data) {
                 resolve(data)
             } else {
-                var pars = ndkRequest.parameterJoin({ tdb: cobj.type, conn: cobj.conn });
+                var pars = ndkRequest.parameterJoin({ dbt: cobj.type, conn: cobj.conn });
                 ndkRequest.request(`${ndkVary.apiServer}${ndkVary.apiGetDatabaseName}?${pars}`).then(res => {
                     var dbrows = [];
                     res.data.forEach(name => {
@@ -236,13 +236,13 @@ var ndkRequest = {
             if (data) {
                 resolve(data)
             } else {
-                var pars = ndkRequest.parameterJoin({ tdb: cobj.type, conn: cobj.conn, filterDatabaseName: filterDatabaseName });
+                var pars = ndkRequest.parameterJoin({ dbt: cobj.type, conn: cobj.conn, filterDatabaseName: filterDatabaseName });
                 ndkRequest.request(`${ndkVary.apiServer}${ndkVary.apiGetDatabaseInfo}?${pars}`).then(res => {
                     ndkStorage.cc([cobj.id]).then(cdb => {
                         cdb.data.forEach(row => {
-                            var newrow = res.data.filter(x => x.DatabaseName == row.DatabaseName);
-                            if (newrow.length > 0) {
-                                Object.assign(row, newrow[0]);
+                            var newrow = res.data.find(x => x.DatabaseName == row.DatabaseName);
+                            if (newrow) {
+                                Object.assign(row, newrow);
                             }
                         })
                         ndkStorage.cc([cobj.id], cdb.data) //缓存
@@ -278,7 +278,7 @@ var ndkRequest = {
             if (data) {
                 resolve(data)
             } else {
-                var pars = ndkRequest.parameterJoin({ tdb: cobj.type, conn: cobj.conn, databaseName: databaseName });
+                var pars = ndkRequest.parameterJoin({ dbt: cobj.type, conn: cobj.conn, databaseName: databaseName });
                 ndkRequest.request(`${ndkVary.apiServer}${ndkVary.apiGetTable}?${pars}`).then(res => {
                     ndkStorage.cc([cobj.id, databaseName], res.data) //缓存
                     resolve(res.data);
@@ -329,7 +329,7 @@ var ndkRequest = {
                 resolve(data)
             } else {
                 var fd = new FormData();
-                fd.append('tdb', cobj.type);
+                fd.append('dbt', cobj.type);
                 fd.append('conn', cobj.conn);
                 fd.append('filterSchemaNameTableName', filterSNTN);
                 fd.append('databaseName', databaseName);
@@ -366,7 +366,7 @@ var ndkRequest = {
      */
     reqTableDDL: (cobj, databaseName, schemaName, tableName) => {
         var pars = ndkRequest.parameterJoin({
-            tdb: cobj.type,
+            dbt: cobj.type,
             conn: cobj.conn,
             tableName: tableName,
             schemaName: schemaName,
@@ -387,7 +387,7 @@ var ndkRequest = {
     setTableComment: (cobj, tableName, tableComment, schemaName, databaseName) => new Promise((resolve, reject) => {
         if (cobj.type != "SQLite") {
             var fd = new FormData();
-            fd.append('tdb', cobj.type);
+            fd.append('dbt', cobj.type);
             fd.append('conn', cobj.conn);
             fd.append('tableName', tableName);
             fd.append('tableComment', tableComment);
@@ -416,7 +416,7 @@ var ndkRequest = {
     setColumnComment: (cobj, tableName, columnName, columnComment, schemaName, databaseName) => new Promise((resolve, reject) => {
         if (cobj.type != "SQLite") {
             var fd = new FormData();
-            fd.append('tdb', cobj.type);
+            fd.append('dbt', cobj.type);
             fd.append('conn', cobj.conn);
             fd.append('tableName', tableName);
             fd.append('columnName', columnName);

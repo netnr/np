@@ -33,12 +33,12 @@ namespace Netnr.Blog.Web.Controllers
         {
             var uinfo = IdentityService.Get(HttpContext);
 
-            var vm = await CommonService.MessageQuery(uinfo.UserId, MessageType.UserWriting, null, page);
+            var vm = await CommonService.MessageQuery(uinfo.UserId, MessageTypes.UserWriting, null, page);
             vm.Route = Request.Path;
 
             if (page == 1)
             {
-                var mType = MessageType.UserWriting.ToString();
+                var mType = MessageTypes.UserWriting.ToString();
                 await db.UserMessage.Where(x => x.UmType == mType && x.UmAction == 2 && x.UmStatus == 1)
                     .ExecuteUpdateAsync(x => x.SetProperty(p => p.UmStatus, 2));
             }
@@ -144,7 +144,7 @@ namespace Netnr.Blog.Web.Controllers
 
                     if (string.IsNullOrWhiteSpace(uinfo.UserPhoto))
                     {
-                        uinfo.UserPhoto = UniqueTo.LongId() + ".jpg";
+                        uinfo.UserPhoto = $"{Guid.NewGuid().ToLongString()}.jpg";
                     }
                     var upname = uinfo.UserPhoto.Split('?')[0];
                     var npnew = upname + "?" + DateTime.Now.ToTimestamp();
@@ -155,7 +155,7 @@ namespace Netnr.Blog.Web.Controllers
                             {
                                 source = source[(source.LastIndexOf(",") + 1)..];
                                 byte[] bytes = Convert.FromBase64String(source);
-                                System.IO.File.WriteAllBytes(PathTo.Combine(ppath, upname), bytes);
+                                System.IO.File.WriteAllBytes(ParsingTo.Combine(ppath, upname), bytes);
 
                                 var userInfo = await db.UserInfo.FindAsync(uinfo.UserId);
                                 userInfo.UserPhoto = npnew;
@@ -167,7 +167,7 @@ namespace Netnr.Blog.Web.Controllers
                                     await IdentityService.Set(HttpContext, userInfo);
                                 }
 
-                                vm.Set(EnumTo.RTag.success);
+                                vm.Set(RCodeTypes.success);
                             }
                             break;
                         case "link":
@@ -177,11 +177,11 @@ namespace Netnr.Blog.Web.Controllers
                                 {
                                     Timeout = TimeSpan.FromMinutes(1)
                                 };
-                                await client.DownloadAsync(source, PathTo.Combine(ppath, upname), (rlen, total) =>
+                                await client.DownloadAsync(source, ParsingTo.Combine(ppath, upname), (rlen, total) =>
                                 {
                                     if (total > maxLength || rlen > maxLength)
                                     {
-                                        throw new Exception($"{source} Size exceeds limit(max {ParsingTo.FormatByteSize(maxLength)})");
+                                        throw new Exception($"{source} Size exceeds limit(max {ParsingTo.FormatByte(maxLength)})");
                                     }
                                 });
 
@@ -195,7 +195,7 @@ namespace Netnr.Blog.Web.Controllers
                                     await IdentityService.Set(HttpContext, userInfo);
                                 }
 
-                                vm.Set(EnumTo.RTag.success);
+                                vm.Set(RCodeTypes.success);
                             }
                             break;
                     }
@@ -257,7 +257,7 @@ namespace Netnr.Blog.Web.Controllers
 
             if (errMsg.Count > 0)
             {
-                vm.Set(EnumTo.RTag.refuse);
+                vm.Set(RCodeTypes.refuse);
                 vm.Msg = string.Join("<br/>", errMsg);
 
                 return vm;
@@ -274,7 +274,7 @@ namespace Netnr.Blog.Web.Controllers
                 //账号重复
                 if (await db.UserInfo.AnyAsync(x => x.UserName == mo.UserName))
                 {
-                    vm.Set(EnumTo.RTag.exist);
+                    vm.Set(RCodeTypes.exist);
                     vm.Msg = "账号已经存在";
 
                     return vm;
@@ -296,14 +296,14 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     if (!ParsingTo.IsMail(mo.UserMail))
                     {
-                        vm.Set(EnumTo.RTag.invalid);
+                        vm.Set(RCodeTypes.failure);
                         vm.Msg = "邮箱格式有误";
 
                         return vm;
                     }
                     else if (await db.UserInfo.AnyAsync(x => x.UserMail == mo.UserMail))
                     {
-                        vm.Set(EnumTo.RTag.exist);
+                        vm.Set(RCodeTypes.exist);
                         vm.Msg = "邮箱已经存在";
 
                         return vm;
@@ -424,7 +424,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Set(RCodeTypes.unauthorized);
                     vm.Msg = "原密码错误";
                 }
             }
@@ -458,7 +458,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
 
                 var uinfo = IdentityService.Get(HttpContext);
-                var vm = await CommonService.UserConnWritingQuery(uinfo.UserId, ConnectionType.UserWriting, action, page ?? 1);
+                var vm = await CommonService.UserConnWritingQuery(uinfo.UserId, ConnectionTypes.UserWriting, action, page ?? 1);
                 vm.Route = Request.Path;
                 vm.Other = id;
 
@@ -499,7 +499,7 @@ namespace Netnr.Blog.Web.Controllers
                                 a.UwCategory
                             };
                 vm.Data = await query.ToListAsync();
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {
@@ -529,7 +529,7 @@ namespace Netnr.Blog.Web.Controllers
                 item = mo,
                 tags = listTags
             };
-            vm.Set(EnumTo.RTag.success);
+            vm.Set(RCodeTypes.success);
 
             return vm;
         }
@@ -548,7 +548,7 @@ namespace Netnr.Blog.Web.Controllers
             try
             {
                 var lisTagId = new List<int>();
-                TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
+                TagIds.Split(',').ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
                 var lisTagName = (await CommonService.TagsQuery()).Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                 var uinfo = IdentityService.Get(HttpContext);

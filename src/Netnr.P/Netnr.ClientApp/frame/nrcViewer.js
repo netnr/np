@@ -184,4 +184,5 @@ let nrcViewer = {
 
 }
 
+Object.assign(window, { nrcViewer });
 export { nrcViewer }

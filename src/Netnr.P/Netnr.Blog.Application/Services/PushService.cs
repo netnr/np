@@ -64,7 +64,7 @@
 
                 await MailTo.Send(sendModel);
 
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
                 vm.Msg = "已发送";
             }
             catch (Exception ex)

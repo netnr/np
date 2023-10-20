@@ -10,6 +10,7 @@ import { ndkStorage } from './ndkStorage';
 import { ndkTab } from './ndkTab';
 import { ndkVary } from './ndkVary';
 import { ndkView } from './ndkView';
+import { nrTranslations } from '../../frame/Shoelace/nrTranslations';
 
 // 初始化
 let ndkInit = {
@@ -17,6 +18,8 @@ let ndkInit = {
         await ndkStorage.init();
         ndkEditor.extend();
 
+        nrTranslations.registerTranslation(nrTranslations['zh-cn']);
+        
         // 初始化语言
         var sobj = await ndkStorage.stepsGet();
         if (sobj && sobj.language) {
@@ -34,12 +37,14 @@ let ndkInit = {
         //重写
         ndkInit.rewrite();
 
-        //步骤恢复
+        document.body.style.overflow = "hidden";
+        //步骤恢复        
         await ndkStep.stepStart();
         ndkStep.stepLog(ndkI18n.lg.done);
+        document.body.style.removeProperty('overflow');
 
-        //载入完成
-        ['nrg-load0', 'nrg-dark0'].forEach(c => document.body.classList.remove(c));
+        //载入完成        
+        document.getElementById('style0').remove();
         ndkVary.domMain.style.removeProperty('visibility');
         // console.clear();
         console.debug(`${ndkVary.name} v${nrcBase.version}`);
@@ -93,7 +98,7 @@ let ndkInit = {
         <sl-textarea label="ndk.json" class="mb-2" placeholder="${ndkI18n.lg.setImportPlaceholder}"></sl-textarea>
         <sl-button type="default" data-cmd="config-import">${ndkVary.emoji.save}${ndkI18n.lg.setImportSave}</sl-button>
         `);
-        if (ndkFunction.supportClipboard) {
+        if (navigator.clipboard) {
             htmlConfigImport.push(`<sl-button type="default" data-cmd="config-import-clipboard">${ndkVary.emoji.clipboard}${ndkI18n.lg.setImportSaveClipboard}</sl-button>`);
         }
 

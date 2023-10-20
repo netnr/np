@@ -389,10 +389,12 @@ var ndkAction = {
                     var domViewDecode = ndkVary.domAlert.querySelector('.view-cell-decode');
 
                     // base64 to text
-                    ndkVary.domAlert.querySelector('sl-dropdown').addEventListener('sl-select', e => {
-                        const selectedItem = e.detail.item;
-                        domViewMime.value = selectedItem.value;
-                        domViewTofile.click();
+                    ndkVary.domAlert.querySelector('sl-dropdown').addEventListener('sl-select', event => {
+                        if (this.contains(event.target)) {
+                            const domItem = event.detail.item;
+                            domViewMime.value = domItem.value;
+                            domViewTofile.click();
+                        }
                     });
 
                     // base64 to file

@@ -124,4 +124,5 @@
     }
 };
 
+Object.assign(window, { nrcRandomatic });
 export { nrcRandomatic }

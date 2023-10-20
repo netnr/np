@@ -10,7 +10,7 @@ namespace Netnr;
 /// 谓词构建
 /// https://petemontgomery.wordpress.com/2011/02/10/a-universal-predicatebuilder/
 /// </summary>
-public static class PredicateTo
+public static partial class PredicateTo
 {
     /// <summary>
     /// Creates a predicate that evaluates to true.

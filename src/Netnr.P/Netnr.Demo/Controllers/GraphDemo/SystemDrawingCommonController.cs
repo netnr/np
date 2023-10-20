@@ -1,9 +1,11 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Runtime.Versioning;
 
 namespace Netnr.Demo.Controllers.GraphDemo;
 
+[SupportedOSPlatform("windows")]
 [Route("/GraphDemo/[controller]/[action]")]
 public class SystemDrawingCommonController : Controller
 {
@@ -24,7 +26,7 @@ public class SystemDrawingCommonController : Controller
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                code = Guid.NewGuid().ToString("N").Substring(0, 4).ToUpper();
+                code = Guid.NewGuid().ToString("N")[..4].ToUpper();
             }
 
             byte[] bytes = CreateImg(code);
@@ -83,7 +85,6 @@ public class SystemDrawingCommonController : Controller
     /// 生成图片验证码
     /// </summary>
     /// <param name="code">随机码</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:验证平台兼容性", Justification = "<挂起>")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public byte[] CreateImg(string code)
     {
@@ -137,7 +138,6 @@ public class SystemDrawingCommonController : Controller
     /// <param name="width">缩略图宽度</param>
     /// <param name="height">缩略图高度</param>
     /// <param name="model">生成缩略的模式: wh|width|height|cut </param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:验证平台兼容性", Justification = "<挂起>")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public byte[] ResizeBin(string imgPath, int width, int height, string model)
     {
@@ -210,7 +210,6 @@ public class SystemDrawingCommonController : Controller
     /// </summary>
     /// <param name="imgPath"></param>
     /// <param name="text"></param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:验证平台兼容性", Justification = "<挂起>")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public byte[] WatermarkForTextBin(string imgPath, string text)
     {

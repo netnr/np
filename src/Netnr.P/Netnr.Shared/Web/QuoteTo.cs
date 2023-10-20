@@ -1,11 +1,13 @@
 ﻿#if Full || Web
 
+using System.Text.RegularExpressions;
+
 namespace Netnr;
 
 /// <summary>
 /// 资源引用
 /// </summary>
-public class QuoteTo
+public partial class QuoteTo
 {
     /// <summary>
     /// 面板容器样式1
@@ -24,8 +26,6 @@ public class QuoteTo
     /// <returns></returns>
     public static string Html(string quotes)
     {
-        var adminGitHub = AppTo.GetValue("Common:AdminGitHub");
-
         var vh = new List<string>();
 
         List<string> listQuote = quotes.Split(',').ToList();
@@ -34,7 +34,7 @@ public class QuoteTo
             switch (item)
             {
                 case "the":
-                    vh.Add($"<!--\r\nhttps://github.com/{adminGitHub}\r\n{DateTime.Now:yyyy-MM}\r\n-->");
+                    vh.Add($"<!-- https://github.com/{AppTo.GetValue("Common:AdminGitHub")}  {DateTime.Now:yyyy-MM} -->");
                     break;
 
                 case "loading":
@@ -50,7 +50,7 @@ public class QuoteTo
                     break;
 
                 case "jquery3.js":
-                    vh.Add("<script src='https://npmcdn.com/jquery@3.7.0/dist/jquery.min.js'></script>");
+                    vh.Add("<script src='https://npmcdn.com/jquery@3.7.1/dist/jquery.min.js'></script>");
                     break;
 
                 case "bootstrap3.css":
@@ -60,10 +60,10 @@ public class QuoteTo
                     vh.Add("<script src='https://npmcdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js'></script>");
                     break;
                 case "bootstrap5.css":
-                    vh.Add("<link href='https://npmcdn.com/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npmcdn.com/bootstrap@5.3.2/dist/css/bootstrap.min.css' rel='stylesheet' />");
                     break;
                 case "bootstrap5.js":
-                    vh.Add("<script src='https://npmcdn.com/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' async ></script>");
+                    vh.Add("<script src='https://npmcdn.com/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js' async ></script>");
                     break;
 
                 case "bpmn-js":
@@ -75,7 +75,23 @@ public class QuoteTo
             }
         }
 
-        return (string.Join(Environment.NewLine, vh) + Environment.NewLine).Replace(@"                            ", "");
+        return string.Join("\r\n", vh.Select(MirrorNPM));
     }
+
+    /// <summary>
+    /// NPM 镜像
+    /// </summary>
+    /// <param name="url"></param>
+    /// <returns></returns>
+    public static string MirrorNPM(string url)
+    {
+        string replacement = "https://registry.npmmirror.com/$2/$3/files/$4.$5";
+        url = MatchMirrorNPM().Replace(url, replacement);
+
+        return url;
+    }
+
+    [GeneratedRegex(@"(https?:\/\/[\w.-]+)\/(.*)@([\d.]+)\/(.*)\.(\w+)")]
+    private static partial Regex MatchMirrorNPM();
 }
 #endif

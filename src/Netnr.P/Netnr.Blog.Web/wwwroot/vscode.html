@@ -1,8 +1,4 @@
-<!--
-https://github.com/netnr
-2023-06
--->
-
+<!-- https://github.com/netnr  2023-10 -->
 <!DOCTYPE html>
 <html lang="zh-cn" data-bs-theme='light' class="netnrmd-light" >
 <head>
@@ -23,16 +19,14 @@ https://github.com/netnr
     <title>VSCode &#x7F16;&#x8F91;&#x5668; NET牛人</title>
 
     <link rel='icon' href='/favicon.ico'>
-<link href='https://npmcdn.com/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet' />
-<script src='https://npmcdn.com/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' async ></script>
+<link href='https://registry.npmmirror.com/bootstrap/5.3.2/files/dist/css/bootstrap.min.css' rel='stylesheet' />
+<script src='https://registry.npmmirror.com/bootstrap/5.3.2/files/dist/js/bootstrap.bundle.min.js' async ></script>
 
-
-    <link href='/dist/main.css?v=-QYXkBuVGj_o2f297IPomfjvKxEiiuqLtpvqzWD_meE' rel='stylesheet' />
-    <script src="/dist/main.js?v=jHvvmyOgBbK1XOP9yRpfTcXGMR_aONxZ--_sUHJY4JA" async></script>
+    <link href='/dist/main.css?v=kXl58w4NzphHiWmIfmRXwXyYPE7qtQ-1AmPUx3a91SE' rel='stylesheet' />
+    <script src="/dist/main.js?v=T5hGosyPk-78n9idG9kprU24zHEhI52uz8kF7UsetDw" async></script>
 
 </head>
 <body>
-
         
         <input type="hidden" id="hid_is_build_html" />
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -104,12 +98,29 @@ https://github.com/netnr
 
 
     <div class="container-fluid p-lg-5 pb-lg-0 py-4 pb-0">
-    <div class="d-flex">
-        <div style="width:15em;margin-right:2em">
+    <div class="row">
+        <div class="col-auto mb-2">
+            <select class="nrg-se-language invisible form-select"></select>
+        </div>
+        <div class="nrg-card-active col-auto mb-2">
+            <button class="nrg-btn-run btn btn-warning d-none">Run</button>
+            <button class="nrg-btn-preview btn btn-warning d-none">Preview</button>
+        </div>
+        <div class="col"></div>
 
-            <div class="btn-group mb-2 w-100">
+        <div class="col-auto mb-2">
+            <div class="nrg-ddl-list dropdown">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                    列表 List
+                </button>
+                <div class="dropdown-menu p-0 mt-1 border-0">
+                    <ol class="nrg-list-file list-group list-group-numbered overflow-auto" style="width:19em" role="button"></ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="btn-group">
                 <button class="nrg-btn-new btn btn-outline-secondary">新建 New</button>
-
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                         更多
@@ -120,24 +131,10 @@ https://github.com/netnr
                     </ul>
                 </div>
             </div>
-
-            <ol class="nrg-list-file list-group list-group-numbered overflow-auto" role="button"></ol>
         </div>
-        <div class="position-relative" style="width:calc(100% - 17em)">
-            <span class="nrg-btn-fold badge text-bg-secondary d-none" role="button" style="position:absolute;top:50%;z-index:1;left:-1em">↔</span>
 
-            <div class="row">
-                <div class="col-auto mb-2">
-                    <select class="nrg-se-language invisible form-select"></select>
-                </div>
-                <div class="nrg-card-active col-auto mb-2">
-                    <button class="nrg-btn-run btn btn-warning d-none">Run</button>
-                    <button class="nrg-btn-preview btn btn-warning d-none">Preview</button>
-                </div>
-                <div class="col-12">
-                    <div class="nrg-editor"></div>
-                </div>
-            </div>
+        <div class="col-12">
+            <div class="nrg-editor"></div>
         </div>
     </div>
 </div>

@@ -15,7 +15,7 @@ namespace Netnr;
 /// 如果想要绝对唯一，建议在外部设置唯一的workerId，再结合单例使用，此时确保最终生成的Id绝对不重复！
 /// 高要求场合，推荐使用Redis自增序数作为workerId，在大型分布式系统中亦能保证绝对唯一。
 /// </remarks>
-public class SnowflakeTo
+public partial class SnowflakeTo
 {
     #region 属性
     /// <summary>开始时间戳。首次使用前设置，否则无效，默认2022-6-6</summary>

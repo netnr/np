@@ -194,6 +194,16 @@ public class LoginTo
                                 }
                             }
                             break;
+                        case LoginWhich.Feishu:
+                            {
+                                var authModel = reqModel == null ? new FeishuAuthorizeModel() : reqModel as FeishuAuthorizeModel;
+                                if (stateCall != null)
+                                {
+                                    authModel.State = stateCall.Invoke(authModel.State);
+                                }
+                                result.Raw = AuthorizeLink(Feishu.API_Authorize, authModel);
+                            }
+                            break;
                         case LoginWhich.Gitee:
                             {
                                 var authModel = reqModel == null ? new GiteeAuthorizeModel() : reqModel as GiteeAuthorizeModel;
@@ -362,6 +372,18 @@ public class LoginTo
                                 }
                             }
                             break;
+                        case LoginWhich.Feishu:
+                            {
+                                if (reqModel is not FeishuAccessTokenModel sendModel)
+                                {
+                                    sendModel = new FeishuAccessTokenModel()
+                                    {
+                                        Code = authModel.Code
+                                    };
+                                }
+                                result.Raw = Post(Feishu.API_AccessToken, sendModel);
+                            }
+                            break;
                         case LoginWhich.Gitee:
                             {
                                 if (reqModel is not GiteeAccessTokenModel sendModel)
@@ -527,6 +549,19 @@ public class LoginTo
                                     }
                                     result.Raw = Post(DingTalk.API_AccessToken, sendModel, true);
                                 }
+                            }
+                            break;
+                        case LoginWhich.Feishu:
+                            {
+                                if (reqModel is not FeishuRefreshTokenModel sendModel)
+                                {
+                                    var beforeModel = beforeResult as DocModel;
+                                    sendModel = new FeishuRefreshTokenModel()
+                                    {
+                                        Refresh_Token = beforeModel.Doc.GetValue("refresh_token")
+                                    };
+                                }
+                                result.Raw = Post(Feishu.API_AccessToken, sendModel);
                             }
                             break;
                         case LoginWhich.Gitee:
@@ -703,6 +738,19 @@ public class LoginTo
                                     }
                                     result.Raw = Get(DingTalk.API_User, sendModel, new Dictionary<string, string> { { "x-acs-dingtalk-access-token", sendModel.Access_Token } });
                                 }
+                            }
+                            break;
+                        case LoginWhich.Feishu:
+                            {
+                                if (reqModel is not FeishuUserModel sendModel)
+                                {
+                                    var beforeModel = beforeResult as DocModel;
+                                    sendModel = new FeishuUserModel()
+                                    {
+                                        Access_Token = beforeModel.Doc.GetValue("access_token")
+                                    };
+                                }
+                                result.Raw = Get(Feishu.API_User, sendModel, new Dictionary<string, string> { { "Authorization", $"token {sendModel.Access_Token}" } });
                             }
                             break;
                         case LoginWhich.Gitee:
@@ -929,8 +977,17 @@ public class LoginTo
                         publicUser.OpenId = userResult.Doc.GetValue("openId");
                         publicUser.Avatar = userResult.Doc.GetValue("avatarUrl");
                         publicUser.Nickname = userResult.Doc.GetValue("nick");
-                        publicUser.Email = userResult.Doc.GetValue("Email");
+                        publicUser.Email = userResult.Doc.GetValue("email");
                     }
+                }
+                break;
+            case LoginWhich.Feishu:
+                {
+                    publicUser.UniqueId = userResult.Doc.GetValue("union_id");
+                    publicUser.OpenId = userResult.Doc.GetValue("open_id");
+                    publicUser.Avatar = userResult.Doc.GetValue("avatar_big");
+                    publicUser.Name = userResult.Doc.GetValue("name");
+                    publicUser.Email = userResult.Doc.GetValue("email");
                 }
                 break;
             case LoginWhich.Gitee:
@@ -1049,6 +1106,10 @@ public enum LoginWhich
     /// 钉钉
     /// </summary>
     DingTalk,
+    /// <summary>
+    /// 飞书
+    /// </summary>
+    Feishu,
     /// <summary>
     /// Gitee
     /// </summary>

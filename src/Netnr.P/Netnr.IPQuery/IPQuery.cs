@@ -76,11 +76,12 @@ public class IPQuery
     /// <returns></returns>
     public IPQueryResult Search(string ip)
     {
-        var result = new IPQueryResult();
-
         if (IPAddress.TryParse(ip, out IPAddress addr))
         {
-            result.IsIPv6 = addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6;
+            var result = new IPQueryResult
+            {
+                IsIPv6 = addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6
+            };
 
             var qr = result.IsIPv6 ? V6Query.Search(ip) : V4Query.Search(ip);
             if (qr != null)
@@ -96,9 +97,11 @@ public class IPQuery
                     result.ISP = qr.ISP.Trim() == "CZ88.NET" ? "" : qr.ISP;
                 }
             }
+
+            return result;
         }
 
-        return result;
+        return null;
     }
 
     /// <summary>

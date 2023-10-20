@@ -82,4 +82,5 @@ let nrcLeanCloud = {
     }
 }
 
+Object.assign(window, { nrcLeanCloud });
 export { nrcLeanCloud };

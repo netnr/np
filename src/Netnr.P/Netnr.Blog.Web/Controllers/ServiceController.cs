@@ -1,9 +1,3 @@
-using System.Net;
-using System.Net.Http;
-using System.Net.Sockets;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
@@ -59,7 +53,7 @@ namespace Netnr.Blog.Web.Controllers
                     var encodingAESKey = AppTo.GetValue("ApiKey:WeixinMP:EncodingAESKey");
                     var appId = AppTo.GetValue("ApiKey:WeixinMP:AppID");
                 }
-                ConsoleTo.Title("Receive WeixinMP Message", postData);
+                ConsoleTo.WriteCard("Receive WeixinMP Message", postData);
 
                 //处理消息并回复
                 result = WeixinMPService.MessageReply(postData);
@@ -72,12 +66,12 @@ namespace Netnr.Blog.Web.Controllers
         }
 
         /// <summary>
-        /// 导出演示数据，开发环境
+        /// 导出样本数据（开发环境）
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [FilterConfigs.IsAdmin]
-        public async Task<ResultVM> DatabaseExportDemo()
+        public async Task<ResultVM> ExportSampleData()
         {
             var vm = new ResultVM();
 
@@ -85,8 +79,8 @@ namespace Netnr.Blog.Web.Controllers
             {
                 if (BaseTo.IsDev)
                 {
-                    var export_before = "db/backup_demo_before.zip";
-                    var export_demo = "db/backup_demo.zip";
+                    var export_before = "static/sample_before.zip";
+                    var export_demo = "static/sample.zip";
 
                     //备份
                     if ((await DatabaseExport(export_before)).Code == 200)
@@ -144,7 +138,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Set(RCodeTypes.refuse);
                     vm.Msg = "仅限开发环境使用";
                 }
             }
@@ -175,7 +169,7 @@ namespace Netnr.Blog.Web.Controllers
                     PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
                     ReadConnectionInfo = new DbKitConnectionOption()
                     {
-                        ConnectionType = AppTo.TDB,
+                        ConnectionType = AppTo.DBT,
                         Connection = db.Database.GetDbConnection()
                     },
                     ExportType = onlyData ? "onlyData" : "all"
@@ -185,7 +179,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     System.IO.File.Delete(edb.PackagePath);
                 }
-                vm = await DataKitTo.ExportDatabase(edb);
+                vm = await DataKitTo.ExportDataTable(await edb.AsExportDataTable());
             }
             catch (Exception ex)
             {
@@ -213,7 +207,7 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     WriteConnectionInfo = new DbKitConnectionOption
                     {
-                        ConnectionType = AppTo.TDB,
+                        ConnectionType = AppTo.DBT,
                         Connection = db.Database.GetDbConnection()
                     },
                     PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
@@ -242,9 +236,9 @@ namespace Netnr.Blog.Web.Controllers
 
             try
             {
-                if (AppTo.GetValue<bool>("ReadOnly"))
+                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
                 {
-                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Set(RCodeTypes.refuse);
                     return vm;
                 }
 
@@ -276,7 +270,7 @@ namespace Netnr.Blog.Web.Controllers
                     vm.Log.Add(ex.Message);
                 }
 
-                Thread.Sleep(1000 * 1);
+                await Task.Delay(1000);
 
                 //备份数据
                 var zipPath = $"db/backup_{now}.zip";
@@ -398,7 +392,7 @@ namespace Netnr.Blog.Web.Controllers
             try
             {
                 //处理Guff查询记录数
-                var ctype = ConnectionType.GuffRecord.ToString();
+                var ctype = ConnectionTypes.GuffRecord.ToString();
                 var listOr = db.OperationRecord.Where(x => x.OrType == ctype && x.OrMark == "default").ToList();
                 if (listOr.Count > 0)
                 {
@@ -421,7 +415,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                 }
             }
             catch (Exception ex)
@@ -451,7 +445,7 @@ namespace Netnr.Blog.Web.Controllers
             Console.WriteLine(postData);
 
             vm.Data = postData.DeJson();
-            vm.Set(EnumTo.RTag.success);
+            vm.Set(RCodeTypes.success);
 
             return vm;
         }

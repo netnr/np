@@ -112,7 +112,7 @@ var ndkView = {
                 {
                     field: 'type', headerName: ndkI18n.lg.connType, enableRowGroup: true, width: 160,
                     cellRenderer: params => params.value ? ndkVary.iconSvg(params.value.toLowerCase(), params.value, { library: "nrg-icon" }) : "",
-                    cellEditor: 'agRichSelectCellEditor', cellEditorParams: { values: ndkVary.typeDB }
+                    cellEditor: 'agRichSelectCellEditor', cellEditorParams: { values: ndkVary.DBTypes }
                 },
                 nrGrid.newColumnNumber({ field: 'order', headerName: ndkI18n.lg.connOrder, rowDrag: true }),
                 { field: 'id', headerName: ndkVary.emoji.id, width: 140, editable: false },
@@ -220,7 +220,7 @@ var ndkView = {
 
                 //新增连接
                 var adddbs = [];
-                ndkVary.typeDB.forEach(type => {
+                ndkVary.DBTypes.forEach(type => {
                     adddbs.push({
                         name: type,
                         icon: ndkVary.iconSvg(type, '', { library: "nrg-icon" }),

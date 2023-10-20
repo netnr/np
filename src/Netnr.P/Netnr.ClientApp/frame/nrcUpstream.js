@@ -94,4 +94,5 @@ let nrcUpstream = {
     })
 }
 
+Object.assign(window, { nrcUpstream });
 export { nrcUpstream }

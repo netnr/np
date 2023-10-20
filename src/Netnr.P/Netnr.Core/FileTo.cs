@@ -9,7 +9,7 @@ namespace Netnr;
 /// <summary>
 /// 文件
 /// </summary>
-public class FileTo
+public partial class FileTo
 {
     /// <summary>
     /// 流写入
@@ -54,14 +54,14 @@ public class FileTo
     /// </summary>
     /// <param name="rootPath"></param>
     /// <param name="handler"></param>
-    public static void EachDirectory(string rootPath, Action<DirectoryInfo[], FileInfo[]> handler)
+    public static void EachDirectory(string rootPath, Action<IEnumerable<DirectoryInfo>, IEnumerable<FileInfo>> handler)
     {
         var dir = new DirectoryInfo(rootPath);
         if (dir.Exists)
         {
-            var subDir = dir.GetDirectories();
+            var subDir = dir.EnumerateDirectories();
 
-            handler.Invoke(subDir, dir.GetFiles()); //处理
+            handler.Invoke(subDir, dir.EnumerateFiles()); //处理
 
             foreach (DirectoryInfo dd in subDir)
             {
@@ -93,20 +93,19 @@ public class FileTo
             Directory.CreateDirectory(target.FullName);
         }
 
-        foreach (FileInfo fi in source.GetFiles())
+        source.EnumerateFiles().ForEach(fi =>
         {
             fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
-        }
+        });
 
-        foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+        source.EnumerateDirectories().ForEach(diSourceSubDir =>
         {
-            if (ignoreFolder != null && ignoreFolder.Any(x => x == diSourceSubDir.Name))
+            if (ignoreFolder?.Any(x => x == diSourceSubDir.Name) != true)
             {
-                continue;
+                DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyDirectory(diSourceSubDir, nextTargetSubDir, ignoreFolder);
             }
-            DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-            CopyDirectory(diSourceSubDir, nextTargetSubDir, ignoreFolder);
-        }
+        });
     }
 
     /// <summary>

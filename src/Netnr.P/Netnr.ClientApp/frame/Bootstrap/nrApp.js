@@ -134,6 +134,7 @@ let nrApp = {
         })
     },
 
+    domAlert: null,
     /**
      * 提示
      * @param {any} content 内容
@@ -179,7 +180,7 @@ let nrApp = {
             dom.className = "m-0 fs-6";
             dom.style.whiteSpace = 'pre-wrap';
             dom.innerText = content;
-            
+
             domBody.appendChild(dom);
         } catch (error) {
             domBody.innerHTML = content;
@@ -188,6 +189,7 @@ let nrApp = {
         nrApp.domAlert["alert"].show();
     },
 
+    domConfirm: null,
     /**
      * 确认
      * @param {any} message 提示内容
@@ -241,4 +243,5 @@ let nrApp = {
     }),
 }
 
+Object.assign(window, { nrApp });
 export { nrApp }

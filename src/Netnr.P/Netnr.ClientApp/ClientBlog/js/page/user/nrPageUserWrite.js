@@ -10,7 +10,6 @@ let nrPage = {
 
     init: async () => {
         await nrPage.viewGrid1();
-
         await nrPage.viewModalForm();
 
         nrPage.bindEvent();
@@ -118,7 +117,7 @@ let nrPage = {
             } else {
                 nrApp.setLoading(nrVary.domBtnSave);
 
-                let fd = nrcBase.jsonToFormData(obj);
+                let fd = nrcBase.fromKeyToFormData(obj);
 
                 let result = await nrWeb.reqServer('/User/WriteSave', { method: 'POST', body: fd });
                 nrApp.setLoading(nrVary.domBtnSave, true);
@@ -188,6 +187,16 @@ let nrPage = {
 
     //form
     viewModalForm: async () => {
+        //编辑器
+        await nrcRely.remote("netnrmdEditor");
+        await nrcRely.remote("netnrmd");
+        nrApp.tsMd = netnrmd.init('.nrg-editor', {
+            theme: nrcBase.isDark() ? "dark" : "light"
+        });
+
+        //快捷键
+        nrApp.tsMd.addCommand("Ctrl+S", () => nrVary.domBtnSave.click());
+
         //标签
         let result = await nrWeb.reqServer('/Home/TagSelect');
         if (result.code == 200 && result.data) {
@@ -209,16 +218,6 @@ let nrPage = {
                 return result.data.map(item => ({ value: item.TagId, label: item.TagName }))
             })
         }
-
-        //编辑器
-        await nrcRely.remote("netnrmdAce.js");
-        await nrcRely.remote("netnrmd");
-        nrApp.tsMd = netnrmd.init('.nrg-editor', {
-            theme: nrcBase.isDark() ? "dark" : "light"
-        });
-
-        //快捷键
-        nrApp.tsMd.addCommand("Ctrl+S", () => nrVary.domBtnSave.click());
 
         //高度
         nrVary.domModalForm.addEventListener('shown.bs.modal', function () {

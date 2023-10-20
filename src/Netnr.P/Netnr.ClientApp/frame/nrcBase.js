@@ -1,15 +1,8 @@
 let nrcBase = {
     /**版本号 */
-    version: "1.705.0",
+    version: require("../package.json").version,
 
-    /**
-     * 错误处理
-     */
-    globalError: () => {
-        window.addEventListener('error', function (event) {
-            console.debug(event)
-        });
-    },
+    lastFetchDate: null, //上次请求时间（需配置 Access-Control-Expose-Headers 含 date）
 
     /**
      * 读写 cookie
@@ -68,15 +61,28 @@ let nrcBase = {
     },
 
     /**
+     * 为空
+     * @param {*} value 
+     * @returns 
+     */
+    isNullOrWhiteSpace: (value) => value == null || value.toString().trim() == "",
+
+    /**
+     * 获取文件名 不含扩展名
+     * @param {*} filename 
+     * @returns 
+     */
+    getFileNameWithoutExtension: (filename) => {
+        var parts = filename.split('.');
+        parts.pop();
+        return parts.join('.');
+    },
+
+    /**
      * 生成 UUID
      * @returns 
      */
     UUID: () => window["crypto"] && window.isSecureContext ? crypto.randomUUID() : URL.createObjectURL(new Blob([])).split('/').pop(),
-
-    /**
-     * 模拟雪花ID
-     */
-    snow: () => Number(`${Date.now()}${nrcBase.random(999).toString().padStart(3, '0')}`),
 
     /**
      * 随机
@@ -101,23 +107,6 @@ let nrcBase = {
         if (window["_define"]) {
             nrcBase.amdKeys.forEach(key => window[key] = window[`_${key}`])
         }
-    },
-
-    /**
-     * 计算hash
-     * @param {*} algorithm 散列函数 SHA-1 SHA-256 SHA-384 SHA-512
-     * @param {*} message 
-     * @returns 
-     */
-    toHash: async (algorithm, message) => {
-        if (window.isSecureContext) {
-            const msgUint8 = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest(algorithm, msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
-        return null;
     },
 
     addSeconds: (date, num) => {
@@ -159,6 +148,34 @@ let nrcBase = {
     sleep: (time) => new Promise(resolve => setTimeout(() => resolve(), time || 1000)),
 
     /**
+     * 开始移除
+     * @param {*} text 
+     * @param {*} remove 
+     * @returns 
+     */
+    trimStart: (text, remove) => {
+        text = text.toString().trim();
+        while (text.startsWith(remove)) {
+            text = text.substring(remove.length);
+        }
+        return text;
+    },
+
+    /**
+     * 末尾移除
+     * @param {*} text 
+     * @param {*} remove 
+     * @returns 
+     */
+    trimEnd: (text, remove) => {
+        text = text.toString().trim();
+        while (text.endsWith(remove)) {
+            text = text.substring(0, text.length - remove.length);
+        }
+        return text;
+    },
+
+    /**
      * 抛出错误
      */
     error: () => { throw new Error("Fake Error") },
@@ -183,6 +200,34 @@ let nrcBase = {
             dom.style.setProperty(k, v);
         }
     },
+
+    /**
+     * XSS 过滤 安全编码
+     * @param {*} content 
+     * @returns 
+     */
+    xssOf: (content) => {
+        let DOMPurify = window["DOMPurify"];
+        if (DOMPurify) {
+            return DOMPurify.sanitize(content);
+        } else {
+            console.debug("DOMPurify not found");
+        }
+        return content;
+    },
+
+    /**
+     * HTML 安全编码
+     * @param {*} html 
+     * @returns 
+     */
+    htmlOf: (content) => String(content)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;'),
 
     /**
      * HTML 编码
@@ -248,12 +293,6 @@ let nrcBase = {
     },
 
     /**
-     * 逗号分割转为数组
-     * @param {*} joins 
-     */
-    joinToArray: (joins) => (joins == null || joins.trim() == "") ? [] : joins.split(','),
-
-    /**
      * 字符串长度
      * @param {any} content 
      * @returns 
@@ -267,33 +306,40 @@ let nrcBase = {
     },
 
     /**
-     * 对象转参数
-     * @param {any} obj 
+     * 从逗号分割转为数组
+     * @param {*} joins 
      * @returns 
      */
-    toParams: (obj) => {
-        if (nrcBase.type(obj) == "Object") {
-            for (const key in obj) {
-                if (obj[key] === null) {
-                    obj[key] = '';
+    fromCommaToArray: (joins) => (joins == null || joins.trim() == "") ? [] : joins.split(','),
+
+    /**
+     * 键值对象转为URL参数
+     * @param {any} keys 
+     * @returns 
+     */
+    fromKeyToURLParams: (keys) => {
+        if (nrcBase.type(keys) == "Object") {
+            for (const key in keys) {
+                if (keys[key] === null) {
+                    keys[key] = '';
                 }
             }
         }
-        return new URLSearchParams(obj).toString();
+        return new URLSearchParams(keys).toString();
     },
 
     /**
-     * 获取表为 JSON
+     * 表单转为键值对
      * @param {any} domForm
      */
-    getFormJson: (domForm) => Object.fromEntries(nrcBase.getFormData(domForm)),
+    fromFormToKey: (domForm) => Object.fromEntries(nrcBase.fromFormToFormData(domForm)),
 
     /**
-     * 获取表单数据
+     * 表单转为 FormData
      * @param {*} domForm 
      * @returns 
      */
-    getFormData: (domForm) => {
+    fromFormToFormData: (domForm) => {
         let fd = new FormData(domForm);
 
         domForm.querySelectorAll('sl-select[multiple]').forEach(dom => {
@@ -306,16 +352,16 @@ let nrcBase = {
     },
 
     /**
-     * JSON 转 FormData
-     * @param {*} json 
+     * 键值对 转为 FormData
+     * @param {*} keys 
      * @returns 
      */
-    jsonToFormData: (json) => {
+    fromKeyToFormData: (keys) => {
         let fd = new FormData();
-        for (const key in json) {
-            let val = json[key];
+        for (const key in keys) {
+            let val = keys[key];
             if (val !== null) {
-                fd.append(key, json[key]);
+                fd.append(key, keys[key]);
             }
         }
         return fd;
@@ -342,7 +388,7 @@ let nrcBase = {
     /**
      * 请求服务
      * @param {any} url 链接
-     * @param {any} options 选项 type: text blob json(default)
+     * @param {any} options 选项 type: text blob reader json(default)
      * @returns {any} { resp: null, result: null, error: null }
      */
     fetch: async (url, options) => {
@@ -354,12 +400,20 @@ let nrcBase = {
             vm.resp = resp;
 
             try {
+                nrcBase.lastFetchDate = resp.headers.get('date');
+                if (nrcBase.lastFetchDate != null) {
+                    nrcBase.lastFetchDate = nrcBase.formatDateTime('datetime', nrcBase.lastFetchDate);
+                }
+
                 switch (options.type) {
                     case "text":
                         vm.result = await resp.text();
                         break;
                     case "blob":
                         vm.result = await resp.blob();
+                        break;
+                    case "reader":
+                        vm.result = await resp.body.getReader();
                         break;
                     default:
                         vm.result = await resp.json();
@@ -413,6 +467,7 @@ let nrcBase = {
      * @returns 
      */
     importStyle: async (src) => {
+        src = nrcBase.mirrorNPM(src);
         let pout = nrcBase.tsLoaded[src];
         if (!pout) {
             nrcBase.tsLoaded[src] = pout = new Promise((resolve) => {
@@ -451,6 +506,7 @@ let nrcBase = {
      * @returns 
      */
     importScript: async (src, type) => {
+        src = nrcBase.mirrorNPM(src);
         let pout = nrcBase.tsLoaded[src];
         if (!pout) {
             nrcBase.tsLoaded[src] = pout = new Promise((resolve, reject) => {
@@ -495,6 +551,7 @@ let nrcBase = {
             resolve();
         } else {
             let keys = names.split(',');
+            urls = urls.map(url => nrcBase.mirrorNPM(url));
 
             window["require"](urls, function () {
                 for (let index = 0; index < arguments.length; index++) {
@@ -507,17 +564,31 @@ let nrcBase = {
         }
     }),
 
+    /**
+     * npm 镜像 https://zhuanlan.zhihu.com/p/633904268
+     * @param {*} url 
+     * @returns 
+     */
+    mirrorNPM: (url) => {
+        const regex = /(https?:\/\/[\w.-]+)\/(.*)@([\d.]+)\/(.*)\.(\w+)/;
+        let mr = regex.exec(url);
+        if (mr != null) {
+            url = `https://registry.npmmirror.com/${mr[2]}/${mr[3]}/files/${mr[4]}.${mr[5]}`;
+        }
+        return url;
+    },
+
     //【重写】底部保留高度
     tsBottomKeepHeight: 40,
     /**
      * 设置距离底部高度
      * @param {*} dom 
-     * @param {*} height （可选）指定高度，带单位
+     * @param {*} bottomKeepHeight （可选）底部保留高度
      */
-    setHeightFromBottom: (dom, height) => {
-        let mtop = dom.getBoundingClientRect().top + nrcBase.tsBottomKeepHeight;
+    setHeightFromBottom: (dom, bottomKeepHeight) => {
+        let mtop = dom.getBoundingClientRect().top + (bottomKeepHeight || nrcBase.tsBottomKeepHeight);
         Object.assign(dom.style, {
-            height: height || `calc(100vh - ${mtop}px)`,
+            height: `calc(100vh - ${mtop}px)`,
             minHeight: '200px'
         })
     },
@@ -555,7 +626,17 @@ let nrcBase = {
         switch (nrcBase.type(date)) {
             case "String":
             case "Number":
-                date = new Date(date);
+                {
+                    let d = new Date(date);
+                    if (isNaN(d)) {
+                        if (date.includes("年") && date.includes("月") && date.includes("日")) {
+                            d = new Date(date.replace(/年|月/g, "-").replace("日", ""));
+                        }
+                    } else if (date.length == 10) {
+                        d.setHours(0, 0, 0, 0);
+                    }
+                    date = d;
+                }
                 break;
             case "Date":
                 break;
@@ -659,7 +740,7 @@ let nrcBase = {
      */
     clipboard: async (content) => {
         let text;
-        if (nrcBase.supportClipboard) {
+        if (navigator.clipboard) {
             if (content == null) {
                 text = await navigator.clipboard.readText();
             } else {
@@ -681,10 +762,8 @@ let nrcBase = {
         } else {
             return ndkI18n.lg.unsupported;
         }
-    },
-
-    //可读写剪贴板内容
-    supportClipboard: window.isSecureContext && navigator.clipboard != null,
+    }
 }
 
+Object.assign(window, { nrcBase });
 export { nrcBase }

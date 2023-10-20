@@ -317,6 +317,7 @@ src/Netnr.P/Netnr.Admin.Web/wwwroot/
 src/Netnr.P/Netnr.DataKit/wwwroot/
 src/Netnr.P/Netnr.ClientApp/*/dist/
 src/Netnr.P/Netnr.DataX/ud/hub/
+src/Netnr.P/Netnr.FileServer/db/netnr_fileserver.db
 src/Netnr.P/Netnr.Test/regexes/
 log.db
 yarn.lock

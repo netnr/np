@@ -18,7 +18,9 @@ let zidian = {
     find: async (type, txt, isSearch) => {
         let tocJson = zidian.cache[`${type}/00`];
         if (!tocJson) {
-            let resp = await fetch(`${zidian.host}/${type}/00.json`);
+            let url = `${zidian.host}/${type}/00.json`;
+            url = nrcBase.mirrorNPM(url);
+            let resp = await fetch(url);
             zidian.cache[`${type}/00`] = tocJson = await resp.json();
         }
 
@@ -37,7 +39,9 @@ let zidian = {
 
                 let indexJson = zidian.cache[`${type}/${pi}`];
                 if (!indexJson) {
-                    let resp = await fetch(`${zidian.host}/${type}/${pi}.json`);
+                    let url = `${zidian.host}/${type}/${pi}.json`;
+                    url = nrcBase.mirrorNPM(url);
+                    let resp = await fetch(url);
                     zidian.cache[`${type}/${pi}`] = indexJson = await resp.json();
                 }
                 return indexJson[ii];

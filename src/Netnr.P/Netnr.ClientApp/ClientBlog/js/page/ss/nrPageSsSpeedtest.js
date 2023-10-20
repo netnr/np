@@ -81,7 +81,7 @@ let nrPage = {
     //压缩率（根据开发环境的测试结果计算所得）
     ratio: function () {
         let ss = nrVary.domSeServer.value;
-        let cr = nrPage.speedSource.filter(x => x.link == ss)[0].ratio;
+        let cr = nrPage.speedSource.find(x => x.link == ss).ratio;
         return cr;
     },
 

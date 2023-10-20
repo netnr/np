@@ -427,7 +427,7 @@ SELECT 'curr_conn' col, ( SELECT COUNT(dbid) FROM sys.sysprocesses ) val
 UNION ALL
 SELECT 'ignore_case' col, ( CASE WHEN 'a' = 'A' THEN 1 ELSE 0 END ) val
 UNION ALL
-SELECT 'system' col, REPLACE( RIGHT( @@VERSION, CHARINDEX(CHAR(10), REVERSE(@@VERSION), 2) - 2 ), CHAR(10), '' ) val;
+SELECT 'system' col, LTRIM(SUBSTRING(@@version, CHARINDEX(' on ', @@version) + 4, LEN(@@version))) val;
 
 EXEC master.dbo.Xp_instance_regread N'HKEY_LOCAL_MACHINE',
 N'SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation',

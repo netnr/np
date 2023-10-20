@@ -12,7 +12,7 @@ var ndkVary = {
     ],
 
     //数据库类型
-    typeDB: ["SQLite", "MySQL", "MariaDB", "Oracle", "SQLServer", "PostgreSQL"],
+    DBTypes: ["SQLite", "MySQL", "MariaDB", "Oracle", "SQLServer", "PostgreSQL"],
 
     typeEnv: ["dev", "prod"], //环境类型
     colorEnv: env => `var(--sl-color-${env == "prod" ? "danger" : "primary"}-600)`,
@@ -130,15 +130,15 @@ var ndkVary = {
 
     apiServer: location.origin, //指定接口服务
 
-    apiServiceStatus: "/DK/ServiceStatus", // 服务状态检测 204
-    apiGetDatabaseName: "/DK/GetDatabaseName",
-    apiGetDatabaseInfo: "/DK/GetDatabase",
-    apiGetTable: "/DK/GetTable",
-    apiGetColumn: "/DK/GetColumn",
-    apiSetTableComment: "/DK/SetTableComment",
-    apiSetColumnComment: "/DK/SetColumnComment",
-    apiGetTableDDL: "/DK/GetTableDDL",
-    apiExecuteSql: "/DK/ExecuteSql",
+    apiServiceStatus: "/DataKit/ServiceStatusGet", // 服务状态检测 204
+    apiGetDatabaseName: "/DataKit/DatabaseNameGet",
+    apiGetDatabaseInfo: "/DataKit/DatabaseGet",
+    apiGetTable: "/DataKit/TableGet",
+    apiGetColumn: "/DataKit/ColumnPost",
+    apiSetTableComment: "/DataKit/TableCommentPost",
+    apiSetColumnComment: "/DataKit/ColumnCommentPost",
+    apiGetTableDDL: "/DataKit/TableDDLGet",
+    apiExecuteSql: "/DataKit/ExecuteSqlPost",
 
     defer: {}, //延迟对象
     envConnsChanged: false, //连接变化

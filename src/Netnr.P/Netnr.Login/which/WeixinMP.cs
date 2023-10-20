@@ -128,7 +128,7 @@ public class WeixinMPUserModel
     public string Access_Token { get; set; }
 
     /// <summary>
-    /// 普通用户的标识，对当前开发者帐号唯一
+    /// 普通用户的标识，对当前开发者账号唯一
     /// </summary>
     public string OpenId { get; set; }
 

@@ -16,7 +16,7 @@ namespace Netnr;
 /// <summary>
 /// 系统状态
 /// </summary>
-public class SystemStatusTo
+public partial class SystemStatusTo
 {
     /// <summary>
     /// 时间
@@ -430,9 +430,9 @@ public class SystemStatusTo
     /// <summary>
     /// 获取磁盘信息
     /// </summary>
-    /// <param name="filterMoreThan">过滤空间大于多少的磁盘，默认 1G</param>
+    /// <param name="filterLessThan">过滤空间小于多少的磁盘，默认 1G</param>
     /// <returns></returns>
-    public static List<LogicalDiskModel> GetLogicalDisk(int filterMoreThan = 1024 * 1024 * 1024)
+    public static List<LogicalDiskModel> GetLogicalDisk(int filterLessThan = 1024 * 1024 * 1024)
     {
         var result = new List<LogicalDiskModel>();
 
@@ -457,7 +457,7 @@ public class SystemStatusTo
         var allDrives = DriveInfo.GetDrives();
         foreach (var di in allDrives)
         {
-            if (di.IsReady && di.TotalSize >= filterMoreThan)
+            if (di.IsReady && di.TotalSize >= filterLessThan)
             {
                 var model = new LogicalDiskModel
                 {
@@ -517,7 +517,7 @@ public class SystemStatusTo
         {
             { 0, "" },
             { 1, $" Framework: {FrameworkDescription}" },
-            { 2, $" Memory: {ParsingTo.FormatByteSize(size:WorkingSet)}" },
+            { 2, $" Memory: {ParsingTo.FormatByte(size:WorkingSet)}" },
             { 3, $" OSName: {OperatingSystem} , {OSArchitecture}" },
             { 4, $" OSVersion: {OSVersion}" },
             { 5, $" User: {UserName}" },

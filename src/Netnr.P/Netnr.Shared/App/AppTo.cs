@@ -12,7 +12,7 @@ namespace Netnr
         /// <summary>
         /// 数据库类型
         /// </summary>
-        public static EnumTo.TypeDB TDB { get; set; }
+        public static DBTypes DBT { get; set; }
 
         /// <summary>
         /// 内部访问（项目根路径）
@@ -36,9 +36,10 @@ namespace Netnr
                 if (Config == null)
                 {
                     var builder = new ConfigurationBuilder();
-                    var path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
-                    builder.AddJsonFile(path, false, true);
+                    // 从应用程序根目录加载配置文件
+                    var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
 
+                    builder.AddJsonFile(path, false, true);
                     Config = builder.Build();
                 }
                 return Config;

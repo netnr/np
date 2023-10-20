@@ -50,7 +50,7 @@ class netnrmdInit {
         }
 
         //构建工具条
-        let ulhtml = `<ul class="netnrmd-menu">${this.objToolbarIcons.map(x => netnrmd.toolbarBuildIcon(x)).join('\n')}</ul>`;
+        let ulhtml = `<ul class="netnrmd-menu">${this.objToolbarIcons.map(x => netnrmd.toolbarBuildIcon(x)).join('\r\n')}</ul>`;
         this.domToolbar = netnrmd.createDom("div", "netnrmd-toolbar", ulhtml);
 
         //工具条加持命令响应
@@ -86,13 +86,19 @@ class netnrmdInit {
         //载入编辑器
         this.domContainer.appendChild(this.domEditor);
 
-        //new ace 
-        if (window["netnrmdAce"] != null) {
+        //new editor 
+        if (window["monaco"] != null) {
             //初始化写
-            this.objWrite = new netnrmdAce(this.domWrite);
+            this.objWrite = window["monaco"].editor.create(this.domWrite, {
+                theme: ops.theme == 'dark' ? 'vs-dark' : 'vs',
+                wordWrap: "on", language: 'markdown', fontSize: 17, automaticLayout: true,
+                scrollbar: { verticalScrollbarSize: 13, horizontalScrollbarSize: 13 },
+                unicodeHighlight: { ambiguousCharacters: false },
+                scrollBeyondLastLine: false, minimap: { enabled: false }
+            })
 
             //编辑器内容变动回调
-            this.objWrite.session.on('change', function () {
+            this.objWrite.onDidChangeModelContent(function () {
                 if (typeof that.objOptions.input == "function" && that.objOptions.input.call(that) == false) {
                     return false;
                 }
@@ -107,37 +113,31 @@ class netnrmdInit {
             });
 
             //滚动条同步
-            this.objWrite.session.on("changeScrollTop", function (th) {
-                let perc = th / (that.objWrite.renderer.scrollBar.scrollHeight - that.objWrite.renderer.scrollBar.element.clientHeight);
-                that.domView.scrollTop = (that.domView.scrollHeight - that.domView.clientHeight) * perc;
-            })
+            this.objWrite.onDidScrollChange(function (sc) {
+                let p = sc.scrollTop / (sc.scrollHeight - that.domWrite.clientHeight - 4);
+                that.domView.scrollTop = (that.domView.scrollHeight - that.domView.clientHeight) * p;
+            });
 
             //按键事件监听
             this.objToolbarIcons.forEach(item => {
                 if (item.key) {
-                    that.objWrite.commands.addCommand({
-                        name: item.cmd,
-                        bindKey: { win: item.key, mac: item.key.replace('Ctrl', 'Command') },
-                        exec: function () {
-                            that.cmd(item.cmd);
-                        },
-                        readOnly: false,
-                        scrollIntoView: "cursor"
-                    });
+                    that.objWrite.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode[`Key${item.key.split('+').pop()}`], function () {
+                        that.cmd(item.cmd);
+                    })
                 }
             });
             //header1-6
             [1, 2, 3, 4, 5, 6].forEach(h => {
-                that.objWrite.commands.addCommand({
-                    name: `header${h}`,
-                    bindKey: { win: `Ctrl+Alt+${h}`, mac: `Command+Alt+${h}` },
-                    exec: function () {
-                        that.cmd(`header${h}`);
-                    },
-                    readOnly: false,
-                    scrollIntoView: "cursor"
+                that.objWrite.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode[`Digit${h}`], function () {
+                    that.cmd(`header${h}`);
+                });
+
+                that.objWrite.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode[`Numpad${h}`], function () {
+                    that.cmd(`header${h}`);
                 });
             });
+        } else {
+            console.debug("monaco is not defined");
         }
 
         //初始化响应配置
@@ -185,7 +185,7 @@ class netnrmdInit {
         }
 
         // 事件
-        let itemIcon = this.objToolbarIcons.filter(x => x.cmd == cmdname)[0];
+        let itemIcon = this.objToolbarIcons.find(x => x.cmd == cmdname);
         if (itemIcon && itemIcon.action) {
             itemIcon.action(this);
         }
@@ -199,10 +199,10 @@ class netnrmdInit {
             isdo: true
         }
 
-        //编辑器选择对象
-        let txtRange = this.objWrite.getSelectionRange(); //选中的范围
-        let text = this.objWrite.session.getTextRange(txtRange); //选中的内容
-        let textBeforeTheCursor = this.objWrite.session.getLine(txtRange.start.row).substring(0, txtRange.start.column).trim(); //选中的前面内容
+        //选中的范围
+        let txtRange = this.objWrite.getSelection();
+        //选中的内容
+        let text = this.objWrite.getModel().getValueInRange(txtRange);
 
         switch (cmdname) {
             case "bold":
@@ -239,60 +239,64 @@ class netnrmdInit {
                         eobj.before = "#" + eobj.before;
                     }
 
-                    if (textBeforeTheCursor != "" && ["-", "+", "*"].includes(textBeforeTheCursor) && !/^\d+.$/.test(textBeforeTheCursor)) {
-                        eobj.addrow = 1;
-                        eobj.before = "\n" + eobj.before;
+                    if (txtRange.startColumn > 1) {
+                        //选中的前面内容
+                        let textBefore = this.objWrite.getModel().getLineContent(txtRange.startLineNumber).substring(0, txtRange.startColumn - 1).trim();
+                        if (["-", "+", "*"].filter(x => textBefore).length) {
+                            eobj.addrow = 1;
+                            eobj.before = "\r\n" + eobj.before;
+                        }
                     }
                 }
                 break;
             case "quote":
                 {
-                    eobj.before = '> ';
-                    if (txtRange.start.column > 0) {
-                        eobj.addrow = 1;
-                        eobj.before = '\n> ';
-                    }
                     eobj.dv = '引用内容';
+                    eobj.before = '> ';
+                    if (txtRange.startColumn > 1) {
+                        eobj.addrow = 1;
+                        eobj.before = '\r\n> ';
+                    }
                 }
                 break;
             case "list-ol":
                 {
-                    eobj.before = '1. ';
-                    if (txtRange.start.column > 0) {
-                        eobj.addrow = 1;
-                        eobj.before = '\n1. ';
-                    }
                     eobj.dv = '列表文本';
+                    eobj.before = '1. ';
+                    if (txtRange.startColumn > 1) {
+                        eobj.addrow = 1;
+                        eobj.before = '\r\n1. ';
+                    }
                 }
                 break;
             case "list-ul":
                 {
-                    eobj.before = '- ';
-                    if (txtRange.start.column > 0) {
-                        eobj.addrow = 1;
-                        eobj.before = '\n- ';
-                    }
                     eobj.dv = '列表文本';
+                    eobj.before = '- ';
+                    if (txtRange.startColumn > 1) {
+                        eobj.addrow = 1;
+                        eobj.before = '\r\n- ';
+                    }
                 }
                 break;
             case "checked":
                 {
-                    eobj.before = '- [x] ';
-                    if (txtRange.start.column > 0) {
-                        eobj.addrow = 1;
-                        eobj.before = '\n- [x] ';
-                    }
                     eobj.dv = '列表文本';
+                    eobj.before = '- [x] ';
+                    if (txtRange.startColumn > 1) {
+                        eobj.addrow = 1;
+                        eobj.before = '\r\n- [x] ';
+                    }
                 }
                 break;
             case "unchecked":
                 {
-                    eobj.before = '- [ ] ';
-                    if (txtRange.start.column > 0) {
-                        eobj.addrow = 1;
-                        eobj.before = '\n- [ ] ';
-                    }
                     eobj.dv = '列表文本';
+                    eobj.before = '- [ ] ';
+                    if (txtRange.startColumn > 1) {
+                        eobj.addrow = 1;
+                        eobj.before = '\r\n- [ ] ';
+                    }
                 }
                 break;
             case "link":
@@ -311,31 +315,36 @@ class netnrmdInit {
                     eobj.before = cols + nl + hd + nl + cols + nl + cols + nl + nl;
 
                     eobj.addrow = 5;
-                    if (txtRange.start.column > 0) {
+                    if (txtRange.startColumn > 1) {
                         eobj.addrow = 7;
-                        eobj.before = "\n\n" + eobj.before;
+                        eobj.before = "\r\n" + eobj.before;
                     }
                 }
                 break;
             case "code":
                 {
-                    if (txtRange.start.column == 0) {
+                    if (txtRange.startColumn == 1) {
                         eobj.addrow = 1;
-                        eobj.before = '```\n';
-                        eobj.after = '\n```';
+                        eobj.before = '```\r\n';
+                        eobj.after = '\r\n```';
+                        eobj.dv = '输入代码';
                     } else {
-                        eobj.before = '`';
-                        eobj.after = '`';
+                        //选中的前面内容
+                        let textBefore = this.objWrite.getModel().getLineContent(txtRange.startLineNumber).substring(0, txtRange.startColumn - 1);
+                        eobj.before = (textBefore.slice(-1) == " " ? "" : " ") + '`';
+                        //选中的后面内容
+                        let textAfter = this.objWrite.getModel().getLineContent(txtRange.endLineNumber).substring(txtRange.endColumn - 1);
+                        eobj.after = '`' + (textAfter.slice(0, 1) == " " ? "" : " ");
+                        eobj.dv = '输入关键字';
                     }
-                    eobj.dv = '输入代码';
                 }
                 break;
             case "line":
                 {
-                    eobj.before = '---\r\n';
-                    if (txtRange.start.column > 0) {
+                    eobj.before = '---';
+                    if (txtRange.startColumn > 1) {
                         eobj.addrow = 1;
-                        eobj.before = '\n---\r\n';
+                        eobj.before = '\r\n---';
                     }
                 }
                 break;
@@ -345,28 +354,36 @@ class netnrmdInit {
         }
 
         if (eobj.isdo && cmdname && cmdname != "") {
-            if (text.trim() == "") {
+            //未选中内容，插入模版
+            if (text == "") {
                 text = eobj.dv;
+
+                //光标处插入
+                this.insert(eobj.before + text + eobj.after);
+            } else {
+                //构建选中内容后的光标位置
+                let afterRange = new monaco.Range(txtRange.endLineNumber, txtRange.endColumn, txtRange.endLineNumber, txtRange.endColumn);
+                this.insert(eobj.after, afterRange);
+
+                //构建选中内容前的光标位置                
+                let beforeRange = new monaco.Range(txtRange.startLineNumber, txtRange.startColumn, txtRange.startLineNumber, txtRange.startColumn);
+                this.insert(eobj.before, beforeRange);
             }
 
             this.focus();
-
-            //光标处插入
-            this.insert(eobj.before + text + eobj.after);
-
             //光标选中
-            txtRange.start.column += eobj.before.length;
-            txtRange.end.column = txtRange.start.column + text.length;
+            txtRange.startColumn += eobj.before.length;
+            txtRange.endColumn = txtRange.startColumn + text.length;
             if (eobj.addrow > 0) {
-                txtRange.start.row += eobj.addrow;
-                txtRange.end.row += eobj.addrow;
-                txtRange.start.column = eobj.before.length - 1;
+                txtRange.startLineNumber += eobj.addrow;
+                txtRange.endLineNumber += eobj.addrow;
+                txtRange.startColumn = eobj.before.length - 1;
                 if (cmdname == "code") {
-                    txtRange.start.column = 0;
+                    txtRange.startColumn = 1;
                 }
-                txtRange.end.column += text.length;
+                txtRange.endColumn += text.length;
             }
-            this.objWrite.selection.setRange(txtRange);
+            this.objWrite.setSelection(new monaco.Selection(txtRange.startLineNumber, txtRange.startColumn, txtRange.endLineNumber, txtRange.endColumn));
         }
     }
 
@@ -375,18 +392,47 @@ class netnrmdInit {
         this.objWrite.focus();
     }
 
-    //插入内容
-    insert(content) {
-        this.objWrite.insert(content);
+    /**
+     * 插入文本
+     * @param {*} text 内容
+     * @param {*} range 默认为光标位置，可指定插入位置
+     */
+    insert(text, range) {
+        let model = this.objWrite.getModel();
+
+        //默认为光标位置
+        if (range == null) {
+            let cursorPosition = this.objWrite.getPosition();
+            range = new monaco.Range(cursorPosition.lineNumber, cursorPosition.column, cursorPosition.lineNumber, cursorPosition.column);
+        }
+
+        let edits = [{ identifier: { major: 1, minor: 1 }, range: range, text: text, forceMoveMarkers: true }];
+        model.pushEditOperations([], edits, function () {
+            return null;
+        });
     }
 
     //添加按键命令
     addCommand(keys, exec) {
-        this.objWrite.commands.addCommand({
-            name: keys,
-            bindKey: { win: keys, mac: keys.replace("Ctrl", "Command") },
-            exec
-        });
+        if (window["monaco"] != null) {
+            //Ctrl+Alt+Shift+S to monaco
+            let keybinding = 0;
+            keys.split('+').forEach(key => {
+                if (key == "Ctrl") {
+                    keybinding |= monaco.KeyMod.CtrlCmd;
+                } else if (/^[A-Z]$/i.test(key.toUpperCase())) {
+                    keybinding |= monaco.KeyCode[`Key${key.toUpperCase()}`];
+                } else if (/^[0-9]$/.test(key)) {
+                    keybinding |= monaco.KeyCode[`Digit${key}`];
+                } else if (key in monaco.KeyMod) {
+                    keybinding |= monaco.KeyMod[key];
+                } else if (key in monaco.KeyCode) {
+                    keybinding |= monaco.KeyCode[key];
+                }
+            });
+
+            this.objWrite.addCommand(keybinding, exec);
+        }
     }
 
     //设置高度（内部使用）
@@ -394,9 +440,6 @@ class netnrmdInit {
         let weh = (height - (this.domToolbar.style.display == "none" ? 0 : this.domToolbar.offsetHeight)) + "px";
         this.domWrite.style.height = weh;
         this.domView.style.height = weh;
-        if (this.objWrite) {
-            this.objWrite.resize();
-        }
         return this;
     }
 
@@ -429,9 +472,6 @@ class netnrmdInit {
             tt.classList.add('active');
             this._setHeight(document.documentElement.clientHeight);
         }
-        if (this.objWrite) {
-            this.objWrite.resize();
-        }
     }
 
     //视图切换
@@ -456,9 +496,6 @@ class netnrmdInit {
                 this.domView.classList.add("netnrmd-view-w100");
                 break;
         }
-        if (this.objWrite) {
-            this.objWrite.resize();
-        }
     }
 
     //设置主题
@@ -466,7 +503,7 @@ class netnrmdInit {
         this.objOptions.theme = theme;
 
         let domIcon = this.getToolbarTarget('theme');
-        let itemIcon = netnrmd.toolbarIcons.filter(x => x.cmd == "theme")[0];
+        let itemIcon = netnrmd.toolbarIcons.find(x => x.cmd == "theme");
         let tooltip = `${itemIcon.title}/${itemIcon.cmd} ${(itemIcon.key ? itemIcon.key : '')}`;
         domIcon.title = `${tooltip} ${theme}`;
 
@@ -474,14 +511,14 @@ class netnrmdInit {
         switch (theme) {
             case "dark":
                 if (this.objWrite) {
-                    this.objWrite.setTheme("ace/theme/tomorrow_night");
+                    monaco.editor.setTheme('vs-dark');
                 }
                 domHtml.classList.remove("netnrmd-light");
                 domHtml.classList.add("netnrmd-dark");
                 break;
             default:
                 if (this.objWrite) {
-                    this.objWrite.setTheme("ace/theme/github");
+                    monaco.editor.setTheme('vs');
                 }
                 domHtml.classList.remove("netnrmd-dark");
                 domHtml.classList.add("netnrmd-light");
@@ -514,7 +551,13 @@ class netnrmdInit {
     //赋值md
     setmd(md) {
         if (this.objWrite) {
-            this.objWrite.setValue(md, -1);
+            let pos = this.objWrite.getPosition();
+            this.objWrite.executeEdits('', [{
+                range: this.objWrite.getModel().getFullModelRange(),
+                text: md
+            }]);
+            this.objWrite.setSelection(new monaco.Range(0, 0, 0, 0));
+            this.objWrite.setPosition(pos);
         }
         return this;
     }
@@ -556,6 +599,7 @@ class netnrmdInit {
     //间隙
     spacing() {
         this.setmd(netnrmd.pangu.spacing(this.getmd()));
+        this.focus();
     }
 
     //渲染
@@ -633,9 +677,6 @@ class netnrmdInit {
         if (format == "markdown") {
             format = "md";
         }
-        if (format == "word") {
-            format = "docx";
-        }
         if (format == "image") {
             format = "png";
         }
@@ -646,10 +687,10 @@ class netnrmdInit {
                 netnrmd.download(this.getmd(), filename);
                 break;
             case "html":
-            case "docx":
                 {
                     let htmlContent = this.gethtml();
-                    let styleContent = await (await fetch(netnrmd.tsRely.markdownStyle)).text();
+                    let mdcss = netnrmd.mirrorNPM(netnrmd.tsRely.markdownStyle);
+                    let styleContent = await (await fetch(mdcss)).text();
 
                     let htmls = ['<!DOCTYPE html>',
                         '<html><head>',
@@ -660,60 +701,84 @@ class netnrmdInit {
                         '</body></html>'
                     ];
                     let result = htmls.join('\r\n');
-
-                    if (format == "html") {
-                        netnrmd.download(result, filename);
-                    }
-                    else if (format == "docx") {
-                        await netnrmd.importScript(netnrmd.tsRely.htmlDocx);
-                        netnrmd.download(htmlDocx.asBlob(result), filename)
-                    }
+                    netnrmd.download(result, filename);
                 }
                 break;
             case "png":
             case "jpg":
-                {
-                    if (oldvm == 1) {
-                        this.toggleView(2);
-                    }
-
-                    that.domView.style.padding = 0;
-                    that.domMarkdownBody.style.padding = "27px";
-
-                    await netnrmd.importScript(netnrmd.tsRely.html2canvas);
-                    let canvas = await html2canvas(that.domMarkdownBody, {
-                        scale: 1.2, backgroundColor: nmdBg,
-                    });
-                    netnrmd.download(canvas, filename);
-
-                    that.domView.style.removeProperty("padding");
-                    that.domMarkdownBody.style.removeProperty("padding");
-
-                    if (oldvm == 1) {
-                        this.toggleView(1);
-                    }
-                }
-                break;
             case "pdf":
                 {
                     if (oldvm == 1) {
                         this.toggleView(2);
                     }
 
-                    await netnrmd.importScript(netnrmd.tsRely.html2canvas);
-                    await netnrmd.importScript(netnrmd.tsRely.jspdf);
-                    await netnrmd.importScript(netnrmd.tsRely.html2PDF);
+                    that.domMarkdownBody.style.padding = "2em 2em 4em";
 
-                    that.domView.style.padding = 0;
-                    that.domMarkdownBody.style.padding = "27px";
+                    if (window["define"] == null) {
+                        await netnrmd.importScript(netnrmd.tsRely.html2canvas);
+                        if (format == "pdf") {
+                            await netnrmd.importScript(netnrmd.tsRely.jspdf);
+                        }
+                    } else {
+                        await netnrmd.require([netnrmd.tsRely.html2canvas], "html2canvas");
+                        if (format == "pdf") {
+                            await netnrmd.require([netnrmd.tsRely.jspdf], "jspdf");
+                        }
+                    }
 
-                    await html2PDF(that.domMarkdownBody, {
-                        imageType: 'image/jpeg',
-                        html2canvas: { scale: 1.2, backgroundColor: nmdBg, },
-                        output: filename
-                    });
+                    //分批截图
+                    let totalHeight = that.domMarkdownBody.scrollHeight;
+                    let partsCount = Math.ceil(totalHeight / netnrmd.tsScreenshotHeight);
+                    console.debug(`Total height ${totalHeight} , Total ${partsCount} images`);
+                    let arrIndex = [];
+                    while (partsCount > 0) {
+                        arrIndex.unshift(partsCount--);
+                    }
+                    for (const index of arrIndex) {
+                        let y = (index - 1) * netnrmd.tsScreenshotHeight;
+                        let height = Math.min(netnrmd.tsScreenshotHeight, totalHeight - y);
 
-                    that.domView.style.removeProperty("padding");
+                        let canvas = await html2canvas(that.domMarkdownBody, {
+                            scale: format == "pdf" ? 3 : 2,
+                            backgroundColor: nmdBg,
+                            y: y,
+                            useCORS: true,
+                            logging: false,
+                            height: height
+                        });
+
+                        let newname = arrIndex.length > 1 ? filename.replace(".", `_${index}.`) : filename;
+                        if (format == "pdf") {
+                            let a4w = 595.28;
+                            let a4h = 841.89;
+
+                            let pageHeight = (canvas.width / a4w) * a4h;
+                            let leftHeight = canvas.height;
+                            let position = 0;
+                            let imgHeight = (a4w / canvas.width) * canvas.height;
+                            let pageData = canvas.toDataURL('image/jpeg', 0.92);
+                            let pdf = new window["jspdf"].jsPDF('', 'pt', 'a4');
+                            if (leftHeight < pageHeight) {
+                                pdf.addImage(pageData, 'JPEG', 0, 0, a4w, imgHeight);
+                            } else {
+                                while (leftHeight > 0) {
+                                    pdf.addImage(pageData, 'JPEG', 0, position, a4w, imgHeight);
+                                    leftHeight -= pageHeight;
+                                    position -= a4h;
+                                    if (leftHeight > 0) {
+                                        pdf.addPage();
+                                    }
+                                }
+                            }
+                            pdf.save(newname);
+                        } else {
+                            netnrmd.download(canvas, newname);
+                        }
+
+                        if (arrIndex.length > 1) {
+                            console.debug(`progress ${index}/${arrIndex.length}`);
+                        }
+                    }
                     that.domMarkdownBody.style.removeProperty("padding");
 
                     if (oldvm == 1) {

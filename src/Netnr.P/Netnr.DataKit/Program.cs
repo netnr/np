@@ -15,9 +15,16 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo
     {
         Title = name,
+        Version = BaseTo.Version,
         Description = "https://github.com/netnr"
     });
-    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
+
+    c.CustomSchemaIds(type => type.FullName.Replace("+", "."));
+
+    Directory.EnumerateFiles(AppContext.BaseDirectory, "Netnr.*.xml").ForEach(file =>
+    {
+        c.IncludeXmlComments(file, true);
+    });
 });
 
 var app = builder.Build();
@@ -37,13 +44,16 @@ app.UseSwagger().UseSwaggerUI(c =>
 {
     c.DocumentTitle = builder.Environment.ApplicationName;
     c.SwaggerEndpoint($"{c.DocumentTitle}/swagger.json", c.DocumentTitle);
-    c.InjectStylesheet("/Home/SwaggerCustomStyle");
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseMiddleware<AllowCorsMiddleware>();
+// Call UseCors after UseRouting https://learn.microsoft.com/zh-cn/aspnet/core/security/cors
+app.UseCors();
 
 app.UseAuthorization();
 

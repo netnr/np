@@ -107,7 +107,7 @@ let nrPage = {
                             }
                         })
                     } else {
-                        let srow = nrPage.grid1.api.getSelectedRows().filter(x => x[nrPage.tableKey] == nrPage.rowId)[0];
+                        let srow = nrPage.grid1.api.getSelectedRows().find(x => x[nrPage.tableKey] == nrPage.rowId);
                         if (srow) {
                             srow["NoteTitle"] = title;
                             nrPage.grid1.api.applyTransactionAsync({ update: [srow] })
@@ -164,7 +164,7 @@ let nrPage = {
     //form
     viewForm: async () => {
         //编辑器
-        await nrcRely.remote("netnrmdAce.js");
+        await nrcRely.remote("netnrmdEditor");
         await nrcRely.remote("netnrmd");
         nrApp.tsMd = netnrmd.init('.nrg-editor', {
             theme: nrcBase.isDark() ? "dark" : "light",

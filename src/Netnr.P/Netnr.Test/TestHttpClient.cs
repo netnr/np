@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.DirectoryServices.ActiveDirectory;
+using Xunit;
 
 namespace Netnr.Test
 {
@@ -49,7 +50,7 @@ namespace Netnr.Test
         {
             var hc = new HttpClient();
 
-            var content = new StringContent("a=1&b=x");
+            var content = new StringContent(new { keyword = "search" }.ToJson(), Encoding.UTF8, "application/json");
             var resp = await hc.PostAsync("https://httpbin.org/post", content);
 
             Debug.WriteLine(resp.IsSuccessStatusCode);

@@ -39,7 +39,7 @@
                     return query.ToListAsync();
                 });
 
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {

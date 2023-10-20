@@ -12,7 +12,7 @@ public partial class AgGridService
     /// <summary>
     /// 数据库类型
     /// </summary>
-    public EnumTo.TypeDB Tdb { get; set; }
+    public DBTypes Tdb { get; set; }
 
     /// <summary>
     /// 表名
@@ -50,10 +50,6 @@ public partial class AgGridService
     /// <summary>
     /// 构建SQL，返回页查询、总数查询
     /// </summary>
-    /// <param name="joArgs"></param>
-    /// <param name="tableName"></param>
-    /// <param name="preField"></param>
-    /// <param name="preWhere"></param>
     /// <returns></returns>
     public ValueTuple<string, string> BuildSql()
     {
@@ -96,7 +92,7 @@ public partial class AgGridService
                     }
                     else
                     {
-                        field = ParsingTo.DangerReplace(field);
+                        field = ParsingTo.ReplaceDanger(field);
                     }
                     return field;
                 });
@@ -137,9 +133,9 @@ public partial class AgGridService
         }
         else
         {
-            field = ParsingTo.DangerReplace(field);
+            field = ParsingTo.ReplaceDanger(field);
         }
-        field = DbKitExtensions.SqlQuote(Tdb, field);
+        field = DbKitExtensions.SqlQuote(field, Tdb);
 
         var filterType = item.Value.GetProperty("filterType").ToString();
         var type = item.Value.GetProperty("type").ToString();
@@ -217,20 +213,20 @@ public partial class AgGridService
 
                         switch (Tdb)
                         {
-                            case EnumTo.TypeDB.SQLite:
+                            case DBTypes.SQLite:
                                 field = $"STRFTIME('%Y%m%d', {field})";
                                 break;
-                            case EnumTo.TypeDB.MySQL:
-                            case EnumTo.TypeDB.MariaDB:
+                            case DBTypes.MySQL:
+                            case DBTypes.MariaDB:
                                 field = $"DATE_FORMAT({field}, '%Y%m%d')";
                                 break;
-                            case EnumTo.TypeDB.Oracle:
+                            case DBTypes.Oracle:
                                 field = $"TO_CHAR({field}, 'yyyymmdd')";
                                 break;
-                            case EnumTo.TypeDB.SQLServer:
+                            case DBTypes.SQLServer:
                                 field = $"CONVERT(VARCHAR(99), {field}, 112)";
                                 break;
-                            case EnumTo.TypeDB.PostgreSQL:
+                            case DBTypes.PostgreSQL:
                                 field = $"TO_CHAR({field}, 'YYYYMMDD')";
                                 break;
                         }
@@ -363,7 +359,7 @@ public partial class AgGridService
                     }
                     else
                     {
-                        field = ParsingTo.DangerReplace(field);
+                        field = ParsingTo.ReplaceDanger(field);
                     }
 
                     return field;
@@ -401,9 +397,9 @@ public partial class AgGridService
                 }
                 else
                 {
-                    field = ParsingTo.DangerReplace(field);
+                    field = ParsingTo.ReplaceDanger(field);
                 }
-                field = DbKitExtensions.SqlQuote(Tdb, field);
+                field = DbKitExtensions.SqlQuote(field, Tdb);
 
                 var sort = item.GetProperty("sort").ToString().ToUpper();
                 sort = sort == "DESC" ? sort : "ASC";
@@ -421,9 +417,9 @@ public partial class AgGridService
         }
         else
         {
-            if (Tdb == EnumTo.TypeDB.SQLServer)
+            if (Tdb == DBTypes.SQLServer)
             {
-                result = "ORDER BY (SELECT 1)";
+                result = "ORDER BY (SELECT NULL)";
             }
         }
 
@@ -438,7 +434,6 @@ public partial class AgGridService
     /// <summary>
     /// 分页
     /// </summary>
-    /// <param name="request"></param>
     /// <returns></returns>
     public string CreateLimitSql()
     {
@@ -449,17 +444,17 @@ public partial class AgGridService
         var result = string.Empty;
         switch (Tdb)
         {
-            case EnumTo.TypeDB.SQLite:
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.SQLite:
+            case DBTypes.PostgreSQL:
                 result = $"LIMIT {pageSize} OFFSET {startRow}";
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 result = $"LIMIT {startRow}, {pageSize}";
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 result = $"OFFSET {startRow} ROWS FETCH NEXT {pageSize} ROWS ONLY";
                 break;
             default:

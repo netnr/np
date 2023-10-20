@@ -7,11 +7,12 @@ let nrEditor = {
      * 资源依赖，默认远程，可重写为本地
      */
     init: () => new Promise((resolve) => {
-        nrcBase.importScript('https://npmcdn.com/monaco-editor@0.39.0/min/vs/loader.js').then(() => {
-            nrcBase.amdInit();
+        let loaderUrl = 'https://npmcdn.com/monaco-editor@0.44.0/min/vs/loader.js';
+        loaderUrl = nrcBase.mirrorNPM(loaderUrl);
 
+        nrcBase.importScript(loaderUrl).then(() => {
             window["require"].config({
-                paths: { vs: 'https://npmcdn.com/monaco-editor@0.39.0/min/vs' },
+                paths: { vs: loaderUrl.replace('/loader.js', '') },
                 'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
             });
 
@@ -92,7 +93,7 @@ let nrEditor = {
 
     onChange: (editor, callback, defer) => {
         defer = defer || 500;
-        editor.onDidChangeModelContent(function () {
+        editor.onDidChangeModelContent(function (event) {
             clearTimeout(nrEditor.defer_change);
             nrEditor.defer_change = setTimeout(function () {
                 callback(editor.getValue());
@@ -145,4 +146,5 @@ let nrEditor = {
     },
 }
 
+Object.assign(window, { nrEditor });
 export { nrEditor }

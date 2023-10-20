@@ -80,7 +80,7 @@ let nrPage = {
                         }
 
                         let sqls = nrcAgGridQuery.buildSql(req);
-                        let url = `/Admin/QueryLog?${nrcBase.toParams(sqls)}`;
+                        let url = `/Admin/QueryLog?${nrcBase.fromKeyToURLParams(sqls)}`;
                         nrcBase.fetch(url).then(vm => {
                             if (!vm.error && vm.resp.ok) {
                                 params.success({ rowData: vm.result.RowData, rowCount: vm.result.RowCount });

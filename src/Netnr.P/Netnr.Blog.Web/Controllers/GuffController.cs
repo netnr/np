@@ -52,7 +52,7 @@
                 if (string.IsNullOrWhiteSpace(mo.GrId))
                 {
                     mo.Uid = uinfo?.UserId;
-                    mo.GrId = UniqueTo.LongId().ToString();
+                    mo.GrId = Guid.NewGuid().ToLongString();
                     mo.GrCreateTime = now;
                     mo.GrUpdateTime = now;
                     mo.GrStatus = 1;
@@ -242,7 +242,7 @@
 
                     if (uinfo != null)
                     {
-                        var ctype = ConnectionType.GuffRecord.ToString();
+                        var ctype = ConnectionTypes.GuffRecord.ToString();
                         var result2 = await db.UserConnection.FirstOrDefaultAsync(x => x.UconnTargetType == ctype && x.UconnAction == 1 && x.Uid == uinfo.UserId && x.UconnTargetId == mo.GrId);
 
                         mo.Spare1 = string.IsNullOrEmpty(result2?.UconnTargetId) ? "" : "laud";
@@ -274,11 +274,11 @@
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(EnumTo.RTag.invalid);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else if (string.IsNullOrWhiteSpace(mo.UrContent))
                 {
-                    vm.Set(EnumTo.RTag.invalid);
+                    vm.Set(RCodeTypes.failure);
                     vm.Msg = "回复内容不能为空";
                 }
                 else
@@ -291,12 +291,12 @@
                         var guffmo = db.GuffRecord.Find(id);
                         if (guffmo == null)
                         {
-                            vm.Set(EnumTo.RTag.invalid);
+                            vm.Set(RCodeTypes.failure);
                         }
                         else
                         {
                             mo.Uid = uinfo?.UserId;
-                            mo.UrTargetType = ConnectionType.GuffRecord.ToString();
+                            mo.UrTargetType = ConnectionTypes.GuffRecord.ToString();
                             mo.UrTargetId = id;
                             mo.UrCreateTime = DateTime.Now;
                             mo.UrStatus = 1;
@@ -343,7 +343,7 @@
                     PageSize = 10
                 };
 
-                var list = await CommonService.ReplyOneQuery(ReplyType.GuffRecord, id, pag);
+                var list = await CommonService.ReplyOneQuery(ReplyTypes.GuffRecord, id, pag);
                 //匿名用户，生成邮箱MD5加密用于请求头像
                 foreach (var item in list)
                 {
@@ -360,7 +360,7 @@
                 };
                 vm.Data = pvm;
 
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {

@@ -3,7 +3,7 @@ import { nrcRely } from "./nrcRely";
 
 // ag-grid
 let nrGrid = {
-    flagRowHeight: 32, //表格行高
+    flagRowHeight: 42, //表格行高
     flagPageSize: 30, //表格分页大小
 
     /**
@@ -62,21 +62,31 @@ let nrGrid = {
      */
     newColumnSet: (column, valueText) => Object.assign({
         cellRenderer: params => {
-            let item = valueText.filter(x => x.value == params.value)[0];
-            return item ? item.text : params.value;
+            if (params.data) {
+                let item = valueText.find(x => x.value == params.value);
+                if (item) {
+                    return nrcBase.xssOf(item.text);
+                }
+            }
         },
         filter: 'agSetColumnFilter', filterParams: {
             buttons: ['apply', 'reset'], values: valueText.map(x => x.value),
             cellRenderer: (params) => {
-                let item = valueText.filter(x => x.value == params.value)[0];
-                return item ? `${item.text} (${item.value})` : params.value;
+                let item = valueText.find(x => x.value == params.value);
+                if (item) {
+                    return nrcBase.xssOf(`${item.text} (${item.value})`);
+                }
+                return params.value;
             }
         }, cellEditor: 'agRichSelectCellEditor', cellEditorParams: {
             values: valueText.map(x => x.value),
-            cellHeight: nrGrid.flagRowHeight,
+            cellHeight: nrGrid.flagRowHeight * 0.9,
+            valueListMaxHeight: nrGrid.flagRowHeight * 6,
             formatValue: value => {
-                let vt = valueText.filter(x => x.value == value)[0];
-                return vt ? vt.text : value;
+                let item = valueText.find(x => x.value == value);
+                if (item) {
+                    return item.text;
+                }
             },
         }
     }, column),
@@ -86,9 +96,57 @@ let nrGrid = {
      * @param {any} column
      */
     newColumnDate: (column) => Object.assign({
-        filter: 'agDateColumnFilter', filterParams: { buttons: ['apply', 'reset'] }, width: 200,
+        filter: 'agDateColumnFilter',
+        filterParams: { buttons: ['apply', 'reset'], comparator: nrGrid.agDateColumnFilterComparator },
+        width: 200,
+        valueGetter: params => {
+            if (params.data && params.data[column.field]) {
+                return params.data[column.field].split('.')[0];
+            }
+        },
         valueFormatter: nrGrid.formatterDateTime
     }, column),
+
+    /**
+     * 日期列
+     * @param {any} column
+     */
+    newColumnDateOnly: (column) => Object.assign({
+        filter: 'agDateColumnFilter',
+        filterParams: { buttons: ['apply', 'reset'], comparator: nrGrid.agDateColumnFilterComparator },
+        width: 150,
+        valueGetter: params => {
+            if (params.data && params.data[column.field]) {
+                return params.data[column.field].split(' ')[0];
+            }
+        },
+        valueFormatter: nrGrid.formatterDate
+    }, column),
+
+    /**
+     * 仅比较日期
+     * @param {*} filterDate 
+     * @param {*} cellValue 
+     * @returns 
+     */
+    agDateColumnFilterComparator: function (filterDate, cellValue) {
+        if (cellValue == null || cellValue == "") return -1;
+
+        //仅比较日期
+        let cellDate = new Date(cellValue);
+        cellDate = new Date(Number(cellDate.getFullYear()), Number(cellDate.getMonth()) - 1, Number(cellDate.getDate()));
+        filterDate = new Date(Number(filterDate.getFullYear()), Number(filterDate.getMonth()) - 1, Number(filterDate.getDate()));
+
+        if (filterDate.getTime() == cellDate.getTime()) {
+            return 0;
+        }
+        if (cellDate < filterDate) {
+            return -1;
+        }
+        if (cellDate > filterDate) {
+            return 1;
+        }
+    },
 
     /**
      * 文本域列
@@ -97,6 +155,7 @@ let nrGrid = {
      */
     newColumnTextarea: (column, maxLength) => Object.assign({
         cellEditor: 'agLargeTextCellEditor', cellEditorParams: { maxLength: maxLength || 99999999 },
+        cellEditorPopup: true,
         filterParams: { buttons: ['apply', 'reset'] }
     }, column),
 
@@ -238,7 +297,7 @@ let nrGrid = {
         //默认文本过滤
         filter: 'agTextColumnFilter', filterParams: { buttons: ['apply', 'reset'] },
         //默认菜单项
-        menuTabs: ['generalMenuTab', 'filterMenuTab', 'columnsMenuTab']
+        menuTabs: ['filterMenuTab', 'generalMenuTab', 'columnsMenuTab']
     }, colDef),
 
     /**
@@ -272,6 +331,7 @@ let nrGrid = {
         // suppressClipboardPaste: true, //抑制 Ctrl+V 粘贴更新
         enableBrowserTooltips: true, //提示
         enableRangeSelection: true, //范围选择
+        enableCellChangeFlash: true, //单元格更新闪烁
         rowGroupPanelShow: 'always', //启用列拖拽分组 'never', 'always', 'onlyWhenGrouping'
         rowSelection: 'multiple', //多选 multiple、单选 single
         //getRowId: event => event.data.data_id, //主键列
@@ -280,61 +340,18 @@ let nrGrid = {
         headerHeight: nrGrid.flagRowHeight, //表头高度
         rowHeight: nrGrid.flagRowHeight, //行高度
         pagination: true, //分页
+        paginationAutoPageSize: true, //自动分页
         paginationPageSize: nrGrid.flagPageSize, //单页数量
         cacheBlockSize: nrGrid.flagPageSize, //加载数量
         popupParent: document.body, //右键菜单容器
         animateRows: true, //动画
-        isRowSelectable: rowNode => rowNode.group !== true, //非分组显示复选框        
+        isRowSelectable: rowNode => rowNode.group !== true, //非分组显示复选框
+        onRowDataUpdated: event => event.api.refreshCells(), //数据更新后刷新（更新行号）
         onSortChanged: event => event.api.refreshCells(), //排序后刷新（更新行号）        
         onFilterChanged: event => event.api.refreshCells(), //过滤后刷新（更新行号）
         onRowGroupOpened: event => event.api.refreshCells(), //组展开后刷新（更新行号）
         //右键菜单
-        getContextMenuItems: (params) => {
-            let domGrid = nrGrid.getContainer(params).firstElementChild;
-            let isFullscreen = domGrid.classList.contains(`nrg-fullscreen`);
-
-            let result = [
-                'copy',
-                'copyWithHeaders',
-                {
-                    name: "复制文本", icon: nrGrid.iconGrid('copy'), action: async function () {
-                        let cranges = params.api.getCellRanges()[0];
-                        let rows = [];
-                        let rowNodes = [];
-                        for (let rowIndex = cranges.startRow.rowIndex; rowIndex <= cranges.endRow.rowIndex; rowIndex++) {
-                            let rowNode = params.api.getDisplayedRowAtIndex(rowIndex);
-                            let cols = [];
-                            cranges.columns.forEach(column => {
-                                let content = rowNode.data[column.colId];
-                                Object.assign(params, { column, data: rowNode.data, value: content });
-                                if (typeof column.colDef.valueFormatter == "function") {
-                                    content = column.colDef.valueFormatter(params)
-                                } else if (typeof column.colDef.cellRenderer == "function") {
-                                    content = column.colDef.cellRenderer(params)
-                                }
-                                cols.push(content);
-                            });
-                            rowNodes.push(rowNode);
-                            rows.push(cols.join('\t'));
-                        }
-                        await nrcBase.clipboard(rows.join('\r\n')); //复制
-                        params.api.flashCells({ rowNodes, columns: cranges.columns.map(x => x.colId) }); //闪烁
-
-                    }
-                },
-                'separator',
-                {
-                    name: isFullscreen ? "取消全屏" : "全屏显示", icon: nrGrid.iconGrid(isFullscreen ? 'minimize' : 'maximize'), action: function () {
-                        domGrid.classList.toggle(`nrg-fullscreen`);
-                    }
-                },
-                'autoSizeAll',
-                'resetColumns',
-                'export'
-            ];
-
-            return result;
-        },
+        getContextMenuItems: nrGrid.getContextMenuItems,
     }, options),
 
     /**
@@ -418,45 +435,103 @@ let nrGrid = {
     },
 
     /**
-     * 过滤器
-     * @param {any} type 
-     * @param {any} ops 
-     * @returns 
+     * 右键菜单
+     * @param {*} params 
+     * @param {*} type 默认通用，可选 import excel
      */
-    filterParamsDef: (type, ops) => {
-        switch (type) {
-            case "Number":
-                return { filters: [{ filter: `ag${type}ColumnFilter` }, { filter: 'agSetColumnFilter', }] }
-            case "Date":
-                return {
-                    filters: [
-                        {
-                            filter: 'agDateColumnFilter', filterParams: {
-                                comparator: function (filterDate, cellValue) {
-                                    if (cellValue == null || cellValue == "") return -1;
+    getContextMenuItems: (params, type) => {
+        let domGrid = nrGrid.getContainer(params).firstElementChild;
+        let isFullscreen = domGrid.classList.contains(`nrg-fullscreen`);
+        let itemCopyText = {
+            name: "复制文本", icon: nrGrid.iconGrid('copy'), action: async function () {
+                let cranges = params.api.getCellRanges()[0];
+                let rows = [];
+                let rowNodes = [];
+                for (let rowIndex = cranges.startRow.rowIndex; rowIndex <= cranges.endRow.rowIndex; rowIndex++) {
+                    let rowNode = params.api.getDisplayedRowAtIndex(rowIndex);
+                    let cols = [];
+                    cranges.columns.forEach(column => {
+                        let content = rowNode.data[column.colId];
+                        Object.assign(params, { column, data: rowNode.data, value: content });
+                        if (typeof column.colDef.valueFormatter == "function") {
+                            content = column.colDef.valueFormatter(params)
+                        } else if (typeof column.colDef.cellRenderer == "function") {
+                            content = column.colDef.cellRenderer(params)
+                        }
+                        cols.push(content);
+                    });
+                    rowNodes.push(rowNode);
+                    rows.push(cols.join('\t'));
+                }
+                await nrcBase.clipboard(rows.join('\r\n')); //复制
+                params.api.flashCells({ rowNodes, columns: cranges.columns.map(x => x.colId) }); //闪烁
 
-                                    //仅比较日期
-                                    let cellDate = new Date(cellValue);
-                                    cellDate = new Date(Number(cellDate.getFullYear()), Number(cellDate.getMonth()) - 1, Number(cellDate.getDate()));
-                                    filterDate = new Date(Number(filterDate.getFullYear()), Number(filterDate.getMonth()) - 1, Number(filterDate.getDate()));
-
-                                    if (filterDate.getTime() == cellDate.getTime()) {
-                                        return 0;
-                                    }
-                                    if (cellDate < filterDate) {
-                                        return -1;
-                                    }
-                                    if (cellDate > filterDate) {
-                                        return 1;
-                                    }
-                                }
-                            },
-                        },
-                        { filter: 'agSetColumnFilter', },
-                    ],
-                };
+            }
         }
-        return ops;
+        let itemFullScreen = {
+            name: isFullscreen ? "取消全屏" : "全屏显示", icon: nrGrid.iconGrid(isFullscreen ? 'minimize' : 'maximize'), action: function () {
+                domGrid.classList.toggle(`nrg-fullscreen`);
+            }
+        }
+        let itemAdd = {
+            name: "新增一行", action: async function () {
+                params.api.applyTransaction({ add: [{}] });
+            }
+        }
+        let itemDelete = {
+            name: "删除选中的行", icon: nrGrid.iconGrid('cross'), action: async function () {
+                let srows = params.api.getSelectedRows();
+                if (srows.length) {
+                    params.api.applyTransaction({ remove: srows });
+                }
+            }
+        }
+
+        let result = [];
+
+        switch (type) {
+            case "excel":
+                result = [
+                    'copy',
+                    'copyWithHeaders',
+                    'separator',
+                    itemFullScreen,
+                    'autoSizeAll',
+                    'resetColumns',
+                    'export',
+                    'separator',
+                    'chartRange'
+                ];
+                break;
+            case "import":
+                result = [
+                    'copy',
+                    'copyWithHeaders',
+                    'separator',
+                    itemAdd,
+                    itemDelete,
+                    'separator',
+                    itemFullScreen,
+                    'autoSizeAll',
+                    'resetColumns',
+                    'export'
+                ];
+                break;
+            default:
+                result = [
+                    'copy',
+                    'copyWithHeaders',
+                    itemCopyText,
+                    'separator',
+                    itemFullScreen,
+                    'autoSizeAll',
+                    'resetColumns',
+                    'export'
+                ];
+                break;
+        }
+
+        return result;
     },
 
     /**
@@ -494,7 +569,7 @@ let nrGrid = {
      * @param {any} event 
      * @returns 
      */
-    getContainer: event => event.api.gridOptionsService.eGridDiv,
+    getContainer: event => event.api.getModel().gridOptionsService.eGridDiv,
 
     /**
      * 设置加载状态
@@ -523,43 +598,88 @@ let nrGrid = {
      * @returns 
      */
     formatterDateTime: (params) => {
-        if (params.value != null) {
+        if (params.value != null && params.value != "") {
             return nrcBase.formatDateTime('datetime', params.value);
         }
     },
 
     /**
-     * 转为树
-     * @param {*} data 原始数据
-     * @param {*} pidField 父级字段
-     * @param {*} idField 主字段
-     * @param {*} startPid 起始父级数组
-     * @param {*} dataPath 新构字段
+     * 格式化日期
+     * @param {any} params 
+     * @returns 
      */
-    asTreeDataForGroup: function (data, pidField, idField, startPid, dataPath) {
-        dataPath = dataPath || "$dataPath";
+    formatterDate: (params) => {
+        if (params.value != null && params.value != "") {
+            return nrcBase.formatDateTime('date', params.value);
+        }
+    },
 
-        //查询当前父级的子节点
-        let fdata = data.filter(x => startPid.includes(x[pidField]));
-        fdata.forEach(item => {
-            let paths = [];
-            //查询当前父级的路径
-            let pdata = data.filter(x => x[idField] == item[pidField])[0];
-            if (pdata) {
-                paths = paths.concat(pdata[dataPath])
-            }
-            //添加当前自身父级
-            paths.push(item[idField]);
-            item[dataPath] = paths;
 
-            //存在子节点
-            let sfdata = data.filter(x => x[pidField] == item[idField]);
-            if (sfdata.length) {
-                nrGrid.asTreeDataForGroup(data, pidField, idField, [item[idField]], dataPath);
+
+    /**
+     * 列宽自适应
+     * @param {*} params 
+     * @param {*} skipHeader 
+     */
+    autoSizeAll: (params, skipHeader) => {
+        const allColumnIds = params.columnApi.getColumns().map((column) => column.getId());
+        params.columnApi.autoSizeColumns(allColumnIds, skipHeader);
+    },
+
+    /**
+     * 表格数据转换 [{Entity:{},Entity2:{}}] => [{}]
+     * @param {*} result 
+     */
+    fromResultToRows: (result) => {
+        if (result.code == 200) {
+            let rows = [];
+            result.data.RowsThisBlock.forEach(item => {
+                let row = {};
+                Object.keys(item).forEach(key => {
+                    Object.assign(row, item[key]);
+                })
+                rows.push(row);
+            })
+            result.data.RowsThisBlock = rows;
+        }
+    },
+
+    /**
+     * 数组转为 AgGrid treeData 模式 getDataPath 方法所需的路径数组
+     * @param {*} rows 
+     * @param {*} pidField 
+     * @param {*} idField 
+     * @param {*} startPid 
+     * @param {*} dataField 
+     * @returns 
+     */
+    fromRowsToTreeData: (rows, pidField, idField, startPid = '0', dataField = "$dataPath") => {
+        let rowsMap = {}; // 用于存储每个节点的上级路径
+
+        // 构建节点映射表
+        rows.forEach(row => rowsMap[row[idField]] = row);
+
+        // 遍历数组，为每个节点新增 rowPath 字段
+        rows.forEach(row => {
+            let rowPath = []; // 用于存储当前节点的路径
+
+            // 逐级向上查找上级节点，直到根节点
+            let currentRow = row;
+            while (currentRow && currentRow[pidField] != startPid) {
+                const parentRow = rowsMap[currentRow[pidField]];
+                if (parentRow) {
+                    rowPath.unshift(parentRow[idField]);
+                    currentRow = parentRow;
+                } else {
+                    break;
+                }
             }
+
+            rowPath.push(row[idField]); // 添加当前节点
+            row[dataField] = rowPath;
         });
 
-        return data;
+        return rows;
     },
 
     /**
@@ -632,9 +752,11 @@ let nrGrid = {
         group: '分组',
         // Row Drag
         rowDragRows: '行',
+        rowDragRows: '多行',
 
         // Other
         loadingOoo: '加载中...',
+        loadingError: '错误',
         noRowsToShow: '（空）',
         enabled: '启用',
 
@@ -644,10 +766,12 @@ let nrGrid = {
         pinRight: '右固定',
         noPin: '取消固定',
         valueAggregation: '合计',
+        noAggregation: '无',
         autosizeThiscolumn: '当前列大小自适应',
         autosizeAllColumns: '所有列大小自适应',
         groupBy: '分组',
         ungroupBy: '不分组',
+        ungroupAll: '取消所有分组',
         addToValues: '添加值 ${variable}',
         removeFromValues: '移除值 ${variable}',
         addToLabels: '添加到标签 ${variable}',
@@ -657,16 +781,20 @@ let nrGrid = {
         collapseAll: '折叠全部',
         copy: '复制',
         ctrlC: 'Ctrl+C',
+        ctrlX: 'Ctrl+X',
         copyWithHeaders: '复制（带标题）',
-        copyWithHeaderGroups: '复制（带分组）',
+        copyWithGroupHeaders: '复制（带分组）',
+        cut: '剪切',
         paste: '粘贴',
         ctrlV: 'Ctrl+V',
         export: '导出',
-        csvExport: 'CSV 导出',
-        excelExport: 'Excel 导出',
+        csvExport: '导出 CSV',
+        excelExport: '导出 Excel',
 
         // Enterprise Menu Aggregation and Status Bar
         sum: '求和',
+        first: '首',
+        last: '尾',
         min: '最小',
         max: '最大',
         none: '无',
@@ -680,6 +808,7 @@ let nrGrid = {
         to: '-',
         of: '，共',
         page: '当前',
+        pageLastRowUnknown: '?',
         nextPage: '下一页',
         lastPage: '尾页',
         firstPage: '首页',
@@ -718,6 +847,11 @@ let nrGrid = {
         normalizedArea: '100% 叠堆',
 
         histogramChart: '直方图',
+        histogramFrequency: "Frequency",
+
+        combinationChart: 'Combination',
+        columnLineCombo: 'Column & Line',
+        AreaColumnCombo: 'Area & Column',
 
         // Charts
         pivotChartTitle: '图表枢轴',
@@ -739,6 +873,7 @@ let nrGrid = {
         category: '类别',
         number: '数字',
         time: '时间',
+        autoRotate: '自动旋转',
         xRotation: 'X 旋转',
         yRotation: 'Y 旋转',
         ticks: 'Ticks',
@@ -771,6 +906,7 @@ let nrGrid = {
         layoutHorizontalSpacing: 'Horizontal Spacing',
         layoutVerticalSpacing: 'Vertical Spacing',
         strokeWidth: '线条宽度',
+        lineDash: '划线',
         offset: 'Offset',
         offsets: 'Offsets',
         tooltips: '显示提示',
@@ -796,6 +932,7 @@ let nrGrid = {
         scatterGroup: '散点及气泡',
         areaGroup: '面积',
         histogramGroup: '直方',
+        combinationGroup: 'Combination',
         groupedColumnTooltip: 'Grouped',
         stackedColumnTooltip: 'Stacked',
         normalizedColumnTooltip: '100% Stacked',
@@ -811,13 +948,38 @@ let nrGrid = {
         scatterTooltip: 'Scatter',
         bubbleTooltip: 'Bubble',
         histogramTooltip: 'Histogram',
+        columnLineComboTooltip: 'Column & Line',
+        areaColumnComboTooltip: 'Area & Column',
+        customComboTooltip: 'Custom Combination',
         noDataToChart: 'No data available to be charted.',
         pivotChartRequiresPivotMode: 'Pivot Chart requires Pivot Mode enabled.',
         chartSettingsToolbarTooltip: 'Menu',
         chartLinkToolbarTooltip: 'Linked to Grid',
         chartUnlinkToolbarTooltip: 'Unlinked from Grid',
         chartDownloadToolbarTooltip: 'Download Chart',
+        seriesChartType: 'Series Chart Type',
+        seriesType: 'Series Type',
+        secondaryAxis: 'Secondary Axis',
+
+        // Data types
+        true: 'True',
+        false: 'False',
+        invalidDate: '无效日期',
+        invalidNumber: '无效数字',
+        january: '1月',
+        february: '2月',
+        march: '3月',
+        april: '4月',
+        may: '5月',
+        june: '6月',
+        july: '7月',
+        august: '8月',
+        september: '9月',
+        october: '10月',
+        november: '11月',
+        december: '12月',
     }
 }
 
+Object.assign(window, { nrGrid });
 export { nrGrid }

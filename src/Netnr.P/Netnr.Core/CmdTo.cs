@@ -10,7 +10,7 @@ namespace Netnr;
 /// <summary>
 /// 调用cmd
 /// </summary>
-public class CmdTo
+public partial class CmdTo
 {
     /// <summary>
     /// 是 Windows

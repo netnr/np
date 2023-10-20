@@ -16,7 +16,7 @@ let nrPage = {
             e.preventDefault();
 
             nrApp.setLoading(nrVary.domBtnSaveInfo);
-            let fd = nrcBase.getFormData(this);
+            let fd = nrcBase.fromFormToFormData(this);
             let result = await nrWeb.reqServer('/User/SaveUserInfo', { method: "POST", body: fd });
             nrApp.setLoading(nrVary.domBtnSaveInfo, true);
 
@@ -33,7 +33,7 @@ let nrPage = {
         nrVary.domFormPwd.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            let fd = nrcBase.getFormData(this);
+            let fd = nrcBase.fromFormToFormData(this);
             if (fd.get("newPassword") != fd.get("newPassword2")) {
                 nrApp.alert('两次输入的密码不一致')
             } else {

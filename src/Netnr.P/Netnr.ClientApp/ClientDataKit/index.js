@@ -1,4 +1,5 @@
-require.context('../frame/Shoelace', true, /.css$/);
+require.context('../frame/Shared', true, /.css$/);
+import '../frame/Shoelace/nrDark.css';
 require.context('./css', true, /.css$/);
 
 import { ndkAction } from './js/ndkAction';

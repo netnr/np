@@ -8,7 +8,7 @@ namespace Netnr;
 /// <summary>
 /// HTTP请求
 /// </summary>
-public class HttpTo
+public partial class HttpTo
 {
     /// <summary>
     /// HttpWebRequest对象
@@ -79,7 +79,7 @@ public class HttpTo
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"StatusCode: {statusCode}\r\n{result}");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ResetColor();
 
             throw e;
         }

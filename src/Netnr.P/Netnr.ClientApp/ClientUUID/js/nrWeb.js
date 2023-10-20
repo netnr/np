@@ -22,7 +22,7 @@ let nrWeb = {
         //资源依赖
         await import('bootstrap/dist/css/bootstrap.css');
         const bootstrap = await import("bootstrap/dist/js/bootstrap.bundle.js");
-        Object.assign(window, { bootstrap, nrcBase, nrStorage, nrApp, nrWeb, nrVary });
+        Object.assign(window, { bootstrap, nrWeb, nrVary });
 
         //存储初始化
         nrStorage.localforage = await new nrcIndexedDB({ name: "nr-cache" }).init();
@@ -47,6 +47,11 @@ let nrWeb = {
             nrVary.flagLibs = pns[2];
         }
 
+        //指定本地
+        if (location.hash == '#_local') {
+            nrVary.flagLocalUsed = true;
+            await nrStorage.setItem('local', nrVary.flagLocalUsed);
+        }
         //local
         let localUsed = await nrStorage.getItem('local');
         if (localUsed === true) {
@@ -63,13 +68,15 @@ let nrWeb = {
 
         //proxy
         let proxyUsed = await nrStorage.getItem('proxy');
-        if (proxyUsed === true) {
+        if (proxyUsed != null) {
             nrVary.flagProxyUsed = proxyUsed;
+        }
+        if (nrVary.flagProxyUsed) {
             document.querySelector('[data-action="proxy"]').classList.add('active');
         }
 
-        //关闭提示
-        ['nrg-load0', 'nrg-dark0'].forEach(c => document.body.classList.remove(c));
+        //关闭提示        
+        document.getElementById('style0').remove();
         nrVary.domLayout.classList.remove('invisible');
 
         await nrWeb.load();
@@ -301,7 +308,9 @@ let nrWeb = {
                         nrVary.flagLocalUsed = !nrVary.flagLocalUsed;
                         await nrStorage.setItem('local', nrVary.flagLocalUsed);
                         nrVary.domDdMore.querySelector('[data-action="local"]').classList.toggle('active');
-
+                        if (location.hash == "#_local") {
+                            location.hash = "";
+                        }
                         location.reload();
                     }
                 }
@@ -400,9 +409,9 @@ let nrWeb = {
 <div class="mt-2">缓存后可离线使用</div>
 <hr/>
 <div>Fork 项目，从浏览器导出书签 HTML，再转换书签为 Markdown，保存到 libs/*.md</div>
-<div>私有化部署 dist 分支，再把 libs 文件夹拷贝到 dist，更新索引文件 libs/index.json，再启用 本地 Local</div>
+<div>私有化部署，更新索引文件 libs/index.json，页面再启用 本地 Local</div>
 <hr/>
-<div>为缩减经费，uuid.fun 于 2028-11-09 8:00 到期，计划不再续费，启用子域名，<a href="https://uu.zme.ink">https://uu.zme.ink</a></div>
+<div>uuid.fun 于 2028-11-09 8:00 到期，计划不再续费，启用子域名，<a href="https://uu.zme.ink">https://uu.zme.ink</a></div>
 `;
                     nrApp.alert(html, 'About 关于');
                 }
@@ -644,7 +653,7 @@ let nrWeb = {
 
         //proxy
         if (nrVary.flagProxyUsed && !nrVary.flagLocalUsed) {
-            url = `${nrVary.flagProxyServer}${encodeURIComponent(url)}`;
+            url = `${nrVary.flagProxyServer}${encodeURIComponent(url.replace("https://", ""))}`;
         }
 
         let vm = await nrcBase.fetch(url, options);

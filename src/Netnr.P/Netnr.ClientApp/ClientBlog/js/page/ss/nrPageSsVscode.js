@@ -5,6 +5,7 @@ import { nrcBase } from "../../../../frame/nrcBase";
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
 import { nrcRely } from "../../../../frame/nrcRely";
 import { nrVary } from "../../nrVary";
+import { nrcSnowflake } from "../../../../frame/nrcSnowflake";
 
 let nrPage = {
     pathname: "/ss/vscode",
@@ -42,10 +43,7 @@ let nrPage = {
 
         nrVary.domEditor.classList.add('border');
 
-        nrcBase.setHeightFromBottom(nrVary.domListFile);
         nrcBase.setHeightFromBottom(nrVary.domEditor);
-
-        nrVary.domBtnFold.classList.remove('d-none');
 
         //列表
         nrPage.cacheFile = await nrStorage.getItem(nrPage.ckeyFile) || [];
@@ -55,15 +53,24 @@ let nrPage = {
         nrPage.bindEvent();
     },
 
+    flagWorking: false,
+
     bindEvent: () => {
+        //显示列表
+        nrVary.domDdlList.addEventListener('shown.bs.dropdown', async function () {
+            let mtop = nrVary.domEditor.getBoundingClientRect().top + nrcBase.tsBottomKeepHeight;
+            nrVary.domListFile.style.maxHeight = `calc(100vh - ${mtop}px)`;
+        })
 
         //新增
         nrVary.domBtnNew.addEventListener('click', async function () {
-            let item = { id: nrcBase.snow(), title: `file ${nrcBase.snow().toString().slice(-4)}`, language: nrVary.domSeLanguage.value, create: Date.now() };
+            let item = { id: nrcSnowflake.id(), title: `file ${nrcSnowflake.id().toString().slice(-4)}`, language: nrVary.domSeLanguage.value, create: Date.now() };
             nrPage.cacheFile.push(item);
             await nrStorage.setItem(nrPage.ckeyFile, nrPage.cacheFile);
 
             nrPage.fileAdd(item);
+            nrPage.showList();
+
             nrEditor.keepSetValue(nrApp.tsEditor, "");
             nrPage.fileSelected(item.id);
         });
@@ -85,6 +92,12 @@ let nrPage = {
 
         //点击列表
         nrVary.domListFile.addEventListener('click', async function (e) {
+            if (nrPage.flagWorking) {
+                console.debug('working')
+                return;
+            }
+            nrPage.flagWorking = true;
+
             let target = e.target;
 
             let listNode = nrVary.domListFile.children;
@@ -105,14 +118,7 @@ let nrPage = {
                     break;
                 }
             }
-        });
-
-        //折叠
-        nrVary.domBtnFold.addEventListener('click', function () {
-            let domRight = this.parentElement;
-            let domLeft = domRight.previousElementSibling;
-            domLeft.classList.toggle('d-none');
-            domRight.classList.toggle('w-100')
+            nrPage.flagWorking = false;
         });
 
         //修改语言
@@ -140,7 +146,9 @@ let nrPage = {
 
         //变动自动保存
         nrEditor.onChange(nrApp.tsEditor, (value) => {
-            nrStorage.setItem(`${nrPage.ckeyFile}-${nrPage.cacheSelected}`, value);
+            if (nrPage.flagWorking == false) {
+                nrStorage.setItem(`${nrPage.ckeyFile}-${nrPage.cacheSelected}`, value);
+            }
         });
 
         //运行
@@ -170,13 +178,19 @@ let nrPage = {
 
         //接收文件
         nrcFile.init(async (files) => {
+            nrPage.flagWorking = true;
             let lastItem;
             for (const file of files) {
                 try {
+                    if (file.size > 1024 * 1024 * 50) {
+                        if (!await nrApp.confirm(file.name, '文件过大是否继续打开')) {
+                            continue;
+                        }
+                    }
                     let text = await nrcFile.reader(file);
 
                     let item = {
-                        id: nrcBase.snow(),
+                        id: nrcSnowflake.id(),
                         title: file.name,
                         language: 'plaintext',
                         create: file.lastModifiedDate
@@ -202,6 +216,7 @@ let nrPage = {
                     lastItem = item;
 
                     nrPage.fileAdd(item);
+                    nrPage.showList();
                 } catch (error) {
                     console.debug(error);
                     nrApp.toast(`打开文件（${file.name}）失败`);
@@ -210,15 +225,19 @@ let nrPage = {
 
             if (lastItem != null) {
                 nrEditor.keepSetValue(nrApp.tsEditor, await nrStorage.getItem(`${nrPage.ckeyFile}-${lastItem.id}`));
+                nrApp.tsEditor.revealLine(1); //滚动到第一行
                 nrPage.fileSelected(lastItem.id);
                 await nrStorage.setItem(nrPage.ckeyFile, nrPage.cacheFile);
             }
+            nrPage.flagWorking = false;
         })
     },
 
+    showList: () => (new bootstrap.Dropdown(nrVary.domDdlList)).show(),
+
     fileView: async () => {
         //默认记录
-        if (nrPage.cacheFile.length == 0 && nrPage.cacheFile.filter(x => x.id == nrPage.cacheSelected).length == 0) {
+        if (nrPage.cacheFile.length == 0) {
             let dvContent = await nrStorage.getItem(nrPage.ckeyContent) || 'console.log("hello world")';
             let dvLanguage = await nrStorage.getItem(nrPage.ckeyLanguage) || "javascript";
             nrPage.cacheFile.push({ id: 0, title: "default", language: dvLanguage, create: Date.now() });
@@ -256,6 +275,8 @@ let nrPage = {
                 //赋值内容
                 let fileContent = await nrStorage.getItem(`${nrPage.ckeyFile}-${id}`);
                 nrEditor.keepSetValue(nrApp.tsEditor, fileContent);
+                //滚动到顶部
+                nrApp.tsEditor.setScrollPosition({ scrollTop: 0, scrollLeft: 0 });
             } else {
                 domItem.classList.remove('active');
             }
@@ -268,7 +289,7 @@ let nrPage = {
         domItem.dataset.id = item.id;
         domItem.title = item.title;
         domItem.dataset.language = item.language || "plaintext";
-        domItem.innerHTML = `<div class="ms-2 me-auto"><div class="text-truncate" style="width:7em">${nrcBase.htmlEncode(item.title)}</div></div>
+        domItem.innerHTML = `<div class="ms-2 me-auto"><div class="text-truncate" style="width:12em">${nrcBase.htmlEncode(item.title)}</div></div>
         <div><a class="flag-update text-decoration-none" href="javascript:void(0)" title="编辑 update">📝</a><a class="flag-remove text-decoration-none" href="javascript:void(0)" title="删除 remove">❌</a></div>`
         nrVary.domListFile.appendChild(domItem);
     },
@@ -330,12 +351,12 @@ let nrPage = {
     languageExt: {
         "cameligo": "migo", "clojure": "clj", "coffeescript": "coffee", "csharp": "cs",
         "cypher": "cyp", "elixir": "ex", "freemarker2": "ftl", "fsharp": "fs", "graphql": "gql",
-        "handlebars": "hbs", "javascript": "js", "julia": "jl", "kotlin": "kt", "lexon": "lex",
-        "markdown": "md", "mips": "s", "mysql": "sql", "objective-c": "m", "pascal": "pas",
-        "pascaligo": "pasi", "perl": "pl", "pgsql": "sql", "plaintext": "txt", "postiats": "dats",
-        "powerquery": "pq", "powershell": "ps1", "python": "py", "qsharp": "qs", "razor": "cshtml",
-        "restructuredtext": "rst", "ruby": "rb", "rust": "rs", "scheme": "scm", "shell": "sh",
-        "sparql": "rq", "sql": "sql", "st": "st", "swift": "swift", "systemverilog": "sv",
+        "handlebars": "hbs", "javascript": "js", "json": "jsonc", "julia": "jl", "kotlin": "kt",
+        "lexon": "lex", "markdown": "md", "mips": "s", "mysql": "sql", "objective-c": "m",
+        "pascal": "pas", "pascaligo": "pasi", "perl": "pl", "pgsql": "sql", "plaintext": "txt",
+        "postiats": "dats", "powerquery": "pq", "powershell": "ps1", "python": "py", "qsharp": "qs",
+        "razor": "cshtml", "restructuredtext": "rst", "ruby": "rb", "rust": "rs", "scheme": "scm",
+        "shell": "sh", "sparql": "rq", "sql": "sql", "st": "st", "swift": "swift", "systemverilog": "sv",
         "tcl": "tcl", "twig": "twig", "typescript": "ts", "verilog": "v"
     }
 }

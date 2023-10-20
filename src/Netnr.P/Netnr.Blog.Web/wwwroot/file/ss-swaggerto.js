@@ -24,6 +24,8 @@ let swg = {
         }
 
         var mdg = [];
+        var pathsTags = [];
+        var pathsTagKey = {};
 
         var paths = openAPI["paths"];
         if (paths) {
@@ -52,12 +54,20 @@ let swg = {
                         mdi.push(swg.formatter.responses(i2.responses, openAPI));
                     }
 
+                    if (!(tags[0] in pathsTagKey)) {
+                        pathsTagKey[tags[0]] = 1;
+                        pathsTags.push({ name: tags[0], description: tags[0] })
+                    }
+
                     mdg.push({ tag: tags[0], mdi });
                 }
             }
         }
 
         var tags = swg.jk("tags", openAPI);
+        if (tags == null) {
+            tags = pathsTags
+        }
         tags.forEach(tag => {
             mds.push(swg.formatter.tags_item(tag));
 
@@ -121,7 +131,7 @@ let swg = {
         path: function (method, path) {
             var mds = [];
             mds.push("");
-            mds.push("### " + method.toUpperCase() + " " + path);
+            mds.push(`### ${method.toUpperCase()} ${path}`);
             return mds.join('\n');
         },
 
@@ -132,7 +142,7 @@ let swg = {
         summary: function (summary) {
             var mds = [];
             mds.push("");
-            mds.push("#### 描述（Summary）");
+            //mds.push("#### 描述（Description）");
             mds.push(swg.mdEncode(summary));
             return mds.join('\n');
         },
@@ -150,12 +160,16 @@ let swg = {
             parameters.forEach(p => {
                 var type = [swg.jk("type", p), swg.jk("schema:type", p), swg.jk("schema:format", p), swg.jk("schema:items:type", p), swg.jk("schema:items:enum", p) ? "enum" : null];
                 type = type.filter(x => x != null);
+                var refModel;
                 if (type.length) {
                     type = type.join(' / ');
                 } else {
                     var refName = swg.jk("schema:$ref", p);
                     if (refName) {
                         type = swg.refForType(refName, swaggerJson);
+
+                        //引用对象
+                        refModel = swg.buildRefTree(refName, swaggerJson);
                     } else {
                         type = "";
                     }
@@ -179,6 +193,9 @@ let swg = {
                     description = "**必填** 。 " + description;
                 }
                 mds.push(`| ${p.name} | ${type} | ${p.in} | ${description} |`);
+                if (refModel) {
+                    mds = mds.concat(swg.fieldsAsView(refModel.fields, p.in));
+                }
             });
             return mds.join('\n');
         },
@@ -194,7 +211,7 @@ let swg = {
 
             var mds = [];
             mds.push("");
-            mds.push("#### 请求主体（RequestBody）");
+            mds.push("#### 请求主体（Request Body）");
             if (rb_description != null) {
                 mds.push(swg.mdEncode(rb_description));
             }
@@ -205,7 +222,9 @@ let swg = {
 
             for (var i in rb_content) {
                 mds.push("");
-                mds.push("**" + i.replace(/\*/g, "\\*") + "**");
+                mds.push("Content-Type: **" + i.replace(/\*/g, "\\*") + "**");
+                mds.push("");
+                mds.push("内容（Content）");
                 mds.push("");
 
                 var cformat = i.split('/')[1];
@@ -216,6 +235,9 @@ let swg = {
                 var properties = swg.jk("schema:properties", rb_content[i]);
 
                 if (properties != null) {
+                    mds.push("");
+                    mds.push("说明（Description）");
+                    mds.push("");
 
                     swg.mdTableHeader(mds, "名称,类型,说明".split(','));
 
@@ -254,11 +276,14 @@ let swg = {
                             ov = swg.jsonToXml(ov, rbcRefName1.split("/").pop())
                         } else {
                             ov = JSON.stringify(ov, null, 2);
+                            cformat = "json";
                         }
 
                         mds.push("```" + cformat);
                         mds.push(ov);
                         mds.push("```");
+                        mds.push("");
+                        mds.push("说明（Description）");
                         mds.push("");
 
                         swg.mdTableHeader(mds, "名称,类型,说明".split(','));
@@ -276,11 +301,14 @@ let swg = {
                             ov = swg.jsonToXml(ov, rbcRefName2.split("/").pop())
                         } else {
                             ov = JSON.stringify(ov, null, 2);
+                            cformat = "json";
                         }
 
                         mds.push("```" + cformat);
                         mds.push(ov);
                         mds.push("```");
+                        mds.push("");
+                        mds.push("说明（Description）");
                         mds.push("");
 
                         swg.mdTableHeader(mds, "名称,类型,说明".split(','));
@@ -304,9 +332,7 @@ let swg = {
             for (var i in responses) {
                 var ri = responses[i];
                 mds.push("");
-                mds.push("```html");
-                mds.push(`Status: ${i} ${ri.description}`);
-                mds.push("```");
+                mds.push(`StatusCode: **${i}** ${ri.description}`);
 
                 if ("content" in ri) {
                     var content = ri.content;
@@ -317,7 +343,9 @@ let swg = {
 
                     for (var j in content) {
                         mds.push("");
-                        mds.push("**" + j.replace(/\*/g, "\\*") + "**");
+                        mds.push("Content-Type: **" + j.replace(/\*/g, "\\*") + "**");
+                        mds.push("");
+                        mds.push("内容（Content）");
                         mds.push("");
 
                         var cformat = j.split('/')[1];
@@ -340,11 +368,14 @@ let swg = {
                                 ov = swg.jsonToXml(ov, cSchemaRefName.split("/").pop())
                             } else {
                                 ov = JSON.stringify(ov, null, 2);
+                                cformat = "json";
                             }
 
                             mds.push("```" + cformat);
                             mds.push(ov);
                             mds.push("```");
+                            mds.push("");
+                            mds.push("说明（Description）");
                             mds.push("");
 
                             swg.mdTableHeader(mds, "名称,类型,说明".split(','));
@@ -359,6 +390,7 @@ let swg = {
                                 ov = swg.jsonToXml(ov, cSchemaItemsType.split("/").pop())
                             } else {
                                 ov = JSON.stringify(ov, null, 2);
+                                cformat = "json";
                             }
 
                             mds.push("```" + cformat);
@@ -376,11 +408,14 @@ let swg = {
                                 ov = swg.jsonToXml(ov, cSchemaItemsRefName.split("/").pop())
                             } else {
                                 ov = JSON.stringify(ov, null, 2);
+                                cformat = "json";
                             }
 
                             mds.push("```" + cformat);
                             mds.push(ov);
                             mds.push("```");
+                            mds.push("");
+                            mds.push("说明（Description）");
                             mds.push("");
 
                             swg.mdTableHeader(mds, "名称,类型,说明".split(','));
@@ -397,11 +432,14 @@ let swg = {
                                     ov = swg.jsonToXml(ov)
                                 } else {
                                     ov = JSON.stringify(ov, null, 2);
+                                    cformat = "json";
                                 }
 
                                 mds.push("```" + cformat);
                                 mds.push(ov);
                                 mds.push("```");
+                                mds.push("");
+                                mds.push("说明（Description）");
                                 mds.push("");
 
                                 swg.mdTableHeader(mds, "名称,类型,说明".split(','));
@@ -574,9 +612,10 @@ let swg = {
     /**
      * 字段
      * @param {any} fields
+     * @param {any} parameterIn 可选，参数位置
      * @param {any} deep
      */
-    fieldsAsView: function (fields, deep) {
+    fieldsAsView: function (fields, parameterIn, deep) {
         var list = [], deep = deep || 0, empty = [];
         while (empty.length < deep) {
             empty.push(' —');
@@ -593,9 +632,13 @@ let swg = {
                 description = "**默认值**：" + (item.default === '' ? '"" 。 ' : '`' + item.default + '` 。 ') + description;
             }
 
-            list.push(`|${empty} ${item.field} | ${type} | ${description} |`);
+            if (parameterIn == null) {
+                list.push(`|${empty.join('')} ${item.field} | ${type} | ${description} |`);
+            } else {
+                list.push(`|${empty.join('')} ${item.field} | ${type} | ${parameterIn} | ${description} |`);
+            }
             if (item.children) {
-                list = list.concat(arguments.callee(item.children, deep + 1))
+                list = list.concat(arguments.callee(item.children, parameterIn, deep + 1))
             }
         });
         return list;

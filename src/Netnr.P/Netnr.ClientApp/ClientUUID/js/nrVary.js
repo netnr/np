@@ -10,8 +10,8 @@ let nrVary = {
     flagLocalPath: "/libs/index.json",
     flagLocalJson: null,
 
-    flagProxyServer: 'https://cors.zme.ink/', //代理服务
-    flagProxyUsed: false, //使用代理
+    flagProxyServer: 'https://proxy.zme.ink/', //代理服务
+    flagProxyUsed: true, //使用代理
 
     flagTitle: document.title, //站点名称
 }

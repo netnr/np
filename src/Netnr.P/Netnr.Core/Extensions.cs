@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Collections;
 
 namespace Netnr;
@@ -139,11 +138,11 @@ public static partial class Extensions
     {
         Type elementType = typeof(T);
         var t = new DataTable();
-        elementType.GetProperties().ToList().ForEach(propInfo => t.Columns.Add(propInfo.Name, Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType));
+        elementType.GetProperties().ForEach(propInfo => t.Columns.Add(propInfo.Name, Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType));
         foreach (T item in list)
         {
             var row = t.NewRow();
-            elementType.GetProperties().ToList().ForEach(propInfo => row[propInfo.Name] = propInfo.GetValue(item, null) ?? DBNull.Value);
+            elementType.GetProperties().ForEach(propInfo => row[propInfo.Name] = propInfo.GetValue(item, null) ?? DBNull.Value);
             t.Rows.Add(row);
         }
         return t;
@@ -196,8 +195,9 @@ public static partial class Extensions
     /// </summary>
     /// <param name="ex"></param>
     /// <param name="messageOnly">仅消息</param>
+    /// <param name="limitStackTrace">截断堆栈跟踪长度，默认-1不截断</param>
     /// <returns></returns>
-    public static Dictionary<string, object> ToTree(this Exception ex, bool messageOnly = false)
+    public static Dictionary<string, object> ToTree(this Exception ex, bool messageOnly = false, int limitStackTrace = -1)
     {
         var result = new Dictionary<string, object>
         {
@@ -206,7 +206,12 @@ public static partial class Extensions
         if (!messageOnly)
         {
             result.Add("HResult", ex.HResult);
-            result.Add("StackTrace", ex.StackTrace);
+            var stackTrace = ex.StackTrace;
+            if (stackTrace != null && limitStackTrace > 1 && stackTrace.Length > limitStackTrace + 4)
+            {
+                stackTrace = stackTrace.Substring(0, limitStackTrace) + " ...";
+            }
+            result.Add("StackTrace", stackTrace);
             result.Add("Source", ex.Source);
         }
         if (ex.Data.Count > 0)
@@ -215,7 +220,7 @@ public static partial class Extensions
         }
         if (ex.InnerException != null)
         {
-            result.Add("InnerException", ex.InnerException.ToTree(messageOnly));
+            result.Add("InnerException", ex.InnerException.ToTree(messageOnly, limitStackTrace));
         }
 
         return result;
@@ -226,14 +231,14 @@ public static partial class Extensions
     /// </summary>
     /// <param name="value">内容</param>
     /// <returns></returns>
-    public static string ToUrlEncode(this string value) => WebUtility.UrlEncode(value);
+    public static string ToUrlEncode(this string value) => Uri.EscapeDataString(value);
 
     /// <summary>
     /// URL 解码
     /// </summary>
     /// <param name="value">内容</param>
     /// <returns></returns>
-    public static string ToUrlDecode(this string value) => WebUtility.UrlDecode(value);
+    public static string ToUrlDecode(this string value) => Uri.UnescapeDataString(value);
 
     /// <summary>
     /// HTML 编码
@@ -342,7 +347,7 @@ public static partial class Extensions
     {
         int readLength;
         long receiveLength = 0;
-        var buffer = new byte[81920];
+        var buffer = new byte[8192];
 
         while ((readLength = await source.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) != 0)
         {
@@ -550,6 +555,28 @@ public static partial class Extensions
     }
 
     /// <summary>
+    /// 根据 Guid 获取唯一数字
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
+    public static long ToLong(this Guid guid)
+    {
+        var bytes = guid.ToByteArray();
+        return BitConverter.ToInt64(bytes, 0);
+    }
+
+    /// <summary>
+    /// 根据 Guid 获取唯一数字字符串
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
+    public static string ToLongString(this Guid guid)
+    {
+        var bytes = guid.ToByteArray();
+        return BitConverter.ToInt64(bytes, 0).ToString();
+    }
+
+    /// <summary>
     /// 将Datetime转换成时间戳，10位：秒 或 13位：毫秒
     /// </summary>
     /// <param name="datetime"></param>
@@ -587,6 +614,23 @@ public static partial class Extensions
             yield return item;
         }
         yield return newItem;
+    }
+
+    /// <summary>
+    /// 遍历
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="action"></param>
+    public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
+    {
+        if (action != null)
+        {
+            foreach (var item in items)
+            {
+                action(item);
+            }
+        }
     }
 
     /// <summary>

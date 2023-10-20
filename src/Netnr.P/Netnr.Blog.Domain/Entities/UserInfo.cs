@@ -8,7 +8,7 @@ public partial class UserInfo
     public int UserId { get; set; }
 
     /// <summary>
-    /// 登录帐号
+    /// 登录账号
     /// </summary>
     public string UserName { get; set; }
 

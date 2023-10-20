@@ -26,7 +26,7 @@ namespace Netnr.Blog.Application.Services
                 paths.Add(AppTo.GetValue($"StaticResource:{item}"));
             });
             paths.AddRange(args);
-            return PathTo.Combine(paths.ToArray());
+            return ParsingTo.Combine(paths.ToArray());
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Netnr.Blog.Application.Services
         /// <returns></returns>
         public static string StaticResourcePath(string typePath = null, params string[] args)
         {
-            return PathTo.Combine(AppTo.WebRootPath, UrlRelativePath(typePath, args));
+            return ParsingTo.Combine(AppTo.WebRootPath, UrlRelativePath(typePath, args));
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Netnr.Blog.Application.Services
             }
 
             listPath.AddRange(args);
-            return PathTo.Combine(listPath.ToArray());
+            return ParsingTo.Combine(listPath.ToArray());
         }
 
         /// <summary>
@@ -119,15 +119,15 @@ namespace Netnr.Blog.Application.Services
         /// <summary>
         /// 获取文章列表
         /// </summary>
-        /// <param name="KeyWords"></param>
+        /// <param name="words"></param>
         /// <param name="page"></param>
         /// <param name="TagName"></param>
         /// <returns></returns>
-        public static async Task<PageVM> UserWritingQuery(string KeyWords, int page, string TagName = "")
+        public static async Task<PageVM> UserWritingQuery(string words, int page, string TagName = "")
         {
             var vm = new PageVM();
 
-            KeyWords ??= "";
+            words ??= "";
 
             var pag = new PaginationVM
             {
@@ -135,7 +135,7 @@ namespace Netnr.Blog.Application.Services
                 PageSize = PageSize
             };
 
-            var dicQs = new Dictionary<string, string> { { "k", KeyWords } };
+            var dictQs = new Dictionary<string, string> { { "k", words } };
 
             using var db = ContextBaseFactory.CreateDbContext();
 
@@ -149,20 +149,20 @@ namespace Netnr.Blog.Application.Services
             }
             query = query.Where(x => x.UwOpen == 1 && x.UwStatus == 1);
 
-            if (!string.IsNullOrWhiteSpace(KeyWords))
+            if (!string.IsNullOrWhiteSpace(words))
             {
                 var kws = new List<string>();
-                kws.AddRange(KeyWords.Split(' '));
-                kws.Add(KeyWords);
+                kws.AddRange(words.Split(' '));
+                kws.Add(words);
                 kws = kws.Distinct().ToList();
 
                 var inner = PredicateTo.False<UserWriting>();
-                switch (AppTo.TDB)
+                switch (AppTo.DBT)
                 {
-                    case EnumTo.TypeDB.SQLite:
+                    case DBTypes.SQLite:
                         kws.ForEach(k => inner = inner.Or(x => EF.Functions.Like(x.UwTitle, $"%{k}%") || EF.Functions.Like(x.UwContentMd, $"%{k}%")));
                         break;
-                    case EnumTo.TypeDB.PostgreSQL:
+                    case DBTypes.PostgreSQL:
                         kws.ForEach(k => inner = inner.Or(x => EF.Functions.ILike(x.UwTitle, $"%{k}%") || EF.Functions.ILike(x.UwContentMd, $"%{k}%")));
                         break;
                     default:
@@ -219,7 +219,7 @@ namespace Netnr.Blog.Application.Services
 
             vm.Rows = list;
             vm.Pag = pag;
-            vm.QueryString = dicQs;
+            vm.QueryString = dictQs;
 
             //标签信息
             if (!string.IsNullOrWhiteSpace(TagName))
@@ -255,7 +255,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="action">动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static async Task<PageVM> UserConnWritingQuery(int OwnerId, ConnectionType connectionType, int action, int page)
+        public static async Task<PageVM> UserConnWritingQuery(int OwnerId, ConnectionTypes connectionType, int action, int page)
         {
             var pag = new PaginationVM
             {
@@ -268,7 +268,7 @@ namespace Netnr.Blog.Application.Services
 
             switch (connectionType)
             {
-                case ConnectionType.UserWriting:
+                case ConnectionTypes.UserWriting:
                     {
                         query = from a in db.UserConnection
                                 join b in db.UserWriting on a.UconnTargetId equals b.UwId.ToString()
@@ -375,7 +375,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UrTargetId">回复目标ID</param>
         /// <param name="pag">分页信息</param>
         /// <returns></returns>
-        public static async Task<List<UserReply>> ReplyOneQuery(ReplyType replyType, string UrTargetId, PaginationVM pag)
+        public static async Task<List<UserReply>> ReplyOneQuery(ReplyTypes replyType, string UrTargetId, PaginationVM pag)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserReply
@@ -460,7 +460,7 @@ namespace Netnr.Blog.Application.Services
         /// <param name="action">消息动作</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static async Task<PageVM> MessageQuery(int UserId, MessageType? messageType, int? action, int page = 1)
+        public static async Task<PageVM> MessageQuery(int UserId, MessageTypes? messageType, int? action, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.UserMessage
@@ -494,7 +494,7 @@ namespace Netnr.Blog.Application.Services
             if (list.Count > 0)
             {
                 //分类：根据ID查询对应的标题
-                var listUwId = list.Where(x => x.a.UmType == MessageType.UserWriting.ToString()).Select(x => Convert.ToInt32(x.a.UmTargetId)).ToList();
+                var listUwId = list.Where(x => x.a.UmType == MessageTypes.UserWriting.ToString()).Select(x => Convert.ToInt32(x.a.UmTargetId)).ToList();
                 var listUw = await db.UserWriting.Where(x => listUwId.Contains(x.UwId)).Select(x => new { x.UwId, x.UwTitle }).ToListAsync();
 
                 foreach (var item in list)
@@ -523,7 +523,7 @@ namespace Netnr.Blog.Application.Services
         /// <returns></returns>
         public static int NewMessageQuery(int UserId)
         {
-            if (AppTo.GetValue<bool>("ReadOnly"))
+            if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
             {
                 return 0;
             }
@@ -556,13 +556,13 @@ namespace Netnr.Blog.Application.Services
         /// <summary>
         /// Gist查询，按列权重排序
         /// </summary>
-        /// <param name="q">搜索</param>
+        /// <param name="words">搜索</param>
         /// <param name="lang">语言</param>
         /// <param name="OwnerId">所属用户</param>
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static async Task<PageVM> GistQuery(string q, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static async Task<PageVM> GistQuery(string words, string lang, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
 
@@ -581,13 +581,13 @@ namespace Netnr.Blog.Application.Services
                 query1 = query1.Where(x => x.a.GistLanguage == lang);
             }
 
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(words))
             {
-                query1 = AppTo.TDB switch
+                query1 = AppTo.DBT switch
                 {
-                    EnumTo.TypeDB.SQLite => query1.Where(x => EF.Functions.Like(x.a.GistFilename, $"%{q}%") || EF.Functions.Like(x.a.GistRemark, $"%{q}%") || EF.Functions.Like(x.a.GistContent, $"%{q}%")),
-                    EnumTo.TypeDB.PostgreSQL => query1.Where(x => EF.Functions.ILike(x.a.GistFilename, $"%{q}%") || EF.Functions.ILike(x.a.GistRemark, $"%{q}%") || EF.Functions.ILike(x.a.GistContent, $"%{q}%")),
-                    _ => query1.Where(x => x.a.GistFilename.Contains(q) || x.a.GistRemark.Contains(q) || x.a.GistContent.Contains(q)),
+                    DBTypes.SQLite => query1.Where(x => EF.Functions.Like(x.a.GistFilename, $"%{words}%") || EF.Functions.Like(x.a.GistRemark, $"%{words}%") || EF.Functions.Like(x.a.GistContent, $"%{words}%")),
+                    DBTypes.PostgreSQL => query1.Where(x => EF.Functions.ILike(x.a.GistFilename, $"%{words}%") || EF.Functions.ILike(x.a.GistRemark, $"%{words}%") || EF.Functions.ILike(x.a.GistContent, $"%{words}%")),
+                    _ => query1.Where(x => x.a.GistFilename.Contains(words) || x.a.GistRemark.Contains(words) || x.a.GistContent.Contains(words)),
                 };
             }
 
@@ -611,29 +611,29 @@ namespace Netnr.Blog.Application.Services
             IQueryable<Gist> query = null;
 
             //搜索
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(words))
             {
                 var query2 = query1.Select(x => new
                 {
-                    SearchOrder = (x.a.GistFilename.Contains(q) ? 4 : 0) + (x.a.GistRemark.Contains(q) ? 2 : 0) + (x.a.GistContent.Contains(q) ? 1 : 0),
+                    SearchOrder = (x.a.GistFilename.Contains(words) ? 4 : 0) + (x.a.GistRemark.Contains(words) ? 2 : 0) + (x.a.GistContent.Contains(words) ? 1 : 0),
                     x.Nickname,
                     x.a
                 }).OrderByDescending(x => x.SearchOrder);
 
-                switch (AppTo.TDB)
+                switch (AppTo.DBT)
                 {
-                    case EnumTo.TypeDB.SQLite:
+                    case DBTypes.SQLite:
                         query2 = query1.Select(x => new
                         {
-                            SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{q}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{q}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{q}%") ? 1 : 0),
+                            SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{words}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{words}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{words}%") ? 1 : 0),
                             x.Nickname,
                             x.a
                         }).OrderByDescending(x => x.SearchOrder);
                         break;
-                    case EnumTo.TypeDB.PostgreSQL:
+                    case DBTypes.PostgreSQL:
                         query2 = query1.Select(x => new
                         {
-                            SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{q}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{q}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{q}%") ? 1 : 0),
+                            SearchOrder = (EF.Functions.Like(x.a.GistFilename, $"%{words}%") ? 4 : 0) + (EF.Functions.Like(x.a.GistRemark, $"%{words}%") ? 2 : 0) + (EF.Functions.Like(x.a.GistContent, $"%{words}%") ? 1 : 0),
                             x.Nickname,
                             x.a
                         }).OrderByDescending(x => x.SearchOrder);
@@ -683,7 +683,7 @@ namespace Netnr.Blog.Application.Services
                 PageSize = 10
             };
 
-            var dicQs = new Dictionary<string, string> { { "q", q } };
+            var dictQs = new Dictionary<string, string> { { "k", words } };
 
             pag.Total = await query.CountAsync();
             var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
@@ -692,11 +692,11 @@ namespace Netnr.Blog.Application.Services
             {
                 Rows = list,
                 Pag = pag,
-                QueryString = dicQs
+                QueryString = dictQs
             };
 
             //显示词云 Spare1=1
-            if (string.IsNullOrWhiteSpace(q) && pag.Total > 0)
+            if (string.IsNullOrWhiteSpace(words) && pag.Total > 0)
             {
                 var result = await db.Gist
                     .Select(x => new { x.GistCode, x.GistFilename, x.GistRemark, x.GistCreateTime, x.GistOpen, x.GistStatus, x.Spare1 })
@@ -713,12 +713,12 @@ namespace Netnr.Blog.Application.Services
         /// <summary>
         /// Doc查询
         /// </summary>
-        /// <param name="q">搜索</param>
+        /// <param name="words">搜索</param>
         /// <param name="OwnerId">所属用户</param>
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static async Task<PageVM> DocQuery(string q, int OwnerId, int UserId, int page = 1)
+        public static async Task<PageVM> DocQuery(string words, int OwnerId, int UserId, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.DocSet
@@ -755,13 +755,13 @@ namespace Netnr.Blog.Application.Services
                 query = query.Where(x => x.DsOpen == 1 || x.Uid == UserId);
             }
 
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(words))
             {
-                query = AppTo.TDB switch
+                query = AppTo.DBT switch
                 {
-                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DsName, $"%{q}%") || EF.Functions.Like(x.DsRemark, $"%{q}%")),
-                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DsName, $"%{q}%") || EF.Functions.ILike(x.DsRemark, $"%{q}%")),
-                    _ => query.Where(x => x.DsName.Contains(q) || x.DsRemark.Contains(q)),
+                    DBTypes.SQLite => query.Where(x => EF.Functions.Like(x.DsName, $"%{words}%") || EF.Functions.Like(x.DsRemark, $"%{words}%")),
+                    DBTypes.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DsName, $"%{words}%") || EF.Functions.ILike(x.DsRemark, $"%{words}%")),
+                    _ => query.Where(x => x.DsName.Contains(words) || x.DsRemark.Contains(words)),
                 };
             }
 
@@ -771,7 +771,7 @@ namespace Netnr.Blog.Application.Services
                 PageSize = PageSize
             };
 
-            var dicQs = new Dictionary<string, string> { { "q", q } };
+            var dictQs = new Dictionary<string, string> { { "k", words } };
 
             pag.Total = await query.CountAsync();
             var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
@@ -780,7 +780,7 @@ namespace Netnr.Blog.Application.Services
             {
                 Rows = list,
                 Pag = pag,
-                QueryString = dicQs
+                QueryString = dictQs
             };
 
             return pageSet;
@@ -789,12 +789,12 @@ namespace Netnr.Blog.Application.Services
         /// <summary>
         /// Run查询
         /// </summary>
-        /// <param name="q">搜索</param>
+        /// <param name="words">搜索</param>
         /// <param name="OwnerId">所属用户</param>
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static async Task<PageVM> RunQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static async Task<PageVM> RunQuery(string words, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Run
@@ -832,13 +832,13 @@ namespace Netnr.Blog.Application.Services
                 query = query.Where(x => x.RunOpen == 1 || x.Uid == UserId);
             }
 
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(words))
             {
-                query = AppTo.TDB switch
+                query = AppTo.DBT switch
                 {
-                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.RunRemark, $"%{q}%")),
-                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.RunRemark, $"%{q}%")),
-                    _ => query.Where(x => x.RunRemark.Contains(q)),
+                    DBTypes.SQLite => query.Where(x => EF.Functions.Like(x.RunRemark, $"%{words}%")),
+                    DBTypes.PostgreSQL => query.Where(x => EF.Functions.ILike(x.RunRemark, $"%{words}%")),
+                    _ => query.Where(x => x.RunRemark.Contains(words)),
                 };
             }
 
@@ -848,7 +848,7 @@ namespace Netnr.Blog.Application.Services
                 PageSize = PageSize
             };
 
-            var dicQs = new Dictionary<string, string> { { "q", q } };
+            var dictQs = new Dictionary<string, string> { { "k", words } };
 
             pag.Total = await query.CountAsync();
             var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
@@ -857,7 +857,7 @@ namespace Netnr.Blog.Application.Services
             {
                 Rows = list,
                 Pag = pag,
-                QueryString = dicQs
+                QueryString = dictQs
             };
 
             return pageSet;
@@ -866,12 +866,12 @@ namespace Netnr.Blog.Application.Services
         /// <summary>
         /// Draw查询
         /// </summary>
-        /// <param name="q">搜索</param>
+        /// <param name="words">搜索</param>
         /// <param name="OwnerId">所属用户</param>
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static async Task<PageVM> DrawQuery(string q, int OwnerId = 0, int UserId = 0, int page = 1)
+        public static async Task<PageVM> DrawQuery(string words, int OwnerId = 0, int UserId = 0, int page = 1)
         {
             using var db = ContextBaseFactory.CreateDbContext();
             var query = from a in db.Draw
@@ -912,13 +912,13 @@ namespace Netnr.Blog.Application.Services
                 query = query.Where(x => x.DrOpen == 1 || x.Uid == UserId);
             }
 
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(words))
             {
-                query = AppTo.TDB switch
+                query = AppTo.DBT switch
                 {
-                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.DrName, $"%{q}%") || EF.Functions.Like(x.DrRemark, $"%{q}%")),
-                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DrName, $"%{q}%") || EF.Functions.ILike(x.DrRemark, $"%{q}%")),
-                    _ => query.Where(x => x.DrName.Contains(q) || x.DrRemark.Contains(q)),
+                    DBTypes.SQLite => query.Where(x => EF.Functions.Like(x.DrName, $"%{words}%") || EF.Functions.Like(x.DrRemark, $"%{words}%")),
+                    DBTypes.PostgreSQL => query.Where(x => EF.Functions.ILike(x.DrName, $"%{words}%") || EF.Functions.ILike(x.DrRemark, $"%{words}%")),
+                    _ => query.Where(x => x.DrName.Contains(words) || x.DrRemark.Contains(words)),
                 };
             }
 
@@ -928,7 +928,7 @@ namespace Netnr.Blog.Application.Services
                 PageSize = PageSize
             };
 
-            var dicQs = new Dictionary<string, string> { { "q", q } };
+            var dictQs = new Dictionary<string, string> { { "k", words } };
 
             pag.Total = await query.CountAsync();
             var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
@@ -937,7 +937,7 @@ namespace Netnr.Blog.Application.Services
             {
                 Rows = list,
                 Pag = pag,
-                QueryString = dicQs
+                QueryString = dictQs
             };
 
             return pageSet;
@@ -947,7 +947,7 @@ namespace Netnr.Blog.Application.Services
         /// Guff查询
         /// </summary>
         /// <param name="category">类别，可选，支持 text、image、audio、video、me（我的）、melaud（我点赞的）、mereply（我回复的）</param>
-        /// <param name="q">搜索</param>
+        /// <param name="words">搜索</param>
         /// <param name="nv">分类名/分类值</param>
         /// <param name="tag">标签</param>
         /// <param name="obj">对象</param>
@@ -955,9 +955,9 @@ namespace Netnr.Blog.Application.Services
         /// <param name="UserId">登录用户</param>
         /// <param name="page">页码</param>
         /// <returns></returns>
-        public static async Task<PageVM> GuffQuery(string category, string q, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
+        public static async Task<PageVM> GuffQuery(string category, string words, string nv, string tag, string obj, int OwnerId, int UserId, int page = 1)
         {
-            var ctype = ConnectionType.GuffRecord.ToString();
+            var ctype = ConnectionTypes.GuffRecord.ToString();
 
             using var db = ContextBaseFactory.CreateDbContext();
 
@@ -1147,13 +1147,13 @@ namespace Netnr.Blog.Application.Services
                 query = query.Where(x => x.GrObject.Contains(obj));
             }
 
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(words))
             {
-                query = AppTo.TDB switch
+                query = AppTo.DBT switch
                 {
-                    EnumTo.TypeDB.SQLite => query.Where(x => EF.Functions.Like(x.GrContent, $"%{q}%") || EF.Functions.Like(x.GrRemark, $"%{q}%") || EF.Functions.Like(x.GrTag, $"%{q}%")),
-                    EnumTo.TypeDB.PostgreSQL => query.Where(x => EF.Functions.ILike(x.GrContent, $"%{q}%") || EF.Functions.ILike(x.GrRemark, $"%{q}%") || EF.Functions.ILike(x.GrTag, $"%{q}%")),
-                    _ => query.Where(x => x.GrContent.Contains(q) || x.GrRemark.Contains(q) || x.GrTag.Contains(q)),
+                    DBTypes.SQLite => query.Where(x => EF.Functions.Like(x.GrContent, $"%{words}%") || EF.Functions.Like(x.GrRemark, $"%{words}%") || EF.Functions.Like(x.GrTag, $"%{words}%")),
+                    DBTypes.PostgreSQL => query.Where(x => EF.Functions.ILike(x.GrContent, $"%{words}%") || EF.Functions.ILike(x.GrRemark, $"%{words}%") || EF.Functions.ILike(x.GrTag, $"%{words}%")),
+                    _ => query.Where(x => x.GrContent.Contains(words) || x.GrRemark.Contains(words) || x.GrTag.Contains(words)),
                 };
             }
 
@@ -1163,7 +1163,7 @@ namespace Netnr.Blog.Application.Services
                 PageSize = PageSize
             };
 
-            var dicQs = new Dictionary<string, string> { { "q", q } };
+            var dictQs = new Dictionary<string, string> { { "k", words } };
 
             pag.Total = await query.CountAsync();
             var list = await query.Skip((pag.PageNumber - 1) * pag.PageSize).Take(pag.PageSize).ToListAsync();
@@ -1184,11 +1184,11 @@ namespace Netnr.Blog.Application.Services
             }
 
             //查询记录
-            if (!AppTo.GetValue<bool>("ReadOnly"))
+            if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
             {
                 var ormo = new OperationRecord()
                 {
-                    OrId = UniqueTo.LongId().ToString(),
+                    OrId = Snowflake53To.Id().ToString(),
                     OrType = ctype,
                     OrAction = "query",
                     OrSource = string.Join(",", listid),
@@ -1203,7 +1203,7 @@ namespace Netnr.Blog.Application.Services
             {
                 Rows = list,
                 Pag = pag,
-                QueryString = dicQs
+                QueryString = dictQs
             };
 
             return pageSet;

@@ -60,7 +60,7 @@ public partial class DbKit
             var cb = new OracleCommandBuilder();
             if (string.IsNullOrWhiteSpace(sqlEmpty))
             {
-                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, EnumTo.TypeDB.Oracle);
+                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, DBTypes.Oracle);
                 sqlEmpty = DbKitExtensions.SqlEmpty(sntn);
             }
 

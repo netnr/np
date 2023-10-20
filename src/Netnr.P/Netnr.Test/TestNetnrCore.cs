@@ -218,13 +218,13 @@ namespace Netnr.Test
             }
             catch (Exception ex)
             {
-                ConsoleTo.Log(ex);
+                ConsoleTo.LogError(ex);
             }
 
             var now = DateTime.Now;
             var filename = $"console_{now:yyyyMMdd}.log";
 
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", now.Year.ToString());
+            var path = Path.Combine(AppContext.BaseDirectory, "logs", now.Year.ToString());
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -371,8 +371,10 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void LockTo_1()
+        public async void LockTo_1()
         {
+            var st = Stopwatch.StartNew();
+
             var num = 0;
             var arr = Enumerable.Range(1, 999);
             arr.AsParallel().ForAll(i =>
@@ -381,6 +383,8 @@ namespace Netnr.Test
             });
             // != 999
             Debug.WriteLine(num);
+            Debug.WriteLine(st.Elapsed);
+            st.Restart();
 
             num = 0;
             arr.AsParallel().ForAll(i =>
@@ -393,6 +397,22 @@ namespace Netnr.Test
             // == 999
             Debug.WriteLine(num);
             Assert.True(num == arr.Count());
+            Debug.WriteLine(st.Elapsed);
+            st.Restart();
+
+            num = 0;
+            await Parallel.ForEachAsync(arr, async (i, ctoken) =>
+            {
+                await LockTo.RunAsync("key", 1000, () =>
+                {
+                    num++;
+                    return Task.CompletedTask;
+                });
+            });
+            // == 999
+            Debug.WriteLine(num);
+            Assert.True(num == arr.Count());
+            Debug.WriteLine(st.Elapsed);
         }
 
         [Fact]
@@ -478,18 +498,33 @@ namespace Netnr.Test
         [Fact]
         public void ParsingTo_2_Format()
         {
-            Assert.Equal("1023 B", ParsingTo.FormatByteSize(1023));
-            Assert.Equal("1 KiB", ParsingTo.FormatByteSize(1024));
-            Assert.Equal("1 KiB", ParsingTo.FormatByteSize(1025));
-            Assert.Equal("1 MiB", ParsingTo.FormatByteSize(1024 * 1024));
-            Assert.Equal("1 MiB", ParsingTo.FormatByteSize(1024 * 1024 + 1));
-            Assert.Equal("1 MiB", ParsingTo.FormatByteSize(1024 * 1024 - 1));
-            Assert.Equal("1 GiB", ParsingTo.FormatByteSize(1024 * 1024 * 1024));
+            Assert.Equal("1023B", ParsingTo.FormatByte(1023));
+            Assert.Equal("1KiB", ParsingTo.FormatByte(1024));
+            Assert.Equal("1KiB", ParsingTo.FormatByte(1025));
+            Assert.Equal("1MiB", ParsingTo.FormatByte(1024 * 1024));
+            Assert.Equal("1MiB", ParsingTo.FormatByte(1024 * 1024 + 1));
+            Assert.Equal("1MiB", ParsingTo.FormatByte(1024 * 1024 - 1));
+            Assert.Equal("1GiB", ParsingTo.FormatByte(1024 * 1024 * 1024));
 
-            Assert.Equal("00:00:00:222", ParsingTo.FormatMillisecondsSize(222));
-            Assert.Equal("00:00:22:022", ParsingTo.FormatMillisecondsSize(1000 * 22 + 22));
-            Assert.Equal("00:01:22:022", ParsingTo.FormatMillisecondsSize(1000 * 82 + 22));
-            Assert.Equal("01:00:00:022", ParsingTo.FormatMillisecondsSize(1000 * 3600 + 22));
+            Assert.Equal("00:00:00.222", ParsingTo.FormatMilliseconds(222));
+            Assert.Equal("00:00:22.022", ParsingTo.FormatMilliseconds(1000 * 22 + 22));
+            Assert.Equal("00:01:22.022", ParsingTo.FormatMilliseconds(1000 * 82 + 22));
+            Assert.Equal("01:00:00.022", ParsingTo.FormatMilliseconds(1000 * 3600 + 22));
+
+            var now = DateTime.Now;
+            Debug.WriteLine(ParsingTo.FormatTimeAgo(now));
+            now = now.AddSeconds(-9);
+            Debug.WriteLine(ParsingTo.FormatTimeAgo(now));
+            now = now.AddMinutes(-9);
+            Debug.WriteLine(ParsingTo.FormatTimeAgo(now));
+            now = now.AddHours(-9);
+            Debug.WriteLine(ParsingTo.FormatTimeAgo(now));
+            now = now.AddDays(-9);
+            Debug.WriteLine(ParsingTo.FormatTimeAgo(now));
+            now = now.AddMonths(-1);
+            Debug.WriteLine(ParsingTo.FormatTimeAgo(now));
+            now = now.AddYears(-9);
+            Debug.WriteLine(ParsingTo.FormatTimeAgo(now));
         }
 
         [Fact]
@@ -497,18 +532,18 @@ namespace Netnr.Test
         {
             var key1 = "Abc_123";
             Assert.False(ParsingTo.IsDanger(key1));
-            Assert.True(ParsingTo.DangerReplace(key1) == key1);
+            Assert.True(ParsingTo.ReplaceDanger(key1) == key1);
 
             var key2 = $"你好{key1}@-@,'\"";
             Assert.True(ParsingTo.IsDanger("你好"));
             Assert.True(ParsingTo.IsDanger(key2));
-            Assert.True(ParsingTo.DangerReplace(key2) == key1);
+            Assert.True(ParsingTo.ReplaceDanger(key2) == key1);
         }
 
         [Fact]
         public void PathTo_1()
         {
-            Assert.Equal("abc/123/xyz/", PathTo.Combine("abc/ ", "/123", "", "xyz/"));
+            Assert.Equal("abc/123/xyz/", ParsingTo.Combine("abc/ ", "/123", "", "xyz/"));
 
             Assert.NotEqual("abc/123/xyz/", Path.Combine("abc/ ", "/123", "", "xyz/"));
         }
@@ -523,46 +558,6 @@ namespace Netnr.Test
             Assert.Matches("\\w{10}", RandomTo.NewString(10));
             Assert.Matches("\\w{50}", RandomTo.NewString(50));
             Assert.Matches("\\w{999}", RandomTo.NewString(999));
-        }
-
-        [Fact]
-        public void SnowflakeTo_1()
-        {
-            var sw = Stopwatch.StartNew();
-
-            var hs = new HashSet<long>();
-            for (int i = 0; i < 1_999_999; i++)
-            {
-                var val = SnowflakeTo.Id();
-                if (!hs.Add(val))
-                {
-                    throw new Exception("same");
-                }
-            }
-            Debug.WriteLine($"Snowflake 1_999_999: {sw.Elapsed}");
-        }
-
-        [Fact]
-        public void SnowflakeTo_2()
-        {
-            var sw = Stopwatch.StartNew();
-
-            var hs = new HashSet<long>();
-            for (int i = 0; i < 1_999_999; i++)
-            {
-                //12位序列
-                if (hs.Count % 4096 == 0)
-                {
-                    Thread.Sleep(0);
-                }
-
-                var val = Snowflake53To.Id();
-                if (!hs.Add(val))
-                {
-                    throw new Exception($"same，count：{hs.Count}，time：{sw.Elapsed}");
-                }
-            }
-            Debug.WriteLine($"Snowflake 1_999_999: {sw.Elapsed}");
         }
 
         [Fact]
@@ -595,22 +590,6 @@ namespace Netnr.Test
 
             Debug.WriteLine(sw.Elapsed);
             Debug.WriteLine(tm.TopItems().ToJson());
-        }
-
-        [Fact]
-        public void UniqueTo_1()
-        {
-            var sw = Stopwatch.StartNew();
-            var hs = new HashSet<long>();
-            for (int i = 0; i < 1_999_999; i++)
-            {
-                var val = UniqueTo.LongId();
-                if (!hs.Add(val))
-                {
-                    throw new Exception("same");
-                }
-            }
-            Debug.WriteLine($"UniqueTo 1_999_999: {sw.Elapsed}");
         }
 
         [Fact]

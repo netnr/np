@@ -383,4 +383,5 @@ html {
     }
 }
 
+Object.assign(window, { nrcSplit });
 export { nrcSplit };

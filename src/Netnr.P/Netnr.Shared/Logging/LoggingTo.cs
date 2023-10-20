@@ -35,7 +35,7 @@ namespace Netnr
         /// <summary>
         /// 数据库目录
         /// </summary>
-        public static string OptionsDbRoot { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+        public static string OptionsDbRoot { get; set; } = Path.Combine(AppContext.BaseDirectory, "logs");
 
         /// <summary>
         /// 数据库文件名
@@ -73,7 +73,7 @@ namespace Netnr
         {
             var connOption = new DbKitConnectionOption
             {
-                ConnectionType = EnumTo.TypeDB.SQLite,
+                ConnectionType = DBTypes.SQLite,
                 ConnectionString = $"Data Source={path}"
             };
 
@@ -151,8 +151,8 @@ namespace Netnr
                 );
             ";
 
-            var dbk = GetConnOption(path).CreateInstance();
-            await dbk.SqlExecuteNonQuery(createTableSql);
+            var dbKit = GetConnOption(path).CreateDbInstance();
+            await dbKit.SqlExecuteNonQuery(createTableSql);
         }
 
         /// <summary>
@@ -362,8 +362,8 @@ namespace Netnr
                 listSql.Add($"insert into {OptionsDbTableName} ({fields}) values ('{values}')");
             }
 
-            var dbk = GetConnOption(path).CreateInstance();
-            var num = await dbk.SqlExecuteNonQuery(listSql);
+            var dbKit = GetConnOption(path).CreateDbInstance();
+            var num = await dbKit.SqlExecuteNonQuery(listSql);
             return num;
         }
 
@@ -425,24 +425,24 @@ namespace Netnr
         /// </summary>
         /// <param name="begin">开始时间</param>
         /// <param name="end">结束时间</param>
-        /// <param name="dbk">数据库对象</param>
+        /// <param name="dbKit">数据库对象</param>
         /// <param name="lost">丢失数据库文件</param>
         /// <param name="listPreSql">前置SQL</param>
         /// <returns></returns>
-        public static string GetSqlForQuery(DateTime begin, DateTime end, out DbKit dbk, out int lost, out List<string> listPreSql)
+        public static string GetSqlForQuery(DateTime begin, DateTime end, out DbKit dbKit, out int lost, out List<string> listPreSql)
         {
             var listPath = GetDbPath(begin, end);
 
             if (listPath.Count == 0)
             {
-                dbk = null;
+                dbKit = null;
                 lost = 0;
                 listPreSql = null;
 
                 return null;
             }
 
-            dbk = GetConnOption(listPath.FirstOrDefault()).CreateInstance();
+            dbKit = GetConnOption(listPath.FirstOrDefault()).CreateDbInstance();
 
             var listSql = new List<string>() { "select * from " + OptionsDbTableName };
             listPreSql = new List<string>();
@@ -535,7 +535,7 @@ namespace Netnr
         {
             var vm = new LoggingResultVM();
 
-            var sql = GetSqlForQuery(begin, end, out DbKit dbk, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(begin, end, out DbKit dbKit, out int lost, out List<string> listPreSql);
             if (sql != null)
             {
                 var whereSql = ListWhereJoin(listWhere);
@@ -550,16 +550,16 @@ namespace Netnr
                 //预执行
                 try
                 {
-                    dbk.ConnOption.AutoClose = false;
-                    await dbk.SqlExecuteNonQuery(listPreSql);
-                    dbk.ConnOption.AutoClose = true;
+                    dbKit.ConnOption.AutoClose = false;
+                    await dbKit.SqlExecuteNonQuery(listPreSql);
+                    dbKit.ConnOption.AutoClose = true;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
                 //查询数据
-                var edo = await dbk.SqlExecuteDataOnly($"{totalSql};{sql}");
+                var edo = await dbKit.SqlExecuteDataOnly($"{totalSql};{sql}");
                 vm.RowCount = Convert.ToInt32(edo.Datas.Tables[0].Rows[0][0]);
                 vm.RowData = edo.Datas.Tables[1];
 
@@ -580,7 +580,7 @@ namespace Netnr
             var vm = new LoggingResultVM();
 
             var now = DateTime.Now;
-            var sql = GetSqlForQuery(now.AddYears(-5), now, out DbKit dbk, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(now.AddYears(-5), now, out DbKit dbKit, out int lost, out List<string> listPreSql);
             if (sql != null)
             {
                 queryAllSql = queryAllSql.Replace("(TABLE)", "(" + sql + ") as t");
@@ -591,16 +591,16 @@ namespace Netnr
                 //预执行
                 try
                 {
-                    dbk.ConnOption.AutoClose = false;
-                    await dbk.SqlExecuteNonQuery(listPreSql);
-                    dbk.ConnOption.AutoClose = true;
+                    dbKit.ConnOption.AutoClose = false;
+                    await dbKit.SqlExecuteNonQuery(listPreSql);
+                    dbKit.ConnOption.AutoClose = true;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
                 //查询数据
-                var edo = await dbk.SqlExecuteDataOnly($"{totalSql};{queryLimitSql}");
+                var edo = await dbKit.SqlExecuteDataOnly($"{totalSql};{queryLimitSql}");
                 vm.RowCount = Convert.ToInt32(edo.Datas.Tables[0].Rows[0][0]);
                 vm.RowData = edo.Datas.Tables[1];
 
@@ -644,7 +644,7 @@ namespace Netnr
                     break;
             }
 
-            var sql = GetSqlForQuery(begin, end, out DbKit dbk, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(begin, end, out DbKit dbKit, out int lost, out List<string> listPreSql);
             vm.Lost = lost;
 
             if (sql != null)
@@ -659,16 +659,16 @@ namespace Netnr
                 //预执行
                 try
                 {
-                    dbk.ConnOption.AutoClose = false;
-                    await dbk.SqlExecuteNonQuery(listPreSql);
-                    dbk.ConnOption.AutoClose = true;
+                    dbKit.ConnOption.AutoClose = false;
+                    await dbKit.SqlExecuteNonQuery(listPreSql);
+                    dbKit.ConnOption.AutoClose = true;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
                 //查询数据
-                var edo = await dbk.SqlExecuteDataOnly(sql);
+                var edo = await dbKit.SqlExecuteDataOnly(sql);
                 var query = edo.Datas.Tables[0].AsEnumerable();
 
                 switch (days)
@@ -734,7 +734,7 @@ namespace Netnr
                     break;
             }
 
-            var sql = GetSqlForQuery(begin, end, out DbKit dbk, out int lost, out List<string> listPreSql);
+            var sql = GetSqlForQuery(begin, end, out DbKit dbKit, out int lost, out List<string> listPreSql);
             if (sql != null)
             {
                 var listName = new LoggingModel().GetType().GetProperties().ToList().Select(x => x.Name).ToList();
@@ -750,16 +750,16 @@ namespace Netnr
                     //预执行
                     try
                     {
-                        dbk.ConnOption.AutoClose = false;
-                        await dbk.SqlExecuteNonQuery(listPreSql);
-                        dbk.ConnOption.AutoClose = true;
+                        dbKit.ConnOption.AutoClose = false;
+                        await dbKit.SqlExecuteNonQuery(listPreSql);
+                        dbKit.ConnOption.AutoClose = true;
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex);
                     }
                     //查询数据
-                    var edo = await dbk.SqlExecuteDataOnly(sql);
+                    var edo = await dbKit.SqlExecuteDataOnly(sql);
                     var dt = edo.Datas.Tables[0];
                     vm.RowData = dt.Rows.Count > 50 ? dt.AsEnumerable().Take(50).CopyToDataTable() : dt;
 

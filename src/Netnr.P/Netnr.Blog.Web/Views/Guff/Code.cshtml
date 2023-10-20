@@ -53,8 +53,8 @@
                     💬@item.GrReplyNum.Value
                 </a>
                 <a href="/guff/user/@item.Uid" class="me-2 text-nowrap lh-lg">@item.Spare3</a>
-                <small class="me-2 d-none d-sm-inline-block opacity-75" title="创建于">@VisualFormatService.Duration(item.GrCreateTime.Value)</small>                    
-                    
+                <small class="me-2 d-none d-sm-inline-block opacity-75" title="创建于">@ParsingTo.FormatTimeAgo(item.GrCreateTime.Value)</small>
+
                 @if (!string.IsNullOrWhiteSpace(item.GrTypeName) && !string.IsNullOrWhiteSpace(item.GrTypeValue)) {
                     <!--分类-->
                     <a class="me-2 text-nowrap lh-lg text-decoration-none opacity-75" title="分类名/分类值">

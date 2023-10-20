@@ -21,7 +21,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public async Task<ResultVM> DatabaseReset(string zipName = "db/backup.zip")
+        public async Task<ResultVM> DatabaseReset(string zipName = "static/sample.zip")
         {
             var vm = new ResultVM();
 
@@ -29,7 +29,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 if (HttpContext != null && new UAParsers(HttpContext.Request.Headers.UserAgent).GetBot() != null)
                 {
-                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Set(RCodeTypes.refuse);
                     vm.Msg = "are you human？";
                 }
                 else
@@ -38,10 +38,10 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         WriteConnectionInfo = new DbKitConnectionOption
                         {
-                            ConnectionType = AppTo.TDB,
+                            ConnectionType = AppTo.DBT,
                             Connection = db.Database.GetDbConnection()
                         },
-                        PackagePath = PathTo.Combine(AppTo.ContentRootPath, zipName),
+                        PackagePath = ParsingTo.Combine(AppTo.ContentRootPath, zipName),
                         WriteDeleteData = true
                     };
 
@@ -63,7 +63,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public async Task<ResultVM> DatabaseExport(string zipName = "db/backup.zip")
+        public async Task<ResultVM> DatabaseExport(string zipName = "static/sample.zip")
         {
             var vm = new ResultVM();
 
@@ -76,17 +76,17 @@ namespace Netnr.ResponseFramework.Web.Controllers
                         PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
                         ReadConnectionInfo = new DbKitConnectionOption
                         {
-                            ConnectionType = AppTo.TDB,
+                            ConnectionType = AppTo.DBT,
                             Connection = db.Database.GetDbConnection()
                         },
                         ExportType = "onlyData"
                     };
 
-                    vm = await DataKitTo.ExportDatabase(edb);
+                    vm = await DataKitTo.ExportDataTable(await edb.AsExportDataTable());
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Set(RCodeTypes.refuse);
                     vm.Msg = "仅限开发环境使用";
                 }
             }
@@ -110,13 +110,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             try
             {
-                string directoryPath = PathTo.Combine(AppTo.WebRootPath, AppTo.GetValue("StaticResource:TmpDir"));
+                string directoryPath = ParsingTo.Combine(AppTo.WebRootPath, AppTo.GetValue("StaticResource:TmpDir"));
 
                 vm.Log.Add($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 清理临时目录：{directoryPath}");
 
                 if (!Directory.Exists(directoryPath))
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                     vm.Msg = "文件路径不存在";
                 }
                 else
@@ -125,14 +125,13 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     int delFolderCount = 0;
 
                     //删除文件
-                    var listFile = Directory.GetFiles(directoryPath).ToList();
-                    foreach (var path in listFile)
+                    Directory.EnumerateFiles(directoryPath).ForEach(file =>
                     {
-                        if (!path.Contains("README"))
+                        if (!file.Contains("README"))
                         {
                             try
                             {
-                                System.IO.File.Delete(path);
+                                System.IO.File.Delete(file);
                                 delFileCount++;
                             }
                             catch (Exception ex)
@@ -140,25 +139,24 @@ namespace Netnr.ResponseFramework.Web.Controllers
                                 vm.Log.Add($"删除文件异常：{ex.Message}");
                             }
                         }
-                    }
+                    });
 
                     //删除文件夹
-                    var listFolder = Directory.GetDirectories(directoryPath).ToList();
-                    foreach (var path in listFolder)
+                    Directory.EnumerateDirectories(directoryPath).ForEach(dir =>
                     {
                         try
                         {
-                            Directory.Delete(path, true);
+                            Directory.Delete(dir, true);
                             delFolderCount++;
                         }
                         catch (Exception ex)
                         {
                             vm.Log.Add($"删除文件夹异常：{ex.Message}");
                         }
-                    }
+                    });
 
                     vm.Log.Insert(0, $"删除文件{delFileCount}个，删除{delFolderCount}个文件夹");
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
             }
             catch (Exception ex)

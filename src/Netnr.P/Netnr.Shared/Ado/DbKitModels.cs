@@ -10,7 +10,7 @@ public partial class DbKitConnectionOption
     /// <summary>
     /// 连接类型
     /// </summary>
-    public EnumTo.TypeDB ConnectionType { get; set; }
+    public DBTypes ConnectionType { get; set; }
 
     /// <summary>
     /// 连接对象
@@ -35,7 +35,7 @@ public partial class DbKitConnectionOption
     {
         get
         {
-            var conn = DbKitExtensions.PreCheckConn(ConnectionType, _connectionString);
+            var conn = DbKitExtensions.PreCheckConn(_connectionString, ConnectionType);
             return conn;
         }
         set

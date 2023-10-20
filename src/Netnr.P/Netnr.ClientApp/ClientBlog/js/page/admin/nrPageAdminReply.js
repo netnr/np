@@ -74,7 +74,7 @@ let nrPage = {
                 // 单元格变动
                 onCellValueChanged: async function (params) {
                     let data = params.data;
-                    let fd = nrcBase.jsonToFormData(data);
+                    let fd = nrcBase.fromKeyToFormData(data);
 
                     let result = await nrWeb.reqServer('/Admin/ReplySave', { method: "POST", body: fd });
 

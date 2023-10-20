@@ -1,0 +1,183 @@
+iframe#webpack-dev-server-client-overlay {
+    display: none;
+}
+
+/* ag-grid watermark */
+.ag-root-wrapper .ag-watermark {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/*ag-grid*/
+.ag-theme-alpine,
+.ag-theme-alpine-dark {
+    --ag-font-size: 14px;
+}
+
+.ag-popup-child {
+    /*右键菜单叠堆高度*/
+    z-index: 909 !important;
+}
+
+.ag-paging-panel {
+    /*分页组件高度自适应*/
+    height: auto !important;
+    min-height: 32px !important;
+}
+
+@media (max-width: 576px) {
+
+    /*小屏幕底部分页组件换行*/
+    .ag-paging-panel {
+        line-height: 2.5;
+        flex-direction: column !important;
+    }
+}
+
+.ag-cell-inline-editing {
+    /*编辑单元格*/
+    height: 100% !important;
+}
+
+.ag-cell {
+    line-height: normal !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ag-cell-wrapper>*:not(.ag-cell-value):not(.ag-group-value) {
+    height: auto !important;
+}
+
+.ag-root-wrapper {
+    /*边框颜色*/
+    --ag-border-color: var(--global-border);
+}
+
+/* ag-grid border */
+.nrg-grid-b0 .ag-root-wrapper {
+    border: none !important;
+}
+
+/*全屏*/
+.nrg-fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/*loading*/
+.nrg-loading {
+    position: relative;
+    visibility: hidden !important;
+}
+
+.nrg-loading-wait {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    width: 100%;
+    color: var(--global-color);
+    visibility: visible !important;
+    transform: translate(-50%, -50%);
+    background-color: var(--global-bg);
+}
+
+/* modal header button */
+.nrg-modal-header-btn {
+    --bs-btn-padding-y: 0;
+    --bs-btn-padding-x: 0.5em;
+    vertical-align: bottom;
+}
+
+/*choices*/
+.choices__list--dropdown {
+    z-index: 9 !important;
+}
+
+/* js-tree */
+.nrg-tree {
+    background-color: transparent !important;
+}
+
+/*jstree icon*/
+.fa-folder-open::before {
+    content: "📁";
+    font-style: normal;
+}
+
+.fa-file-text::before {
+    content: "📝";
+    font-style: normal;
+}
+
+/*uppy*/
+.uppy-Dashboard-poweredBy {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+[data-uppy-theme=dark] .uppy-Dashboard-inner {
+    border-color: var(--global-border);
+}
+
+/*air-datepicker*/
+html[data-bs-theme="dark"] .air-datepicker {
+    --adp-color: var(--global-color);
+    --adp-background-color: var(--global-bg);
+    --adp-border-color: var(--global-border);
+    --adp-background-color-hover: #133d57;
+    --adp-background-color-active: #15527a;
+}
+
+html[data-bs-theme="dark"] .air-datepicker--pointer::after {
+    background-color: var(--global-bg);
+    --adp-border-color-inline: var(--global-border);
+}
+
+/* pre>code 右上角显示语言 */
+pre.nrg-code-language code::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 80%;
+    padding: 3px 6px;
+    content: attr(data-language);
+    color: deeppink;
+}
+
+/* pre 代码预览与 monaco-editor 靠齐 */
+.nrg-pre-code-edit {
+    font-family: Consolas, Courier New, monospace;
+    font-size: 18px;
+    line-height: 24px;
+    padding: 0 0 0 75px;
+}
+
+/* markdown 内容底部标签底部间距清除 */
+.markdown-body>:last-child,
+.nrg-clear-bottom>*:last-child {
+    margin-bottom: 0px !important;
+}
+
+/* form */
+.nrg-dialog-form {
+    --width: 60em;
+}
+
+/* sl-card */
+sl-card.nrg-card-p0::part(body) {
+    --padding: 0;
+}
+
+/* sl-dialog */
+sl-dialog sl-button[slot="header-actions"],
+sl-dialog sl-button-group[slot="header-actions"] {
+    margin-top: 1.26em;
+}

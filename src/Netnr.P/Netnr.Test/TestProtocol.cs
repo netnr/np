@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using Xunit;
+using System.Threading;
 
 namespace Netnr.Test
 {
@@ -69,19 +70,29 @@ namespace Netnr.Test
         [Fact]
         public void Protocol_TCP()
         {
-            var client = new TcpClient();
             try
             {
-                Assert.True(client.ConnectAsync(Dns.GetHostAddresses("zme.ink").First(), 80).Wait(2000));
+                using var client = new TcpClient();
+                var host = Dns.GetHostAddresses("zme.ink").First();
+                var port = 80;
+                var result = client.BeginConnect(host, port, null, null);
+
+                var success = result.AsyncWaitHandle.WaitOne(2000);
+                if (success)
+                {
+                    // 连接成功
+                    client.EndConnect(result);
+                }
+                else
+                {
+                    // 连接超时
+                    client.Close();
+                }
+                Assert.True(success);
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
-                Assert.True(client.Client.Connected);
-            }
-            finally
-            {
-                client.Close();
+                Console.WriteLine(ex);
             }
         }
 

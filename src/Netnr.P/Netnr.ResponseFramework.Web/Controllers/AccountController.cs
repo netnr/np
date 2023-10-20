@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +25,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public FileResult Captcha()
+        public IActionResult Captcha()
         {
             string num = RandomTo.NewNumber(4);
             byte[] bytes = ImageTo.Captcha(num);
@@ -71,12 +70,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                     if (string.IsNullOrWhiteSpace(captcha) || (capt ?? "") != CalcTo.MD5(captcha.ToLower()))
                     {
-                        vm.Set(EnumTo.RTag.failure);
+                        vm.Set(RCodeTypes.failure);
                         vm.Msg = "验证码错误或已过期";
                     }
                     else if (string.IsNullOrWhiteSpace(mo.SuName) || string.IsNullOrWhiteSpace(mo.SuPwd))
                     {
-                        vm.Set(EnumTo.RTag.lack);
+                        vm.Set(RCodeTypes.failure);
                         vm.Msg = "用户名或密码不能为空";
                     }
                     else
@@ -87,12 +86,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
                 if (outMo == null || string.IsNullOrWhiteSpace(outMo.SuId))
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Set(RCodeTypes.unauthorized);
                     vm.Msg = "用户名或密码错误";
                 }
                 else if (outMo.SuStatus != 1)
                 {
-                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Set(RCodeTypes.refuse);
                     vm.Msg = "用户已被禁止登录";
                 }
                 else
@@ -100,7 +99,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     //授权访问信息
                     await IdentityService.Set(HttpContext, outMo, remember == 1);
 
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                     vm.Data = "/";
                 }
             }

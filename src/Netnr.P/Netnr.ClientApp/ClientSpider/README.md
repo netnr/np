@@ -10,10 +10,10 @@
 ### 🧡 spider_zoning.js
 
 统计用区划和城乡划分代码  
-<http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/>  
+<http://www.stats.gov.cn/sj/tjbz/qhdm/>  
 
-统计数据截止 2022-10-31 于 2022-12-29 发布  
-<http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022>
+统计数据截止 2023-06-30 于 2023-09-11 发布  
+<http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/>
 
 共 5 级
 
@@ -47,7 +47,7 @@ deep | int | 爬取深度
 ### 🧡 spider_product_category.js
 
 统计用产品分类目录  
-http://www.stats.gov.cn/tjsj/tjbz/tjypflml/index.html
+http://www.stats.gov.cn/sj/tjbz/tjypflml/
 
 最新发布时间 2010-06-17 ，共 5 级，爬 4 级错误链接 1 个，爬 5 级错误链接 87 个  
 已根据代码 ID 去重，去除子节点与父节点相同的项

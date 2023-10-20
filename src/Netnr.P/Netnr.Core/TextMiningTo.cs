@@ -12,7 +12,7 @@ namespace Netnr;
 /// http://www.matrix67.com/blog/archives/5044
 /// https://www.cnblogs.com/cliffhuang/p/3334219.html
 /// </summary>
-public class TextMiningTo
+public partial class TextMiningTo
 {
     /// <summary>
     /// 

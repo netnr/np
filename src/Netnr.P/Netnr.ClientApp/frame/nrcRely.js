@@ -1,3 +1,4 @@
+import { nrEditor } from "./nrEditor";
 import { nrcBase } from "./nrcBase";
 
 let nrcRely = {
@@ -8,24 +9,28 @@ let nrcRely = {
     remote: async (name) => {
         switch (name) {
             case "bootstrap5.css":
-                await nrcBase.importStyle('https://npmcdn.com/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css');
+                await nrcBase.importStyle('https://npmcdn.com/bootstrap@5.3.2/dist/css/bootstrap.min.css');
                 break;
             case "agGrid":
-                await nrcBase.importScript('https://npmcdn.com/ag-grid-enterprise@30.0.0/dist/ag-grid-enterprise.min.js');
+                await nrcBase.importScript('https://npmcdn.com/ag-grid-enterprise@30.2.0/dist/ag-grid-enterprise.min.js');
                 break;
             case "echarts":
-                await nrcBase.importScript('https://npmcdn.com/echarts@5.4.2/dist/echarts.min.js');
+                await nrcBase.importScript('https://npmcdn.com/echarts@5.4.3/dist/echarts.min.js');
                 break;
-            case "netnrmdAce.js":
-                await nrcBase.importScript('/file/md/ace.js?4.0.1');
+            case "netnrmdEditor":
+                // 打包后实践，部分页面使用 await nrcRely.remote("netnrmdEditor") 引入出错
+                // 使用线上方式代替 await nrEditor.init()
+                await nrEditor.init();
+                // await nrcBase.importStyle('/file/md/monaco.css?4.1.0');
+                // await nrcBase.importScript('/file/md/monaco.js?4.1.0');
                 break;
             case "netnrmd":
-                await nrcBase.importStyle('/file/md/netnrmd.css?4.0.1');
-                await nrcBase.importScript('/file/md/netnrmd.js?4.0.1');
+                await nrcBase.importStyle('/file/md/netnrmd.css?4.1.0');
+                await nrcBase.importScript('/file/md/netnrmd.js?4.1.0');
                 break;
             case "asciinema-player":
-                await nrcBase.importStyle('https://npmcdn.com/asciinema-player@3.4.0/dist/bundle/asciinema-player.css');
-                await nrcBase.importScript('https://npmcdn.com/asciinema-player@3.4.0/dist/bundle/asciinema-player.min.js');
+                await nrcBase.importStyle('https://npmcdn.com/asciinema-player@3.6.3/dist/bundle/asciinema-player.css');
+                await nrcBase.importScript('https://npmcdn.com/asciinema-player@3.6.3/dist/bundle/asciinema-player.min.js');
                 break;
             case "choices":
                 await nrcBase.importStyle('https://npmcdn.com/choices.js@10.2.0/public/assets/styles/choices.min.css');
@@ -35,7 +40,7 @@ let nrcRely = {
                 await nrcBase.importScript('https://npmcdn.com/blueimp-md5@2.19.0/js/md5.min.js');
                 break;
             case "hls.js":
-                await nrcBase.importScript('https://npmcdn.com/hls.js@1.4.5/dist/hls.min.js');
+                await nrcBase.importScript('https://npmcdn.com/hls.js@1.4.12/dist/hls.min.js');
                 break;
             //生成二维码
             case "qrcode.js":
@@ -46,21 +51,21 @@ let nrcRely = {
                 await nrcBase.importScript('https://npmcdn.com/jsqr@1.4.0/dist/jsQR.js');
                 break;
             case "terser.js":
-                await nrcBase.importScript('https://npmcdn.com/terser@5.18.0/dist/bundle.min.js');
+                await nrcBase.importScript('https://npmcdn.com/terser@5.22.0/dist/bundle.min.js');
                 break;
             case "editor-nginx":
                 await nrcBase.importScript('/file/ss-editor-nginx.js?202303');
                 await nrcBase.importScript('https://npmcdn.com/nginxbeautifier@1.0.19/nginxbeautifier.js');
                 break;
             case "js-beautify.js":
-                await nrcBase.importScript('https://npmcdn.com/js-beautify@1.14.8/js/lib/beautifier.min.js');
+                await nrcBase.importScript('https://npmcdn.com/js-beautify@1.14.9/js/lib/beautifier.min.js');
                 await nrcBase.require(['beautifier'], 'beautifier');
                 // require(['beautifier'], function (beautifier) {
                 //     console.debug(beautifier)
                 // });
                 break;
             case "sql-formatter.js":
-                await nrcBase.require(['https://npmcdn.com/sql-formatter@12.2.2/dist/sql-formatter.min.js'], 'sqlFormatter');
+                await nrcBase.require(['https://npmcdn.com/sql-formatter@13.0.0/dist/sql-formatter.min.js'], 'sqlFormatter');
                 break;
             case "html2canvas.js":
                 await nrcBase.importScript('https://npmcdn.com/html2canvas@1.4.1/dist/html2canvas.min.js');
@@ -82,11 +87,21 @@ let nrcRely = {
                 await nrcBase.importScript('https://npmcdn.com/segmentit@2.0.3/dist/umd/segmentit.js');
                 break;
             case "cropperjs":
-                await nrcBase.importStyle('https://npmcdn.com/cropperjs@1.5.13/dist/cropper.min.css');
-                await nrcBase.importScript('https://npmcdn.com/cropperjs@1.5.13/dist/cropper.min.js');
+                await nrcBase.importStyle('https://npmcdn.com/cropperjs@1.6.1/dist/cropper.min.css');
+                await nrcBase.importScript('https://npmcdn.com/cropperjs@1.6.1/dist/cropper.min.js');
+                break;
+            //https://github.com/exceljs/exceljs
+            //只支持 xlsx
+            case "exceljs":
+                await nrcBase.importScript('https://npmcdn.com/exceljs@4.3.0/dist/exceljs.min.js');
+                break;
+            //https://github.com/SheetJS/sheetjs
+            //社区版 不支持设置样式
+            case "XLSX":
+                await nrcBase.importScript('https://npmcdn.com/xlsx@0.18.5/dist/xlsx.full.min.js');
                 break;
             case "pdf.js":
-                await nrcBase.importScript('https://npmcdn.com/pdfjs-dist@3.7.107/build/pdf.min.js');
+                await nrcBase.importScript('https://npmcdn.com/pdfjs-dist@3.11.174/build/pdf.min.js');
                 break;
             case "jszip.js":
                 await nrcBase.importScript('https://npmcdn.com/jszip@3.10.1/dist/jszip.min.js');
@@ -95,23 +110,27 @@ let nrcRely = {
                 await nrcBase.importScript('https://npmcdn.com/bowser@2.11.0/es5.js');
                 break;
             case "swaggerui":
-                await nrcBase.importStyle('https://npmcdn.com/swagger-ui-dist@5.0.0/swagger-ui.css');
+                await nrcBase.importStyle('https://npmcdn.com/swagger-ui-dist@5.9.0/swagger-ui.css');
                 await nrcBase.require([
-                    'https://npmcdn.com/swagger-ui-dist@5.0.0/swagger-ui-bundle.js',
-                    'https://npmcdn.com/swagger-ui-dist@5.0.0/swagger-ui-standalone-preset.js'
+                    'https://npmcdn.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js',
+                    'https://npmcdn.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js'
                 ], 'SwaggerUIBundle, SwaggerUIStandalonePreset')
                 break;
             case "crypto.js":
                 await nrcBase.importScript('https://npmcdn.com/crypto-js@4.1.1/crypto-js.js');
                 break;
             case "jstree":
-                await nrcBase.importScript('https://npmcdn.com/jquery@3.7.0/dist/jquery.min.js');
-                await nrcBase.importStyle('https://npmcdn.com/jstree@3.3.15/dist/themes/default/style.min.css');
-                await nrcBase.importStyle('https://npmcdn.com/jstree@3.3.15/dist/themes/default-dark/style.min.css');
-                await nrcBase.importScript('https://npmcdn.com/jstree@3.3.15/dist/jstree.min.js');
+                await nrcBase.importScript('https://npmcdn.com/jquery@3.7.1/dist/jquery.min.js');
+                await nrcBase.importStyle('https://npmcdn.com/jstree@3.3.16/dist/themes/default/style.min.css');
+                await nrcBase.importStyle('https://npmcdn.com/jstree@3.3.16/dist/themes/default-dark/style.min.css');
+                await nrcBase.importScript('https://npmcdn.com/jstree@3.3.16/dist/jstree.min.js');
+                break;
+            case "pinyin-pro.js":
+                await nrcBase.importScript('https://npmcdn.com/pinyin-pro@3.17.0/dist/index.js');
                 break;
         }
     }
 }
 
+Object.assign(window, { nrcRely });
 export { nrcRely }

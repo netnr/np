@@ -15,4 +15,5 @@ let nrStorage = {
     clear: async () => await nrStorage.localforage.clear(),
 }
 
+Object.assign(window, { nrStorage });
 export { nrStorage }

@@ -8,7 +8,7 @@ namespace Netnr;
 /// <summary>
 /// 邮件
 /// </summary>
-public class MailTo
+public partial class MailTo
 {
     /// <summary>
     /// 发送

@@ -1,6 +1,6 @@
+using FluentScheduler;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Netnr;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,17 +41,22 @@ builder.Services.AddSession(options =>
 //数据库连接池
 builder.Services.AddDbContextPool<ContextBase>(options =>
 {
-    AppTo.TDB = AppTo.GetValue<EnumTo.TypeDB>("TypeDB");
-    DbContextTo.CreateDbContextOptionsBuilder<ContextBase>(AppTo.TDB, options);
+    AppTo.DBT = AppTo.GetValue<DBTypes>("ConnectionStrings:DBTypes");
+    DbContextTo.CreateDbContextOptionsBuilder<ContextBase>(AppTo.DBT, options);
 }, 10);
 
 //配置swagger
 builder.Services.AddSwaggerGen(c =>
 {
     var name = builder.Environment.ApplicationName;
-    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
+    c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name, Version = BaseTo.Version });
 
-    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
+    c.CustomSchemaIds(type => type.FullName.Replace("+", "."));
+
+    Directory.EnumerateFiles(AppContext.BaseDirectory, "Netnr.*.xml").ForEach(file =>
+    {
+        c.IncludeXmlComments(file, true);
+    });
 });
 
 var app = builder.Build();
@@ -76,11 +81,11 @@ using (var scope = app.Services.CreateScope())
     if (db.Database.EnsureCreated())
     {
         var createScript = db.Database.GenerateCreateScript();
-        if (AppTo.TDB == EnumTo.TypeDB.PostgreSQL)
+        if (AppTo.DBT == DBTypes.PostgreSQL)
         {
             createScript = createScript.Replace(" datetime ", " timestamp ");
         }
-        ConsoleTo.Title("GenerateCreateScript", createScript);
+        ConsoleTo.WriteCard("GenerateCreateScript", createScript);
 
         //重置数据库
         var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db).DatabaseReset();
@@ -88,45 +93,49 @@ using (var scope = app.Services.CreateScope())
     }
 
 
-    //定时任务 https://github.com/fluentscheduler/FluentScheduler
-    FluentScheduler.JobManager.Initialize();
-
-    //每2天在2:2 重置数据库
-    FluentScheduler.JobManager.AddJob(async () =>
+    if (AppTo.GetValue<bool?>("DisableTask") == false)
     {
-        try
-        {
-            var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
-            var vm = await sc.DatabaseReset();
-            var result = vm.ToJson();
+        //https://github.com/fluentscheduler/FluentScheduler
+        ConsoleTo.LogColor("初始化定时任务", ConsoleColor.Cyan);
+        JobManager.Initialize(); //初始化
 
-            ConsoleTo.Title(result, "重置数据库");
-        }
-        catch (Exception ex)
+        //每2天在2:2 重置数据库
+        JobManager.AddJob(async () =>
         {
-            ConsoleTo.Log(ex, "重置数据库");
-        }
-    }, s =>
-    {
-        s.WithName("Job_DatabaseReset");
-        s.ToRunEvery(2).Days().At(2, 2);
-    });
+            try
+            {
+                var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
+                var vm = await sc.DatabaseReset();
+                var result = vm.ToJson();
 
-    //每2天在3:3 清理临时目录
-    FluentScheduler.JobManager.AddJob(() =>
-    {
-        try
+                ConsoleTo.WriteCard(result, "重置数据库");
+            }
+            catch (Exception ex)
+            {
+                ConsoleTo.LogError(ex, "重置数据库");
+            }
+        }, s =>
         {
-            var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
-            var vm = sc.ClearTmp();
-            var result = vm.ToJson();
-            ConsoleTo.Log(result);
-        }
-        catch (Exception ex)
+            s.WithName("Job_DatabaseReset");
+            s.ToRunEvery(2).Days().At(2, 2);
+        });
+
+        //每2天在3:3 清理临时目录
+        JobManager.AddJob(() =>
         {
-            ConsoleTo.Log(ex, "清理临时目录");
-        }
-    }, s => s.ToRunEvery(2).Days().At(3, 3));
+            try
+            {
+                var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
+                var vm = sc.ClearTmp();
+                var result = vm.ToJson();
+                ConsoleTo.Log(result);
+            }
+            catch (Exception ex)
+            {
+                ConsoleTo.LogError(ex, "清理临时目录");
+            }
+        }, s => s.ToRunEvery(2).Days().At(3, 3));
+    }
 }
 
 //配置swagger
@@ -134,13 +143,16 @@ app.UseSwagger().UseSwaggerUI(c =>
 {
     c.DocumentTitle = builder.Environment.ApplicationName;
     c.SwaggerEndpoint($"{c.DocumentTitle}/swagger.json", c.DocumentTitle);
-    c.InjectStylesheet("/Home/SwaggerCustomStyle");
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseMiddleware<AllowCorsMiddleware>();
+// Call UseCors after UseRouting https://learn.microsoft.com/zh-cn/aspnet/core/security/cors
+app.UseCors();
 
 //身份验证·解 JWT/Cookie 设置 HttpContext.User
 app.UseAuthentication();

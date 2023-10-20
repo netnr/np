@@ -19,8 +19,7 @@ HttpTo.cs | HTTP 请求（GET、POST 等，可设置 `HttpWebRequest` 对象）
 LockTo.cs | 锁
 MailTo.cs | 邮件
 MonitorTo.cs | 监测
-ParsingTo.cs | 解析（正则相关）
-PathTo.cs | 路径
+ParsingTo.cs | 解析（正则、拼接）
 PredicateTo.cs | 谓词构建（And、Or 等）
 RandomTo.cs | 生成随机码（验证码）
 Snowflake53To.cs | 雪花 ID （兼容 JS）

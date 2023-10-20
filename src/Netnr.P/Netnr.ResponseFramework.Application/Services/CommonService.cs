@@ -177,11 +177,11 @@ namespace Netnr.ResponseFramework.Application.Services
         {
             Type elementType = typeof(T);
             var t = new DataTable();
-            elementType.GetProperties().ToList().ForEach(propInfo => t.Columns.Add(propInfo.Name, typeof(string)));
+            elementType.GetProperties().ForEach(propInfo => t.Columns.Add(propInfo.Name, typeof(string)));
             foreach (T item in list)
             {
                 var row = t.NewRow();
-                elementType.GetProperties().ToList().ForEach(propInfo => row[propInfo.Name] = propInfo.GetValue(item, null) ?? DBNull.Value);
+                elementType.GetProperties().ForEach(propInfo => row[propInfo.Name] = propInfo.GetValue(item, null) ?? DBNull.Value);
                 t.Rows.Add(row);
             }
             return t;

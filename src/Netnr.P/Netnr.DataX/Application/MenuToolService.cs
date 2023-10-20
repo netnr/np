@@ -2,6 +2,8 @@
 using System.Net.Http;
 using Hardware.Info;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Runtime.Versioning;
 
 namespace Netnr.DataX.Application
 {
@@ -15,7 +17,7 @@ namespace Netnr.DataX.Application
         public static async Task SystemInfo()
         {
             var wItems = "view,json,send".Split(',');
-            var wType = DXService.VarString(0, "输出为", wItems);
+            var wType = DXService.VarIndex(0, "输出为", wItems);
 
             var ss = new SystemStatusTo();
 
@@ -25,7 +27,7 @@ namespace Netnr.DataX.Application
                 case "json":
                 case "-j":
                     await ss.RefreshAll();
-                    DXService.Log(ss.ToJson(true));
+                    ConsoleTo.LogColor(ss.ToJson(true));
                     break;
                 case "--send":
                 case "send":
@@ -34,7 +36,7 @@ namespace Netnr.DataX.Application
                         var url = DXService.VarName("--send", "Send URL");
                         if (string.IsNullOrWhiteSpace(url))
                         {
-                            DXService.Log("URL 无效", ConsoleColor.Red);
+                            ConsoleTo.LogColor("URL 无效", ConsoleColor.Red);
                         }
                         else
                         {
@@ -50,7 +52,7 @@ namespace Netnr.DataX.Application
 
                             var paramsJson = ss.ToJson();
                             var postData = $"paramsJson={paramsJson.ToUrlEncode()}";
-                            DXService.Log($"curl -X POST {url} -d '{postData}'");
+                            ConsoleTo.LogColor($"curl -X POST {url} -d '{postData}'");
 
                             //https://stackoverflow.com/questions/12553277
                             var handler = new HttpClientHandler
@@ -68,23 +70,23 @@ namespace Netnr.DataX.Application
                                 if (resp.IsSuccessStatusCode)
                                 {
                                     var read = await resp.Content.ReadAsStringAsync();
-                                    DXService.Log(read);
+                                    ConsoleTo.LogColor(read);
                                 }
                                 else
                                 {
-                                    DXService.Log($"Failed to send, StatusCode: {resp.StatusCode}");
+                                    ConsoleTo.LogColor($"Failed to send, StatusCode: {resp.StatusCode}");
                                 }
                             }
                             catch (Exception ex)
                             {
-                                DXService.Log(ex);
+                                ConsoleTo.LogError(ex);
                             }
                         }
                     }
                     break;
                 default:
                     await ss.RefreshAll();
-                    DXService.Log(ss.ToView());
+                    ConsoleTo.LogColor(ss.ToView());
                     break;
             }
         }
@@ -93,7 +95,7 @@ namespace Netnr.DataX.Application
             ShortName = "sming", Prompt = "ndx sming")]
         public static void SystemMonitor()
         {
-            DXService.Log("Starting System Monitor ...");
+            ConsoleTo.LogColor("Starting System Monitor ...");
 
             var IsWorking = true;
             var thread = new Thread(async () =>
@@ -113,8 +115,8 @@ namespace Netnr.DataX.Application
 
                     var outinfo = new string[]
                     {
-                        $"\r\n Received Speed: {ParsingTo.FormatByteSize(sumReceived)}/s",
-                        $"\r\n\r\n Sent Speed: {ParsingTo.FormatByteSize(sumSent)}/s",
+                        $"\r\n Received Speed: {ParsingTo.FormatByte(sumReceived)}/s",
+                        $"\r\n\r\n Sent Speed: {ParsingTo.FormatByte(sumSent)}/s",
                         ss.ToView()
                     };
                     Console.WriteLine(string.Join("", outinfo));
@@ -145,7 +147,7 @@ namespace Netnr.DataX.Application
         {
             var hinfo = new HardwareInfo();
             hinfo.RefreshAll();
-            DXService.Log(hinfo.ToJson(true));
+            ConsoleTo.LogColor(hinfo.ToJson(true));
         }
 
         [Display(Name = "Process Info", Description = "程序信息", GroupName = "Tool",
@@ -156,23 +158,32 @@ namespace Netnr.DataX.Application
             var full = DXService.VarBool("完整的信息（默认精简）", "--full,-f");
 
             Process process;
-            try
+            if (string.IsNullOrWhiteSpace(pid))
             {
-                process = Process.GetProcessById(Convert.ToInt32(pid));
-            }
-            catch (Exception ex)
-            {
-                DXService.Log($"{ex.Message}\r\n获取 PID 失败，已返回自身信息", ConsoleColor.Red);
-
                 process = Process.GetCurrentProcess();
+            }
+            else
+            {
+                try
+                {
+                    process = Process.GetProcessById(Convert.ToInt32(pid));
+                }
+                catch (Exception ex)
+                {
+                    ConsoleTo.LogColor(ex.Message, ConsoleColor.Red);
+
+                    process = Process.GetCurrentProcess();
+                }
             }
 
             var dict = process.ToProps(full);
-            DXService.Log(dict.ToJson(true));
+            var removes = dict.Keys.Where(x => x.EndsWith("64")).Select(x => x[..^2]);
+            removes.ForEach(x => dict.Remove(x));
+            ConsoleTo.LogColor(dict.ToJson(true));
         }
 
         [Display(Name = "Consume", Description = "消耗", GroupName = "Tool", AutoGenerateFilter = true,
-            ShortName = "consume --cpu [1-100] --ram [1-100] --idle [1-7,20-23] --time [9]", Prompt = "ndx consume\r\nndx consume --cpu 1-40 --ram 1-50 --idle 1-7,20-23 --time 9")]
+            ShortName = "consume --cpu [1-100] --ram [1-100] --idle [1-7,20-23]  --url [url] --time [9]", Prompt = "ndx consume\r\nndx consume --cpu 1-40 --ram 1-50 --idle 1-7,20-23 --time 9")]
         public static void Consume()
         {
             var cpuValue = DXService.VarName("--cpu", $"CPU 消耗百分比(1-100 默认1-40随机)");
@@ -202,10 +213,40 @@ namespace Netnr.DataX.Application
                 ramNumber = (int)Math.Ceiling(ramNumber / 2.0);
             }
 
+            var downloadUrl = DXService.VarName("--url", $"网络下载链接");
+            string downloadSpeed = "";
+            if (!string.IsNullOrWhiteSpace(downloadUrl) && downloadUrl.ToLower().StartsWith("http"))
+            {
+                downloadSpeed = DXService.VarName("--speed", $"网络下载限速(单位 KiB/s 默认 2MiB/s)");
+            }
+
             //随机间隔
             var randomInterval = 10;
 
-            DXService.Log($"\r\nCPU({string.Join('-', cpuRange)}) {cpuNumber}% , RAM({string.Join('-', ramRange)}) {ramNumber}% , IdleHour {idleValue} , Interval {randomInterval}s");
+            ConsoleTo.LogColor($"\r\n[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] CPU({string.Join('-', cpuRange)}) {cpuNumber}% , RAM({string.Join('-', ramRange)}) {ramNumber}% , IdleHour {idleValue} , Interval {randomInterval}s");
+
+            //消耗 网络
+            //结束
+            var flagNetwork1 = true;
+            //暂停
+            var flagNetwork2 = true;
+            if (!string.IsNullOrWhiteSpace(downloadUrl) && downloadUrl.ToLower().StartsWith("http"))
+            {
+                var threadNetwork = new Thread(async () =>
+                {
+                    var speed = 1024 * 1024 * 2;
+                    if (!string.IsNullOrWhiteSpace(downloadSpeed))
+                    {
+                        speed = Convert.ToInt32(downloadSpeed) * 1024;
+                    }
+                    await DXService.ConsumeNetwork(downloadUrl, () => new(flagNetwork1, flagNetwork2), speed);
+                })
+                {
+                    IsBackground = true
+                };
+                threadNetwork.Start();
+                GC.KeepAlive(threadNetwork);
+            }
 
             //消耗 CPU
             var ctsCPU = new CancellationTokenSource();
@@ -246,11 +287,14 @@ namespace Netnr.DataX.Application
                 if (randomWatch.Elapsed.TotalSeconds > randomInterval)
                 {
                     //随机时，可不活跃
-                    if (ramRandom && cpuRandom && taskTime.ElapsedMilliseconds % 2 == 0)
+                    if (ramRandom && cpuRandom && taskTime.ElapsedMilliseconds % 3 == 0)
                     {
-                        randomInterval = RandomTo.Instance.Next(10, 90);
+                        randomInterval = RandomTo.Instance.Next(10, 30);
                         cpuNumber = 1;
                         ramNumber = 1;
+
+                        //暂停
+                        flagNetwork2 = false;
                     }
                     else
                     {
@@ -266,9 +310,12 @@ namespace Netnr.DataX.Application
                             cpuNumber = (int)Math.Ceiling(cpuNumber / 2.0);
                             ramNumber = (int)Math.Ceiling(ramNumber / 2.0);
                         }
+
+                        //继续
+                        flagNetwork2 = true;
                     }
 
-                    DXService.Log($"\r\nCPU({string.Join('-', cpuRange)}) {cpuNumber}% , RAM({string.Join('-', ramRange)}) {ramNumber}% , IdleHour {idleValue} , Interval {randomInterval}s , {taskTime.Elapsed}");
+                    ConsoleTo.LogColor($"\r\n[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] CPU({string.Join('-', cpuRange)}) {cpuNumber}% , RAM({string.Join('-', ramRange)}) {ramNumber}% , IdleHour {idleValue} , Interval {randomInterval}s , {taskTime.Elapsed}");
 
                     //随机时，重新分配
                     if (ramRandom)
@@ -292,7 +339,10 @@ namespace Netnr.DataX.Application
                     ctsCPU.Cancel();
                     taskCancel.Cancel();
 
-                    DXService.Log($"\r\n倒计时 {timeNumber}s 结束, {taskTime.Elapsed}");
+                    //结束
+                    flagNetwork1 = false;
+
+                    ConsoleTo.LogColor($"\r\n倒计时 {timeNumber}s 结束, {taskTime.Elapsed}");
                 }
             }
         }
@@ -303,22 +353,139 @@ namespace Netnr.DataX.Application
         {
             if (DXService.VarBool("清理有风险，是否继续"))
             {
-                ClearMemoryService.CleanUp();
+                CleanUpService.CleanUp();
             }
             else
             {
-                DXService.Log("已放弃", ConsoleColor.Cyan);
+                ConsoleTo.LogColor("已放弃", ConsoleColor.Cyan);
+            }
+        }
+
+        [Display(Name = "Pipeline", Description = "管道工具", GroupName = "Tool",
+            ShortName = "pipe --source [source] --json [xpath] --formabyte --trim --split [char[0]] --regex [regex[1]] --debug",
+            Prompt = @"ndx pipe --json .key --formatbyte --trim --split ';[0]' --regex '(\d+).(\d+).(\d+).(\d+)[0]' --debug")]
+        public static async Task Pipe()
+        {
+            string oo = null;
+
+            if (BaseTo.IsCmdArgs)
+            {
+                //管道输入
+                if (Console.IsInputRedirected)
+                {
+                    oo = await Console.In.ReadToEndAsync();
+                }
+                else
+                {
+                    var source = DXService.VarName("--source", "content or file");
+                    if (File.Exists(source) || File.Exists(source = ParsingTo.Combine(Environment.CurrentDirectory, source)))
+                    {
+                        oo = await File.ReadAllTextAsync(source);
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(oo))
+                {
+                    ConsoleTo.LogColor("Get source is empty", ConsoleColor.Red);
+                }
+                else
+                {
+                    var isDebug = DXService.VarBool("debug", "--debug");
+
+                    var listStep = DXService.GetArgsKeyValue();
+                    foreach (var step in listStep)
+                    {
+                        switch (step.Key)
+                        {
+                            case "--json":
+                                {
+                                    if (oo.StartsWith('['))
+                                    {
+                                        oo = oo.DeJArray().SelectToken(step.Value).ToNJson(true);
+                                    }
+                                    else
+                                    {
+                                        oo = oo.DeJObject().SelectToken(step.Value).ToNJson(true);
+                                    }
+                                }
+                                break;
+                            case "--formatbyte":
+                                {
+                                    if (!string.IsNullOrWhiteSpace(oo) && double.TryParse(oo, out double sizeNumber))
+                                    {
+                                        oo = ParsingTo.FormatByte(sizeNumber);
+                                    }
+                                }
+                                break;
+                            case "--trim":
+                                {
+                                    oo = string.IsNullOrWhiteSpace(step.Value) ? oo.Trim() : oo.Trim(step.Value[0]);
+                                }
+                                break;
+                            case "--split":
+                                {
+                                    var vi = step.Value.LastIndexOf('[');
+                                    if (vi == -1)
+                                    {
+                                        oo = oo.Split(step.Value).ToNJson(true);
+                                    }
+                                    else
+                                    {
+                                        var index = step.Value[(vi + 1)..].TrimEnd(']');
+                                        oo = oo.Split(step.Value[..vi])[Convert.ToInt32(index)];
+                                    }
+                                }
+                                break;
+                            case "--regex":
+                                {
+                                    var vi = step.Value.LastIndexOf('[');
+                                    if (vi == -1)
+                                    {
+                                        var mr = new Regex(step.Value).Match(oo);
+                                        if (mr.Success)
+                                        {
+                                            oo = (mr.Groups as IEnumerable<Group>).Select(x => x.Value).ToNJson(true);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var mr = new Regex(step.Value[..vi]).Match(oo);
+                                        if (mr.Success)
+                                        {
+                                            var index = step.Value[(vi + 1)..].TrimEnd(']');
+                                            oo = mr.Groups[Convert.ToInt32(index)].Value;
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                        if (isDebug && step.Key != "--debug")
+                        {
+                            ConsoleTo.LogTag($"{step.Key} {step.Value}");
+                            ConsoleTo.LogColor(oo);
+                        }
+                    }
+
+                    if (!isDebug)
+                    {
+                        ConsoleTo.LogColor(oo);
+                    }
+                }
+            }
+            else
+            {
+                ConsoleTo.LogColor("Only command line arguments are supported", ConsoleColor.Red);
             }
         }
 
         [Display(Name = "Environment variables", Description = "环境变量", GroupName = "Tool",
-            ShortName = "env [-g] --set [key=val,key2=val2,path=dir,path=dir2] --del [key,path=dir]", Prompt = "ndx env\r\nndx env --get $PATH\r\nndx env --set key1=val1,key2=val2\r\nndx env --del key1\r\nndx env --set path=D:\\software\\single\r\nndx env --del path=D:\\software\\single")]
+            ShortName = "env [-g] --set [key=val,key2=val2,path=dir,path=dir2] --del [key,path=dir]", Prompt = "ndx env\r\nndx env --get $PATH\r\nndx env --set key1=val1,key2=val2\r\nndx env --set \"NLS_LANG=SIMPLIFIED CHINESE_CHINA.ZHS16GBK\"\r\nndx env --del key1\r\nndx env --set path=D:\\software\\single\r\nndx env --del path=D:\\software\\single")]
         public static void EnvironmentVariables()
         {
             var processPath = Path.GetDirectoryName(Environment.ProcessPath);
 
             var mItems = "get,set,del".Split(',');
-            var mType = DXService.VarString(0, "管理", mItems);
+            var mType = DXService.VarIndex(0, "管理", mItems);
 
             if (CmdTo.IsWindows)
             {
@@ -376,7 +543,7 @@ namespace Netnr.DataX.Application
                                         var delPath = valItem[5..].Split(Path.PathSeparator).Where(x => !string.IsNullOrWhiteSpace(x));
                                         Environment.SetEnvironmentVariable("PATH", string.Join(Path.PathSeparator, pathArray.Where(x => !delPath.Contains(x))), evt);
                                     }
-                                    else if (Environment.GetEnvironmentVariable(valItem, evt) != null)
+                                    else if (!valItem.Equals("path", StringComparison.OrdinalIgnoreCase) && Environment.GetEnvironmentVariable(valItem, evt) != null)
                                     {
                                         Environment.SetEnvironmentVariable(valItem, null, evt);
                                     }
@@ -392,7 +559,7 @@ namespace Netnr.DataX.Application
                                 var dictEnv = Environment.GetEnvironmentVariables(evt);
                                 foreach (var key in dictEnv.Keys)
                                 {
-                                    DXService.Log($"{key}={dictEnv[key]}");
+                                    ConsoleTo.LogColor($"{key}={dictEnv[key]}");
                                 }
                             }
                             else
@@ -409,14 +576,14 @@ namespace Netnr.DataX.Application
                                         {
                                             if (!string.IsNullOrWhiteSpace(pathItem))
                                             {
-                                                DXService.Log(pathItem);
+                                                ConsoleTo.LogColor(pathItem);
                                             }
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    DXService.Log(envVal);
+                                    ConsoleTo.LogColor(envVal);
                                 }
                             }
                         }
@@ -427,7 +594,7 @@ namespace Netnr.DataX.Application
             {
                 if (AppContext.GetData("Netnr.NotFirstEnv") is not true)
                 {
-                    DXService.Log($"env # 查看环境变量列表\r\necho $PATH # 查看环境变量路径\r\nexport KEY=val # 设置环境变量\r\nexport PATH=$PATH:/new/path # 设置环境变量路径\r\nvi ~/.bashrc # 编辑用户配置文件加入 export 再执行 source ~/.bashrc 生效（新开 Shell）\r\n");
+                    ConsoleTo.LogColor($"env # 查看环境变量列表\r\necho $PATH # 查看环境变量路径\r\nexport KEY=val # 设置环境变量\r\nexport PATH=$PATH:/new/path # 设置环境变量路径\r\nvi ~/.bashrc # 编辑用户配置文件加入 export 再执行 source ~/.bashrc 生效（新开 Shell）\r\n");
                     AppContext.SetData("Netnr.NotFirstEnv", true);
                 }
 
@@ -438,7 +605,7 @@ namespace Netnr.DataX.Application
                     case "set":
                     case "--set":
                         {
-                            DXService.Log($"尝试写入用户配置文件 {bashrcPath}");
+                            ConsoleTo.LogColor($"尝试写入用户配置文件 {bashrcPath}");
 
                             var contents = File.ReadAllLines(bashrcPath).ToList();
 
@@ -474,7 +641,7 @@ namespace Netnr.DataX.Application
                             {
                                 File.WriteAllText(bashrcPath, string.Join(Environment.NewLine, contents.Distinct()) + Environment.NewLine);
                                 var refreshEnv = $"source {bashrcPath}";
-                                DXService.Log(refreshEnv);
+                                ConsoleTo.LogColor(refreshEnv);
                                 CmdTo.Execute(refreshEnv);
                             }
                         }
@@ -482,7 +649,7 @@ namespace Netnr.DataX.Application
                     case "del":
                     case "--del":
                         {
-                            DXService.Log($"尝试从用户配置文件中删除 {bashrcPath}");
+                            ConsoleTo.LogColor($"尝试从用户配置文件中删除 {bashrcPath}");
 
                             var contents = File.ReadAllLines(bashrcPath).ToList();
                             var isChange = false;
@@ -512,7 +679,7 @@ namespace Netnr.DataX.Application
                             {
                                 File.WriteAllText(bashrcPath, string.Join(Environment.NewLine, contents.Distinct()) + Environment.NewLine);
                                 var refreshEnv = $"source {bashrcPath}";
-                                DXService.Log(refreshEnv);
+                                ConsoleTo.LogColor(refreshEnv);
                                 CmdTo.Execute(refreshEnv);
                             }
                         }
@@ -522,11 +689,11 @@ namespace Netnr.DataX.Application
                             var varyName = DXService.VarName("--get", "变量名称（默认全部）");
                             if (string.IsNullOrWhiteSpace(varyName))
                             {
-                                DXService.Log(CmdTo.Execute("env").CrOutput);
+                                ConsoleTo.LogColor(CmdTo.Execute("env").CrOutput);
                             }
                             else
                             {
-                                DXService.Log(CmdTo.Execute($"env | grep {varyName}=").CrOutput);
+                                ConsoleTo.LogColor(CmdTo.Execute($"env | grep {varyName}=").CrOutput);
                             }
                         }
                         break;
@@ -534,31 +701,64 @@ namespace Netnr.DataX.Application
             }
         }
 
+        [Display(Name = ".NET Framework", Description = "已安装的 .NET Framework", GroupName = "Tool",
+            ShortName = "dotnetframework", Prompt = "ndx dotnetframework")]
+        [SupportedOSPlatform("windows")]
+        public static void DOTNETFramework()
+        {
+            var result1 = WinTo.Get45Less();
+            result1.ForEach(item =>
+            {
+                ConsoleTo.LogColor($"{item.Version}\t{item.ServicePack}");
+            });
+
+            var result2 = WinTo.Get45Plus();
+            result2.ForEach(item =>
+            {
+                ConsoleTo.LogColor($"{item.Version}\t{item.ServicePack}");
+            });
+        }
+
         [Display(Name = "Generate UUID", Description = "生成UUID", GroupName = "Tool",
             ShortName = "uuid [count]", Prompt = "ndx uuid\r\nndx uuid -9")]
         public static void GenerateUUID()
         {
-            var count = DXService.VarString(0, "生成个数");
+            var count = DXService.VarIndex(0, "生成个数");
             _ = int.TryParse(count, out int countNumber);
             countNumber = Math.Max(1, Math.Abs(countNumber));
 
             for (int i = 0; i < countNumber; i++)
             {
-                DXService.Log(Guid.NewGuid().ToString());
+                ConsoleTo.LogColor(Guid.NewGuid().ToString());
             }
         }
 
-        [Display(Name = "Generate Snowflake", Description = "生成雪花ID", GroupName = "Tool",
-            ShortName = "snow [count]", Prompt = "ndx snow\r\nndx snow -9")]
+        [Display(Name = "Generate Snowflake", Description = "雪花ID", GroupName = "Tool",
+            ShortName = "snow [count|id|time]", Prompt = "ndx snow\r\nndx snow 9\r\nndx snow 154689429516288\r\nndx snow \"2023-07-28 15:50:45.943\"")]
         public static void GenerateSnowflake()
         {
-            var count = DXService.VarString(0, "生成个数");
-            _ = int.TryParse(count, out int countNumber);
-            countNumber = Math.Max(1, Math.Abs(countNumber));
-
-            for (int i = 0; i < countNumber; i++)
+            var count = DXService.VarIndex(0, "生成数量 或 时间和ID转换");
+            if (DateTime.TryParse(count, out DateTime time))
             {
-                DXService.Log(Snowflake53To.Id().ToString());
+                ConsoleTo.LogColor(Snowflake53To.GetId(time).ToString());
+            }
+            else
+            {
+                _ = long.TryParse(count, out long countNumber);
+                countNumber = Math.Max(1, Math.Abs(countNumber));
+
+                if (countNumber > 1000000)
+                {
+                    time = Snowflake53To.Parse(countNumber).Value;
+                    ConsoleTo.LogColor(time.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                }
+                else
+                {
+                    for (long i = 0; i < countNumber; i++)
+                    {
+                        ConsoleTo.LogColor(Snowflake53To.Id().ToString());
+                    }
+                }
             }
         }
 
@@ -566,7 +766,7 @@ namespace Netnr.DataX.Application
             ShortName = "tail [file]", Prompt = "ndx tail access.log")]
         public static void Tail()
         {
-            string filePath = DXService.VarString(0, "文件路径");
+            string filePath = DXService.VarIndex(0, "文件路径");
             if (File.Exists(filePath))
             {
                 using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -607,7 +807,7 @@ namespace Netnr.DataX.Application
             }
             else
             {
-                DXService.Log("file not found", ConsoleColor.Red);
+                ConsoleTo.LogColor("file not found", ConsoleColor.Red);
             }
         }
 
@@ -615,10 +815,10 @@ namespace Netnr.DataX.Application
             ShortName = "textmining [file] --top [50]", Prompt = "ndx textmining text.txt\r\nndx textmining text.txt --top 999")]
         public static void TextMining()
         {
-            string filePath = DXService.VarString(0, "文件路径或内容");
+            string filePath = DXService.VarIndex(0, "文件路径或内容");
 
             var dvTop = 50;
-            string topRow = DXService.VarString(0, $"输出前 N 项(default {dvTop})");
+            string topRow = DXService.VarIndex(0, $"输出前 N 项(default {dvTop})");
             if (int.TryParse(topRow, out int topRowNumber))
             {
                 dvTop = Math.Max(topRowNumber, 1);
@@ -628,16 +828,16 @@ namespace Netnr.DataX.Application
             if (File.Exists(filePath))
             {
                 tm.FromFile(filePath);
-                DXService.Log(tm.TopItems(dvTop).ToJson());
+                ConsoleTo.LogColor(tm.TopItems(dvTop).ToJson());
             }
             else if (filePath.Length > 9)
             {
                 tm.FromString(new string[] { filePath });
-                DXService.Log(tm.TopItems(dvTop).ToJson());
+                ConsoleTo.LogColor(tm.TopItems(dvTop).ToJson());
             }
             else
             {
-                DXService.Log("内容太少了", ConsoleColor.Red);
+                ConsoleTo.LogColor("内容太少了", ConsoleColor.Red);
             }
         }
 
@@ -645,14 +845,14 @@ namespace Netnr.DataX.Application
             ShortName = "ddel [dir] [matchName] [ignoreDir] [-y]", Prompt = "ndx ddel ./ bin,*.md,file?.txt -y")]
         public static void DeepDelete()
         {
-            var dir = DXService.VarString(0, $"根目录(default: {Environment.CurrentDirectory})");
+            var dir = DXService.VarIndex(0, $"根目录(default: {Environment.CurrentDirectory})");
             if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
             {
                 dir = Environment.CurrentDirectory;
             }
 
-            var matchName = DXService.VarString(1, "要删除的文件（夹），如 bin,*.md,file?.txt 逗号分割");
-            var ignoreDir = DXService.VarString(2, "要忽略的目录名称，逗号分割");
+            var matchName = DXService.VarIndex(1, "要删除的文件（夹），如 bin,*.md,file?.txt 逗号分割");
+            var ignoreDir = DXService.VarIndex(2, "要忽略的目录名称，逗号分割");
 
             if (!string.IsNullOrWhiteSpace(matchName))
             {
@@ -674,20 +874,18 @@ namespace Netnr.DataX.Application
             ShortName = "gitpull [dir]", Prompt = "ndx gitpull ./")]
         public static void GitPull()
         {
-            var dir = DXService.VarString(0, "请输入目录");
+            var dir = DXService.VarIndex(0, "请输入目录");
             if (!Directory.Exists(dir))
             {
                 dir = Environment.CurrentDirectory;
             }
 
             var di = new DirectoryInfo(dir);
-            var sdis = di.GetDirectories().ToList();
+            var sdis = di.EnumerateDirectories();
             if (Directory.Exists(Path.Combine(di.FullName, ".git")))
             {
-                sdis.Insert(0, di);
+                sdis.Add(di);
             }
-
-            DXService.Log($"\r\n从 {dir} 目录找到 {sdis.Count} 个项目\r\n", ConsoleColor.Cyan);
 
             int c1 = 0;
             int c2 = 0;
@@ -700,27 +898,48 @@ namespace Netnr.DataX.Application
                     var cr = CmdTo.Execute(arg);
                     if (cr.CrError.Contains("unsafe repository"))
                     {
-                        DXService.Log($"add safe.directory {sdi.FullName}, please try again");
+                        ConsoleTo.LogColor($"add safe.directory {sdi.FullName}, please try again");
                     }
                     else
                     {
                         var rt = cr.CrOutput + cr.CrError;
-                        DXService.Log($"【 {sdi.Name} 】\n{rt}");
+                        ConsoleTo.LogColor($"【 {sdi.Name} 】\n{rt}");
                         c1++;
                     }
                 }
                 else
                 {
-                    DXService.Log($"已跳过 \"{sdi.FullName}\", 未找到 .git\n");
+                    ConsoleTo.LogColor($"已跳过 \"{sdi.FullName}\", 未找到 .git\n");
                     c2++;
                 }
             });
-            DXService.Log($"Done!  Pull: {c1}, Skip: {c2}");
+            ConsoleTo.LogColor($"Done!  Pull: {c1}, Skip: {c2}");
 
             if (listUnsafe.Count > 0)
             {
                 Console.WriteLine(Environment.NewLine);
-                DXService.Log(string.Join("\r\n", listUnsafe));
+                ConsoleTo.LogColor(string.Join("\r\n", listUnsafe));
+            }
+        }
+
+        [Display(Name = "AES Conn", Description = "连接字符串加密解密", GroupName = "Tool",
+            ShortName = "aesconn --pwd [pwd] --encrypt [encrypt] --decrypt [decrypt]", Prompt = "ndx aesconn --pwd 123 --encrypt conn")]
+        public static void AesConn()
+        {
+            var txtPwd = DXService.VarName("--password,--pwd", "请输入密码");
+            var txtEncrypt = DXService.VarName("--encrypt", "要加密的连接字符串");
+            var txtDecrypt = DXService.VarName("--decrypt", "要解密的连接字符串");
+
+            if (!string.IsNullOrWhiteSpace(txtEncrypt))
+            {
+                ConsoleTo.LogTag("加密后的连接字符串");
+                ConsoleTo.LogColor(CalcTo.AESEncrypt(txtEncrypt, txtPwd));
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtDecrypt))
+            {
+                ConsoleTo.LogTag("解密后的连接字符串");
+                ConsoleTo.LogColor(CalcTo.AESDecrypt(txtDecrypt, txtPwd));
             }
         }
     }

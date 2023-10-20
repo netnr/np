@@ -25,7 +25,7 @@ public partial class DbKit
 
             using var bulk = new SqlBulkCopy(connection, SqlBulkCopyOptions.KeepIdentity, transaction)
             {
-                DestinationTableName = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, EnumTo.TypeDB.SQLServer),
+                DestinationTableName = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, DBTypes.SQLServer),
                 BatchSize = dt.Rows.Count,
                 BulkCopyTimeout = ConnOption.Timeout * 10
             };
@@ -66,7 +66,7 @@ public partial class DbKit
             var cb = new SqlCommandBuilder();
             if (string.IsNullOrWhiteSpace(sqlEmpty))
             {
-                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, EnumTo.TypeDB.SQLServer);
+                var sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, DBTypes.SQLServer);
                 sqlEmpty = DbKitExtensions.SqlEmpty(sntn);
             }
 

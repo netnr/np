@@ -12,27 +12,33 @@ public partial class DataKitScript
     /// </summary>
     /// <param name="tdb"></param>
     /// <returns></returns>
-    public static string GetDatabaseName(EnumTo.TypeDB tdb)
+    public static string GetDatabaseName(DBTypes tdb)
     {
         string result = null;
 
         switch (tdb)
         {
-            case EnumTo.TypeDB.SQLite:
+            case DBTypes.SQLite:
                 result = "PRAGMA database_list";
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 result = "SELECT SCHEMA_NAME AS DatabaseName FROM information_schema.schemata ORDER BY SCHEMA_NAME";
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 result = "SELECT USERNAME AS DatabaseName FROM ALL_USERS ORDER BY USERNAME";
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 result = "SELECT name AS DatabaseName FROM sys.databases ORDER BY name";
                 break;
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.PostgreSQL:
                 result = "SELECT datname AS DatabaseName FROM pg_database ORDER BY datname";
+                break;
+            case DBTypes.ClickHouse:
+                result = "SELECT schema_name AS DatabaseName FROM information_schema.schemata ORDER BY schema_name";
+                break;
+            case DBTypes.Dm:
+                result = "SELECT DISTINCT OBJECT_NAME FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'SCH' ORDER BY OBJECT_NAME";
                 break;
         }
 
@@ -45,29 +51,27 @@ public partial class DataKitScript
     /// <param name="tdb"></param>
     /// <param name="listDatabaseName"></param>
     /// <returns></returns>
-    public static string GetDatabase(EnumTo.TypeDB tdb, IList<string> listDatabaseName = null)
+    public static string GetDatabase(DBTypes tdb, IList<string> listDatabaseName = null)
     {
         string result = null;
 
-        string where = string.Empty;
-        if (listDatabaseName?.Count > 0)
-        {
-            where = "AND {0} IN ('" + string.Join("','", listDatabaseName) + "')";
-        }
+        var listWhere = new List<string>() { "1=1" };
+        var filterDatabase = listDatabaseName?.Count > 0 ? "('" + string.Join("','", listDatabaseName) + "')" : null;
 
         switch (tdb)
         {
-            case EnumTo.TypeDB.SQLite:
+            case DBTypes.SQLite:
                 result = "PRAGMA database_list;PRAGMA encoding";
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
-                if (!string.IsNullOrEmpty(where))
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 {
-                    where = string.Format(where, "t1.SCHEMA_NAME");
-                }
+                    if (string.IsNullOrEmpty(filterDatabase))
+                    {
+                        listWhere.Add($"t1.SCHEMA_NAME IN {filterDatabase}");
+                    }
 
-                result = $@"
+                    result = $@"
 SELECT
   t1.SCHEMA_NAME AS DatabaseName,
   t1.DEFAULT_CHARACTER_SET_NAME AS DatabaseCharset,
@@ -89,17 +93,19 @@ FROM
     GROUP BY
       TABLE_SCHEMA
   ) t2 ON t1.SCHEMA_NAME = t2.TABLE_SCHEMA
-WHERE
-  1 = 1 {where}
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.SCHEMA_NAME
 ";
-                break;
-            case EnumTo.TypeDB.Oracle:
-                if (!string.IsNullOrEmpty(where))
-                {
-                    where = string.Format(where, "t1.USERNAME");
                 }
+                break;
+            case DBTypes.Oracle:
+                {
+                    if (string.IsNullOrEmpty(filterDatabase))
+                    {
+                        listWhere.Add($"t1.USERNAME IN {filterDatabase}");
+                    }
 
-                result = $@"
+                    result = $@"
 SELECT
   t1.USERNAME AS DatabaseName,
   t1.USERNAME AS DatabaseOwner,
@@ -137,19 +143,20 @@ FROM
     GROUP BY
       OWNER
   ) s2 ON s2.OWNER = t1.USERNAME
-WHERE
-  1 = 1 {where}
-ORDER BY
-  t1.USERNAME
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.USERNAME
 ";
-                break;
-            case EnumTo.TypeDB.SQLServer:
-                if (!string.IsNullOrEmpty(where))
-                {
-                    where = string.Format(where, "t1.name");
                 }
+                break;
+            case DBTypes.SQLServer:
+                {
+                    if (string.IsNullOrEmpty(filterDatabase))
+                    {
+                        listWhere.Add($"t1.name IN {filterDatabase}");
+                    }
+                    listWhere.Add("t2.[type] = 0 AND t3.[type] = 1");
 
-                result = $@"
+                    result = $@"
 SELECT
   t1.name AS DatabaseName,
   t4.name AS DatabaseOwner,
@@ -180,20 +187,19 @@ FROM
   LEFT JOIN sys.master_files t2 ON t2.database_id = t1.database_id
   LEFT JOIN sys.master_files t3 ON t3.database_id = t1.database_id
   left join sys.server_principals t4 on t1.owner_sid = t4.sid
-WHERE
-  t2.[type] = 0
-  AND t3.[type] = 1 {where}
-ORDER BY
-  t1.name
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.name
             ";
-                break;
-            case EnumTo.TypeDB.PostgreSQL:
-                if (!string.IsNullOrEmpty(where))
-                {
-                    where = string.Format(where, "t1.datname");
                 }
+                break;
+            case DBTypes.PostgreSQL:
+                {
+                    if (string.IsNullOrEmpty(filterDatabase))
+                    {
+                        listWhere.Add($"t1.datname IN {filterDatabase}");
+                    }
 
-                result = $@"
+                    result = $@"
 SELECT
   t1.datname AS DatabaseName,
   pg_get_userbyid(t1.datdba) AS DatabaseOwner,
@@ -212,11 +218,45 @@ SELECT
 FROM
   pg_database t1
   LEFT JOIN pg_tablespace t2 ON t1.dattablespace = t2.oid
-WHERE
-  1 = 1 {where}
-ORDER BY
-  t1.datname
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.datname
 ";
+                }
+                break;
+            case DBTypes.ClickHouse:
+                {
+                    if (string.IsNullOrEmpty(filterDatabase))
+                    {
+                        listWhere.Add($"t1.catalog_name IN {filterDatabase}");
+                    };
+                    listWhere.Add("lower(t1.catalog_name) != lower('information_schema')");
+
+                    result = $@"
+SELECT
+  t1.catalog_name AS DatabaseName,
+  t1.schema_owner AS DatabaseOwner,
+  if (
+    empty (t2.metadata_path),
+    t2.data_path,
+    t2.metadata_path
+  ) AS DatabasePath,
+  t3.size_bytes AS DatabaseDataLength
+from
+  information_schema.schemata t1
+  left join system.databases t2 on t1.catalog_name = t2.name
+  left join (
+    SELECT
+      database,
+      sum(bytes) AS size_bytes
+    FROM
+      system.parts
+    GROUP BY
+      database
+  ) t3 on t1.catalog_name = t3.database
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.catalog_name
+";
+                }
                 break;
         }
 
@@ -224,39 +264,50 @@ ORDER BY
     }
 
     /// <summary>
-    /// 获取表
+    /// 获取表（视图）
     /// </summary>
     /// <param name="tdb"></param>
     /// <param name="databaseName">数据库名</param>
-    /// <param name="schemaName">模式名</param>
+    /// <param name="schemaName">模式名，可选</param>
     /// <returns></returns>
-    public static string GetTable(EnumTo.TypeDB tdb, string databaseName, string schemaName)
+    public static string GetTable(DBTypes tdb, string databaseName, string schemaName)
     {
         string result = null;
 
-        string where = string.Empty;
-        if (!string.IsNullOrWhiteSpace(schemaName))
-        {
-            where = "AND {0} = '" + schemaName.OfSql() + "'";
-        }
-
+        var listWhere = new List<string>() { "1=1" };
         switch (tdb)
         {
-            case EnumTo.TypeDB.SQLite:
-                result = $@"SELECT tbl_name AS TableName FROM {databaseName}.sqlite_master WHERE type = 'table' ORDER BY tbl_name";
-                break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
-                if (!string.IsNullOrEmpty(where))
+            case DBTypes.SQLite:
                 {
-                    where = string.Format(where, "TABLE_SCHEMA");
-                }
+                    databaseName ??= "main";
 
-                result = $@"
+                    listWhere.Add("type = 'table' AND tbl_name != 'sqlite_sequence'");
+
+                    result = $@"
+SELECT
+  tbl_name AS TableName,
+  'BASE TABLE' AS TableType
+FROM
+  {databaseName}.sqlite_master
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY tbl_name
+";
+                }
+                break;
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
+                {
+                    listWhere.Add("TABLE_TYPE = 'BASE TABLE'");
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"TABLE_SCHEMA = '{databaseName}'");
+                    }
+
+                    result = $@"
 SELECT
   TABLE_NAME AS TableName,
   TABLE_SCHEMA AS SchemaName,
-  TABLE_TYPE AS TableType,
+  'BASE TABLE' AS TableType,
   ENGINE AS TableEngine,
   TABLE_ROWS AS TableRows,
   DATA_LENGTH AS TableDataLength,
@@ -264,17 +315,20 @@ SELECT
   CREATE_TIME AS TableCreateTime,
   TABLE_COLLATION AS TableCollation,
   TABLE_COMMENT AS TableComment
-FROM
-  information_schema.tables
-WHERE
-  TABLE_TYPE = 'BASE TABLE'
-  AND TABLE_SCHEMA = '{databaseName}' {where}
-ORDER BY
-  TABLE_NAME
+FROM information_schema.tables
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY TABLE_NAME
 ";
+                }
                 break;
-            case EnumTo.TypeDB.Oracle:
-                result = $@"
+            case DBTypes.Oracle:
+                {
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"t1.OWNER = '{databaseName}'");
+                    }
+
+                    result = $@"
 SELECT
   t1.TABLE_NAME AS TableName,
   t1.OWNER AS TableOwner,
@@ -312,38 +366,33 @@ FROM
       p1.TABLE_NAME
   ) t5 ON t1.OWNER = t5.OWNER
   AND t1.TABLE_NAME = t5.TABLE_NAME
-WHERE
-  1 = 1 AND t1.OWNER = '{databaseName}'
-ORDER BY
-  t1.TABLE_NAME
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.TABLE_NAME
 ";
-                break;
-            case EnumTo.TypeDB.SQLServer:
-                if (!string.IsNullOrEmpty(where))
-                {
-                    where = string.Format(where, "SCHEMA_NAME(o.schema_id)");
                 }
+                break;
+            case DBTypes.SQLServer:
+                {
+                    if (!string.IsNullOrWhiteSpace(schemaName))
+                    {
+                        listWhere.Add($"SCHEMA_NAME(o.schema_id) = '{schemaName}'");
+                    }
+                    listWhere.Add("o.type = 'U'");
 
-                result = $@"
+                    result = $@"
 USE [{databaseName}];
 SELECT
   o.name AS TableName,
   (
-    select
-      sp.name
-    from
-      sys.databases db
-      left join sys.server_principals sp on db.owner_sid = sp.sid
-    where
-      db.name = '{databaseName}'
+    SELECT
+      SUSER_NAME(owner_sid)
+    FROM
+      sys.databases
+    WHERE
+      database_id = DB_ID()
   ) AS TableOwner,
   SCHEMA_NAME(o.schema_id) AS SchemaName,
-  CASE
-    o.type
-    WHEN 'U' THEN 'BASE TABLE'
-    WHEN 'V' THEN 'VIEW'
-    ELSE o.type
-  END AS TableType,
+  'BASE TABLE' AS TableType,
   m1.TableRows,
   m1.TableDataLength,
   m2.TableIndexLength,
@@ -378,26 +427,27 @@ FROM
     GROUP BY
       object_id
   ) m2 ON o.object_id = m2.object_id
-WHERE
-  o.type = 'U' {where}
-ORDER BY
-  SCHEMA_NAME(o.schema_id),
-  o.name
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY SCHEMA_NAME(o.schema_id), o.name
             ";
-                break;
-            case EnumTo.TypeDB.PostgreSQL:
-                if (!string.IsNullOrEmpty(where))
-                {
-                    where = string.Format(where, "t1.table_schema");
                 }
+                break;
+            case DBTypes.PostgreSQL:
+                {
+                    if (!string.IsNullOrWhiteSpace(schemaName))
+                    {
+                        listWhere.Add($"t1.table_schema = '{schemaName}'");
+                    }
+                    listWhere.Add("t1.table_schema NOT IN('pg_catalog', 'information_schema')");
+                    listWhere.Add("t1.table_type = 'BASE TABLE'");
 
-                result = $@"
+                    result = $@"
 SELECT
   t1.table_name AS TableName,
   t1.table_schema AS SchemaName,
   t2.tableowner AS TableOwner,
   t2.tablespace AS TableSpace,
-  t1.table_type AS TableType,
+  'BASE TABLE' AS TableType,
   t4.reltuples AS TableRows,
   pg_relation_size(t4.oid) AS TableDataLength,
   pg_indexes_size(t4.oid) AS TableIndexLength,
@@ -409,13 +459,10 @@ FROM
   LEFT JOIN pg_namespace t3 ON t1.table_schema = t3.nspname
   LEFT JOIN pg_class t4 ON t3.oid = t4.relnamespace
   AND t1.table_name = t4.relname
-WHERE
-  t1.table_type = 'BASE TABLE'
-  AND t1.table_schema NOT IN('pg_catalog', 'information_schema') {where}
-ORDER BY
-  t1.table_schema,
-  t1.table_name
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.table_schema, t1.table_name
 ";
+                }
                 break;
         }
 
@@ -430,20 +477,20 @@ ORDER BY
     /// <param name="schemaName"></param>
     /// <param name="tableName"></param>
     /// <returns></returns>
-    public static string GetTableDDL(EnumTo.TypeDB tdb, string databaseName, string schemaName, string tableName)
+    public static string GetTableDDL(DBTypes tdb, string databaseName, string schemaName, string tableName)
     {
         string result = null;
 
         switch (tdb)
         {
-            case EnumTo.TypeDB.SQLite:
+            case DBTypes.SQLite:
                 result = $@"SELECT type, tbl_name, sql FROM {databaseName}.sqlite_master WHERE tbl_name = '{tableName}' ORDER BY type DESC";
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 result = $"SHOW CREATE TABLE `{databaseName}`.`{tableName}`";
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 {
                     var list = new List<string>
                     {
@@ -464,7 +511,7 @@ ORDER BY
                     result = sql;
                 }
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 // http://www.stormrage.com/SQLStuff/sp_GetDDL_Latest.txt
                 result = $@"
 USE [{databaseName}];
@@ -1090,7 +1137,7 @@ SELECT
   @input AS [Create Table];
 ";
                 break;
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.PostgreSQL:
                 // https://stackoverflow.com/questions/2593803
                 result = $@"
 DO $$
@@ -1288,13 +1335,227 @@ $$;
     }
 
     /// <summary>
+    /// 获取表（视图）
+    /// </summary>
+    /// <param name="tdb"></param>
+    /// <param name="databaseName">数据库名</param>
+    /// <param name="schemaName">模式名，可选</param>
+    /// <returns></returns>
+    public static string GetView(DBTypes tdb, string databaseName, string schemaName)
+    {
+        string result = null;
+
+        var listWhere = new List<string>() { "1=1" };
+        switch (tdb)
+        {
+            case DBTypes.SQLite:
+                {
+                    databaseName ??= "main";
+                    result = $"SELECT tbl_name AS TableName, 'VIEW' AS TableType FROM {databaseName}.sqlite_master WHERE type = 'view' ORDER BY tbl_name";
+                }
+                break;
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
+                {
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"TABLE_SCHEMA = '{databaseName}'");
+                    }
+                    listWhere.Add("TABLE_TYPE = 'VIEW'");
+
+                    result = $@"
+SELECT
+  TABLE_NAME AS TableName,
+  TABLE_SCHEMA AS SchemaName,
+  TABLE_TYPE AS TableType,
+  CREATE_TIME AS TableCreateTime,
+  TABLE_COMMENT AS TableComment
+FROM information_schema.tables
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY TABLE_SCHEMA, TABLE_NAME
+";
+                }
+                break;
+            case DBTypes.Oracle:
+                {
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"t1.OWNER = '{databaseName}'");
+                    }
+                    listWhere.Add("t3.OBJECT_TYPE = 'VIEW'");
+
+                    result = $@"
+SELECT
+  t1.VIEW_NAME AS TableName,
+  t1.OWNER AS TableOwner,
+  t3.OBJECT_TYPE AS TableType,
+  t3.CREATED AS TableCreateTime,
+  t3.LAST_DDL_TIME AS TableModifyTime,
+  t2.COMMENTS AS TableComment
+FROM
+  ALL_VIEWS t1
+  LEFT JOIN ALL_TAB_COMMENTS t2 ON t1.OWNER = t2.OWNER
+  AND t1.VIEW_NAME = t2.TABLE_NAME
+  LEFT JOIN ALL_OBJECTS t3 ON t1.OWNER = t3.OWNER
+  AND t1.VIEW_NAME = t3.OBJECT_NAME
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.OWNER, t1.VIEW_NAME
+";
+                }
+                break;
+            case DBTypes.SQLServer:
+                {
+                    if (!string.IsNullOrWhiteSpace(schemaName))
+                    {
+                        listWhere.Add($"SCHEMA_NAME(o.schema_id) = '{schemaName}'");
+                    }
+                    listWhere.Add("o.type = 'V'");
+
+                    result = $@"
+USE [{databaseName}];
+SELECT
+  o.name AS TableName,
+  (
+    SELECT
+      SUSER_NAME(owner_sid)
+    FROM
+      sys.databases
+    WHERE
+      database_id = DB_ID()
+  ) AS TableOwner,
+  SCHEMA_NAME(o.schema_id) AS SchemaName,
+  'VIEW' AS TableType,
+  o.create_date AS TableCreateTime,
+  o.modify_date AS TableModifyTime,
+  ep.value AS TableComment
+FROM
+  sys.objects o
+  LEFT JOIN sys.extended_properties ep ON ep.major_id = o.object_id
+  AND ep.minor_id = 0
+  AND ep.class = 1
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY SCHEMA_NAME(o.schema_id), o.name
+            ";
+                }
+                break;
+            case DBTypes.PostgreSQL:
+                {
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"t1.table_catalog = '{databaseName}'");
+                    }
+                    if (!string.IsNullOrWhiteSpace(schemaName))
+                    {
+                        listWhere.Add($"t1.table_schema = '{schemaName}'");
+                    }
+                    listWhere.Add("t1.table_schema NOT IN ('pg_catalog', 'information_schema')");
+                    listWhere.Add("t1.table_type = 'VIEW'");
+
+                    result = $@"
+SELECT
+  t1.table_name AS TableName,
+  t1.table_schema AS SchemaName,
+  t1.table_type AS TableType,
+  obj_description(t4.oid) AS TableComment
+FROM
+  information_schema.tables t1
+  LEFT JOIN pg_views t2 ON t1.table_name = t2.viewname
+  AND t1.table_schema = t2.schemaname
+  LEFT JOIN pg_namespace t3 ON t1.table_schema = t3.nspname
+  LEFT JOIN pg_class t4 ON t3.oid = t4.relnamespace
+  AND t1.table_name = t4.relname
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.table_schema, t1.table_name
+";
+                }
+                break;
+            case DBTypes.ClickHouse:
+                {
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"database = '{databaseName}'");
+                    }
+                    listWhere.Add("engine LIKE '%View'");
+
+                    result = $@"
+SELECT
+  name AS TableName,
+  database AS SchemaName,
+  'VIEW' AS TableType,
+  metadata_modification_time AS TableCreateTime
+FROM
+  system.tables
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY database, name
+";
+                }
+                break;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 视图DLL
+    /// </summary>
+    /// <param name="tdb"></param>
+    /// <param name="databaseName"></param>
+    /// <param name="schemaName"></param>
+    /// <param name="tableName"></param>
+    /// <returns></returns>
+    public static string GetViewDDL(DBTypes tdb, string databaseName, string schemaName, string tableName)
+    {
+        string result = null;
+
+        switch (tdb)
+        {
+            case DBTypes.SQLite:
+                {
+                    databaseName ??= "main";
+                    result = $"SELECT sql AS ddl FROM {databaseName}.sqlite_master WHERE type = 'view' AND tbl_name = '{tableName}'";
+                }
+                break;
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
+                {
+                    result = $"SELECT VIEW_DEFINITION AS ddl FROM information_schema.VIEWS WHERE TABLE_SCHEMA='{databaseName}' AND TABLE_NAME ='{tableName}'";
+                }
+                break;
+            case DBTypes.Oracle:
+                {
+                    result = $"SELECT TEXT AS ddl FROM ALL_VIEWS WHERE OWNER ='{databaseName}' AND VIEW_NAME='{tableName}'";
+                }
+                break;
+            case DBTypes.SQLServer:
+                {
+                    schemaName ??= "dbo";
+                    result = $"SELECT VIEW_DEFINITION AS ddl FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_CATALOG='{databaseName}' AND TABLE_SCHEMA='{schemaName}' AND TABLE_NAME ='{tableName}'";
+                }
+                break;
+            case DBTypes.PostgreSQL:
+                {
+                    schemaName ??= "public";
+                    result = $"SELECT view_definition AS ddl FROM information_schema.views WHERE table_catalog='{databaseName}' AND table_schema='{schemaName}' AND table_name ='{tableName}'";
+                }
+                break;
+            case DBTypes.ClickHouse:
+                {
+                    result = $"SELECT view_definition AS ddl FROM information_schema.views WHERE table_catalog='{databaseName}' AND table_name ='{tableName}'";
+                }
+                break;
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// 获取列
     /// </summary>
     /// <param name="tdb"></param>
     /// <param name="databaseName">数据库名</param>
     /// <param name="listSchemaNameTableName">过滤 模式名、表名集合</param>
     /// <returns></returns>
-    public static string GetColumn(EnumTo.TypeDB tdb, string databaseName, List<ValueTuple<string, string>> listSchemaNameTableName = null)
+    public static string GetColumn(DBTypes tdb, string databaseName, List<ValueTuple<string, string>> listSchemaNameTableName = null)
     {
         string result = null;
 
@@ -1324,7 +1585,7 @@ $$;
 
         switch (tdb)
         {
-            case EnumTo.TypeDB.SQLite:
+            case DBTypes.SQLite:
                 if (!string.IsNullOrEmpty(where))
                 {
                     where = string.Format(where, "m.name");
@@ -1393,8 +1654,8 @@ ORDER BY
 SELECT name, sql FROM {databaseName}.sqlite_master m WHERE 1=1 {where}
 ";
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 if (!string.IsNullOrEmpty(where))
                 {
                     where = string.Format(where, "t1.TABLE_NAME", "t1.TABLE_SCHEMA");
@@ -1437,7 +1698,7 @@ ORDER BY
   t1.ORDINAL_POSITION
 ";
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 if (!string.IsNullOrEmpty(where))
                 {
                     where = string.Format(where, "t1.TABLE_NAME");
@@ -1481,7 +1742,7 @@ ORDER BY
   t3.COLUMN_ID
 ";
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 if (listSchemaNameTableName?.Count > 0)
                 {
                     where = string.Format(where, "o.name", "SCHEMA_NAME(o.schema_id)");
@@ -1545,7 +1806,7 @@ WHERE o.type = 'U' {where}
 ORDER BY SCHEMA_NAME(o.schema_id), o.name, c.column_id
             ";
                 break;
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.PostgreSQL:
                 if (listSchemaNameTableName?.Count > 0)
                 {
                     where = string.Format(where, "t1.table_name", "t1.table_schema");
@@ -1603,39 +1864,6 @@ ORDER BY
     }
 
     /// <summary>
-    /// 获取补全对象
-    /// </summary>
-    /// <param name="tdb"></param>
-    /// <param name="databaseName">数据库名</param>
-    /// <returns></returns>
-    public static string GetCompletionObject(EnumTo.TypeDB tdb, string databaseName)
-    {
-        string result = null;
-
-        switch (tdb)
-        {
-            case EnumTo.TypeDB.SQLite:
-                result = "SELECT t1.name AS table_name, t2.name AS column_name FROM sqlite_master t1 LEFT JOIN pragma_table_info(t1.name) t2 where t1.type='table'";
-                break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
-                result = $"SELECT TABLE_NAME AS table_name, COLUMN_NAME AS column_name from information_schema.COLUMNS WHERE TABLE_SCHEMA='{databaseName.OfSql()}'";
-                break;
-            case EnumTo.TypeDB.Oracle:
-                result = $"SELECT TABLE_NAME AS table_name,COLUMN_NAME AS column_name FROM all_tab_cols WHERE OWNER='{databaseName.OfSql()}'";
-                break;
-            case EnumTo.TypeDB.SQLServer:
-                result = $"USE [{databaseName}];SELECT TABLE_SCHEMA AS table_schema, TABLE_NAME AS table_name, COLUMN_NAME AS column_name from information_schema.COLUMNS";
-                break;
-            case EnumTo.TypeDB.PostgreSQL:
-                result = "select table_schema,table_name,column_name from information_schema.columns";
-                break;
-        }
-
-        return result;
-    }
-
-    /// <summary>
     /// 设置表注释
     /// </summary>
     /// <param name="tdb"></param>
@@ -1644,21 +1872,21 @@ ORDER BY
     /// <param name="tableName">表名</param>
     /// <param name="tableComment">表注释</param>
     /// <returns></returns>
-    public static string SetTableComment(EnumTo.TypeDB tdb, string databaseName, string tableSchema, string tableName, string tableComment)
+    public static string SetTableComment(DBTypes tdb, string databaseName, string tableSchema, string tableName, string tableComment)
     {
         string result = null;
 
         tableComment = tableComment.OfSql();
         switch (tdb)
         {
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 result = $"ALTER TABLE `{databaseName}`.`{tableName}` COMMENT '{tableComment}'";
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 result = $"COMMENT ON TABLE \"{databaseName}\".\"{tableName}\" IS '{tableComment}'";
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 tableSchema ??= "dbo";
 
                 result = $@"
@@ -1687,7 +1915,7 @@ EXEC sp_updateextendedproperty @name = N'MS_Description',
 @level1name = N'{tableName}';
             ";
                 break;
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.PostgreSQL:
                 tableSchema ??= "public";
 
                 result = $"COMMENT ON TABLE {tableSchema}.\"{tableName}\" IS '{tableComment.OfSql()}'";
@@ -1707,24 +1935,24 @@ EXEC sp_updateextendedproperty @name = N'MS_Description',
     /// <param name="columnName">列名</param>
     /// <param name="columnComment">列注释</param>
     /// <returns></returns>
-    public static string SetColumnComment(EnumTo.TypeDB tdb, string databaseName, string tableSchema, string tableName, string columnName, string columnComment)
+    public static string SetColumnComment(DBTypes tdb, string databaseName, string tableSchema, string tableName, string columnName, string columnComment)
     {
         string result = null;
 
         columnComment = columnComment.OfSql();
         switch (tdb)
         {
-            case EnumTo.TypeDB.SQLite:
+            case DBTypes.SQLite:
                 result = "";
                 break;
-            case EnumTo.TypeDB.MySQL:
-            case EnumTo.TypeDB.MariaDB:
+            case DBTypes.MySQL:
+            case DBTypes.MariaDB:
                 result = "";
                 break;
-            case EnumTo.TypeDB.Oracle:
+            case DBTypes.Oracle:
                 result = "";
                 break;
-            case EnumTo.TypeDB.SQLServer:
+            case DBTypes.SQLServer:
                 tableSchema ??= "dbo";
 
                 result = $@"
@@ -1758,7 +1986,7 @@ EXEC sp_updateextendedproperty @name = N'MS_Description',
 @level2name = N'{columnName}';
             ";
                 break;
-            case EnumTo.TypeDB.PostgreSQL:
+            case DBTypes.PostgreSQL:
                 result = "";
                 break;
         }

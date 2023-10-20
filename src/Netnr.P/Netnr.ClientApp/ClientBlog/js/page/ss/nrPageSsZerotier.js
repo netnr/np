@@ -76,7 +76,7 @@ let nrPage = {
                 {
                     field: "config.noAutoAssignIps", headerName: "自动分配IP", width: 150, valueFormatter: (params) => {
                         if (params.data) {
-                            return params.value ? '✅' : '🛑'
+                            return params.value ? '✅' : '⛔'
                         }
                     }
                 },
@@ -113,7 +113,7 @@ let nrPage = {
                 {
                     field: "config.authorized", headerName: "授权", width: 150, valueFormatter: (params) => {
                         if (params.data) {
-                            return params.value ? '✅' : '🛑'
+                            return params.value ? '🟩' : '⛔'
                         }
                     }
                 },

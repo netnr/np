@@ -51,7 +51,7 @@
                         break;
                 }
                 <span class="opacity-75 mx-2">
-                    @VisualFormatService.Duration(item.UmCreateTime.Value)
+                    @ParsingTo.FormatTimeAgo(item.UmCreateTime.Value)
                 </span>
                 <a href="/user/delmessage/@item.UmId" class="btn-outline-danger" onclick='return confirm("确定删除？")'>删除</a>
                 <div class="mt-2">

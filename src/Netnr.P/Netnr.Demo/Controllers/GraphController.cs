@@ -1,4 +1,5 @@
 ﻿using Netnr.Demo.Controllers.GraphDemo;
+using System.Runtime.Versioning;
 
 namespace Netnr.Demo.Controllers
 {
@@ -20,6 +21,7 @@ namespace Netnr.Demo.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [SupportedOSPlatform("windows")]
         public IActionResult CaptchaTest([FromRoute] int id)
         {
             var num = id;

@@ -6,6 +6,7 @@ namespace Netnr.ResponseFramework.Web.Services
     public class LoggingService
     {
         private static Dictionary<string, string> _dicDescription;
+
         /// <summary>
         /// 提取 XML 注释为字典
         /// </summary>

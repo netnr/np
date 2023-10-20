@@ -48,7 +48,7 @@ namespace Netnr.Blog.Web.Controllers
                                 Uid = a.Uid,
                             };
                 vm.Data = await query.ToListAsync();
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {
@@ -71,7 +71,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 if (string.IsNullOrWhiteSpace(mo.NoteTitle) || string.IsNullOrWhiteSpace(mo.NoteContent))
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else
                 {
@@ -119,11 +119,11 @@ namespace Netnr.Blog.Web.Controllers
             var mo = await db.Notepad.FirstOrDefaultAsync(x => x.NoteId == id && x.Uid == uinfo.UserId);
             if (mo == null)
             {
-                vm.Set(EnumTo.RTag.invalid);
+                vm.Set(RCodeTypes.failure);
             }
             else
             {
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
                 vm.Data = mo;
             }
 

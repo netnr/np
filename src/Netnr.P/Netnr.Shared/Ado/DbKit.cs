@@ -89,7 +89,7 @@ public partial class DbKit
         // 修复：避免内存泄露
         // ref: https://stackoverflow.com/questions/3699143
         // ref: https://support.oracle.com/knowledge/Oracle%20Database%20Products/1050515_1.html
-        if (ConnOption.ConnectionType == EnumTo.TypeDB.Oracle)
+        if (ConnOption.ConnectionType == DBTypes.Oracle)
         {
             var gtCmd = cmd.GetType();
 
@@ -253,7 +253,7 @@ public partial class DbKit
         {
             var model = new DbKitDataSetResult();
 
-            if (ConnOption.ConnectionType == EnumTo.TypeDB.Oracle && !DbKitExtensions.SqlParserBeginEnd(sql))
+            if (ConnOption.ConnectionType == DBTypes.Oracle && !DbKitExtensions.SqlParserBeginEnd(sql))
             {
                 model.Datas = new DataSet();
                 model.Schemas = new DataSet();
@@ -365,6 +365,8 @@ public partial class DbKit
 
     /// <summary>
     /// 查询 读取行
+    /// 
+    /// 注意 MySQL 不允许在逐行读取过程中使用当前连接另外执行语句：fix MySqlConnection is already in use. See https://fl.vu/mysql-conn-reuse
     /// </summary>
     /// <param name="sql">SQL</param>
     /// <param name="parameters">参数</param>
@@ -425,6 +427,28 @@ public partial class DbKit
                     await ConnOption.Connection.CloseAsync();
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// 手动开启连接
+    /// </summary>
+    public async Task Open()
+    {
+        if (ConnOption.Connection?.State == ConnectionState.Closed)
+        {
+            await ConnOption.Connection.OpenAsync();
+        }
+    }
+
+    /// <summary>
+    /// 手动关闭连接
+    /// </summary>
+    public async Task Close()
+    {
+        if (ConnOption.Connection?.State == ConnectionState.Open)
+        {
+            await ConnOption.Connection.CloseAsync();
         }
     }
 }

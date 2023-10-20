@@ -34,7 +34,7 @@ namespace Netnr
         /// <param name="tdb">数据库类型</param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static DbContextOptionsBuilder<T> CreateDbContextOptionsBuilder<T>(EnumTo.TypeDB tdb, DbContextOptionsBuilder options = null) where T : DbContext
+        public static DbContextOptionsBuilder<T> CreateDbContextOptionsBuilder<T>(DBTypes tdb, DbContextOptionsBuilder options = null) where T : DbContext
         {
             options ??= new DbContextOptionsBuilder<T>();
 
@@ -43,40 +43,45 @@ namespace Netnr
                 var connnectionString = GetConn();
                 switch (tdb)
                 {
-                    case EnumTo.TypeDB.InMemory:
+                    case DBTypes.InMemory:
 #if DbContextInMemory
                         builder.UseInMemoryDatabase(connnectionString);
 #endif
                         break;
-                    case EnumTo.TypeDB.SQLite:
+                    case DBTypes.SQLite:
 #if DbContextSQLite
                         options.UseSqlite(connnectionString);
 #endif
                         break;
-                    case EnumTo.TypeDB.MySQL:
-                    case EnumTo.TypeDB.MariaDB:
+                    case DBTypes.MySQL:
+                    case DBTypes.MariaDB:
 #if DbContextMySQL
                         options.UseMySql(connnectionString, ServerVersion.AutoDetect(connnectionString));
 #endif
                         break;
-                    case EnumTo.TypeDB.Oracle:
+                    case DBTypes.Oracle:
 #if DbContextOracle
                         builder.UseOracle(connnectionString);
 #endif
                         break;
-                    case EnumTo.TypeDB.SQLServer:
+                    case DBTypes.SQLServer:
 #if DbContextSQLServer
                         options.UseSqlServer(connnectionString);
 #endif
                         break;
-                    case EnumTo.TypeDB.PostgreSQL:
+                    case DBTypes.PostgreSQL:
 #if DbContextPostgreSQL
                         options.UseNpgsql(connnectionString);
 #endif
                         break;
+                    case DBTypes.Dm:
+#if DbContextDm
+                        options.UseDm(connnectionString);
+#endif
+                        break;
                 }
             }
-            options.UseLoggerFactory(LogFactory).EnableSensitiveDataLogging().EnableDetailedErrors();
+            options.UseLoggerFactory(LogFactory).EnableSensitiveDataLogging(BaseTo.IsDev).EnableDetailedErrors();
 
             return options as DbContextOptionsBuilder<T>;
         }
@@ -84,23 +89,23 @@ namespace Netnr
         /// <summary>
         /// 获取连接字符串
         /// </summary>
-        /// <param name="typeDB"></param>
+        /// <param name="dbTypes"></param>
         /// <returns></returns>
-        public static string GetConn(EnumTo.TypeDB? typeDB = null)
+        public static string GetConn(DBTypes? dbTypes = null)
         {
-            var tdb = typeDB ?? AppTo.TDB;
-            var conn = AppTo.Configuration.GetConnectionString(tdb.ToString());
-            if (tdb != EnumTo.TypeDB.InMemory)
+            var dbt = dbTypes ?? AppTo.DBT;
+            var conn = AppTo.Configuration.GetConnectionString(dbt.ToString());
+            if (dbt != DBTypes.InMemory)
             {
                 var pwd = AppTo.GetValue("ConnectionStrings:Password");
                 conn = DbKitExtensions.SqlConnEncryptOrDecrypt(conn, pwd);
 
-                if (tdb == EnumTo.TypeDB.SQLite)
+                if (dbt == DBTypes.SQLite)
                 {
                     conn = conn.Replace("~", AppTo.ContentRootPath);
                 }
 
-                conn = DbKitExtensions.PreCheckConn(tdb, conn);
+                conn = DbKitExtensions.PreCheckConn(conn, dbt);
                 return conn;
             }
             return null;

@@ -122,4 +122,5 @@ class nrcIndexedDB {
     }
 }
 
+Object.assign(window, { nrcIndexedDB });
 export { nrcIndexedDB };

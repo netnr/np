@@ -49,8 +49,6 @@ netnr@netnr.com
 
 [Sponsor list](SPONSORS.md)
 
-[扫码进群](https://ss.netnr.com/tmp/weixin_group.jpg)
-
 
 ### Up
 不要把人或事往坏处想
@@ -58,5 +56,3 @@ netnr@netnr.com
 傲慢是一种得不到支持的尊严
 
 听从安排，保留意见
-
-可以提出意见，态度温和友善

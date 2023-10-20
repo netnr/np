@@ -1,5 +1,5 @@
 ﻿# NetnrMD 编辑器
-Ace 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高亮 + tocbot 目录 + pangu 间隙
+Monaco Editor 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高亮 + tocbot 目录 + pangu 间隙
 
 > <https://md.js.org>
 
@@ -11,8 +11,7 @@ Ace 编辑器 + Marked 解析 + DOMPurify 清洗 + highlight 代码高亮 + tocb
 <div class="nrg-md">Loading ...</div>
 
 <link href="dist/netnrmd.css" rel="stylesheet" />
-<!-- or /dist/netnrmd.bundle.js -->
-<script src="dist/ace.js"></script>
+<script src="dist/monaco.js"></script> <!-- or monaco-editor cdn -->
 <script src="dist/netnrmd.js"></script>
 
 <script>
@@ -92,10 +91,10 @@ nmd.setstore();         //set store 写入本地保存
 nmd.getstore();         //get store 获取本地保存
 
 nmd.objOptions          //配置选项
-nmd.objWrite            //编辑器对象，更多信息参考 ace 文档
+nmd.objWrite            //编辑器对象，更多信息参考 monaco-editor 文档
 nmd.objWrite.getValue() //获取编辑器值
 
-nmd.save(format, filename) //保存 (markdown html word png pdf)
+nmd.save(format, filename) //保存 (markdown html png pdf)
 nmd.addCommand("Ctrl+S", () => { /* save */ }) //快捷键
 
 //全局对象

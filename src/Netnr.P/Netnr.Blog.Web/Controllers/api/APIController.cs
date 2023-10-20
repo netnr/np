@@ -2,14 +2,14 @@
 using System.Globalization;
 using SkiaSharp;
 using SkiaSharp.QrCode;
+using System.Net.Http;
 
-namespace Netnr.Blog.Web.Controllers.api
+namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 公共接口
     /// </summary>
     [Route("api/v1/[action]")]
-    [FilterAllowCORS]
     public partial class APIController : ControllerBase
     {
         /// <summary>
@@ -25,11 +25,11 @@ namespace Netnr.Blog.Web.Controllers.api
             if (uinfo != null)
             {
                 vm.Data = uinfo;
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             else
             {
-                vm.Set(EnumTo.RTag.unauthorized);
+                vm.Set(RCodeTypes.unauthorized);
             }
 
             return vm;
@@ -66,7 +66,7 @@ namespace Netnr.Blog.Web.Controllers.api
             }
             else
             {
-                vm.Set(EnumTo.RTag.unauthorized);
+                vm.Set(RCodeTypes.unauthorized);
             }
 
             return vm;
@@ -90,10 +90,10 @@ namespace Netnr.Blog.Web.Controllers.api
                 ext = Path.GetExtension(file.FileName);
             }
 
-            if (string.IsNullOrWhiteSpace(ext) || !ext.Contains('.') || ext.EndsWith("exe"))
+            if (file == null || ParsingTo.IsRiskExtension(file.FileName))
             {
-                vm.Set(EnumTo.RTag.refuse);
-                vm.Msg = "Invalid extension";
+                vm.Set(RCodeTypes.refuse);
+                vm.Msg = "File extension not supported";
             }
             else
             {
@@ -102,7 +102,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
                 if (!string.IsNullOrWhiteSpace(subdir) && !ParsingTo.IsLinkPath(subdir))
                 {
-                    vm.Set(EnumTo.RTag.invalid);
+                    vm.Set(RCodeTypes.failure);
                     vm.Msg = "subdir 仅为字母、数字";
                 }
                 else
@@ -111,14 +111,14 @@ namespace Netnr.Blog.Web.Controllers.api
                     var vpath = CommonService.UrlRelativePath(null, subdir, now.ToString("yyyy"));
 
                     //物理路径
-                    var ppath = PathTo.Combine(AppTo.WebRootPath, vpath);
+                    var ppath = ParsingTo.Combine(AppTo.WebRootPath, vpath);
                     //创建物理目录
                     if (!Directory.Exists(ppath))
                     {
                         Directory.CreateDirectory(ppath);
                     }
 
-                    using var fs = new FileStream(PathTo.Combine(ppath, filename), FileMode.CreateNew);
+                    using var fs = new FileStream(ParsingTo.Combine(ppath, filename), FileMode.CreateNew);
                     if (file != null)
                     {
                         await file.CopyToAsync(fs);
@@ -131,12 +131,9 @@ namespace Netnr.Blog.Web.Controllers.api
                     fs.Close();
 
                     //输出
-                    vm.Data = new
-                    {
-                        path = PathTo.Combine(vpath, filename)
-                    };
+                    vm.Data = ParsingTo.Combine(vpath, filename);
 
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
             }
 
@@ -150,20 +147,19 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
         /// <returns></returns>
         [HttpPost]
-        [HttpOptions]
         public async Task<ResultVM> Upload(IFormFile file, [FromForm] string subdir = "/static")
         {
             var vm = new ResultVM();
 
             try
             {
-                if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true && !HttpContext.User.Identity.IsAuthenticated)
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Set(RCodeTypes.unauthorized);
                 }
                 else if (file == null)
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else
                 {
@@ -186,20 +182,19 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
         /// <returns></returns>
         [HttpPost]
-        [HttpOptions]
         public async Task<ResultVM> UploadBase64([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             var vm = new ResultVM();
 
             try
             {
-                if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true && !HttpContext.User.Identity.IsAuthenticated)
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Set(RCodeTypes.unauthorized);
                 }
                 else if (content == null)
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else
                 {
@@ -226,20 +221,19 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="subdir">可选，默认 /static，自定义子路径，如：/static/draw</param>
         /// <returns></returns>
         [HttpPost]
-        [HttpOptions]
         public async Task<ResultVM> UploadText([FromForm] string content, [FromForm] string ext, [FromForm] string subdir = "/static")
         {
             var vm = new ResultVM();
 
             try
             {
-                if (!AppTo.GetValue<bool>("ReadOnly") && !HttpContext.User.Identity.IsAuthenticated)
+                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true && !HttpContext.User.Identity.IsAuthenticated)
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Set(RCodeTypes.unauthorized);
                 }
                 else if (content == null)
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else
                 {
@@ -300,7 +294,7 @@ namespace Netnr.Blog.Web.Controllers.api
                     //IP
                     client_ip,
                 };
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {
@@ -409,16 +403,16 @@ namespace Netnr.Blog.Web.Controllers.api
                 if (bytes != null)
                 {
                     vm.Data = ocr.GeneralBasic(bytes).ToString().DeJson();
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
                 else if (!string.IsNullOrWhiteSpace(url))
                 {
                     vm.Data = ocr.GeneralBasicUrl(url).ToString().DeJson();
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                 }
 
                 vm.Log.Add("通用文字识别(百度接口,50000次/天免费,用自己申请的授权信息更稳定不受限制)");
@@ -463,7 +457,7 @@ namespace Netnr.Blog.Web.Controllers.api
             {
                 Data = DictOCRType
             };
-            vm.Set(EnumTo.RTag.success);
+            vm.Set(RCodeTypes.success);
 
             return vm;
         }
@@ -491,90 +485,90 @@ namespace Netnr.Blog.Web.Controllers.api
                     case "general":
                         vm.Log.Add("通用文字识别（标准含位置版） 500次/天");
                         vm.Data = ocr.General(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "accuratebasic":
                         vm.Log.Add("通用文字识别（高精度版） 500次/天");
                         vm.Data = ocr.AccurateBasic(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "accurate":
                         vm.Log.Add("通用文字识别（高精度含位置版） 50次/天");
                         vm.Data = ocr.Accurate(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "numbers":
                         vm.Log.Add("数字识别 200次/天");
                         vm.Data = ocr.Numbers(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "webimage":
                         vm.Log.Add("网络图片文字识别 500次/天");
                         vm.Data = ocr.WebImage(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "handwriting":
                         vm.Log.Add("手写文字识别 50次/天");
                         vm.Data = ocr.Handwriting(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "idcard":
                         vm.Log.Add("身份证识别 500次/天");
                         vm.Data = ocr.Idcard(bytes, side == "avatar" ? "front" : "back");
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "bankcard":
                         vm.Log.Add("银行卡识别 500次/天");
                         vm.Data = ocr.Bankcard(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "businesslicense":
                         vm.Log.Add("营业执照识别 200次/天");
                         vm.Data = ocr.BusinessLicense(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "vatinvoice":
                         vm.Log.Add("增值税发票识别 500次/天");
                         vm.Data = ocr.VatInvoice(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "trainticket":
                         vm.Log.Add("火车票识别 50次/天");
                         vm.Data = ocr.TrainTicket(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "taxireceipt":
                         vm.Log.Add("出租车票识别 50次/天");
                         vm.Data = ocr.TaxiReceipt(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "receipt":
                         vm.Log.Add("通用票据识别 200次/天");
                         vm.Data = ocr.Receipt(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "vehiclelicense":
                         vm.Log.Add("行驶证识别 200次/天");
                         vm.Data = ocr.VehicleLicense(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "drivinglicense":
                         vm.Log.Add("驾驶证识别 200次/天");
                         vm.Data = ocr.DrivingLicense(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "licenseplate":
                         vm.Log.Add("车牌识别 200次/天");
                         vm.Data = ocr.LicensePlate(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     case "seal":
                         vm.Log.Add("印章识别 100次/天");
                         vm.Data = ocr.Seal(bytes);
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                         break;
                     default:
-                        vm.Set(EnumTo.RTag.invalid);
+                        vm.Set(RCodeTypes.failure);
                         break;
                 }
 
@@ -610,7 +604,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 }
             };
 
-            vm.Set(EnumTo.RTag.success);
+            vm.Set(RCodeTypes.success);
 
             return vm;
         }
@@ -636,7 +630,7 @@ namespace Netnr.Blog.Web.Controllers.api
 
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    vm.Set(EnumTo.RTag.failure);
+                    vm.Set(RCodeTypes.failure);
                     vm.Msg = "content 不能为空";
                 }
                 else
@@ -646,32 +640,32 @@ namespace Netnr.Blog.Web.Controllers.api
                         case "commenttag":
                             vm.Log.Add("评论观点抽取");
                             vm.Data = nlp.CommentTag(content);
-                            vm.Set(EnumTo.RTag.success);
+                            vm.Set(RCodeTypes.success);
                             break;
                         case "sentimentclassify":
                             vm.Log.Add("情感倾向分析");
                             vm.Data = nlp.SentimentClassify(content);
-                            vm.Set(EnumTo.RTag.success);
+                            vm.Set(RCodeTypes.success);
                             break;
                         case "keyword":
                             {
                                 vm.Log.Add("文章标签");
                                 if (string.IsNullOrWhiteSpace(title))
                                 {
-                                    vm.Set(EnumTo.RTag.failure);
+                                    vm.Set(RCodeTypes.failure);
                                     vm.Msg = "title 不能为空";
                                 }
                                 else
                                 {
                                     vm.Data = nlp.Keyword(title, content);
-                                    vm.Set(EnumTo.RTag.success);
+                                    vm.Set(RCodeTypes.success);
                                 }
                             }
                             break;
                         case "ecnet":
                             vm.Log.Add("文本纠错");
                             vm.Data = nlp.Ecnet(content);
-                            vm.Set(EnumTo.RTag.success);
+                            vm.Set(RCodeTypes.success);
                             break;
                         case "newssummary":
                             {
@@ -705,7 +699,7 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public FileResult SVGPIG()
+        public IActionResult SVGPIG()
         {
             return SVGPIG("200x200");
         }
@@ -716,7 +710,8 @@ namespace Netnr.Blog.Web.Controllers.api
         /// <param name="wh">自定义宽高，如 500x309</param>
         /// <returns></returns>
         [HttpGet, Route("{wh}")]
-        public FileResult SVGPIG([FromRoute] string wh)
+        [ResponseCache(Duration = 3600)]
+        public IActionResult SVGPIG([FromRoute] string wh)
         {
             var w = 200;
             var h = 200;
@@ -759,11 +754,11 @@ namespace Netnr.Blog.Web.Controllers.api
         /// </summary>
         /// <param name="text">文本</param>
         /// <param name="icon">带 logo 图标</param>
-        /// <param name="size">大小，默认 200 </param>
+        /// <param name="size">大小，默认 300 </param>
         /// <param name="fill">填充颜色</param>
         /// <returns></returns>
         [HttpPost]
-        public FileResult QRCode([FromForm] string text, IFormFile icon, [FromForm] int size = 200, [FromForm] string fill = "000000")
+        public IActionResult QRCode([FromForm] string text, IFormFile icon, [FromForm] int size = 300, [FromForm] string fill = "000000")
         {
             size = Math.Max(30, size);
             size = Math.Min(99999, size);
@@ -800,11 +795,11 @@ namespace Netnr.Blog.Web.Controllers.api
         /// 生成二维码
         /// </summary>
         /// <param name="text">文本</param>
-        /// <param name="size">大小，默认 200 </param>
+        /// <param name="size">大小，默认 300 </param>
         /// <param name="fill">填充颜色</param>
         /// <returns></returns>
         [HttpGet]
-        public FileResult QRCode(string text, int size = 200, string fill = "000000")
+        public IActionResult QRCode(string text, int size = 300, string fill = "000000")
         {
             return QRCode(text, null, size, fill);
         }
@@ -821,8 +816,7 @@ namespace Netnr.Blog.Web.Controllers.api
         [HttpHead]
         [HttpPatch]
         [HttpDelete]
-        [HttpOptions]
-        public ActionResult Proxy(string url, string charset = "utf-8")
+        public IActionResult Proxy(string url, string charset = "utf-8")
         {
             var outCode = 500;
             var outContent = string.Empty;
@@ -833,7 +827,7 @@ namespace Netnr.Blog.Web.Controllers.api
                 var ci = new ClientInfoTo(HttpContext);
                 Console.WriteLine($"PROXY | {Request.Method} | {ci.IP} | {url} | {ci.Headers.UserAgent}");
 
-                if (!AppTo.GetValue<bool>("ReadOnly"))
+                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
                 {
                     return BadRequest("Refuse");
                 }
@@ -953,6 +947,56 @@ namespace Netnr.Blog.Web.Controllers.api
         }
 
         /// <summary>
+        /// 死链检测
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ActionResult> Link(string url)
+        {
+            try
+            {
+                var hc = new HttpClient();
+                var resp = await hc.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+
+                var data = new JsonObject
+                {
+                    ["ok"] = resp.IsSuccessStatusCode,
+                    ["status"] = (int)resp.StatusCode,
+                    ["statusText"] = resp.ReasonPhrase,
+                    ["url"] = url
+                };
+
+                var header = new JsonObject();
+                resp.Headers.ForEach(h =>
+                {
+                    if (h.Value.Count() > 1)
+                    {
+                        var values = new JsonArray();
+                        h.Value.ForEach(v => values.Add(v));
+                        header[h.Key.ToLower()] = values;
+                    }
+                    else
+                    {
+                        header[h.Key.ToLower()] = h.Value.First();
+                    }
+                });
+                data["header"] = header;
+
+                return new ContentResult
+                {
+                    StatusCode = (int)resp.StatusCode,
+                    Content = data.ToJson(),
+                    ContentType = "application/json; charset=utf-8"
+                };
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// 执行命令行
         /// </summary>
         /// <param name="arguments">参数（必填）</param>
@@ -965,18 +1009,18 @@ namespace Netnr.Blog.Web.Controllers.api
             var vm = new ResultVM();
             try
             {
-                if (AppTo.GetValue<bool>("ReadOnly"))
+                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
                 {
                     var cr = CmdTo.Execute(arguments, fileName);
                     vm.Data = cr.CrOutput?.Split(Environment.NewLine);
 
                     vm.Log.AddRange(cr.CrError?.Split(Environment.NewLine));
 
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.refuse);
+                    vm.Set(RCodeTypes.refuse);
                 }
             }
             catch (Exception ex)

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Reflection;
 using Xunit;
 
 namespace Netnr.Test
@@ -23,8 +21,8 @@ namespace Netnr.Test
 
                 var dict = new Dictionary<string, object>
                 {
-                    { "Bytes Sent", ParsingTo.FormatByteSize(ipStats.BytesSent) },
-                    { "Bytes Received", ParsingTo.FormatByteSize(ipStats.BytesReceived) },
+                    { "Bytes Sent", ParsingTo.FormatByte(ipStats.BytesSent) },
+                    { "Bytes Received", ParsingTo.FormatByte(ipStats.BytesReceived) },
                     { "PhysicalAddress(MAC)", ni.GetPhysicalAddress() }
                 };
                 foreach (var key in dict.Keys)

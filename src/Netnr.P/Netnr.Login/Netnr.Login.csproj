@@ -3,17 +3,17 @@
 	<PropertyGroup>
 		<TargetFrameworks>net48;netstandard2.0;netstandard2.1</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
-		<Version>5.1.0-rc.1</Version>
+		<Version>5.1.0</Version>
 		<Authors>netnr</Authors>
 		<Copyright>netnr</Copyright>
 		<Company>$(Authors)</Company>
 		<PackageIcon>favicon.png</PackageIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Description>第三方 OAuth2 授权登录，QQ、微信开放平台（Weixin）、微信公众平台（WeixinMP）、微博（Weibo）、淘宝（Taobao）、支付宝（Alipay）、钉钉（DingTalk）、码云（Gitee）、GitHub、微软（Microsoft ）、StackOverflow、谷歌（Google）</Description>
+		<Description>第三方 OAuth2 授权登录，QQ、微信开放平台（Weixin）、微信公众平台（WeixinMP）、微博（Weibo）、淘宝（Taobao）、支付宝（Alipay）、钉钉（DingTalk）、飞书（Feishu）、码云（Gitee）、GitHub、微软（Microsoft ）、StackOverflow、谷歌（Google）</Description>
 		<PackageProjectUrl>https://github.com/netnr</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/netnr</RepositoryUrl>
 		<PackageTags>oauth2.0;login</PackageTags>
-		<PackageReleaseNotes>微信公众平台（WeixinMP）</PackageReleaseNotes>
+		<PackageReleaseNotes>飞书（Feishu）</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>Netnr.Login.md</PackageReadmeFile>

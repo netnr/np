@@ -127,7 +127,7 @@
                     mo.GistStatus = 1;
                     mo.Uid = uinfo?.UserId;
 
-                    mo.GistCode = UniqueTo.LongId().ToString();
+                    mo.GistCode = Guid.NewGuid().ToLongString();
                     await db.Gist.AddAsync(mo);
                     var num = await db.SaveChangesAsync();
 

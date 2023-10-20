@@ -223,7 +223,7 @@ let nrPage = {
                                 let ver = vd[0];
                                 let day = vd[1];
                                 let npmPath = `ushio-api-img-wallpaper@${ver}/img_${day}_1920x1080_96_background_normal.jpg`;
-                                let url = nrPage.imgProxy(`https://npmcdn.com/${npmPath}`);
+                                let url = nrcBase.mirrorNPM(`https://npmcdn.com/${npmPath}`);
 
                                 let domCol = document.createElement('div');
                                 domCol.className = 'col-12 my-2';

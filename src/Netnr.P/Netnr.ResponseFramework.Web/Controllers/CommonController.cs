@@ -178,11 +178,11 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        vpath = PathTo.Combine(vpath, subdir, now.ToString("yyyy'/'MM'"));
+                        vpath = ParsingTo.Combine(vpath, subdir, now.ToString("yyyy'/'MM'"));
                     }
 
                     //物理路径
-                    var ppath = PathTo.Combine(AppTo.WebRootPath, vpath);
+                    var ppath = ParsingTo.Combine(AppTo.WebRootPath, vpath);
                     if (!Directory.Exists(ppath))
                     {
                         Directory.CreateDirectory(ppath);
@@ -192,15 +192,18 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     for (int i = 0; i < files.Count; i++)
                     {
                         var file = files[i];
-                        var ext = Path.GetExtension(file.FileName);
-                        var filename = now.ToString("ddHHmmss") + RandomTo.NewNumber() + ext;
-
-                        using (var stream = new FileStream(PathTo.Combine(ppath, filename), FileMode.Create))
+                        if (!ParsingTo.IsRiskExtension(file.FileName))
                         {
-                            await file.CopyToAsync(stream);
-                        }
+                            var ext = Path.GetExtension(file.FileName);
+                            var filename = now.ToString("ddHHmmss") + RandomTo.NewNumber() + ext;
 
-                        listPath.Add(PathTo.Combine(vpath, filename));
+                            using (var stream = new FileStream(ParsingTo.Combine(ppath, filename), FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+
+                            listPath.Add(ParsingTo.Combine(vpath, filename));
+                        }
                     }
 
                     if (listPath.Count == 1)
@@ -211,7 +214,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     {
                         vm.Data = listPath;
                     }
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
             }
             catch (Exception ex)

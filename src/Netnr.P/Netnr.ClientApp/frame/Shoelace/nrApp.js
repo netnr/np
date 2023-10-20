@@ -9,6 +9,15 @@ let nrApp = {
     tsLoadingHtml: '<sl-spinner class="fs-3 m-3"></sl-spinner>',
     /* 失败提示 */
     tsFailHtml: '<sl-button variant="text">网络错误</sl-button>',
+    tsHrHtml: '<sl-divider></sl-divider>',
+
+    /**
+     * 标签提示
+     * @param {*} text 
+     * @param {*} size 
+     * @returns 
+     */
+    eleTips: (text, size) => `<sl-button variant="text" size="${size || "medium"}">${nrcBase.htmlOf(text)}</sl-button>`,
 
     /**
      * 是暗黑主题
@@ -26,6 +35,8 @@ let nrApp = {
 
         nrcBase.saveTheme(theme);
         let isDark = nrcBase.isDark();
+
+        document.documentElement.dataset.bsTheme = isDark ? "dark" : "light";
 
         //monaco-editor
         if (window["monaco"]) {
@@ -56,6 +67,23 @@ let nrApp = {
         document.querySelectorAll('.nrg-chart').forEach(dom => {
             nrECharts.setTheme(dom);
         });
+
+        //uppy
+        document.querySelectorAll('.uppy-Dashboard').forEach(dom => {
+            dom.dataset.uppyTheme = theme
+        });
+    },
+
+    /**
+     * 全局错误处理
+     */
+    globalError: () => {
+        window.addEventListener('error', function (event) {
+            console.debug(event);
+            if (window["shoelace"] || window["nrTranslations"]) {
+                nrApp.toast(JSON.stringify(event));
+            }
+        });
     },
 
     /**
@@ -64,7 +92,7 @@ let nrApp = {
      * @param {any} tips
      */
     logError: (error, tips) => {
-        if (tips != null && window["shoelace"]) {
+        if (tips != null && (window["shoelace"] || window["nrTranslations"])) {
             nrApp.toast(tips);
         }
         console.debug(error);
@@ -88,16 +116,60 @@ let nrApp = {
      * @param {any} isLoading 
      */
     setLoading: (domCard, isLoading) => {
-        domCard.querySelectorAll('sl-button,sl-input,sl-select').forEach(dom => {
-            if (dom.nodeName == "SL-BUTTON" && dom.variant != "text") {
-                dom.loading = isLoading;
-            } else if (dom.nodeName == "SL-SELECT") {
-                dom.disabled = isLoading;
+        let domArray = [];
+        let tagArray = ["sl-button", "sl-input", "sl-select", "sl-range"];
+        if (tagArray.includes(domCard.nodeName.toLowerCase())) {
+            domArray.push(domCard);
+        } else {
+            domArray = domCard.querySelectorAll(tagArray.join(","));
+        }
+
+        if (isLoading) {
+            window.clearTimeout(domCard["to"]);
+            domArray.forEach(dom => {
+                if (dom.nodeName == "SL-BUTTON" && dom.variant != "text") {
+                    dom.loading = isLoading;
+                    dom.disabled = isLoading;
+                } else if (["SL-SELECT", "SL-RANGE"].includes(dom.nodeName)) {
+                    dom.disabled = isLoading;
+                }
+                else {
+                    dom.readonly = isLoading;
+                }
+            })
+        } else {
+            domCard["to"] = setTimeout(() => {
+                domArray.forEach(dom => {
+                    if (dom.nodeName == "SL-BUTTON" && dom.variant != "text") {
+                        dom.loading = isLoading;
+                        dom.disabled = isLoading;
+                    } else if (["SL-SELECT", "SL-RANGE"].includes(dom.nodeName)) {
+                        dom.disabled = isLoading;
+                    }
+                    else {
+                        dom.readonly = isLoading;
+                    }
+                })
+            }, 500);
+        }
+    },
+
+    /**
+     * 设置 grid 列处于加载状态
+     * @param {*} columnDefs 
+     */
+    setGridColumnLoading: (columnDefs) => {
+        for (let i = 0; i < columnDefs.length; i++) {
+            let col = columnDefs[i];
+            if (col.field != "#line_number" && col.hide != true) {
+                if (col.cellRenderer == null) {
+                    col.cellRenderer = (params) => {
+                        return params.value === undefined ? '<sl-spinner class="fs-4"></sl-spinner>' : params.value
+                    }
+                }
+                break;
             }
-            else {
-                dom.readonly = isLoading;
-            }
-        })
+        }
     },
 
     /**
@@ -131,7 +203,7 @@ let nrApp = {
             type: type,
             closable: true,
             duration: duration,
-            innerHTML: `<sl-icon name="${icon}" slot="icon"></sl-icon><div class="text-break">${message}</div>`
+            innerHTML: `<sl-icon name="${icon}" slot="icon"></sl-icon><div class="text-break">${nrcBase.xssOf(message)}</div>`
         });
 
         document.body.append(alert);
@@ -140,6 +212,7 @@ let nrApp = {
         }
     },
 
+    domAlert: null,
     /**
      * 提示
      * @param {any} content 内容
@@ -169,11 +242,11 @@ let nrApp = {
             let dom = document.createElement("pre");
             dom.className = "m-0 fs-6";
             dom.style.whiteSpace = 'pre-wrap';
-            dom.innerText = content;
-            
+            dom.textContent = content;
+
             nrApp.domAlert.appendChild(dom);
         } catch (error) {
-            nrApp.domAlert.innerHTML = content;
+            nrApp.domAlert.innerHTML = nrcBase.xssOf(content);
         }
 
         if (nrApp.domAlert.show) {
@@ -181,6 +254,7 @@ let nrApp = {
         }
     },
 
+    domConfirm: null,
     /**
      * 确认
      * @param {any} message 提示内容
@@ -197,7 +271,7 @@ let nrApp = {
         }
         nrApp.domConfirm.label = title || "确认";
         nrcBase.cssvar(nrApp.domConfirm, '--width', width);
-        nrApp.domConfirm.querySelector(`div.nrg-confirm-message`).innerHTML = message;
+        nrApp.domConfirm.querySelector(`div.nrg-confirm-message`).innerHTML = nrcBase.xssOf(message);
 
         //取消
         let cancelEvent = function () {
@@ -217,5 +291,5 @@ let nrApp = {
         nrApp.domConfirm.show();
     }),
 }
-
+Object.assign(window, { nrApp });
 export { nrApp };

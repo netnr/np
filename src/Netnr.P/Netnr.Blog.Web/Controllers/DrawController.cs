@@ -82,7 +82,7 @@
                 //新增
                 if (string.IsNullOrWhiteSpace(model.DrId))
                 {
-                    model.DrId = model.DrType[0] + UniqueTo.LongId().ToString();
+                    model.DrId = model.DrType[0] + Guid.NewGuid().ToLongString();
                     model.DrCreateTime = DateTime.Now;
                     model.Uid = uinfo?.UserId;
                     model.DrOrder = 100;
@@ -167,16 +167,16 @@
                 var mo = await db.Draw.FindAsync(id);
                 if (mo == null)
                 {
-                    vm.Set(EnumTo.RTag.failure);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else if (mo.DrOpen == 1 || mo.Uid == uinfo?.UserId || (!string.IsNullOrWhiteSpace(mo.Spare1) && mo.Spare1 == code))
                 {
                     vm.Data = mo;
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
                 else
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Set(RCodeTypes.unauthorized);
                 }
             }
             catch (Exception ex)
@@ -229,7 +229,7 @@
             var url = "";
 
             var subdir = AppTo.GetValue("StaticResource:DrawPath");
-            var vm = await api.APIController.UploadCheck(Request.Form.Files[0], null, "", subdir);
+            var vm = await APIController.UploadCheck(Request.Form.Files[0], null, "", subdir);
             if (vm.Code == 200)
             {
                 var jd = vm.Data.ToJson().DeJson();

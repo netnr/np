@@ -1,6 +1,8 @@
 ﻿#if Full || Base
 
+using System;
 using System.Net;
+using System.Reflection;
 using System.Text.Encodings.Web;
 
 namespace Netnr;
@@ -431,7 +433,6 @@ public class JsonConverterTo
         }
     }
 
-
     /// <summary>
     /// 构建 JSON 序列化选项
     /// </summary>
@@ -454,16 +455,17 @@ public class JsonConverterTo
             PropertyNamingPolicy = null,
             //编码
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            //格式化
-            Converters = {
-                new DateTimeJsonConverter(formatter), //时间格式化
-                new JsonStringEnumConverter(), //枚举字符串
-                new DataTableJsonConverter(), //数据表格式化
-                new DataSetJsonConverter(), //数据集格式化
-                new IPAddressJsonConverter(), //IPAddress
-                new IPEndPointJsonConverter(), //IPEndPoint
-                new DirectoryInfoJsonConverter(), //DirectoryInfo
-                new IntPtrJsonConverter(), //IntPtr
+            //转换
+            Converters =
+            {
+                new DateTimeJsonConverter(formatter),
+                new JsonStringEnumConverter(),
+                new DataTableJsonConverter(),
+                new DataSetJsonConverter(),
+                new IPAddressJsonConverter(),
+                new IPEndPointJsonConverter(),
+                new DirectoryInfoJsonConverter(),
+                new IntPtrJsonConverter(),
             }
         };
 

@@ -86,14 +86,13 @@
     <link href='/dist/main.css' rel='stylesheet' asp-append-version="true" />
     <script src="/dist/main.js" async asp-append-version="true"></script>
 
-    @*<link href='http://localhost:775/main.css' rel='stylesheet' asp-append-version="true" />
-    <script src="http://localhost:775/main.js" async asp-append-version="true"></script>*@
+    @*<link href='https://localhost:775/main.css' rel='stylesheet' asp-append-version="true" />
+    <script src="https://localhost:775/main.js" async asp-append-version="true"></script>*@
 </head>
 <body>
-
     @if (!canav.Any(x => ca.StartsWith(x)))
     {
-        if (AppTo.GetValue<bool>("ReadOnly"))
+        if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
         {
             var myDomain = AppTo.GetValue("Common:Domain");
 

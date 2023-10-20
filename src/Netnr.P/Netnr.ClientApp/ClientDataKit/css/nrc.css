@@ -106,3 +106,8 @@
 .nrc-item-default {
     background-color: var(--sl-color-orange-50);
 }
+
+/*不显示 webpack 错误弹窗*/
+iframe#webpack-dev-server-client-overlay{
+    display: none;
+}

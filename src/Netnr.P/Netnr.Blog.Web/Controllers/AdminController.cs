@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -69,7 +70,7 @@ namespace Netnr.Blog.Web.Controllers
                                 b.UserMail
                             };
                 vm.Data = await query.ToListAsync();
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {
@@ -154,7 +155,7 @@ namespace Netnr.Blog.Web.Controllers
                                 UserMail = b == null ? null : b.UserMail
                             };
                 vm.Data = await query.ToListAsync();
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {
@@ -413,7 +414,7 @@ namespace Netnr.Blog.Web.Controllers
                         break;
                 }
 
-                vm.Set(EnumTo.RTag.success);
+                vm.Set(RCodeTypes.success);
             }
             catch (Exception ex)
             {
@@ -425,12 +426,25 @@ namespace Netnr.Blog.Web.Controllers
 
         #endregion
 
-        #region 清理全局缓存
+        #region 缓存
 
-        public IActionResult ClearCache()
+        /// <summary>
+        /// 清理缓存
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult CacheRemoveAll()
         {
             CacheTo.RemoveAll();
             return Ok("Done!");
+        }
+
+        /// <summary>
+        /// 获取缓存
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult CacheAll()
+        {
+            return Json(CacheTo.CacheDictionary);
         }
 
         #endregion

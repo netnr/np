@@ -297,7 +297,7 @@ public class ServeTo
                             //index
                             if (isDir && !string.IsNullOrWhiteSpace(so.Index))
                             {
-                                if (so.RootDir.GetFiles(Path.Combine(path, so.Index)).Any())
+                                if (so.RootDir.EnumerateFiles(Path.Combine(path, so.Index)).Any())
                                 {
                                     path = Path.Combine(path, so.Index);
                                     isDir = false;
@@ -373,12 +373,12 @@ public class ServeTo
                             {
                                 // file
 
-                                var file = so.RootDir.GetFiles(path).FirstOrDefault();
+                                var file = so.RootDir.EnumerateFiles(path).FirstOrDefault();
                                 if (file != null)
                                 {
                                     so.OutputFile(response, file, request);
                                 }
-                                else if (so.RootDir.GetDirectories(path).Any())
+                                else if (so.RootDir.EnumerateDirectories(path).Any())
                                 {
                                     // 301 directory/
 
@@ -427,7 +427,7 @@ public class ServeTo
 
                             if (pathname.EndsWith('/') && request.Url.Query == "?force")
                             {
-                                var delPath = so.RootDir.GetDirectories(path, SearchOption.AllDirectories).FirstOrDefault();
+                                var delPath = so.RootDir.EnumerateDirectories(path, SearchOption.AllDirectories).FirstOrDefault();
                                 delPath?.Delete(true);
                             }
                             else
@@ -457,12 +457,12 @@ public class ServeTo
 
                     if (!string.IsNullOrEmpty(so.Suffix) && !path.EndsWith(so.Suffix))
                     {
-                        file = so.RootDir.GetFiles(path + so.Suffix).FirstOrDefault();
+                        file = so.RootDir.EnumerateFiles(path + so.Suffix).FirstOrDefault();
                     }
 
                     if (file == null && !string.IsNullOrWhiteSpace(so.Error404))
                     {
-                        file = so.RootDir.GetFiles(so.Error404).FirstOrDefault();
+                        file = so.RootDir.EnumerateFiles(so.Error404).FirstOrDefault();
                     }
 
                     if (file != null)
@@ -479,9 +479,9 @@ public class ServeTo
         }
         catch (DirectoryNotFoundException ex)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(ex);
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ResetColor();
 
             OutputText(response, "Not Found", HttpStatusCode.NotFound);
         }
@@ -489,7 +489,7 @@ public class ServeTo
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex);
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ResetColor();
 
             OutputText(response, ex.Message, HttpStatusCode.ServiceUnavailable);
         }

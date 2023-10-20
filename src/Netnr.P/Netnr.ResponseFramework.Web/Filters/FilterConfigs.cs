@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-
-namespace Netnr.ResponseFramework.Web.Filters
+﻿namespace Netnr.ResponseFramework.Web.Filters
 {
     /// <summary>
     /// 过滤器
@@ -80,7 +78,7 @@ namespace Netnr.ResponseFramework.Web.Filters
                         }
 
                         //记录查询SQL
-                        if ((context.Result as ObjectResult)?.Value is QueryDataOutputVM ovm)
+                        if (context.Result is ObjectResult { Value: QueryDataOutputVM ovm })
                         {
                             mo.LogContent += Environment.NewLine + ovm.QuerySql;
                         }
@@ -105,7 +103,7 @@ namespace Netnr.ResponseFramework.Web.Filters
                         if (LoggingService.CurrentCacheLog.Count > cacheLogCount || DateTime.Now.ToTimestamp() - cacheLogWrite.Value.ToTimestamp() > cacheLogTime)
                         {
                             //异步写入日志
-                            ThreadPool.QueueUserWorkItem(_ =>
+                            Task.Run(() =>
                             {
                                 try
                                 {
@@ -114,7 +112,7 @@ namespace Netnr.ResponseFramework.Web.Filters
 
                                     while (LoggingService.CurrentCacheLog.TryDequeue(out SysLog deobj))
                                     {
-                                        deobj.LogId = UniqueTo.LongId().ToString();
+                                        deobj.LogId = Guid.NewGuid().ToLongString();
 
                                         LoggingTo.UserAgentParser(deobj.LogUserAgent, out string browserName, out string systemName, out bool isBot);
                                         deobj.LogBrowserName = browserName;

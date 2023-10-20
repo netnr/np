@@ -1,5 +1,6 @@
 import { nrWeb } from "../../nrWeb";
 import { nrVary } from "../../nrVary";
+import { nrcBase } from "../../../../frame/nrcBase";
 
 let nrPage = {
     pathname: "/ss/zoning",
@@ -9,7 +10,7 @@ let nrPage = {
         await nrPage.linkage(nrVary.domZoning5, 5);
     },
 
-    npmsrc: "https://npmcdn.com/zoningjs@2.2022.0/",
+    npmsrc: nrcBase.mirrorNPM("https://npmcdn.com/zoningjs@2.2023.0/xx.json").replace("xx.json", ""),
     cacheJson: {},
 
     /**

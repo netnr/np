@@ -10,7 +10,7 @@ let nrPage = {
     init: async () => {
 
         //markdown 编辑器
-        await nrcRely.remote("netnrmdAce.js");
+        await nrcRely.remote("netnrmdEditor");
         await nrcRely.remote("netnrmd");
         nrApp.tsMd = netnrmd.init('.nrg-editor', {
             theme: nrcBase.isDark() ? "dark" : "light",
@@ -73,7 +73,7 @@ let nrPage = {
             } else {
                 nrApp.setLoading(nrVary.domBtnSave);
 
-                let fd = nrcBase.jsonToFormData(obj);
+                let fd = nrcBase.fromKeyToFormData(obj);
                 let result = await nrWeb.reqServer('/Doc/ItemSave', { method: "POST", body: fd, redirect: 'manual' });
 
                 nrApp.setLoading(nrVary.domBtnSave, true);

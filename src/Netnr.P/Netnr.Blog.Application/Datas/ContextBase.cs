@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Netnr.Blog.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.Blog.Application.Datas;
 
@@ -745,7 +742,7 @@ public partial class ContextBase : DbContext
             entity.Property(e => e.UserMailValid).HasComment("邮箱是否验证，1验证");
             entity.Property(e => e.UserName)
                 .HasMaxLength(50)
-                .HasComment("登录帐号");
+                .HasComment("登录账号");
             entity.Property(e => e.UserNameChange).HasComment("账号变更，1已经更改");
             entity.Property(e => e.UserPhone)
                 .HasMaxLength(20)

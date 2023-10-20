@@ -1,10 +1,27 @@
 ﻿<div class="@QuoteTo.PanelClass1">
-    <div class="d-flex">
-        <div style="width:15em;margin-right:2em">
+    <div class="row">
+        <div class="col-auto mb-2">
+            <select class="nrg-se-language invisible form-select"></select>
+        </div>
+        <div class="nrg-card-active col-auto mb-2">
+            <button class="nrg-btn-run btn btn-warning d-none">Run</button>
+            <button class="nrg-btn-preview btn btn-warning d-none">Preview</button>
+        </div>
+        <div class="col"></div>
 
-            <div class="btn-group mb-2 w-100">
+        <div class="col-auto mb-2">
+            <div class="nrg-ddl-list dropdown">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                    列表 List
+                </button>
+                <div class="dropdown-menu p-0 mt-1 border-0">
+                    <ol class="nrg-list-file list-group list-group-numbered overflow-auto" style="width:19em" role="button"></ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+            <div class="btn-group">
                 <button class="nrg-btn-new btn btn-outline-secondary">新建 New</button>
-
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                         更多
@@ -15,24 +32,10 @@
                     </ul>
                 </div>
             </div>
-
-            <ol class="nrg-list-file list-group list-group-numbered overflow-auto" role="button"></ol>
         </div>
-        <div class="position-relative" style="width:calc(100% - 17em)">
-            <span class="nrg-btn-fold badge text-bg-secondary d-none" role="button" style="position:absolute;top:50%;z-index:1;left:-1em">↔</span>
 
-            <div class="row">
-                <div class="col-auto mb-2">
-                    <select class="nrg-se-language invisible form-select"></select>
-                </div>
-                <div class="nrg-card-active col-auto mb-2">
-                    <button class="nrg-btn-run btn btn-warning d-none">Run</button>
-                    <button class="nrg-btn-preview btn btn-warning d-none">Preview</button>
-                </div>
-                <div class="col-12">
-                    <div class="nrg-editor"></div>
-                </div>
-            </div>
+        <div class="col-12">
+            <div class="nrg-editor"></div>
         </div>
     </div>
 </div>

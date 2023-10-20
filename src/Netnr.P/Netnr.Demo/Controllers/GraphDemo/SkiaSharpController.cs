@@ -253,7 +253,7 @@ public class SkiaSharpController : Controller
     /// <param name="size">大小，默认 200 </param>
     /// <returns></returns>
     [HttpPost]
-    public FileResult QrCode([FromForm] string text, IFormFile icon, [FromForm] int size = 200)
+    public IActionResult QrCode([FromForm] string text, IFormFile icon, [FromForm] int size = 200)
     {
         size = Math.Max(30, size);
         size = Math.Min(99999, size);

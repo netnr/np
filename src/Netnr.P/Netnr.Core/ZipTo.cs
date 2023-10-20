@@ -9,7 +9,7 @@ namespace Netnr;
 /// <summary>
 /// 压缩
 /// </summary>
-public class ZipTo
+public partial class ZipTo
 {
     /// <summary>
     /// 编码

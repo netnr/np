@@ -1,5 +1,7 @@
 ﻿#if Full || Service
 
+using System.Drawing.Drawing2D;
+
 namespace Netnr;
 
 /// <summary>
@@ -43,7 +45,7 @@ public class EWeChatAppService
     /// <param name="accessToken"></param>
     /// <param name="toUser">指定接收消息的成员，多个用‘|’分隔，或指定为 @all </param>
     /// <param name="agentId">企业应用id</param>
-    /// <param name="content">【以 500 字分批】消息内容，最长不超过 2048 个字节，超过将截断</param>
+    /// <param name="content">【以 2048 字节分批】消息内容</param>
     /// <param name="title">消息标题，可选，追加到消息内容前面</param>
     /// <param name="msgType">消息类型</param>
     /// <returns></returns>
@@ -51,97 +53,79 @@ public class EWeChatAppService
     {
         var vm = new ResultVM();
 
-        var hc = new HttpClient();
-        var uri = $"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={accessToken}";
-
-        var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        var successCount = 0;
-        var listResult = new List<JsonElement>();
-
-        var groups = SplitByLength(content);
-        for (int i = 0; i < groups.Count; i++)
+        try
         {
-            var finalContent = new List<string>();
+            var hc = new HttpClient();
+            var uri = $"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={accessToken}";
 
-            if (i == 0)
+            var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss dddd");
+            var successCount = 0;
+            var listResult = new List<JsonElement>();
+
+            if (string.IsNullOrWhiteSpace(title))
             {
-                if (!string.IsNullOrWhiteSpace(title))
-                {
-                    finalContent.Add(title);
-                }
-                finalContent.Add(now);
-                finalContent.Add($"\r\n{groups[i]}");
+                content = $"{now}\r\n\r\n{content}";
             }
             else
             {
-                finalContent.Add(groups[i]);
+                content = $"{title}\r\n{now}\r\n\r\n{content}";
             }
 
-            var postJson = new JsonObject
+            var groups = ParsingTo.SplitBySize(content, 2048);
+            await LockTo.RunAsync(nameof(MessageSend), 5000 * groups.Count, async () =>
             {
-                ["touser"] = toUser,
-                ["msgtype"] = msgType,
-                ["agentid"] = agentId,
-                [msgType] = new JsonObject
+                for (int i = 0; i < groups.Count; i++)
                 {
-                    ["content"] = string.Join("\r\n", finalContent)
-                }
-            };
+                    if (i != 0)
+                    {
+                        await Task.Delay(1000);
+                    }
 
-            var resp = await hc.PostAsync(uri, new StringContent(postJson.ToJson()));
-            if (resp.IsSuccessStatusCode)
-            {
-                var read = await resp.Content.ReadAsStringAsync();
-                var outjson = read.DeJson();
-                listResult.Add(outjson);
-                if (outjson.GetValue("errcode") == "0")
-                {
-                    successCount++;
+                    var postJson = new JsonObject
+                    {
+                        ["touser"] = toUser,
+                        ["msgtype"] = msgType,
+                        ["agentid"] = agentId,
+                        [msgType] = new JsonObject
+                        {
+                            ["content"] = groups[i]
+                        }
+                    };
+
+                    var resp = await hc.PostAsync(uri, new StringContent(postJson.ToJson()));
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var read = await resp.Content.ReadAsStringAsync();
+                        var outjson = read.DeJson();
+                        listResult.Add(outjson);
+                        if (outjson.GetValue("errcode") == "0")
+                        {
+                            successCount++;
+                        }
+                    }
                 }
+            });
+
+            if (successCount == groups.Count)
+            {
+                vm.Set(RCodeTypes.success);
             }
+            else if (successCount > 0)
+            {
+                vm.Set(RCodeTypes.partialSuccess);
+            }
+            else
+            {
+                vm.Set(RCodeTypes.failure);
+            }
+            vm.Data = listResult.Count == 1 ? listResult[0] : listResult;
         }
-
-        if (successCount == groups.Count)
+        catch (Exception ex)
         {
-            vm.Set(EnumTo.RTag.success);
+            vm.Set(ex);
         }
-        else if (successCount > 0)
-        {
-            vm.Set(EnumTo.RTag.partialSuccess);
-        }
-        else
-        {
-            vm.Set(EnumTo.RTag.failure);
-        }
-        vm.Data = listResult.Count == 1 ? listResult[0] : listResult;
 
         return vm;
-    }
-
-    /// <summary>
-    /// 按长度拆分字符串
-    /// </summary>
-    /// <param name="content">字符串</param>
-    /// <param name="length">拆分长度</param>
-    /// <returns></returns>
-    public static List<string> SplitByLength(string content, int length = 500)
-    {
-        var list = new List<string>();
-
-        for (int i = 0; i < content.Length; i += length)
-        {
-            int len = Math.Min(length, content.Length - i);
-            var substr = content.Substring(i, len);
-            list.Add(substr);
-
-            //小于 4000
-            if (list.Count > 7)
-            {
-                break;
-            }
-        }
-
-        return list;
     }
 }
 

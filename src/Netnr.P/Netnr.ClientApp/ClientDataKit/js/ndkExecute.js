@@ -18,7 +18,7 @@ var ndkExecute = {
      */
     executeSql: async (cobj, databaseName, sql) => {
         var fd = new FormData();
-        fd.append('tdb', cobj.type);
+        fd.append('dbt', cobj.type);
         fd.append('conn', cobj.conn);
         fd.append('sql', sql);
         if (databaseName) {

@@ -31,7 +31,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             //虚拟路径
             string vpath = AppTo.GetValue("StaticResource:TmpDir");
             //物理路径
-            var ppath = PathTo.Combine(AppTo.WebRootPath, vpath);
+            var ppath = ParsingTo.Combine(AppTo.WebRootPath, vpath);
             if (!Directory.Exists(ppath))
             {
                 Directory.CreateDirectory(ppath);
@@ -48,7 +48,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 switch (ivm.TableName?.ToLower())
                 {
                     default:
-                        vm.Set(EnumTo.RTag.invalid);
+                        vm.Set(RCodeTypes.failure);
                         break;
 
                     //角色
@@ -85,21 +85,21 @@ namespace Netnr.ResponseFramework.Web.Controllers
                 }
 
                 Console.WriteLine($"Export table rows : {dtReport.Rows.Count}");
-                if (vm.Msg != EnumTo.RTag.invalid.ToString())
+                if (vm.Code != (int)RCodeTypes.failure)
                 {
                     //生成
-                    if (NpoiTo.DataTableToExcel(dtReport, PathTo.Combine(ppath, filename)))
+                    if (NpoiTo.DataTableToExcel(dtReport, ParsingTo.Combine(ppath, filename)))
                     {
-                        vm.Data = PathTo.Combine(vpath, filename);
+                        vm.Data = ParsingTo.Combine(vpath, filename);
 
                         //生成的Excel继续操作
-                        ExportService.ExcelDraw(PathTo.Combine(ppath, filename), ivm);
+                        ExportService.ExcelDraw(ParsingTo.Combine(ppath, filename), ivm);
 
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                     }
                     else
                     {
-                        vm.Set(EnumTo.RTag.failure);
+                        vm.Set(RCodeTypes.failure);
                     }
                 }
             }

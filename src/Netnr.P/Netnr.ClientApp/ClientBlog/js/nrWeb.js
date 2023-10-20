@@ -1,13 +1,13 @@
 import { nrApp } from "../../frame/Bootstrap/nrApp";
 import { nrcBase } from "../../frame/nrcBase";
-import { nrEditor } from "../../frame/nrEditor";
+import { nrRouter } from "../../frame/nrRouter";
 import { nrStorage } from "../../frame/nrStorage";
 import { nrToy } from "./nrToy";
 import { nrVary } from "./nrVary";
 
 let nrWeb = {
     init: async () => {
-        Object.assign(window, { nrcBase, nrStorage, nrApp, nrWeb, nrVary, nrEditor, nrToy });
+        Object.assign(window, { nrWeb, nrVary, nrToy });
 
         //存储
         await nrStorage.init();
@@ -90,41 +90,19 @@ let nrWeb = {
      * @param {any} pathname
      */
     getPage: async (pathname) => {
-        let nrPage; //页面脚本对象
+        let pathArray = pathname.toLowerCase().split('/');
 
-        let urlRoutes = pathname.toLowerCase().split('/');
-        let ctrl = urlRoutes[1] || "home";
-        let action = urlRoutes[2] || "index";
-        let id = urlRoutes[3];
+        let routerController = pathArray[1] || "home";
+        let routerAction = pathArray[2] || "index";
+        let routerId = pathArray[3] || null;
+        
+        let packName = `nrPack_${nrcBase.humpToUnderline(routerController)}`;
 
-        //分包名称，包名小写+下划线
-        let packName = `nrPack_${nrcBase.humpToUnderline(ctrl)}`;
-        let nrPack = await nrWeb.getPack(packName);
-
-        if (nrPack) {
-            for (const packItem of nrPack) {
-                let packObj = packItem["nrPage"]; //提取模块输出对象
-                if (packObj && packObj.pathname) {
-                    let paths = packObj.pathname;
-                    if (nrcBase.type(paths) != "Array") {
-                        paths = [paths];
-                    }
-                    let fpath = paths.filter(path => {
-                        let scriptRoutes = path.split('/');
-                        if (ctrl == scriptRoutes[1] && action == scriptRoutes[2]) {
-                            if (id == scriptRoutes[3] || (scriptRoutes[3] == "*" && id != null)) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    })
-                    if (fpath.length) {
-                        nrPage = packObj;
-                        break;
-                    }
-                }
-            }
-        }
+        //页面脚本对象
+        let nrPage = await nrRouter.findPage(pathname, {
+            pack: await nrWeb.getPack(packName),
+            routerController, routerAction, routerId,
+        });
 
         return nrPage;
     },

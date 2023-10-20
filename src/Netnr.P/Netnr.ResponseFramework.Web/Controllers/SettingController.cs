@@ -68,10 +68,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 mo.SbPid = Guid.Empty.ToString();
             }
-            if (mo.SbBtnHide == null)
-            {
-                mo.SbBtnHide = -1;
-            }
+            mo.SbBtnHide ??= -1;
 
             if (savetype == "add")
             {
@@ -319,7 +316,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
 
             if (await db.SysUser.AnyAsync(x => x.SrId == id))
             {
-                vm.Set(EnumTo.RTag.exist);
+                vm.Set(RCodeTypes.exist);
             }
             else
             {
@@ -396,7 +393,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 if (await db.SysUser.Where(x => x.SuName == mo.SuName).AnyAsync())
                 {
-                    vm.Set(EnumTo.RTag.exist);
+                    vm.Set(RCodeTypes.exist);
                 }
                 else
                 {
@@ -410,7 +407,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             {
                 if (await db.SysUser.Where(x => x.SuName == mo.SuName && x.SuId != mo.SuId).AnyAsync())
                 {
-                    vm.Set(EnumTo.RTag.exist);
+                    vm.Set(RCodeTypes.exist);
                 }
                 else
                 {

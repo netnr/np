@@ -23,8 +23,13 @@ public class ConfigInit
         {
             DXConfig = File.ReadAllText(configPath).DeJson<ConfigOption>();
 
-            //设置连接对象以深拷贝构建新实例
-            DXConfig.ListConnectionInfo.ForEach(item => item.DeepCopyNewInstance = true);
+            DXConfig.ListConnectionInfo.ForEach(item =>
+            {
+                //设置连接对象以深拷贝构建新实例
+                item.DeepCopyNewInstance = true;
+                //解密
+                item.ConnectionString = DbKitExtensions.SqlConnEncryptOrDecrypt(item.ConnectionString, "");
+            });
         }
     }
 
@@ -86,7 +91,7 @@ public class MethodModel
 
         if (!string.IsNullOrWhiteSpace(GroupName))
         {
-            list.Add(GroupName);
+            list.Add($"[{GroupName}]");
         }
         if (!string.IsNullOrWhiteSpace(Action))
         {
@@ -113,7 +118,7 @@ public class MethodModel
         if (!string.IsNullOrWhiteSpace(Action))
         {
             var result = $"ndx {Action} {(Description.Length > 50 ? "\r\n" : "")}### {Description}\r\nformat: ndx {ShortName}\r\ndemo: {string.Join("\r\ndemo: ", Prompt.Split(Environment.NewLine))}\r\n";
-            DXService.Log(result);
+            ConsoleTo.LogColor(result);
         }
     }
 }

@@ -392,7 +392,7 @@ namespace Netnr.Blog.Web.Controllers
 
                 if (!await db.DocSet.AnyAsync(x => x.DsCode == mo.DsCode && x.Uid == uinfo.UserId))
                 {
-                    vm.Set(EnumTo.RTag.unauthorized);
+                    vm.Set(RCodeTypes.unauthorized);
                 }
                 else
                 {
@@ -411,7 +411,7 @@ namespace Netnr.Blog.Web.Controllers
 
                     if (string.IsNullOrWhiteSpace(mo.DsdId))
                     {
-                        mo.DsdId = UniqueTo.LongId().ToString();
+                        mo.DsdId = Guid.NewGuid().ToLongString();
                         mo.DsdCreateTime = mo.DsdUpdateTime;
 
                         await db.DocSetDetail.AddAsync(mo);
@@ -499,7 +499,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    vm.Set(EnumTo.RTag.invalid);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else
                 {
@@ -508,7 +508,7 @@ namespace Netnr.Blog.Web.Controllers
                     var uinfo = IdentityService.Get(HttpContext);
                     if (!await db.DocSet.AnyAsync(x => x.DsCode == id && x.Uid == uinfo.UserId))
                     {
-                        vm.Set(EnumTo.RTag.unauthorized);
+                        vm.Set(RCodeTypes.unauthorized);
                     }
                     else
                     {
@@ -569,7 +569,7 @@ namespace Netnr.Blog.Web.Controllers
                         }
 
                         vm.Data = await db.SaveChangesAsync();
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                     }
                 }
             }
@@ -716,19 +716,19 @@ namespace Netnr.Blog.Web.Controllers
                 if (sid == "parent")
                 {
                     vm.Data = list;
-                    vm.Set(EnumTo.RTag.success);
+                    vm.Set(RCodeTypes.success);
                 }
                 else
                 {
                     var listtree = TreeTo.ListToTree(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
                     if (string.IsNullOrWhiteSpace(listtree))
                     {
-                        vm.Set(EnumTo.RTag.lack);
+                        vm.Set(RCodeTypes.failure);
                     }
                     else
                     {
                         vm.Data = listtree.DeJson();
-                        vm.Set(EnumTo.RTag.success);
+                        vm.Set(RCodeTypes.success);
                     }
                 }
             }

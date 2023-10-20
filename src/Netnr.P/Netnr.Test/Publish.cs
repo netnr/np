@@ -35,7 +35,7 @@ namespace Netnr.Test
             //目标目录
             var targetPath = @"D:\site\np";
             //忽略文件夹
-            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.Admin.XOps,ClientAdmin,Netnr.SMS";
+            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.XOps.Client,ClientAdmin,Netnr.Admin.pdm";
 
             //删除旧文件夹
             var docsFolder = Path.Combine(targetPath, "docs");
@@ -53,12 +53,11 @@ namespace Netnr.Test
             Debug.WriteLine("Copy completed!");
 
             //需要处理的项目名称
-            var listEp = "Netnr.Blog.Web".ToLower().Split(",").ToList();
+            var listEp = "Netnr.Blog.Web".ToLower().Split(",");
 
-            var filesPath = Directory.GetFiles(targetPath, "appsettings.json", SearchOption.AllDirectories);
-            for (int i = 0; i < filesPath.Length; i++)
+            var filesPath = Directory.EnumerateFiles(targetPath, "appsettings.json", SearchOption.AllDirectories);
+            foreach (var filePath in filesPath)
             {
-                var filePath = filesPath[i];
                 if (!listEp.Any(x => filePath.ToLower().Contains(x)))
                 {
                     continue;
@@ -320,7 +319,7 @@ namespace Netnr.Test
                     {
                         using var stream = entry.Open();
                         var reader = new StreamReader(stream);
-                        var content = reader.ReadToEnd().Replace("CQSME", "NETNR").Replace("EE.Oracle.Docker", "orcl").Replace(@"D:\\tmp\\res\\tmp.db", "/tmp/tmp.db");
+                        var content = reader.ReadToEnd().Replace("LHR11G", "ORCL").Replace(@"D:\\tmp\\res\\tmp.db", "/tmp/tmp.db");
                         var buffer = content.ToByte();
                         stream.SetLength(0);
                         stream.Write(buffer, 0, buffer.Length);
@@ -522,7 +521,7 @@ namespace Netnr.Test
         public static void ReleasePackage(ReleaseOption model)
         {
             Debug.WriteLine($"Release {model.ProjectShortName}");
-            var csproj = new DirectoryInfo(model.ProjectDir).GetFiles("*.csproj", SearchOption.TopDirectoryOnly).First();
+            var csproj = new DirectoryInfo(model.ProjectDir).EnumerateFiles("*.csproj", SearchOption.TopDirectoryOnly).First();
 
             var cddir = Path.GetDirectoryName(csproj.FullName);
             var run = $"cd {cddir} && dotnet publish {csproj.Name} -p:PublishSingleFile={model.PublishSingleFile} -p:PublishTrimmed={model.PublishTrimmed} -c Release -r {model.Platform} --self-contained {model.SelfContained} -o {model.OutputDir}";

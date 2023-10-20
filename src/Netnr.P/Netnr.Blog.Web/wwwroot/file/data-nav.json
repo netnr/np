@@ -9,13 +9,6 @@
         "remark": "源于网络"
       },
       {
-        "url": "/ps",
-        "icon": "ps",
-        "title": "Photoshop",
-        "remark": "在线 PS",
-        "target": "_blank"
-      },
-      {
         "url": "/tv",
         "icon": "tv",
         "title": "在线电视",
@@ -141,10 +134,10 @@
         "remark": "JS 压缩、CSS 压缩"
       },
       {
-        "url": "/jsonto",
+        "url": "/datato",
         "icon": "convert",
-        "title": "JSON 转",
-        "remark": "转 XML、生成 Model"
+        "title": "Data To",
+        "remark": "数据转换、处理、生成"
       },
       {
         "url": "/pdm",
@@ -267,22 +260,19 @@
         "url": "/bpmn",
         "icon": "graph",
         "title": "BPMN Editor",
-        "remark": "BPMN 流程图",
-        "target": "_blank"
+        "remark": "BPMN 流程图"
       },
       {
         "url": "/graph",
         "icon": "graph",
         "title": "Graph Editor",
-        "remark": "mxGraph 流程图",
-        "target": "_blank"
+        "remark": "mxGraph 流程图"
       },
       {
         "url": "/mind",
         "icon": "mind",
         "title": "Mind Editor",
         "remark": "kityminder 脑图",
-        "target": "_blank"
       },
       {
         "url": "/identicon",
@@ -327,22 +317,19 @@
       {
         "url": "/app/boot/",
         "icon": "boot",
-        "title": "站点引导",
-        "target": "_blank"
+        "title": "站点引导"
       },
       {
         "url": "/app/jcute/",
         "icon": "js",
         "title": "jCute Library",
-        "remark": "JavaScript Library",
-        "target": "_blank"
+        "remark": "JavaScript Library"
       },
       {
         "url": "/app/jz/",
         "icon": "js",
         "title": "Jz",
         "remark": "JS 弹窗插件",
-        "target": "_blank"
       }
     ]
   },

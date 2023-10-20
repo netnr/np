@@ -278,7 +278,6 @@ public class IPv6Query
         byte[] ipbyte = ipa.GetAddressBytes();
         Array.Reverse(ipbyte);
         long tex = BitConverter.ToInt64(ipbyte, 8);
-        string te0 = System.Convert.ToString(tex, 16);
         return tex;
     }
 

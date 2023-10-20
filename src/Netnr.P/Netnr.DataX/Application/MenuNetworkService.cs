@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices.JavaScript;
 
 namespace Netnr.DataX.Application
 {
@@ -12,10 +13,10 @@ namespace Netnr.DataX.Application
     {
         [Display(Name = "TCPing", Description = "TCP 端口探测", GroupName = "Network",
             ShortName = "tcping [host] [port]", Prompt = "ndx tcping zme.ink 443 -t")]
-        public static void TCPing()
+        public static async Task TCPing()
         {
-            var host = DXService.VarString(0, "host");
-            var port = DXService.VarString(1, "port(default: 80)");
+            var host = DXService.VarIndex(0, "host");
+            var port = DXService.VarIndex(1, "port(default: 80)");
             _ = int.TryParse(port, out int portNumber);
             if (portNumber < 1)
             {
@@ -27,21 +28,50 @@ namespace Netnr.DataX.Application
 
             if (!string.IsNullOrWhiteSpace(host))
             {
-                Console.WriteLine("");
-                var index = 0;
-                while (index++ < count)
+                if (!IPAddress.TryParse(host, out IPAddress _))
                 {
-                    var client = new TcpClient();
+                    var listIps = await Dns.GetHostAddressesAsync(host);
+                    if (DXService.CmdArgs.Any(x => x == "-6"))
+                    {
+                        host = listIps.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetworkV6)?.ToString();
+                    }
+                    else if (DXService.CmdArgs.Any(x => x == "-4"))
+                    {
+                        host = listIps.FirstOrDefault(x => x.AddressFamily != AddressFamily.InterNetworkV6)?.ToString();
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(host))
+                {
+                    ConsoleTo.LogColor("get host is empty", ConsoleColor.Red);
+                }
+                else
+                {
+                    Console.WriteLine("");
+                    var index = 0;
+                    bool? lastResult = null;
 
                     var sw = Stopwatch.StartNew();
-                    var result = client.ConnectAsync(host, portNumber).Wait(2001);
-                    var time = sw.ElapsedMilliseconds;
 
-                    DXService.Log($"Probing {host}:{portNumber}/tcp - {(result ? "Port is open" : "No response")} - time={time}ms");
-
-                    if (time < 1000)
+                    while (index++ < count)
                     {
-                        Thread.Sleep(Convert.ToInt32(1000 - time));
+                        var client = new TcpClient();
+                        var result = client.ConnectAsync(host, portNumber).Wait(2001);
+                        var time = sw.ElapsedMilliseconds;
+                        var openNotify = index > 1 && count > 4 && lastResult.Value == false && result;
+                        if (openNotify)
+                        {
+                            DXService.Notify(nameof(TCPing), $"{host}:{portNumber}/tcp Port is open");
+                        }
+                        lastResult = result;
+
+                        ConsoleTo.LogColor($"Probing {host}:{portNumber}/tcp - {(result ? "Port is open" : "No response")} - time={time}ms", openNotify ? ConsoleColor.Green : null);
+
+                        if (time < 1000)
+                        {
+                            Thread.Sleep(Convert.ToInt32(1000 - time));
+                        }
+                        sw.Restart();
                     }
                 }
             }
@@ -52,14 +82,14 @@ namespace Netnr.DataX.Application
         public static void TCPScan()
         {
             var dvhost = "127.0.0.1";
-            var host = DXService.VarString(0, $"host(default: {dvhost})");
+            var host = DXService.VarIndex(0, $"host(default: {dvhost})");
             if (string.IsNullOrWhiteSpace(host))
             {
                 host = dvhost;
             }
 
             var dvports = "21,22,53,80,443,9000-9100";
-            var ports = DXService.VarString(1, $"ports(default: {dvports})");
+            var ports = DXService.VarIndex(1, $"ports(default: {dvports})");
             if (string.IsNullOrWhiteSpace(ports))
             {
                 ports = dvports;
@@ -74,7 +104,7 @@ namespace Netnr.DataX.Application
 
             if (portList.Any())
             {
-                DXService.Log($"扫描 {host} 端口(共 {portList.Count} 个)\r\n");
+                ConsoleTo.LogColor($"扫描 {host} 端口(共 {portList.Count} 个)\r\n");
                 var result = new ConcurrentBag<int>();
 
                 var sw = Stopwatch.StartNew();
@@ -101,7 +131,7 @@ namespace Netnr.DataX.Application
 
                                         Console.ForegroundColor = ConsoleColor.Green;
                                         Console.Write($"{port} ");
-                                        Console.ForegroundColor = ConsoleColor.White;
+                                        Console.ResetColor();
                                     }
                                     else
                                     {
@@ -121,8 +151,8 @@ namespace Netnr.DataX.Application
                     }
                 } while (!portQueue.IsEmpty || scanCurr != 0);
 
-                DXService.Log($"\r\n扫描完成, 耗时 {sw.Elapsed}, 发现 {result.Count} 个端口", ConsoleColor.Cyan);
-                DXService.Log($"{string.Join(" ", result.ToList())}", ConsoleColor.Green);
+                ConsoleTo.LogColor($"\r\n扫描完成, 耗时 {sw.Elapsed}, 发现 {result.Count} 个端口", ConsoleColor.Cyan);
+                ConsoleTo.LogColor($"{string.Join(" ", result.ToList())}", ConsoleColor.Green);
             }
         }
 
@@ -130,10 +160,10 @@ namespace Netnr.DataX.Application
             ShortName = "devicescan [ipRange]", Prompt = "ndx devicescan 192.168.1.1-254")]
         public static void DeviceScan()
         {
-            string ipRange = DXService.VarString(0, "ip range(demo: 192.168.1.1-254)");
+            string ipRange = DXService.VarIndex(0, "ip range(demo: 192.168.1.1-254)");
             if (string.IsNullOrWhiteSpace(ipRange))
             {
-                DXService.Log("IP cannot be empty", ConsoleColor.Red);
+                ConsoleTo.LogColor("IP cannot be empty", ConsoleColor.Red);
             }
             else
             {
@@ -168,12 +198,12 @@ namespace Netnr.DataX.Application
                         result.Add(new(e.UserState.ToString(), e.Reply.Status));
                         if (e.Reply.Status == IPStatus.Success)
                         {
-                            DXService.Log($"{e.UserState}");
+                            ConsoleTo.LogColor($"{e.UserState}");
                         }
 
                         if (result.Count == listAdds.Count)
                         {
-                            DXService.Log("Done!");
+                            ConsoleTo.LogColor("Done!");
                         }
                     };
                     p.SendAsync(item, 2001, data, item);
@@ -186,11 +216,11 @@ namespace Netnr.DataX.Application
             }
         }
 
-        [Display(Name = "Trace Route", Description = "路由追踪", GroupName = "Network", AutoGenerateFilter = true,
+        [Display(Name = "Trace Route", Description = "路由追踪", GroupName = "Network",
             ShortName = "traceroute [host]", Prompt = "ndx traceoute zme.ink")]
         public static async Task TraceRoute()
         {
-            string host = DXService.VarString(0, "host");
+            string host = DXService.VarIndex(0, "host");
 
             int timeout = 5000;
             int maxTTL = 30;
@@ -203,7 +233,7 @@ namespace Netnr.DataX.Application
 
             using var pinger = new Ping();
             var address = (await Dns.GetHostAddressesAsync(host)).First();
-            DXService.Log($"traceroute to {host} ({address}), {maxTTL} hops max, {bufferSize} byte packets\r\n");
+            ConsoleTo.LogColor($"traceroute to {host} ({address}), {maxTTL} hops max, {bufferSize} byte packets\r\n", ConsoleColor.Cyan);
             for (int ttl = 1; ttl <= maxTTL; ttl++)
             {
                 var options = new PingOptions(ttl, true);
@@ -234,11 +264,60 @@ namespace Netnr.DataX.Application
                     }
                 }
 
-                var itemInfo = $"{reply.Address,20} {reply.Status,20} {reply.RoundtripTime,5}   {ipCache[reply.Address]}".TrimEnd();
-                DXService.Log(itemInfo);
+                var ms = reply.RoundtripTime == 0 ? $"{"0",5}   " : $"{reply.RoundtripTime,5} ms";
+                ConsoleColor? cc = reply.Status == IPStatus.Success ? ConsoleColor.Green : reply.Status == IPStatus.TimedOut ? ConsoleColor.Red : null;
+                ConsoleTo.LogColor($"{ttl,3} {ms} {reply.Status,15} {reply.Address,30}  {ipCache[reply.Address]}", cc);
 
                 if (reply.Status != IPStatus.TtlExpired && reply.Status != IPStatus.TimedOut)
                     break;
+            }
+        }
+
+        [Display(Name = "Wake On LAN", Description = "局域网唤醒", GroupName = "Network", AutoGenerateFilter = true,
+            ShortName = "wol [mac]", Prompt = "ndx wol 04-D4-C4-20-03-AC")]
+        public static void WakeOnLAN()
+        {
+            var macAddress = DXService.VarIndex(0, $"MAC");
+            if (!string.IsNullOrWhiteSpace(macAddress))
+            {
+                macAddress = macAddress.Replace(":", "").Replace("-", "").ToUpper();
+                if (macAddress.Length != 12)
+                {
+                    ConsoleTo.LogColor("无效的MAC地址！", ConsoleColor.Red);
+                }
+                else
+                {
+                    // 将MAC地址转换为字节数组
+                    byte[] macBytes = new byte[6];
+                    for (int i = 0; i < 6; i++)
+                    {
+                        macBytes[i] = Convert.ToByte(macAddress.Substring(i * 2, 2), 16);
+                    }
+
+                    // 组装唤醒包数据（首先是6个字节的0xFF，即全为1的二进制值，紧接着是目标计算机的MAC地址重复16次）
+                    byte[] packet = new byte[102];
+                    for (int i = 0; i < 6; i++)
+                    {
+                        packet[i] = 0xFF;
+                    }
+                    for (int i = 6; i < 102; i += 6)
+                    {
+                        Array.Copy(macBytes, 0, packet, i, 6);
+                    }
+
+                    // 使用UDP发送唤醒包到广播地址
+                    using (var client = new UdpClient())
+                    {
+                        client.Connect(IPAddress.Broadcast, 9); // 设置广播地址和端口
+                        client.Send(packet, packet.Length);
+                    }
+
+                    ConsoleTo.LogColor("唤醒包已发送！", ConsoleColor.Cyan);
+                }
+            }
+            else
+            {
+                ConsoleTo.LogColor("无效的MAC地址！", ConsoleColor.Red);
             }
         }
 
@@ -246,14 +325,14 @@ namespace Netnr.DataX.Application
             ShortName = "whois [domain]", Prompt = "ndx whois zme.ink")]
         public static async Task Whois()
         {
-            string domain = DXService.VarString(0, "domain");
+            string domain = DXService.VarIndex(0, "domain");
             if (!string.IsNullOrWhiteSpace(domain))
             {
                 await DXService.QueryWhois(domain);
             }
             else
             {
-                DXService.Log("请输入域名", ConsoleColor.Red);
+                ConsoleTo.LogColor("请输入域名", ConsoleColor.Red);
             }
         }
 
@@ -261,19 +340,19 @@ namespace Netnr.DataX.Application
             ShortName = "dns [host]", Prompt = "ndx dns zme.ink")]
         public static async Task DNSResolve()
         {
-            string host = DXService.VarString(0, "host");
+            string host = DXService.VarIndex(0, "host");
 
             try
             {
                 var addresses = await Dns.GetHostAddressesAsync(host);
                 foreach (var item in addresses)
                 {
-                    DXService.Log($"{item}");
+                    ConsoleTo.LogColor($"{item}");
                 }
             }
             catch (Exception ex)
             {
-                DXService.Log(ex);
+                ConsoleTo.LogError(ex);
             }
 
             if (string.IsNullOrWhiteSpace(host))
@@ -281,11 +360,11 @@ namespace Netnr.DataX.Application
                 try
                 {
                     var endPoint = await SystemStatusTo.GetAddressInterNetwork();
-                    DXService.Log($"\r\nLAN IP: {endPoint.Address}", ConsoleColor.Cyan);
+                    ConsoleTo.LogColor($"\r\nLAN IP: {endPoint.Address}", ConsoleColor.Cyan);
                 }
                 catch (Exception ex)
                 {
-                    DXService.Log(ex);
+                    ConsoleTo.LogError(ex);
                 }
             }
         }
@@ -294,11 +373,11 @@ namespace Netnr.DataX.Application
             ShortName = "ip [ipOrDomain]", Prompt = "ndx ip\r\nndx ip 1.1.1.1\r\nndx ip zme.ink")]
         public static async Task IP()
         {
-            string ipOrDomain = DXService.VarString(0, "ip or domain");
+            string ipOrDomain = DXService.VarIndex(0, "ip or domain");
             var result = await DXService.DomainOrIPInfo(ipOrDomain);
             foreach (var key in result.Keys)
             {
-                DXService.Log($"{key} {result[key]}");
+                ConsoleTo.LogColor($"{key} {result[key]}");
             }
         }
 
@@ -306,7 +385,7 @@ namespace Netnr.DataX.Application
             ShortName = "icp [domain]", Prompt = "ndx icp qq.com")]
         public static async Task ICP()
         {
-            string domain = DXService.VarString(0, "domain");
+            string domain = DXService.VarIndex(0, "domain");
 
             if (domain.Contains("://") && Uri.TryCreate(domain, UriKind.Absolute, out Uri uri))
             {
@@ -319,14 +398,14 @@ namespace Netnr.DataX.Application
                     if (domain.Split('.').Length > 2 && domain.StartsWith("www."))
                     {
                         var tryFixDomain = domain[4..];
-                        DXService.Log($"尝试查询 {tryFixDomain}", ConsoleColor.Cyan);
+                        ConsoleTo.LogColor($"尝试查询 {tryFixDomain}", ConsoleColor.Cyan);
                         await DXService.QueryICP(tryFixDomain);
                     }
                 }
             }
             else
             {
-                DXService.Log("请输入域名");
+                ConsoleTo.LogColor("请输入域名");
             }
         }
 
@@ -334,7 +413,7 @@ namespace Netnr.DataX.Application
             ShortName = "ssl [hostname:port|path]", Prompt = "ndx ssl ss.netnr.com\r\nndx ssl zme.ink:443\r\nndx ssl ./zme.ink.crt")]
         public static void SSL()
         {
-            string hostnameAndPort = DXService.VarString(0, "host:port or path");
+            string hostnameAndPort = DXService.VarIndex(0, "host:port or path");
 
             try
             {
@@ -355,7 +434,7 @@ namespace Netnr.DataX.Application
             }
             catch (Exception ex)
             {
-                DXService.Log(ex);
+                ConsoleTo.LogError(ex);
             }
         }
 
@@ -363,32 +442,32 @@ namespace Netnr.DataX.Application
             Description = "域名信息查询（合集）", ShortName = "dni [domain]", Prompt = "ndx dni qq.com")]
         public static async Task DomainNameInformation()
         {
-            string domain = DXService.VarString(0, "domain");
+            string domain = DXService.VarIndex(0, "domain");
 
             var isRestore = false;
-            if (BaseTo.IsWithArgs == false)
+            if (BaseTo.IsCmdArgs == false)
             {
                 isRestore = true;
-                DXService.Args.Clear();
-                DXService.Args.Add(domain);
-                BaseTo.IsWithArgs = true;
+                DXService.CmdArgs.Clear();
+                DXService.CmdArgs.Add(domain);
+                BaseTo.IsCmdArgs = true;
             }
 
-            DXService.OutputTitle("Whois");
+            ConsoleTo.LogTag("Whois");
             await Whois();
-            DXService.OutputTitle("DNS");
+            ConsoleTo.LogTag("DNS");
             await DNSResolve();
-            DXService.OutputTitle("IP");
+            ConsoleTo.LogTag("IP");
             await IP();
-            DXService.OutputTitle("ICP");
+            ConsoleTo.LogTag("ICP");
             await ICP();
-            DXService.OutputTitle("SSL/TLS");
+            ConsoleTo.LogTag("SSL/TLS");
             SSL();
 
             if (isRestore)
             {
-                DXService.Args.Clear();
-                BaseTo.IsWithArgs = false;
+                DXService.CmdArgs.Clear();
+                BaseTo.IsCmdArgs = false;
             }
         }
 

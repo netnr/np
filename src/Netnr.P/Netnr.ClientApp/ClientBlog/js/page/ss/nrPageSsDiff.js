@@ -42,12 +42,10 @@ let nrPage = {
             });
         });
 
-        nrPage.den = monaco.editor.createDiffNavigator(nrApp.tsEditor, {
-            followsCaret: true,
-            ignoreCharChanges: true
-        });
         nrVary.domBtnNext.addEventListener('click', function () {
-            nrPage.den.next();
+            if (nrApp.tsEditor) {
+                nrApp.tsEditor.accessibleDiffViewerNext()
+            }
         });
 
         //通信

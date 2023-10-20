@@ -7,6 +7,7 @@
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<!--剪裁粒度 https://learn.microsoft.com/zh-cn/dotnet/core/deploying/trimming/trimming-options-->
 		<TrimMode>partial</TrimMode>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<!--SqlClient 依赖ICU-->
 		<!--<InvariantGlobalization>true</InvariantGlobalization>-->
 	</PropertyGroup>
@@ -22,16 +23,16 @@
 	</Target>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>TRACE;Ready;ImportBase;Base;AdoAll;DataKit;Serve</DefineConstants>
+		<DefineConstants>$(DefineConstants);TRACE;Ready;ImportBase;Base;AdoAll;DataKit;Serve;NJson;Win</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;Ready;ImportBase;Base;AdoAll;DataKit;Serve</DefineConstants>
+		<DefineConstants>$(DefineConstants);TRACE;Ready;ImportBase;Base;AdoAll;DataKit;Serve;NJson;Win</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Application\MenuMainService.cs" />
-	  <Compile Remove="Application\MenuSilenceService.cs" />
+		<Compile Remove="Application\MenuMainService.cs" />
+		<Compile Remove="Application\MenuSilenceService.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,14 +44,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ClickHouse.Client" Version="6.6.0" />
-		<PackageReference Include="Hardware.Info" Version="11.1.0" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.7" />
-		<PackageReference Include="MiniExcel" Version="1.31.0" />
-		<PackageReference Include="MySqlConnector" Version="2.3.0-beta.1" />
-		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.100" />
+		<PackageReference Include="ClickHouse.Client" Version="6.7.5" />
+		<PackageReference Include="Hardware.Info" Version="100.0.0" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
-		<PackageReference Include="Npgsql" Version="7.0.4" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.12" />
+		<PackageReference Include="MiniExcel" Version="1.31.2" />
+		<PackageReference Include="MySqlConnector" Version="2.3.0-beta.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Npgsql" Version="7.0.6" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.120" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

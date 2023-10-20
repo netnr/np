@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Netnr.ResponseFramework.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Netnr.ResponseFramework.Application.Datas;
 

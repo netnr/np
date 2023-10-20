@@ -60,6 +60,22 @@ let nrPage = {
                     nrVary.domCardRegex.classList.remove('d-none');
                 }
                 break;
+            case "dns":
+                {
+                    await nrcBase.importScript('/file/data-dns.js');
+
+                    gridOps = nrGrid.gridOptionsClient({
+                        columnDefs: [
+                            { field: "type", headerName: "分类", width: 150, enableRowGroup: true },
+                            { field: "name", headerName: "名称", width: 200, enableRowGroup: true },
+                            { field: "ip", headerName: "IP", flex: 1 },
+                        ],
+                        rowData: dataDNS,
+                    });
+
+                    nrVary.domCardRegex.classList.remove('d-none');
+                }
+                break;
             case "purine":
                 {
                     await nrcBase.importScript('/file/data-purine.js');
@@ -146,7 +162,7 @@ let nrPage = {
                         columnDefs: [
                             { field: 'id', headerName: "代码", sortable: true },
                             { field: 'txt', headerName: "名称", },
-                            { field: 'pid', headerName: "父级代码", },
+                            { field: 'pid', headerName: "上级代码", },
                             nrGrid.newColumnNumber({ field: 'num', sortable: true, headerName: "同级排序", }),
                             nrGrid.newColumnNumber({ field: 'deep', headerName: "层级", }),
                         ],
@@ -171,6 +187,7 @@ let nrPage = {
                                 var gkey = pr.groupKeys.slice(-1).pop(); //分组Key
                                 if (gkey) {
                                     let url = `https://npmcdn.com/stats-product-category@1.0.0/${gkey.substring(0, 2)}.json`;
+                                    url = nrcBase.mirrorNPM(url);
                                     let result = await nrWeb.reqServer(url);
                                     if (result) {
                                         var allRows = result.filter(x => x.pid == gkey);
@@ -194,6 +211,7 @@ let nrPage = {
                                     }
                                 } else {
                                     let url = 'https://npmcdn.com/stats-product-category@1.0.0/0.json';
+                                    url = nrcBase.mirrorNPM(url);
                                     let allRows = await nrWeb.reqServer(url);
                                     if (allRows) {
                                         allRows.forEach(item => item.group = true);

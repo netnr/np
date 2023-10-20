@@ -149,4 +149,5 @@ let nrcFile = {
 
 }
 
+Object.assign(window, { nrcFile });
 export { nrcFile }

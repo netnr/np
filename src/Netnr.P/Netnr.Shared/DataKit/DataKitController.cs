@@ -10,12 +10,12 @@ public class DataKitController : Controller
     /// <summary>
     /// 入口
     /// </summary>
-    /// <param name="tdb"></param>
+    /// <param name="dbt"></param>
     /// <param name="conn"></param>
     /// <param name="databaseName"></param>
     /// <param name="dkCall"></param>
     /// <returns></returns>
-    private async Task<ResultVM> Entry(EnumTo.TypeDB tdb, string conn, string databaseName, Func<DataKitTo, Task<object>> dkCall)
+    private async Task<ResultVM> Entry(DBTypes dbt, string conn, string databaseName, Func<DataKitTo, Task<object>> dkCall)
     {
         var vm = new ResultVM();
 
@@ -23,22 +23,22 @@ public class DataKitController : Controller
         {
             var connOption = new DbKitConnectionOption
             {
-                ConnectionType = tdb,
+                ConnectionType = dbt,
                 ConnectionString = conn,
                 DatabaseName = databaseName
             };
 
-            var dk = DataKitTo.CreateDkInstance(connOption);
+            var dataKit = DataKitTo.CreateDataKitInstance(connOption);
 
             //终止请求、终止执行
             HttpContext.RequestAborted.Register(() =>
             {
-                dk.DbInstance.CommandAbort();
-                ConsoleTo.Title("Cancellation Requested");
+                dataKit.DbInstance.CommandAbort();
+                ConsoleTo.WriteCard("Cancellation Requested");
             });
 
-            vm.Data = await dkCall.Invoke(dk);
-            vm.Set(EnumTo.RTag.success);
+            vm.Data = await dkCall.Invoke(dataKit);
+            vm.Set(RCodeTypes.success);
         }
         catch (Exception ex)
         {
@@ -53,80 +53,80 @@ public class DataKitController : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public IActionResult ServiceStatus() => NoContent();
+    public IActionResult ServiceStatusGet() => NoContent();
 
     /// <summary>
     /// 获取库名
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ResultVM> GetDatabaseName(EnumTo.TypeDB tdb, string conn)
+    public async Task<ResultVM> DatabaseNameGet(DBTypes dbt, string conn)
     {
-        return await Entry(tdb, conn, null, async dk => await dk.GetDatabaseName());
+        return await Entry(dbt, conn, null, async dk => await dk.GetDatabaseName());
     }
 
     /// <summary>
     /// 获取库
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <param name="filterDatabaseName">数据库名</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ResultVM> GetDatabase(EnumTo.TypeDB tdb, string conn, string filterDatabaseName = null)
+    public async Task<ResultVM> DatabaseGet(DBTypes dbt, string conn, string filterDatabaseName = null)
     {
-        return await Entry(tdb, conn, null, async dk => await dk.GetDatabase(filterDatabaseName));
+        return await Entry(dbt, conn, null, async dk => await dk.GetDatabase(filterDatabaseName));
     }
 
     /// <summary>
     /// 获取表
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ResultVM> GetTable(EnumTo.TypeDB tdb, string conn, string schemaName = null, string databaseName = null)
+    public async Task<ResultVM> TableGet(DBTypes dbt, string conn, string schemaName = null, string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, async dk => await dk.GetTable(schemaName, databaseName));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.GetTable(schemaName, databaseName));
     }
 
     /// <summary>
     /// 表DDL
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <param name="tableName">表名</param>
     /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ResultVM> GetTableDDL(EnumTo.TypeDB tdb, string conn, string tableName, string schemaName = null, string databaseName = null)
+    public async Task<ResultVM> TableDDLGet(DBTypes dbt, string conn, string tableName, string schemaName = null, string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, async dk => await dk.GetTableDDL(tableName, schemaName, databaseName));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.GetTableDDL(tableName, schemaName, databaseName));
     }
 
     /// <summary>
     /// 获取列
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <param name="filterSchemaNameTableName">过滤模式表名，逗号分隔</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ResultVM> GetColumn([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string filterSchemaNameTableName = null, [FromForm] string databaseName = null)
+    public async Task<ResultVM> ColumnPost([FromForm] DBTypes dbt, [FromForm] string conn, [FromForm] string filterSchemaNameTableName = null, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, async dk => await dk.GetColumn(filterSchemaNameTableName, databaseName));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.GetColumn(filterSchemaNameTableName, databaseName));
     }
 
     /// <summary>
     /// 设置表注释
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <param name="tableName">表名</param>
     /// <param name="tableComment">表注释</param>
@@ -134,15 +134,15 @@ public class DataKitController : Controller
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ResultVM> SetTableComment([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string tableComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
+    public async Task<ResultVM> TableCommentPost([FromForm] DBTypes dbt, [FromForm] string conn, [FromForm] string tableName, [FromForm] string tableComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, async dk => await dk.SetTableComment(tableName, tableComment, schemaName, databaseName));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.SetTableComment(tableName, tableComment, schemaName, databaseName));
     }
 
     /// <summary>
     /// 设置列注释
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <param name="tableName">表名</param>
     /// <param name="columnName">列名</param>
@@ -151,23 +151,23 @@ public class DataKitController : Controller
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ResultVM> SetColumnComment([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string tableName, [FromForm] string columnName, [FromForm] string columnComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
+    public async Task<ResultVM> ColumnCommentPost([FromForm] DBTypes dbt, [FromForm] string conn, [FromForm] string tableName, [FromForm] string columnName, [FromForm] string columnComment, [FromForm] string schemaName = null, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, async dk => await dk.SetColumnComment(tableName, columnName, columnComment, schemaName, databaseName));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.SetColumnComment(tableName, columnName, columnComment, schemaName, databaseName));
     }
 
     /// <summary>
     /// 执行脚本
     /// </summary>
-    /// <param name="tdb">数据库类型</param>
+    /// <param name="dbt">数据库类型</param>
     /// <param name="conn">连接字符串</param>
     /// <param name="sql">脚本</param>
     /// <param name="databaseName">数据库名</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ResultVM> ExecuteSql([FromForm] EnumTo.TypeDB tdb, [FromForm] string conn, [FromForm] string sql, [FromForm] string databaseName = null)
+    public async Task<ResultVM> ExecuteSqlPost([FromForm] DBTypes dbt, [FromForm] string conn, [FromForm] string sql, [FromForm] string databaseName = null)
     {
-        return await Entry(tdb, conn, databaseName, async dk => await dk.ExecuteSql(sql));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.ExecuteSql(sql));
     }
 }
 

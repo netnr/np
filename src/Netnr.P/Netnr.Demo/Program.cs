@@ -8,7 +8,13 @@ builder.Services.AddSwaggerGen(c =>
 {
     var name = builder.Environment.ApplicationName;
     c.SwaggerDoc(name, new Microsoft.OpenApi.Models.OpenApiInfo { Title = name });
-    c.IncludeXmlComments($"{AppContext.BaseDirectory}{name}.xml", true);
+
+    c.CustomSchemaIds(type => type.FullName.Replace("+", "."));
+
+    Directory.EnumerateFiles(AppContext.BaseDirectory, "Netnr.*.xml").ForEach(file =>
+    {
+        c.IncludeXmlComments(file, true);
+    });
 });
 
 var app = builder.Build();

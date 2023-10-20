@@ -97,7 +97,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 Data = await CommonService.TagsQuery()
             };
-            vm.Set(EnumTo.RTag.success);
+            vm.Set(RCodeTypes.success);
 
             return vm;
         }
@@ -121,7 +121,7 @@ namespace Netnr.Blog.Web.Controllers
                     var uinfo = IdentityService.Get(HttpContext);
 
                     var lisTagId = new List<int>();
-                    TagIds.Split(',').ToList().ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
+                    TagIds.Split(',').ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
                     var lisTagName = (await CommonService.TagsQuery()).Where(x => lisTagId.Contains(x.TagId)).ToList();
 
                     mo.Uid = uinfo?.UserId;
@@ -201,7 +201,7 @@ namespace Netnr.Blog.Web.Controllers
                 var vm = new PageVM()
                 {
                     //查询回复
-                    Rows = await CommonService.ReplyOneQuery(ReplyType.UserWriting, id.ToString(), pag),
+                    Rows = await CommonService.ReplyOneQuery(ReplyTypes.UserWriting, id.ToString(), pag),
                     Pag = pag,
                     Temp = uwo,
                     Route = $"/home/list/{id}"
@@ -211,7 +211,7 @@ namespace Netnr.Blog.Web.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var uinfo = IdentityService.Get(HttpContext);
-                    var listuc = await db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == ConnectionType.UserWriting.ToString() && x.UconnTargetId == id.ToString()).ToListAsync();
+                    var listuc = await db.UserConnection.Where(x => x.Uid == uinfo.UserId && x.UconnTargetType == ConnectionTypes.UserWriting.ToString() && x.UconnTargetId == id.ToString()).ToListAsync();
 
                     ViewData["uca1"] = listuc.Any(x => x.UconnAction == 1) ? "yes" : "";
                     ViewData["uca2"] = listuc.Any(x => x.UconnAction == 2) ? "yes" : "";
@@ -240,7 +240,7 @@ namespace Netnr.Blog.Web.Controllers
             {
                 if (!mo.Uid.HasValue || string.IsNullOrWhiteSpace(mo.UrContent) || string.IsNullOrWhiteSpace(mo.UrTargetId))
                 {
-                    vm.Set(EnumTo.RTag.lack);
+                    vm.Set(RCodeTypes.failure);
                 }
                 else
                 {
@@ -248,9 +248,9 @@ namespace Netnr.Blog.Web.Controllers
                     var now = DateTime.Now;
 
                     //回复消息
-                    um.UmId = UniqueTo.LongId().ToString();
+                    um.UmId = Guid.NewGuid().ToLongString();
                     um.UmTriggerUid = mo.Uid;
-                    um.UmType = MessageType.UserWriting.ToString();
+                    um.UmType = MessageTypes.UserWriting.ToString();
                     um.UmTargetId = mo.UrTargetId;
                     um.UmAction = 2;
                     um.UmStatus = 1;
@@ -261,7 +261,7 @@ namespace Netnr.Blog.Web.Controllers
                     mo.UrCreateTime = now;
                     mo.UrStatus = 1;
                     mo.UrTargetPid = 0;
-                    mo.UrTargetType = ReplyType.UserWriting.ToString();
+                    mo.UrTargetType = ReplyTypes.UserWriting.ToString();
 
                     mo.UrAnonymousLink = ParsingTo.JsSafeJoin(mo.UrAnonymousLink);
 
@@ -318,11 +318,11 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     modelConn = new UserConnection()
                     {
-                        UconnId = UniqueTo.LongId().ToString(),
+                        UconnId = Guid.NewGuid().ToLongString(),
                         UconnAction = a,
                         UconnCreateTime = DateTime.Now,
                         UconnTargetId = id.ToString(),
-                        UconnTargetType = ConnectionType.UserWriting.ToString(),
+                        UconnTargetType = ConnectionTypes.UserWriting.ToString(),
                         Uid = uinfo.UserId
                     };
                     await db.UserConnection.AddAsync(modelConn);
@@ -385,22 +385,6 @@ namespace Netnr.Blog.Web.Controllers
         public IActionResult CompleteInfo()
         {
             return View();
-        }
-
-        /// <summary>
-        /// Swagger自定义样式
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult SwaggerCustomStyle()
-        {
-            var txt = @".opblock-options{display:none}.download-contents{width:auto !important}";
-
-            return new ContentResult()
-            {
-                Content = txt,
-                StatusCode = 200,
-                ContentType = "text/css"
-            };
         }
     }
 }

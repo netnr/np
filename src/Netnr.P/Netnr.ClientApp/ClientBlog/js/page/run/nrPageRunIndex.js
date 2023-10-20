@@ -120,7 +120,7 @@ let nrPage = {
             if (errMsg.length) {
                 nrApp.alert(errMsg.join('<hr/>'));
             } else {
-                let fd = nrcBase.jsonToFormData(post);
+                let fd = nrcBase.fromKeyToFormData(post);
 
                 nrApp.setLoading(nrVary.domBtnSave);
                 let result = await nrWeb.reqServer(`/Run/Save`, { method: "POST", body: fd });

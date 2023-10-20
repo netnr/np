@@ -1,0 +1,86 @@
+<div class="@QuoteTo.PanelClass1">
+    <div class="row">
+        <div class="col-xxl-5 col-lg-5">
+            <div class="nrg-editor1"></div>
+        </div>
+
+        <div class="col-xxl-2 col-lg-3 mt-lg-0 mt-3">
+            <button class="nrg-btn-to btn btn-lg btn-warning w-100 mb-2">转换</button>
+            <select class="nrg-se-to form-select form-select-lg mb-2">
+                <option value="json-to-csharp">JSON 👉 C#</option>
+                <option value="json-to-xml">JSON 👉 XML</option>
+                <option value="xml-to-json">JSON 👈 XML</option>
+                <option value="json-to-yaml">JSON 👉 YAML</option>
+                <option value="yaml-to-json">JSON 👈 YAML</option>
+                <option value="array-to-excel">Array 👉 Excel</option>
+                <option value="excel-to-array">Array 👈 Excel</option>
+                <option value="array-to-md">Array 👉 MD</option>
+                <option value="excel-to-md">Excel 👉 MD</option>
+                <option value="excel-to-sql">Excel 👉 SQL</option>
+            </select>
+            <button class="nrg-btn-demo btn btn-secondary w-100 mb-4">示例数据</button>
+
+            <div class="nrg-switch mb-3">
+                <div data-value="json-to-csharp">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">注释</span>
+                        <select class="form-select flag-comment">
+                            <option value="1">包含注释</option>
+                            <option value="2" selected>不含注释</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">命名</span>
+                        <select class="form-select flag-hump">
+                            <option value="1" selected>大驼峰命名</option>
+                            <option value="2">不改变命名</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">属性</span>
+                        <select class="form-select flag-property">
+                            <option value="1">包含属性名</option>
+                            <option value="2" selected>不含属性名</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-none" data-value="array-to-excel">
+                    <p>数组转为 Excel 文本</p>
+                    <p>使用制表符（\t）分割</p>
+                    <p>在 Excel 右键【只粘贴文本】</p>
+                </div>
+                <div class="d-none" data-value="excel-to-array">
+                    <p>Excel 文本转为数组</p>
+                    <p>第一行为标题</p>
+                </div>
+                <div class="d-none" data-value="array-to-md">
+                    <p>数组转为 Markdown 表格</p>
+                </div>
+                <div class="d-none" data-value="excel-to-md">
+                    <p>Excel 文本转为 Markdown 表格</p>
+                    <p>Excel 文本使用制表符（\t）分割</p>
+                    <p>第一行为标题</p>
+                </div>
+                <div class="d-none" data-value="excel-to-sql">
+                    <p>Excel 文本转为 SQL</p>
+                    <p>Excel 文本使用制表符（\t）分割</p>
+                    <p>第一行为标题</p>
+                    <p>
+                        <div class="input-group">
+                            <label class="input-group-text">数据库类型</label>
+                            <select class="nrg-se-db form-select">
+                                <option>MySQL</option>
+                                <option>SQLServer</option>
+                                <option>PostgreSQL</option>
+                            </select>
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-5 col-lg-4">
+            <div class="nrg-editor2"></div>
+        </div>
+    </div>
+</div>

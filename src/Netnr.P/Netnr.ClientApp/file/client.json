@@ -1,0 +1,9 @@
+{
+    "server": {
+        "type": "spdy",
+        "options": {
+            "key": "D:/tmp/res/local-key.pem",
+            "cert": "D:/tmp/res/local.pem"
+        }
+    }
+}

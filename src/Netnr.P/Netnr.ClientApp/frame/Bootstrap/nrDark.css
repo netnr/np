@@ -1,6 +1,24 @@
+/* light */
+:root {
+    --global-border: var(--bs-border-color);
+    --global-color: var(--bs-body-color);
+    --global-bg: var(--bs-body-bg);
+}
+
 /*bootstrap*/
 html[data-bs-theme="dark"] {
     --bs-heading-color: #cdd9e5;
+}
+
+/*ag-grid*/
+html[data-bs-theme="dark"] .ag-theme-alpine-dark {
+    --ag-foreground-color: var(--bs-body-color);
+}
+
+/*markdown*/
+html[data-bs-theme="dark"] .markdown-body,
+html[data-bs-theme="dark"] .markdown-body pre code {
+    color: currentColor;
 }
 
 /*choices*/

@@ -13,11 +13,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitExtensionsAll.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitClickHouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitMySQL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitOracle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitPostgreSQL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitSQLite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitSQLServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AGGrid\AGGridTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\BaseTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\JsonConverterTo.cs" />
@@ -28,8 +30,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scheduler\SchedulerTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\EWeChatAppService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\AgGridService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\FilterAllowCORS.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\LaunchTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\AllowCorsMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\ProjectTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitTo.cs" />
@@ -49,7 +52,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggingResultVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggingTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Npoi\NpoiTo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pinyin\PinyinTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Win\WinTo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Import\" />

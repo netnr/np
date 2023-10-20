@@ -15,8 +15,8 @@ let nrPage = {
         });
 
         await nrStorage.init();
-
-        await nrcRely.remote('netnrmdAce.js');
+        await nrcBase.importScript('/file/mimc/mimc-min_1_0_3.js');
+        await nrcRely.remote('netnrmdEditor');
         await nrcRely.remote('netnrmd');
         await nrcBase.importScript('/file/identicon/identicon.min.js');
         nrApp.tsMd = netnrmd.init(nrVary.domChatWrite, {
@@ -205,8 +205,6 @@ let nrPage = {
 
     //登录
     chatLogin: async () => {
-        await nrcBase.importScript('/file/mimc/mimc-min_1_0_3.js');
-
         let user = nrPage.chatClient = new MIMCUser(nrPage.chatKeys.appId, nrPage.chatAccount);
 
         user.registerFetchToken(nrPage.callback.fetchMIMCToken);         //获取token回调

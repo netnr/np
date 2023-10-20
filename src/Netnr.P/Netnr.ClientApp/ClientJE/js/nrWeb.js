@@ -32,7 +32,7 @@ let nrWeb = {
         ];
         nrcBase.tsIcons['tree'] = ['M 0,32 v 64 h 416 v -64 z M 160,160 v 64 h 352 v -64 z M 160,288 v 64 h 288 v -64 z M 0,416 v 64 h 320 v -64 z'];
         const { JSONEditor } = await import('vanilla-jsoneditor');
-        Object.assign(window, { nrcBase, nrcSplit, nrStorage, nrWeb, nrVary, JSONEditor });
+        Object.assign(window, { nrWeb, nrVary, JSONEditor });
 
         //渲染
         await nrWeb.render();
@@ -79,7 +79,7 @@ let nrWeb = {
         nrWeb.bindEvent();
 
         //关闭提示
-        ['nrg-load0', 'nrg-dark0'].forEach(c => document.body.classList.remove(c));
+        document.getElementById('style0').remove();
         nrVary.domBox.style.removeProperty('visibility');
     },
 

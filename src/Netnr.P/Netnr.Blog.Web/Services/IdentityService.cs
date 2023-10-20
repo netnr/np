@@ -112,7 +112,7 @@ namespace Netnr.Blog.Web.Services
             }
             catch (Exception ex)
             {
-                ConsoleTo.Title("accessToken 无效", accessToken);
+                ConsoleTo.WriteCard("accessToken 无效", accessToken);
                 Console.WriteLine(ex);
             }
 
@@ -140,7 +140,7 @@ namespace Netnr.Blog.Web.Services
             var uinfo = Get(context);
 
             //已登录 非只读模式
-            if (uinfo != null && !AppTo.GetValue<bool>("ReadOnly"))
+            if (uinfo != null && AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
             {
                 //查询登录标记（缓存||数据库）
                 var ckey = "UserSign";

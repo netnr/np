@@ -7,27 +7,32 @@
     {
       "ConnectionType": "SQLite",
       "ConnectionString": "Data Source=D:\\tmp\\res\\tmp.db",
-      "ConnectionRemark": "Local tmp"
+      "ConnectionRemark": "local SQLite"
     },
     {
       "ConnectionType": "MySQL",
-      "ConnectionString": "Server=local.host;uid=root;pwd=Abc1230..",
+      "ConnectionString": "Server=local.host;User ID=root;Password=Abc1230..;Database=jcy",
       "ConnectionRemark": "local MySQL"
     },
     {
       "ConnectionType": "SQLServer",
-      "ConnectionString": "Server=local.host;uid=sa;pwd=Abc1230..",
+      "ConnectionString": "Data Source=local.host;User ID=sa;Password=Abc1230..;Initial Catalog=netnr",
       "ConnectionRemark": "local SQLServer"
     },
     {
       "ConnectionType": "PostgreSQL",
-      "ConnectionString": "Server=local.host;Port=5432;User Id=postgres;Password=Abc1230..",
+      "ConnectionString": "Host=local.host;Port=5432;Username=postgres;Password=Abc1230..;Database=netnr",
       "ConnectionRemark": "local PostgreSQL"
     },
     {
+      "ConnectionType": "ClickHouse",
+      "ConnectionString": "host=local.host;port=8123;username=root;password=Abc1230..",
+      "ConnectionRemark": "local ClickHouse"
+    },
+    {
       "ConnectionType": "Oracle",
-      "ConnectionString": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQSME;Password=Abc1230..",
-      "ConnectionRemark": "local Oracle CQSME"
+      "ConnectionString": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQENT;Password=Abc1230..",
+      "ConnectionRemark": "local Oracle CQENT"
     }
   ],
 
@@ -81,7 +86,9 @@
         // 写入数据库名，可选（默认连接配置的数据库名）
         "WriteDatabaseName": "netnr",
         // 写入前删除表数据
-        "WriteDeleteData": true
+        "WriteDeleteData": true,
+        // 忽略源表名（可带模式名 SchemaName），可选
+        "ListIgnoreTableName": []
       },
 
       //导出数据表
@@ -112,7 +119,9 @@
         //导出包完整路径
         "PackagePath": "~/ExportDatabase_{yyyy}{MMdd}.zip",
         //读取表名（可带模式名 SchemaName），可选，默认全表
-        "ListReadTableName": []
+        "ListReadTableName": [],
+        //忽略源表名（可带模式名 SchemaName），可选
+        "ListIgnoreTableName": []
       },
 
       //导入数据库

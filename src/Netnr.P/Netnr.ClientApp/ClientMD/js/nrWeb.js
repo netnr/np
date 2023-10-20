@@ -11,19 +11,20 @@ let nrWeb = {
         }
 
         //载入组件
-        await Promise.all([import('../index'), import('../indexAce')]);
+        await Promise.all([import('../index'), import('../monaco')]);
         //扩展
         nrWeb.expand();
 
         //关闭提示
-        ['nrg-load0', 'nrg-dark0'].forEach(c => document.body.classList.remove(c));
+        document.getElementById('style0').remove();
 
         //读取主题
         let isDark = nrcBase.isDark();
 
         let domMd = document.createElement('div');
         document.body.appendChild(domMd);
-        // 初始化编辑器
+
+        //初始化编辑器
         let nmd = window.nmd = netnrmd.init(domMd, {
             theme: isDark ? "dark" : "light",
 
@@ -80,7 +81,6 @@ let nrWeb = {
                             let file = this.files[0];
                             if (file) {
                                 let fd = new FormData();
-                                fd.append('json', 'true');
                                 fd.append('file', file);
 
                                 //发起上传
@@ -97,16 +97,16 @@ let nrWeb = {
                                     }
                                 };
 
-                                xhr.open("POST", "https://bashupload.com/", true);
+                                xhr.open("POST", "https://file.zme.ink/API/UploadTmp", true);
                                 xhr.send(fd);
                                 xhr.onreadystatechange = function () {
                                     if (xhr.readyState == 4) {
                                         if (xhr.status == 200) {
                                             console.log(xhr.responseText)
                                             let res = JSON.parse(xhr.responseText);
-                                            if (res.file) {
+                                            if (res.code == 200) {
                                                 //上传成功，插入链接
-                                                let link = `[${file.name}](${res.file.url}?download=1)`;
+                                                let link = `[${file.name}](https://file.zme.ink${res.data})`;
                                                 if (file.type.startsWith("image")) {
                                                     link = "!" + link;
                                                 }

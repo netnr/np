@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Diagnostics;
 
 namespace Netnr;
 
 /// <summary>
 /// 生成随机字符
 /// </summary>
-public class RandomTo
+public partial class RandomTo
 {
     /// <summary>
     /// 获取实例，多次调用时请赋值变量

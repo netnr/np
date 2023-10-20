@@ -27,12 +27,12 @@
     <div class="row">
         <div class="col mb-2 opacity-75">
             <a class="me-2 small" href='/user/id/@uw.Uid'>@uw.Spare2</a>
-            <small class="me-2 d-none d-sm-inline-block" title="创建于">@VisualFormatService.Duration(uw.UwCreateTime.Value)</small>
+            <small class="me-2 d-none d-sm-inline-block" title="创建于">@ParsingTo.FormatTimeAgo(uw.UwCreateTime.Value)</small>
             @if (uw.UwCreateTime.Value.Date != uw.UwUpdateTime.Value.Date)
             {
-                <small class="me-2 d-none d-sm-inline-block" title="更新于">@VisualFormatService.Duration(uw.UwUpdateTime.Value)</small>
+                <small class="me-2 d-none d-sm-inline-block" title="更新于">@ParsingTo.FormatTimeAgo(uw.UwUpdateTime.Value)</small>
             }
-            <small class="me-2" title="阅读量">👁@VisualFormatService.Count(uw.UwReadNum.Value)</small>
+            <small class="me-2" title="阅读量">👁@ParsingTo.FormatCount(uw.UwReadNum.Value)</small>
             <small class="me-2" title="回复数">💬@uw.UwReplyNum.Value</small>
         </div>
         <div class="col-auto d-none d-sm-inline">
@@ -126,14 +126,14 @@
                         {
                             <a class="me-2 small" href='/user/id/@item.Uid'>@item.Spare1</a>
                         }
-                        <small class="me-2 d-none d-sm-inline-block opacity-75" title="创建于">@VisualFormatService.Duration(item.UrCreateTime.Value)</small>
+                        <small class="me-2 d-none d-sm-inline-block opacity-75" title="创建于">@ParsingTo.FormatTimeAgo(item.UrCreateTime.Value)</small>
                         <a href="#no_@lv" class="float-end">#@lv</a>
 
                         <div class="markdown-body mt-2">@Html.Raw(item.UrContent)</div>
                     }
                     else
                     {
-                        <small class="me-2 d-none d-sm-inline-block opacity-75" title="创建于">@VisualFormatService.Duration(item.UrCreateTime.Value)</small>
+                        <small class="me-2 d-none d-sm-inline-block opacity-75" title="创建于">@ParsingTo.FormatTimeAgo(item.UrCreateTime.Value)</small>
                         <a href="#no_@lv" class="float-end">#@lv</a>
 
                         <div class="mt-2">
@@ -151,7 +151,7 @@
         <partial name="_PartialPaging" />
     }
 
-    @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && !AppTo.GetValue<bool>("ReadOnly"))
+    @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
     {
         <div class="row mt-5">
             <!--回复帖子-->

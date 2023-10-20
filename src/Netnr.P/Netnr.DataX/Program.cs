@@ -9,18 +9,8 @@ namespace Netnr.DataX
             BaseTo.ReadyEncoding();
             BaseTo.ReadyLegacyTimestamp();
 
-            //git bash
-            if (Console.Out.Encoding.CodePage == 65001)
-            {
-                Console.OutputEncoding = Encoding.UTF8;
-            }
-            else
-            {
-                Console.OutputEncoding = CmdTo.IsWindows ? Encoding.Unicode : Encoding.UTF8;
-            }
-
             //参数模式（静默）
-            if (BaseTo.IsWithArgs)
+            if (BaseTo.IsCmdArgs)
             {
                 await DXService.RunOfSilence();
             }

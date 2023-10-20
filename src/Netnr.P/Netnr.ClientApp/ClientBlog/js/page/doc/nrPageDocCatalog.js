@@ -3,13 +3,14 @@ import { nrApp } from "../../../../frame/Bootstrap/nrApp";
 import { nrcRely } from "../../../../frame/nrcRely";
 import { nrWeb } from "../../nrWeb";
 import { nrVary } from "../../nrVary";
+import { nrcSnowflake } from "../../../../frame/nrcSnowflake";
 
 let nrPage = {
     pathname: '/doc/catalog/*',
 
     init: async () => {
         nrcBase.setHeightFromBottom(nrVary.domTree);
-        
+
         await nrPage.viewTree();
         nrPage.bindEvent();
     },
@@ -32,10 +33,10 @@ let nrPage = {
         domForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
-            let obj = nrcBase.getFormJson(this);
+            let obj = nrcBase.fromFormToKey(this);
 
             let newData = {
-                id: nrcBase.snow(),
+                id: nrcSnowflake.id(),
                 text: obj.DsdTitle,
                 type: obj.DsdType == "file" ? "file" : "menu",
             }
@@ -175,7 +176,7 @@ let nrPage = {
                                     label: "新建子目录",
                                     action: function () {
                                         let newData = {
-                                            id: nrcBase.snow(),
+                                            id: nrcSnowflake.id(),
                                             text: "新目录",
                                             type: "menu"
                                         }
@@ -195,7 +196,7 @@ let nrPage = {
                                     label: "新建页面",
                                     action: function () {
                                         let newData = {
-                                            id: nrcBase.snow(),
+                                            id: nrcSnowflake.id(),
                                             text: "新页面",
                                             type: "file"
                                         }

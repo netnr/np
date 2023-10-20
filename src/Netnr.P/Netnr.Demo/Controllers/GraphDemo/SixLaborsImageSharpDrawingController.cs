@@ -33,10 +33,6 @@ public class SixLaborsImageSharpDrawingController : Controller
         }
     }
 
-    /// <summary>
-    /// 生成图片验证码
-    /// </summary>
-    /// <param name="code">随机码</param>
     [HttpGet]
     public byte[] CreateImg(string code)
     {
@@ -62,12 +58,10 @@ public class SixLaborsImageSharpDrawingController : Controller
             //在随机位置画背景点  
             for (int i = 0; i < 200; i++)
             {
-                var pen = new Pen(Colors[random.Next(Colors.Length)], 1);
-
                 var p1 = new PointF(random.Next(image.Width), random.Next(image.Height));
                 var p2 = new PointF(p1.X + 2f, p1.Y + 2f);
 
-                ctx.DrawLines(pen, p1, p2);
+                ctx.DrawLine(Colors[random.Next(Colors.Length)], 1, new[] { p1, p2 });
             }
 
             //验证码绘制
