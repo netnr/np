@@ -2,10 +2,10 @@
 @{
     ViewData["Title"] = Model.Nickname;
 
-    var uinfo = IdentityService.Get(ViewContext.HttpContext);
+    var uinfo = IdentityService.Get(Context);
     var isme = uinfo?.UserId == Model.UserId;
 
-    var avatarUrl = AppTo.GetValue("Common:Gravatar");
+    var avatarUrl = AppTo.GetValue("ProgramParameters:Gravatar");
 }
 
 <input type="hidden" class="nrg-hid-isme" value='@(isme?1:0)' />

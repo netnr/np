@@ -43,6 +43,11 @@ let nrcAes = {
         const decryptedText = decoder.decode(decrypted);
         return decryptedText;
     },
+
+    passwordDecrypt: async (password, account) => {
+        let encryptedText = await nrcAes.encrypt(`${Date.now()}${password}`, account);
+        return encryptedText;
+    }
 }
 
 Object.assign(window, { nrcAes });

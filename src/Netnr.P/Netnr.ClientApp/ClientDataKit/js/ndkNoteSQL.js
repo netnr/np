@@ -93,6 +93,8 @@ SELECT 'engine' col, @@default_storage_engine val
 UNION ALL
 SELECT 'charset' col, @@collation_server val
 UNION ALL
+SELECT 'innodb_page_size' col, @@innodb_page_size val
+UNION ALL
 SELECT 'time_zone' col, @@system_time_zone val
 UNION ALL
 SELECT 'max_conn' col, @@max_connections val
@@ -102,6 +104,8 @@ UNION ALL
 SELECT 'datetime' col, now() AS val
 UNION ALL
 SELECT 'time_out' col, @@wait_timeout AS val
+UNION ALL
+SELECT 'net_write_timeout' col, @@net_write_timeout AS val
 UNION ALL
 SELECT 'ignore_case' col, 'a' = 'A' AS val
 UNION ALL
@@ -229,6 +233,11 @@ SELECT @@innodb_buffer_pool_size/1024/1024/1024; -- 字节转为 G
 -- 在线调整 InnoDB 缓冲池大小，如果不设置，默认为 128M
 -- set global innodb_buffer_pool_size = 1024*1024*1024*9; -- 单位字节`,
     remark: 'InnoDB 缓冲池大小'
+  },
+  {
+    group: 'default',
+    name: "rename-table",
+    sql: `RENAME TABLE old_table TO tmp_table, new_table TO old_table, tmp_table TO new_table`
   },
   {
     group: 'default',
@@ -585,6 +594,109 @@ END
 $$;
 `,
     remark: '打印输出'
+  },
+  {
+    group: 'default',
+    name: "empty",
+    sql: ``
+  },
+];
+
+ndkNoteSQL["ClickHouse"] = [
+  {
+    group: 'rely',
+    name: "db-env-info",
+    sql: `select 'name' as Key, alphaTokens(value)[1] AS Value from system.build_options where name = 'VERSION_FULL'
+UNION ALL
+SELECT 'version', value from system.build_options where name = 'VERSION_DESCRIBE'
+UNION ALL
+SELECT 'dir_data', path FROM system.disks order by total_space desc limit 1
+UNION ALL
+SELECT 'time_zone', timeZone()
+UNION ALL
+SELECT 'datetime', formatDateTime(now(),'%Y-%m-%d %H:%M:%S')
+UNION ALL
+SELECT 'curr_conn', toString(sum(value)) FROM system.metrics WHERE metric LIKE '%Connection'
+UNION ALL
+SELECT 'ignore_case', ( CASE WHEN 'a' = 'A' THEN '1' ELSE '0' END )
+UNION ALL
+SELECT 'system', arrayStringConcat(groupArray(value), '-') from system.build_options where name in('SYSTEM','SYSTEM_PROCESSOR')`,
+    remark: '数据库环境信息'
+  },
+  {
+    group: 'rely',
+    name: "db-var-info",
+    sql: `SELECT * FROM system.settings`,
+    remark: '数据库参数信息'
+  },
+  {
+    group: 'default',
+    name: "database-name",
+    sql: `SELECT name AS DatabaseName FROM system.databases`,
+    remark: '数据库名称'
+  },
+  {
+    group: 'default',
+    name: "empty",
+    sql: ``
+  },
+];
+
+ndkNoteSQL["Dm"] = [
+  {
+    group: 'rely',
+    name: "db-env-info",
+    sql: `SELECT 'name' AS "Key", BANNER AS "Value" from v$version WHERE ROWNUM = 1
+UNION ALL
+SELECT 'version', id_code()
+UNION ALL
+SELECT 'dir_data', file_name FROM dba_data_files WHERE file_id = 0 AND ROWNUM = 1
+UNION ALL
+SELECT 'charset', ( CASE SF_GET_UNICODE_FLAG() WHEN '0' THEN 'GBK18030' WHEN '1' then 'UTF-8' when '2' then 'EUC-KR' end)
+UNION ALL
+SELECT 'time_zone', SESSIONTIMEZONE
+UNION ALL
+SELECT 'datetime', TO_CHAR(SYSDATE, 'yyyy-mm-dd hh24:mi:ss')
+UNION ALL
+SELECT 'max_conn', TO_CHAR(SF_GET_PARA_VALUE(2,'MAX_SESSIONS'))
+UNION ALL
+SELECT 'curr_conn', TO_CHAR(COUNT(1)) FROM v$process
+UNION ALL
+SELECT 'ignore_case', TO_CHAR(1 - CASE_SENSITIVE())
+UNION ALL
+SELECT 'expired_date', TO_CHAR(EXPIRED_DATE, 'yyyy-mm-dd hh24:mi:ss') from v$license
+UNION ALL
+SELECT 'expired_day', TO_CHAR(NVL(EXPIRED_DATE-SYSDATE, 999999), 'FM999999') from v$license
+UNION ALL
+SELECT 'page_size', TO_CHAR(para_value) from v$dm_ini where para_name = 'GLOBAL_PAGE_SIZE'
+UNION ALL
+SELECT 'length_in_char', decode(para_value, '1', 'char', 'byte') from v$dm_ini where para_name = 'LENGTH_IN_CHAR'
+UNION ALL
+SELECT 'arch_mode', arch_mode FROM v$database`,
+    remark: '数据库环境信息'
+  },
+  {
+    group: 'rely',
+    name: "db-var-info",
+    sql: `SELECT * FROM V$PARAMETER;\r\nSELECT * FROM V$DM_INI`,
+    remark: '数据库参数信息'
+  },
+  {
+    group: 'default',
+    name: "database-name",
+    sql: `SELECT NAME AS DatabaseName FROM SYS.SYSOBJECTS WHERE TYPE$='SCH' ORDER BY NAME`,
+    remark: '数据库名称'
+  },
+  {
+    group: 'default',
+    name: "schema",
+    sql: `SELECT SF_GET_SCHEMA_NAME_BY_ID(CURRENT_SCHID); -- 查询
+select sys_context('USERENV','CURRENT_SCHEMA'); -- 查询
+
+alter session set current_schema = NEW_SCHEMA; -- 设置
+set SCHEMA NEW_SCHEMA; -- 设置
+`,
+    remark: '模式'
   },
   {
     group: 'default',

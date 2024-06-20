@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitExtensionsAll.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitModels.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitClickHouse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitDm.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitMySQL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitOracle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ado\DbKitPostgreSQL.cs" />
@@ -23,13 +24,67 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\BaseTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\JsonConverterTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\PMScriptTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\TreeTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\ValueTextVM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleX\CleanUpService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleX\ConsoleXTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleX\GlobalUsing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleX\MenuAboutService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleX\MenuNetworkService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleX\MenuToolService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CacheTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CalcTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CmdTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ConsoleTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\FileTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\GeoTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\HttpTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\LngLatTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\LockTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\MailTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\MonitorTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ParsingTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\PredicateTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\QueueTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RandomTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Snowflake53To.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SnowflakeTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SystemStatusTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\TextMiningTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ZipTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataKit\DataKitModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IPQuery\IPQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IPQuery\IPv4Query.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IPQuery\IPv6Query.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\LoginTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\NetnrCore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Alipay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\DingTalk.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\DingTalkOld.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Feishu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Gitee.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\GitHub.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Google.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Microsoft.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\MicrosoftOld.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\QQ.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\StackOverflow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Taobao.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Weibo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\Weixin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\which\WeixinMP.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NJson\Extensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scheduler\SchedulerTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NJson\NJsonConverterTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Activation\ActivationTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\SchedulerTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\EWeChatAppService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\AgGridService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleX\ConsoleXModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UAParser\UAModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UAParser\UAParsers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UAParser\UARegexes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\AllowCorsMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\ProjectTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\Extensions.cs" />
@@ -56,5 +111,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Import\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Activation\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)IPQuery\README.md" />
   </ItemGroup>
 </Project>

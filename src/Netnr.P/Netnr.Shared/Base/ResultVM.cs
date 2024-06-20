@@ -40,7 +40,7 @@ public class ResultVM
     /// 日志
     /// </summary>
     [JsonPropertyName("log")]
-    public ObservableCollection<object> Log { get; set; } = new ObservableCollection<object>();
+    public ObservableCollection<object> Log { get; set; } = [];
 
     /// <summary>
     /// 日志事件
@@ -144,27 +144,6 @@ public class ResultVM
         ConsoleTo.WriteCard("Exception", ex);
         Set(RCodeTypes.exception);
         Msg = ex.ToJson();
-    }
-
-    /// <summary>
-    /// 通用的异常处理
-    /// </summary>
-    /// <param name="resTry"></param>
-    /// <returns></returns>
-    public static async Task<ResultVM> Try(Func<ResultVM, Task<ResultVM>> resTry)
-    {
-        var vm = new ResultVM();
-
-        try
-        {
-            vm = await resTry.Invoke(vm);
-        }
-        catch (Exception ex)
-        {
-            vm.Set(ex);
-        }
-
-        return vm;
     }
 }
 

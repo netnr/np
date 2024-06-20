@@ -268,7 +268,7 @@ namespace Netnr.Demo.Controllers.LoginDemo
                     if (loginType == LoginWhich.QQ)
                     {
                         openidResult = LoginTo.EntryOfStep<DocModel, object>(loginType, LoginStep.OpenId, beforeResult: tokenResult);
-                        userResult = LoginTo.EntryOfStep<DocModel[], object>(loginType, LoginStep.User, beforeResult: new[] { tokenResult, openidResult });
+                        userResult = LoginTo.EntryOfStep<DocModel[], object>(loginType, LoginStep.User, beforeResult: [tokenResult, openidResult]);
                     }
                     else if (loginType == LoginWhich.DingTalk && DingTalk.IsOld)
                     {

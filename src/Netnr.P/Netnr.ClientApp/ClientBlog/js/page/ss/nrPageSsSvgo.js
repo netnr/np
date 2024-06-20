@@ -54,17 +54,17 @@ let nrPage = {
                 nrApp.setLoading(this)
 
                 if (typeof nrPage.svgOut == "string") {
-                    nrcBase.download(nrPage.svgOut, "icon.svg");
+                    nrcBase.downloadText(nrPage.svgOut, "icon.svg");
                 } else {
                     if (nrPage.svgOut.length == 1) {
-                        nrcBase.download(nrPage.svgOut[0].data, nrPage.svgOut[0].name);
+                        nrcBase.downloadText(nrPage.svgOut[0].data, nrPage.svgOut[0].name);
                     } else {
                         await nrcRely.remote('jszip.js');
 
                         let zip = new JSZip();
                         nrPage.svgOut.forEach(item => zip.file(item.name, item.data));
                         let content = await zip.generateAsync({ type: "blob" });
-                        nrcBase.download(content, "icon.zip");
+                        nrcBase.downloadBlob(content, "icon.zip");
                     }
                 }
 
@@ -127,7 +127,7 @@ let nrPage = {
      */
     viewEditor: async () => {
         if (!nrApp.tsEditor) {
-            await nrEditor.init();
+            await nrEditor.rely();
 
             nrApp.tsEditor = nrEditor.create(nrVary.domEditor, { language: 'html', wordWrap: 'on' });
 

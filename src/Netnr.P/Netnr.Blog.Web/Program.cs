@@ -1,6 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 
+PMScriptTo.Init();
+
 var builder = WebApplication.CreateBuilder(args);
+if (!BaseTo.CommandLineArgs.Contains("--urls"))
+{
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        //随机端口
+        serverOptions.Listen(System.Net.IPAddress.Any, 0);
+    });
+}
 
 BaseTo.ReadyEncoding();
 BaseTo.ReadyLegacyTimestamp();
@@ -9,7 +19,7 @@ BaseTo.ReadyLegacyTimestamp();
 builder.SetMaxRequestData();
 
 //第三方登录
-if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true && AppTo.GetValue<bool?>("OAuthLogin:enable") == true)
+if (AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") != true && AppTo.GetValue<bool?>("OAuthLogin:enable") == true)
 {
     Netnr.Login.LoginTo.InitConfig((loginType, field) =>
     {
@@ -89,6 +99,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add Hangfire services.
+HangfireService.InitServer(builder);
+
 var app = builder.Build();
 
 //ERROR
@@ -99,66 +112,6 @@ if (!(BaseTo.IsDev = app.Environment.IsDevelopment()))
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
-
-//获取注入对象
-using (var scope = app.Services.CreateScope())
-{
-    //数据库初始化
-    var db = scope.ServiceProvider.GetRequiredService<ContextBase>();
-
-    //数据库不存在则创建，创建后返回true
-    if (db.Database.EnsureCreated())
-    {
-        var createScript = db.Database.GenerateCreateScript();
-        if (AppTo.DBT == DBTypes.PostgreSQL)
-        {
-            createScript = createScript.Replace(" datetime ", " timestamp ");
-        }
-        Console.WriteLine(createScript);
-
-        //导入数据库示例数据
-        var vm = new Netnr.Blog.Web.Controllers.ServiceController(db).DatabaseImport("static/sample.zip");
-        Console.WriteLine(vm.ToJson(true));
-    }
-
-
-    //定时任务 https://github.com/fluentscheduler/FluentScheduler
-    if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true && AppTo.GetValue<bool?>("DisableTask") == false)
-    {
-        FluentScheduler.JobManager.Initialize();
-
-        //处理操作记录
-        FluentScheduler.JobManager.AddJob(() =>
-        {
-            try
-            {
-                var sc = new Netnr.Blog.Web.Controllers.ServiceController(ContextBaseFactory.CreateDbContext());
-                sc.HandleOperationRecord();
-            }
-            catch (Exception ex)
-            {
-                ConsoleTo.LogError(ex, "HandleOperationRecord");
-            }
-        }, s => s.ToRunEvery(6).Hours());
-
-        //数据库备份到 Git
-        FluentScheduler.JobManager.AddJob(async () =>
-        {
-            try
-            {
-                var sc = new Netnr.Blog.Web.Controllers.ServiceController(ContextBaseFactory.CreateDbContext());
-                await sc.DatabaseBackupToGit();
-            }
-            catch (Exception ex)
-            {
-                ConsoleTo.LogError(ex, "DatabaseBackupToGit");
-            }
-        }, s => s.ToRunEvery(3).Days().At(16, 16));
-    }
-
-    //作业
-    NotifyService.DouyuRoomOnline();
 }
 
 //配置swagger
@@ -178,14 +131,14 @@ app.UseStaticFiles(new StaticFileOptions()
     {
         if (!resp.File.IsDirectory && (resp.File.Name.EndsWith(".js") || resp.File.Name.EndsWith(".css")))
         {
-            resp.Context.Response.Headers["Content-Type"] += "; charset=utf-8";
+            resp.Context.Response.Headers.ContentType += "; charset=utf-8";
         }
-        resp.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-        resp.Context.Response.Headers["Cache-Control"] = "public, max-age=604800";
+        resp.Context.Response.Headers.AccessControlAllowOrigin = "*";
+        resp.Context.Response.Headers.CacheControl = "public, max-age=604800";
     }
 });
 //目录浏览&&公开访问
-if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
+if (AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") == true)
 {
     var fso = new FileServerOptions()
     {
@@ -197,7 +150,7 @@ if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
     {
         if (!resp.File.IsDirectory && (resp.File.Name.EndsWith(".js") || resp.File.Name.EndsWith(".css")))
         {
-            resp.Context.Response.Headers["Content-Type"] += "; charset=utf-8";
+            resp.Context.Response.Headers.ContentType += "; charset=utf-8";
         }
     };
     fso.FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(AppTo.WebRootPath);
@@ -220,6 +173,32 @@ app.UseAuthorization();
 // Call UseSession after UseRouting and before MapRazorPages and MapDefaultControllerRoute 
 app.UseSession();
 
+//获取注入对象
+using (var scope = app.Services.CreateScope())
+{
+    //数据库初始化
+    var db = scope.ServiceProvider.GetRequiredService<ContextBase>();
+
+    //数据库不存在则创建，创建后返回true
+    if (db.Database.EnsureCreated())
+    {
+        var createScript = db.Database.GenerateCreateScript();
+        if (AppTo.DBT == DBTypes.PostgreSQL)
+        {
+            createScript = createScript.Replace(" datetime ", " timestamp ");
+        }
+        Console.WriteLine(createScript);
+
+        //导入数据库示例数据
+        ConsoleTo.WriteCard("DatabaseImport");
+        var vm = await new Netnr.Blog.Web.Controllers.ServiceController(db).DatabaseImport("static/sample.zip", realTimePrint: true);
+        Console.WriteLine($"{vm.Code} {vm.Msg}");
+    }
+
+    //定时任务
+    HangfireService.InitManager(app);
+}
+
 //default index.html
 //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 app.MapGet("/app/{appName}/", (string appName) => Results.File($"{AppTo.WebRootPath}/app/{appName}/index.html", "text/html; charset=utf-8"));
@@ -233,7 +212,7 @@ app.Map("/generate_404", () => Results.NotFound());
 app.Map("/generate_418", () => Results.StatusCode(418));
 
 //curl HOST -T file.txt
-if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
+if (AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") == true)
 {
     app.MapPut("/{id}", async ([FromRoute] string id, HttpContext context) =>
     {

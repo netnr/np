@@ -3,13 +3,9 @@
 namespace Netnr.Demo.Controllers.GraphDemo;
 
 [Route("/GraphDemo/[controller]/[action]")]
-public class NetVipsController : Controller
+public class NetVipsController(IWebHostEnvironment host) : Controller
 {
-    public IWebHostEnvironment env;
-    public NetVipsController(IWebHostEnvironment host)
-    {
-        env = host;
-    }
+    public IWebHostEnvironment env = host;
 
     /// <summary>
     /// 验证码

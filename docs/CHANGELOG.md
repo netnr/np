@@ -1,5 +1,11 @@
 # Change Log
 
+### 2024-06
+- 升级 .NET 7.0.20 , 暂时保持 .NET 7 版本，因为 .NET 8 Linux 依赖 GLIBCXX_3.4.21 ，CentOS 7 不支持
+
+### 2023-10
+- 升级 .NET 7.0.13
+
 ### 2023-04
 - 升级 个站前端去除 shoelace-style 组件库，因为 bootstrap-5.3 已经开始支持暗黑主题，使用 webpack 打包
 - 升级 .NET 7.0.5
@@ -18,7 +24,6 @@
 - 发布 NDX (Netnr.DataX)
 - 发布 NS (Netnr.Serve)
 - 发布 NFS (Netnr.FileServer)
-- https://gitee.com/netnr/np/releases
 - https://github.com/netnr/np/releases
 
 ### 2021-06

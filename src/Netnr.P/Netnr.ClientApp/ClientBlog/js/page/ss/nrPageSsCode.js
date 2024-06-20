@@ -165,6 +165,8 @@ let nrPage = {
                             }
                             break;
                     }
+
+                    nrPage.biggerTextaream();
                 } catch (ex) {
                     nrApp.logError(ex, '处理错误');
                 }
@@ -209,6 +211,8 @@ let nrPage = {
                         nrVary.domTxtCode1.value = result;
                     }
                 }
+
+                nrPage.biggerTextaream();
             }
         })
         //DES
@@ -244,6 +248,8 @@ let nrPage = {
                         nrVary.domTxtCode1.value = result;
                     }
                 }
+
+                nrPage.biggerTextaream();
             }
         })
 
@@ -251,12 +257,14 @@ let nrPage = {
         nrcFile.init(async (files) => {
             let file = files[0];
             if (file) {
+                nrPage.biggerTextaream(true);
+
                 let finfo = `文件名：${file.name}，大小：${nrcBase.formatByteSize(file.size)}`;
                 let startDate = new Date();
 
                 nrVary.domTxtCode2.value = `${finfo}\n读取中 ...`;
 
-                let algoKeys = ['MD5', 'SHA1', 'SHA256'], algsObj = {};
+                let algoKeys = ['MD5', 'SHA1', 'SHA256', 'SHA384', 'SHA512'], algsObj = {};
                 algoKeys.forEach(key => algsObj[key] = CryptoJS.algo[key].create());
 
                 nrPage.readLargeFile({
@@ -279,6 +287,14 @@ let nrPage = {
             nrVary.domTxtFile.value = "";
         }, nrVary.domTxtFile);
 
+        nrVary.domTxtAscii.title = `
+[
+    { "code": "KeyA", "key": "A" },
+    { "code": "KeyA", "key": "a" },
+    { "code": "ControlLeft", "key": "Control" },
+    { "code": "ControlRight", "key": "Control" }
+]
+        `;
         // 按键 ASCII
         nrVary.domTxtAscii.addEventListener('keydown', function (e) {
             console.debug(e);
@@ -293,6 +309,16 @@ let nrPage = {
         nrVary.domTxtColor.addEventListener('input', function () {
             nrVary.domTxtColorValue.value = this.value;
         })
+    },
+
+    biggerTextaream: (isBigger) => {
+        if (isBigger) {
+            nrVary.domTxtCode1.parentElement.classList.add("col-xl-3");
+            nrVary.domTxtCode2.parentElement.classList.add("col-xl-9");
+        } else {
+            nrVary.domTxtCode1.parentElement.classList.remove("col-xl-3");
+            nrVary.domTxtCode2.parentElement.classList.remove("col-xl-9");
+        }
     },
 
     /**

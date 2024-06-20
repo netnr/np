@@ -3,14 +3,9 @@
     /// <summary>
     /// Run
     /// </summary>
-    public class RunController : Controller
+    public class RunController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public RunController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// Run 首页

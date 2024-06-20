@@ -1,7 +1,7 @@
 @{
-    var adminGitHub = AppTo.GetValue("Common:AdminGitHub");
-    var mirror = AppTo.GetValue("Common:Mirror");
-    var links = AppTo.GetValue("Common:Links").Split(',');
+    var adminGitHub = AppTo.GetValue("ProgramParameters:AdminGitHub");
+    var mirror = AppTo.GetValue("ProgramParameters:Mirror");
+    var links = AppTo.GetValue("ProgramParameters:Links").Split(',');
 }
 <hr />
 
@@ -32,7 +32,7 @@
             <a class="me-3 lh-lg" href="/mix/faq">FAQ</a>
             <a class="me-3 lh-lg" href="/mix/terms">Terms</a>
             <a class="me-3 lh-lg" href="@mirror" title="不定时备份到镜像只读站点">Mirror</a>
-            <span>&copy; @AppTo.GetValue("Common:EnglishName") @DateTime.Now.Year</span>
+            <span>&copy; @AppTo.GetValue("ProgramParameters:EnglishName") @DateTime.Now.Year</span>
         </div>
     </div>
 </div>

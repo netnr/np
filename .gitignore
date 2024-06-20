@@ -314,6 +314,8 @@ OpenCover/
 src/Netnr.P/Netnr.Blog.Web/db/jieba/
 src/Netnr.P/Netnr.Blog.Web/wwwroot/dist/
 src/Netnr.P/Netnr.Admin.Web/wwwroot/
+src/Netnr.P/Netnr.Admin.Web/static/hangfire/hangfire.*
+src/Netnr.P/Netnr.Admin.Web/static/sas/sas.*
 src/Netnr.P/Netnr.DataKit/wwwroot/
 src/Netnr.P/Netnr.ClientApp/*/dist/
 src/Netnr.P/Netnr.DataX/ud/hub/

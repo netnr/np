@@ -1,18 +1,18 @@
 ﻿@{
     Layout = null;
 
-    var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
+    var theme = Context.Request.Cookies[".theme"];
     theme = theme == "dark" ? "dark" : "light";
 
     var dscode = ViewContext.RouteData.Values["id"]?.ToString();
     var sid = ViewContext.RouteData.Values["sid"]?.ToString();
-    var uinfo = IdentityService.Get(ViewContext.HttpContext);
+    var uinfo = IdentityService.Get(Context);
 }
 <!DOCTYPE html>
 <html lang="zh-cn" data-bs-theme='@theme' class="netnrmd-@theme">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] @AppTo.GetValue("Common:EnglishName") Doc</title>
+    <title>@ViewData["Title"] @AppTo.GetValue("ProgramParameters:EnglishName") Doc</title>
 
     @Html.Raw(Netnr.QuoteTo.Html("favicon,blog-seo"))
 </head>

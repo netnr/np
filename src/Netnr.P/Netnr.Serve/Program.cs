@@ -1,1 +1,1 @@
-﻿Netnr.ServeTo.FastStart();
+﻿await Netnr.ServeTo.QuickStart();

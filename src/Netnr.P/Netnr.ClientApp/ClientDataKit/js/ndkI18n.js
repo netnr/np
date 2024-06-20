@@ -102,6 +102,9 @@ var ndkI18n = {
             setParameterConfigTitle: "参数设置",
 
             //参数项
+            parameterKey_openTransaction: "事务执行 SQL",
+            parameterKey_openTransaction_true: "开启事物自动提交",
+            parameterKey_openTransaction_false: "不启用事物",
             parameterKey_autoFilterDatabaseNumber: "数据库名超过自动过滤",
             parameterKey_selectDataLimit: "查询数据默认限制行数",
             parameterKey_buildSqlWithQuote: "生成 SQL 带符号",
@@ -322,6 +325,9 @@ var ndkI18n = {
             setParameterConfigTitle: "Parameter configuration",
 
             //参数项
+            parameterKey_openTransaction: "Transaction execution SQL",
+            parameterKey_openTransaction_true: "Auto submission of transactions",
+            parameterKey_openTransaction_false: "Don't enable things",
             parameterKey_autoFilterDatabaseNumber: "Auto filter database number",
             parameterKey_selectDataLimit: "Select data default limit",
             parameterKey_buildSqlWithQuote: "Build SQL with quote",

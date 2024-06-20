@@ -6,7 +6,7 @@ namespace Netnr
 {
     /// <summary>
     /// 引用组件：SkiaSharp、SkiaSharp.NativeAssets.Linux
-    /// 跨平台
+    /// 跨平台, Linux 需安装 dnf install fontconfig
     /// </summary>
     public class ImageTo
     {
@@ -25,7 +25,7 @@ namespace Netnr
             }
 
             //验证码颜色集合  
-            SKColor[] colors = { SKColors.LightBlue, SKColors.LightCoral, SKColors.LightGreen, SKColors.LightPink, SKColors.LightSkyBlue, SKColors.LightSteelBlue, SKColors.LightSalmon };
+            SKColor[] colors = [SKColors.LightBlue, SKColors.LightCoral, SKColors.LightGreen, SKColors.LightPink, SKColors.LightSkyBlue, SKColors.LightSteelBlue, SKColors.LightSalmon];
 
             //旋转角度
             int randAngle = 40;

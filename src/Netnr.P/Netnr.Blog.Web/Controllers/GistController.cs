@@ -3,14 +3,9 @@
     /// <summary>
     /// Gist
     /// </summary>
-    public class GistController : Controller
+    public class GistController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public GistController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// Gist 首页

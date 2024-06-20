@@ -1,7 +1,7 @@
 @{
-    var siteName = AppTo.GetValue("Common:EnglishName");
+    var siteName = AppTo.GetValue("ProgramParameters:EnglishName");
 
-    var uinfo = IdentityService.Get(ViewContext.HttpContext);
+    var uinfo = IdentityService.Get(Context);
     int num = uinfo == null ? 0 : CommonService.NewMessageQuery(uinfo.UserId);
 
     var rdv = ViewContext.RouteData.Values;
@@ -9,14 +9,14 @@
     var actionName = rdv["action"].ToString().ToLower();
     var ca = ctrl + "/" + actionName;
     var caSearch = "home/index,home/type,run/user,run/discover,gist/user,gist/discover,draw/user,draw/discover,doc/user,doc/discover,guff/user,guff/discover".Split(',');
-    var search = ViewContext.HttpContext.Request.Query["k"];
+    var search = Context.Request.Query["k"];
 
     AppContext.TryGetSwitch("Netnr.BuildHtml", out bool isBuildHtml);
 }
 
 @if (isBuildHtml)
 {
-    var siteDomain = AppTo.GetValue("Common:Domain");
+    var siteDomain = AppTo.GetValue("ProgramParameters:Domain");
 
     if (ctrl == "ss")
     {
@@ -24,7 +24,7 @@
     }
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
+        <div class="@QuoteTo.PanelClass3">
             <a class="navbar-brand text-decoration-none" href="@siteDomain">
                 <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
                 <span class="d-none d-sm-inline-block">@siteName</span>
@@ -111,7 +111,7 @@
 else
 {
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
+        <div class="@QuoteTo.PanelClass3">
             <a class="navbar-brand text-decoration-none" href="/">
                 <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
                 <span class="d-none d-sm-inline-block">@siteName</span>
@@ -211,7 +211,7 @@ else
                                 <li><a class="dropdown-item px-4 py-2" href="/home/write">写文章</a></li>
                                 <li><a class="dropdown-item px-4 py-2" href="/user/write">我的文章</a></li>
                                 <li><a class="dropdown-item px-4 py-2" href="/note">我的记事</a></li>
-                                @if (uinfo?.UserId == AppTo.GetValue<int>("Common:AdminId"))
+                                @if (uinfo?.UserId == AppTo.GetValue<int>("ProgramParameters:AdminId"))
                                 {
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item px-4 py-2" href="/admin">后台管理</a></li>
@@ -299,7 +299,7 @@ else
                             <li class="nav-item"><a class="nav-link px-3 py-2" href="/home/write">写文章</a></li>
                             <li class="nav-item"><a class="nav-link px-3 py-2" href="/user/write">我的文章</a></li>
                             <li class="nav-item"><a class="nav-link px-3 py-2" href="/note">我的记事</a></li>
-                            @if (uinfo?.UserId == AppTo.GetValue<int>("Common:AdminId"))
+                            @if (uinfo?.UserId == AppTo.GetValue<int>("ProgramParameters:AdminId"))
                             {
                                 <li class="nav-item"><a class="nav-link px-3 py-2" href="/admin">后台管理</a></li>
                             }

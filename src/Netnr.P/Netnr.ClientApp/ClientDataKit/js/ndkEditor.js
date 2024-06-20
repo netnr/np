@@ -184,9 +184,7 @@ var ndkEditor = {
      * 获取选中值
      * @param {any} editor
      */
-    selectedValue: editor => {
-        return editor.getModel().getValueInRange(editor.getSelection());
-    },
+    selectedValue: editor => editor.getModel().getValueInRange(editor.getSelection()),
 
     /**
      * 获取选中或全部值
@@ -229,7 +227,9 @@ var ndkEditor = {
             case "PostgreSQL":
                 sqlang = type.toLowerCase();
                 break;
+            case "Dm":
             case "Oracle": sqlang = 'plsql'; break;
+            case "ClickHouse": sqlang = 'mysql'; break;
             case "SQLServer":
             default: sqlang = 'tsql'; break;
         }

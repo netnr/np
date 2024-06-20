@@ -8,14 +8,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// </summary>
     [Authorize]
     [Route("[controller]/[action]")]
-    public class SettingController : Controller
+    public class SettingController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public SettingController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         #region 系统按钮
 
@@ -41,7 +36,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var list = await db.SysButton.OrderBy(x => x.SbBtnOrder).ToListAsync();
-            var tree = TreeTo.ListToTree(list, "SbPid", "SbId", new List<string> { Guid.Empty.ToString() });
+            var tree = TreeTo.ListToTree(list, "SbPid", "SbId", [Guid.Empty.ToString()]);
             ovm.Data = tree.DeJson();
 
             //列
@@ -131,7 +126,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             var ovm = new QueryDataOutputVM();
 
             var list = await db.SysMenu.OrderBy(x => x.SmOrder).ToListAsync();
-            var tree = TreeTo.ListToTree(list, "SmPid", "SmId", new List<string> { Guid.Empty.ToString() });
+            var tree = TreeTo.ListToTree(list, "SmPid", "SmId", [Guid.Empty.ToString()]);
             ovm.Data = tree.DeJson();
 
             //列

@@ -14,26 +14,29 @@ public partial class DbKit
     /// 表批量写入
     /// </summary>
     /// <param name="dt">数据表</param>
-    /// <param name="bulkCopy">设置表复制对象</param>
+    /// <param name="bulkCopyAction">设置表复制对象</param>
+    /// <param name="batchSize">每批行数，默认全部</param>
     /// <returns></returns>
-    public async Task<int> BulkCopyClickHouse(DataTable dt, Action<ClickHouseBulkCopy> bulkCopy = null)
+    public async Task<int> BulkCopyClickHouse(DataTable dt, Action<ClickHouseBulkCopy> bulkCopyAction = null, int batchSize = 0)
     {
         return await SafeConn(async () =>
         {
             var connection = (ClickHouseConnection)ConnOption.Connection;
 
-            using var bulk = new ClickHouseBulkCopy(connection)
+            using var bulkCopy = new ClickHouseBulkCopy(connection)
             {
                 DestinationTableName = dt.TableName,
-                BatchSize = dt.Rows.Count
+                ColumnNames = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray(),
+                BatchSize = batchSize > 0 ? batchSize : dt.Rows.Count,
             };
 
-            bulkCopy?.Invoke(bulk);
+            bulkCopyAction?.Invoke(bulkCopy);
 
+            await bulkCopy.InitAsync();
             var cts = new CancellationTokenSource();
-            await bulk.WriteToServerAsync(dt, cts.Token);
+            await bulkCopy.WriteToServerAsync(dt, cts.Token);
 
-            return (int)bulk.RowsWritten;
+            return (int)bulkCopy.RowsWritten;
         });
     }
 }

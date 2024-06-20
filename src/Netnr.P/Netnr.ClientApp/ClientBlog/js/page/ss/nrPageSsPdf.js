@@ -84,7 +84,7 @@ let nrPage = {
                             nrApp.alert("请选择 PDF 文件");
                         } else {
                             let canvas = nrVary.domCardView.querySelector('canvas');
-                            nrcBase.download(canvas, `page-${nrVary.domTxtNumber.value}.png`);
+                            nrcBase.downloadCanvas(canvas, `page-${nrVary.domTxtNumber.value}.png`);
                         }
                     }
                     break;
@@ -95,7 +95,7 @@ let nrPage = {
                         } else {
                             if (nrPage.pdf.numPages == 1) {
                                 let canvas = nrVary.domCardView.querySelector('canvas');
-                                nrcBase.download(canvas, `page-${nrVary.domTxtNumber.value}.png`);
+                                nrcBase.downloadCanvas(canvas, `page-${nrVary.domTxtNumber.value}.png`);
                             } else {
                                 await nrPage.exportImage(1);
                             }
@@ -197,7 +197,7 @@ let nrPage = {
             nrVary.domCardView.classList.remove('invisible');
 
             let content = await nrPage.zip.generateAsync({ type: "blob" });
-            nrcBase.download(content, `pages-${nrPage.pdf.numPages}.zip`);
+            nrcBase.downloadBlob(content, `pages-${nrPage.pdf.numPages}.zip`);
         }
     }
 }

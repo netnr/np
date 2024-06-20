@@ -2,7 +2,8 @@
 a {
     text-decoration: none;
 }
-a:not(.btn):not(.dropdown-item):hover {
+
+a:not(.btn):not(.dropdown-item):not([href="#"]):hover {
     text-decoration: underline;
     text-underline-position: under;
 }

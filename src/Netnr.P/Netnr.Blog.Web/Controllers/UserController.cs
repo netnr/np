@@ -1,25 +1,19 @@
 using Netnr.Login;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using System.Net.Http;
+using Ganss.Xss;
 
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 个人用户
     /// </summary>
-    public class UserController : WebController
+    /// <remarks>
+    /// 
+    /// </remarks>
+    /// <param name="cb"></param>
+    public class UserController(ContextBase cb) : WebController
     {
-        public ContextBase db;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cb"></param>
-        public UserController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         #region 消息
 
@@ -153,7 +147,7 @@ namespace Netnr.Blog.Web.Controllers
                     {
                         case "file":
                             {
-                                source = source[(source.LastIndexOf(",") + 1)..];
+                                source = source[(source.LastIndexOf(',') + 1)..];
                                 byte[] bytes = Convert.FromBase64String(source);
                                 System.IO.File.WriteAllBytes(ParsingTo.Combine(ppath, upname), bytes);
 
@@ -177,9 +171,9 @@ namespace Netnr.Blog.Web.Controllers
                                 {
                                     Timeout = TimeSpan.FromMinutes(1)
                                 };
-                                await client.DownloadAsync(source, ParsingTo.Combine(ppath, upname), (rlen, total) =>
+                                await client.DownloadAsync(source, ParsingTo.Combine(ppath, upname), (rlen, tlen) =>
                                 {
-                                    if (total > maxLength || rlen > maxLength)
+                                    if (tlen > maxLength || rlen > maxLength)
                                     {
                                         throw new Exception($"{source} Size exceeds limit(max {ParsingTo.FormatByte(maxLength)})");
                                     }
@@ -553,6 +547,9 @@ namespace Netnr.Blog.Web.Controllers
 
                 var uinfo = IdentityService.Get(HttpContext);
 
+                //xss
+                mo.UwContent = CommonService.XSS(mo.UwContent);
+
                 //更新文章
                 var num = await db.UserWriting
                     .Where(x => x.Uid == uinfo.UserId && x.UwId == mo.UwId && x.UwStatus != -1)
@@ -639,8 +636,8 @@ namespace Netnr.Blog.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(id))
             {
-                var vckey = AppTo.GetValue("Common:GlobalKey");
-                var vcurl = AppTo.GetValue("Common:EmailVerificationLink");
+                var vckey = AppTo.GetValue("ProgramParameters:GlobalKey");
+                var vcurl = AppTo.GetValue("ProgramParameters:EmailVerificationLink");
 
                 switch (id.ToLower())
                 {

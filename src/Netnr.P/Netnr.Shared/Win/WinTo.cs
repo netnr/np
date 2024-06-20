@@ -61,7 +61,7 @@ public partial class WinTo
                 continue;
             }
 
-            if (versionKeyName.StartsWith("v"))
+            if (versionKeyName.StartsWith('v'))
             {
                 RegistryKey versionKey = ndpKey.OpenSubKey(versionKeyName);
                 // Get the .NET Framework version value.

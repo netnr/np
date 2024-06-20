@@ -13,31 +13,32 @@ public partial class DbKit
     /// 表批量写入
     /// </summary>
     /// <param name="dt">数据表（Namespace=SchemaName，TableName=TableName）</param>
-    /// <param name="bulkCopy">设置表复制对象</param>
+    /// <param name="bulkCopyAction">设置表复制对象</param>
     /// <param name="openTransaction">开启事务，默认 True</param>
+    /// <param name="batchSize">每批行数，默认全部</param>
     /// <returns></returns>
-    public async Task<int> BulkCopySQLServer(DataTable dt, Action<SqlBulkCopy> bulkCopy = null, bool openTransaction = true)
+    public async Task<int> BulkCopySQLServer(DataTable dt, Action<SqlBulkCopy> bulkCopyAction = null, bool openTransaction = true, int batchSize = 0)
     {
         return await SafeConn(async () =>
         {
             var connection = (SqlConnection)ConnOption.Connection;
             var transaction = openTransaction ? (SqlTransaction)await connection.BeginTransactionAsync() : null;
 
-            using var bulk = new SqlBulkCopy(connection, SqlBulkCopyOptions.KeepIdentity, transaction)
+            using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.KeepIdentity, transaction)
             {
                 DestinationTableName = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace, DBTypes.SQLServer),
-                BatchSize = dt.Rows.Count,
+                BatchSize = batchSize > 0 ? batchSize : dt.Rows.Count,
                 BulkCopyTimeout = ConnOption.Timeout * 10
             };
 
-            bulkCopy?.Invoke(bulk);
+            bulkCopyAction?.Invoke(bulkCopy);
 
             foreach (DataColumn dc in dt.Columns)
             {
-                bulk.ColumnMappings.Add(dc.ColumnName, dc.ColumnName);
+                bulkCopy.ColumnMappings.Add(dc.ColumnName, dc.ColumnName);
             }
 
-            await bulk.WriteToServerAsync(dt);
+            await bulkCopy.WriteToServerAsync(dt);
             if (transaction != null)
             {
                 await transaction.CommitAsync();

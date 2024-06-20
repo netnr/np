@@ -28,22 +28,18 @@ let nrPage = {
 
     bindEvent: () => {
         //过滤
-        nrVary.domTxtFilter.addEventListener('input', function () {
-            if (nrPage.grid1) {
-                nrPage.grid1.api.setQuickFilter(this.value);
-            }
-        })
+        nrApp.setQuickFilter(nrVary.domTxtFilter, nrPage.grid1);
 
         //新增
         nrVary.domBtnAdd.addEventListener('click', function () {
-            nrPage.grid1.api.deselectAll()
-            nrPage.grid1.api.clearRangeSelection();
+            nrPage.grid1.deselectAll()
+            nrPage.grid1.clearRangeSelection();
             nrPage.viewAdd();
         });
 
         //删除
         nrVary.domBtnDel.addEventListener('click', async function () {
-            let srows = nrPage.grid1.api.getSelectedRows();
+            let srows = nrPage.grid1.getSelectedRows();
             if (srows.length) {
                 if (await nrApp.confirm(srows.map(x => `${x["NoteTitle"]}`).join('<hr/>'), `确定删除（${srows.length}）`)) {
                     nrApp.setLoading(this)
@@ -100,17 +96,17 @@ let nrPage = {
                     //新增
                     if (nrPage.rowId == 0) {
                         await nrPage.viewGrid1();
-                        nrPage.grid1.api.forEachNode((rowNode) => {
+                        nrPage.grid1.forEachNode((rowNode) => {
                             if (rowNode.data[nrPage.tableKey] == result.data) {
                                 rowNode.setSelected(true)
                                 nrPage.viewEdit(rowNode.data);
                             }
                         })
                     } else {
-                        let srow = nrPage.grid1.api.getSelectedRows().find(x => x[nrPage.tableKey] == nrPage.rowId);
+                        let srow = nrPage.grid1.getSelectedRows().find(x => x[nrPage.tableKey] == nrPage.rowId);
                         if (srow) {
                             srow["NoteTitle"] = title;
-                            nrPage.grid1.api.applyTransactionAsync({ update: [srow] })
+                            nrPage.grid1.applyTransactionAsync({ update: [srow] })
                         }
                     }
                 } else {
@@ -155,7 +151,7 @@ let nrPage = {
             nrcBase.setHeightFromBottom(nrVary.domGrid);
 
             //grid 显示
-            nrPage.grid1 = await nrGrid.viewGrid(nrVary.domGrid, gridOptions);
+            nrPage.grid1 = await nrGrid.createGrid(nrVary.domGrid, gridOptions);
         } else {
             nrVary.domGrid.innerHTML = nrApp.tsFailHtml;
         }

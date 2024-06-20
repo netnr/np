@@ -1,7 +1,7 @@
 @model PageVM
 @{
     var rows = Model.Rows as List<Draw>;
-    var uinfo = IdentityService.Get(ViewContext.HttpContext);
+    var uinfo = IdentityService.Get(Context);
 
     var nickname = ViewData["Nickname"]?.ToString() ?? "Discover";
     ViewData["Title"] = $"{nickname} draws";

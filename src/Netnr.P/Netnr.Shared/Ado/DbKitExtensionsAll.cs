@@ -6,6 +6,7 @@ using Microsoft.Data.Sqlite;
 using ClickHouse.Client.ADO;
 using MySqlConnector;
 using Npgsql;
+using Dm;
 
 namespace Netnr;
 
@@ -78,6 +79,9 @@ public static partial class DbKitExtensions
                 case DBTypes.ClickHouse:
                     connOption.Connection = new ClickHouseConnection(connOption.ConnectionString);
                     break;
+                case DBTypes.Dm:
+                    connOption.Connection = new DmConnection(connOption.ConnectionString);
+                    break;
             }
         }
     }
@@ -95,6 +99,11 @@ public static partial class DbKitExtensions
             var csb = new OracleConnectionStringBuilder(connOption.ConnectionString);
             databaseName = csb.UserID;
         }
+        else if (connOption.ConnectionType == DBTypes.Dm)
+        {
+            var csb = new DmConnectionStringBuilder(connOption.ConnectionString);
+            databaseName = csb.Schema;
+        }
         else
         {
             connOption.CreateDbConn(setDatabase: false);
@@ -108,9 +117,9 @@ public static partial class DbKitExtensions
     /// 获取连接信息（去密码）
     /// </summary>
     /// <param name="connOption"></param>
-    /// <param name="isReplace">替换，默认删除</param>
+    /// <param name="isReplace">默认替换，否删除</param>
     /// <returns></returns>
-    public static string GetSafeConnectionString(this DbKitConnectionOption connOption, bool isReplace = false)
+    public static string GetSafeConnectionString(this DbKitConnectionOption connOption, bool isReplace = true)
     {
         var conn = connOption.ConnectionString;
         if (string.IsNullOrWhiteSpace(conn) && connOption.Connection != null)
@@ -160,7 +169,7 @@ public static partial class DbKitExtensions
                     {
                         csb.Remove(nameof(csb.Password));
                     }
-                    conn = csb.ToString();
+                    conn = csb.ToString().Replace("\"", "");
                 }
                 break;
             case DBTypes.SQLServer:
@@ -194,6 +203,20 @@ public static partial class DbKitExtensions
             case DBTypes.ClickHouse:
                 {
                     var csb = new ClickHouseConnectionStringBuilder(conn);
+                    if (isReplace)
+                    {
+                        csb.Password = "***";
+                    }
+                    else
+                    {
+                        csb.Remove(nameof(csb.Password));
+                    }
+                    conn = csb.ToString();
+                }
+                break;
+            case DBTypes.Dm:
+                {
+                    var csb = new DmConnectionStringBuilder(conn);
                     if (isReplace)
                     {
                         csb.Password = "***";
@@ -248,6 +271,10 @@ public static partial class DbKitExtensions
                 {
                     Database = databaseName
                 }.ConnectionString,
+                DBTypes.Dm => new DmConnectionStringBuilder(connOption.ConnectionString)
+                {
+                    Schema = databaseName
+                }.ConnectionString,
                 _ => connOption.ConnectionString,
             };
         }
@@ -256,20 +283,20 @@ public static partial class DbKitExtensions
     }
 
     /// <summary>
-    /// 预执行（目前仅针对 MySQL local_infile）
+    /// 复制 预执行 MySQL local_infile ，保持连接，使用手动关闭
     /// </summary>
     /// <returns></returns>
-    public static async Task<int> PreExecute(this DbKit db)
+    public static async Task<int> PreBulkCopy(this DbKit dbKit)
     {
         var num = 0;
         try
         {
-            switch (db.ConnOption.ConnectionType)
+            switch (dbKit.ConnOption.ConnectionType)
             {
                 case DBTypes.MySQL:
                 case DBTypes.MariaDB:
                     {
-                        var edo = await db.SqlExecuteDataOnly("SHOW VARIABLES");
+                        var edo = await dbKit.SqlExecuteDataOnly("SHOW VARIABLES");
                         var dt = edo.Datas.Tables[0];
 
                         var dictVar = new Dictionary<string, string>
@@ -314,7 +341,7 @@ public static partial class DbKitExtensions
                         if (listBetterSql.Count > 0)
                         {
                             Console.WriteLine($"\n执行优化脚本：\n{string.Join(Environment.NewLine, listBetterSql)}\n");
-                            await db.SqlExecuteNonQuery(listBetterSql);
+                            await dbKit.SqlExecuteNonQuery(listBetterSql);
                         }
 
                         num = listBetterSql.Count;
@@ -336,9 +363,9 @@ public static partial class DbKitExtensions
     /// </summary>
     /// <param name="db"></param>
     /// <param name="dt"></param>
-    /// <param name="isCopy">复制模式，false MySQL 多行模式</param>
+    /// <param name="batchSize">每批行数，默认全部，部分支持</param>
     /// <returns></returns>
-    public static async Task<int> BulkCopy(this DbKit db, DataTable dt, bool isCopy = true)
+    public static async Task<int> BulkCopy(this DbKit db, DataTable dt, int batchSize = 0)
     {
         int num = 0;
 
@@ -349,19 +376,39 @@ public static partial class DbKitExtensions
                 break;
             case DBTypes.MySQL:
             case DBTypes.MariaDB:
-                num = isCopy ? await db.BulkCopyMySQL(dt) : await db.BulkBatchMySQL(dt);
+                {
+                    var lifKey = "MySQL_local_infile";
+                    if (!db.DictVariable.TryGetValue(lifKey, out string lifVal))
+                    {
+                        lifVal = await db.PreBulkCopy() == -1 ? "-1" : "1";
+                        db.DictVariable[lifKey] = lifVal;
+                    }
+
+                    // 支持 local infile
+                    if (lifVal == "1")
+                    {
+                        num = await db.BulkCopyMySQL(dt, batchSize: batchSize);
+                    }
+                    else
+                    {
+                        num = await db.BulkBatchMySQL(dt);
+                    }
+                }
                 break;
             case DBTypes.Oracle:
-                num = await db.BulkCopyOracle(dt);
+                num = await db.BulkCopyOracle(dt, batchSize: batchSize);
                 break;
             case DBTypes.SQLServer:
-                num = await db.BulkCopySQLServer(dt);
+                num = await db.BulkCopySQLServer(dt, batchSize: batchSize);
                 break;
             case DBTypes.PostgreSQL:
                 num = await db.BulkKeepIdentityPostgreSQL(dt);
                 break;
             case DBTypes.ClickHouse:
-                num = await db.BulkCopyClickHouse(dt);
+                num = await db.BulkCopyClickHouse(dt, batchSize: batchSize);
+                break;
+            case DBTypes.Dm:
+                num = await db.BulkBatchDm(dt);
                 break;
         }
 
@@ -396,6 +443,9 @@ public static partial class DbKitExtensions
                 break;
             case DBTypes.PostgreSQL:
                 num = await db.BulkBatchPostgreSQL(dt, sqlEmpty);
+                break;
+            case DBTypes.Dm:
+                num = await db.BulkBatchDm(dt, sqlEmpty);
                 break;
         }
 

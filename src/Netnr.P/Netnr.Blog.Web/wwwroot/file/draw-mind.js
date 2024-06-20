@@ -235,8 +235,8 @@ var km = {
     exportInit: {
         format: {
             png: { ext: "png", txt: "PNG 图片文件" },
-            text: { ext: "txt", txt: "TXT 文本格式" },
-            markdown: { ext: "md", txt: "Markdown 文档" },
+            text: { ext: "text", txt: "Text 文本格式" },
+            markdown: { ext: "markdown", txt: "Markdown 文档" },
             json: { ext: "json", txt: "JSON 字符串" },
             svg: { ext: "svg", txt: "SVG 适量图形" }
         },

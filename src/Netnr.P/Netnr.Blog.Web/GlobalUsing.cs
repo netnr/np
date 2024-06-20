@@ -6,3 +6,5 @@ global using Netnr.Blog.Application.Services;
 global using Netnr.Blog.Web.Filters;
 global using Netnr.Blog.Web.Services;
 global using Microsoft.EntityFrameworkCore;
+global using Hangfire;
+global using Hangfire.Storage;

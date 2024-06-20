@@ -60,9 +60,9 @@ namespace Netnr
         /// <summary>
         /// 当前缓存日志
         /// </summary>
-        public static ConcurrentQueue<LoggingModel> CurrentCacheLog { get; set; } = new ConcurrentQueue<LoggingModel>();
+        public static ConcurrentQueue<LoggingModel> CurrentCacheLog { get; set; } = [];
 
-        static EventWaitHandle WriteEvent = null;
+        private static AutoResetEvent WriteEvent = null;
 
         /// <summary>
         /// 获取连接配置
@@ -109,7 +109,7 @@ namespace Netnr
         /// <param name="path"></param>
         public static async Task CreateDatabase(string path)
         {
-            File.WriteAllBytes(path, Array.Empty<byte>());
+            File.WriteAllBytes(path, []);
 
             var createTableSql = @"
                 CREATE TABLE ""LoggingModel"" (
@@ -189,7 +189,7 @@ namespace Netnr
                         }
 
                         // 剩余写入
-                        if (listLog.Any())
+                        if (listLog.Count != 0)
                         {
                             await AddNow(listLog);
                             listLog.Clear();
@@ -445,7 +445,7 @@ namespace Netnr
             dbKit = GetConnOption(listPath.FirstOrDefault()).CreateDbInstance();
 
             var listSql = new List<string>() { "select * from " + OptionsDbTableName };
-            listPreSql = new List<string>();
+            listPreSql = [];
 
             //附加数据库
             var adi = 1;

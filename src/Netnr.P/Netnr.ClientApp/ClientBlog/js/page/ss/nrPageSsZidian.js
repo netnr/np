@@ -101,7 +101,7 @@ let nrPage = {
             })
 
             dom.addEventListener('keydown', async function (event) {
-                if (event.code == "Enter") {
+                if (event.key == "Enter") {
                     this.nextElementSibling.click();
                 }
             });

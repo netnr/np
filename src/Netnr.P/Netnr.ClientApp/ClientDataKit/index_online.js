@@ -21,12 +21,14 @@ import { ndkInit } from './js/ndkInit';
 import { nrGrid } from '../frame/nrGrid';
 import { nrEditor } from '../frame/nrEditor';
 import { nrcRely } from '../frame/nrcRely';
+import { nrPolyfill } from '../frame/nrPolyfill';
 
 let init = async () => {
     const magicBytes = await import('magic-bytes.js');
 
-    await nrEditor.init();
-    await nrGrid.init();
+    await nrPolyfill.init();
+    await nrEditor.rely();
+    await nrGrid.rely();
     await nrcRely.remote('sql-formatter.js');
     await nrcRely.remote('jszip.js');
 

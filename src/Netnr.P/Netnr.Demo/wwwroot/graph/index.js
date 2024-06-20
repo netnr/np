@@ -13,7 +13,7 @@
 
         var items = [
             { name: "MagickNET", pathname: "/GraphDemo/MagickNET/Captcha" },
-            { name: "SixLaborsImageSharpDrawing", pathname: "/GraphDemo/SixLaborsImageSharpDrawing/Captcha" },
+            { name: "ImageSharp", pathname: "/GraphDemo/ImageSharp/Captcha" },
             { name: "SkiaSharp", pathname: "/GraphDemo/SkiaSharp/Captcha" },
             { name: "SystemDrawingCommon", pathname: "/GraphDemo/SystemDrawingCommon/Captcha" },
             { name: "NetVips", pathname: "/GraphDemo/NetVips/Captcha" }

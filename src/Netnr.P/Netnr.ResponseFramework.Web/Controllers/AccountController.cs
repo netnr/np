@@ -9,14 +9,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// 账号
     /// </summary>
     [Route("[controller]/[action]")]
-    public class AccountController : Controller
+    public class AccountController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public AccountController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         #region 登录
 

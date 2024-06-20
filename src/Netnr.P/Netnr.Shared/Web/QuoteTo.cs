@@ -20,6 +20,11 @@ public partial class QuoteTo
     public static string PanelClass2 { get; set; } = "container-fluid p-lg-5 py-4";
 
     /// <summary>
+    /// 面板容器样式3
+    /// </summary>
+    public static string PanelClass3 { get; set; } = "container-fluid px-lg-5";
+
+    /// <summary>
     /// 得到html字符串
     /// </summary>
     /// <param name="quotes">引用项，逗号分割，按顺序</param>
@@ -28,13 +33,13 @@ public partial class QuoteTo
     {
         var vh = new List<string>();
 
-        List<string> listQuote = quotes.Split(',').ToList();
+        var listQuote = quotes.Split(',');
         foreach (var item in listQuote)
         {
             switch (item)
             {
                 case "the":
-                    vh.Add($"<!-- https://github.com/{AppTo.GetValue("Common:AdminGitHub")}  {DateTime.Now:yyyy-MM} -->");
+                    vh.Add($"<!-- https://github.com/{AppTo.GetValue("ProgramParameters:AdminGitHub")}  {DateTime.Now:yyyy-MM} -->");
                     break;
 
                 case "loading":
@@ -60,10 +65,10 @@ public partial class QuoteTo
                     vh.Add("<script src='https://npmcdn.com/bootstrap@3.4.1/dist/js/bootstrap.min.js'></script>");
                     break;
                 case "bootstrap5.css":
-                    vh.Add("<link href='https://npmcdn.com/bootstrap@5.3.2/dist/css/bootstrap.min.css' rel='stylesheet' />");
+                    vh.Add("<link href='https://npmcdn.com/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet' />");
                     break;
                 case "bootstrap5.js":
-                    vh.Add("<script src='https://npmcdn.com/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js' async ></script>");
+                    vh.Add("<script src='https://npmcdn.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js' async ></script>");
                     break;
 
                 case "bpmn-js":
@@ -85,9 +90,9 @@ public partial class QuoteTo
     /// <returns></returns>
     public static string MirrorNPM(string url)
     {
-        string replacement = "https://registry.npmmirror.com/$2/$3/files/$4.$5";
+        // "https://registry.npmmirror.com/$2/$3/files/$4.$5"
+        var replacement = "https://ss.netnr.com/$2@$3/$4.$5";
         url = MatchMirrorNPM().Replace(url, replacement);
-
         return url;
     }
 

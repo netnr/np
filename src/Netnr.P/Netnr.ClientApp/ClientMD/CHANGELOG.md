@@ -1,8 +1,12 @@
 ﻿# 变更日志
-### [v4.1.0] - 2023-06
-- 调整 编辑器改为 monaco-editor-v0.39.0
+### [v4.1.0] - 2024-05
+- 更新 编辑器改为 monaco-editor v0.48.0
+- 更新 marked v12.0.2 
+- 删除 headerIds 方法
 - 调整/优化配色
 - 调整 执行命令事件改为 `cmdcallback` 改为 `cmdbefore`
+- 新增 file 方法，接收拖拽、粘贴的文件
+- 新增 tooltip 方法，消息提示，手动关闭 closeTooltip 方法
 
 ### [v4.0.0] - 2022-07-04
 - 调整 编辑器改为 Ace

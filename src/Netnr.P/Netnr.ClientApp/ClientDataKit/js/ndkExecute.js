@@ -21,6 +21,7 @@ var ndkExecute = {
         fd.append('dbt', cobj.type);
         fd.append('conn', cobj.conn);
         fd.append('sql', sql);
+        fd.append("openTransaction", ndkVary.parameterConfig.openTransaction.value);
         if (databaseName) {
             fd.append('databaseName', databaseName);
         }

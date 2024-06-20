@@ -8,14 +8,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// </summary>
     [Authorize]
     [Route("[controller]/[action]")]
-    public class CommonController : Controller
+    public class CommonController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public CommonController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// 公共查询：菜单树
@@ -43,12 +38,12 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     }
                     else
                     {
-                        listMenu = new List<SysMenu>();
+                        listMenu = [];
                     }
                 }
                 else
                 {
-                    listMenu = new List<SysMenu>();
+                    listMenu = [];
                 }
                 #endregion
             }
@@ -68,7 +63,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             #endregion
 
-            result = TreeTo.ListToTree(listNode, "Pid", "Id", new List<string> { Guid.Empty.ToString() });
+            result = TreeTo.ListToTree(listNode, "Pid", "Id", [Guid.Empty.ToString()]);
 
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -105,7 +100,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
             }
             #endregion
 
-            result = TreeTo.ListToTree(listNode, "Pid", "Id", new List<string> { Guid.Empty.ToString() });
+            result = TreeTo.ListToTree(listNode, "Pid", "Id", [Guid.Empty.ToString()]);
 
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -192,7 +187,7 @@ namespace Netnr.ResponseFramework.Web.Controllers
                     for (int i = 0; i < files.Count; i++)
                     {
                         var file = files[i];
-                        if (!ParsingTo.IsRiskExtension(file.FileName))
+                        if (!ParsingTo.IsRiskFile(file.FileName))
                         {
                             var ext = Path.GetExtension(file.FileName);
                             var filename = now.ToString("ddHHmmss") + RandomTo.NewNumber() + ext;

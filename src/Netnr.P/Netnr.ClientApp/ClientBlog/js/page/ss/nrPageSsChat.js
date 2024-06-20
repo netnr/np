@@ -78,7 +78,7 @@ let nrPage = {
             }
         });
         nrVary.domTxtAccount.addEventListener('keydown', async function (event) {
-            if (nrPage.chatOnline == false && event.code == "Enter") {
+            if (nrPage.chatOnline == false && event.key == "Enter") {
                 nrVary.domBtnLogin.click();
             }
         })

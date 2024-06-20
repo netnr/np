@@ -1,21 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Netnr.Login;
-using System.Net.Http;
 
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 账号
     /// </summary>
-    public class AccountController : Controller
+    public class AccountController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public AccountController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         #region 注册
 
@@ -242,9 +235,9 @@ namespace Netnr.Blog.Web.Controllers
                                     {
                                         Timeout = TimeSpan.FromMinutes(1)
                                     };
-                                    await client.DownloadAsync(publicUser.Avatar, ParsingTo.Combine(ppath, newUser.UserPhoto), (rlen, total) =>
+                                    await client.DownloadAsync(publicUser.Avatar, ParsingTo.Combine(ppath, newUser.UserPhoto), (rlen, tlen) =>
                                     {
-                                        if (total > maxLength || rlen > maxLength)
+                                        if (tlen > maxLength || rlen > maxLength)
                                         {
                                             throw new Exception($"{publicUser.Avatar} Size exceeds limit(max {ParsingTo.FormatByte(maxLength)})");
                                         }
@@ -391,8 +384,9 @@ namespace Netnr.Blog.Web.Controllers
                 int num = await db.SaveChangesAsync();
                 vm.Set(num > 0);
 
+                var avatar = CommonService.StaticResourceLink("AvatarPath", string.IsNullOrWhiteSpace(mo.UserPhoto) ? "favicon.svg" : mo.UserPhoto);
                 //推送通知
-                _ = PushService.PushWeChat("网站消息（注册）", $"{mo.UserId}");
+                _ = PushService.PushWeChat("网站消息（注册）", $"{mo.UserId}\r\n{avatar}");
             }
 
             return vm;
@@ -448,7 +442,7 @@ namespace Netnr.Blog.Web.Controllers
                 loginUser.UserSign = $"{CalcTo.MD5(loginUser.UserPwd, 16)}:{loginUser.UserLoginTime.Value.ToTimestamp()}";
 
                 //刷新登录标记
-                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
+                if (AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") != true)
                 {
                     db.UserInfo.Update(loginUser);
                     await db.SaveChangesAsync();

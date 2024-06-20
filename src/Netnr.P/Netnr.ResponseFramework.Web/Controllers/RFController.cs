@@ -3,14 +3,9 @@
     /// <summary>
     /// 示例，请删除
     /// </summary>
-    public class RFController : Controller
+    public class RFController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public RFController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         #region 表配置示例
 

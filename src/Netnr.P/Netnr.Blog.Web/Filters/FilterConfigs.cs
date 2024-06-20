@@ -24,9 +24,9 @@ namespace Netnr.Blog.Web.Filters
                     //日志保存
                     var mo = LoggingService.Build(context.HttpContext);
                     mo.LogAction = controller + "/" + action;
-                    if (LoggingService.DicDescription.ContainsKey(mo.LogAction))
+                    if (LoggingService.DicDescription.TryGetValue(mo.LogAction, out string value))
                     {
-                        mo.LogContent = LoggingService.DicDescription[mo.LogAction];
+                        mo.LogContent = value;
                     }
 
                     LoggingTo.Add(mo);

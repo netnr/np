@@ -45,7 +45,7 @@ let nrPage = {
         await nrcRely.remote('pinyin-pro.js');
         window["jsyaml"] = await import('js-yaml');
 
-        await nrEditor.init();
+        await nrEditor.rely();
         nrVary.domEditor1.innerHTML = '';
         nrVary.domEditor2.innerHTML = '';
 

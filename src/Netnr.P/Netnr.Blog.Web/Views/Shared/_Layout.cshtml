@@ -1,6 +1,9 @@
 ﻿@{
-    var theme = ViewContext.HttpContext.Request.Cookies[".theme"];
+    var theme = Context.Request.Cookies[".theme"];
     theme = theme == "dark" ? "dark" : "light";
+
+    var relyPrefix = (BaseTo.IsDev && MonitorTo.TCPort("localhost", 775, 1).Code == 200)
+    ? "https://localhost:775" : "/dist";
 
     var rdv = ViewContext.RouteData.Values;
     var ctrl = rdv["controller"].ToString().ToLower();
@@ -79,22 +82,19 @@
         <meta name='description' content='NET牛人,Netnr,Gist,Run,Doc,Draw' />
     }
 
-    <title>@ViewData["Title"] @Html.Raw(AppTo.GetValue("Common:ChineseName"))</title>
+    <title>@ViewData["Title"] @Html.Raw(AppTo.GetValue("ProgramParameters:ChineseName"))</title>
 
     @Html.Raw(QuoteTo.Html($"favicon,bootstrap5.css,bootstrap5.js"))
 
-    <link href='/dist/main.css' rel='stylesheet' asp-append-version="true" />
-    <script src="/dist/main.js" async asp-append-version="true"></script>
-
-    @*<link href='https://localhost:775/main.css' rel='stylesheet' asp-append-version="true" />
-    <script src="https://localhost:775/main.js" async asp-append-version="true"></script>*@
+    <link href='@relyPrefix/main.css' rel='stylesheet' asp-append-version="true" />
+    <script src="@relyPrefix/main.js" async asp-append-version="true"></script>
 </head>
 <body>
     @if (!canav.Any(x => ca.StartsWith(x)))
     {
-        if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
+        if (AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") == true)
         {
-            var myDomain = AppTo.GetValue("Common:Domain");
+            var myDomain = AppTo.GetValue("ProgramParameters:Domain");
 
             <div class="p-2 text-center">Mirror site is read only <a href="@myDomain">@(new Uri(myDomain).Host)</a></div>
         }

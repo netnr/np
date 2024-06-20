@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using Xunit;
-using System.Threading;
 
 namespace Netnr.Test
 {

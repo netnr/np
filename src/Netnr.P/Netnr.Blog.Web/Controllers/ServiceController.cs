@@ -1,17 +1,14 @@
+using AngleSharp.Css.Values;
+
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 服务
     /// </summary>
     [Route("[Controller]/[action]")]
-    public class ServiceController : Controller
+    public class ServiceController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public ServiceController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// 微信公众号
@@ -42,9 +39,12 @@ namespace Netnr.Blog.Web.Controllers
             else if (Request.Method == "POST")
             {
                 //接收
-                using var ms = new MemoryStream();
-                await Request.Body.CopyToAsync(ms);
-                var postData = ms.ToArray().ToText();
+                using var reader = new StreamReader(Request.Body);
+                var requestBody = await reader.ReadToEndAsync();
+
+                //using var ms = new MemoryStream();
+                //await Request.Body.CopyToAsync(ms);
+                //var postData = ms.ToArray().ToText();
 
                 //解密
                 if (encrypt_type == "aes")
@@ -53,10 +53,10 @@ namespace Netnr.Blog.Web.Controllers
                     var encodingAESKey = AppTo.GetValue("ApiKey:WeixinMP:EncodingAESKey");
                     var appId = AppTo.GetValue("ApiKey:WeixinMP:AppID");
                 }
-                ConsoleTo.WriteCard("Receive WeixinMP Message", postData);
+                ConsoleTo.WriteCard(nameof(Weixin), requestBody);
 
                 //处理消息并回复
-                result = WeixinMPService.MessageReply(postData);
+                result = WeixinMPService.MessageReply(requestBody);
             }
 
             //输出
@@ -129,7 +129,7 @@ namespace Netnr.Blog.Web.Controllers
                         vm = await DatabaseExport(export_demo, true);
 
                         //导入恢复
-                        if ((await DatabaseImport(export_before, true)).Code == 200)
+                        if ((await DatabaseImport(export_before, true, true)).Code == 200)
                         {
                             var fullPath = Path.Combine(AppTo.ContentRootPath, export_before);
                             System.IO.File.Delete(fullPath);
@@ -158,7 +158,7 @@ namespace Netnr.Blog.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [FilterConfigs.IsAdmin]
-        public async Task<ResultVM> DatabaseExport(string zipName = "db/backup.zip", bool onlyData = false)
+        public async Task<ResultVM> DatabaseExport(string zipName = "static/backup.zip", bool onlyData = false)
         {
             var vm = new ResultVM();
 
@@ -193,11 +193,12 @@ namespace Netnr.Blog.Web.Controllers
         /// 数据库导入（管理员）
         /// </summary>
         /// <param name="zipName">文件名</param>
-        /// <param name="clearTable">清空表，默认 false</param>
+        /// <param name="deleteData">删除表数据，默认 false</param>
+        /// <param name="realTimePrint">实时打印日志</param>
         /// <returns></returns>
         [HttpGet]
         [FilterConfigs.IsAdmin]
-        public async Task<ResultVM> DatabaseImport(string zipName = "db/backup.zip", bool clearTable = false)
+        public async Task<ResultVM> DatabaseImport(string zipName = "static/backup.zip", bool deleteData = false, bool realTimePrint = false)
         {
             var vm = new ResultVM();
 
@@ -211,221 +212,25 @@ namespace Netnr.Blog.Web.Controllers
                         Connection = db.Database.GetDbConnection()
                     },
                     PackagePath = Path.Combine(AppTo.ContentRootPath, zipName),
-                    WriteDeleteData = clearTable
+                    WriteDeleteData = deleteData
                 };
 
-                vm = await DataKitTo.ImportDatabase(idb);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 数据库备份到 Git（管理员）
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [FilterConfigs.IsAdmin]
-        public async Task<ResultVM> DatabaseBackupToGit()
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
+                if (realTimePrint)
                 {
-                    vm.Set(RCodeTypes.refuse);
-                    return vm;
-                }
-
-                var now = $"{DateTime.Now:yyyyMMdd_HHmmss}";
-
-                var database = db.Database.GetDbConnection().Database;
-
-                var createScript = db.Database.GenerateCreateScript();
-
-                //备份创建脚本
-                var b1 = Convert.ToBase64String(Encoding.UTF8.GetBytes(createScript));
-                var p1 = $"{database}/backup_{now}.sql";
-                try
-                {
-                    vm.Log.Add(PutGitee(b1, p1, now));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    vm.Log.Add(ex.Message);
-                }
-                try
-                {
-                    vm.Log.Add(PutGitHub(b1, p1, now));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    vm.Log.Add(ex.Message);
-                }
-
-                await Task.Delay(1000);
-
-                //备份数据
-                var zipPath = $"db/backup_{now}.zip";
-                if ((await DatabaseExport(zipPath)).Code == 200)
-                {
-                    var ppath = Path.Combine(AppTo.ContentRootPath, zipPath);
-                    var b2 = Convert.ToBase64String(System.IO.File.ReadAllBytes(ppath));
-                    var p2 = $"{database}/backup_{now}.zip";
-                    try
+                    vm = await DataKitTo.ImportDatabase(idb, le =>
                     {
-                        vm.Log.Add(PutGitee(b2, p2, now));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                        vm.Log.Add(ex.Message);
-                    }
-                    try
-                    {
-                        vm.Log.Add(PutGitHub(b2, p2, now));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                        vm.Log.Add(ex.Message);
-                    }
-
-                    System.IO.File.Delete(ppath);
-                }
-
-                var vmj = vm.ToJson(true);
-                Console.WriteLine(vmj);
-                ConsoleTo.Log(vmj);
-            }
-            catch (Exception ex)
-            {
-                vm.Set(ex);
-            }
-
-            return vm;
-        }
-
-        /// <summary>
-        /// 推送到GitHub
-        /// </summary>
-        /// <param name="content">内容 base64</param>
-        /// <param name="path">路径</param>
-        /// <param name="message"></param>
-        /// <param name="token"></param>
-        /// <param name="or"></param>
-        /// <returns></returns>
-        private static string PutGitHub(string content, string path, string message = "m", string token = null, string or = null)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                token = AppTo.GetValue("ApiKey:GitHub:GistToken");
-            }
-            if (string.IsNullOrWhiteSpace(or))
-            {
-                or = AppTo.GetValue("Common:AdminBackupToGit");
-            }
-
-            var put = $"https://api.github.com/repos/{or}/contents/{path}";
-
-            var hwr = HttpTo.HWRequest(put, "PUT", Encoding.UTF8.GetBytes(new { message, content }.ToJson()));
-
-            hwr.Headers.Set("Accept", "application/vnd.github.v3+json");
-            hwr.Headers.Set("Authorization", $"token {token}");
-            hwr.Headers.Set("Content-Type", "application/json");
-
-            var result = HttpTo.Url(hwr);
-
-            return result;
-        }
-
-        /// <summary>
-        /// 推送到Gitee
-        /// </summary>
-        /// <param name="content">内容 base64</param>
-        /// <param name="path">路径</param>
-        /// <param name="message"></param>
-        /// <param name="token"></param>
-        /// <param name="or"></param>
-        /// <returns></returns>
-        private static string PutGitee(string content, string path, string message = "m", string token = null, string or = null)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                token = AppTo.GetValue("ApiKey:Gitee:GistToken");
-            }
-            if (string.IsNullOrWhiteSpace(or))
-            {
-                or = AppTo.GetValue("Common:AdminBackupToGit");
-            }
-
-            var listor = or.Split('/');
-            var owner = listor.First();
-            var repo = listor.Last();
-            var uri = $"https://gitee.com/api/v5/repos/{owner}/{repo}/contents/{path}";
-
-            var hwr = HttpTo.HWRequest(uri, "POST", Encoding.UTF8.GetBytes(new { access_token = token, message, content }.ToJson()));
-            hwr.Headers.Set("Content-Type", "application/json");
-
-            var result = HttpTo.Url(hwr);
-
-            return result;
-        }
-
-        /// <summary>
-        /// 处理操作记录（管理员）
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [FilterConfigs.IsAdmin]
-        public ResultVM HandleOperationRecord()
-        {
-            var vm = new ResultVM();
-
-            try
-            {
-                //处理Guff查询记录数
-                var ctype = ConnectionTypes.GuffRecord.ToString();
-                var listOr = db.OperationRecord.Where(x => x.OrType == ctype && x.OrMark == "default").ToList();
-                if (listOr.Count > 0)
-                {
-                    var listAllId = string.Join(",", listOr.Select(x => x.OrSource).ToList()).Split(',').ToList();
-                    var listid = listAllId.Distinct();
-
-                    var listmo = db.GuffRecord.Where(x => listid.Contains(x.GrId)).ToList();
-                    foreach (var item in listmo)
-                    {
-                        item.GrReadNum += listAllId.GroupBy(x => x).FirstOrDefault(x => x.Key == item.GrId).Count();
-                    }
-                    db.GuffRecord.UpdateRange(listmo);
-
-                    db.OperationRecord.RemoveRange(listOr);
-
-                    int num = db.SaveChanges();
-
-                    vm.Set(num > 0);
-                    vm.Data = "处理操作记录，受影响行数：" + num;
+                        Console.WriteLine(le.NewItems[0]);
+                    });
                 }
                 else
                 {
-                    vm.Set(RCodeTypes.failure);
+                    vm = await DataKitTo.ImportDatabase(idb);
                 }
             }
             catch (Exception ex)
             {
                 vm.Set(ex);
             }
-
-            var vmj = vm.ToJson(true);
-            Console.WriteLine(vmj);
-            ConsoleTo.Log(vmj);
 
             return vm;
         }
@@ -439,12 +244,11 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ResultVM();
 
-            using var ms = new MemoryStream();
-            await Request.Body.CopyToAsync(ms);
-            var postData = ms.ToArray().ToText();
-            Console.WriteLine(postData);
+            using var reader = new StreamReader(Request.Body);
+            var requestBody = await reader.ReadToEndAsync();
+            Console.WriteLine(requestBody);
 
-            vm.Data = postData.DeJson();
+            vm.Data = requestBody.DeJson();
             vm.Set(RCodeTypes.success);
 
             return vm;

@@ -15,7 +15,7 @@ let nrPage = {
 
         //编辑器
         nrVary.domEditor.innerHTML = nrApp.tsLoadingHtml;
-        await nrEditor.init();
+        await nrEditor.rely();
         nrVary.domEditor.innerHTML = '';
 
         nrApp.tsEditor = monaco.editor.createDiffEditor(nrVary.domEditor, nrEditor.config({

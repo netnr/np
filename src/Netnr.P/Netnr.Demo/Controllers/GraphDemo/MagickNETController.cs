@@ -1,15 +1,13 @@
 ﻿using ImageMagick;
+using System.Drawing.Text;
+using System.Runtime.Versioning;
 
 namespace Netnr.Demo.Controllers.GraphDemo;
 
 [Route("/GraphDemo/[controller]/[action]")]
-public class MagickNETController : Controller
+public class MagickNETController(IWebHostEnvironment host) : Controller
 {
-    public IWebHostEnvironment env;
-    public MagickNETController(IWebHostEnvironment host)
-    {
-        env = host;
-    }
+    public IWebHostEnvironment env = host;
 
     /// <summary>
     /// 验证码
@@ -17,6 +15,7 @@ public class MagickNETController : Controller
     /// <param name="code"></param>
     /// <returns></returns>
     [HttpGet]
+    [SupportedOSPlatform("windows")]
     public IActionResult Captcha(string code = null)
     {
         try
@@ -26,11 +25,16 @@ public class MagickNETController : Controller
                 code = Guid.NewGuid().ToString("N")[..4].ToUpper();
             }
 
+            var installedFonts = new InstalledFontCollection();
+            var readSettings = new MagickReadSettings
+            {
+                FontFamily = installedFonts.Families.First().Name
+            };
             using var image = new MagickImage(new MagickColor("#ffffff"), 132, 38);
             //噪点
             image.AddNoise(NoiseType.Uniform, 50f, Channels.RGB);
 
-            MagickColor[] colors = { MagickColors.LightBlue, MagickColors.LightCoral, MagickColors.LightGreen, MagickColors.LightPink, MagickColors.LightSkyBlue, MagickColors.LightSteelBlue, MagickColors.LightSalmon };
+            MagickColor[] colors = [MagickColors.LightBlue, MagickColors.LightCoral, MagickColors.LightGreen, MagickColors.LightPink, MagickColors.LightSkyBlue, MagickColors.LightSteelBlue, MagickColors.LightSalmon];
 
             var random = new Random();
             for (int i = 0; i < 4; i++)

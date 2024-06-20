@@ -1,4 +1,4 @@
-<!-- https://github.com/netnr  2023-10 -->
+<!-- https://github.com/netnr  2024-06 -->
 <!DOCTYPE html>
 <html lang="zh-cn" data-bs-theme='light' class="netnrmd-light" >
 <head>
@@ -19,18 +19,17 @@
     <title>VSCode &#x7F16;&#x8F91;&#x5668; NET牛人</title>
 
     <link rel='icon' href='/favicon.ico'>
-<link href='https://registry.npmmirror.com/bootstrap/5.3.2/files/dist/css/bootstrap.min.css' rel='stylesheet' />
-<script src='https://registry.npmmirror.com/bootstrap/5.3.2/files/dist/js/bootstrap.bundle.min.js' async ></script>
+<link href='https://ss.netnr.com/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet' />
+<script src='https://ss.netnr.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js' async ></script>
 
-    <link href='/dist/main.css?v=kXl58w4NzphHiWmIfmRXwXyYPE7qtQ-1AmPUx3a91SE' rel='stylesheet' />
-    <script src="/dist/main.js?v=T5hGosyPk-78n9idG9kprU24zHEhI52uz8kF7UsetDw" async></script>
-
+    <link href='/dist/main.css?v=tOayr_Wke_9jvVKafZPJrcAi3EjjscnpOUN0hqiNDvo' rel='stylesheet' />
+    <script src="/dist/main.js?v=3bdlPeNDokjHP3AsV9QmfIw3LrobXQoRTIvAgqcmAH8" async></script>
 </head>
 <body>
         
         <input type="hidden" id="hid_is_build_html" />
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
+        <div class="container-fluid px-lg-5">
             <a class="navbar-brand text-decoration-none" href="https://www.netnr.com">
                 <img src="/favicon.ico" style="height:1.3em;vertical-align:sub" />
                 <span class="d-none d-sm-inline-block">Netnr</span>
@@ -109,27 +108,31 @@
         <div class="col"></div>
 
         <div class="col-auto mb-2">
-            <div class="nrg-ddl-list dropdown">
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false">
-                    列表 List
-                </button>
-                <div class="dropdown-menu p-0 mt-1 border-0">
-                    <ol class="nrg-list-file list-group list-group-numbered overflow-auto" style="width:19em" role="button"></ol>
-                </div>
-            </div>
-        </div>
-        <div class="col-auto mb-2">
             <div class="btn-group">
-                <button class="nrg-btn-new btn btn-outline-secondary">新建 New</button>
-                <div class="btn-group" role="group">
+                <div class="nrg-ddl-list dropdown">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                        列表 List
+                    </button>
+                    <div class="dropdown-menu p-0 mt-1 border-0">
+                        <ol class="nrg-list-file list-group list-group-numbered overflow-auto" style="width:20em" role="button"></ol>
+                    </div>
+                </div>
+                <div class="dropdown mx-1">
                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                        更多
+                        导出
                     </button>
                     <ul class="dropdown-menu">
                         <li><button class="nrg-btn-export dropdown-item">导出当前</button></li>
                         <li><button class="nrg-btn-export-all dropdown-item">导出全部</button></li>
                     </ul>
                 </div>
+            </div>
+        </div>
+        <div class="col-auto mb-2">
+        </div>
+        <div class="col-auto mb-2">
+            <div class="btn-group">
+                <button class="nrg-btn-new btn btn-outline-secondary">✚ 新建</button>
             </div>
         </div>
 

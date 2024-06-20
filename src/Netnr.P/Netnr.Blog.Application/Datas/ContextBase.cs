@@ -2,13 +2,8 @@
 
 namespace Netnr.Blog.Application.Datas;
 
-public partial class ContextBase : DbContext
+public partial class ContextBase(DbContextOptions<ContextBase> options) : DbContext(options)
 {
-    public ContextBase(DbContextOptions<ContextBase> options)
-        : base(options)
-    {
-    }
-
     public virtual DbSet<DocSet> DocSet { get; set; }
 
     public virtual DbSet<DocSetDetail> DocSetDetail { get; set; }
@@ -187,15 +182,6 @@ public partial class ContextBase : DbContext
             entity.HasIndex(e => e.Uid, "GiftRecord_Uid");
 
             entity.Property(e => e.GrId).HasMaxLength(50);
-            entity.Property(e => e.ActionTime)
-                .HasComment("活动时间")
-                .HasColumnType("datetime");
-            entity.Property(e => e.CreateTime)
-                .HasComment("创建时间")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Describe)
-                .HasMaxLength(255)
-                .HasComment("描述");
             entity.Property(e => e.GrActionTime)
                 .HasComment("活动时间")
                 .HasColumnType("datetime");
@@ -224,21 +210,6 @@ public partial class ContextBase : DbContext
                 .HasMaxLength(200)
                 .HasComment("主题");
             entity.Property(e => e.GrType).HasComment("分类");
-            entity.Property(e => e.Name1)
-                .HasMaxLength(50)
-                .HasComment("涉及人员");
-            entity.Property(e => e.Name2)
-                .HasMaxLength(50)
-                .HasComment("涉及人员");
-            entity.Property(e => e.Name3)
-                .HasMaxLength(50)
-                .HasComment("涉及人员");
-            entity.Property(e => e.Name4)
-                .HasMaxLength(50)
-                .HasComment("涉及人员");
-            entity.Property(e => e.Remark)
-                .HasMaxLength(255)
-                .HasComment("备注");
             entity.Property(e => e.Spare1)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -251,10 +222,6 @@ public partial class ContextBase : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasComment("备用");
-            entity.Property(e => e.Theme)
-                .HasMaxLength(200)
-                .HasComment("主题");
-            entity.Property(e => e.Type).HasComment("分类");
             entity.Property(e => e.Uid).HasMaxLength(50);
         });
 

@@ -4,13 +4,9 @@ using SkiaSharp.QrCode;
 namespace Netnr.Demo.Controllers.GraphDemo;
 
 [Route("/GraphDemo/[controller]/[action]")]
-public class SkiaSharpController : Controller
+public class SkiaSharpController(IWebHostEnvironment host) : Controller
 {
-    public IWebHostEnvironment env;
-    public SkiaSharpController(IWebHostEnvironment host)
-    {
-        env = host;
-    }
+    public IWebHostEnvironment env = host;
 
     /// <summary>
     /// 验证码
@@ -96,7 +92,7 @@ public class SkiaSharpController : Controller
         }
 
         //验证码颜色集合  
-        SKColor[] colors = { SKColors.LightBlue, SKColors.LightCoral, SKColors.LightGreen, SKColors.LightPink, SKColors.LightSkyBlue, SKColors.LightSteelBlue, SKColors.LightSalmon };
+        SKColor[] colors = [SKColors.LightBlue, SKColors.LightCoral, SKColors.LightGreen, SKColors.LightPink, SKColors.LightSkyBlue, SKColors.LightSteelBlue, SKColors.LightSalmon];
 
         //旋转角度
         int randAngle = 40;

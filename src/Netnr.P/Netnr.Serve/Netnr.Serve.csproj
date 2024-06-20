@@ -3,7 +3,9 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<!--<PublishAot>true</PublishAot>-->
-		<TargetFramework>net7.0</TargetFramework>
+		<!--dotnet publish -r win-x64 -c Release-->
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>

@@ -7,6 +7,7 @@ import { ndkTab } from './ndkTab';
 import { ndkRequest } from './ndkRequest';
 import { ndkAction } from './ndkAction';
 import { nrGrid } from '../../frame/nrGrid';
+import { nrApp } from '../../frame/Shoelace/nrApp';
 
 // 记录
 var ndkStep = {
@@ -104,9 +105,12 @@ var ndkStep = {
 
                         ndkVary.domGridTabconns = ndkVary.domTabconns.querySelector(".nrg-grid-tabconns");
                         ndkVary.domFilterTabconns = ndkVary.domTabconns.querySelector(".nrg-filter-tabconns");
+
                         //过滤
                         ndkVary.domFilterTabconns.addEventListener("input", function () {
-                            ndkVary.gridOpsTabconns.api.setQuickFilter(this.value);
+                            if (ndkVary.gridOpsTabconns) {
+                                ndkVary.gridOpsTabconns.updateGridOptions({ quickFilterText: this.value })
+                            }
                         });
 
                         //显示连接（检测是否重新加载表格、回填选中）
@@ -149,7 +153,7 @@ var ndkStep = {
                                     onSelectionChanged: function () {
                                         var tabkey = ndkVary.domTabconns.getAttribute("data-key");
                                         var tabcp = ndkStep.cpGet(tabkey);
-                                        var srows = ndkVary.gridOpsTabconns.api.getSelectedRows();
+                                        var srows = ndkVary.gridOpsTabconns.getSelectedRows();
                                         //连接变化
                                         if (srows.length && tabcp.cobj.id != srows[0].id) {
                                             ndkStep.cpSet(tabkey, srows[0]);
@@ -166,14 +170,14 @@ var ndkStep = {
 
                             //清空过滤
                             ndkVary.domFilterTabconns.value = "";
-                            ndkVary.gridOpsTabconns.api.setQuickFilter("");
+                            ndkVary.gridOpsTabconns.updateGridOptions({ quickFilterText: "" });
 
-                            ndkVary.gridOpsTabconns.api.clearRangeSelection(); //清除范围选择                            
+                            ndkVary.gridOpsTabconns.clearRangeSelection(); //清除范围选择                            
                             //选中当前
-                            ndkVary.gridOpsTabconns.api.forEachNode(function (node) {
+                            ndkVary.gridOpsTabconns.forEachNode(function (node) {
                                 if (node.data.id == tabcp.cobj.id) {
                                     node.setSelected(true, true);
-                                    ndkVary.gridOpsTabconns.api.ensureIndexVisible(node.rowIndex); //滚动到行显示
+                                    ndkVary.gridOpsTabconns.ensureIndexVisible(node.rowIndex); //滚动到行显示
                                 }
                             })
                         })
@@ -199,9 +203,12 @@ var ndkStep = {
 
                         ndkVary.domGridTabdatabase = ndkVary.domTabdatabase.querySelector(".nrg-grid-tabdatabase");
                         ndkVary.domFilterTabdatabase = ndkVary.domTabdatabase.querySelector(".nrg-filter-tabdatabase");
+                        
                         //过滤
                         ndkVary.domFilterTabdatabase.addEventListener("input", function () {
-                            ndkVary.gridOpsTabdatabase.api.setQuickFilter(this.value);
+                            if (ndkVary.gridOpsTabdatabase) {
+                                ndkVary.gridOpsTabdatabase.updateGridOptions({ quickFilterText: this.value })
+                            }
                         });
 
                         //显示数据库（检测是否重新加载表格、回填选中）
@@ -213,8 +220,9 @@ var ndkStep = {
 
                             new Promise((resolve, reject) => {
                                 //检测是否重新加载表格（或库名更新）
+                                let dbAllRows = nrGrid.getAllRows(ndkVary.gridOpsDatabase);
                                 if (ndkVary.gridOpsTabdatabase == null || gridcobjid != tabcp.cobj.id ||
-                                    ndkVary.gridOpsDatabase.rowData.map(x => x.DatabaseName).join() != ndkVary.gridOpsTabdatabase.rowData.map(x => x.DatabaseName).join()) {
+                                    dbAllRows.map(x => x.DatabaseName).join() != dbAllRows.map(x => x.DatabaseName).join()) {
                                     ndkVary.domTabdatabase.setAttribute("data-grid-cobjid", tabcp.cobj.id);
 
                                     ndkRequest.reqDatabaseName(tabcp.cobj).then(rowData => {
@@ -240,7 +248,7 @@ var ndkStep = {
                                             onSelectionChanged: function () {
                                                 var tabkey = ndkVary.domTabconns.getAttribute("data-key");
                                                 var tabcp = ndkStep.cpGet(tabkey);
-                                                var srows = ndkVary.gridOpsTabdatabase.api.getSelectedRows();
+                                                var srows = ndkVary.gridOpsTabdatabase.getSelectedRows();
                                                 var databaseName = srows.length ? srows[0].DatabaseName : null;
 
                                                 //数据库变化
@@ -271,18 +279,18 @@ var ndkStep = {
                             }).then(() => {
                                 //清空过滤
                                 ndkVary.domFilterTabdatabase.value = "";
-                                ndkVary.gridOpsTabdatabase.api.setQuickFilter("");
+                                ndkVary.gridOpsTabdatabase.updateGridOptions({ quickFilterText: "" });
 
-                                ndkVary.gridOpsTabdatabase.api.clearRangeSelection(); //清除范围选择
+                                ndkVary.gridOpsTabdatabase.clearRangeSelection(); //清除范围选择
                                 //选中当前
                                 if (tabcp.databaseName) {
-                                    ndkVary.gridOpsTabdatabase.api.forEachNode(function (node) {
+                                    ndkVary.gridOpsTabdatabase.forEachNode(function (node) {
                                         if (node.data.DatabaseName == tabcp.databaseName) {
                                             node.setSelected(true, true);
                                         }
                                     })
                                 } else {
-                                    ndkVary.gridOpsTabdatabase.api.deselectAll();
+                                    ndkVary.gridOpsTabdatabase.deselectAll();
                                 }
                             })
                         })
@@ -301,13 +309,13 @@ var ndkStep = {
         switch (ndkVary.domTabGroupTree.activeTab.panel) {
             case "tp1-conns":
                 {
-                    var srows = ndkVary.gridOpsConns.api.getSelectedRows(),
-                        crows = ndkVary.gridOpsConns.api.getCellRanges(), edata;
+                    var srows = ndkVary.gridOpsConns.getSelectedRows(),
+                        crows = ndkVary.gridOpsConns.getCellRanges(), edata;
                     if (srows.length) {
                         edata = srows[0];
                     } else if (crows.length) {
                         //范围选择行
-                        edata = ndkVary.gridOpsConns.api.getDisplayedRowAtIndex(crows[0].startRow.rowIndex).data
+                        edata = ndkVary.gridOpsConns.getDisplayedRowAtIndex(crows[0].startRow.rowIndex).data
                     }
 
                     if (edata) {
@@ -320,13 +328,13 @@ var ndkStep = {
             case "tp1-database":
                 {
                     if (ndkVary.gridOpsDatabase) {
-                        var srows = ndkVary.gridOpsDatabase.api.getSelectedRows(),
-                            crows = ndkVary.gridOpsDatabase.api.getCellRanges(), edata;
+                        var srows = ndkVary.gridOpsDatabase.getSelectedRows(),
+                            crows = ndkVary.gridOpsDatabase.getCellRanges(), edata;
                         if (srows.length) {
                             edata = srows.sort((a, b) => a.DatabaseName.localeCompare(b.DatabaseName))[0];
                         } else if (crows.length) {
                             //范围选择行
-                            edata = ndkVary.gridOpsDatabase.api.getDisplayedRowAtIndex(crows[0].startRow.rowIndex).data
+                            edata = ndkVary.gridOpsDatabase.getDisplayedRowAtIndex(crows[0].startRow.rowIndex).data
                         }
 
                         var cp = ndkStep.cpGet(1);
@@ -422,7 +430,7 @@ var ndkStep = {
 
             //列信息表名
             if (sobj.viewColumn) {
-                sobj.viewColumnTableName = ndkFunction.groupBy(ndkVary.gridOpsColumn.rowData, x => x.TableName);
+                sobj.viewColumnTableName = ndkFunction.groupBy(nrGrid.getAllRows(ndkVary.gridOpsColumn), x => x.TableName);
             }
 
             ndkStorage.stepsSet(sobj)
@@ -539,7 +547,7 @@ var ndkStep = {
                         var fv = (sobj.filterConns || "").trim();
                         if (fv != "") {
                             ndkVary.domFilterConns.value = fv;
-                            ndkVary.gridOpsConns.api.setQuickFilter(fv);
+                            ndkVary.gridOpsConns.updateGridOptions({ quickFilterText: fv });
                         }
                         resolve();
                     })
@@ -556,7 +564,7 @@ var ndkStep = {
                             var fv = (sobj.filterDatabase || "").trim();
                             if (fv != "") {
                                 ndkVary.domFilterDatabase.value = fv;
-                                ndkVary.gridOpsDatabase.api.setQuickFilter(fv);
+                                ndkVary.gridOpsDatabase.updateGridOptions({ quickFilterText: fv });
                             }
                             resolve();
                         })
@@ -576,7 +584,7 @@ var ndkStep = {
                             var fv = (sobj.filterTable || "").trim();
                             if (fv != "") {
                                 ndkVary.domFilterTable.value = fv;
-                                ndkVary.gridOpsTable.api.setQuickFilter(fv);
+                                ndkVary.gridOpsTable.updateGridOptions({ quickFilterText: fv })
                             }
                             resolve();
                         })
@@ -596,7 +604,7 @@ var ndkStep = {
                             var fv = (sobj.filterColumn || "").trim();
                             if (fv != "") {
                                 ndkVary.domFilterColumn.value = fv;
-                                ndkVary.gridOpsColumn.api.setQuickFilter(fv);
+                                ndkVary.gridOpsColumn.updateGridOptions({ quickFilterText: fv })
                             }
                             resolve();
                         })

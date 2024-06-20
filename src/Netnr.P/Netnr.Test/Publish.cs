@@ -1,5 +1,6 @@
-﻿using System.IO.Compression;
-using System.Net;
+﻿using Microsoft.CodeAnalysis;
+using System.IO.Compression;
+using System.Xml;
 using Xunit;
 
 namespace Netnr.Test
@@ -12,7 +13,7 @@ namespace Netnr.Test
         /// <summary>
         /// 发布根目录
         /// </summary>
-        public static string ReleaseRoot { get; set; } = @"D:\tmp\release";
+        public static string ReleaseRoot { get; set; } = @"E:\package\release";
 
         /// <summary>
         /// 批处理
@@ -22,43 +23,42 @@ namespace Netnr.Test
         /// <summary>
         /// 项目根目录
         /// </summary>
-        public static string ProjectRoot { get; set; } = new DirectoryInfo(BaseTo.ProjectRootPath).Parent.FullName;
+        public static string ProjectRoot { get; set; } = new DirectoryInfo(BaseTo.ProjectPath).Parent.FullName;
 
         /// <summary>
         /// 拷贝项目
         /// </summary>
         [Fact]
-        public void NetnrProjectCopy()
+        public void ProjectCopy()
         {
             //源目录
-            var sourcePath = @"D:\site\npp";
-            //目标目录
-            var targetPath = @"D:\site\np";
+            var fromSource = @"D:\site\npp";
+            //新目录
+            var toTarget = @"D:\site\np";
             //忽略文件夹
-            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.svg,.vs,.config,.vercel,regexes,Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.XOps.Client,ClientAdmin,Netnr.Admin.pdm";
+            var ignoreForder = "bin,obj,PublishProfiles,node_modules,packages,.git,.github,.svg,.vs,.config,.vercel,regexes";
+            ignoreForder += ",Netnr.Admin.Web,Netnr.Admin.Domain,Netnr.Admin.Application,Netnr.Admin.XOpsClient,Netnr.Admin.Cqbn,Netnr.Cqbncrane,Netnr.Observer,ClientAdmin";
 
             //删除旧文件夹
-            var docsFolder = Path.Combine(targetPath, "docs");
-            if (Directory.Exists(docsFolder))
+            "docs,src".Split(',').ForEach(f =>
             {
-                Directory.Delete(docsFolder, true);
-            }
-            var srcFolder = Path.Combine(targetPath, "src");
-            if (Directory.Exists(srcFolder))
-            {
-                Directory.Delete(srcFolder, true);
-            }
+                var df = Path.Combine(toTarget, f);
+                if (Directory.Exists(df))
+                {
+                    Directory.Delete(df, true);
+                }
+            });
 
-            FileTo.CopyDirectory(sourcePath, targetPath, ignoreForder.Split(','));
+            FileTo.CopyDirectory(fromSource, toTarget, ignoreForder.Split(','));
             Debug.WriteLine("Copy completed!");
 
             //需要处理的项目名称
             var listEp = "Netnr.Blog.Web".ToLower().Split(",");
 
-            var filesPath = Directory.EnumerateFiles(targetPath, "appsettings.json", SearchOption.AllDirectories);
+            var filesPath = Directory.EnumerateFiles(toTarget, "appsettings.json", SearchOption.AllDirectories);
             foreach (var filePath in filesPath)
             {
-                if (!listEp.Any(x => filePath.ToLower().Contains(x)))
+                if (!listEp.Any(x => filePath.Contains(x, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }
@@ -73,22 +73,148 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void ReleaseAll()
+        public void ProjectRelease()
         {
-            NetnrDataX();
-            NetnrServe();
-            NetnrFileServer();
+            string[] ProjectArray = [
+                //"Netnr.ToolX",
+                //"Netnr.DataX",
 
-            NetnrDataKit();
+                //"Netnr.Admin.Web",
+                //"Netnr.Admin.XOpsClient",
+                //"Netnr.Admin.Cqbn",
+                //"Netnr.Cqbncrane",
+                //"Netnr.Observer",
 
-            NetnrBlogBuildSS();
-            NetnrBlog();
+                //"Netnr.Blog.Web",
+                //"Netnr.ResponseFramework.Web",
 
-            NetnrResponseFramework();
+                //"Netnr.DataKit",
+                //"Netnr.FileServer",
+                //"Netnr.Garnet",
+                //"Netnr.Serve",
+
+                //"Netnr.PaddleOCR",
+                //"Netnr.PaddleSeg",
+
+                //"Netnr.Demo"
+            ];
+
+            ProjectArray.ForEach(p =>
+            {
+                //项目环境版本
+                var csprojFile = new DirectoryInfo(Path.Combine(ProjectRoot, p)).GetFiles("*.csproj", SearchOption.TopDirectoryOnly).First();
+                var csprojXml = new XmlDocument();
+                csprojXml.LoadXml(File.ReadAllText(csprojFile.FullName));
+                var targetFramework = csprojXml.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText.Replace("net", "");
+                var targetVersion = Convert.ToInt32(targetFramework.Split('.')[0]);
+
+                //发布环境版本
+                var cr = CmdTo.Execute("dotnet --list-runtimes").CrOutput;
+                var releaseVersion = cr.Split('\n').Where(line => line.StartsWith($"Microsoft.AspNetCore.App {targetVersion}."))
+                .Select(x => new Version(x.Split(' ')[1].Trim())).Max().ToString();
+
+                var option = new ReleaseOption
+                {
+                    ProjectDir = Path.Combine(ProjectRoot, p),
+                    ProjectShortName = p,
+                    PackageExclusion = [],
+                    CompressLevel = ProjectArray.Length > 1 ? CompressionLevel.SmallestSize : CompressionLevel.NoCompression
+                };
+                option.DictProps["PublishTrimmed"] = "false";
+
+                var win_x64Option = new ReleaseOption().ToDeepCopy(option);
+                win_x64Option.Platform = "win-x64";
+                win_x64Option.OutputDir = Path.Combine(ReleaseRoot, p, win_x64Option.Platform);
+                win_x64Option.PackagePath = Path.Combine(ReleaseRoot, p, "assets", $"{p}-{releaseVersion}-{win_x64Option.Platform}.zip");
+
+                var linux_x64Option = new ReleaseOption().ToDeepCopy(option);
+                linux_x64Option.Platform = "linux-x64";
+                linux_x64Option.OutputDir = Path.Combine(ReleaseRoot, p, linux_x64Option.Platform);
+                linux_x64Option.PackagePath = Path.Combine(ReleaseRoot, p, "assets", $"{p}-{releaseVersion}-{linux_x64Option.Platform}.zip");
+
+                var linux_arm64Option = new ReleaseOption().ToDeepCopy(option);
+                linux_arm64Option.Platform = "linux-arm64";
+                linux_arm64Option.OutputDir = Path.Combine(ReleaseRoot, p, linux_arm64Option.Platform);
+                linux_arm64Option.PackagePath = Path.Combine(ReleaseRoot, p, "assets", $"{p}-{releaseVersion}-{linux_arm64Option.Platform}.zip");
+
+                switch (p)
+                {
+                    case "Netnr.PaddleOCR":
+                    case "Netnr.PaddleSeg":
+                        {
+                            win_x64Option.DictProps["PublishTrimmed"] = "false";
+
+                            ReleaseOption.ReleasePackage(win_x64Option);
+                        }
+                        break;
+                    case "Netnr.Demo":
+                    case "Netnr.Blog.Web":
+                    case "Netnr.ResponseFramework.Web":
+                    case "Netnr.Admin.Web":
+                        {
+                            ReleaseOption.ReleasePackage(linux_x64Option);
+                            ReleaseOption.ReleasePackage(win_x64Option);
+                            ReleaseOption.ReleasePackage(linux_arm64Option);
+                        }
+                        break;
+                    case "Netnr.Admin.Cqbn":
+                        {
+                            win_x64Option.DictProps["PublishTrimmed"] = "false";
+                            win_x64Option.DictProps["ApplicationIcon"] = "./favicon-cqbn.ico";
+                            win_x64Option.DictProps["Copyright"] = $"cqhg.com.cn {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+
+                            ReleaseOption.ReleasePackage(win_x64Option);
+                        }
+                        break;
+                    case "Netnr.Serve":
+                    case "Netnr.Admin.XOpsClient":
+                        {
+                            //winOption.DictProps["PublishTrimmed"] = "true";
+                            //linuxOption.DictProps["PublishTrimmed"] = "true";
+
+                            //ReleaseOption.ReleasePackage(linuxOption);
+                            //ReleaseOption.ReleasePackage(winOption);
+
+                            // aot
+                            if (targetVersion >= 8)
+                            {
+                                var aotWinOption = new ReleaseOption().ToDeepCopy(win_x64Option);
+                                aotWinOption.DictProps["PublishAot"] = "true";
+                                ReleaseOption.ReleasePackage(aotWinOption);
+
+                                //var aotLinuxOption = new ReleaseOption().ToDeepCopy(linuxOption);
+                                //aotLinuxOption.DictProps["PublishAot"] = "true";
+                                //ReleaseOption.ReleasePackage(aotLinuxOption);
+                            }
+                        }
+                        break;
+                    case "Netnr.Observer":
+                        {
+                            var aotWinOption = new ReleaseOption().ToDeepCopy(win_x64Option);
+                            aotWinOption.DictProps["PublishAot"] = "true";
+
+                            ReleaseOption.ReleasePackage(aotWinOption);
+                        }
+                        break;
+                    default:
+                        {
+                            win_x64Option.DictProps["PublishTrimmed"] = "true";
+                            linux_x64Option.DictProps["PublishTrimmed"] = "true";
+                            linux_arm64Option.DictProps["PublishTrimmed"] = "true";
+
+                            ReleaseOption.ReleasePackage(linux_x64Option);
+                            ReleaseOption.ReleasePackage(win_x64Option);
+                            ReleaseOption.ReleasePackage(linux_arm64Option);
+                        }
+                        break;
+                }
+            });
+
+            Debug.WriteLine("All done!");
         }
 
         [Fact]
-        public void NetnrBlogBuildSS()
+        public void BuildSS()
         {
             var projectName = "Netnr.Blog.Web";
             var projectDir = Path.Combine(ProjectRoot, projectName);
@@ -98,28 +224,16 @@ namespace Netnr.Test
             //带参数 模式启动，用于授权
             Task.Run(() =>
             {
-                CmdTo.Execute(CmdTo.PSInfo($"cd {projectDir} && dotnet run --urls {uri} --admin"), (process, cr) =>
+                var run = $"cd {projectDir} && dotnet run --urls {uri} --admin";
+                var proc = CmdTo.BuildProcess(run);
+                proc.OutputDataReceived += (sender, output) =>
                 {
-                    process.OutputDataReceived += (sender, output) =>
-                    {
-                        if (output.Data != null)
-                        {
-                            Debug.WriteLine(output.Data);
-                            if (output.Data == "Done!")
-                            {
-                                process.Close();//关闭进程
-                                process.Dispose();
-                            }
-                        }
-                    };
+                    Debug.WriteLine(output.Data);
+                };
 
-                    process.Start();//启动线程
-                    process.BeginOutputReadLine();//开始异步读取
-                    process.WaitForExit();//阻塞等待进程结束
-
-                    //process.Close();//关闭进程
-                    //process.Dispose();
-                });
+                proc.Start();//启动线程
+                proc.BeginOutputReadLine();//开始异步读取
+                proc.WaitForExit();//阻塞等待进程结束
             });
 
             for (int i = 0; i < 9; i++)
@@ -127,7 +241,7 @@ namespace Netnr.Test
                 Debug.WriteLine("等待服务启动 ...");
                 Thread.Sleep(1000 * 3);
 
-                var client = new HttpClient();
+                var client = HttpTo.BuildClient();
                 var request = new HttpRequestMessage
                 {
                     RequestUri = new Uri(uri),
@@ -141,10 +255,12 @@ namespace Netnr.Test
                     {
                         Debug.WriteLine("服务已启动成功，准备执行生成");
                         Thread.Sleep(1000);
-                        var bresult = HttpTo.Get($"{uri}/ss/build");
-                        Debug.WriteLine(bresult);
-                        Assert.True(bresult.DeJson<ResultVM>().Code == 200);
 
+                        var result = client.GetStringAsync($"{uri}/ss/Build").ToResult();
+                        Debug.WriteLine(result);
+                        Assert.Equal(200, result.DeJson<ResultVM>().Code);
+
+                        _ = client.GetAsync($"{uri}/ss/BuildDone");
                         break;
                     }
                 }
@@ -153,261 +269,6 @@ namespace Netnr.Test
                     Debug.WriteLine(ex.Message);
                 }
             }
-
-            Thread.Sleep(2000);
-            CmdTo.KillProcess(new int[] { Convert.ToInt32(uri.Split(':').Last()) });
-        }
-
-        [Fact]
-        public void NetnrBlog()
-        {
-            Release("Netnr.Blog.Web", "blog");
-        }
-
-        [Fact]
-        public void NetnrResponseFramework()
-        {
-            Release("Netnr.ResponseFramework.Web", "nrf");
-        }
-
-        [Fact]
-        public void NetnrFileServer()
-        {
-            var projectName = "Netnr.FileServer";
-
-            var shortName = "nfs";
-            var platform = "win-x64";
-            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-
-                var stream1 = zip.CreateEntry("start.bat", CompressionLevel.SmallestSize).Open();
-                stream1.Write($"start {projectName}.exe --urls http://+:9998".ToByte());
-                stream1.Close();
-            }
-
-            platform = "linux-x64";
-            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-
-                var stream1 = zip.CreateEntry("start.sh", CompressionLevel.SmallestSize).Open();
-                stream1.Write($"chmod +x {projectName}\r\nnohup ./{projectName} --urls http://+:9998 &".ToByte());
-                stream1.Close();
-
-                var stream2 = zip.CreateEntry("stop.sh", CompressionLevel.SmallestSize).Open();
-                stream2.Write("kill -9 $(netstat -nlp | grep :9998 | awk '{print $7}' | awk -F\"/\" '{ print $1 }') ".ToByte());
-                stream2.Close();
-            }
-        }
-
-        [Fact]
-        public void NetnrDataKit()
-        {
-            var projectName = "Netnr.DataKit";
-            var shortName = "ndk";
-
-            var platform = "linux-x64";
-            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-
-                var stream1 = zip.CreateEntry("start.sh", CompressionLevel.SmallestSize).Open();
-                stream1.Write($"chmod +x {projectName}\r\nnohup ./{projectName} --urls http://+:9999 &".ToByte());
-                stream1.Close();
-
-                var stream2 = zip.CreateEntry("stop.sh", CompressionLevel.SmallestSize).Open();
-                stream2.Write("kill -9 $(netstat -nlp | grep :9999 | awk '{print $7}' | awk -F\"/\" '{ print $1 }') ".ToByte());
-                stream2.Close();
-            }
-
-            platform = "win-x64";
-            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-
-                var stream1 = zip.CreateEntry("start.bat", CompressionLevel.SmallestSize).Open();
-                stream1.Write($"start {projectName}.exe --urls http://+:9999".ToByte());
-                stream1.Close();
-            }
-        }
-
-        [Fact]
-        public void NetnrDataX()
-        {
-            var projectName = "Netnr.DataX";
-            var shortName = "ndx";
-
-            var platform = "win-x64";
-            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-                for (int i = zip.Entries.Count - 1; i >= 0; i--)
-                {
-                    var entry = zip.Entries[i];
-                    if (entry.Name.EndsWith(".pdb") || entry.Name.EndsWith(".xml"))
-                    {
-                        entry.Delete();
-                    }
-                    else if (entry.Name == $"{projectName}.exe")
-                    {
-                        var newEntry = zip.CreateEntry($"{shortName}.exe", CompressionLevel.SmallestSize);
-
-                        using var oldStream = entry.Open();
-                        using var newStream = newEntry.Open();
-                        oldStream.CopyTo(newStream);
-                        oldStream.Close();
-                        entry.Delete();
-                    }
-                    else if (entry.Name == "config.json")
-                    {
-                        using var stream = entry.Open();
-                        var reader = new StreamReader(stream);
-                        var content = reader.ReadToEnd().Replace("CQSME", "NETNR").Replace("EE.Oracle.Docker", "orcl");
-                        var buffer = content.ToByte();
-                        stream.SetLength(0);
-                        stream.Write(buffer, 0, buffer.Length);
-                        stream.Dispose();
-                    }
-                }
-            }
-
-            platform = "linux-x64";
-            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-                for (int i = zip.Entries.Count - 1; i >= 0; i--)
-                {
-                    var entry = zip.Entries[i];
-                    if (entry.Name.EndsWith(".pdb") || entry.Name.EndsWith(".xml"))
-                    {
-                        entry.Delete();
-                    }
-                    else if (entry.Name == projectName)
-                    {
-                        var newEntry = zip.CreateEntry($"{shortName}", CompressionLevel.SmallestSize);
-
-                        using var oldStream = entry.Open();
-                        using var newStream = newEntry.Open();
-                        oldStream.CopyTo(newStream);
-                        oldStream.Close();
-                        entry.Delete();
-                    }
-                    else if (entry.Name == "config.json")
-                    {
-                        using var stream = entry.Open();
-                        var reader = new StreamReader(stream);
-                        var content = reader.ReadToEnd().Replace("LHR11G", "ORCL").Replace(@"D:\\tmp\\res\\tmp.db", "/tmp/tmp.db");
-                        var buffer = content.ToByte();
-                        stream.SetLength(0);
-                        stream.Write(buffer, 0, buffer.Length);
-                        stream.Dispose();
-                    }
-                }
-            }
-        }
-
-        [Fact]
-        public void NetnrServe()
-        {
-            var projectName = "Netnr.Serve";
-            var shortName = "ns";
-
-            var platform = "win-x64";
-            var zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            var zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-                for (int i = zip.Entries.Count - 1; i >= 0; i--)
-                {
-                    var entry = zip.Entries[i];
-                    if (entry.Name.EndsWith(".pdb") || entry.Name.EndsWith(".xml"))
-                    {
-                        entry.Delete();
-                    }
-                    else if (entry.Name == $"{projectName}.exe")
-                    {
-                        var newEntry = zip.CreateEntry($"{shortName}.exe", CompressionLevel.SmallestSize);
-
-                        using var oldStream = entry.Open();
-                        using var newStream = newEntry.Open();
-                        oldStream.CopyTo(newStream);
-                        oldStream.Close();
-                        entry.Delete();
-                    }
-                }
-            }
-
-            platform = "linux-x64";
-            zipFile = $"{shortName}-{BaseTo.Version}-{platform}.zip";
-            zipPath = Path.Combine(ReleaseRoot, shortName, zipFile);
-
-            Release(projectName, shortName, platform, zipFile);
-            if (File.Exists(zipPath))
-            {
-                using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Update);
-                for (int i = zip.Entries.Count - 1; i >= 0; i--)
-                {
-                    var entry = zip.Entries[i];
-                    if (entry.Name.EndsWith(".pdb") || entry.Name.EndsWith(".xml"))
-                    {
-                        entry.Delete();
-                    }
-                    else if (entry.Name == projectName)
-                    {
-                        var newEntry = zip.CreateEntry($"{shortName}", CompressionLevel.SmallestSize);
-
-                        using var oldStream = entry.Open();
-                        using var newStream = newEntry.Open();
-                        oldStream.CopyTo(newStream);
-                        oldStream.Close();
-                        entry.Delete();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 发布 WEB
-        /// </summary>
-        /// <param name="projectName"></param>
-        /// <param name="shortName"></param>
-        private static void Release(string projectName, string shortName, string platform = "linux-x64", string zipFile = "publish.zip")
-        {
-            var model = new ReleaseOption
-            {
-                ProjectDir = Path.Combine(ProjectRoot, projectName),
-                ProjectShortName = shortName,
-                OutputDir = Path.Combine(ReleaseRoot, shortName, platform),
-                PackagePath = Path.Combine(ReleaseRoot, shortName, zipFile),
-                Platform = platform
-            };
-            ReleaseOption.ReleasePackage(model);
         }
 
         /// <summary>
@@ -494,13 +355,21 @@ namespace Netnr.Test
         /// </summary>
         public string PackagePath { get; set; }
         /// <summary>
-        /// 是否单文件
+        /// 属性字典
         /// </summary>
-        public string PublishSingleFile { get; set; } = "true";
-        /// <summary>
-        /// 是否剪裁
-        /// </summary>
-        public string PublishTrimmed { get; set; } = "true";
+        public Dictionary<string, string> DictProps { get; set; } = new Dictionary<string, string>
+        {
+            {"PublishSingleFile","true"},
+            {"PublishTrimmed","true"},
+            {"PublishAot","false"},
+
+            {"ApplicationIcon","../Netnr.ClientApp/file/favicon.ico"},
+            {"Authors", "netnr"},
+            {"Copyright", $"netnr.com {DateTime.Now:yyyy-MM-dd HH:mm:ss}"},
+            {"Version",BaseTo.Version},
+            {"FileVersion",BaseTo.Version},
+            {"AssemblyVersion",BaseTo.Version},
+        };
         /// <summary>
         /// 是否包含运行时
         /// </summary>
@@ -512,7 +381,11 @@ namespace Netnr.Test
         /// <summary>
         /// 打包排除
         /// </summary>
-        public List<string> PackageExclusion { get; set; } = new() { "appsettings.json" };
+        public List<string> PackageExclusion { get; set; } = ["appsettings.json"];
+        /// <summary>
+        /// 打包压缩等级
+        /// </summary>
+        public CompressionLevel CompressLevel { get; set; } = CompressionLevel.SmallestSize;
 
         /// <summary>
         /// 发布打包
@@ -520,44 +393,98 @@ namespace Netnr.Test
         /// <param name="model"></param>
         public static void ReleasePackage(ReleaseOption model)
         {
-            Debug.WriteLine($"Release {model.ProjectShortName}");
+            Debug.WriteLine($"\r\n===== Start publishing {model.ProjectShortName}");
             var csproj = new DirectoryInfo(model.ProjectDir).EnumerateFiles("*.csproj", SearchOption.TopDirectoryOnly).First();
-
             var cddir = Path.GetDirectoryName(csproj.FullName);
-            var run = $"cd {cddir} && dotnet publish {csproj.Name} -p:PublishSingleFile={model.PublishSingleFile} -p:PublishTrimmed={model.PublishTrimmed} -c Release -r {model.Platform} --self-contained {model.SelfContained} -o {model.OutputDir}";
 
-            Debug.WriteLine($"重建输出目录 {model.OutputDir}");
-            if (Directory.Exists(model.OutputDir))
+            var listProps = new List<string>();
+            var isAOT = model.DictProps.TryGetValue("PublishAot", out string PublishAot) && PublishAot == "true";
+            var aotIgnore = "PublishSingleFile,PublishTrimmed".Split(',');
+            foreach (var kv in model.DictProps)
             {
-                Directory.Delete(model.OutputDir, true);
-            }
-            Directory.CreateDirectory(model.OutputDir);
-
-            File.WriteAllText(Publish.BatPath, $"{run} && exit");
-            CmdTo.Execute($"start {Publish.BatPath}");
-
-            Debug.WriteLine($"打包文件 {model.PackagePath}");
-            if (File.Exists(model.PackagePath))
-            {
-                File.Delete(model.PackagePath);
-            }
-            ZipFile.CreateFromDirectory(model.OutputDir, model.PackagePath, CompressionLevel.SmallestSize, false);
-
-            if (model.PackageExclusion.Count > 0)
-            {
-                Debug.WriteLine($"打包排除 {model.PackageExclusion.Count}");
-                using var zip = ZipFile.Open(model.PackagePath, ZipArchiveMode.Update);
-                for (int i = 0; i < zip.Entries.Count; i++)
+                if (isAOT && aotIgnore.Contains(kv.Key))
                 {
-                    var entry = zip.Entries[i];
-                    if (model.PackageExclusion.Contains(entry.Name))
-                    {
-                        entry.Delete();
-                    }
+                    continue;
+                }
+                listProps.Add($"-p:{kv.Key}={kv.Value.ToUrlEncode()}");
+            }
+
+            var listRun = new List<string>
+            {
+                $"cd {cddir} &&",
+                $"dotnet publish",
+                $"{csproj.Name}",
+                $"-c Release",
+                $"--self-contained {model.SelfContained}",
+                $"-r {model.Platform}",
+                $"-o {model.OutputDir}"
+            };
+            listRun.AddRange(listProps);
+            var run = string.Join(" ", listRun);
+
+            Debug.WriteLine($"{run}\r\n重建输出目录 {model.OutputDir}");
+            FileTo.ClearDirectory(model.OutputDir);
+
+            var proc = CmdTo.BuildProcess(run);
+            proc.OutputDataReceived += (sender, output) =>
+            {
+                if (output.Data != null)
+                {
+                    Debug.WriteLine(output.Data);
+                }
+            };
+
+            proc.Start();//启动线程
+
+            proc.BeginOutputReadLine();//开始异步读取
+            proc.WaitForExit();//阻塞等待进程结束
+
+            proc.Close();//关闭进程
+
+            Debug.WriteLine($"===== Published {model.ProjectShortName}");
+
+            //创建资产目录
+            var ppdir = new DirectoryInfo(Path.GetDirectoryName(model.PackagePath));
+            if (!ppdir.Exists)
+            {
+                ppdir.Create();
+            }
+
+            if (isAOT)
+            {
+                if (model.Platform.Contains("win"))
+                {
+                    var winAotName = $"{model.ProjectShortName}.exe";
+
+                    File.Copy(Path.Combine(model.OutputDir, winAotName), Path.Combine(Path.GetDirectoryName(model.PackagePath), winAotName.Replace(".exe", $"-{BaseTo.Version}.exe")), true);
                 }
             }
+            else if (!string.IsNullOrWhiteSpace(model.PackagePath))
+            {
+                Debug.WriteLine($"压缩打包 {model.PackagePath}");
 
-            Debug.WriteLine("打包完成!");
+                if (File.Exists(model.PackagePath))
+                {
+                    File.Delete(model.PackagePath);
+                }
+                ZipFile.CreateFromDirectory(model.OutputDir, model.PackagePath, model.CompressLevel, false);
+
+                if (model.PackageExclusion.Count > 0)
+                {
+                    Debug.WriteLine($"压缩打包排除 {model.PackageExclusion.Count}");
+                    using var zip = ZipFile.Open(model.PackagePath, ZipArchiveMode.Update);
+                    for (int i = 0; i < zip.Entries.Count; i++)
+                    {
+                        var entry = zip.Entries[i];
+                        if (model.PackageExclusion.Contains(entry.Name))
+                        {
+                            entry.Delete();
+                        }
+                    }
+                }
+
+                Debug.WriteLine("===== Packaging completed !!!");
+            }
         }
     }
 }

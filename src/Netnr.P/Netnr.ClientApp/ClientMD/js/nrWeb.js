@@ -1,4 +1,5 @@
-﻿import { nrcBase } from '../../frame/nrcBase';
+﻿import { nrPolyfill } from '../../frame/nrPolyfill';
+import { nrcBase } from '../../frame/nrcBase';
 
 let nrWeb = {
     init: async () => {
@@ -10,8 +11,13 @@ let nrWeb = {
                 .catch(ex => console.debug('SW failed: ', ex));
         }
 
+        await nrPolyfill.init();
+
         //载入组件
-        await Promise.all([import('../index'), import('../monaco')]);
+        await import('../index');
+        let { monaco } = await import("../../frame/monaco-old");
+        Object.assign(window, { monaco });
+
         //扩展
         nrWeb.expand();
 
@@ -45,6 +51,42 @@ let nrWeb = {
             //调整大小
             resize: function (ch) {
                 this.height(ch - 20);
+            },
+
+            //文件
+            file: async (files) => {
+                let that = nmd;
+                let links = [];
+                for (let file of files) {
+                    that.tooltip(`${file.name} 正在上传...`);
+
+                    let fd = new FormData();
+                    fd.append('file', file);
+                    let xhr = await netnrmd.upload({
+                        url: "https://netnr.zme.ink/api/v1/Upload", body: fd,
+                        onprogress: (pp) => {
+                            that.tooltip(`${file.name} 已上传 ${pp}%`, pp == 100 ? 9999 : 30000);
+                        }
+                    });
+
+                    if (xhr.status == 200) {
+                        let res = JSON.parse(xhr.responseText);
+                        if (res.code == 200) {
+                            //上传成功，插入链接
+                            let link = `[${file.name}](https://netnr.zme.ink/${res.data})`;
+                            if (file.type.startsWith("image")) {
+                                link = "!" + link;
+                            }
+                            links.push(link);
+                            that.closeTooltip();
+                        } else {
+                            that.tooltip(`上传失败 ${file.name}, ${res.msg}`, 20000);
+                        }
+                    } else {
+                        that.tooltip(`上传失败 ${file.name}, HTTP ${xhr.statusText || xhr.status}`, 20000);
+                    }
+                }
+                return links.join('\r\n');
             }
         });
 
@@ -97,7 +139,7 @@ let nrWeb = {
                                     }
                                 };
 
-                                xhr.open("POST", "https://file.zme.ink/API/UploadTmp", true);
+                                xhr.open("POST", "https://netnr.zme.ink/api/v1/Upload", true);
                                 xhr.send(fd);
                                 xhr.onreadystatechange = function () {
                                     if (xhr.readyState == 4) {
@@ -106,7 +148,7 @@ let nrWeb = {
                                             let res = JSON.parse(xhr.responseText);
                                             if (res.code == 200) {
                                                 //上传成功，插入链接
-                                                let link = `[${file.name}](https://file.zme.ink${res.data})`;
+                                                let link = `[${file.name}](https://netnr.zme.ink/${res.data})`;
                                                 if (file.type.startsWith("image")) {
                                                     link = "!" + link;
                                                 }

@@ -15,7 +15,7 @@ let nrPage = {
         nrVary.domEditor1.innerHTML = nrApp.tsLoadingHtml;
 
         window["jsyaml"] = await import('js-yaml');
-        await nrEditor.init();
+        await nrEditor.rely();
         nrVary.domEditor1.innerHTML = "";
 
         nrcBase.setHeightFromBottom(nrVary.domEditor1);
@@ -190,7 +190,7 @@ let nrPage = {
         nrVary.domBtnDemo.addEventListener('click', async function () {
             nrApp.setLoading(this);
 
-            await nrPage.openUrl("https://petstore.swagger.io/v2/swagger.json")
+            await nrPage.openUrl("https://httpbin.org/spec.json")
 
             nrApp.setLoading(this, true);
         });

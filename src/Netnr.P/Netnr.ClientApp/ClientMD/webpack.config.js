@@ -30,7 +30,18 @@ module.exports = (_env, argv) => {
         module: {
             rules: [
                 { test: /\.css$/i, use: [MiniCssExtractPlugin.loader, 'css-loader'] },
-                { test: /\.svg$/, loader: 'svg-sprite-loader' }
+                { test: /\.svg$/, loader: 'svg-sprite-loader' },
+                {
+                    test: /\.(?:js|mjs|cjs)$/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            plugins: ['@babel/plugin-transform-runtime'],
+                            presets: [['@babel/preset-env', { targets: { chrome: "78" } }]],
+                            cacheDirectory: true,
+                        }
+                    }
+                }
             ],
         },
         optimization: {

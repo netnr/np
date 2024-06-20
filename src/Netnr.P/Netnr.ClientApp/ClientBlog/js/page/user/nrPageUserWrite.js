@@ -27,15 +27,11 @@ let nrPage = {
 
     bindEvent: () => {
         //过滤
-        nrVary.domTxtFilter.addEventListener('input', function () {
-            if (nrPage.grid1) {
-                nrPage.grid1.api.setQuickFilter(this.value);
-            }
-        })
+        nrApp.setQuickFilter(nrVary.domTxtFilter, nrPage.grid1);
 
         //编辑
         nrVary.domBtnEdit.addEventListener('click', async function () {
-            let srows = nrPage.grid1.api.getSelectedRows();
+            let srows = nrPage.grid1.getSelectedRows();
             if (srows.length == 1) {
                 if (nrPage.modalForm == null) {
                     nrPage.modalForm = new bootstrap.Modal(nrVary.domModalForm, { keyboard: false, });
@@ -69,7 +65,7 @@ let nrPage = {
 
         //删除
         nrVary.domBtnDel.addEventListener('click', async function () {
-            let srows = nrPage.grid1.api.getSelectedRows();
+            let srows = nrPage.grid1.getSelectedRows();
             if (srows.length) {
                 if (await nrApp.confirm(srows.map(x => `${x[nrPage.tableKey]}.${x["UwTitle"]}`).join('<hr/>'), `确定删除（${srows.length}）`)) {
                     nrApp.setLoading(this)
@@ -179,7 +175,7 @@ let nrPage = {
             nrcBase.setHeightFromBottom(nrVary.domGrid);
 
             //grid 显示
-            nrPage.grid1 = await nrGrid.viewGrid(nrVary.domGrid, gridOptions);
+            nrPage.grid1 = await nrGrid.createGrid(nrVary.domGrid, gridOptions);
         } else {
             nrVary.domGrid.innerHTML = nrApp.tsFailHtml;
         }

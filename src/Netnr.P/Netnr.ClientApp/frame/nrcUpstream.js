@@ -88,7 +88,7 @@ let nrcUpstream = {
                     reader.readAsText(blob, encoding)
                 }).catch(ex => reject(ex))
             } else {
-                reject(ok);
+                reject();
             }
         })
     })

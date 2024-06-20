@@ -23,7 +23,7 @@ let nrPage = {
         nrApp.setLoading(nrVary.domBtnRun);
 
         //初始化编辑器
-        await nrEditor.init();
+        await nrEditor.rely();
 
         [nrVary.domPreHtml, nrVary.domPreCss, nrVary.domPreJs].forEach(function (dom) {
             let code = dom.innerText;
@@ -192,9 +192,11 @@ let nrPage = {
                 }
             }
         }
-        iframe.contentWindow.document.open();
-        iframe.contentWindow.document.write(codeHtml);
-        iframe.contentWindow.document.close();
+        
+        iframe.srcdoc = codeHtml;
+        // iframe.contentWindow.document.open();
+        // iframe.contentWindow.document.write(codeHtml);
+        // iframe.contentWindow.document.close();
     },
 
     libaryInit: () => {
@@ -220,8 +222,6 @@ let nrPage = {
                 }
             }
         });
-
-        nrVary.domDdLibrary.style.maxHeight = `calc(100vh - ${nrVary.domBtnLibrary.getBoundingClientRect().top + 100}px)`;
     },
     libaryKey: "",
     /**
@@ -312,6 +312,9 @@ let nrPage = {
                 {
                     let dir = domItem.dataset.dir;
                     let text = `https://npmcdn.com/${nrPage.libaryKey}/${dir}`;
+                    if (document.getElementById("ck_npm_mirror").checked) {
+                        text = nrcBase.mirrorNPM(text);
+                    }
                     switch (dir.split('.').pop()) {
                         case "js":
                             text = `<script src="${text}"></script>`

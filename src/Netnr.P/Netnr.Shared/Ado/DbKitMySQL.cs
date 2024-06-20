@@ -1,5 +1,6 @@
 ﻿#if Full || AdoAll || AdoMySQL
 
+using Microsoft.Data.SqlClient;
 using MySqlConnector;
 
 namespace Netnr;
@@ -13,35 +14,60 @@ public partial class DbKit
     /// 表批量写入
     /// </summary>
     /// <param name="dt">数据表</param>
-    /// <param name="bulkCopy">设置表复制对象</param>
+    /// <param name="bulkCopyAction">设置表复制对象</param>
     /// <param name="openTransaction">开启事务，默认 True</param>
+    /// <param name="batchSize">每批行数，默认全部</param>
     /// <returns></returns>
-    public async Task<int> BulkCopyMySQL(DataTable dt, Action<MySqlBulkCopy> bulkCopy = null, bool openTransaction = true)
+    public async Task<int> BulkCopyMySQL(DataTable dt, Action<MySqlBulkCopy> bulkCopyAction = null, bool openTransaction = true, int batchSize = 0)
     {
         return await SafeConn(async () =>
         {
             var connection = (MySqlConnection)ConnOption.Connection;
             var transaction = openTransaction ? await connection.BeginTransactionAsync() : null;
 
-            var bulk = new MySqlBulkCopy(connection, transaction)
+            var bulkCopy = new MySqlBulkCopy(connection, transaction)
             {
                 DestinationTableName = dt.TableName,
                 BulkCopyTimeout = ConnOption.Timeout * 10
             };
-            bulkCopy?.Invoke(bulk);
+            bulkCopyAction?.Invoke(bulkCopy);
 
             for (int i = 0; i < dt.Columns.Count; i++)
             {
-                bulk.ColumnMappings.Add(new MySqlBulkCopyColumnMapping(i, dt.Columns[i].ColumnName));
+                bulkCopy.ColumnMappings.Add(new MySqlBulkCopyColumnMapping(i, dt.Columns[i].ColumnName));
             }
 
-            var result = await bulk.WriteToServerAsync(dt);
-            if (transaction != null)
+            if (batchSize > 0 && batchSize < dt.Rows.Count)
             {
-                await transaction.CommitAsync();
-            }
+                #region 不支持 BatchSize 手动分行
+                var drCollection = dt.AsEnumerable();
 
-            return result.RowsInserted;
+                var num = 0;
+                for (int i = 0; i < dt.Rows.Count; i += batchSize)
+                {
+                    var dataRows = drCollection.Skip(i).Take(batchSize);
+
+                    var result = await bulkCopy.WriteToServerAsync(dataRows, dt.Columns.Count);
+                    num += result.RowsInserted;
+                }
+                if (transaction != null)
+                {
+                    await transaction.CommitAsync();
+                }
+                return num;
+
+                #endregion
+            }
+            else
+            {
+                var result = await bulkCopy.WriteToServerAsync(dt);
+                if (transaction != null)
+                {
+                    await transaction.CommitAsync();
+                }
+
+                return result.RowsInserted;
+            }
         });
     }
 

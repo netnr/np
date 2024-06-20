@@ -29,11 +29,7 @@ let nrPage = {
         })
 
         //过滤
-        nrVary.domTxtFilter.addEventListener('input', function () {
-            if (nrApp.tsGrid) {
-                nrApp.tsGrid.api.setQuickFilter(this.value);
-            }
-        })
+        nrApp.setQuickFilter(nrVary.domTxtFilter, nrApp.tsGrid);
     },
 
     bindGrid: async (type) => {
@@ -72,8 +68,6 @@ let nrPage = {
                         ],
                         rowData: dataDNS,
                     });
-
-                    nrVary.domCardRegex.classList.remove('d-none');
                 }
                 break;
             case "purine":
@@ -161,7 +155,7 @@ let nrPage = {
                         //列
                         columnDefs: [
                             { field: 'id', headerName: "代码", sortable: true },
-                            { field: 'txt', headerName: "名称", },
+                            { field: 'txt', headerName: "名称", width: 240, },
                             { field: 'pid', headerName: "上级代码", },
                             nrGrid.newColumnNumber({ field: 'num', sortable: true, headerName: "同级排序", }),
                             nrGrid.newColumnNumber({ field: 'deep', headerName: "层级", }),
@@ -178,6 +172,7 @@ let nrPage = {
                             },
                         },
                         treeData: true, //树
+                        getRowId: event => event.data["id"],
                         isServerSideGroup: dataItem => dataItem.group > 0, //有子节点
                         getServerSideGroupKey: dataItem => dataItem.id, //分组项
                         //数据源
@@ -241,7 +236,7 @@ let nrPage = {
         }
 
         nrGrid.buildDom(nrVary.domGrid);
-        nrApp.tsGrid = await nrGrid.viewGrid(nrVary.domGrid, gridOps);
+        nrApp.tsGrid = await nrGrid.createGrid(nrVary.domGrid, gridOps);
     }
 }
 

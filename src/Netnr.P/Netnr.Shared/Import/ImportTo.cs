@@ -3,6 +3,8 @@
 global using Netnr;
 global using System;
 global using System.IO;
+global using System.Net;
+global using System.Net.Http;
 global using System.Linq;
 global using System.Text;
 global using System.Data;

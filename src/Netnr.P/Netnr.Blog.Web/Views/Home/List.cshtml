@@ -7,7 +7,7 @@
     bool laud = ViewData["uca1"]?.ToString() == "yes";
     bool mark = ViewData["uca2"]?.ToString() == "yes";
 
-    var avatarUrl = AppTo.GetValue("Common:Gravatar");
+    var avatarUrl = AppTo.GetValue("ProgramParameters:Gravatar");
 }
 
 <input class="nrg-hid-write-id" type="hidden" value="@uw.UwId" />
@@ -151,7 +151,7 @@
         <partial name="_PartialPaging" />
     }
 
-    @if (ViewContext.HttpContext.User.Identity.IsAuthenticated && AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
+    @if (Context.User.Identity.IsAuthenticated && AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") != true)
     {
         <div class="row mt-5">
             <!--回复帖子-->

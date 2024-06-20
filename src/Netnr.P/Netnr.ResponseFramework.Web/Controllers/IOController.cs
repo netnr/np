@@ -7,13 +7,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// </summary>
     [Authorize]
     [Route("[controller]/[action]")]
-    public class IOController : Controller
+    public class IOController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-        public IOController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         #region 导出
 

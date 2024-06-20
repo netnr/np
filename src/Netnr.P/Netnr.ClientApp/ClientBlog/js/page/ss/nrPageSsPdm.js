@@ -17,11 +17,7 @@ let nrPage = {
 
     bindEvent: () => {
         //过滤
-        nrVary.domTxtFilter.addEventListener('input', async function () {
-            if (nrApp.tsGrid) {
-                nrApp.tsGrid.api.setQuickFilter(this.value);
-            }
-        });
+        nrApp.setQuickFilter(nrVary.domTxtFilter, nrApp.tsGrid);
 
         window.addEventListener('hashchange', async function () {
             await nrPage.openUrl();
@@ -54,7 +50,7 @@ let nrPage = {
 
     view: async (rowData) => {
         if (nrApp.tsGrid) {
-            nrApp.tsGrid.api.setRowData(nrApp.tsGrid.rowData = rowData)
+            nrApp.tsGrid.updateGridOptions({ rowData: rowData });
         } else {
             let gridOptions = nrGrid.gridOptionsClient({
                 columnDefs: [
@@ -96,7 +92,7 @@ let nrPage = {
                     field: 'ColumnName', width: 550, resizable: true, cellRendererParams: {
                         suppressCount: true, suppressEnterExpand: true, suppressDoubleClickExpand: true,
                         innerRenderer: function (item) {
-                            let grow = nrApp.tsGrid.rowData.filter(x => x[item.node.field] == item.value);
+                            let grow = nrGrid.getAllRows(nrApp.tsGrid).filter(x => x[item.node.field] == item.value);
                             let row = grow[0];
                             switch (item.node.field) {
                                 case "ModelCode":
@@ -119,16 +115,14 @@ let nrPage = {
             });
 
             nrGrid.buildDom(nrVary.domGrid);
-            nrApp.tsGrid = await nrGrid.viewGrid(nrVary.domGrid, gridOptions);
+            nrApp.tsGrid = await nrGrid.createGrid(nrVary.domGrid, gridOptions);
 
             //搜索
-            nrVary.domTxtFilter.addEventListener("input", function () {
-                nrApp.tsGrid.api.setQuickFilter(this.value.trim());
-            });
+            nrApp.setQuickFilter(nrVary.domTxtFilter, nrApp.tsGrid);
 
             //展开节点
             setTimeout(function () {
-                nrApp.tsGrid.api.forEachNode(function (node) {
+                nrApp.tsGrid.forEachNode(function (node) {
                     if (node.group && node.level == 0) {
                         node.setExpanded(true);
                     }

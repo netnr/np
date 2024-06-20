@@ -1,4 +1,5 @@
 ﻿using DuckDB.NET.Data;
+using DuckDbSharp;
 using Xunit;
 
 namespace Netnr.Test
@@ -31,19 +32,23 @@ namespace Netnr.Test
          */
 
         [Fact]
-        public void DuckDB_1()
+        public async Task DuckDB_1()
         {
             Debug.WriteLine("tmp");
 
-            using var connection = new DuckDBConnection("Data Source=D:/tmp/res/duck.db");
+            using var connection = new DuckDBConnection(@"Data Source=E:\package\res\duck_test_09.db");
             connection.Open();
 
             var command = connection.CreateCommand();
-            command.CommandText = "set access_mode=READ_ONLY";
-            var executeNonQuery = command.ExecuteNonQuery();
 
             command.CommandText = "SELECT current_setting('access_mode');";
             var executeScalar = command.ExecuteScalar();
+
+            //command.CommandText = "set access_mode=READ_ONLY";
+            //var executeNonQuery = command.ExecuteNonQuery();
+
+            command.CommandText = "from duckdb_extensions();";
+            var duckdb_extensions = await command.ReaderDataSetAsync();
 
             using (var duckDbCommand = connection.CreateCommand())
             {
@@ -67,6 +72,75 @@ namespace Netnr.Test
             }
 
             Debug.WriteLine(st.Elapsed);
+        }
+
+        [Fact]
+        public void DuckDB_2()
+        {
+            Debug.WriteLine("tmp");
+
+            var db = ThreadSafeTypedDuckDbConnection.Create(@"D:\tmp\res\duck_test.db");
+            var executeScalar = db.ExecuteScalar("SELECT current_setting('access_mode');", null);
+            Debug.WriteLine(executeScalar);
+
+            db.CreateTable<TestTable>("test_table", true);
+
+            var st = Stopwatch.StartNew();
+            var items = new List<TestTable>(1_999_999);
+            for (var i = 0; i < 1_999_999; i++)
+            {
+                items.Add(new TestTable
+                {
+                    Col1 = Snowflake53To.Id(),
+                    Col2 = i * 1.0,
+                    Col4 = i * 1.0m,
+                    Col5 = Guid.NewGuid().ToString("N"),
+                    Col6 = DateTime.Now,
+                    Col7 = i % 2 == 0
+                });
+            }
+            Debug.WriteLine(st.Elapsed);
+            st.Restart();
+
+            db.InsertRange("test_table", items);
+
+            Debug.WriteLine(st.Elapsed);
+        }
+
+        [Fact]
+        public async Task DuckDB_4()
+        {
+            using var connection = new DuckDBConnection(@"Data Source=D:/package/res/duck_test_10.db");
+            await connection.OpenAsync();
+
+            Debug.WriteLine($"建表 files(id,name)");
+            var command = connection.CreateCommand();
+            command.CommandText = "CREATE TABLE files(id INTEGER, name VARCHAR)";
+            await command.ExecuteNonQueryAsync();
+
+            var st = Stopwatch.StartNew();
+            using var appender = connection.CreateAppender("files");
+            for (var i = 1; i <= 2_000_000; i++)
+            {
+                var name = i % 5 == 0 ? $"{Guid.NewGuid()}.py" : Guid.NewGuid().ToString();
+                appender.CreateRow().AppendValue(i).AppendValue(name).EndRow();
+            }
+            Debug.WriteLine($"写入 200 万条数据耗时：{st.Elapsed}");
+            st.Restart();
+
+            command.CommandText = "SELECT name FROM files WHERE name like '%.py'";
+            var list = await command.ReaderDataOnlyAsync();
+            Debug.WriteLine($"查找 .py 结尾的文件共 {list.Datas.Tables[0].Rows.Count} 条，耗时：{st.Elapsed}");
+        }
+
+        class TestTable
+        {
+            public long Col1;
+            public double Col2;
+            public decimal Col4;
+            public string Col5;
+            public DateTime Col6;
+            public bool Col7;
         }
     }
 }

@@ -100,6 +100,23 @@ let nrApp = {
     },
 
     /**
+     * 设置本地过滤
+     * @param {*} domTxt 
+     * @param {*} gridApi 
+     */
+    setQuickFilter: (domTxt, gridApi) => {
+        domTxt.addEventListener('input', async function () {
+            if (gridApi) {
+                (gridApi.gos.eGridDiv.gridApi || gridApi).updateGridOptions({ quickFilterText: this.value })
+                // 模拟引用传递的效果
+                // 通过 nrGrid.createGrid 方法创建的对象会在 DOM 记录 gridApi
+                // 获取 DOM 存储的 gridApi 对象再调用，解决 gridApi 对象被覆盖后不生效的问题
+                // gridApi.updateGridOptions({ quickFilterText: this.value })
+            }
+        })
+    },
+
+    /**
      * 消息
      * @param {any} message 
      * @returns 

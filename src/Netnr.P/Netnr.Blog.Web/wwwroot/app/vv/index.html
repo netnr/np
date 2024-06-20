@@ -1,114 +1,112 @@
 ﻿<!DOCTYPE html>
 
 <html lang="zh-cn">
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv=X-UA-Compatible content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="referrer" content="never">
 
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="favicon.ico">
 
     <meta name="keywords" content="VIP视频解析" />
     <meta name="description" content="VIP视频解析" />
 
     <title>VIP视频解析</title>
 
-    <link href='https://npmcdn.com/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet' />
+    <link href='https://registry.npmmirror.com/bootstrap/5.3.3/files/dist/css/bootstrap.min.css' rel='stylesheet' />
 
     <style>
         body {
-            overflow: hidden;
-            background-color: #22272e;
-        }
-
-        select, input {
-            color: #999 !important;
-            background-color: #333 !important;
-        }
-
-        iframe {
-            width: 100vw;
-            height: 100vh;
+            background-color: #212529;
+            visibility: hidden;
         }
     </style>
 </head>
+
 <body>
     <div class="container-fluid">
-        <div class="row my-3 position-absolute w-100 opacity-75">
+        <div class="row my-3 position-absolute z-1 w-100 opacity-75">
             <div class="col-auto">
-                <button class="btn btn-secondary" id="btnPlay">播放</button>
+                <button class="btn btn-secondary nr-btn-play">播放</button>
             </div>
             <div class="col-auto">
-                <select class="form-select" id="seVtype">
-                </select>
+                <select class="form-select nr-se-source"></select>
             </div>
             <div class="col">
-                <input type="text" class="form-control" placeholder="请粘贴VIP视频链接，回车" autocomplete="off" autofocus id="txtVipUri" />
+                <input type="text" class="form-control nr-txt-url" placeholder="粘贴VIP视频链接 Enter" autocomplete="off" />
             </div>
-            <div class="col-auto">
-                <a class="btn btn-secondary" href="vip.crx">插件下载</a>
+            <div class="col-auto d-none d-md-block">
+                <a class="btn btn-link" href="vip.crx" title="下载浏览器插件">vip.crx</a>
             </div>
         </div>
     </div>
-    <div>
-        <iframe id="inetnr" src="about:blank" scrolling="no" frameborder="0" allowfullscreen></iframe>
-    </div>
+
+    <iframe class="nr-iframe position-absolute w-100 h-100 border0" src="about:blank" scrolling="no"
+            allowfullscreen></iframe>
 
     <script>
+        let nrWeb = {
+            vipSource: [
+                "https://jx.m3u8.tv/jiexi/?url=",
+                "https://jx.xyflv.cc/?url=",
+                "https://jx.xmflv.com/?url="
+            ],
 
-        //线路
-        var vipSource = [
-            "https://jx.playerjy.com/?url=",
-            "https://jx.m3u8.tv/jiexi/?url=",
-            "https://jx.qqwtt.com/?url=",
-            "https://jx.bozrc.com:4433/player/?url=",
-            "https://jx.iztyy.com/svip/?url=",
-            "https://jx.xmflv.com/?url=",
-            "https://jx.aidouer.net/?url=",
-            "https://jx.jsonplayer.com/player/?url=",
-            "https://www.jiexila.com/?url="
-        ];
+            domBtnPlay: document.querySelector('.nr-btn-play'),
+            domSeSource: document.querySelector('.nr-se-source'),
+            domTxtUrl: document.querySelector('.nr-txt-url'),
+            domIframe: document.querySelector('.nr-iframe'),
 
-        //初始化
-        function init() {
-            //绑定线路
-            var htm = [], i = 0, len = vipSource.length;
-            for (; i < len;) {
-                htm.push('<option value="' + vipSource[i++] + '">线路 ' + i + '</option>');
-            }
-            document.getElementById('seVtype').innerHTML = htm.join('');
+            ready: () => {
+                document.documentElement.dataset.bsTheme = "dark";
+                document.body.style.visibility = "visible";
 
-            //带参播放
-            var playUrl = new URLSearchParams(location.search).get("url");
-            if (playUrl) {
-                document.getElementById('txtVipUri').value = playUrl.split('?')[0];
-                document.getElementById('btnPlay').click();
+                //绑定线路
+                let index = 1;
+                nrWeb.domSeSource.innerHTML = nrWeb.vipSource.map(x => `<option value="${x}">线路 ${index++}</option>`);
+
+                nrWeb.domTxtUrl.focus();
+
+                //切换源
+                nrWeb.domSeSource.addEventListener("change", function () {
+                    nrWeb.domBtnPlay.click();
+                });
+                //Enter
+                nrWeb.domTxtUrl.addEventListener("keydown", function (event) {
+                    if (event.key == "Enter") {
+                        nrWeb.domBtnPlay.click();
+                    }
+                });
+
+                //播放
+                nrWeb.domBtnPlay.addEventListener("click", function () {
+                    let url = nrWeb.domTxtUrl.value.split('?')[0];
+                    if (url.length > 10) {
+                        nrWeb.domTxtUrl.value = url;
+                        nrWeb.domIframe.src = nrWeb.domSeSource.value + encodeURIComponent(url);
+                    }
+                });
+            },
+
+            init: () => {
+                nrWeb.ready();
+
+                //带参播放
+                let url = new URLSearchParams(location.search).get("url");
+                if (url) {
+                    nrWeb.domTxtUrl.value = url;
+                    nrWeb.domBtnPlay.click();
+                }
             }
         }
 
-        //切换源
-        document.getElementById("seVtype").onchange = function () {
-            document.getElementById('btnPlay').click();
-        }
-        document.getElementById('txtVipUri').onkeydown = function (e) {
-            if (e.keyCode == 13) {
-                document.getElementById('btnPlay').click();
-            }
-        }
-
-        //播放
-        document.getElementById('btnPlay').onclick = function () {
-            var uri = document.getElementById("txtVipUri").value;
-            if (uri.length > 10) {
-                document.getElementById('inetnr').src = document.getElementById('seVtype').value + document.getElementById('txtVipUri').value;
-            }
-        }
-
-        setTimeout(function () {
-            init();
-        }, 10)
+        setTimeout(() => {
+            nrWeb.init();
+        }, 10);
     </script>
 
 </body>
+
 </html>

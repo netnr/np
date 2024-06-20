@@ -7,13 +7,9 @@ namespace Netnr.Demo.Controllers.GraphDemo;
 
 [SupportedOSPlatform("windows")]
 [Route("/GraphDemo/[controller]/[action]")]
-public class SystemDrawingCommonController : Controller
+public class SystemDrawingCommonController(IWebHostEnvironment host) : Controller
 {
-    public IWebHostEnvironment env;
-    public SystemDrawingCommonController(IWebHostEnvironment host)
-    {
-        env = host;
-    }
+    public IWebHostEnvironment env = host;
 
     /// <summary>
     /// 验证码
@@ -97,7 +93,7 @@ public class SystemDrawingCommonController : Controller
         }
 
         //验证码颜色集合  
-        Color[] colors = { Color.LightBlue, Color.LightCoral, Color.LightGreen, Color.LightPink, Color.LightSkyBlue, Color.LightSteelBlue, Color.LightSalmon };
+        Color[] colors = [Color.LightBlue, Color.LightCoral, Color.LightGreen, Color.LightPink, Color.LightSkyBlue, Color.LightSteelBlue, Color.LightSalmon];
 
         //定义图像的大小，生成图像的实例  
         using Bitmap Img = new(code.Length * 22, 38);

@@ -9,13 +9,13 @@
         /// 添加日志
         /// </summary>
         /// <param name="content"></param>
-        internal void LogContent(string content) => HttpContext.Items.Add("LogContent", content);
+        internal void LogContent(string content) => HttpContext?.Items.Add("LogContent", content);
 
         /// <summary>
         /// 添加日志
         /// </summary>
         /// <param name="content"></param>
-        internal void LogSql(string content) => HttpContext.Items.Add("LogSql", content);
+        internal void LogSql(string content) => HttpContext?.Items.Add("LogSql", content);
 
         /// <summary>
         /// 查询

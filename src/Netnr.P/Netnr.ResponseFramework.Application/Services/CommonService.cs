@@ -33,7 +33,7 @@ namespace Netnr.ResponseFramework.Application.Services
                 var lambda = Expression.Lambda(propertyAccess, parameter);
 
                 var ob = i == 0 ? "OrderBy" : "ThenBy";
-                if (order.ToLower() == "desc")
+                if (order.Equals("desc", StringComparison.OrdinalIgnoreCase))
                 {
                     ob += "Descending";
                     MethodCallExpression resultExp = Expression.Call(typeof(Queryable), ob, new Type[] { typeof(T), property.PropertyType }, query.Expression, Expression.Quote(lambda));

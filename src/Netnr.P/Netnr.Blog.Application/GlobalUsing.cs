@@ -1,4 +1,5 @@
 ﻿global using System.Net.Http;
+global using Microsoft.EntityFrameworkCore;
 global using Netnr;
 global using Netnr.Blog.Domain.Entities;
 global using Netnr.Blog.Domain.Enums;

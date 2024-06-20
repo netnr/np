@@ -26,7 +26,7 @@ var ndkGenerateCode = {
         // 表设计（列信息）、数据库类型
         var allColumns = [], ctype;
         if (ndkVary.gridOpsColumn) {
-            allColumns = ndkVary.gridOpsColumn.api.getSelectedRows();
+            allColumns = ndkVary.gridOpsColumn.getSelectedRows();
             ctype = ndkStep.cpGet(1).cobj.type;
         }
         if (allColumns.length == 0) {

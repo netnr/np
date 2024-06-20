@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 
 namespace Netnr.Blog.Web.Services
@@ -46,11 +45,11 @@ namespace Netnr.Blog.Web.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName ?? ""),
-                new Claim(ClaimTypes.GivenName, user.Nickname ?? ""),
-                new Claim(ClaimTypes.UserData, user.UserSign ?? ""),
-                new Claim("Gravatar", user.UserPhoto ?? "")
+                new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new(ClaimTypes.Name, user.UserName ?? ""),
+                new(ClaimTypes.GivenName, user.Nickname ?? ""),
+                new(ClaimTypes.UserData, user.UserSign ?? ""),
+                new("Gravatar", user.UserPhoto ?? "")
             };
 
             var cp = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
@@ -74,7 +73,7 @@ namespace Netnr.Blog.Web.Services
         public static string AccessTokenBuild(UserInfo mo)
         {
             //密钥
-            var key = AppTo.GetValue("Common:GlobalKey");
+            var key = AppTo.GetValue("ProgramParameters:GlobalKey");
 
             var vm = new LoginUserVM()
             {
@@ -102,7 +101,7 @@ namespace Netnr.Blog.Web.Services
                 if (!string.IsNullOrWhiteSpace(accessToken))
                 {
                     //密钥
-                    var key = AppTo.GetValue("Common:GlobalKey");
+                    var key = AppTo.GetValue("ProgramParameters:GlobalKey");
                     var vm = CalcTo.AESDecrypt(accessToken.ToBase64Decode(), key).DeJson<LoginUserVM>();
                     if (vm.Expired >= DateTime.UtcNow.Ticks)
                     {
@@ -127,7 +126,7 @@ namespace Netnr.Blog.Web.Services
         public static bool IsAdmin(HttpContext context)
         {
             var uinfo = Get(context);
-            return uinfo?.UserId == AppTo.GetValue<int>("Common:AdminId");
+            return uinfo?.UserId == AppTo.GetValue<int>("ProgramParameters:AdminId");
         }
 
         /// <summary>
@@ -140,7 +139,7 @@ namespace Netnr.Blog.Web.Services
             var uinfo = Get(context);
 
             //已登录 非只读模式
-            if (uinfo != null && AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
+            if (uinfo != null && AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") != true)
             {
                 //查询登录标记（缓存||数据库）
                 var ckey = "UserSign";
@@ -158,7 +157,7 @@ namespace Netnr.Blog.Web.Services
                 var signLatest = cval.Split(':');
 
                 //已修改密码 || 启用单一在线
-                if (signSession[0] != signLatest[0] || (AppTo.GetValue<bool>("Common:SingleOnline") && signSession.Last() != signLatest.Last()))
+                if (signSession[0] != signLatest[0] || (AppTo.GetValue<bool>("ProgramParameters:SingleOnline") && signSession.Last() != signLatest.Last()))
                 {
                     context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 }
@@ -181,7 +180,7 @@ namespace Netnr.Blog.Web.Services
             }
             else
             {
-                if (AppTo.GetValue<bool>("Common:CompleteInfo"))
+                if (AppTo.GetValue<bool>("ProgramParameters:CompleteInfo"))
                 {
                     if (string.IsNullOrWhiteSpace(uinfo.Nickname))
                     {
@@ -191,7 +190,7 @@ namespace Netnr.Blog.Web.Services
                     using var db = ContextBaseFactory.CreateDbContext();
                     var umo = db.UserInfo.Find(uinfo.UserId);
 
-                    if (umo.UserId != AppTo.GetValue<int>("Common:AdminId"))
+                    if (umo.UserId != AppTo.GetValue<int>("ProgramParameters:AdminId"))
                     {
                         if (umo.UserMailValid != 1)
                         {

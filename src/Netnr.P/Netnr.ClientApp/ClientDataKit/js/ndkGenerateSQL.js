@@ -91,6 +91,7 @@ var ndkGenerateSQL = {
                 }
                 break;
             case "Oracle":
+            case "Dm":
                 {
                     //主键
                     if (['varchar', 'varchar2'].includes(column.DataType) && column.DataLength >= 36 && column.PrimaryKey > 0) {
@@ -141,6 +142,7 @@ var ndkGenerateSQL = {
             case "MariaDB":
                 return '`' + key + '`'
             case "Oracle":
+            case "Dm":
             case "PostgreSQL":
                 return `"${key}"`
             default:
@@ -155,7 +157,8 @@ var ndkGenerateSQL = {
      */
     sqlFullTableName: (cp, tableRow) => {
         var ftn = [ndkGenerateSQL.sqlQuote(cp.cobj.type, cp.databaseName)];
-        if (!["MySQL", "MariaDB"].includes(cp.cobj.type) && tableRow.SchemaName != null && tableRow.SchemaName != "") {
+        //!! 数据库名即模式名
+        if (!["MySQL", "MariaDB", "Dm"].includes(cp.cobj.type) && tableRow.SchemaName != null && tableRow.SchemaName != "") {
             ftn.push(ndkGenerateSQL.sqlQuote(cp.cobj.type, tableRow.SchemaName))
         }
         ftn.push(ndkGenerateSQL.sqlQuote(cp.cobj.type, tableRow.TableName))
@@ -168,7 +171,7 @@ var ndkGenerateSQL = {
      * @param {*} name 菜单名
      */
     buildNewTabSql: (name) => {
-        var srows = ndkVary.gridOpsTable.api.getSelectedRows();
+        var srows = ndkVary.gridOpsTable.getSelectedRows();
         if (srows.length) {
             var cp = ndkStep.cpGet(1);
 
@@ -525,7 +528,8 @@ select 'BLOB', 'BLOB 数据不做任何转换，以输入形式存储'`);
                 switch (name) {
                     case "Status":
                         sqls.push(`select * from performance_schema.session_status; -- show session status;
-select * from performance_schema.global_status; -- show global status;`);
+select * from performance_schema.global_status; -- show global status;
+SHOW ENGINE INNODB STATUS;`);
                         break;
                     case "User":
                         sqls.push("select * from mysql.user");
@@ -682,13 +686,15 @@ ORDER BY 1, 2`);
      * @param {*} name 菜单名
      */
     dataNewSql: (event, name) => {
-        var dom = nrGrid.getContainer(event), tabkey = dom.getAttribute("data-key"),
-            tabobj = ndkTab.tabKeys[tabkey], dtSchema;
+        var eGridDiv = nrGrid.getContainer(event),
+            tabkey = eGridDiv.getAttribute("data-key"),
+            tabobj = ndkTab.tabKeys[tabkey],
+            dtSchema;
 
         if (tabobj.esdata.Item2) {
             for (var i = 0; i < tabobj.grids.length; i++) {
                 var grid = tabobj.grids[i];
-                if (grid.domGridExecuteSql == dom) {
+                if (grid.domGridExecuteSql == eGridDiv) {
                     dtSchema = tabobj.esdata.Item2[Object.keys(tabobj.esdata.Item2)[i]];
                     break;
                 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net48;netstandard2;netstandard2.1</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Version>2.0.0</Version>
 		<Authors>netnr</Authors>
@@ -19,9 +19,33 @@
 		<PackageReadmeFile>Netnr.Core.md</PackageReadmeFile>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Compile Remove="GlobalTo.cs" />
-	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2|AnyCPU'">
+	  <NoWarn>1701;1702;1591;</NoWarn>
+	  <DefineConstants>$(DefineConstants);Core</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+	  <NoWarn>1701;1702;1591;</NoWarn>
+	  <DefineConstants>$(DefineConstants);Core</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2|AnyCPU'">
+	  <NoWarn>1701;1702;1591;</NoWarn>
+	  <DefineConstants>$(DefineConstants);Core</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+	  <NoWarn>1701;1702;1591;</NoWarn>
+	  <DefineConstants>$(DefineConstants);Core</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);Core</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);Core</DefineConstants>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\..\..\docs\Netnr.Core.md">
@@ -33,5 +57,7 @@
 		  <PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
+
+	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 </Project>

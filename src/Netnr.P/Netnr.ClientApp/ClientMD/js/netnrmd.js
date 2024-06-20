@@ -1,19 +1,35 @@
-﻿import pangu from 'pangu';
-import tocbot from 'tocbot';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
+﻿import { Marked } from "marked";
+import { markedHighlight } from "marked-highlight";
 import hljs from 'highlight.js/lib/common';
+import DOMPurify from 'dompurify';
+import tocbot from 'tocbot';
+import pangu from 'pangu';
 import { netnrmdInit } from './netnrmdInit';
 
 let netnrmd = {
-
     init: (id, ops) => new netnrmdInit(id, ops),
 
-    hljs,
-    DOMPurify,
-    marked,
-    pangu,
-    tocbot,
+    hljs, DOMPurify, pangu, tocbot,
+    marked: new Marked(
+        markedHighlight({
+            langPrefix: 'hljs language-',
+            highlight(code, lang, _info) {
+                return hljs.getLanguage(lang) ? hljs.highlight(code, { language: lang }).value : hljs.highlightAuto(code).value;
+            }
+        })
+    ),
+    /**
+     * 渲染
+     * @param {*} md 
+     * @returns 
+     */
+    render: (md) => DOMPurify.sanitize(netnrmd.marked.parse(md)),
+    /**
+     * 渲染
+     * @param {*} md 
+     * @returns 
+     */
+    renderInline: (md) => DOMPurify.sanitize(netnrmd.marked.parseInline(md)),
 
     /**
      * 等待
@@ -21,22 +37,6 @@ let netnrmd = {
      * @returns 
      */
     sleep: (time) => new Promise(resolve => setTimeout(() => resolve(), time || 1000)),
-
-    /**
-     * 渲染
-     * @param {*} md 
-     * @returns 
-     */
-    render: function (md) {
-        return DOMPurify.sanitize(marked.parse(md, {
-            headerIds: true,
-            headerPrefix: 'toc-',
-            highlight: function (str, lang) {
-                return hljs.getLanguage(lang) ? hljs.highlight(str, { language: lang }).value : hljs.highlightAuto(str).value;
-            },
-            langPrefix: 'hljs language-',
-        }))
-    },
 
     /**
      * 创建节点
@@ -223,7 +223,7 @@ let netnrmd = {
         const regex = /(https?:\/\/[\w.-]+)\/(.*)@([\d.]+)\/(.*)\.(\w+)/;
         let mr = regex.exec(url);
         if (mr != null) {
-            url = `https://registry.npmmirror.com/${mr[2]}/${mr[3]}/files/${mr[4]}.${mr[5]}`;
+            url = `https://ss.netnr.com/${mr[2]}@${mr[3]}/${mr[4]}.${mr[5]}`;
         }
         return url;
     },
@@ -290,9 +290,25 @@ let netnrmd = {
         { title: '表格', cmd: 'table', key: 'Ctrl+Alt+T', svg: '<path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 0 0 1-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 0 0 1 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/>' },
         { title: '代码', cmd: 'code', key: 'Ctrl+Alt+K', svg: '<path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>' },
         { title: '分隔线', cmd: 'line', key: 'Ctrl+Alt+R', svg: '<path d="M2 8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>' },
-        { title: '间隙', cmd: 'spacing', key: 'Ctrl+Alt+S', svg: '<path fill-rule="evenodd" d="M14.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5zm-13 0a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5z"/><path d="M6 13a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v10z"/>', action: function (that) { that.spacing() } },
         {
-            title: '导出', cmd: 'export', svg: '<path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>', action: function (that) {
+            title: '间隙', cmd: 'spacing', key: 'Ctrl+Alt+S', svg: '<path fill-rule="evenodd" d="M14.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5zm-13 0a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5z"/><path d="M6 13a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v10z"/>',
+            action: function (that) {
+                let range = that.objWrite.getSelection();
+                let model = that.objWrite.getModel();
+                // 仅光标时，获取光标行的范围
+                if (range.startLineNumber == range.endLineNumber && range.startColumn == range.endColumn) {
+                    let startColumn = model.getLineFirstNonWhitespaceColumn(range.positionLineNumber);
+                    let endColumn = model.getLineLastNonWhitespaceColumn(range.positionLineNumber);
+                    range = new monaco.Range(range.positionLineNumber, startColumn, range.positionLineNumber, endColumn);
+                }
+                let text = model.getValueInRange(range);
+                text = netnrmd.pangu.spacing(text);
+                that.replace(text, range);
+            }
+        },
+        {
+            title: '导出', cmd: 'export', svg: '<path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>',
+            action: function (that) {
                 if (!that.domExport) {
                     //弹出
                     that.domExport = netnrmd.popup("导出", "Markdown HTML PNG PDF".split(' ').map(x => `<p style="font-size:1.3em; text-align:center;"><a href="javascript:void(0)">${x}</a></p>`).join(''));
@@ -310,7 +326,8 @@ let netnrmd = {
             }
         },
         {
-            title: '关于', cmd: 'about', svg: '<path d="m10.277 5.433-4.031.505-.145.67.794.145c.516.123.619.309.505.824L6.101 13.68c-.34 1.578.186 2.32 1.423 2.32.959 0 2.072-.443 2.577-1.052l.155-.732c-.35.31-.866.434-1.206.434-.485 0-.66-.34-.536-.939l1.763-8.278zm.122-3.673a1.76 1.76 0 1 1-3.52 0 1.76 1.76 0 0 1 3.52 0z"/>', action: function (that) {
+            title: '关于', cmd: 'about', svg: '<path d="m10.277 5.433-4.031.505-.145.67.794.145c.516.123.619.309.505.824L6.101 13.68c-.34 1.578.186 2.32 1.423 2.32.959 0 2.072-.443 2.577-1.052l.155-.732c-.35.31-.866.434-1.206.434-.485 0-.66-.34-.536-.939l1.763-8.278zm.122-3.673a1.76 1.76 0 1 1-3.52 0 1.76 1.76 0 0 1 3.52 0z"/>',
+            action: function (that) {
                 if (!that.domAbout) {
                     let html = [
                         '### 编辑器 (NetnrMD)',
@@ -344,6 +361,31 @@ let netnrmd = {
         { title: '分屏', cmd: 'splitscreen', class: 'float-right', svg: '<path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm8.5-1v12H14a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H8.5zm-1 0H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h5.5V2z"/>', action: function (that) { that.toggleView() } },
         { title: '主题', cmd: 'theme', class: 'float-right', svg: '<path d="M7 8a3.5 3.5 0 0 1 3.5 3.555.5.5 0 0 0 .625.492A1.503 1.503 0 0 1 13 13.5a1.5 1.5 0 0 1-1.5 1.5H3a2 2 0 1 1 .1-3.998.5.5 0 0 0 .509-.375A3.502 3.502 0 0 1 7 8zm4.473 3a4.5 4.5 0 0 0-8.72-.99A3 3 0 0 0 3 16h8.5a2.5 2.5 0 0 0 0-5h-.027z"/><path d="M11.286 1.778a.5.5 0 0 0-.565-.755 4.595 4.595 0 0 0-3.18 5.003 5.46 5.46 0 0 1 1.055.209A3.603 3.603 0 0 1 9.83 2.617a4.593 4.593 0 0 0 4.31 5.744 3.576 3.576 0 0 1-2.241.634c.162.317.295.652.394 1a4.59 4.59 0 0 0 3.624-2.04.5.5 0 0 0-.565-.755 3.593 3.593 0 0 1-4.065-5.422z"/>', action: function (that) { that.toggleTheme() } }
     ],
+
+    /**
+     * 上传
+     * @param {*} options {url,method,body,onprogress}
+     * @returns 
+     */
+    upload: (options) => new Promise((resolve) => {
+        let xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = function (event) {
+            if (event.lengthComputable) {
+                let pp = ((event.loaded / event.total) * 100).toFixed(0);
+                options.onprogress(pp, event);
+            }
+        };
+
+        xhr.open(options.method || "POST", options.url, true);
+        if (options.body != null) {
+            xhr.send(options.body);
+        }
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                resolve(xhr);
+            }
+        }
+    }),
 
     /**
      * 表情

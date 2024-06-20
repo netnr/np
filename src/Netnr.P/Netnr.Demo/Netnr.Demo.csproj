@@ -5,17 +5,17 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<!--<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<NoWarn>1701;1702;1591;1416</NoWarn>
-		<DefineConstants>$(DefineConstants)TRACE;Base;ImportBase;ImportWeb;App;Web</DefineConstants>
+		<DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;Base;Core;App;Web;Login</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<NoWarn>1701;1702;1591;1416</NoWarn>
-		<DefineConstants>$(DefineConstants)TRACE;Base;ImportBase;ImportWeb;App;Web</DefineConstants>
+		<DefineConstants>$(DefineConstants)TRACE;ImportBase;ImportWeb;Base;Core;App;Web;Login</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -23,21 +23,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.3.0" />
-		<PackageReference Include="NetVips" Version="2.3.1" />
-		<PackageReference Include="NetVips.Native.linux-x64" Version="8.14.5" />
-		<PackageReference Include="NetVips.Native.win-x64" Version="8.14.5" />
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.0" />
-		<PackageReference Include="SkiaSharp" Version="2.88.6" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.6" />
-		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
-		<ProjectReference Include="..\Netnr.Login\Netnr.Login.csproj" />
+		<PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.9.1" />
+		<PackageReference Include="NetVips" Version="2.4.1" />
+		<PackageReference Include="NetVips.Native.linux-x64" Version="8.15.2" />
+		<PackageReference Include="NetVips.Native.win-x64" Version="8.15.2" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.3" />
+		<PackageReference Include="SkiaSharp" Version="2.88.8" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.8" />
+		<PackageReference Include="SkiaSharp.QrCode" Version="0.7.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

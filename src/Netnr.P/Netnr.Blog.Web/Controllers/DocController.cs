@@ -5,14 +5,9 @@ namespace Netnr.Blog.Web.Controllers
     /// <summary>
     /// Doc
     /// </summary>
-    public class DocController : Controller
+    public class DocController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public DocController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// Doc 新增表单
@@ -103,6 +98,9 @@ namespace Netnr.Blog.Web.Controllers
             var uinfo = IdentityService.Get(HttpContext);
             int num;
 
+            //xss
+            mo.DsName = CommonService.XSS(mo.DsName);
+
             //新增
             if (string.IsNullOrWhiteSpace(mo.DsCode))
             {
@@ -186,7 +184,7 @@ namespace Netnr.Blog.Web.Controllers
             sid ??= "";
 
             //跳转带斜杠
-            if (id.Length > 10 && sid == "" && !Request.Path.Value.EndsWith("/"))
+            if (id.Length > 10 && sid == "" && !Request.Path.Value.EndsWith('/'))
             {
                 return Redirect(Request.Path.Value + "/");
             }
@@ -305,7 +303,7 @@ namespace Netnr.Blog.Web.Controllers
         {
             var ct = new List<string>();
 
-            listNo ??= new List<string>();
+            listNo ??= [];
 
             var rdt = list.Where(x => x.DsdPid == pid).ToList();
 
@@ -409,6 +407,9 @@ namespace Netnr.Blog.Web.Controllers
                         mo.DsdOrder = 99;
                     }
 
+                    //xss
+                    mo.DsdContentHtml = CommonService.XSS(mo.DsdContentHtml);
+
                     if (string.IsNullOrWhiteSpace(mo.DsdId))
                     {
                         mo.DsdId = Guid.NewGuid().ToLongString();
@@ -503,7 +504,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    var listTree = string.IsNullOrWhiteSpace(rows) ? new List<DocTreeVM>() : rows.DeJson<List<DocTreeVM>>();
+                    var listTree = string.IsNullOrWhiteSpace(rows) ? [] : rows.DeJson<List<DocTreeVM>>();
 
                     var uinfo = IdentityService.Get(HttpContext);
                     if (!await db.DocSet.AnyAsync(x => x.DsCode == id && x.Uid == uinfo.UserId))
@@ -605,7 +606,7 @@ namespace Netnr.Blog.Web.Controllers
                     x.DsdContentHtml
                 }).ToList();
 
-                var htmlbody = ListTreeEach(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
+                var htmlbody = ListTreeEach(list, "DsdPid", "DsdId", [Guid.Empty.ToString()]);
 
                 return Content(htmlbody);
             }
@@ -647,7 +648,7 @@ namespace Netnr.Blog.Web.Controllers
                 //序号
                 if (listNo == null)
                 {
-                    listNo = new List<int> { i + 1 };
+                    listNo = [i + 1];
                 }
                 else
                 {
@@ -720,7 +721,7 @@ namespace Netnr.Blog.Web.Controllers
                 }
                 else
                 {
-                    var listtree = TreeTo.ListToTree(list, "DsdPid", "DsdId", new List<string> { Guid.Empty.ToString() });
+                    var listtree = TreeTo.ListToTree(list, "DsdPid", "DsdId", [Guid.Empty.ToString()]);
                     if (string.IsNullOrWhiteSpace(listtree))
                     {
                         vm.Set(RCodeTypes.failure);

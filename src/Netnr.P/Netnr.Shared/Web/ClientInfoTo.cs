@@ -1,7 +1,5 @@
 ﻿#if Full || Web
 
-using System.Net;
-
 namespace Netnr
 {
     /// <summary>
@@ -26,9 +24,9 @@ namespace Netnr
 
             //X-Forwarded-For: <client>, <proxy1>, <proxy2>
             var xffKey = "X-Forwarded-For";
-            if (Headers.ContainsKey(xffKey))
+            if (Headers.TryGetValue(xffKey, out Microsoft.Extensions.Primitives.StringValues value))
             {
-                var xffVal = Headers[xffKey].ToString();
+                var xffVal = value.ToString();
                 if (!string.IsNullOrWhiteSpace(xffVal))
                 {
                     var ips = xffVal.Split(',').ToList();
@@ -61,7 +59,7 @@ namespace Netnr
         /// <summary>
         /// 代理 IP
         /// </summary>
-        public List<string> ProxyIP { get; set; } = new List<string>();
+        public List<string> ProxyIP { get; set; } = [];
     }
 }
 

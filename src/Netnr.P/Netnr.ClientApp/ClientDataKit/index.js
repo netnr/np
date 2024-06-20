@@ -21,6 +21,7 @@ import { ndkView } from './js/ndkView';
 import { ndkInit } from './js/ndkInit';
 import { nrGrid } from '../frame/nrGrid';
 import { nrcBase } from '../frame/nrcBase';
+import { nrPolyfill } from '../frame/nrPolyfill';
 
 let init = async () => {
   await import('bootstrap/dist/css/bootstrap.css');
@@ -46,18 +47,22 @@ let init = async () => {
     mutator: svg => svg.setAttribute('fill', 'currentColor')
   });
 
+  await nrPolyfill.init();
+
   //重写
-  nrGrid.init = async () => {
+  nrGrid.rely = async () => {
     let agGrid = window['agGrid'];
     if (!agGrid) {
-      await import('ag-grid-enterprise/styles/ag-grid.css')
-      await import('ag-grid-enterprise/styles/ag-theme-alpine.css')
+      await Promise.all([
+        import('ag-grid-enterprise/styles/ag-grid.css'),
+        import('ag-grid-enterprise/styles/ag-theme-alpine.css'),
+      ]);
       agGrid = await import('ag-grid-enterprise');
       Object.assign(window, { agGrid });
       nrGrid.err();
     }
   };
-  await nrGrid.init();
+  await nrGrid.rely();
 
   Object.assign(window, {
     sqlFormatter, JSZip, magicBytes, monaco, ndkInit, nrGrid, nrcBase,

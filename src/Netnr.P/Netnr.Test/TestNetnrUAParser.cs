@@ -7,7 +7,7 @@ namespace Netnr.Test
     public class TestNetnrUAParser
     {
         [Fact]
-        public void YmlToXml()
+        public void YmlToText()
         {
             //下载 https://github.com/matomo-org/device-detector 项目里面的 regexes 文件夹放置当前项目下
             var projectDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent;
@@ -147,9 +147,16 @@ namespace Netnr.Test
 
                 #endregion
 
-                var xmlContent = UAParsers.ToXml(result);
-                xmlContent = UAParsers.NodeConvert(xmlContent, true);
-                File.WriteAllText(Path.Combine(regexesDir, "regexes.xml"), xmlContent);
+                var outPath = Path.Combine(regexesDir, "out");
+                if (!Directory.Exists(outPath))
+                {
+                    Directory.CreateDirectory(outPath);
+                }
+
+                File.WriteAllText(Path.Combine(outPath, "client.json"), result.ListClient.ToJson());
+                File.WriteAllText(Path.Combine(outPath, "device.json"), result.ListDevice.ToJson());
+                File.WriteAllText(Path.Combine(outPath, "bot.json"), result.ListBot.ToJson());
+                File.WriteAllText(Path.Combine(outPath, "os.json"), result.ListOS.ToJson());
             }
         }
 
@@ -183,12 +190,12 @@ namespace Netnr.Test
                 }
                 var osModel = uap.GetOS();
 
-                listMsg.Add($"UAP: {sw.Elapsed}");
+                listMsg.Add($"UAP once: {sw.Elapsed}");
                 sw.Restart();
-                Debug.WriteLine(clientModel.ToJson());
-                Debug.WriteLine(deviceModel.ToJson());
-                Debug.WriteLine(osModel.ToJson());
-                Debug.WriteLine(botModel.ToJson());
+                Debug.WriteLine(clientModel.ToJson(), nameof(UAModels.ClientModel));
+                Debug.WriteLine(deviceModel.ToJson(), nameof(UAModels.DeviceModel));
+                Debug.WriteLine(osModel.ToJson(), nameof(UAModels.OSModel));
+                Debug.WriteLine(botModel.ToJson(), nameof(UAModels.BotModel));
             });
 
             var largeUA = new List<string>();
@@ -207,7 +214,8 @@ namespace Netnr.Test
                 var botModel = uap.GetBot();
             });
 
-            listMsg.Add($"UAP: {sw.Elapsed}");
+            listMsg.Add($"UAP parallel: {sw.Elapsed}");
+            Debug.WriteLine(string.Join(Environment.NewLine, listMsg));
         }
     }
 }

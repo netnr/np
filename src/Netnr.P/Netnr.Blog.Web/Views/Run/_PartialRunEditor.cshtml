@@ -2,9 +2,8 @@
 @{
     var mo = Model ?? new Run();
 
-    var hc = ViewContext.HttpContext;
-    bool IsLogin = hc.User.Identity.IsAuthenticated;
-    bool IsMe = IsLogin && IdentityService.Get(hc)?.UserId == mo.Uid;
+    bool IsLogin = Context.User.Identity.IsAuthenticated;
+    bool IsMe = IsLogin && IdentityService.Get(Context)?.UserId == mo.Uid;
 }
 
 @if (Model != null)
@@ -47,9 +46,17 @@ else
         <div class="col-auto d-none d-sm-inline-block mb-2">
             <div class="dropdown">
                 <button type="button" class="nrg-btn-library btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside">Library</button>
-                <div class="nrg-dd-library dropdown-menu p-1 overflow-auto" style="--bs-dropdown-min-width:20em">
-                    <input class="nrg-txt-search-library form-control form-control-sm mb-2" placeholder="Search NPM" />
-                    <div class="nrg-list-library list-group">
+                <div class="dropdown-menu p-1">
+                    <div class="input-group input-group-sm mb-2">
+                        <span class="input-group-text">搜索</span>
+                        <input class="nrg-txt-search-library form-control" placeholder="search npm" />
+                        <div class="form-check user-select-none mx-3 mt-1" title="勾选则使用镜像源链接">
+                            <input class="form-check-input" type="checkbox" id="ck_npm_mirror" checked>
+                            <label class="form-check-label" for="ck_npm_mirror">Mirror</label>
+                        </div>
+                    </div>
+
+                    <div class="nrg-list-library list-group overflow-auto" style="max-height:70vh;width:25em">
                         <button type="button" class="list-group-item list-group-item-action px-2 py-1">jquery</button>
                         <button type="button" class="list-group-item list-group-item-action px-2 py-1">jquery@3.6.3</button>
                     </div>

@@ -6,22 +6,20 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// 服务
     /// </summary>
     [Route("[controller]/[action]")]
-    public class ServicesController : Controller
+    public class ServicesController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-        public ServicesController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// 数据库重置
         /// </summary>
         /// <param name="zipName">文件名</param>
+        /// <param name="deleteData">删除表数据，默认 true</param>
+        /// <param name="realTimePrint">实时打印日志</param>
         /// <returns></returns>
         [HttpGet]
         [ResponseCache(Duration = 10)]
-        public async Task<ResultVM> DatabaseReset(string zipName = "static/sample.zip")
+        public async Task<ResultVM> DatabaseReset(string zipName = "static/sample.zip", bool deleteData = true, bool realTimePrint = false)
         {
             var vm = new ResultVM();
 
@@ -42,10 +40,20 @@ namespace Netnr.ResponseFramework.Web.Controllers
                             Connection = db.Database.GetDbConnection()
                         },
                         PackagePath = ParsingTo.Combine(AppTo.ContentRootPath, zipName),
-                        WriteDeleteData = true
+                        WriteDeleteData = deleteData
                     };
 
-                    vm = await DataKitTo.ImportDatabase(idb);
+                    if (realTimePrint)
+                    {
+                        vm = await DataKitTo.ImportDatabase(idb, le =>
+                        {
+                            Console.WriteLine(le.NewItems[0]);
+                        });
+                    }
+                    else
+                    {
+                        vm = await DataKitTo.ImportDatabase(idb);
+                    }
                 }
             }
             catch (Exception ex)

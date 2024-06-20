@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net48;netstandard2;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net6;net7;net8</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Version>1.1.0</Version>
 		<Authors>netnr</Authors>
@@ -40,6 +40,36 @@ var botModel = uap.GetBot();
 		<PackageReadmeFile>Netnr.UAParser.md</PackageReadmeFile>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);UAParser</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);UAParser</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);UAParser</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);UAParser</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);UAParser</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);UAParser</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Properties\**" />
+	  <EmbeddedResource Remove="Properties\**" />
+	  <None Remove="Properties\**" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Include="..\..\..\docs\Netnr.UAParser.md">
 		  <Pack>True</Pack>
@@ -51,19 +81,6 @@ var botModel = uap.GetBot();
 		</None>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Update="Properties\Resources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Resources.resx</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	</ItemGroup>
+	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 </Project>

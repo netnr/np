@@ -15,7 +15,7 @@ let nrPage = {
     init: async () => {
         //编辑器
         nrVary.domEditor.innerHTML = nrApp.tsLoadingHtml;
-        await nrEditor.init();
+        await nrEditor.rely();
         nrVary.domEditor.innerHTML = '';
 
         let defaultLang = await nrStorage.getItem(nrPage.ckeyLanguage) || "sql";

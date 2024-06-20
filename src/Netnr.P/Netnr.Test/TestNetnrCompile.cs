@@ -31,7 +31,7 @@ public class DynamicCompile
             {
                 Debug.WriteLine(item);
             }
-            Assert.True(ce.Any());
+            Assert.True(ce.Length > 0);
         }
     }
 }

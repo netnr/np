@@ -1,5 +1,4 @@
-﻿using System.DirectoryServices.ActiveDirectory;
-using Xunit;
+﻿using Xunit;
 
 namespace Netnr.Test
 {
@@ -14,13 +13,16 @@ namespace Netnr.Test
             //https://stackoverflow.com/questions/12553277
             var handler = new HttpClientHandler
             {
+                AutomaticDecompression = DecompressionMethods.All,
+
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
             };
-
+            
             var hc = new HttpClient(handler);
+            hc.DefaultRequestHeaders.AcceptEncoding.TryParseAdd("gzip");
 
-            var resp = await hc.GetAsync("https://httpbin.org/get");
+            var resp = await hc.GetAsync("https://zme.ink");
 
             Debug.WriteLine(resp.IsSuccessStatusCode);
             if (resp.IsSuccessStatusCode)
@@ -109,26 +111,58 @@ namespace Netnr.Test
             {
                 Timeout = TimeSpan.FromMinutes(5)
             };
-            await client.DownloadAsync(url, savePath, (rlen, total) =>
+            await client.DownloadAsync(url, savePath, (rlen, tlen) =>
             {
-                Debug.WriteLine($"{rlen}/{total} {rlen * 1.0 / total * 100:F2}%");
+                Debug.WriteLine($"{rlen}/{tlen} {rlen * 1.0 / tlen * 100:F2}%");
             });
         }
 
         [Fact]
-        public async Task HttpClient_7()
+        public async Task HttpClient_7_EnsureSuccess()
         {
-            var url = "http://192.168.6.167:8592/site/platformLogin.do";
+            var client = new HttpClient();
+            var response = await client.GetAsync("https://zme.ink/README"); // 这一步可能会抛出异常
+
+            // 响应状态码不在 200-299，且抛出异常
+            response.EnsureSuccessStatusCode();
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Debug.WriteLine(responseBody);
+        }
+
+        [Fact]
+        public async Task HttpClient_8_IsSuccess()
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync("https://zme.ink/README"); // 这一步可能会抛出异常
+
+            // 响应状态码在 200-299，且不抛出异常
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine(responseBody);
+            }
+            else
+            {
+                Debug.WriteLine($"请求失败: {(int)response.StatusCode} {response.ReasonPhrase}");
+            }
+        }
+
+        [Fact]
+        public async Task HttpClient_9()
+        {
+            var url = "https://static.centbrowser.cn/win_stable/5.0.1002.354/centbrowser_5.0.1002.354_x64_portable.exe";
             var savePath = @"D:\tmp\res\try\download.bin";
 
             var client = new HttpClient
             {
                 Timeout = TimeSpan.FromMinutes(5)
             };
-            await client.DownloadAsync(url, savePath, (rlen, total) =>
+            await client.DownloadAsync(url, savePath, (rlen, tlen) =>
             {
-                Debug.WriteLine($"{rlen}/{total} {rlen * 1.0 / total * 100:F2}%");
+                Debug.WriteLine($"{rlen}/{tlen} {rlen * 1.0 / tlen * 100:F2}%");
             });
         }
+
     }
 }

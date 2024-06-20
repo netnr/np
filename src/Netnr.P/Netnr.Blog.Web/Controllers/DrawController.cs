@@ -3,14 +3,9 @@
     /// <summary>
     /// Draw
     /// </summary>
-    public class DrawController : Controller
+    public class DrawController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public DrawController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// Draw 新增表单

@@ -63,10 +63,7 @@ namespace Netnr.Blog.Web.Services
                                 }
 
                                 var action = (conll.Name.Replace("Controller", "/") + item.Name).ToLower();
-                                if (!dic.ContainsKey(action))
-                                {
-                                    dic.Add(action, remark);
-                                }
+                                dic.TryAdd(action, remark);
                             }
                         }
                     }
@@ -96,7 +93,7 @@ namespace Netnr.Blog.Web.Services
             //日志保存
             var mo = new LoggingModel()
             {
-                LogApp = AppTo.GetValue("Common:EnglishName"),
+                LogApp = AppTo.GetValue("ProgramParameters:EnglishName"),
                 LogUid = uinfo?.UserName,
                 LogNickname = uinfo?.Nickname,
                 LogAction = reqPath,
@@ -110,9 +107,9 @@ namespace Netnr.Blog.Web.Services
             };
 
             var ddk = reqPath.ToLower().TrimStart('/');
-            if (DicDescription.ContainsKey(ddk))
+            if (DicDescription.TryGetValue(ddk, out string value))
             {
-                mo.LogContent = DicDescription[ddk];
+                mo.LogContent = value;
             }
 
             return mo;

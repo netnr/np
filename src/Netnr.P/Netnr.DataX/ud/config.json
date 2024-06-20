@@ -1,49 +1,58 @@
 ﻿{
   //映射匹配模式（读写 表、列）：Same（相同） Similar（相似）
   "MapingMatchPattern": "Similar",
+  //分批最大行数，默认 5000
+  "BatchMaxRows": 10,
+  //导出压缩等级，默认 Fastest；可选：最佳（Optimal）、无压缩（NoCompression）
+  "CompressLevel": "Optimal",
 
   //数据库连接信息
   "ListConnectionInfo": [
     {
       "ConnectionType": "SQLite",
-      "ConnectionString": "Data Source=D:\\tmp\\res\\tmp.db",
+      "ConnectionString": "Data Source=D:/tmp/res/tmp.db",
       "ConnectionRemark": "local SQLite"
     },
     {
       "ConnectionType": "MySQL",
-      "ConnectionString": "Server=local.host;User ID=root;Password=Abc1230..;Database=jcy",
+      "ConnectionString": "Server=local.host;Port=3306;User ID=root;Password=Abc1230...;Database=netnr",
       "ConnectionRemark": "local MySQL"
     },
     {
+      "ConnectionType": "Oracle",
+      "ConnectionString": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=helowin)));User Id=CQSME;Password=CQSME",
+      "ConnectionRemark": "local CQSME"
+    },
+    {
       "ConnectionType": "SQLServer",
-      "ConnectionString": "Data Source=local.host;User ID=sa;Password=Abc1230..;Initial Catalog=netnr",
+      "ConnectionString": "Data Source=local.host,1433;User ID=sa;Password=Abc1230...;Initial Catalog=netnr",
       "ConnectionRemark": "local SQLServer"
     },
     {
       "ConnectionType": "PostgreSQL",
-      "ConnectionString": "Host=local.host;Port=5432;Username=postgres;Password=Abc1230..;Database=netnr",
+      "ConnectionString": "Host=local.host;Port=5432;Username=postgres;Password=Abc1230...;Database=netnr",
       "ConnectionRemark": "local PostgreSQL"
     },
     {
       "ConnectionType": "ClickHouse",
-      "ConnectionString": "host=local.host;port=8123;username=root;password=Abc1230..",
+      "ConnectionString": "host=local.host;port=8123;username=default;password=Abc1230...",
       "ConnectionRemark": "local ClickHouse"
     },
     {
-      "ConnectionType": "Oracle",
-      "ConnectionString": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQENT;Password=Abc1230..",
-      "ConnectionRemark": "local Oracle CQENT"
+      "ConnectionType": "Dm",
+      "ConnectionString": "server=local.host;port=5236;user=SYSDBA;password=SYSDBA001;schema=SYSDBA;conn_pooling=True",
+      "ConnectionRemark": "local Dm"
     }
   ],
 
-  //作业 ndx work Work_Demo
+  //作业 ndx work "Work_Demo"
   "Works": {
 
-    //作业名（Work_ 开头，示例配置，建议新建作业名）
+    //作业名（Work 开头，示例配置，建议新建作业名）
     "Work_Demo": {
 
-      //迁移数据表
-      "MigrateDataTable": {
+      //迁移表（开头固定）
+      "MigrateDataTable netnr": {
         // 读取连接（引用配置 ConnectionRemark）
         "RefReadConnectionInfo": "local SQLServer",
         // 读取数据库名，可选（默认连接配置的数据库名）
@@ -75,8 +84,8 @@
         ]
       },
 
-      //迁移数据库
-      "MigrateDatabase": {
+      //迁移库（开头固定）
+      "MigrateDatabase netnr": {
         // 读取连接（引用配置 ConnectionRemark）
         "RefReadConnectionInfo": "local SQLServer",
         // 读取数据库名，可选（默认连接配置的数据库名）
@@ -87,12 +96,14 @@
         "WriteDatabaseName": "netnr",
         // 写入前删除表数据
         "WriteDeleteData": true,
-        // 忽略源表名（可带模式名 SchemaName），可选
-        "ListIgnoreTableName": []
+        // 忽略读取源表名（可带模式名 SchemaName），可选
+        "ListIgnoreTableName": [],
+        // 指定读取源开始表名（可带模式名 SchemaName），针对失败时可跳过成功的表，可选
+        "StartTableName": ""
       },
 
-      //导出数据表
-      "ExportDataTable": {
+      //导出表（开头固定）
+      "ExportDataTable netnr": {
         // 读取连接（引用配置 ConnectionRemark）
         "RefReadConnectionInfo": "local SQLServer",
         // 读取数据库名，可选（默认连接配置的数据库名）
@@ -108,8 +119,8 @@
         ]
       },
 
-      //导出数据库
-      "ExportDatabase": {
+      //导出库（开头固定）
+      "ExportDatabase netnr": {
         // 读取连接（引用配置 ConnectionRemark）
         "RefReadConnectionInfo": "local SQLServer",
         // 读取数据库名，可选（默认连接配置的数据库名）
@@ -120,12 +131,12 @@
         "PackagePath": "~/ExportDatabase_{yyyy}{MMdd}.zip",
         //读取表名（可带模式名 SchemaName），可选，默认全表
         "ListReadTableName": [],
-        //忽略源表名（可带模式名 SchemaName），可选
+        //忽略读取源表名（可带模式名 SchemaName），可选
         "ListIgnoreTableName": []
       },
 
-      //导入数据库
-      "ImportDatabase": {
+      //导入数据库（开头固定）
+      "ImportDatabase netnr": {
         // 写入连接
         "RefWriteConnectionInfo": "local PostgreSQL",
         // 写入数据库名，可选（默认连接配置的数据库名）
@@ -139,12 +150,78 @@
           "redadTable1": "writeTable1",
           "dbo.redadTable2": "dbo.writeTable2"
         }
+      },
+
+      //同步库（开头固定）
+      "SyncDatabase netnr": {
+        // 读取连接（引用配置 ConnectionRemark）
+        "RefReadConnectionInfo": "local SQLServer",
+        // 读取数据库名，可选（默认连接配置的数据库名）
+        "ReadDatabaseName": "netnr",
+        // 写入连接
+        "RefWriteConnectionInfo": "local ClickHouse",
+        // 写入数据库名，可选（默认连接配置的数据库名）
+        "WriteDatabaseName": "default",
+        // DDL 创建，默认auto不存在则创建，或cover始终重建覆盖
+        "DDLCreate": "auto",
+        // 转小写 或相同Same 或大写UpperCase
+        "DDLLowerCase": "LowerCase",
+        // 允许列为 null，默认否，不推荐开启
+        "AllowDBNull": false,
+        // 表名 映射前缀
+        "TableNameMappingPrefix": "",
+        // 表名 同步后缀
+        "TableNameSyncSuffix": "___sync___",
+        // 默认时间（列不为 null）
+        "DefaultDateTime": "1970-01-01",
+        // 默认数值（列不为 null）
+        "DefaultNumeric": 0,
+        // 默认字符（列不为 null）
+        "DefaultString": "",
+        // 忽略读取源表名（可带模式名 SchemaName），可选
+        "ListIgnoreTableName": [],
+        // 指定读取源开始表名（可带模式名 SchemaName），针对失败时可跳过成功的表，可选
+        "StartTableName": "UserInfo"
+      },
+
+      //同步表（开头固定）
+      "SyncDataTable netnr": {
+        // 读取连接（引用配置 ConnectionRemark）
+        "RefReadConnectionInfo": "local SQLServer",
+        // 读取数据库名，可选（默认连接配置的数据库名）
+        "ReadDatabaseName": "netnr",
+        // 写入连接
+        "RefWriteConnectionInfo": "local ClickHouse",
+        // 写入数据库名，可选（默认连接配置的数据库名）
+        "WriteDatabaseName": "default",
+        // DDL 创建，默认auto不存在则创建，或cover始终重建覆盖
+        "DDLCreate": "auto",
+        // 转小写 或相同Same 或大写UpperCase
+        "DDLLowerCase": "LowerCase",
+        // 允许列为 null，默认否，不推荐开启
+        "AllowDBNull": false,
+        // 表名 映射前缀
+        "TableNameMappingPrefix": "",
+        // 表名 同步后缀
+        "TableNameSyncSuffix": "___sync___",
+        // 默认时间
+        "DefaultDateTime": "1970-01-01",
+        // 默认数值
+        "DefaultNumeric": 0,
+        // 默认字符
+        "DefaultString": "",
+        //读取表数据SQL（可带模式名 SchemaName，如 dbo.UserInfo）
+        "ListReadDataSQL": [
+          "select * from UserInfo",
+          "select top 10 * from UserWritingTags"
+        ]
       }
     },
 
     //构建新的作业
-    "Work_New": {
+    "Work 6.171 CQENT => 6.164 cqent": {
 
     }
+
   }
 }

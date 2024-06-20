@@ -27,7 +27,7 @@ namespace Netnr.Test
             var customer = new Customer
             {
                 Name = "John Doe",
-                Phones = new string[] { "8000-0000", "9000-0000" },
+                Phones = ["8000-0000", "9000-0000"],
                 Age = 39,
                 IsActive = true
             };
@@ -64,7 +64,7 @@ namespace Netnr.Test
                 var customer = new Customer
                 {
                     Name = Ulid.NewUlid().ToString(),
-                    Phones = new string[] { Ulid.NewUlid().ToString(), Ulid.NewUlid().ToString() },
+                    Phones = [Ulid.NewUlid().ToString(), Ulid.NewUlid().ToString()],
                     Birthday = DateTime.Now,
                     Age = Snowflake53To.Id(),
                     Remark = Ulid.NewUlid().ToString(),
@@ -75,10 +75,10 @@ namespace Netnr.Test
             var st = Stopwatch.StartNew();
             var v1 = col.InsertBulk(list, list.Count);
             Debug.WriteLine($"{v1} {st.Elapsed}");
-
+            st.Restart();
             // Use LINQ to query documents (with no index)
-            var results = col.Find(x => x.Age > 20);
-            Debug.WriteLine(results.Count());
+            var results = col.Find(x => x.Age > 20).Count();
+            Debug.WriteLine($"{results} {st.Elapsed}");
         }
     }
 

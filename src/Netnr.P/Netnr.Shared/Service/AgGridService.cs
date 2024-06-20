@@ -22,7 +22,7 @@ public partial class AgGridService
     /// <summary>
     /// 别名列映射，别名:真实列名
     /// </summary>
-    public Dictionary<string, string> AliasMapColumn { get; set; } = new Dictionary<string, string>();
+    public Dictionary<string, string> AliasMapColumn { get; set; } = [];
 
     /// <summary>
     /// 预置查询列，列字段逗号分割
@@ -86,9 +86,9 @@ public partial class AgGridService
                 var colsToSelect = groupCols.Select(x =>
                 {
                     var field = x.GetValue("field");
-                    if (AliasMapColumn.ContainsKey(field))
+                    if (AliasMapColumn.TryGetValue(field, out string value))
                     {
-                        field = AliasMapColumn[field];
+                        field = value;
                     }
                     else
                     {
@@ -127,9 +127,9 @@ public partial class AgGridService
         var result = string.Empty;
 
         var field = item.Name;
-        if (AliasMapColumn.ContainsKey(field))
+        if (AliasMapColumn.TryGetValue(field, out string value))
         {
-            field = AliasMapColumn[field];
+            field = value;
         }
         else
         {
@@ -353,9 +353,9 @@ public partial class AgGridService
                 var colsToGroupBy = groupCols.Select(x =>
                 {
                     var field = x.GetValue("field");
-                    if (AliasMapColumn.ContainsKey(field))
+                    if (AliasMapColumn.TryGetValue(field, out string value))
                     {
-                        field = AliasMapColumn[field];
+                        field = value;
                     }
                     else
                     {
@@ -391,9 +391,9 @@ public partial class AgGridService
             {
                 var field = item.GetProperty("colId").ToString();
 
-                if (AliasMapColumn.ContainsKey(field))
+                if (AliasMapColumn.TryGetValue(field, out string value))
                 {
-                    field = AliasMapColumn[field];
+                    field = value;
                 }
                 else
                 {

@@ -25,6 +25,7 @@ module.exports = (_env, argv) => {
         devServer: {
             static: { directory: __dirname }, port: 775,
             server: require('../file/client.json').server,
+            allowedHosts: 'all',
             historyApiFallback: true, //history
         },
         module: {

@@ -1,4 +1,5 @@
 import { nrApp } from "../../../../frame/Bootstrap/nrApp";
+import { nrcBase } from "../../../../frame/nrcBase";
 import { nrcRely } from "../../../../frame/nrcRely";
 import { nrWeb } from "../../nrWeb";
 
@@ -71,9 +72,8 @@ let nrPage = {
         }
 
         //代码可编辑
-        document.querySelector('.markdown-body').querySelectorAll("pre>code").forEach(node => {
-            node.innerHTML = node.innerHTML.trim();
-            node.setAttribute("contenteditable", true);
+        document.querySelectorAll(".markdown-body pre>code").forEach(domCode => {
+            nrcBase.editDOM(domCode.parentElement);
         })
 
         //阅读量

@@ -126,7 +126,7 @@ html {
      */
     sideHorizontal: (domDivider, doneCall) => {
         domDivider.addEventListener("mousedown", onmousedown);
-        domDivider.addEventListener("touchstart", ontouchstart);
+        domDivider.addEventListener("touchstart", ontouchstart, { passive: false });
 
         const l = domDivider.previousElementSibling;
         const r = domDivider.nextElementSibling;
@@ -138,7 +138,7 @@ html {
             l.style.pointerEvents = 'none';
             r.style.pointerEvents = 'none';
 
-            domDivider.addEventListener("touchmove", ontouchmove);
+            domDivider.addEventListener("touchmove", ontouchmove, { passive: false });
             domDivider.addEventListener("touchend", ontouchend);
         }
         function ontouchmove(e) {
@@ -257,7 +257,7 @@ html {
      */
     sideVertical: (domDivider, doneCall) => {
         domDivider.addEventListener("mousedown", onmousedown);
-        domDivider.addEventListener("touchstart", ontouchstart);
+        domDivider.addEventListener("touchstart", ontouchstart, { passive: false });
 
         const t = domDivider.previousElementSibling;
         const b = domDivider.nextElementSibling;
@@ -269,7 +269,7 @@ html {
             t.style.pointerEvents = 'none';
             b.style.pointerEvents = 'none';
 
-            domDivider.addEventListener("touchmove", ontouchmove);
+            domDivider.addEventListener("touchmove", ontouchmove, { passive: false });
             domDivider.addEventListener("touchend", ontouchend);
         }
         function ontouchmove(e) {

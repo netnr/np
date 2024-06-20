@@ -2,6 +2,7 @@ import { ndkI18n } from './ndkI18n';
 import { ndkFunction } from './ndkFunction';
 import { ndkRequest } from './ndkRequest';
 import { ndkVary } from './ndkVary';
+import { ndkEditor } from './ndkEditor';
 
 // 获取 DDL
 var ndkGenerateDDL = {
@@ -17,7 +18,7 @@ var ndkGenerateDDL = {
      */
     loopTable: (cobj, databaseName, tableAndSchemaArray, index, success, error) => {
         let tableName = tableAndSchemaArray[index].TableName;
-        let schemaName = tableAndSchemaArray[index].SchemaName || "";        
+        let schemaName = tableAndSchemaArray[index].SchemaName || "";
         let sntnShow = ["SQLServer", "PostgreSQL"].includes(cobj.type)
             ? [schemaName, tableName].filter(x => x != "").join(".")
             : tableName;
@@ -27,6 +28,9 @@ var ndkGenerateDDL = {
         // 请求单表
         ndkRequest.reqTableDDL(cobj, databaseName, schemaName, tableName).then(res => {
             var ddl = res.data;
+            if (cobj.type == "ClickHouse") {
+                ddl = ndkEditor.formatterSQL(ddl, cobj.type);
+            }
 
             var tableDesc = '-- --------------------';
             ndkVary.generateDDL.push(`${tableDesc}`);
@@ -95,8 +99,10 @@ var ndkGenerateDDL = {
                 }
                 break;
             case 'Oracle':
+            case 'Dm':
             case 'SQLServer':
             case 'PostgreSQL':
+            case 'ClickHouse':
                 {
                     ndkVary.generateDDL.push(`-- ${cobj.type}`);
                     ndkVary.generateDDL.push(`-- Database: ${databaseName}`);

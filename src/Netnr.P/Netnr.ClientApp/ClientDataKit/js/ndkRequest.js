@@ -23,7 +23,7 @@ var ndkRequest = {
             ndkRequest.statusInfo.stop()
         }
 
-        ndkVary.gridOpsQueue.api.setRowData(ndkRequest.statusInfo.queueList);
+        ndkVary.gridOpsQueue.updateGridOptions({ rowData: ndkRequest.statusInfo.queueList });
     },
 
     statusInfo: {

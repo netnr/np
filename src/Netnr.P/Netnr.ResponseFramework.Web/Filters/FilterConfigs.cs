@@ -72,9 +72,9 @@
                             LogRemark = $"请求耗时：{swAsync.ElapsedMilliseconds}毫秒"
                         };
 
-                        if (LoggingService.DicDescription.ContainsKey(ca))
+                        if (LoggingService.DicDescription.TryGetValue(ca, out string value))
                         {
-                            mo.LogContent = LoggingService.DicDescription[ca];
+                            mo.LogContent = value;
                         }
 
                         //记录查询SQL

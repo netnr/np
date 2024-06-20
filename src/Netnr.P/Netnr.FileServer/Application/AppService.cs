@@ -121,7 +121,7 @@ namespace Netnr.FileServer.Application
         public static bool IsDisableExtension(string filename)
         {
             var risk = false;
-            if (filename.EndsWith("."))
+            if (filename.EndsWith('.'))
             {
                 risk = true;
             }

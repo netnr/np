@@ -85,6 +85,7 @@ public static partial class Extensions
             options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.DataSetJsonConverter());
             options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.IPAddressJsonConverter());
             options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.IPEndPointJsonConverter());
+            options.JsonSerializerOptions.Converters.Add(new JsonConverterTo.TypeJsonConverter());
         });
     }
 
@@ -107,9 +108,9 @@ public static partial class Extensions
                 errBody = ex.Error.ToJson(true);
             }
 
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            context.Response.Headers.Add("Access-Control-Allow-Methods", context.Request.Method);
-            context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+            context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+            context.Response.Headers.Append("Access-Control-Allow-Methods", context.Request.Method);
+            context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
             await context.Response.WriteAsync(errBody);
         });
     }

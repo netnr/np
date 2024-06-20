@@ -47,10 +47,10 @@ namespace Netnr.ResponseFramework.Web.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.SuId),
-                new Claim(ClaimTypes.Name, user.SuName),
-                new Claim(ClaimTypes.GivenName, user.SuNickname ?? ""),
-                new Claim(ClaimTypes.Role, user.SrId ?? "")
+                new(ClaimTypes.NameIdentifier, user.SuId),
+                new(ClaimTypes.Name, user.SuName),
+                new(ClaimTypes.GivenName, user.SuNickname ?? ""),
+                new(ClaimTypes.Role, user.SrId ?? "")
             };
 
             var cp = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
@@ -74,7 +74,7 @@ namespace Netnr.ResponseFramework.Web.Services
         public static string AccessTokenBuild(SysUser mo)
         {
             //密钥
-            var key = AppTo.GetValue("Common:GlobalKey");
+            var key = AppTo.GetValue("ProgramParameters:GlobalKey");
 
             var vm = new LoginUserVM()
             {
@@ -101,7 +101,7 @@ namespace Netnr.ResponseFramework.Web.Services
                 if (!string.IsNullOrWhiteSpace(accessToken))
                 {
                     //密钥
-                    var key = AppTo.GetValue("Common:GlobalKey");
+                    var key = AppTo.GetValue("ProgramParameters:GlobalKey");
                     var vm = CalcTo.AESDecrypt(accessToken.ToBase64Decode(), key).DeJson<LoginUserVM>();
                     if (vm.Expired >= DateTime.UtcNow.Ticks)
                     {
@@ -140,7 +140,7 @@ namespace Netnr.ResponseFramework.Web.Services
         public static bool IsAdmin(HttpContext context)
         {
             var uinfo = Get(context);
-            return uinfo?.UserName == AppTo.GetValue("Common:AdminName");
+            return uinfo?.UserName == AppTo.GetValue("ProgramParameters:AdminName");
         }
 
     }

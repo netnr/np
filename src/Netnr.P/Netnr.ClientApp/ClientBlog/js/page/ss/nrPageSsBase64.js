@@ -11,7 +11,7 @@ let nrPage = {
         nrVary.domEditor.innerHTML = nrApp.tsLoadingHtml;
 
         window["magicBytes"] = await import('magic-bytes.js');
-        await nrEditor.init();
+        await nrEditor.rely();
         nrVary.domEditor.innerHTML = '';
 
         nrApp.tsEditor = nrEditor.create(nrVary.domEditor, { wordWrap: "on" });

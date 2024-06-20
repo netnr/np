@@ -1,8 +1,8 @@
 ﻿#if Full || DataKit
 
-using System.Net.Http;
 using System.IO.Compression;
 using Oracle.ManagedDataAccess.Client;
+using ClickHouse.Client.Numerics;
 using Microsoft.Data.SqlClient;
 using MySqlConnector;
 using Npgsql;
@@ -12,23 +12,18 @@ namespace Netnr;
 /// <summary>
 /// 数据交互
 /// </summary>
-public partial class DataKitTo
+/// <remarks>
+/// 构造
+/// </remarks>
+/// <param name="connOption"></param>
+public partial class DataKitTo(DbKitConnectionOption connOption)
 {
     #region 基础
 
     /// <summary>
     /// 数据库
     /// </summary>
-    public DbKit DbInstance { get; set; }
-
-    /// <summary>
-    /// 构造
-    /// </summary>
-    /// <param name="connOption"></param>
-    public DataKitTo(DbKitConnectionOption connOption)
-    {
-        DbInstance = connOption.CreateDbInstance();
-    }
+    public DbKit DbInstance { get; set; } = connOption.CreateDbInstance();
 
     /// <summary>
     /// 手动关闭连接
@@ -47,11 +42,11 @@ public partial class DataKitTo
     /// 获取库名
     /// </summary>
     /// <returns></returns>
-    public async Task<List<string>> GetDatabaseName()
+    public async Task<List<string>> GetDatabaseNameOnly()
     {
         var result = new List<string>();
 
-        var sql = DataKitScript.GetDatabaseName(DbInstance.ConnOption.ConnectionType);
+        var sql = DataKitScript.GetDatabaseNameOnly(DbInstance.ConnOption.ConnectionType);
         var edo = await DbInstance.SqlExecuteDataOnly(sql);
 
         var dt = edo.Datas.Tables[0];
@@ -118,14 +113,15 @@ public partial class DataKitTo
     /// </summary>
     /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
+    /// <param name="nameOnly">仅名称</param>
     /// <returns></returns>
-    public async Task<List<DataKitTableResult>> GetTable(string schemaName = null, string databaseName = null)
+    public async Task<List<DataKitTableResult>> GetTable(string schemaName = null, string databaseName = null, bool nameOnly = true)
     {
         var result = new List<DataKitTableResult>();
 
         databaseName ??= DbInstance.ConnOption.DatabaseName;
 
-        var sql = DataKitScript.GetTable(DbInstance.ConnOption.ConnectionType, databaseName, schemaName);
+        var sql = DataKitScript.GetTable(DbInstance.ConnOption.ConnectionType, databaseName, schemaName, nameOnly);
         var edo = await DbInstance.SqlExecuteDataOnly(sql);
 
         result = edo.Datas.Tables[0].ToModel<DataKitTableResult>();
@@ -139,8 +135,9 @@ public partial class DataKitTo
     /// <param name="tableName">表名</param>
     /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
+    /// <param name="createOnly">仅创建，不含存在则删除表等</param>
     /// <returns></returns>
-    public async Task<string> GetTableDDL(string tableName, string schemaName = null, string databaseName = null)
+    public async Task<string> GetTableDDL(string tableName, string schemaName = null, string databaseName = null, bool createOnly = false)
     {
         string result = string.Empty;
 
@@ -154,7 +151,11 @@ public partial class DataKitTo
                     var edo = await DbInstance.SqlExecuteDataOnly(sql);
 
                     var rows = edo.Datas.Tables[0].Rows;
-                    var ddl = new List<string> { $"DROP TABLE IF EXISTS [{rows[0]["tbl_name"]}]" };
+                    var ddl = new List<string>();
+                    if (!createOnly)
+                    {
+                        ddl.Add($"DROP TABLE IF EXISTS [{rows[0]["tbl_name"]}]");
+                    }
                     foreach (DataRow dr in rows)
                     {
                         var script = dr["sql"]?.ToString();
@@ -173,8 +174,11 @@ public partial class DataKitTo
                     var edo = await DbInstance.SqlExecuteDataOnly(sql);
 
                     var rows = edo.Datas.Tables[0].Rows;
-                    var ddl = new List<string> { $"DROP TABLE IF EXISTS `{rows[0][0]}`" };
-
+                    var ddl = new List<string>();
+                    if (!createOnly)
+                    {
+                        ddl.Add($"DROP TABLE IF EXISTS `{rows[0][0]}`");
+                    }
                     var script = rows[0][1].ToString();
                     ddl.Add(script);
 
@@ -208,14 +212,19 @@ public partial class DataKitTo
                     });
 
                     var ddlTable = edo.Datas.Tables[0].Rows[0][0].ToString().Trim();
-                    var ddlIndex = edo.Datas.Tables[1].Rows.Cast<DataRow>().Select(x => x[0].ToString().Trim() + ";");
-                    var ddlCheck = edo.Datas.Tables[2].Rows.Cast<DataRow>().Select(x => x[0].ToString().Trim() + ";");
+                    var ddlIndex = edo.Datas.Tables[1].AsEnumerable().Select(x => x[0].ToString().Trim() + ";");
+                    var ddlCheck = edo.Datas.Tables[2].AsEnumerable().Select(x => x[0].ToString().Trim() + ";");
                     var ddlTableComment = edo.Datas.Tables[3].Rows[0][0].ToString().Trim();
                     var ddlColumnComment = edo.Datas.Tables[4];
 
                     var fullTableName = $"\"{databaseName}\".\"{tableName}\"";
 
-                    var ddl = new List<string> { $"DROP TABLE {fullTableName};", $"{ddlTable};" };
+                    var ddl = new List<string>();
+                    if (!createOnly)
+                    {
+                        ddl.Add($"DROP TABLE {fullTableName};");
+                    }
+                    ddl.Add($"{ddlTable};");
                     if (ddlIndex.Any())
                     {
                         ddl.Add("");
@@ -259,6 +268,64 @@ public partial class DataKitTo
                     result = string.Join("\r\n", listInfo);
                 }
                 break;
+            case DBTypes.ClickHouse:
+                {
+                    var edo = await DbInstance.SqlExecuteDataOnly(sql);
+
+                    var rows = edo.Datas.Tables[0].Rows;
+                    var ddl = new List<string>();
+                    if (!createOnly)
+                    {
+                        ddl.Add($"DROP TABLE IF EXISTS {rows[0][0]}");
+                    }
+
+                    var script = rows[0][1].ToString();
+                    ddl.Add(script);
+
+                    result = string.Join(";\r\n", ddl) + ";";
+                }
+                break;
+            case DBTypes.Dm:
+                {
+                    var edo = await DbInstance.SqlExecuteDataOnly(sql);
+
+                    // 下面与 Oracle 一样
+
+                    var ddlTable = edo.Datas.Tables[0].Rows[0][0].ToString().Trim();
+                    var ddlIndex = edo.Datas.Tables[1].Rows.Cast<DataRow>().Select(x => x[0].ToString().Trim() + ";");
+                    var ddlCheck = edo.Datas.Tables[2].Rows.Cast<DataRow>().Select(x => x[0].ToString().Trim() + ";");
+                    var ddlTableComment = edo.Datas.Tables[3].Rows[0][0].ToString().Trim();
+                    var ddlColumnComment = edo.Datas.Tables[4];
+
+                    var fullTableName = $"\"{databaseName}\".\"{tableName}\"";
+
+                    var ddl = new List<string>();
+                    if (!createOnly)
+                    {
+                        ddl.Add($"DROP TABLE {fullTableName};");
+                    }
+                    ddl.Add($"{ddlTable};");
+                    if (ddlIndex.Any())
+                    {
+                        ddl.Add("");
+                        ddl.AddRange(ddlIndex);
+                    }
+                    if (ddlCheck.Any())
+                    {
+                        ddl.Add("");
+                        ddl.AddRange(ddlCheck);
+                    }
+                    ddl.Add("");
+                    ddl.Add($"COMMENT ON TABLE {fullTableName} IS '{ddlTableComment.Replace("'", "''")}';");
+                    ddl.Add("");
+                    foreach (DataRow dr in ddlColumnComment.Rows)
+                    {
+                        ddl.Add($"COMMENT ON COLUMN {fullTableName}.\"{dr[0]}\" IS '{dr[1].ToString().Trim().Replace("'", "''")}';");
+                    }
+
+                    result = string.Join("\r\n", ddl);
+                }
+                break;
         }
 
         return result;
@@ -269,14 +336,15 @@ public partial class DataKitTo
     /// </summary>
     /// <param name="schemaName">模式名</param>
     /// <param name="databaseName">数据库名</param>
+    /// <param name="nameOnly">仅名称</param>
     /// <returns></returns>
-    public async Task<List<DataKitTableResult>> GetView(string schemaName = null, string databaseName = null)
+    public async Task<List<DataKitTableResult>> GetView(string schemaName = null, string databaseName = null, bool nameOnly = true)
     {
         var result = new List<DataKitTableResult>();
 
         databaseName ??= DbInstance.ConnOption.DatabaseName;
 
-        var sql = DataKitScript.GetView(DbInstance.ConnOption.ConnectionType, databaseName, schemaName);
+        var sql = DataKitScript.GetView(DbInstance.ConnOption.ConnectionType, databaseName, schemaName, nameOnly);
         var edo = await DbInstance.SqlExecuteDataOnly(sql);
 
         result = edo.Datas.Tables[0].ToModel<DataKitTableResult>();
@@ -309,8 +377,9 @@ public partial class DataKitTo
     /// </summary>
     /// <param name="filterSchemaNameTableName">过滤模式表名，逗号分隔</param>
     /// <param name="databaseName">数据库名</param>
+    /// <param name="nameOnly">仅名称</param>
     /// <returns></returns>
-    public async Task<List<DataKitColumnResult>> GetColumn(string filterSchemaNameTableName = null, string databaseName = null)
+    public async Task<List<DataKitColumnResult>> GetColumn(string filterSchemaNameTableName = null, string databaseName = null, bool nameOnly = true)
     {
         var result = new List<DataKitColumnResult>();
 
@@ -338,10 +407,10 @@ public partial class DataKitTo
             });
         }
 
-        var sql = DataKitScript.GetColumn(DbInstance.ConnOption.ConnectionType, databaseName, listSchemaNameTableName);
+        var sql = DataKitScript.GetColumn(DbInstance.ConnOption.ConnectionType, databaseName, listSchemaNameTableName, nameOnly);
         var edo = await DbInstance.SqlExecuteDataOnly(sql);
 
-        if (DbInstance.ConnOption.ConnectionType == DBTypes.SQLite)
+        if (DbInstance.ConnOption.ConnectionType == DBTypes.SQLite && nameOnly != true)
         {
             edo.Datas.Tables[0].Rows.RemoveAt(0);
             var ds2 = edo.Datas.Tables[1].Select();
@@ -352,7 +421,7 @@ public partial class DataKitTo
                 var csql = ds2.FirstOrDefault(x => x["name"].ToString().Equals(dr["TableName"].ToString(), StringComparison.OrdinalIgnoreCase))[1].ToString().ToUpper();
                 if (csql.Contains(aakey))
                 {
-                    var isaa = csql.Split(',').Any(x => x.Contains(aakey) && x.Contains(dr["ColumnName"].ToString().ToUpper()));
+                    var isaa = csql.Split(',').Any(x => x.Contains(aakey) && x.Contains(dr["ColumnName"].ToString(), StringComparison.OrdinalIgnoreCase));
                     if (isaa)
                     {
                         dr["AutoIncr"] = 1;
@@ -381,7 +450,10 @@ public partial class DataKitTo
             databaseName ??= DbInstance.ConnOption.DatabaseName;
 
             var sql = DataKitScript.SetTableComment(DbInstance.ConnOption.ConnectionType, databaseName, schemaName, tableName, tableComment);
-            await DbInstance.SqlExecuteNonQuery(sql);
+            if (!string.IsNullOrWhiteSpace(sql))
+            {
+                await DbInstance.SqlExecuteNonQuery(sql);
+            }
         }
 
         return true;
@@ -403,7 +475,10 @@ public partial class DataKitTo
             databaseName ??= DbInstance.ConnOption.DatabaseName;
 
             var sql = DataKitScript.SetColumnComment(DbInstance.ConnOption.ConnectionType, databaseName, schemaName, tableName, columnName, columnComment);
-            await DbInstance.SqlExecuteNonQuery(sql);
+            if (!string.IsNullOrWhiteSpace(sql))
+            {
+                await DbInstance.SqlExecuteNonQuery(sql);
+            }
         }
 
         return true;
@@ -413,24 +488,11 @@ public partial class DataKitTo
     /// 执行脚本
     /// </summary>
     /// <param name="sql">脚本</param>
+    /// <param name="openTransaction">开启事务</param>
     /// <returns></returns>
-    public async Task<ValueTuple<DataSet, DataSet, object>> ExecuteSql(string sql)
+    public async Task<ValueTuple<DataSet, DataSet, object>> ExecuteSql(string sql, bool openTransaction = true)
     {
         var sw = Stopwatch.StartNew();
-
-        //开启事务
-        var openTransaction = true;
-        var sqlUpper = sql.ToUpper();
-        var listKey = "DROP DATABASE,ALTER DATABASE,CREATE DATABASE".Split(',');
-        var listDBTypes = DBTypes.PostgreSQL | DBTypes.SQLServer;
-        if (listDBTypes.HasFlag(DbInstance.ConnOption.ConnectionType) && listKey.Any(sqlUpper.Contains))
-        {
-            openTransaction = false;
-        }
-        if (DbInstance.ConnOption.ConnectionType == DBTypes.SQLite && sqlUpper == "VACUUM")
-        {
-            openTransaction = false;
-        }
 
         //消息
         var listInfo = new List<string>();
@@ -552,9 +614,9 @@ public partial class DataKitTo
                         {
                             Timeout = TimeSpan.FromMinutes(1)
                         };
-                        await client.DownloadAsync(ds, fullPath, (rlen, total) =>
+                        await client.DownloadAsync(ds, fullPath, (rlen, tlen) =>
                         {
-                            if (total > maxLength || rlen > maxLength)
+                            if (tlen > maxLength || rlen > maxLength)
                             {
                                 throw new Exception($"{ds} Size exceeds limit(max {ParsingTo.FormatByte(maxLength)})");
                             }
@@ -577,7 +639,12 @@ public partial class DataKitTo
     /// <summary>
     /// 分批最大行数
     /// </summary>
-    public static int BatchMaxRows { get; set; } = 10000;
+    public static int BatchMaxRows { get; set; } = 5000;
+
+    /// <summary>
+    /// 压缩级别
+    /// </summary>
+    public static CompressionLevel CompressLevel { get; set; } = CompressionLevel.Fastest;
 
     /// <summary>
     /// 导出表
@@ -634,7 +701,7 @@ public partial class DataKitTo
 
                 if (sw.Elapsed.TotalMilliseconds > 5000)
                 {
-                    vm.Log.Add($"read line: {dt.Rows.Count}/{rowCount}");
+                    vm.Log.Add($"read line: {dt.Rows.Count:N0}/{rowCount:N0}");
                     sw.Restart();
                 }
 
@@ -646,8 +713,8 @@ public partial class DataKitTo
 
                     //xml 写入 zip
                     var zae = isOldZip
-                    ? zip.GetEntry(xmlName) ?? zip.CreateEntry(xmlName)
-                    : zip.CreateEntry(xmlName);
+                    ? zip.GetEntry(xmlName) ?? zip.CreateEntry(xmlName, CompressLevel)
+                    : zip.CreateEntry(xmlName, CompressLevel);
 
                     //覆盖写入
                     var ceStream = zae.Open();
@@ -659,18 +726,45 @@ public partial class DataKitTo
                     dt.WriteXml(ceStream, XmlWriteMode.WriteSchema);
                     ceStream.Close();
 
-                    vm.Log.Add($"export table({sntn}) part {batchNo}, rows: {dt.Rows.Count}/{rowCount}, time: {vm.PartTimeFormat()}");
+                    vm.Log.Add($"export table({sntn}) part {batchNo}, rows: {dt.Rows.Count:N0}/{rowCount:N0}, time: {vm.PartTimeFormat()}");
                     sw.Restart();
 
                     dt.Clear();
                 }
 
                 return Task.CompletedTask;
-            }, emptyTable: async etable =>
+            }, schemaResult: async schemaModel =>
             {
-                dt = etable.Clone();
+                dt = schemaModel.Table.Clone();
                 dt.MinimumCapacity = BatchMaxRows;
-                sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace);
+
+                //从读取 SQL 获取表名
+                if (string.IsNullOrWhiteSpace(dt.TableName))
+                {
+                    var sqlArray = sql.Split(['\n', ' ']);
+                    for (int si = 0; si < sqlArray.Length; si++)
+                    {
+                        var sqlToken = sqlArray[si].Trim();
+                        if (sqlToken.Equals("FROM", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (si + 1 < sqlArray.Length)
+                            {
+                                sntn = sqlArray[si + 1].Replace("\"", "").Replace("`", "").Replace("[", "").Replace("]", "");
+                                var sntnArray = sntn.Split('.');
+                                if (sntnArray.Length == 2)
+                                {
+                                    dt.Namespace = sntnArray.First();
+                                }
+                                dt.TableName = sntnArray.Last();
+                            }
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    sntn = DbKitExtensions.SqlSNTN(dt.TableName, dt.Namespace);
+                }
 
                 //表结构 DDL
                 if (edt.ExportType == "all")
@@ -690,14 +784,14 @@ public partial class DataKitTo
                     {
                         ddl = await dataKit.GetTableDDL(dt.TableName, dt.Namespace);
                     }
-                    var bytes = string.Join("\r\n", new string[] { tableDesc, $"-- {sntn}", tableDesc, ddl }).ToByte();
+                    var bytes = string.Join("\r\n", [tableDesc, $"-- {sntn}", tableDesc, ddl]).ToByte();
 
                     var sqlName = $"{sntn}.sql";
 
                     //sql 写入 zip
                     var zae = isOldZip
-                    ? zip.GetEntry(sqlName) ?? zip.CreateEntry(sqlName)
-                    : zip.CreateEntry(sqlName);
+                    ? zip.GetEntry(sqlName) ?? zip.CreateEntry(sqlName, CompressLevel)
+                    : zip.CreateEntry(sqlName, CompressLevel);
 
                     //覆盖写入
                     var ceStream = zae.Open();
@@ -723,8 +817,8 @@ public partial class DataKitTo
 
                 //xml 写入 zip
                 var zae = isOldZip
-                ? zip.GetEntry(xmlName) ?? zip.CreateEntry(xmlName)
-                : zip.CreateEntry(xmlName);
+                ? zip.GetEntry(xmlName) ?? zip.CreateEntry(xmlName, CompressLevel)
+                : zip.CreateEntry(xmlName, CompressLevel);
 
                 //写入
                 var ceStream = zae.Open();
@@ -736,10 +830,10 @@ public partial class DataKitTo
                 dt.WriteXml(ceStream, XmlWriteMode.WriteSchema);
                 ceStream.Close();
 
-                vm.Log.Add($"export table({sntn}) part {batchNo}, rows: {dt.Rows.Count}/{rowCount}, time: {vm.PartTimeFormat()}");
+                vm.Log.Add($"export table({sntn}) part {batchNo}, rows: {dt.Rows.Count:N0}/{rowCount:N0}, time: {vm.PartTimeFormat()}");
             }
 
-            vm.Log.Add($"export table({sntn}) complete, rows: {rowCount}, progress: {i + 1}/{edt.ListReadDataSQL.Count}");
+            vm.Log.Add($"export table({sntn}) complete, rows: {rowCount:N0}, progress: {i + 1}/{edt.ListReadDataSQL.Count}");
             vm.Log.Add("");
 
             //清理包历史分片
@@ -763,7 +857,7 @@ public partial class DataKitTo
             await dataKit2.Close();
         }
 
-        vm.Log.Add($"Done! Save to: {edt.PackagePath}, size: {ParsingTo.FormatByte(new FileInfo(edt.PackagePath).Length)}, total time: {vm.UseTimeFormat}");
+        vm.Log.Add($"Done  save to: {edt.PackagePath}, size: {ParsingTo.FormatByte(new FileInfo(edt.PackagePath).Length)}, total time: {vm.UseTimeFormat}");
         vm.Log.Add("");
         vm.Set(RCodeTypes.success);
         return vm;
@@ -785,17 +879,19 @@ public partial class DataKitTo
 
         //读取数据库
         var dbKitRead = mdt.ReadConnectionInfo.CreateDbInstance();
+
         //写入数据库
         var dbKitWrite = mdt.WriteConnectionInfo.CreateDbInstance();
-        //预检通过
-        var isCopy = await dbKitWrite.PreExecute() != -1;
+
+        //删除等待
+        var deleteWaiting = true;
 
         //遍历
         for (int i = 0; i < mdt.ListReadWrite.Count; i++)
         {
             var rw = mdt.ListReadWrite[i];
 
-            vm.Log.Add($"get write table({rw.WriteTableName}) meta");
+            vm.Log.Add($"get write table({rw.WriteTableName}) metadata");
             var edoWrite = await dbKitWrite.SqlExecuteDataSet(DbKitExtensions.SqlEmpty(rw.WriteTableName, tdb: mdt.WriteConnectionInfo.ConnectionType));
             var dtWrite = edoWrite.Datas.Tables[0];
             dtWrite.TableName = rw.WriteTableName.Split('.').Last();
@@ -804,11 +900,12 @@ public partial class DataKitTo
             //读取表的列 => 读取数据行索引,写入表的列
             var rwMap = new Dictionary<string, KeyValuePair<int, string>>();
 
-            vm.Log.Add($"read table data SQL: {rw.ReadDataSQL}");
+            vm.Log.Add($"read table data: {rw.ReadDataSQL}");
 
             var rowCount = 0;
             var batchNo = 0;
             var catchCount = 0;
+            var batchRate = 1;
 
             //读取行
             await dbKitRead.SqlExecuteDataRow(rw.ReadDataSQL, readRow: async row =>
@@ -826,31 +923,36 @@ public partial class DataKitTo
                     var valueRead = row[colIndexAndMap.Key];
                     if (valueRead is not DBNull)
                     {
-                        //读取表列值 转换类型为 写入表列值
+                        //写入表列
+                        var columnNameWrite = colIndexAndMap.Value;
+                        //写入表列类型
+                        var typeWrite = dtWrite.Columns[columnNameWrite].DataType;
                         try
                         {
-                            //写入表列
-                            var columnNameWrite = colIndexAndMap.Value;
-                            //写入表列类型
-                            var typeWrite = dtWrite.Columns[columnNameWrite].DataType;
-
-                            //读取表列值 赋予 写入表列
-                            drWriteNew[columnNameWrite] = Convert.ChangeType(valueRead, typeWrite);
+                            if (valueRead is MySqlDateTime)
+                            {
+                                drWriteNew[columnNameWrite] = valueRead;
+                            }
+                            else
+                            {
+                                //读取表列值 转换类型为 写入表列值
+                                drWriteNew[columnNameWrite] = Convert.ChangeType(valueRead, typeWrite);
+                            }
                         }
                         catch (Exception ex)
                         {
                             catchCount++;
-                            vm.Log.Add($"value conversion ERROR");
+                            vm.Log.Add($"---- Value Conversion ERROR ({columnNameRead} => {columnNameWrite})");
+                            vm.Log.Add($"Write-DataType: {typeWrite}, Write-MaxLength: {dtWrite.Columns[columnNameWrite].MaxLength}, Read-Value: {valueRead}");
                             vm.Log.Add(ex.ToJson());
-                            var rowJson = row.ToJson();
-                            vm.Log.Add(rowJson.Length > 500 ? rowJson[..500] : rowJson);
+                            vm.Log.Add("");
                         }
                     }
                 }
                 //添加新行
                 dtWrite.Rows.Add(drWriteNew.ItemArray);
 
-                if (dtWrite.Rows.Count >= BatchMaxRows)
+                if (dtWrite.Rows.Count >= BatchMaxRows / batchRate)
                 {
                     batchNo++;
 
@@ -859,24 +961,54 @@ public partial class DataKitTo
                         //第一批写入前清理表
                         if (!string.IsNullOrWhiteSpace(rw.WriteDeleteSQL))
                         {
-                            vm.Log.Add($"delete write table data SQL: {rw.WriteDeleteSQL}");
+                            vm.Log.Add($"delete write table data: {rw.WriteDeleteSQL}");
+                            if (deleteWaiting)
+                            {
+                                deleteWaiting = false;
+                                var writeSafeConn = $"{dbKitWrite.ConnOption.ConnectionType}://{dbKitWrite.ConnOption.GetSafeConnectionString()}";
+                                ConsoleTo.WriteCard(writeSafeConn, "delete data countdown");
+                                for (var j = 3; j > 0; j--)
+                                {
+                                    vm.Log.Add(j);
+                                    Thread.Sleep(5500);
+                                }
+                            }
+
                             var num = await dbKitWrite.SqlExecuteNonQuery(rw.WriteDeleteSQL);
                             vm.Log.Add($"return the number of affected rows: {num}, time: {vm.PartTimeFormat()}");
                         }
                     }
 
                     //分批写入
-                    vm.Log.Add($"write table({rw.WriteTableName}) part: {batchNo} (rows: {dtWrite.Rows.Count}/{rowCount})");
-                    await dbKitWrite.BulkCopy(dtWrite, isCopy);
+                    vm.Log.Add($"write table({rw.WriteTableName}) part: {batchNo} (rows: {dtWrite.Rows.Count:N0}/{rowCount:N0})");
+                    var swPart = Stopwatch.StartNew();
+                    await dbKitWrite.BulkCopy(dtWrite);
+                    swPart.Stop();
+                    if (batchNo == 1)
+                    {
+                        if (swPart.Elapsed.TotalSeconds > 20)
+                        {
+                            batchRate = 10;
+                        }
+                        else if (swPart.Elapsed.TotalSeconds > 5)
+                        {
+                            batchRate = 2;
+                        }
+
+                        if (batchRate != 1)
+                        {
+                            vm.Log.Add($"adjust batch size: {BatchMaxRows}/{batchRate}");
+                        }
+                    }
 
                     //清理
                     dtWrite.Clear();
                 }
-            }, emptyTable: etable =>
+            }, schemaResult: schemaModel =>
             {
                 var index = 0;
                 //构建列映射
-                foreach (DataColumn dcRead in etable.Columns)
+                foreach (DataColumn dcRead in schemaModel.Table.Columns)
                 {
                     //指定映射
                     if (rw.ReadWriteColumnMap.TryGetValue(dcRead.ColumnName, out string value))
@@ -908,15 +1040,27 @@ public partial class DataKitTo
                     //第一批写入前清理表
                     if (!string.IsNullOrWhiteSpace(rw.WriteDeleteSQL))
                     {
-                        vm.Log.Add($"delete write table data SQL: {rw.WriteDeleteSQL}");
+                        vm.Log.Add($"delete write table data: {rw.WriteDeleteSQL}");
+                        if (deleteWaiting)
+                        {
+                            deleteWaiting = false;
+                            var writeSafeConn = $"{dbKitWrite.ConnOption.ConnectionType}://{dbKitWrite.ConnOption.GetSafeConnectionString()}";
+                            ConsoleTo.WriteCard(writeSafeConn, "delete data countdown");
+                            for (var j = 3; j > 0; j--)
+                            {
+                                vm.Log.Add(j);
+                                Thread.Sleep(5500);
+                            }
+                        }
+
                         var num = await dbKitWrite.SqlExecuteNonQuery(rw.WriteDeleteSQL);
                         vm.Log.Add($"return the number of affected rows: {num}, time: {vm.PartTimeFormat()}");
                     }
                 }
 
                 //分批写入
-                vm.Log.Add($"write table({rw.WriteTableName}) part: {batchNo} (rows: {dtWrite.Rows.Count}/{rowCount})");
-                await dbKitWrite.BulkCopy(dtWrite, isCopy);
+                vm.Log.Add($"write table({rw.WriteTableName}) part: {batchNo} (rows: {dtWrite.Rows.Count:N0}/{rowCount:N0})");
+                await dbKitWrite.BulkCopy(dtWrite);
 
                 //清理
                 dtWrite.Clear();
@@ -924,13 +1068,13 @@ public partial class DataKitTo
 
             if (catchCount > 0)
             {
-                vm.Log.Add($"value conversion ERROR: {catchCount}");
+                vm.Log.Add($"---- Value Conversion ERROR: {catchCount}");
             }
-            vm.Log.Add($"write table({rw.WriteTableName}) done! time: {vm.PartTimeFormat()}, progress: {i + 1}/{mdt.ListReadWrite.Count}");
+            vm.Log.Add($"done  write table({rw.WriteTableName}) time: {vm.PartTimeFormat()}, progress: {i + 1}/{mdt.ListReadWrite.Count}");
             vm.Log.Add("");
         }
 
-        vm.Log.Add($"Done! Total time：{vm.UseTimeFormat}");
+        vm.Log.Add($"Done  total time：{vm.UseTimeFormat}");
         vm.Log.Add("");
 
         vm.Set(RCodeTypes.success);
@@ -951,8 +1095,11 @@ public partial class DataKitTo
         vm.Log.Add($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {nameof(ImportDatabase)}");
         vm.Log.Add("");
 
-        var dbKit = idb.WriteConnectionInfo.CreateDbInstance();
-        var isCopy = await dbKit.PreExecute() != -1; //预检通过
+        //写入数据库
+        var dbKitWrite = idb.WriteConnectionInfo.CreateDbInstance();
+
+        //删除等待
+        var deleteWaiting = true;
 
         vm.Log.Add($"read data source: {idb.PackagePath}");
         using var zipRead = ZipFile.OpenRead(idb.PackagePath);
@@ -996,7 +1143,7 @@ public partial class DataKitTo
                 var sqlContent = sqlFile.Open().ToText();
 
                 vm.Log.Add($"create table, execute script: {sqlFile.Name}");
-                await dbKit.SqlExecuteNonQuery(sqlContent);
+                await dbKitWrite.SqlExecuteNonQuery(sqlContent);
             }
 
             //当前表分片
@@ -1063,8 +1210,8 @@ public partial class DataKitTo
 
                         if (!writeTables.Any(x => x.TableName == dt.TableName))
                         {
-                            vm.Log.Add($"write table({dt.TableName}) not found, skipped: {item.Name}");
-                            continue;
+                            vm.Log.Add($"---- write table({dt.TableName}) not found, skipped: {tableGroup.Key}_*.xml");
+                            break;
                         }
 
                         //模式名.表名
@@ -1076,26 +1223,38 @@ public partial class DataKitTo
                             var deleteTableSql = DbKitExtensions.SqlClearTable(sntn, idb.WriteConnectionInfo.ConnectionType);
 
                             vm.Log.Add($"delete write table data SQL: {deleteTableSql}");
-                            var num = await dbKit.SqlExecuteNonQuery(deleteTableSql);
+                            if (deleteWaiting)
+                            {
+                                deleteWaiting = false;
+                                var writeSafeConn = $"{dbKitWrite.ConnOption.ConnectionType}://{dbKitWrite.ConnOption.GetSafeConnectionString()}";
+                                ConsoleTo.WriteCard(writeSafeConn, "delete data countdown");
+                                for (var j = 3; j > 0; j--)
+                                {
+                                    vm.Log.Add(j);
+                                    Thread.Sleep(5500);
+                                }
+                            }
+
+                            var num = await dbKitWrite.SqlExecuteNonQuery(deleteTableSql);
                             vm.Log.Add($"return the number of affected rows: {num}, time: {vm.PartTimeFormat()}");
                         }
                     }
 
                     vm.Log.Add($"importing({sntn}) part: {item.Name} (rows: {dt.Rows.Count}, size: {ParsingTo.FormatByte(item.Length)})");
-                    await dbKit.BulkCopy(dt, isCopy);
+                    await dbKitWrite.BulkCopy(dt, BatchMaxRows);
                     vm.Log.Add($"import({sntn}) part complete, time: {vm.PartTimeFormat()}");
                     vm.Log.Add("");
                 }
                 else
                 {
-                    vm.Log.Add($"skip empty part: {item.Name}");
+                    vm.Log.Add($"---- skip empty part: {item.Name}");
                 }
             }
-            vm.Log.Add($"import table({tableGroup.Key}) done!");
+            vm.Log.Add($"done  import table({tableGroup.Key})");
             vm.Log.Add("");
         }
 
-        vm.Log.Add($"Done! Total time：{vm.UseTimeFormat}");
+        vm.Log.Add($"Done  total time：{vm.UseTimeFormat}");
         vm.Log.Add("");
 
         vm.Set(RCodeTypes.success);
@@ -1113,6 +1272,342 @@ public partial class DataKitTo
         s1 = s1.Replace("-", "").Replace("_", "").Replace(" ", "").ToLower();
         s2 = s2.Replace("-", "").Replace("_", "").Replace(" ", "").ToLower();
         return s1 == s2;
+    }
+
+    #endregion
+
+    #region Sync to ClickHouse
+
+    /// <summary>
+    /// 同步表
+    /// </summary>
+    /// <param name="sdt"></param>
+    /// <param name="le"></param>
+    /// <returns></returns>
+    public static async Task<ResultVM> SyncDataTable(DataKitTransfer.SyncDataTable sdt, Action<NotifyCollectionChangedEventArgs> le = null)
+    {
+        var vm = new ResultVM();
+        vm.LogEvent(le);
+
+        vm.Log.Add($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {nameof(SyncDataTable)}");
+        vm.Log.Add("");
+
+        if (sdt.WriteConnectionInfo.ConnectionType != DBTypes.ClickHouse)
+        {
+            vm.Log.Add("Only supports writing to ClickHouse");
+            vm.Set(RCodeTypes.failure);
+            return vm;
+        }
+
+        //读取数据库
+        var dbKitRead = sdt.ReadConnectionInfo.CreateDbInstance();
+
+        //写入数据库
+        var dataKitWrite = CreateDataKitInstance(sdt.WriteConnectionInfo);
+        var dbKitWrite = dataKitWrite.DbInstance;
+        dbKitWrite.ConnOption.AutoClose = false;
+
+        //删除等待
+        var deleteWaiting = true;
+
+        var listWriteTables = await dataKitWrite.GetTable();
+
+        //遍历
+        for (int i = 0; i < sdt.ListReadDataSQL.Count; i++)
+        {
+            var readDataSQL = sdt.ListReadDataSQL[i];
+
+            DataTable dtRead = null;
+            DataTable dtWrite = null;
+            List<DataColumn> dcWrite = [];
+            string writeName = null;
+            string writeSync = null;
+
+            var rowCount = 0;
+            var batchNo = 0;
+
+            //读取行
+            await dbKitRead.SqlExecuteDataRow(readDataSQL, readRow: async row =>
+            {
+                rowCount++;
+
+                for (int c = 0; c < row.Length; c++)
+                {
+                    var valueRead = row[c];
+
+                    try
+                    {
+                        var dataColumn = dcWrite[c];
+                        if (dataColumn.DataType.Name == nameof(ClickHouseDecimal))
+                        {
+                            _ = decimal.TryParse(valueRead?.ToString(), out decimal val);
+                            row[c] = new ClickHouseDecimal(val);
+                        }
+                        else
+                        {
+                            if (valueRead is DBNull)
+                            {
+                                if (dataColumn.AllowDBNull == false)
+                                {
+                                    valueRead = dataColumn.DataType.Name switch
+                                    {
+                                        "DateTime" => sdt.DefaultDateTime,
+                                        "Int16" or "Int32" or "Int64" or "UInt32" or "UInt64" or "Single" or "Double" or "Decimal" => sdt.DefaultNumeric,
+                                        _ => sdt.DefaultString,
+                                    };
+                                }
+                            }
+
+                            row[c] = valueRead;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        vm.Log.Add($"---- Value Conversion ERROR ({dcWrite[c].ColumnName}: {row[c]})");
+                        vm.Log.Add(ex.ToJson());
+                        vm.Log.Add("");
+                    }
+                }
+                dtWrite.Rows.Add(row);
+
+                if (dtWrite.Rows.Count >= BatchMaxRows)
+                {
+                    batchNo++;
+
+                    if (batchNo == 1)
+                    {
+                        //第一批写入前清理表
+                        var writeDeleteSQL = $"TRUNCATE TABLE {writeSync}";
+                        vm.Log.Add($"delete write table data: {writeDeleteSQL}");
+                        if (deleteWaiting)
+                        {
+                            deleteWaiting = false;
+                            var writeSafeConn = $"{dbKitWrite.ConnOption.ConnectionType}://{dbKitWrite.ConnOption.GetSafeConnectionString()}";
+                            ConsoleTo.WriteCard(writeSafeConn, "delete data countdown");
+                            for (var j = 3; j > 0; j--)
+                            {
+                                vm.Log.Add(j);
+                                Thread.Sleep(5500);
+                            }
+                        }
+
+                        var num = await dbKitWrite.SqlExecuteNonQuery(writeDeleteSQL);
+                        vm.Log.Add($"return the number of affected rows: {num}, time: {vm.PartTimeFormat()}");
+                    }
+
+                    //分批写入
+                    vm.Log.Add($"write table({writeSync}) part: {batchNo} (rows: {dtWrite.Rows.Count:N0}/{rowCount:N0})");
+                    await dbKitWrite.BulkCopy(dtWrite);
+
+                    //清理
+                    dtWrite.Clear();
+                }
+            }, schemaResult: async schemaModel =>
+            {
+                dtRead = schemaModel.Table.Clone();
+
+                //写入表 名称
+                writeName = DbKitExtensions.CaseMapping(dtRead.TableName, sdt.DDLLowerCase);
+                if (!string.IsNullOrWhiteSpace(sdt.TableNameMappingPrefix))
+                {
+                    writeName = sdt.TableNameMappingPrefix + writeName;
+                }
+                //写入表 同步名称
+                writeSync = writeName + sdt.TableNameSyncSuffix;
+
+                // 从 DataTable 建表
+                var ddlWrite = ToClickHouseCreateSQL(dtRead, writeName, tableComment: dtRead.TableName, lowerCase: sdt.DDLLowerCase, allowDBNull: sdt.AllowDBNull);
+                var ddlSyncWrite = ToClickHouseCreateSQL(dtRead, writeSync, tableComment: dtRead.TableName, lowerCase: sdt.DDLLowerCase, allowDBNull: sdt.AllowDBNull);
+
+                await dbKitWrite.SqlExecuteNonQuery($"DROP TABLE IF EXISTS {writeSync}");
+
+                //非覆盖 表存在
+                if (sdt.DDLCreate != "cover" && listWriteTables.Any(x => x.TableName == writeName))
+                {
+                    // 复制一份的表结构为同步表
+                    vm.Log.Add($"create table {writeSync}");
+
+                    ddlWrite = await dataKitWrite.GetTableDDL(writeName, createOnly: true);
+                    ddlSyncWrite = ddlWrite.Replace($".{writeName} (", $".{writeSync} (");
+
+                    await dbKitWrite.SqlExecuteNonQuery(ddlSyncWrite);
+                }
+                else
+                {
+                    await dbKitWrite.SqlExecuteNonQuery($"DROP TABLE IF EXISTS {writeName}");
+
+                    vm.Log.Add($"create table {writeName} && {writeSync}");
+
+                    await dbKitWrite.SqlExecuteNonQuery(ddlWrite);
+                    await dbKitWrite.SqlExecuteNonQuery(ddlSyncWrite);
+                }
+
+                // 构建写入表架构
+                vm.Log.Add($"get write table({writeSync}) metadata");
+                var edsWrite = await dbKitWrite.SqlExecuteDataSet($"SELECT * FROM {writeSync} WHERE 1=2");
+                dtWrite = edsWrite.Datas.Tables[0];
+                dtWrite.TableName = writeSync;
+
+                dcWrite = dtWrite.Columns.Cast<DataColumn>().ToList();
+            });
+
+            //最后一批
+            if (dtWrite.Rows.Count > 0)
+            {
+                batchNo++;
+
+                if (batchNo == 1)
+                {
+                    //第一批写入前清理表
+                    var writeDeleteSQL = $"TRUNCATE TABLE {writeSync}";
+                    vm.Log.Add($"delete write table data: {writeDeleteSQL}");
+                    if (deleteWaiting)
+                    {
+                        deleteWaiting = false;
+                        var writeSafeConn = $"{dbKitWrite.ConnOption.ConnectionType}://{dbKitWrite.ConnOption.GetSafeConnectionString()}";
+                        ConsoleTo.WriteCard(writeSafeConn, "delete data countdown");
+                        for (var j = 3; j > 0; j--)
+                        {
+                            vm.Log.Add(j);
+                            Thread.Sleep(5500);
+                        }
+                    }
+
+                    var num = await dbKitWrite.SqlExecuteNonQuery(writeDeleteSQL);
+                    vm.Log.Add($"return the number of affected rows: {num}, time: {vm.PartTimeFormat()}");
+                }
+
+                //分批写入
+                vm.Log.Add($"write table({writeSync}) part: {batchNo} (rows: {dtWrite.Rows.Count:N0}/{rowCount:N0})");
+                await dbKitWrite.BulkCopy(dtWrite);
+
+                //清理
+                dtWrite.Clear();
+            }
+
+            vm.Log.Add($"done  write table({writeSync}) time: {vm.PartTimeFormat()}, progress: {i + 1}/{sdt.ListReadDataSQL.Count}");
+            var oldName = $"{writeName}___old___";
+            if (listWriteTables.Any(x => x.TableName == oldName))
+            {
+                oldName = $"{writeName}_{RandomTo.NewString(5)}";
+            }
+            var rename = $"RENAME {writeName} TO {oldName}, {writeSync} TO {writeName}";
+            var dropOldTable = $"DROP TABLE {oldName}";
+            vm.Log.Add(rename);
+            vm.Log.Add(dropOldTable);
+            await dbKitWrite.SqlExecuteNonQuery(rename);
+            await dbKitWrite.SqlExecuteNonQuery(dropOldTable);
+            vm.Log.Add("");
+        }
+
+        await dbKitWrite.Close();
+        vm.Log.Add($"Done  total time：{vm.UseTimeFormat}");
+        vm.Log.Add("");
+
+        vm.Set(RCodeTypes.success);
+        return vm;
+    }
+
+    /// <summary>
+    /// 表转ClickHouse建表语句
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <param name="tableName"></param>
+    /// <param name="tableComment"></param>
+    /// <param name="engine"></param>
+    /// <param name="partition"></param>
+    /// <param name="order"></param>
+    /// <param name="lowerCase"></param>
+    /// <param name="allowDBNull"></param>
+    /// <returns></returns>
+    public static string ToClickHouseCreateSQL(DataTable dt, string tableName, string tableComment = null, string engine = "MergeTree", string partition = null, string order = null, string lowerCase = "Same", bool allowDBNull = false)
+    {
+        // 构建建表语句
+        var createTableSQL = new StringBuilder();
+        createTableSQL.AppendLine($"CREATE TABLE {tableName}");
+        createTableSQL.AppendLine("(");
+
+        var listField = new List<string>();
+        foreach (DataColumn dc in dt.Columns)
+        {
+            var field = dc.ColumnName;
+            field = DbKitExtensions.CaseMapping(field, lowerCase);
+
+            var clickHouseType = "String";
+            switch (dc.DataType.Name)
+            {
+                case "DateTime":
+                    {
+                        clickHouseType = dc.DataType.Name;
+
+                        if (string.IsNullOrEmpty(partition) && !(allowDBNull && dc.AllowDBNull))
+                        {
+                            order = field;
+                            partition = $"toYear({field}) -- OR toYYYYMM";
+                        }
+                    }
+                    break;
+                case "Int32":
+                case "Int64":
+                case "UInt32":
+                case "UInt64":
+                case "Decimal":
+                case "Enum":
+                    clickHouseType = dc.DataType.Name;
+                    break;
+                case "Boolean":
+                    clickHouseType = "Bool";
+                    break;
+                case "Single":
+                    clickHouseType = "Float32";
+                    break;
+                case "Double":
+                    clickHouseType = "Float64";
+                    break;
+                case "Byte":
+                    clickHouseType = "BYTE";
+                    break;
+            }
+
+            if (allowDBNull && dc.AllowDBNull)
+            {
+                listField.Add($"\t`{field}` Nullable({clickHouseType})");
+            }
+            else
+            {
+                listField.Add($"\t`{field}` {clickHouseType}");
+            }
+        }
+        createTableSQL.AppendLine(string.Join(",\n", listField));
+        createTableSQL.AppendLine(")");
+        createTableSQL.AppendLine($"ENGINE = {engine}");
+
+        if (string.IsNullOrEmpty(partition))
+        {
+            var column = allowDBNull ?
+                dt.Columns.Cast<DataColumn>().FirstOrDefault(x => x.AllowDBNull == false) : dt.Columns[0];
+            if (column == null)
+            {
+                column = dt.Columns[0];
+                order = DbKitExtensions.CaseMapping(column.ColumnName, lowerCase);
+                createTableSQL.AppendLine($"ORDER BY {order}");
+                createTableSQL.AppendLine($"SETTINGS allow_nullable_key = 1");
+            }
+            else
+            {
+                order = DbKitExtensions.CaseMapping(column.ColumnName, lowerCase);
+                createTableSQL.AppendLine($"ORDER BY {order}");
+            }
+        }
+        else
+        {
+            createTableSQL.AppendLine($"PARTITION BY {partition}");
+            createTableSQL.AppendLine($"ORDER BY {order}");
+            //createTableSQL.AppendLine($"SETTINGS index_granularity = 8192");
+        }
+        createTableSQL.AppendLine($"COMMENT '{(tableComment ?? tableName).OfSql()}';");
+
+        return createTableSQL.ToString();
     }
 
     #endregion

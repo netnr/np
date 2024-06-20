@@ -1,8 +1,17 @@
-using FluentScheduler;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
+PMScriptTo.Init();
+
 var builder = WebApplication.CreateBuilder(args);
+if (!BaseTo.CommandLineArgs.Contains("--urls"))
+{
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        //随机端口
+        serverOptions.Listen(System.Net.IPAddress.Any, 0);
+    });
+}
 
 BaseTo.ReadyEncoding();
 BaseTo.ReadyLegacyTimestamp();
@@ -71,73 +80,6 @@ if (!(BaseTo.IsDev = app.Environment.IsDevelopment()))
     app.UseHsts();
 }
 
-//获取注入对象
-using (var scope = app.Services.CreateScope())
-{
-    //数据库初始化
-    var db = scope.ServiceProvider.GetRequiredService<ContextBase>();
-
-    //数据库不存在则创建，创建后返回true
-    if (db.Database.EnsureCreated())
-    {
-        var createScript = db.Database.GenerateCreateScript();
-        if (AppTo.DBT == DBTypes.PostgreSQL)
-        {
-            createScript = createScript.Replace(" datetime ", " timestamp ");
-        }
-        ConsoleTo.WriteCard("GenerateCreateScript", createScript);
-
-        //重置数据库
-        var vm = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db).DatabaseReset();
-        Console.WriteLine(vm.ToJson(true));
-    }
-
-
-    if (AppTo.GetValue<bool?>("DisableTask") == false)
-    {
-        //https://github.com/fluentscheduler/FluentScheduler
-        ConsoleTo.LogColor("初始化定时任务", ConsoleColor.Cyan);
-        JobManager.Initialize(); //初始化
-
-        //每2天在2:2 重置数据库
-        JobManager.AddJob(async () =>
-        {
-            try
-            {
-                var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
-                var vm = await sc.DatabaseReset();
-                var result = vm.ToJson();
-
-                ConsoleTo.WriteCard(result, "重置数据库");
-            }
-            catch (Exception ex)
-            {
-                ConsoleTo.LogError(ex, "重置数据库");
-            }
-        }, s =>
-        {
-            s.WithName("Job_DatabaseReset");
-            s.ToRunEvery(2).Days().At(2, 2);
-        });
-
-        //每2天在3:3 清理临时目录
-        JobManager.AddJob(() =>
-        {
-            try
-            {
-                var sc = new Netnr.ResponseFramework.Web.Controllers.ServicesController(db);
-                var vm = sc.ClearTmp();
-                var result = vm.ToJson();
-                ConsoleTo.Log(result);
-            }
-            catch (Exception ex)
-            {
-                ConsoleTo.LogError(ex, "清理临时目录");
-            }
-        }, s => s.ToRunEvery(2).Days().At(3, 3));
-    }
-}
-
 //配置swagger
 app.UseSwagger().UseSwaggerUI(c =>
 {
@@ -161,6 +103,29 @@ app.UseAuthorization();
 
 // Call UseSession after UseRouting and before MapRazorPages and MapDefaultControllerRoute 
 app.UseSession();
+
+//获取注入对象
+using (var scope = app.Services.CreateScope())
+{
+    //数据库初始化
+    var db = scope.ServiceProvider.GetRequiredService<ContextBase>();
+
+    //数据库不存在则创建，创建后返回true
+    if (db.Database.EnsureCreated())
+    {
+        var createScript = db.Database.GenerateCreateScript();
+        if (AppTo.DBT == DBTypes.PostgreSQL)
+        {
+            createScript = createScript.Replace(" datetime ", " timestamp ");
+        }
+        ConsoleTo.WriteCard("GenerateCreateScript", createScript);
+
+        //重置数据库
+        ConsoleTo.WriteCard("DatabaseReset");
+        var vm = await new Netnr.ResponseFramework.Web.Controllers.ServicesController(db).DatabaseReset(deleteData: false, realTimePrint: true);
+        Console.WriteLine($"{vm.Code} {vm.Msg}");
+    }
+}
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 

@@ -14,9 +14,9 @@ let nrPage = {
 
     init: async () => {
         //编辑器
-        nrVary.domEditor1.innerHTML = nrApp.tsLoadingHtml;        
+        nrVary.domEditor1.innerHTML = nrApp.tsLoadingHtml;
         await nrcRely.remote('terser.js'); // 在 monaco-editor 之前载入（兼容问题）
-        await nrEditor.init();
+        await nrEditor.rely();
         nrVary.domEditor1.innerHTML = '';
 
         let defaultContent = await nrStorage.getItem(nrPage.ckeyContent) || "/* 粘贴或拖拽 JS、CSS 代码 */";
@@ -121,7 +121,7 @@ let nrPage = {
             if (filename == "") {
                 filename = nrEditor.getLanguage(nrApp.tsEditor) == "javascript" ? "code.js" : "style.css";
             }
-            nrcBase.download(nrPage.editor2.getValue(), filename)
+            nrcBase.downloadText(nrPage.editor2.getValue(), filename)
         });
 
         //接收文件

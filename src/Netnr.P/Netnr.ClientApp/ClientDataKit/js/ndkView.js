@@ -23,12 +23,14 @@ var ndkView = {
         vkey = ndkFunction.hump(vkey);
 
         var vgrid = `gridOps${vkey}`;
-        let dom = ndkVary[`domGrid${vkey}`];
+        let domGrid = ndkVary[`domGrid${vkey}`];
+        domGrid.innerHTML = "";
 
-        nrGrid.buildDom(dom);
+        nrGrid.buildDom(domGrid);
         ndkAction.size();
 
-        ndkVary[vgrid] = new agGrid.Grid(dom, gridOps).gridOptions;
+        let gridApi = agGrid.createGrid(domGrid, gridOps);
+        ndkVary[vgrid] = gridApi;
     },
     /**
      * 移除
@@ -39,7 +41,7 @@ var ndkView = {
         var vgrid = `gridOps${vkey}`;
         if (ndkVary[vgrid] && ndkVary[vgrid].api) {
             ndkVary[`domFilter${vkey}`].value = "";
-            ndkVary[vgrid].api.destroy();
+            ndkVary[vgrid].destroy();
             ndkVary[vgrid] = null;
         }
     },
@@ -53,10 +55,10 @@ var ndkView = {
 
                 var cp = ndkStep.cpGet(1);
                 var color = ndkVary.colorEnv(cp.cobj.env);
-                var dom = nrGrid.getContainer(params);
+                var eGridDiv = nrGrid.getContainer(params);
 
                 var ihtm = `${cp.cobj.type} ${ndkVary.emoji.link}${cp.cobj.alias}`;
-                if (cp.databaseName && !dom.classList.contains("nrg-grid-database")) {
+                if (cp.databaseName && !eGridDiv.classList.contains("nrg-grid-database")) {
                     ihtm = `${ihtm} ${ndkVary.emoji.bucket}${cp.databaseName}`;
                 }
 
@@ -139,7 +141,7 @@ var ndkView = {
                                         newrow.id = ndkFunction.random(20000, 99999);
                                         newrow.alias += "+";
 
-                                        ndkVary.gridOpsConns.api.applyTransaction({
+                                        ndkVary.gridOpsConns.applyTransaction({
                                             add: [newrow],
                                             addIndex: params.rowIndex + 1
                                         });
@@ -148,7 +150,7 @@ var ndkView = {
                                     } else if (target.classList.contains("nrg-conn-cell-del")) {
                                         //删除连接
                                         if (confirm("确定删除？")) {
-                                            ndkVary.gridOpsConns.api.applyTransaction({
+                                            ndkVary.gridOpsConns.applyTransaction({
                                                 remove: [params.data]
                                             });
                                             ndkStorage.connsDelete(params.data.id);
@@ -216,7 +218,7 @@ var ndkView = {
             //连接右键菜单
             getContextMenuItems: (event) => {
                 var enode = event.node, edata = enode && enode.data,
-                    srows = ndkVary.gridOpsConns.api.getSelectedRows();
+                    srows = ndkVary.gridOpsConns.getSelectedRows();
 
                 //新增连接
                 var adddbs = [];
@@ -237,7 +239,7 @@ var ndkView = {
                                 conn: ndkVary.resConnTemplate[type]
                             };
 
-                            ndkVary.gridOpsConns.api.applyTransaction({
+                            ndkVary.gridOpsConns.applyTransaction({
                                 add: [newrow],
                                 addIndex: order
                             });
@@ -256,14 +258,14 @@ var ndkView = {
                         action: function () {
                             var rows = nrGrid.getAllRows(ndkVary.gridOpsConns, true);
                             if (rows.filter(x => x.id == dc.id).length) {
-                                var rowNode = ndkVary.gridOpsConns.api.getRowNode(dc.id);
-                                ndkVary.gridOpsConns.api.ensureIndexVisible(rowNode.rowIndex); //滚动到行显示
-                                ndkVary.gridOpsConns.api.flashCells({ rowNodes: [rowNode] }); //闪烁行
+                                var rowNode = ndkVary.gridOpsConns.getRowNode(dc.id);
+                                ndkVary.gridOpsConns.ensureIndexVisible(rowNode.rowIndex); //滚动到行显示
+                                ndkVary.gridOpsConns.flashCells({ rowNodes: [rowNode] }); //闪烁行
                             } else {
                                 var newrow = dc;
                                 newrow.order = rows.length + 1;
 
-                                ndkVary.gridOpsConns.api.applyTransaction({
+                                ndkVary.gridOpsConns.applyTransaction({
                                     add: [newrow],
                                     addIndex: rows.length
                                 });
@@ -283,7 +285,7 @@ var ndkView = {
                     deletedbs.push({
                         name: `${ndkI18n.lg.confirmDelete}（${srows.length}）`, icon: ndkVary.emoji.ok,
                         action: function () {
-                            ndkVary.gridOpsConns.api.applyTransaction({ remove: srows });
+                            ndkVary.gridOpsConns.applyTransaction({ remove: srows });
                             ndkStorage.connsDelete(srows.map(x => x.id));
                         }
                     });
@@ -291,7 +293,7 @@ var ndkView = {
                         deletedbs.push({
                             name: ndkVary.iconSvg(row.type, row.alias, { library: "nrg-icon" }), icon: ndkVary.iconSvg("trash"),
                             action: function () {
-                                ndkVary.gridOpsConns.api.applyTransaction({ remove: [row] });
+                                ndkVary.gridOpsConns.applyTransaction({ remove: [row] });
                                 ndkStorage.connsDelete(row.id);
                             }
                         })
@@ -421,7 +423,7 @@ var ndkView = {
                             newrow.id = ndkFunction.random();
                             newrow.alias += "+";
 
-                            ndkVary.gridOpsConns.api.applyTransaction({
+                            ndkVary.gridOpsConns.applyTransaction({
                                 add: [newrow],
                                 addIndex: event.node.rowIndex + 1
                             });
@@ -548,11 +550,11 @@ var ndkView = {
             },
             //库信息展开
             onColumnGroupOpened: function (event) {
-                if (event.columnGroup.expanded) {
+                if (event.columnGroups[0].expanded) {
                     var rows = event.api.getSelectedRows();
                     if (rows.length == 0) {
-                        var firstdi = event.api.getFirstDisplayedRow();
-                        var lastdi = event.api.getLastDisplayedRow();
+                        var firstdi = event.api.getFirstDisplayedRowIndex();
+                        var lastdi = event.api.getLastDisplayedRowIndex();
                         for (var i = firstdi; i <= lastdi; i++) {
                             var row = event.api.getDisplayedRowAtIndex(i);
                             if (!row.group) {
@@ -565,7 +567,7 @@ var ndkView = {
 
                     var cp = ndkStep.cpGet(1);
                     ndkRequest.reqDatabaseInfo(cp.cobj, rows.map(row => row.DatabaseName).join(',')).then(res => {
-                        ndkVary.gridOpsDatabase.api.applyTransactionAsync({
+                        ndkVary.gridOpsDatabase.applyTransactionAsync({
                             update: res
                         })
                     });
@@ -631,7 +633,7 @@ var ndkView = {
                         name: ndkI18n.lg.dropDatabase, icon: ndkVary.iconSvg("trash"), disabled: edata == null,
                         action: function () {
                             //选中或范围项
-                            var srows = ndkVary.gridOpsDatabase.api.getSelectedRows();
+                            var srows = ndkVary.gridOpsDatabase.getSelectedRows();
                             if (srows.length) {
                                 var cp = ndkStep.cpGet(1);
 
@@ -706,7 +708,7 @@ var ndkView = {
 
                 //过滤库名（如果调整过滤配置与过滤值不合则会报错）
                 try {
-                    ndkVary.gridOpsDatabase.api.setFilterModel({
+                    ndkVary.gridOpsDatabase.setFilterModel({
                         DatabaseName: {
                             filterType: "multi",
                             filterModels: [
@@ -836,10 +838,10 @@ var ndkView = {
                     {
                         name: ndkI18n.lg.tableDesign, disabled: edata == null, icon: ndkVary.iconSvg("layout-three-columns"),
                         action: function () {
-                            var srows = ndkVary.gridOpsTable.api.getSelectedRows();
+                            var srows = ndkVary.gridOpsTable.getSelectedRows();
 
                             var filterSNTN = "";
-                            if (ndkVary.gridOpsTable.rowData.length != srows.length) {
+                            if (nrGrid.getAllRows(ndkVary.gridOpsTable).length != srows.length) {
                                 filterSNTN = srows.map(x => x.SchemaName == null ? x.TableName : `${x.SchemaName}.${x.TableName}`).join(',')
                             }
 
@@ -857,7 +859,7 @@ var ndkView = {
                         name: ndkI18n.lg.tableData, icon: ndkVary.iconSvg("grid-3x3-gap-fill"), disabled: edata == null,
                         action: function () {
 
-                            var srows = ndkVary.gridOpsTable.api.getSelectedRows();
+                            var srows = ndkVary.gridOpsTable.getSelectedRows();
                             var cp = ndkStep.cpGet(1);
 
                             //构建SQL
@@ -954,7 +956,7 @@ var ndkView = {
                             },
                             {
                                 name: "Markdown", icon: ndkVary.iconGrid('save'), action: function () {
-                                    var columns = ndkVary.gridOpsTable.columnApi.getAllGridColumns();
+                                    var columns = ndkVary.gridOpsTable.getAllGridColumns();
                                     var headers = [];
                                     for (let index = 1; index < columns.length; index++) {
                                         var column = columns[index];
@@ -1044,12 +1046,12 @@ var ndkView = {
                         if (item.node.group) {
                             switch (item.node.field) {
                                 case "SchemaName":
-                                    var grow = ndkFunction.groupBy(ndkVary.gridOpsColumn.rowData.filter(x => x[item.node.field] == item.value), x => x.TableName);
+                                    var grow = ndkFunction.groupBy(nrGrid.getAllRows(ndkVary.gridOpsColumn).filter(x => x[item.node.field] == item.value), x => x.TableName);
                                     return `<b>${item.value} (${grow.length})</b>`;
                                 case "TableName":
                                     var grow = item.node.parent.field == "SchemaName" ?
-                                        ndkVary.gridOpsColumn.rowData.filter(x => x[item.node.parent.field] == item.node.parent.key && x[item.node.field] == item.value) :
-                                        ndkVary.gridOpsColumn.rowData.filter(x => x[item.node.field] == item.value);
+                                        nrGrid.getAllRows(ndkVary.gridOpsColumn).filter(x => x[item.node.parent.field] == item.node.parent.key && x[item.node.field] == item.value) :
+                                        nrGrid.getAllRows(ndkVary.gridOpsColumn).filter(x => x[item.node.field] == item.value);
                                     return `<b>${item.value} (${grow.length})</b> <span title="${grow[0].TableComment || ""}">${grow[0].TableComment || ""}</span>`;
                                 default:
                                     return item.value;
@@ -1114,7 +1116,7 @@ var ndkView = {
                         name: ndkI18n.lg.refresh, icon: ndkVary.iconSvg("arrow-repeat"),
                         action: function () {
                             var cp = ndkStep.cpGet(1);
-                            var filterSNTN = ndkFunction.groupBy(ndkVary.gridOpsColumn.rowData, x => x.SchemaName == null ? x.TableName : `${x.SchemaName}.${x.TableName}`).join(',');
+                            var filterSNTN = ndkFunction.groupBy(nrGrid.getAllRows(ndkVary.gridOpsColumn), x => x.SchemaName == null ? x.TableName : `${x.SchemaName}.${x.TableName}`).join(',');
                             ndkRequest.reqColumn(cp.cobj, cp.databaseName, filterSNTN, true).then(columns => {
                                 ndkView.viewColumn(columns, cp.cobj)
                             })
@@ -1146,7 +1148,7 @@ var ndkView = {
                             },
                             {
                                 name: "Markdown", icon: ndkVary.iconGrid('save'), action: function () {
-                                    var columns = ndkVary.gridOpsColumn.columnApi.getAllGridColumns();
+                                    var columns = ndkVary.gridOpsColumn.getAllGridColumns();
                                     var headers = [], tableNameGroupActive = false;
                                     for (let index = 1; index < columns.length; index++) {
                                         var column = columns[index];
@@ -1241,6 +1243,19 @@ var ndkView = {
                     'TableCollation', 'TableCreateTime', 'TableModifyTime', 'TableEngine', 'TableSpace'
                 ]
                 break;
+            case "ClickHouse":
+                remoteItem = [
+                    'DatabaseSpace', 'DatabaseCharset', 'DatabaseCollation', 'DatabaseLogLength', 'DatabaseIndexLength', 'DatabaseLogPath', 'DatabaseCreateTime',
+                    'TableIndexLength', 'TableCollation', 'TableModifyTime', 'TableOwner', 'TableSpace',
+                    'ColumnComment'
+                ]
+                break;
+            case "Dm":
+                remoteItem = [
+                    'DatabaseCollation', 'DatabaseLogLength', 'DatabaseLogPath', 'DatabaseIndexLength',
+                    'TableIndexLength', 'TableCollation', 'TableCreateTime', 'TableModifyTime', 'TableEngine', 'TableOwner', 'TableRows',
+                ]
+                break;
         }
         //倒序循环删除
         for (var i = columnDefs.length - 1; i >= 0; i--) {
@@ -1265,7 +1280,7 @@ var ndkView = {
 
         //清空表
         if (tpobj.grids) {
-            tpobj.grids.forEach(item => item.gridOps && item.gridOps.api.destroy());
+            tpobj.grids.forEach(item => item.gridOps && item.gridOps.destroy());
         }
         tpobj.grids = [];
         tpobj.esdata = esdata;

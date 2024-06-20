@@ -10,10 +10,10 @@ namespace Netnr.Test
         {
             var list = new List<ValueTextVM>
             {
-                new ValueTextVM{ Value="1",Text="3"},
-                new ValueTextVM{ Value="2",Text="5"},
-                new ValueTextVM{ Value="3",Text="7"},
-                new ValueTextVM{ Value="4",Text="9"},
+                new() { Value="1",Text="3"},
+                new() { Value="2",Text="5"},
+                new() { Value="3",Text="7"},
+                new() { Value="4",Text="9"},
             };
             var v1 = list.AsQueryable().Where("Value == @0 || Value != @1", "2", "4").ToList();
             var v2 = list.AsQueryable().Where("Convert.ToInt32(Value) > @0", 2).ToList();
@@ -52,12 +52,12 @@ namespace Netnr.Test
         {
             var list = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string,string>("name","MySQL"),
-                new KeyValuePair<string,string>("version","8.0.33"),
-                new KeyValuePair<string,string>("version_2","109"),
-                new KeyValuePair<string,string>("version_3","9"),
-                new KeyValuePair<string,string>("account_expired: CQENT_PJTX","6"),
-                new KeyValuePair<string,string>("account_expired: CQENT","2"),
+                new("name","MySQL"),
+                new("version","8.0.33"),
+                new("version_2","109"),
+                new("version_3","9"),
+                new("account_expired: CQENT_PJTX","6"),
+                new("account_expired: CQENT","2"),
             };
 
             var v0 = list.AsQueryable().Where("Key.StartsWith(\"account_expired:\") && Convert.ToDouble(Value) < 7").ToList();

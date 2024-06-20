@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
+using MySqlConnector;
 using Xunit;
 
 namespace Netnr.Test
@@ -12,7 +13,7 @@ namespace Netnr.Test
             var connOption = new DbKitConnectionOption
             {
                 ConnectionType = DBTypes.SQLServer,
-                ConnectionString = "Server=local.host,1433;uid=sa;pwd=Abc1230..;database=xops"
+                ConnectionString = "Server=local.host,1433;uid=sa;pwd=Abc1230...;database=xops"
             };
             var dbKit = connOption.CreateDbInstance();
             dbKit.ConnOption.AutoClose = false;
@@ -93,7 +94,7 @@ namespace Netnr.Test
         {
             // SQLServer
             {
-                var conn = DbKitExtensions.PreCheckConn("Server=local.host;uid=sa;pwd=Abc1230..;", DBTypes.SQLServer);
+                var conn = DbKitExtensions.PreCheckConn("Server=local.host;uid=sa;pwd=Abc1230...;", DBTypes.SQLServer);
                 var csb = new SqlConnectionStringBuilder(conn)
                 {
                     InitialCatalog = "xops"
@@ -114,7 +115,7 @@ namespace Netnr.Test
 
             // PostgreSQL
             {
-                var conn = "Server=local.host;Port=5432;User Id=postgres;Password=Abc1230..;database=netnr;";
+                var conn = "Server=local.host;Port=5432;User Id=postgres;Password=Abc1230...;database=netnr;";
                 var sql = @"DO $$
 BEGIN
     RAISE NOTICE '当前日期时间：%', now();
@@ -136,7 +137,7 @@ $$;";
             }
 
             {
-                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQSME;Password=Abc1230..";
+                var conn = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=helowin)));User Id=CQSME;Password=CQSME";
                 var sql = @"SELECT SYS_GUID() FROM dual";
                 var dbConn = new Oracle.ManagedDataAccess.Client.OracleConnection(conn);
                 dbConn.InfoMessage += (s, e) => Debug.WriteLine($"{nameof(dbConn)} InfoMessage: {e.Message}");
@@ -156,8 +157,7 @@ $$;";
         [Fact]
         public void OracleReader()
         {
-            var connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=LHR11G)));User Id=CQSME;Password=Abc1320..";
-
+            var connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=local.host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=helowin)));User Id=CQSME;Password=CQSME";
             var conn = new Oracle.ManagedDataAccess.Client.OracleConnection(connectionString);
             conn.Open();
 
@@ -222,6 +222,46 @@ $$;";
             } while (reader.NextResult());
 
             Debug.WriteLine($"Done! memory: {ParsingTo.FormatByte(Environment.WorkingSet)}");
+        }
+
+        [Fact]
+        public async Task Test()
+        {
+            var connectionString = "Server=192.168.100.3;Port=52171;User ID=polardbx_root;Password=jfOHgHWQ;Database=cqent;";
+            var connOption = new DbKitConnectionOption
+            {
+                ConnectionString = connectionString,
+                ConnectionType = DBTypes.MySQL
+            };
+
+            var dbKit = connOption.CreateDbInstance();
+            var eds = await dbKit.SqlExecuteDataSet("select * from analyse_industry_avg");
+
+            var dt = eds.Datas.Tables[0];
+            dt.TableName = "analyse_industry_avg";
+
+            for (int i = 0; i < 99; i++)
+            {
+                var dr = dt.NewRow();
+
+                dr[0] = Guid.NewGuid().ToString();
+                dr[1] = Guid.NewGuid().ToString();
+
+                dr[2] = Snowflake53To.Id();
+                dr[3] = Snowflake53To.Id();
+                dr[4] = Snowflake53To.Id();
+
+                dr[5] = DateTime.Now.Month.ToString();
+                dr[6] = DateTime.Now.Year.ToString();
+                dr[7] = DateTime.Now;
+                dr[8] = DateTime.Now;
+
+                dt.Rows.Add(dr.ItemArray);
+            }
+
+            var num = await dbKit.BulkCopyMySQL(dt, openTransaction: false);
+
+            Debug.WriteLine(num);
         }
     }
 }

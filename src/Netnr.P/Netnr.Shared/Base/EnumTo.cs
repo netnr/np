@@ -40,6 +40,10 @@ public enum DBTypes
     /// </summary>
     ClickHouse,
     /// <summary>
+    /// DuckDB
+    /// </summary>
+    DuckDB,
+    /// <summary>
     /// 达梦
     /// </summary>
     Dm

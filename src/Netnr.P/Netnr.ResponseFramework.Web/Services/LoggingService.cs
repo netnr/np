@@ -61,10 +61,7 @@ namespace Netnr.ResponseFramework.Web.Services
                                 }
 
                                 var action = "/" + (conll.Name.Replace("Controller", "/") + item.Name).ToLower();
-                                if (!dic.ContainsKey(action))
-                                {
-                                    dic.Add(action, remark);
-                                }
+                                dic.TryAdd(action, remark);
                             }
                         }
                     }
@@ -78,7 +75,7 @@ namespace Netnr.ResponseFramework.Web.Services
         /// <summary>
         /// 当前缓存日志
         /// </summary>
-        public static ConcurrentQueue<SysLog> CurrentCacheLog { get; set; } = new ConcurrentQueue<SysLog>();
+        public static ConcurrentQueue<SysLog> CurrentCacheLog { get; set; } = [];
 
     }
 }

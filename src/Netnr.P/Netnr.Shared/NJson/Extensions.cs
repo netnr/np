@@ -11,23 +11,37 @@ namespace Netnr;
 public static partial class Extensions
 {
     /// <summary>
-    /// object 转 JSON 字符串（序列化）
+    /// 序列化，对象转为 JSON 字符串
     /// </summary>
     /// <param name="obj"></param>
-    /// <param name="isSpace">缩进输出</param>
-    /// <param name="DateTimeFormat">时间格式化</param>
+    /// <param name="indented"></param>
+    /// <param name="dateTimeFormatter"></param>
     /// <returns></returns>
-    public static string ToNJson(this object obj, bool isSpace = false, string DateTimeFormat = "yyyy-MM-dd HH:mm:ss")
+    public static string ToNJson(this object obj, bool indented = false, string dateTimeFormatter = NJsonConverterTo.DefaultDateTimeFormatter)
     {
-        Newtonsoft.Json.Converters.IsoDateTimeConverter dtFmt = new()
-        {
-            DateTimeFormat = DateTimeFormat
-        };
-        return JsonConvert.SerializeObject(obj, isSpace ? Formatting.Indented : Formatting.None, dtFmt);
+        var setting = new JsonSerializerSettings();
+        setting.DefaultJsonSerializerSettings(indented, dateTimeFormatter);
+        return JsonConvert.SerializeObject(obj, setting);
     }
 
     /// <summary>
-    /// 解析 JSON字符串 为JObject对象（反序列化）
+    /// 默认设置
+    /// </summary>
+    /// <param name="setting"></param>
+    /// <param name="indented"></param>
+    /// <param name="dateTimeFormatter"></param>
+    public static void DefaultJsonSerializerSettings(this JsonSerializerSettings setting, bool indented = false, string dateTimeFormatter = NJsonConverterTo.DefaultDateTimeFormatter)
+    {
+        setting.Formatting = indented ? Formatting.Indented : Formatting.None;
+        setting.TypeNameHandling = TypeNameHandling.None;
+        setting.DateFormatString = dateTimeFormatter;
+        setting.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+        setting.Converters.Add(new NJsonConverterTo.IPAddressConverter());
+    }
+
+    /// <summary>
+    /// 反序列化，JSON 字符串转为对象
     /// </summary>
     /// <param name="json">JSON字符串</param>
     /// <returns>JObject对象</returns>
@@ -37,7 +51,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// 解析 JSON字符串 为JArray对象（反序列化）
+    /// 反序列化，JSON 字符串转为对象
     /// </summary>
     /// <param name="json">JSON字符串</param>
     /// <returns>JArray对象</returns>

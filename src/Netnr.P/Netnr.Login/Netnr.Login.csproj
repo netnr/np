@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net48;netstandard2.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>netstandard2;netstandard2.1</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Version>5.1.0</Version>
 		<Authors>netnr</Authors>
@@ -19,14 +19,6 @@
 		<PackageReadmeFile>Netnr.Login.md</PackageReadmeFile>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-	  <NoWarn>1701;1702;1591</NoWarn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-	  <NoWarn>1701;1702;1591</NoWarn>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
 	  <NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
@@ -37,10 +29,22 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
 	  <NoWarn>1701;1702;1591</NoWarn>
+	  <DefineConstants>$(DefineConstants);Login</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
 	  <NoWarn>1701;1702;1591</NoWarn>
+	  <DefineConstants>$(DefineConstants);Login</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	  <DefineConstants>$(DefineConstants);Login</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	  <DefineConstants>$(DefineConstants);Login</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -55,7 +59,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="System.Text.Json" Version="7.0.3" />
+	  <PackageReference Include="System.Text.Json" Version="8.0.3" />
 	</ItemGroup>
+
+	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 </Project>

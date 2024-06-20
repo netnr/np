@@ -15,7 +15,7 @@ module.exports = (_env, argv) => {
         entry: {
             netnrmd: path.join(__dirname, './index.js'),
             // 打包后实践，部分页面使用 await nrcRely.remote("netnrmdEditor") 引入出错
-            // 使用线上方式代替 await nrEditor.init()
+            // 使用线上方式代替 await nrEditor.rely()
             // monaco: path.join(__dirname, './monaco.js'),
         },
         output: {
@@ -25,7 +25,18 @@ module.exports = (_env, argv) => {
         module: {
             rules: [
                 { test: /\.css$/i, use: [MiniCssExtractPlugin.loader, 'css-loader'] },
-                { test: /\.svg$/, loader: 'svg-sprite-loader' }
+                { test: /\.svg$/, loader: 'svg-sprite-loader' },
+                {
+                    test: /\.(?:js|mjs|cjs)$/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            plugins: ['@babel/plugin-transform-runtime'],
+                            presets: [['@babel/preset-env', { targets: { chrome: "78" } }]],
+                            cacheDirectory: true,
+                        }
+                    }
+                }
             ],
         },
         optimization: {

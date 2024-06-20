@@ -1,8 +1,5 @@
 ﻿#if Full || DbContext
 
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
 namespace Netnr
@@ -12,22 +9,6 @@ namespace Netnr
     /// </summary>
     public class DbContextTo
     {
-        /// <summary>
-        /// 应用程序不为每个上下文实例创建新的ILoggerFactory实例非常重要。这样做会导致内存泄漏和性能下降
-        /// </summary>
-        private static ILoggerFactory logFactory = null;
-        /// <summary>
-        /// 日志
-        /// </summary>
-        public static ILoggerFactory LogFactory
-        {
-            get
-            {
-                logFactory ??= LoggerFactory.Create(logging => logging.AddConsole().AddFilter(level => level >= LogLevel.Information));
-                return logFactory;
-            }
-        }
-
         /// <summary>
         /// 创建 DbContextOptionsBuilder
         /// </summary>
@@ -79,9 +60,14 @@ namespace Netnr
                         options.UseDm(connnectionString);
 #endif
                         break;
+                    case DBTypes.ClickHouse:
+#if DbContextClickHouse
+                        options.UseClickHouse(connnectionString);
+#endif
+                        break;
                 }
             }
-            options.UseLoggerFactory(LogFactory).EnableSensitiveDataLogging(BaseTo.IsDev).EnableDetailedErrors();
+            options.EnableSensitiveDataLogging(BaseTo.IsDev).EnableDetailedErrors();
 
             return options as DbContextOptionsBuilder<T>;
         }
@@ -97,7 +83,7 @@ namespace Netnr
             var conn = AppTo.Configuration.GetConnectionString(dbt.ToString());
             if (dbt != DBTypes.InMemory)
             {
-                var pwd = AppTo.GetValue("ConnectionStrings:Password");
+                var pwd = AppTo.GetValue("ConnectionStrings:Password") ?? "";
                 conn = DbKitExtensions.SqlConnEncryptOrDecrypt(conn, pwd);
 
                 if (dbt == DBTypes.SQLite)

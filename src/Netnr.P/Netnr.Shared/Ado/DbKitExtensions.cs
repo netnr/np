@@ -32,12 +32,19 @@ public static partial class DbKitExtensions
             DBTypes.MySQL or DBTypes.MariaDB or DBTypes.ClickHouse =>
             string.Join('.', words.Replace("`", "").Split('.').Select(x => $"`{x}`")),
 
-            DBTypes.Oracle or DBTypes.PostgreSQL =>
+            DBTypes.Oracle or DBTypes.PostgreSQL or DBTypes.Dm =>
             string.Join('.', words.Replace("\"", "").Split('.').Select(x => $"\"{x}\"")),
 
             _ => words,
         };
     }
+
+    /// <summary>
+    /// 移除符号
+    /// </summary>
+    /// <param name="words"></param>
+    /// <returns></returns>
+    public static string SqlTrimQuote(string words) => words.Trim('"').Trim('`').TrimStart('[').TrimEnd(']');
 
     /// <summary>
     /// 模式及表名
@@ -70,7 +77,7 @@ public static partial class DbKitExtensions
     /// <param name="tableName"></param>
     /// <param name="schemaName"></param>
     /// <returns></returns>
-    public static bool SqlEqualSNTN(string sntn, string tableName, string schemaName = null)
+    public static bool SqlEqualSNTN(string sntn, string tableName, string schemaName)
     {
         var sntnArray = sntn.Split('.');
         if (sntnArray.Length == 2)
@@ -145,7 +152,7 @@ public static partial class DbKitExtensions
     /// <summary>
     /// 连接字符串常用键名
     /// </summary>
-    internal static List<string> ListConnCommonKeys { get; set; } = new List<string> { "database", "server", "filename", "source", "user", "host" };
+    internal static List<string> ListConnCommonKeys { get; set; } = ["database", "server", "filename", "source", "user", "host"];
 
     /// <summary>
     /// SQL连接字符串预检
@@ -167,10 +174,14 @@ public static partial class DbKitExtensions
                     case DBTypes.MySQL:
                     case DBTypes.MariaDB:
                         citem.Add("AllowLoadLocalInfile", "true");
+                        citem.Add("Treat Tiny As Boolean", "False");
                         break;
                     case DBTypes.SQLServer:
                         citem.Add("TrustServerCertificate", "true");
                         citem.Add("MultipleActiveResultSets", "true");
+                        break;
+                    case DBTypes.ClickHouse:
+                        citem.Add("UseCustomDecimals", "false");
                         break;
                 }
 
@@ -178,7 +189,7 @@ public static partial class DbKitExtensions
                 {
                     foreach (var key in citem.Keys)
                     {
-                        if (!connectionString.ToLower().Replace(" ", "").Contains(key.ToLower()))
+                        if (!connectionString.Replace(" ", "").Contains(key, StringComparison.OrdinalIgnoreCase))
                         {
                             connectionString = connectionString.TrimEnd(';') + $";{key}={citem[key]}";
                         }
@@ -196,7 +207,7 @@ public static partial class DbKitExtensions
     /// <param name="conn">连接字符串</param>
     /// <param name="pwd">密码</param>
     /// <param name="isDecrypt">是解密，加密 false</param>
-    public static string SqlConnEncryptOrDecrypt(string conn, string pwd, bool isDecrypt = true)
+    public static string SqlConnEncryptOrDecrypt(string conn, string pwd = "", bool isDecrypt = true)
     {
         if (isDecrypt)
         {
@@ -257,6 +268,25 @@ public static partial class DbKitExtensions
         return list;
     }
 
+    /// <summary>
+    /// 大小写映射
+    /// </summary>
+    /// <param name="field"></param>
+    /// <param name="lowerCase"></param>
+    /// <returns></returns>
+    public static string CaseMapping(string field, string lowerCase = "LowerCase")
+    {
+        if (lowerCase.Equals("UpperCase", StringComparison.OrdinalIgnoreCase))
+        {
+            field = field.ToUpper();
+        }
+        else if (!lowerCase.Equals("Same", StringComparison.OrdinalIgnoreCase))
+        {
+            field = field.ToLower();
+        }
+        return field;
+    }
+
     #endregion
 
     /// <summary>
@@ -297,6 +327,7 @@ public static partial class DbKitExtensions
 
                 var columnName = dr["ColumnName"].ToString();
                 var dataType = dr["DataType"];
+                var dtype = (Type)dataType;
 
                 //处理相同的列
                 int num = 0;
@@ -308,7 +339,7 @@ public static partial class DbKitExtensions
                 var column = new DataColumn()
                 {
                     ColumnName = columnName,
-                    DataType = dataType is string ? Type.GetType(dataType.ToString()) : (Type)dataType,
+                    DataType = Nullable.GetUnderlyingType(dtype) ?? dtype,
                     Unique = Convert.ToBoolean(dr["IsUnique"] == DBNull.Value ? false : dr["IsUnique"]),
                     AllowDBNull = Convert.ToBoolean(dr["AllowDBNull"] == DBNull.Value ? true : dr["AllowDBNull"]),
                     AutoIncrement = Convert.ToBoolean(dr["IsAutoIncrement"] == DBNull.Value ? false : dr["IsAutoIncrement"])
@@ -476,6 +507,7 @@ public static partial class DbKitExtensions
                     }
                     dt.Rows.Add(row);
                 }
+
                 model.Datas.Tables.Add(dt);
             }
         } while (await reader.NextResultAsync());
@@ -490,9 +522,9 @@ public static partial class DbKitExtensions
     /// </summary>
     /// <param name="dbCommand"></param>
     /// <param name="readRow">读取行</param>
-    /// <param name="emptyTable">表结构（空表） dt.Namespace = SchemaName，dt.TableName = TableName</param>
+    /// <param name="schemaResult">表结构（空表） dt.Namespace = SchemaName，dt.TableName = TableName</param>
     /// <returns></returns>
-    public static async Task ReaderDataRowAsync(this DbCommand dbCommand, Func<object[], Task> readRow = null, Func<DataTable, Task> emptyTable = null)
+    public static async Task ReaderDataRowAsync(this DbCommand dbCommand, Func<object[], Task> readRow = null, Func<DbKitSchemaResult, Task> schemaResult = null)
     {
         using var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.KeyInfo);
 
@@ -501,9 +533,9 @@ public static partial class DbKitExtensions
             if (reader.FieldCount > 0)
             {
                 var schemaModel = await reader.ReaderSchemaAsync();
-                if (emptyTable != null)
+                if (schemaResult != null)
                 {
-                    await emptyTable.Invoke(schemaModel.Table);
+                    await schemaResult.Invoke(schemaModel);
                 }
 
                 while (await reader.ReadAsync())

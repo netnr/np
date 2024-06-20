@@ -23,7 +23,7 @@ let nrPage = {
             switch (action) {
                 case "svg1":
                 case "svg2":
-                    nrcBase.download(domCardView.innerHTML, "identicon.svg");
+                    nrcBase.downloadText(domCardView.innerHTML, "identicon.svg");
                     break;
                 case "image1":
                 case "image2":
@@ -34,7 +34,7 @@ let nrPage = {
                         let canvas = await html2canvas(domCardView, { backgroundColor: null });
                         domCardView.classList.toggle('border');
 
-                        nrcBase.download(canvas, "identicon.png");
+                        nrcBase.downloadCanvas(canvas, "identicon.png");
                     }
                     break;
             }

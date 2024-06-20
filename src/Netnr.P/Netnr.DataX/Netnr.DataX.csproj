@@ -3,15 +3,14 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net7.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<!--剪裁粒度 https://learn.microsoft.com/zh-cn/dotnet/core/deploying/trimming/trimming-options-->
 		<TrimMode>partial</TrimMode>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<!--SqlClient 依赖ICU-->
-		<!--<InvariantGlobalization>true</InvariantGlobalization>-->
 	</PropertyGroup>
-
+	
 	<!-- SqlClient v5 剪裁配置 -->
 	<!-- https://docs.microsoft.com/zh-cn/dotnet/core/deploying/trimming/trimming-options -->
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
@@ -23,17 +22,12 @@
 	</Target>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>$(DefineConstants);TRACE;Ready;ImportBase;Base;AdoAll;DataKit;Serve;NJson;Win</DefineConstants>
+		<DefineConstants>$(DefineConstants);TRACE;Ready;ImportBase;Base;Core;AdoAll;DataKit;Serve;NJson;Win;IPQuery;UAParser;ConsoleX</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>$(DefineConstants);TRACE;Ready;ImportBase;Base;AdoAll;DataKit;Serve;NJson;Win</DefineConstants>
+		<DefineConstants>$(DefineConstants);TRACE;Ready;ImportBase;Base;Core;AdoAll;DataKit;Serve;NJson;Win;IPQuery;UAParser;ConsoleX</DefineConstants>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Remove="Application\MenuMainService.cs" />
-		<Compile Remove="Application\MenuSilenceService.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\..\..\docs\Netnr.DataX.md"></None>
@@ -44,23 +38,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ClickHouse.Client" Version="6.7.5" />
-		<PackageReference Include="Hardware.Info" Version="100.0.0" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.12" />
-		<PackageReference Include="MiniExcel" Version="1.31.2" />
-		<PackageReference Include="MySqlConnector" Version="2.3.0-beta.3" />
+		<PackageReference Include="ClickHouse.Client" Version="7.5.1" />
+		<PackageReference Include="dmdbms.DmProvider" Version="1.1.3" />
+		<PackageReference Include="Hardware.Info" Version="100.1.0" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.20" />
+		<PackageReference Include="MiniExcel" Version="1.32.1" />
+		<PackageReference Include="MySqlConnector" Version="2.3.7" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Npgsql" Version="7.0.6" />
-		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.120" />
+		<PackageReference Include="Npgsql" Version="7.0.7" />
+		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.4.0" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
-
-	<ItemGroup>
-		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
-		<ProjectReference Include="..\Netnr.IPQuery\Netnr.IPQuery.csproj" />
-		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
-	</ItemGroup>
 
 </Project>

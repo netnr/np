@@ -12,7 +12,7 @@ var ndkVary = {
     ],
 
     //数据库类型
-    DBTypes: ["SQLite", "MySQL", "MariaDB", "Oracle", "SQLServer", "PostgreSQL"],
+    DBTypes: ["SQLite", "MySQL", "MariaDB", "Oracle", "SQLServer", "PostgreSQL", "ClickHouse", "Dm"],
 
     typeEnv: ["dev", "prod"], //环境类型
     colorEnv: env => `var(--sl-color-${env == "prod" ? "danger" : "primary"}-600)`,
@@ -76,15 +76,21 @@ var ndkVary = {
         MariaDB: "Server={IP};Port=3306;Uid={USER};Pwd={PWD};Database={DBNAME};",
         Oracle: "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={IP})(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=ORCL)));User Id={USER};Password={PWD};",
         SQLServer: "Server={IP},1433;User Id={USER};Password={PWD};Database={DBNAME};TrustServerCertificate=True;",
-        PostgreSQL: "Server={IP};Port=5432;User Id={USER};Password={PWD};Database={DBNAME};"
+        PostgreSQL: "Server={IP};Port=5432;User Id={USER};Password={PWD};Database={DBNAME};",
+        ClickHouse: "host={IP};port=8123;username={USER};password={PWD};",
+        Dm: "server={IP};port=5236;user={USER};password={PWD};database={DBNAME};"
     },
     //连接示例
     resConnDemo: [
         { id: 10001, type: "SQLite", alias: "netnrf", group: "demo", order: 1, env: "dev", conn: "Data Source=https://gs.zme.ink/2020/05/22/2037505934.db" },
-        { id: 10005, type: "PostgreSQL", alias: "eiueluhc", group: "demo", order: 3, env: "dev", conn: "Server=satao.db.elephantsql.com;Port=5432;User Id=eiueluhc;Password=IbiZfVBcqLilS58RkaWNDG6j007Td0ml;Database=eiueluhc;SslMode=Require;Trust Server Certificate=true;" }
     ],
     //参数配置
     parameterConfig: {
+        openTransaction: {
+            type: "boolean",
+            list: [{ val: true }, { val: false }],
+            value: false
+        },
         autoFilterDatabaseNumber: { type: "number", value: 40 },
         selectDataLimit: { type: "number", value: 100 },
         buildSqlWithQuote: {
@@ -131,7 +137,7 @@ var ndkVary = {
     apiServer: location.origin, //指定接口服务
 
     apiServiceStatus: "/DataKit/ServiceStatusGet", // 服务状态检测 204
-    apiGetDatabaseName: "/DataKit/DatabaseNameGet",
+    apiGetDatabaseName: "/DataKit/DatabaseNameOnlyGet",
     apiGetDatabaseInfo: "/DataKit/DatabaseGet",
     apiGetTable: "/DataKit/TableGet",
     apiGetColumn: "/DataKit/ColumnPost",

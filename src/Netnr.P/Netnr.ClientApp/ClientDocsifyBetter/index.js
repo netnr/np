@@ -114,7 +114,7 @@ let nrcDocsify = {
         const regex = /(https?:\/\/[\w.-]+)\/(.*)@([\d.]+)\/(.*)\.(\w+)/;
         let mr = regex.exec(url);
         if (mr != null) {
-            url = `https://registry.npmmirror.com/${mr[2]}/${mr[3]}/files/${mr[4]}.${mr[5]}`;
+            url = `https://ss.netnr.com/${mr[2]}@${mr[3]}/${mr[4]}.${mr[5]}`;
         }
         return url;
     },

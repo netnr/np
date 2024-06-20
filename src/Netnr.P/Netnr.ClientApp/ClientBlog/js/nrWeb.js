@@ -2,12 +2,13 @@ import { nrApp } from "../../frame/Bootstrap/nrApp";
 import { nrcBase } from "../../frame/nrcBase";
 import { nrRouter } from "../../frame/nrRouter";
 import { nrStorage } from "../../frame/nrStorage";
-import { nrToy } from "./nrToy";
 import { nrVary } from "./nrVary";
 
 let nrWeb = {
     init: async () => {
-        Object.assign(window, { nrWeb, nrVary, nrToy });
+        console.log('https://www.netnr.com\r\nhttps://github.com/netnr');
+
+        Object.assign(window, { nrWeb, nrVary });
 
         //存储
         await nrStorage.init();
@@ -65,8 +66,6 @@ let nrWeb = {
 
         //设置主题
         nrApp.setTheme(nrcBase.isDark() ? "dark" : "light");
-
-        nrToy.init();
     },
 
     /**
@@ -95,7 +94,7 @@ let nrWeb = {
         let routerController = pathArray[1] || "home";
         let routerAction = pathArray[2] || "index";
         let routerId = pathArray[3] || null;
-        
+
         let packName = `nrPack_${nrcBase.humpToUnderline(routerController)}`;
 
         //页面脚本对象
@@ -119,7 +118,7 @@ let nrWeb = {
         if (vm.error) {
             return { code: -3, msg: `请求失败：${vm.error.message}`, error: vm.error }
         } else if (vm.resp.ok == false) {
-            return { code: vm.resp.status, msg: vm.resp.statusText, resp: vm.resp }
+            return { code: vm.resp.status, msg: vm.resp.statusText || `请求失败：HTTP ${vm.resp.status}`, resp: vm.resp }
         } else {
             return vm.result;
         }

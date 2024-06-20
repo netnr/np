@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Net.Http;
 
 namespace Netnr.Blog.Web.Controllers
 {
@@ -504,6 +503,27 @@ namespace Netnr.Blog.Web.Controllers
             finally
             {
                 AppContext.SetSwitch("Netnr.BuildHtml", false);
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 【管理员】构建完成
+        /// </summary>
+        /// <returns></returns>
+        public ResultVM BuildDone()
+        {
+            var vm = new ResultVM();
+
+            //是管理员 或 带参数
+            if (IdentityService.IsAdmin(HttpContext) || Environment.GetCommandLineArgs().Contains("--admin"))
+            {
+                Environment.Exit(0);
+            }
+            else
+            {
+                vm.Set(RCodeTypes.unauthorized);
             }
 
             return vm;

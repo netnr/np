@@ -14,7 +14,7 @@ let nrPage = {
     init: async () => {
         //编辑器
         nrApp.setLoading(nrVary.domBtnFormat);
-        await nrEditor.init();
+        await nrEditor.rely();
         await nrcRely.remote('editor-nginx');
         nrApp.setLoading(nrVary.domBtnFormat, true);
 

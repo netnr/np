@@ -1,21 +1,13 @@
-﻿using System.Net.Http;
-using System.Text.RegularExpressions;
-
-namespace Netnr.Blog.Web.Controllers
+﻿namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 后台管理
     /// </summary>
     [Authorize]
     [FilterConfigs.IsAdmin]
-    public class AdminController : WebController
+    public class AdminController(ContextBase cb) : WebController
     {
-        public ContextBase db;
-
-        public AdminController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// 后台管理
@@ -175,6 +167,9 @@ namespace Netnr.Blog.Web.Controllers
         {
             var vm = new ResultVM();
 
+            //xss
+            mo.UrContent = CommonService.XSS(mo.UrContent);
+
             var num = await db.UserReply.Where(x => x.UrId == mo.UrId).ExecuteUpdateAsync(x => x
                 .SetProperty(p => p.UrAnonymousName, mo.UrAnonymousName)
                 .SetProperty(p => p.UrAnonymousMail, mo.UrAnonymousMail)
@@ -233,10 +228,10 @@ namespace Netnr.Blog.Web.Controllers
             var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
             {
-                listWhere = new List<List<string>>
-                {
+                listWhere =
+                [
                     new List<string> { "LogGroup", "=", LogGroup }
-                };
+                ];
             }
 
             var vm = await LoggingTo.StatsPVUV(days ?? 0, listWhere);
@@ -256,10 +251,10 @@ namespace Netnr.Blog.Web.Controllers
             var listWhere = new List<List<string>>();
             if (!string.IsNullOrWhiteSpace(LogGroup))
             {
-                listWhere = new List<List<string>>
-                {
+                listWhere =
+                [
                     new List<string> { "LogGroup", "=", LogGroup }
-                };
+                ];
             }
 
             var vm = await LoggingTo.StatsTop(days ?? 0, field, listWhere);

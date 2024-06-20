@@ -2,31 +2,44 @@ import { nrcBase } from "./nrcBase";
 
 // monaco-editor
 let nrEditor = {
-
+    tsLoaded: null,
     /**
      * 资源依赖，默认远程，可重写为本地
      */
-    init: () => new Promise((resolve) => {
-        let loaderUrl = 'https://npmcdn.com/monaco-editor@0.44.0/min/vs/loader.js';
-        loaderUrl = nrcBase.mirrorNPM(loaderUrl);
+    rely: async () => {
+        if (nrEditor.tsLoaded == null) {
+            nrEditor.tsLoaded = new Promise((resolve) => {
+                // 0.48 出现正则表达式 const markRegex = /\bMARK:\s*(.*)$/d; 末尾 /d 旧版本不支持
+                let loaderUrl = 'https://npmcdn.com/monaco-editor@0.47.0/min/vs/loader.js';
+                loaderUrl = nrcBase.mirrorNPM(loaderUrl);
 
-        nrcBase.importScript(loaderUrl).then(() => {
-            window["require"].config({
-                paths: { vs: loaderUrl.replace('/loader.js', '') },
-                'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+                nrcBase.importScript(loaderUrl).then(() => {
+                    window["require"].config({
+                        paths: { vs: loaderUrl.replace('/loader.js', '') },
+                        'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
+                    });
+
+                    window["require"](['vs/editor/editor.main'], function () {
+                        nrEditor.defaultSetting();
+                        resolve();
+                    });
+                });
             });
+        }
 
-            window["require"](['vs/editor/editor.main'], function () {
-                //xml formatter
-                monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
+        return nrEditor.tsLoaded;
+    },
 
-                //json comments
-                monaco.languages.json.jsonDefaults.diagnosticsOptions.comments = "ignore";
+    /**
+     * 默认设置
+     */
+    defaultSetting: () => {
+        //xml formatter
+        monaco.languages.html.registerHTMLLanguageService('xml', {}, { documentFormattingEdits: true })
 
-                resolve();
-            });
-        });
-    }),
+        //json comments
+        monaco.languages.json.jsonDefaults.diagnosticsOptions.comments = "ignore";
+    },
 
     /**
      * 配置
@@ -91,9 +104,24 @@ let nrEditor = {
      */
     getLanguage: (editor) => editor.getModel().getLanguageId(),
 
+    /**
+     * 支持的语言
+     * @returns 
+     */
+    getAllLanguages: () => {
+        let allLang = monaco.languages.getLanguages().map(lang => lang.id).filter(x => !x.includes('.'));
+        return allLang;
+    },
+
+    /**
+     * 值改变事件
+     * @param {*} editor 
+     * @param {*} callback 
+     * @param {*} defer 
+     */
     onChange: (editor, callback, defer) => {
         defer = defer || 500;
-        editor.onDidChangeModelContent(function (event) {
+        editor.onDidChangeModelContent(function () {
             clearTimeout(nrEditor.defer_change);
             nrEditor.defer_change = setTimeout(function () {
                 callback(editor.getValue());

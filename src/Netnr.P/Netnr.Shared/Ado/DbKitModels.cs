@@ -136,7 +136,7 @@ public partial class DbKitSchemaResult
     /// 主键列（考虑复合主键列只查询一列时的情况，先填充数据，再设置主键，即使是出错）
     /// Table.PrimaryKey = KeyColumns.ToArray();
     /// </summary>
-    public List<DataColumn> KeyColumns { get; set; } = new();
+    public List<DataColumn> KeyColumns { get; set; } = [];
     /// <summary>
     /// 表结构（元数据）
     /// </summary>

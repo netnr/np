@@ -42,7 +42,7 @@ namespace Netnr
             {
                 IWorkbook workbook = new HSSFWorkbook();
 
-                if (fullPathName.ToLower().Contains(".xlsx"))
+                if (fullPathName.Contains(".xlsx", StringComparison.OrdinalIgnoreCase))
                     workbook = new XSSFWorkbook();
 
                 foreach (var sheetitem in dicSheet.Keys)
@@ -199,7 +199,7 @@ namespace Netnr
                                 case CellType.Numeric:
                                     if (DateUtil.IsCellDateFormatted(item))
                                     {
-                                        dr[item.ColumnIndex] = item.DateCellValue.ToString("yyyy-MM-dd hh:MM:ss");
+                                        dr[item.ColumnIndex] = item.DateCellValue?.ToString("yyyy-MM-dd hh:MM:ss");
                                     }
                                     else
                                     {
@@ -227,7 +227,7 @@ namespace Netnr
                         case CellType.Numeric:
                             if (DateUtil.IsCellDateFormatted(item))
                             {
-                                dr[item.ColumnIndex] = item.DateCellValue.ToString("yyyy-MM-dd hh:MM:ss");
+                                dr[item.ColumnIndex] = item.DateCellValue?.ToString("yyyy-MM-dd hh:MM:ss");
                             }
                             else
                             {

@@ -204,7 +204,7 @@ public partial class DataKitTransfer
         /// <summary>
         /// 读取列 映射 写入列
         /// </summary>
-        public Dictionary<string, string> ReadWriteColumnMap { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ReadWriteColumnMap { get; set; } = [];
     }
 
     /// <summary>
@@ -246,7 +246,7 @@ public partial class DataKitTransfer
         /// <summary>
         /// 读写表集合
         /// </summary>
-        public List<ReadWriteItem> ListReadWrite { get; set; } = new List<ReadWriteItem>();
+        public List<ReadWriteItem> ListReadWrite { get; set; } = [];
     }
 
     /// <summary>
@@ -259,9 +259,13 @@ public partial class DataKitTransfer
         /// </summary>
         public bool WriteDeleteData { get; set; }
         /// <summary>
-        /// 忽略表名（可带模式名 SchemaName）
+        /// 忽略读取源表名（可带模式名 SchemaName）
         /// </summary>
-        public List<string> ListIgnoreTableName { get; set; } = new List<string>();
+        public List<string> ListIgnoreTableName { get; set; } = [];
+        /// <summary>
+        /// 指定读取源开始表名（可带模式名 SchemaName），针对失败时可跳过成功的表
+        /// </summary>
+        public string StartTableName { get; set; }
 
         /// <summary>
         /// 转换为
@@ -278,6 +282,21 @@ public partial class DataKitTransfer
 
             if (readTables?.Count > 0 && writeTables?.Count > 0)
             {
+                //开始表名
+                if (!string.IsNullOrWhiteSpace(StartTableName))
+                {
+                    for (int i = 0; i < readTables.Count; i++)
+                    {
+                        var readTable = readTables[i];
+                        var readSNTN = DbKitExtensions.SqlSNTN(readTable.TableName, readTable.SchemaName, mdt.ReadConnectionInfo.ConnectionType);
+                        if (DbKitExtensions.SqlEqualSNTN(StartTableName, readSNTN))
+                        {
+                            readTables = readTables.Skip(i).ToList();
+                            break;
+                        }
+                    }
+                }
+
                 readTables.ForEach(readTable =>
                 {
                     var readSNTN = DbKitExtensions.SqlSNTN(readTable.TableName, readTable.SchemaName, mdt.ReadConnectionInfo.ConnectionType);
@@ -295,12 +314,15 @@ public partial class DataKitTransfer
                         }
                         else
                         {
-                            listWriteTable = writeTables.Where(x => readTable.TableName == x.TableName).ToList();
+                            listWriteTable = writeTables.Where(x => x.TableName == readTable.TableName).ToList();
                         }
                         if (listWriteTable.Count > 0)
                         {
-                            //尝试匹配模式名 或 取第一条
-                            var writeTable = listWriteTable.FirstOrDefault(x => x.SchemaName == readTable.SchemaName);
+                            //模式名.表名
+                            var writeTable = listWriteTable.FirstOrDefault(x => x.SchemaName == readTable.SchemaName && x.TableName == readTable.TableName);
+                            //表名相同
+                            writeTable ??= listWriteTable.FirstOrDefault(x => x.TableName == readTable.TableName);
+                            //表名相似
                             writeTable ??= listWriteTable.First();
 
                             var writeSNTN = DbKitExtensions.SqlSNTN(writeTable.TableName, writeTable.SchemaName, mdt.WriteConnectionInfo.ConnectionType);
@@ -319,6 +341,113 @@ public partial class DataKitTransfer
             }
 
             return mdt;
+        }
+    }
+
+    /// <summary>
+    /// 同步
+    /// </summary>
+    public class SyncBase : MigrateBase
+    {
+        /// <summary>
+        /// DDL 创建，默认auto不存在则创建，或cover始终重建覆盖
+        /// </summary>
+        public string DDLCreate { get; set; } = "auto";
+        /// <summary>
+        /// 默认转小写，或相同Same
+        /// </summary>
+        public string DDLLowerCase { get; set; } = "LowerCase";
+        /// <summary>
+        /// 允许列为 null，默认否，不推荐开启
+        /// </summary>
+        public bool AllowDBNull { get; set; }
+        /// <summary>
+        /// 表名 映射前缀
+        /// </summary>
+        public string TableNameMappingPrefix { get; set; }
+        /// <summary>
+        /// 表名 同步后缀
+        /// </summary>
+        public string TableNameSyncSuffix { get; set; } = "___sync___";
+        /// <summary>
+        /// 默认时间
+        /// </summary>
+        public DateTime DefaultDateTime { get; set; } = new DateTime(1970, 1, 1);
+        /// <summary>
+        /// 默认数值
+        /// </summary>
+        public int DefaultNumeric { get; set; } = 0;
+        /// <summary>
+        /// 默认字符
+        /// </summary>
+        public string DefaultString { get; set; } = "";
+    }
+
+    /// <summary>
+    /// 同步表
+    /// </summary>
+    public class SyncDataTable : SyncBase
+    {
+        /// <summary>
+        /// 读取数据表（可带模式名 SchemaName）
+        /// </summary>
+        public List<string> ListReadDataSQL { get; set; } = [];
+    }
+
+    /// <summary>
+    /// 同步库
+    /// </summary>
+    public class SyncDatabase : SyncBase
+    {
+        /// <summary>
+        /// 忽略读取源表名（可带模式名 SchemaName）
+        /// </summary>
+        public List<string> ListIgnoreTableName { get; set; } = [];
+        /// <summary>
+        /// 指定读取源开始表名（可带模式名 SchemaName），针对失败时可跳过成功的表
+        /// </summary>
+        public string StartTableName { get; set; }
+        /// <summary>
+        /// 转换为
+        /// </summary>
+        /// <returns></returns>
+        public async Task<SyncDataTable> AsSyncDataTable()
+        {
+            var sdb = this;
+            var sdt = new SyncDataTable().ToDeepCopy(sdb);
+
+            var readTables = await DataKitTo.CreateDataKitInstance(sdt.ReadConnectionInfo).GetTable();
+            if (readTables?.Count > 0)
+            {
+                //开始表名
+                if (!string.IsNullOrWhiteSpace(StartTableName))
+                {
+                    for (int i = 0; i < readTables.Count; i++)
+                    {
+                        var readTable = readTables[i];
+                        var readSNTN = DbKitExtensions.SqlSNTN(readTable.TableName, readTable.SchemaName, sdt.ReadConnectionInfo.ConnectionType);
+                        if (DbKitExtensions.SqlEqualSNTN(StartTableName, readSNTN))
+                        {
+                            readTables = readTables.Skip(i).ToList();
+                            break;
+                        }
+                    }
+                }
+
+                sdt.ListReadDataSQL = [];
+                readTables.ForEach(readTable =>
+                {
+                    var readSNTN = DbKitExtensions.SqlSNTN(readTable.TableName, readTable.SchemaName, sdt.ReadConnectionInfo.ConnectionType);
+
+                    //忽略表名
+                    if (!sdb.ListIgnoreTableName.Any(x => DbKitExtensions.SqlEqualSNTN(x, readSNTN)))
+                    {
+                        sdt.ListReadDataSQL.Add($"SELECT * FROM {readSNTN}");
+                    }
+                });
+            }
+
+            return sdt;
         }
     }
 
@@ -357,7 +486,7 @@ public partial class DataKitTransfer
         /// <summary>
         /// 读取数据表（可带模式名 SchemaName）
         /// </summary>
-        public List<string> ListReadDataSQL { get; set; } = new List<string>();
+        public List<string> ListReadDataSQL { get; set; } = [];
     }
 
     /// <summary>
@@ -368,11 +497,11 @@ public partial class DataKitTransfer
         /// <summary>
         /// 读取表名（可带模式名 SchemaName）
         /// </summary>
-        public List<string> ListReadTableName { get; set; } = new List<string>();
+        public List<string> ListReadTableName { get; set; } = [];
         /// <summary>
         /// 忽略表名（可带模式名 SchemaName）
         /// </summary>
-        public List<string> ListIgnoreTableName { get; set; } = new List<string>();
+        public List<string> ListIgnoreTableName { get; set; } = [];
 
         /// <summary>
         /// 转换，导出数据库对象转换为导出数据表对象
@@ -393,7 +522,7 @@ public partial class DataKitTransfer
             var edt = new ExportDataTable().ToDeepCopy(edb);
 
             // 构建读取数据的 SQL
-            edt.ListReadDataSQL = new List<string>();
+            edt.ListReadDataSQL = [];
             foreach (var table in edb.ListReadTableName)
             {
                 //忽略表名
@@ -402,8 +531,7 @@ public partial class DataKitTransfer
                     continue;
                 }
 
-                var sql = $"SELECT * FROM {table}";
-                edt.ListReadDataSQL.Add(sql);
+                edt.ListReadDataSQL.Add($"SELECT * FROM {table}");
             }
 
             return edt;
@@ -438,8 +566,9 @@ public partial class DataKitTransfer
         /// <summary>
         /// 读取表 映射 写入表（可带模式名 SchemaName）
         /// </summary>
-        public Dictionary<string, string> ReadWriteTableMap { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ReadWriteTableMap { get; set; } = [];
     }
+
 }
 
 #endif

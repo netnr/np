@@ -1,7 +1,7 @@
 # NRF (Netnr.ResponseFramework) 响应式框架
 .NET (latest) 的响应式框架，基于 Ace Admin 框架菜单导航，Bootstrap 布局，fontAwesome 图标，内嵌 Iframe 用 EasyUI 做数据绑定，动态配置列表，动态配置表单
 
-> https://rf.netnr.com
+> ### 存档，不在更新
 
 ### [文档说明](Netnr.ResponseFramework.Document.md)
 
@@ -35,7 +35,6 @@
 - 日志：访问日志记录
 - 字典：通用的字典表
 - 工具：库工具 - NDK(Netnr.DataKit)
-- 任务：定时执行任务，清理临时目录、重置演示数据库
 - 导出：公共导出 Excel 表，自定义查询主体，支持条件查询、列格式化，支持追加操作等
 - 上传：通用的上传接口
 - 接口：所有非页面请求规范化为接口，并用 swagger 生成可视化接口文档

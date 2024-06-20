@@ -60,9 +60,9 @@ let nrPage = {
             let fd = new FormData();
             fd.append("file", file);
 
-            let result = await nrWeb.reqServer('https://file.zme.ink/API/UploadTmp', { method: 'POST', body: fd });
+            let result = await nrWeb.reqServer('https://netnr.zme.ink/api/v1/Upload', { method: 'POST', body: fd });
             if (result.code == 200) {
-                nrPage.view(`https://file.zme.ink${result.data}`);
+                nrPage.view(`https://netnr.zme.ink/${result.data}`);
             } else {
                 nrApp.alert(result.msg);
             }

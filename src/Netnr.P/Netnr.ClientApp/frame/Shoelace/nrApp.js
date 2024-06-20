@@ -17,7 +17,7 @@ let nrApp = {
      * @param {*} size 
      * @returns 
      */
-    eleTips: (text, size) => `<sl-button variant="text" size="${size || "medium"}">${nrcBase.htmlOf(text)}</sl-button>`,
+    eleTips: (text, size) => htmlraw`<sl-button variant="text" size="${size || "medium"}">${text}</sl-button>`,
 
     /**
      * 是暗黑主题
@@ -80,9 +80,17 @@ let nrApp = {
     globalError: () => {
         window.addEventListener('error', function (event) {
             console.debug(event);
+            let msg = event.message;
+
             if (window["shoelace"] || window["nrTranslations"]) {
-                nrApp.toast(JSON.stringify(event));
+                if (!msg.startsWith("ResizeObserver")) {
+                    nrApp.toast(msg);
+                }
             }
+
+            // 上报
+            // let obj = { time: nrcBase.now() };
+            // ["filename", "lineno", "message"].forEach(x => obj[x] = event[x]);
         });
     },
 
@@ -175,19 +183,18 @@ let nrApp = {
     /**
      * 设置本地过滤
      * @param {*} domTxt 
-     * @param {*} grid 
+     * @param {*} gridApi 
      */
-    setQuickFilter: (domTxt, grid) => {
-        domTxt.addEventListener('input', async function () {
-            if (grid && grid.api) {
-                grid.api.setQuickFilter(this.value);
+    setQuickFilter: (domTxt, gridApi) => {
+        domTxt.addEventListener("sl-input", async function (event) {
+            if (event.target == this && gridApi) {
+                (gridApi.gos.eGridDiv.gridApi || gridApi).updateGridOptions({ quickFilterText: this.value });
+                // 模拟引用传递的效果
+                // 通过 nrGrid.createGrid 方法创建的对象会在 DOM 记录 gridApi
+                // 获取 DOM 存储的 gridApi 对象再调用，解决 gridApi 对象被覆盖后不生效的问题
+                // gridApi.updateGridOptions({ quickFilterText: this.value })
             }
         });
-        domTxt.addEventListener('sl-clear', async function (e) {
-            if (e.target == this) {
-                grid.api.setQuickFilter(this.value);
-            }
-        })
     },
 
     /**
@@ -222,6 +229,7 @@ let nrApp = {
     alert: (content, title, width = "60em") => {
         if (nrApp.domAlert == null) {
             nrApp.domAlert = document.createElement('sl-dialog');
+            nrApp.domAlert.classList.add("work-break-all");
             document.body.appendChild(nrApp.domAlert);
         }
         nrApp.domAlert.label = title || "消息提示";

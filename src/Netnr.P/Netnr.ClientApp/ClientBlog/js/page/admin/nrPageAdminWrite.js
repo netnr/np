@@ -16,11 +16,7 @@ let nrPage = {
 
     bindEvent: () => {
         //过滤
-        nrVary.domTxtFilter.addEventListener('input', function () {
-            if (nrPage.grid1) {
-                nrPage.grid1.api.setQuickFilter(this.value);
-            }
-        })
+        nrApp.setQuickFilter(nrVary.domTxtFilter, nrPage.grid1);
     },
 
     viewGrid1: async () => {
@@ -70,8 +66,8 @@ let nrPage = {
                     let result = await nrWeb.reqServer('/Admin/WriteSave', { method: "POST", body: fd });
 
                     if (result.code == 200) {
-                        nrPage.grid1.api.ensureIndexVisible(params.rowIndex); //滚动到行显示
-                        nrPage.grid1.api.flashCells({ rowNodes: [params.node], columns: [params.column.colId] }); //闪烁单元格
+                        nrPage.grid1.ensureIndexVisible(params.rowIndex); //滚动到行显示
+                        nrPage.grid1.flashCells({ rowNodes: [params.node], columns: [params.column.colId] }); //闪烁单元格
                     } else {
                         nrApp.alert(result.msg);
                     }
@@ -83,7 +79,7 @@ let nrPage = {
             nrcBase.setHeightFromBottom(nrVary.domGrid);
 
             //grid 显示
-            nrPage.grid1 = await nrGrid.viewGrid(nrVary.domGrid, gridOptions);
+            nrPage.grid1 = await nrGrid.createGrid(nrVary.domGrid, gridOptions);
         } else {
             nrVary.domGrid.innerHTML = nrApp.tsFailHtml;
         }

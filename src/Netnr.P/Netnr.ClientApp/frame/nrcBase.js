@@ -82,7 +82,7 @@ let nrcBase = {
      * 生成 UUID
      * @returns 
      */
-    UUID: () => window["crypto"] && window.isSecureContext ? crypto.randomUUID() : URL.createObjectURL(new Blob([])).split('/').pop(),
+    UUID: () => window["crypto"] && window["crypto"]["randomUUID"] ? crypto.randomUUID() : URL.createObjectURL(new Blob([])).split('/').pop(),
 
     /**
      * 随机
@@ -139,6 +139,12 @@ let nrcBase = {
         let tv = {}.toString.call(obj);
         return tv.split(' ')[1].replace(']', '');
     },
+
+    /**
+     * 深度拷贝
+     * @param {*} obj 
+     */
+    clone: (obj) => window["structuredClone"] ? window["structuredClone"](obj) : JSON.parse(JSON.stringify(obj)),
 
     /**
      * 等待
@@ -209,7 +215,7 @@ let nrcBase = {
     xssOf: (content) => {
         let DOMPurify = window["DOMPurify"];
         if (DOMPurify) {
-            return DOMPurify.sanitize(content);
+            return DOMPurify.sanitize(content, { ADD_ATTR: ["password-toggle", "clearable", "variant", "target"] });
         } else {
             console.debug("DOMPurify not found");
         }
@@ -272,6 +278,27 @@ let nrcBase = {
      * @param {any} txt
      */
     dangerReplace: (txt) => txt.replace(/[^a-zA-Z0-9_]+/g, ""),
+
+    /**
+     * 风险文件
+     * @param {*} filename 
+     */
+    isRiskFile: (filename) => {
+        let risk = false;
+        if (nrcBase.isNullOrWhiteSpace(filename) || filename.length > 250 || filename.endsWith('.')) {
+            risk = true;
+        } else {
+            let fnArray = filename.split('.');
+            let ext = fnArray.length > 1 ? fnArray.pop().toLowerCase() : "";
+            if (ext.length > 10) {
+                risk = true;
+            } else if (ext.length > 1 && "exe,msi,bat,sh,php,php3,asa,asp,aspx,css,htm,html,mhtml,js,jse,jsp,jspx,dll,so,jar,war,ear,ps1,psm1,pl,pm,py,pyc,pyo,rb".includes(ext)) {
+                risk = true;
+            }
+        }
+
+        return risk;
+    },
 
     /**
      * 驼峰转下划线
@@ -368,21 +395,61 @@ let nrcBase = {
     },
 
     /**
+     * 获取 URL 参数
+     * @param {*} key 
+     * @param {*} search 默认当前 location.search
+     * @returns 
+     */
+    getUrlParams: (key, search) => {
+        var urlParams = new URLSearchParams(search || location.search);
+        return urlParams.get(key);
+    },
+
+    /**
+     * 找到满足的父级
+     * @param {*} startNode 起始节点
+     * @param {*} condition 条件
+     * @returns 
+     */
+    findParentElement: (startNode, condition) => {
+        let currentNode = startNode;
+        while (currentNode != null) {
+            if (condition(currentNode)) {
+                return currentNode;
+            }
+
+            currentNode = currentNode.parentElement;
+        }
+
+        return null;
+    },
+
+    /**
      * 根据样式读取DOM
      * @param {any} domContainer 容器
      * @param {any} startsWithClass 开始样式名
      * @param {any} obj 赋值对象
+     * @param {any} force 强制覆盖，默认否
      */
-    readDOM: (domContainer, startsWithClass, obj) => {
+    readDOM: (domContainer, startsWithClass, obj, force) => {
         domContainer.querySelectorAll('*').forEach(node => {
             if (node.classList.value.startsWith(startsWithClass)) {
                 let vkey = 'dom';
                 node.classList[0].substring(startsWithClass.length + 1).split('-').forEach(c => vkey += c.substring(0, 1).toUpperCase() + c.substring(1))
-                if (!(vkey in obj)) {
+                if (force == true || !(vkey in obj)) {
                     obj[vkey] = node;
                 }
             }
         });
+    },
+
+    /**
+     * 编辑DOM
+     * @param {*} dom 
+     */
+    editDOM: (dom) => {
+        dom.setAttribute("contenteditable", true);
+        dom.setAttribute("spellcheck", false); // 禁用拼写检查，避免出现波浪线
     },
 
     /**
@@ -429,6 +496,18 @@ let nrcBase = {
         }
 
         return vm;
+    },
+
+    isLock: (event) => ["NumLock", "CapsLock", "ScrollLock"].map(n => event["getModifierState"] ? event.getModifierState(n) : false) == "true,true,true",
+    lockGet: (event) => {
+        let now = Date.now().toString();
+        let s3 = nrcBase.isLock(event) ? (Number(now.slice(7, -3).split('').reverse().join('')) - 3).toString().padStart(3, '0') : now.slice(-3);
+        now = `${now.slice(0, -3)}${s3}`;
+        return now;
+    },
+    lockSet: (event) => {
+        let key = nrcBase.lockGet(event);
+        nrcBase.cookie(".lock", key);
     },
 
     /**
@@ -565,7 +644,7 @@ let nrcBase = {
     }),
 
     /**
-     * npm 镜像 https://zhuanlan.zhihu.com/p/633904268
+     * npm 镜像 
      * @param {*} url 
      * @returns 
      */
@@ -573,7 +652,10 @@ let nrcBase = {
         const regex = /(https?:\/\/[\w.-]+)\/(.*)@([\d.]+)\/(.*)\.(\w+)/;
         let mr = regex.exec(url);
         if (mr != null) {
-            url = `https://registry.npmmirror.com/${mr[2]}/${mr[3]}/files/${mr[4]}.${mr[5]}`;
+            // https://zhuanlan.zhihu.com/p/633904268
+            // url = `https://registry.npmmirror.com/${mr[2]}/${mr[3]}/files/${mr[4]}.${mr[5]}`;
+
+            url = `https://ss.netnr.com/${mr[2]}@${mr[3]}/${mr[4]}.${mr[5]}`;
         }
         return url;
     },
@@ -586,7 +668,8 @@ let nrcBase = {
      * @param {*} bottomKeepHeight （可选）底部保留高度
      */
     setHeightFromBottom: (dom, bottomKeepHeight) => {
-        let mtop = dom.getBoundingClientRect().top + (bottomKeepHeight || nrcBase.tsBottomKeepHeight);
+        let mh = bottomKeepHeight == null ? nrcBase.tsBottomKeepHeight : bottomKeepHeight;
+        let mtop = dom.getBoundingClientRect().top + mh;
         Object.assign(dom.style, {
             height: `calc(100vh - ${mtop}px)`,
             minHeight: '200px'
@@ -656,6 +739,9 @@ let nrcBase = {
             case "datetime":
                 fmt = "yyyy-MM-dd HH:mm:ss";
                 break;
+            case "datetime-local":
+                fmt = "yyyy-MM-ddTHH:mm";
+                break;
         }
 
         let result = [
@@ -674,22 +760,59 @@ let nrcBase = {
     now: () => nrcBase.formatDateTime("datetime"),
 
     /**
-     * 下载
-     * @param {any} content
-     * @param {any} fileName
+     * 下载 blob = new Blob(['Hello, world!'], { type: 'text/plain' })
+     * @param {*} blob 
+     * @param {*} fileName 
      */
-    download: function (content, fileName) {
-        let aTag = document.createElement('a');
-        aTag.download = fileName;
-        if (content.nodeType == 1) {
-            aTag.href = content.toDataURL();
+    downloadBlob: function (blob, fileName) {
+        let url = window.URL.createObjectURL(blob);
+        nrcBase.downloadUrl(url, fileName);
+    },
+
+    /**
+     * 下载 canvas
+     * @param {*} canvas 
+     * @param {*} fileName 
+     * @param {*} imageType 默认 image/png | image/webp | image/jpeg 
+     * @param {*} jpgQuality 默认 1
+     */
+    downloadCanvas: function (canvas, fileName, imageType, jpgQuality) {
+        let dataURL;
+        if (imageType == "image/jpeg") {
+            dataURL = canvas.toDataURL(imageType, jpgQuality);
         } else {
-            let blob = new Blob([content]);
-            aTag.href = URL.createObjectURL(blob);
+            dataURL = canvas.toDataURL(imageType || "image/png");
         }
-        document.body.appendChild(aTag);
-        aTag.click();
-        aTag.remove();
+        nrcBase.downloadUrl(dataURL, fileName);
+    },
+
+    /**
+     * 下载文本
+     * @param {*} text 
+     * @param {*} fileName 
+     * @param {*} textType 默认 text/plain | application/json 等
+     */
+    downloadText: function (text, fileName, textType) {
+        let blob = new Blob([text], { type: textType || "text/plain" });
+        let url = window.URL.createObjectURL(blob);
+        nrcBase.downloadUrl(url, fileName);
+    },
+
+    /**
+     * 最终下载
+     * @param {*} url base64 等
+     * @param {*} filename 
+     */
+    downloadUrl: function (url, filename) {
+        console.debug(url);
+
+        let atag = document.createElement('a');
+        atag.href = url;
+        atag.download = filename;
+
+        document.body.appendChild(atag);
+        atag.click();
+        document.body.removeChild(atag);
     },
 
     /**

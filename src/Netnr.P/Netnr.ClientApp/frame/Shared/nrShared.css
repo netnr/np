@@ -2,6 +2,25 @@ iframe#webpack-dev-server-client-overlay {
     display: none;
 }
 
+[contenteditable]:focus {
+    outline: none;
+}
+
+/*换行*/
+.work-break-all {
+    word-break: break-all;
+}
+
+/*等宽字体*/
+.font-equal-width {
+    font-family: monospace;
+}
+
+/*字体大小0，解决包裹图片对不齐文本*/
+.fs-0 {
+    font-size: 0;
+}
+
 /* ag-grid watermark */
 .ag-root-wrapper .ag-watermark {
     visibility: hidden;
@@ -15,8 +34,8 @@ iframe#webpack-dev-server-client-overlay {
 }
 
 .ag-popup-child {
-    /*右键菜单叠堆高度*/
-    z-index: 909 !important;
+    /*右键菜单叠堆高度，大于模态框 */
+    z-index: 1209 !important;
 }
 
 .ag-paging-panel {
@@ -89,6 +108,26 @@ iframe#webpack-dev-server-client-overlay {
     background-color: var(--global-bg);
 }
 
+/* 渐变 */
+.nrg-gradient-text {
+    font-weight: 700;
+    text-transform: none;
+    -webkit-text-fill-color: transparent;
+    background: linear-gradient(242deg, #da7909 14.05%, #d600aa 89.3%);
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+/* 焦点缩放 */
+.nrg-scale-hover {
+    transition: transform 0.3s ease;
+}
+
+.nrg-scale-hover:hover {
+    transform: scale(1.02);
+    border-color: deeppink !important;
+}
+
 /* modal header button */
 .nrg-modal-header-btn {
     --bs-btn-padding-y: 0;
@@ -98,10 +137,10 @@ iframe#webpack-dev-server-client-overlay {
 
 /*choices*/
 .choices__list--dropdown {
-    z-index: 9 !important;
+    z-index: 1099 !important;
 }
 
-/* js-tree */
+/* jstree */
 .nrg-tree {
     background-color: transparent !important;
 }
@@ -117,6 +156,21 @@ iframe#webpack-dev-server-client-overlay {
     font-style: normal;
 }
 
+.fa-rename::before {
+    content: "✍";
+    font-style: normal;
+}
+
+.fa-delete::before {
+    content: "❌";
+    font-style: normal;
+}
+
+.fa-link::before {
+    content: "🔗";
+    font-style: normal;
+}
+
 /*uppy*/
 .uppy-Dashboard-poweredBy {
     visibility: hidden;
@@ -127,7 +181,15 @@ iframe#webpack-dev-server-client-overlay {
     border-color: var(--global-border);
 }
 
+[data-uppy-theme=dark] .uppy-Dashboard-AddFiles-title {
+    color: var(--global-color);
+}
+
 /*air-datepicker*/
+.air-datepicker-global-container {
+    z-index: 820;
+}
+
 html[data-bs-theme="dark"] .air-datepicker {
     --adp-color: var(--global-color);
     --adp-background-color: var(--global-bg);

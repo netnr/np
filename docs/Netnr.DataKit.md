@@ -1,5 +1,5 @@
 # NDK (Netnr.DataKit)
-数据库工具，库表查询、导出，生成 SQL、DDL、代码等  
-Database tools, database table query, export, generate SQL, DDL, code, etc.
+数据库、表、列信息查看，执行 SQL 脚本，生成 SQL、DDL  
+View database, table, and column information, execute SQL scripts, and generate SQL and DDL
 
 https://github.com/netnr/np/releases  

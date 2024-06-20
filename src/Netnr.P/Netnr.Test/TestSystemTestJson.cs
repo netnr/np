@@ -59,14 +59,17 @@ namespace Netnr.Test
             Debug.WriteLine(vm.ToJson());
             Debug.WriteLine(vm.ToJson().DeJson().GetProperty("data").GetProperty("sub").ToString().DeJson<ResultVM>());
 
-            var jsonFormat = JsonSerializer.Serialize(jsonElement, new JsonSerializerOptions()
-            {
-                WriteIndented = true, // 缩进
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) //编码
-            });
+            var jsonFormat = JsonSerializer.Serialize(jsonElement, STJDocument_jso);
 
             Debug.WriteLine(jsonFormat);
         }
+
+        private static readonly JsonSerializerOptions STJDocument_jso = new()
+        {
+            WriteIndented = true, // 缩进
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) //编码
+        };
+
 
         /// <summary>
         /// STJ 读写 JSON
@@ -236,14 +239,9 @@ namespace Netnr.Test
         /// <summary>
         /// STJ 时间格式化
         /// </summary>
-        public class DateTimeJsonConverterTo : JsonConverter<DateTime>
+        public class DateTimeJsonConverterTo(string formatter = "yyyy-MM-dd HH:mm:ss.fff") : JsonConverter<DateTime>
         {
-            public string Formatter { get; set; }
-
-            public DateTimeJsonConverterTo(string formatter = "yyyy-MM-dd HH:mm:ss.fff")
-            {
-                Formatter = formatter;
-            }
+            public string Formatter { get; set; } = formatter;
 
             public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

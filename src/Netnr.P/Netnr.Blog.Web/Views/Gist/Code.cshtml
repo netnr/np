@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = Model.GistRemark;
 
-    bool IsMe = IdentityService.Get(ViewContext.HttpContext)?.UserId == Model.Uid;
+    bool IsMe = IdentityService.Get(Context)?.UserId == Model.Uid;
 }
 
 <div class="@QuoteTo.PanelClass2">
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="col-12">
-            @if (Model.GistLanguage == "shell" && Model.GistFilename.EndsWith(".cast"))
+            @if (Model.GistLanguage == "plaintext" && Model.GistFilename.EndsWith(".cast"))
             {
                 <hr />
                 <div style="height:75vh">

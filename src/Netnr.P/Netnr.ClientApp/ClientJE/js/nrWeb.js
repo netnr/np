@@ -197,7 +197,7 @@ let nrWeb = {
             if (text == null && editorVal.json) {
                 text = JSON.stringify(editorVal.json);
             }
-            nrcBase.download(text, 'code.json');
+            nrcBase.downloadText(text, 'code.json');
         })
         //主题
         nrVary.domBtnTheme.addEventListener('click', async function () {

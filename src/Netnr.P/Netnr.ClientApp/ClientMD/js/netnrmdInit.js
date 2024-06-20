@@ -35,8 +35,8 @@ class netnrmdInit {
             fontsize: 16, // 编辑器字体大小
             height: 300, // 高度
             defer: 500, // 延迟解析（毫秒）
-            headerIds: function (node, index) { node.id = "toc_" + index }, // 目录ID，true 默认ID
             autosave: true, // 默认有变化自动保存
+            file: null,// 拖拽文件
             storekey: `${location.pathname}_netnrmd_content`, // 自动保存键，一个页面有多个编辑器时需要对应配置
         }, ops);
 
@@ -94,7 +94,7 @@ class netnrmdInit {
                 wordWrap: "on", language: 'markdown', fontSize: 17, automaticLayout: true,
                 scrollbar: { verticalScrollbarSize: 13, horizontalScrollbarSize: 13 },
                 unicodeHighlight: { ambiguousCharacters: false },
-                scrollBeyondLastLine: false, minimap: { enabled: false }
+                scrollBeyondLastLine: false, minimap: { enabled: false },
             })
 
             //编辑器内容变动回调
@@ -136,6 +136,57 @@ class netnrmdInit {
                     that.cmd(`header${h}`);
                 });
             });
+
+            //drag
+            this.objWrite.onDropIntoEditor(async (drop) => {
+                let { event, position } = drop;
+                event.preventDefault();
+
+                let files = event.dataTransfer.files;
+                if (files.length) {
+                    if (typeof that.objOptions.file == "function") {
+                        let text = await that.objOptions.file(files);
+                        if (text != null) {
+                            let range = new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column);
+                            this.replace(text, range);
+                        }
+                    }
+                }
+            });
+
+            //粘贴（旧）
+            this.domEditor.addEventListener('paste', async (event) => {
+                let clipboardData = event.clipboardData;
+                if (clipboardData) {
+                    let files = clipboardData.files;
+                    if (files.length) {
+                        if (typeof that.objOptions.file == "function") {
+                            let text = await that.objOptions.file(files);
+                            if (text != null) {
+                                let range = that.objWrite.getSelection();
+                                this.insert(text, range);
+                            }
+                        }
+                    }
+                }
+            });
+
+            //粘贴（新）
+            // this.objWrite.onDidPaste(async (paste) => {
+            //     let { clipboardEvent, range } = paste;
+            //     if (clipboardEvent) {
+            //         let files = clipboardEvent.clipboardData.files;
+            //         if (files.length) {
+            //             if (typeof ops.file == "function") {
+            //                 let text = await ops.file(files);
+            //                 if (text != null) {
+            //                     console.debug(text, range)
+            //                     this.insert(text, range);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // });
         } else {
             console.debug("monaco is not defined");
         }
@@ -412,6 +463,21 @@ class netnrmdInit {
         });
     }
 
+    /**
+     * 替换
+     * @param {*} text 
+     * @param {*} range 默认为光标位置，可指定插入位置
+     */
+    replace(text, range) {
+        //默认为光标位置
+        if (range == null) {
+            let cursorPosition = this.objWrite.getPosition();
+            range = new monaco.Range(cursorPosition.lineNumber, cursorPosition.column, cursorPosition.lineNumber, cursorPosition.column);
+        }
+
+        this.objWrite.executeEdits("", [{ range, text }]);
+    }
+
     //添加按键命令
     addCommand(keys, exec) {
         if (window["monaco"] != null) {
@@ -573,16 +639,6 @@ class netnrmdInit {
     //呈现html
     sethtml(html) {
         this.domMarkdownBody.innerHTML = html;
-
-        //重写ID
-        if (typeof this.objOptions.headerIds == "function") {
-            let menus = this.domMarkdownBody.querySelectorAll("h1,h2,h3,h4.h5,h6");
-            for (let i = 0; i < menus.length; i++) {
-                let item = menus[i];
-                this.objOptions.headerIds(item, i);
-            }
-        }
-
         return this;
     }
 
@@ -790,6 +846,30 @@ class netnrmdInit {
                 console.debug("unsupported format");
                 break;
         }
+    }
+
+    /**
+     * 提示
+     * @param {*} msg 
+     * @param {*} timeout 
+     */
+    tooltip(msg, timeout) {
+        clearTimeout(this.defer);
+        let that = this;
+        that.domEditor.dataset.tooltip = msg;
+        that.domEditor.classList.add("netnrmd-tooltip");
+        this.defer = setTimeout(() => {
+            that.domEditor.classList.remove("netnrmd-tooltip");
+            that.domEditor.dataset.tooltip = "";
+        }, timeout || 5000);
+    }
+    /**
+     * 关闭
+     */
+    closeTooltip() {
+        clearTimeout(this.defer);
+        this.domEditor.classList.remove("netnrmd-tooltip");
+        this.domEditor.dataset.tooltip = "";
     }
 }
 

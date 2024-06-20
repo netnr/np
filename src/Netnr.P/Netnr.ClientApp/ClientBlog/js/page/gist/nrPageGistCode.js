@@ -1,4 +1,5 @@
 import { nrApp } from '../../../../frame/Bootstrap/nrApp';
+import { nrcBase } from '../../../../frame/nrcBase';
 import { nrcRely } from '../../../../frame/nrcRely';
 
 let nrPage = {
@@ -28,7 +29,7 @@ let nrPage = {
                         domV.innerHTML = netnrmd.render('```' + mdLang + domCode.innerText + '\r\n```');
 
                         domPre.innerHTML = domV.children[0].innerHTML;
-                        domPre.children[0].contentEditable = true;
+                        nrcBase.editDOM(domPre.children[0]);
                     }
                 })
             }

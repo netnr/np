@@ -12,7 +12,7 @@ public partial class DataKitScript
     /// </summary>
     /// <param name="tdb"></param>
     /// <returns></returns>
-    public static string GetDatabaseName(DBTypes tdb)
+    public static string GetDatabaseNameOnly(DBTypes tdb)
     {
         string result = null;
 
@@ -35,10 +35,10 @@ public partial class DataKitScript
                 result = "SELECT datname AS DatabaseName FROM pg_database ORDER BY datname";
                 break;
             case DBTypes.ClickHouse:
-                result = "SELECT schema_name AS DatabaseName FROM information_schema.schemata ORDER BY schema_name";
+                result = "SELECT name AS DatabaseName FROM system.databases";
                 break;
             case DBTypes.Dm:
-                result = "SELECT DISTINCT OBJECT_NAME FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'SCH' ORDER BY OBJECT_NAME";
+                result = "SELECT NAME AS DatabaseName FROM SYS.SYSOBJECTS WHERE TYPE$='SCH' ORDER BY NAME";
                 break;
         }
 
@@ -227,23 +227,21 @@ ORDER BY t1.datname
                 {
                     if (string.IsNullOrEmpty(filterDatabase))
                     {
-                        listWhere.Add($"t1.catalog_name IN {filterDatabase}");
+                        listWhere.Add($"t1.name IN {filterDatabase}");
                     };
-                    listWhere.Add("lower(t1.catalog_name) != lower('information_schema')");
 
                     result = $@"
 SELECT
-  t1.catalog_name AS DatabaseName,
-  t1.schema_owner AS DatabaseOwner,
-  if (
-    empty (t2.metadata_path),
-    t2.data_path,
-    t2.metadata_path
+  t1.name AS DatabaseName,
+  'default' AS DatabaseOwner,
+  if(
+    empty (t1.metadata_path),
+    t1.data_path,
+    t1.metadata_path
   ) AS DatabasePath,
-  t3.size_bytes AS DatabaseDataLength
+  t2.size_bytes AS DatabaseDataLength
 from
-  information_schema.schemata t1
-  left join system.databases t2 on t1.catalog_name = t2.name
+  system.databases t1
   left join (
     SELECT
       database,
@@ -252,9 +250,40 @@ from
       system.parts
     GROUP BY
       database
-  ) t3 on t1.catalog_name = t3.database
+  ) t2 on t2.database = t1.name
 WHERE {string.Join(" AND ", listWhere)}
-ORDER BY t1.catalog_name
+ORDER BY t1.name
+";
+                }
+                break;
+            case DBTypes.Dm:
+                {
+                    listWhere.Add("t1.OBJECT_TYPE = 'SCH'");
+                    if (string.IsNullOrEmpty(filterDatabase))
+                    {
+                        listWhere.Add($"t1.OBJECT_NAME IN {filterDatabase}");
+                    }
+
+                    result = $@"
+SELECT
+  t1.OBJECT_NAME AS DatabaseName,
+  t1.OWNER AS DatabaseOwner,
+  t2.DEFAULT_TABLESPACE AS DatabaseSpace,
+  CASE SF_GET_UNICODE_FLAG ()
+    WHEN '0' THEN 'GBK18030'
+    WHEN '1' THEN 'UTF-8'
+    WHEN '2' THEN 'EUC-KR'
+  END AS DatabaseCharset,
+  t2.PROFILE AS DatabasePath,
+  (t3.BYTES - t4.BYTES) AS DatabaseDataLength,
+  t1.CREATED AS DatabaseCreateTime
+FROM
+  ALL_OBJECTS t1
+  LEFT JOIN DBA_USERS t2 ON t1.OWNER = t2.USERNAME
+  LEFT JOIN DBA_DATA_FILES t3 ON t3.TABLESPACE_NAME = t2.DEFAULT_TABLESPACE
+  LEFT JOIN DBA_FREE_SPACE t4 ON t3.TABLESPACE_NAME = t4.TABLESPACE_NAME
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.OBJECT_NAME
 ";
                 }
                 break;
@@ -264,13 +293,14 @@ ORDER BY t1.catalog_name
     }
 
     /// <summary>
-    /// 获取表（视图）
+    /// 获取表
     /// </summary>
     /// <param name="tdb"></param>
     /// <param name="databaseName">数据库名</param>
     /// <param name="schemaName">模式名，可选</param>
+    /// <param name="nameOnly">仅名称</param>
     /// <returns></returns>
-    public static string GetTable(DBTypes tdb, string databaseName, string schemaName)
+    public static string GetTable(DBTypes tdb, string databaseName, string schemaName, bool nameOnly = true)
     {
         string result = null;
 
@@ -379,7 +409,21 @@ ORDER BY t1.TABLE_NAME
                     }
                     listWhere.Add("o.type = 'U'");
 
-                    result = $@"
+                    if (nameOnly)
+                    {
+                        result = $@"
+USE [{databaseName}];
+SELECT
+	o.name AS TableName,
+	SCHEMA_NAME(o.schema_id) AS SchemaName
+FROM sys.tables o
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY SCHEMA_NAME(o.schema_id), o.name
+";
+                    }
+                    else
+                    {
+                        result = $@"
 USE [{databaseName}];
 SELECT
   o.name AS TableName,
@@ -430,6 +474,7 @@ FROM
 WHERE {string.Join(" AND ", listWhere)}
 ORDER BY SCHEMA_NAME(o.schema_id), o.name
             ";
+                    }
                 }
                 break;
             case DBTypes.PostgreSQL:
@@ -441,7 +486,21 @@ ORDER BY SCHEMA_NAME(o.schema_id), o.name
                     listWhere.Add("t1.table_schema NOT IN('pg_catalog', 'information_schema')");
                     listWhere.Add("t1.table_type = 'BASE TABLE'");
 
-                    result = $@"
+                    if (nameOnly)
+                    {
+                        result = $@"
+SELECT
+  t1.table_name AS TableName,
+  t1.table_schema AS SchemaName
+FROM
+  information_schema.tables t1
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.table_schema, t1.table_name
+";
+                    }
+                    else
+                    {
+                        result = $@"
 SELECT
   t1.table_name AS TableName,
   t1.table_schema AS SchemaName,
@@ -461,6 +520,112 @@ FROM
   AND t1.table_name = t4.relname
 WHERE {string.Join(" AND ", listWhere)}
 ORDER BY t1.table_schema, t1.table_name
+";
+                    }
+                }
+                break;
+            case DBTypes.ClickHouse:
+                {
+                    listWhere.Add("t1.is_temporary != true");
+                    listWhere.Add("t1.engine not LIKE 'System%'");
+                    listWhere.Add("t1.engine not LIKE '%View'");
+                    listWhere.Add("t1.has_own_data != 0");
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"t1.database = '{databaseName}'");
+                    }
+
+                    if (nameOnly)
+                    {
+                        result = $@"
+SELECT t1.name AS TableName, t1.database AS SchemaName
+FROM system.tables t1
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.name
+";
+                    }
+                    else
+                    {
+                        result = $@"
+SELECT
+  t1.name AS TableName,
+  t1.database AS SchemaName,
+  multiIf (
+    is_temporary,
+    'temporary',
+    engine LIKE '%View',
+    'View',
+    engine LIKE 'System%',
+    'System',
+    has_own_data = 0,
+    'has_own_data',
+    'BASE TABLE'
+  ) AS TableType,
+  t1.engine AS TableEngine,
+  t1.total_rows AS TableRows,
+  t1.total_bytes AS TableDataLength,
+  t1.metadata_modification_time AS TableCreateTime,
+  t1.comment AS TableComment
+FROM system.tables t1
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.name
+";
+
+                    }
+                }
+                break;
+            case DBTypes.Dm:
+                if (nameOnly)
+                {
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"O2.NAME = '{databaseName}'");
+                    }
+
+                    result = $@"
+SELECT
+  O2.NAME AS SchemaName,
+  O3.NAME AS TableName
+FROM
+  SYS.SYSOBJECTS O1
+  JOIN SYS.SYSOBJECTS O2 ON O1.ID = O2.PID
+  JOIN SYS.SYSOBJECTS O3 ON O2.ID = O3.SCHID
+WHERE
+  O1.TYPE$ = 'UR'
+  AND O2.TYPE$ = 'SCH'
+  AND O3.TYPE$ = 'SCHOBJ'
+  AND (
+    O3.SUBTYPE$ = 'UTAB'
+    OR O3.SUBTYPE$ = 'STAB'
+  )
+  AND {string.Join(" AND ", listWhere)}
+ORDER BY O2.NAME, O3.NAME
+";
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        listWhere.Add($"t1.OWNER = '{databaseName}'");
+                    }
+                    listWhere.Add("t2.TABLE_TYPE = 'TABLE'");
+
+                    result = $@"
+SELECT
+  t1.TABLE_NAME AS TableName,
+  t1.OWNER AS SchemaName,
+  t1.TABLESPACE_NAME AS TableSpace,
+  'BASE TABLE' AS TableType,
+  t3.BYTES AS TableDataLength,
+  t2.COMMENTS AS TableComment
+FROM
+  ALL_TABLES t1
+  LEFT JOIN ALL_TAB_COMMENTS t2 ON t2.OWNER = t1.OWNER
+  AND t2.TABLE_NAME = t1.TABLE_NAME
+  LEFT JOIN dba_segments t3 ON t3.OWNER = t1.OWNER
+  AND t3.SEGMENT_NAME = t1.TABLE_NAME
+WHERE {string.Join(" AND ", listWhere)}
+ORDER BY t1.TABLE_NAME
 ";
                 }
                 break;
@@ -491,6 +656,7 @@ ORDER BY t1.table_schema, t1.table_name
                 result = $"SHOW CREATE TABLE `{databaseName}`.`{tableName}`";
                 break;
             case DBTypes.Oracle:
+            case DBTypes.Dm:
                 {
                     var list = new List<string>
                     {
@@ -501,14 +667,20 @@ ORDER BY t1.table_schema, t1.table_name
                         $"SELECT COLUMN_NAME, COMMENTS FROM ALL_COL_COMMENTS WHERE OWNER = '{databaseName}' AND TABLE_NAME = '{tableName}'"
                     };
 
-                    var sql = "BEGIN\n";
-                    for (int i = 0; i < list.Count; i++)
+                    if (tdb == DBTypes.Oracle)
                     {
-                        sql += $"\tOPEN :o{i} FOR {list[i]};\n";
+                        var sql = "BEGIN\n";
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            sql += $"\tOPEN :o{i} FOR {list[i]};\n";
+                        }
+                        sql += "END;";
+                        result = sql;
                     }
-                    sql += "END;";
-
-                    result = sql;
+                    else
+                    {
+                        result = string.Join(";\n", list);
+                    }
                 }
                 break;
             case DBTypes.SQLServer:
@@ -1238,7 +1410,7 @@ BEGIN
     '"".""',
     v_column_record.column_name,
     '"" IS ''',
-    v_column_record.column_comment,
+    REPLACE(v_column_record.column_comment, '''', ''''''),
     ''';'
   );
   END LOOP;
@@ -1329,6 +1501,9 @@ END
 $$;
 ";
                 break;
+            case DBTypes.ClickHouse:
+                result = $"SELECT concat('`',database,'`.`',name,'`') sntn, create_table_query FROM system.tables WHERE database = '{databaseName}' AND name = '{tableName}'";
+                break;
         }
 
         return result;
@@ -1340,8 +1515,9 @@ $$;
     /// <param name="tdb"></param>
     /// <param name="databaseName">数据库名</param>
     /// <param name="schemaName">模式名，可选</param>
+    /// <param name="nameOnly">仅名称</param>
     /// <returns></returns>
-    public static string GetView(DBTypes tdb, string databaseName, string schemaName)
+    public static string GetView(DBTypes tdb, string databaseName, string schemaName, bool nameOnly = true)
     {
         string result = null;
 
@@ -1377,6 +1553,7 @@ ORDER BY TABLE_SCHEMA, TABLE_NAME
                 }
                 break;
             case DBTypes.Oracle:
+            case DBTypes.Dm:
                 {
                     if (!string.IsNullOrWhiteSpace(databaseName))
                     {
@@ -1522,6 +1699,7 @@ ORDER BY database, name
                 }
                 break;
             case DBTypes.Oracle:
+            case DBTypes.Dm:
                 {
                     result = $"SELECT TEXT AS ddl FROM ALL_VIEWS WHERE OWNER ='{databaseName}' AND VIEW_NAME='{tableName}'";
                 }
@@ -1554,8 +1732,9 @@ ORDER BY database, name
     /// <param name="tdb"></param>
     /// <param name="databaseName">数据库名</param>
     /// <param name="listSchemaNameTableName">过滤 模式名、表名集合</param>
+    /// <param name="nameOnly">仅名称</param>
     /// <returns></returns>
-    public static string GetColumn(DBTypes tdb, string databaseName, List<ValueTuple<string, string>> listSchemaNameTableName = null)
+    public static string GetColumn(DBTypes tdb, string databaseName, List<ValueTuple<string, string>> listSchemaNameTableName = null, bool nameOnly = true)
     {
         string result = null;
 
@@ -1591,7 +1770,23 @@ ORDER BY database, name
                     where = string.Format(where, "m.name");
                 }
 
-                result = $@"
+                if (nameOnly)
+                {
+                    result = $@"
+SELECT
+  m.name AS TableName,
+  p.name AS ColumnName
+FROM
+  {databaseName}.sqlite_master m
+  LEFT OUTER JOIN pragma_table_info (m.name) p ON m.name <> p.name
+WHERE
+  m.type = 'table' {where}
+ORDER BY m.name, p.cid;
+";
+                }
+                else
+                {
+                    result = $@"
 SELECT
   '' AS TableName,
   '' AS ColumnName,
@@ -1647,12 +1842,11 @@ FROM
   LEFT OUTER JOIN pragma_table_info (m.name) p ON m.name <> p.name
 WHERE
   m.type = 'table' {where}
-ORDER BY
-  TableName,
-  ColumnOrder;
+ORDER BY m.name, p.cid;
 
 SELECT name, sql FROM {databaseName}.sqlite_master m WHERE 1=1 {where}
 ";
+                }
                 break;
             case DBTypes.MySQL:
             case DBTypes.MariaDB:
@@ -1661,7 +1855,26 @@ SELECT name, sql FROM {databaseName}.sqlite_master m WHERE 1=1 {where}
                     where = string.Format(where, "t1.TABLE_NAME", "t1.TABLE_SCHEMA");
                 }
 
-                result = $@"
+                if (nameOnly)
+                {
+                    result = $@"
+SELECT
+  t1.TABLE_NAME AS TableName,
+  t1.TABLE_SCHEMA AS SchemaName,
+  t1.COLUMN_NAME AS ColumnName
+FROM
+  information_schema.columns t1
+  LEFT JOIN information_schema.tables t2 ON t1.TABLE_SCHEMA = t2.TABLE_SCHEMA
+  AND t1.TABLE_NAME = t2.TABLE_NAME
+WHERE
+  t2.TABLE_TYPE = 'BASE TABLE'
+  AND t2.TABLE_SCHEMA = '{databaseName}' {where}
+ORDER BY t1.TABLE_SCHEMA, t1.TABLE_NAME, t1.ORDINAL_POSITION
+";
+                }
+                else
+                {
+                    result = $@"
 SELECT
   t1.TABLE_NAME AS TableName,
   t1.TABLE_SCHEMA AS SchemaName,
@@ -1693,10 +1906,9 @@ FROM
 WHERE
   t2.TABLE_TYPE = 'BASE TABLE'
   AND t2.TABLE_SCHEMA = '{databaseName}' {where}
-ORDER BY
-  t1.TABLE_NAME,
-  t1.ORDINAL_POSITION
+ORDER BY t1.TABLE_SCHEMA, t1.TABLE_NAME, t1.ORDINAL_POSITION
 ";
+                }
                 break;
             case DBTypes.Oracle:
                 if (!string.IsNullOrEmpty(where))
@@ -1748,7 +1960,24 @@ ORDER BY
                     where = string.Format(where, "o.name", "SCHEMA_NAME(o.schema_id)");
                 }
 
-                result = $@"
+                if (nameOnly)
+                {
+                    result = $@"
+USE [{databaseName}];
+SELECT
+  o.name AS TableName,
+  SCHEMA_NAME(o.schema_id) AS SchemaName,
+  c.name AS ColumnName
+FROM sys.objects o
+JOIN sys.columns c
+  ON c.object_id = o.object_id
+WHERE o.type = 'U' {where}
+ORDER BY SCHEMA_NAME(o.schema_id), o.name, c.column_id
+            ";
+                }
+                else
+                {
+                    result = $@"
 USE [{databaseName}];
 SELECT
   o.name AS TableName,
@@ -1805,6 +2034,7 @@ LEFT JOIN sys.extended_properties ep2
 WHERE o.type = 'U' {where}
 ORDER BY SCHEMA_NAME(o.schema_id), o.name, c.column_id
             ";
+                }
                 break;
             case DBTypes.PostgreSQL:
                 if (listSchemaNameTableName?.Count > 0)
@@ -1812,7 +2042,26 @@ ORDER BY SCHEMA_NAME(o.schema_id), o.name, c.column_id
                     where = string.Format(where, "t1.table_name", "t1.table_schema");
                 }
 
-                result = $@"
+                if (nameOnly)
+                {
+                    result = $@"
+SELECT
+  t1.table_name AS TableName,
+  t1.table_schema AS SchemaName,
+  t1.column_name AS ColumnName
+FROM
+  information_schema.columns t1
+WHERE
+  t1.table_schema NOT IN('pg_catalog', 'information_schema') {where}
+ORDER BY
+  t1.table_schema,
+  t1.table_name,
+  t1.ordinal_position
+";
+                }
+                else
+                {
+                    result = $@"
 SELECT
   t1.table_name AS TableName,
   t1.table_schema AS SchemaName,
@@ -1857,6 +2106,120 @@ ORDER BY
   t1.table_name,
   t1.ordinal_position
 ";
+                }
+                break;
+            case DBTypes.ClickHouse:
+                if (!string.IsNullOrEmpty(where))
+                {
+                    where = string.Format(where, "t1.table");
+                }
+
+                result = $@"
+SELECT
+  t1.table AS TableName,
+  t1.database AS SchemaName,
+  t1.comment AS TableComment,
+  t2.name AS ColumnName,
+  t2.type AS ColumnType,
+  t2.type AS DataType,
+  t2.position AS ColumnOrder,
+  t2.type LIKE 'Nullable(%)' AS IsNullable,
+  t2.comment AS ColumnComment
+FROM
+  system.tables t1
+  left join system.columns t2 on t2.database = t1.database
+  AND t2.table = t1.table
+WHERE
+  t1.is_temporary != true
+  AND t1.engine not LIKE 'System%'
+  AND t1.engine not LIKE '%View'
+  AND t1.has_own_data != 0
+  AND t1.database = '{databaseName}' {where}
+";
+                break;
+            case DBTypes.Dm:
+                if (nameOnly)
+                {
+                    if (!string.IsNullOrEmpty(where))
+                    {
+                        where = string.Format(where, "O3.NAME");
+                    }
+
+                    result = $@"
+SELECT
+  O2.NAME AS SchemaName,
+  O3.NAME AS TableName,
+  COL.NAME AS ColumnName
+FROM
+  SYS.SYSOBJECTS O1
+  JOIN SYS.SYSOBJECTS O2 ON O1.ID = O2.PID
+  JOIN SYS.SYSOBJECTS O3 ON O2.ID = O3.SCHID
+  JOIN SYS.SYSCOLUMNS COL ON O3.ID = COL.ID
+WHERE
+  O1.TYPE$ = 'UR'
+  AND O2.TYPE$ = 'SCH'
+  AND O3.TYPE$ = 'SCHOBJ'
+  AND (
+    O3.SUBTYPE$ = 'UTAB'
+    OR O3.SUBTYPE$ = 'STAB'
+  )
+  AND O2.NAME = '{databaseName}' {where}
+ORDER BY O2.NAME, O3.NAME, COL.COLID
+";
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(where))
+                    {
+                        where = string.Format(where, "t1.TABLE_NAME");
+                    }
+
+                    result = $@"
+SELECT
+  t1.TABLE_NAME AS TableName,
+  t2.COMMENTS AS TableComment,
+  t3.COLUMN_NAME AS ColumnName,
+  CASE
+	WHEN DATA_PRECISION IS NOT NULL THEN CONCAT(t3.DATA_TYPE, '(', t3.DATA_PRECISION, ',', t3.DATA_SCALE, ')')
+	WHEN t3.DATA_TYPE IN ('INT', 'BIGINT', 'TINYINT', 'REAL', 'BYTE', 'SMALLINT', 'FLOAT', 'DOUBLE', 'DATE', 'TIME', 'DATETIME', 'TIMESTAMP') THEN t3.DATA_TYPE
+	WHEN t3.DATA_LENGTH > 8188 THEN t3.DATA_TYPE
+	ELSE CONCAT(t3.DATA_TYPE, '(', t3.DATA_LENGTH, ')')
+  END AS ColumnType,
+  t3.DATA_TYPE AS DataType,
+  NVL(t3.DATA_PRECISION, t3.DATA_LENGTH) AS DataLength,
+  t3.DATA_SCALE AS DataScale,
+  t3.COLUMN_ID AS ColumnOrder,
+  t6.POSITION AS PrimaryKey,
+  DECODE(t7.ID, NULL, 0, 1) AS AutoIncr,
+  DECODE(t3.NULLABLE, 'Y', 1, 0) AS IsNullable,
+  t3.DATA_DEFAULT AS ColumnDefault,
+  t4.COMMENTS AS ColumnComment
+FROM
+  ALL_TABLES t1
+  LEFT JOIN ALL_TAB_COMMENTS t2 ON t2.OWNER = t1.OWNER
+  AND t2.TABLE_NAME = t1.TABLE_NAME
+  LEFT JOIN ALL_TAB_COLUMNS t3 ON t3.OWNER = t1.OWNER
+  AND t3.TABLE_NAME = t1.TABLE_NAME
+  LEFT JOIN ALL_COL_COMMENTS t4 ON t4.SCHEMA_NAME = t1.OWNER
+  AND t4.TABLE_NAME = t1.TABLE_NAME
+  AND t4.COLUMN_NAME = t3.COLUMN_NAME
+  LEFT JOIN ALL_CONSTRAINTS t5 ON t5.OWNER = t1.OWNER
+  AND t5.TABLE_NAME = t1.TABLE_NAME
+  LEFT JOIN ALL_CONS_COLUMNS t6 ON t6.OWNER = t1.OWNER
+  AND t6.TABLE_NAME = t1.TABLE_NAME
+  AND t6.COLUMN_NAME = t3.COLUMN_NAME
+  LEFT JOIN (
+    SELECT a1.NAME, a1.ID, a2.OWNER, a2.OBJECT_NAME 
+    FROM SYSCOLUMNS a1
+    LEFT JOIN ALL_OBJECTS a2 ON a2.OBJECT_ID = a1.ID
+    WHERE a1.INFO2 = 1 AND a2.OBJECT_TYPE = 'TABLE'
+  ) t7 ON t7.OWNER = t1.OWNER
+  AND t7.OBJECT_NAME = t1.TABLE_NAME
+  AND t7.NAME = t3.COLUMN_NAME
+WHERE t2.TABLE_TYPE = 'TABLE' AND t5.CONSTRAINT_TYPE = 'P' AND t1.OWNER = '{databaseName}' {where}
+ORDER BY t1.TABLE_NAME, t3.COLUMN_ID;
+";
+                }
                 break;
         }
 
@@ -1884,6 +2247,7 @@ ORDER BY
                 result = $"ALTER TABLE `{databaseName}`.`{tableName}` COMMENT '{tableComment}'";
                 break;
             case DBTypes.Oracle:
+            case DBTypes.Dm:
                 result = $"COMMENT ON TABLE \"{databaseName}\".\"{tableName}\" IS '{tableComment}'";
                 break;
             case DBTypes.SQLServer:
@@ -1918,7 +2282,10 @@ EXEC sp_updateextendedproperty @name = N'MS_Description',
             case DBTypes.PostgreSQL:
                 tableSchema ??= "public";
 
-                result = $"COMMENT ON TABLE {tableSchema}.\"{tableName}\" IS '{tableComment.OfSql()}'";
+                result = $"COMMENT ON TABLE {tableSchema}.\"{tableName}\" IS '{tableComment}'";
+                break;
+            case DBTypes.ClickHouse:
+                result = $"ALTER TABLE `{databaseName}`.`{tableName}` MODIFY COMMENT '{tableComment}'";
                 break;
         }
 
@@ -1942,15 +2309,14 @@ EXEC sp_updateextendedproperty @name = N'MS_Description',
         columnComment = columnComment.OfSql();
         switch (tdb)
         {
-            case DBTypes.SQLite:
-                result = "";
-                break;
             case DBTypes.MySQL:
             case DBTypes.MariaDB:
+                //重操作 https://stackoverflow.com/questions/2162420
                 result = "";
                 break;
             case DBTypes.Oracle:
-                result = "";
+            case DBTypes.Dm:
+                result = $"COMMENT ON COLUMN \"{databaseName}\".\"{tableName}\".\"{columnName}\" IS '{columnComment}'";
                 break;
             case DBTypes.SQLServer:
                 tableSchema ??= "dbo";
@@ -1987,7 +2353,12 @@ EXEC sp_updateextendedproperty @name = N'MS_Description',
             ";
                 break;
             case DBTypes.PostgreSQL:
-                result = "";
+                tableSchema ??= "public";
+
+                result = $"COMMENT ON COLUMN {tableSchema}.\"{tableName}\".\"{columnName}\" IS '{columnComment}'";
+                break;
+            case DBTypes.ClickHouse:
+                result = $"ALTER TABLE `{databaseName}`.`{tableName}` MODIFY COLUMN `{columnName}` COMMENT '{columnComment}'";
                 break;
         }
 

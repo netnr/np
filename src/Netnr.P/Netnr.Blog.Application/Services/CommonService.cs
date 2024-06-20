@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+using Ganss.Xss;
 
 namespace Netnr.Blog.Application.Services
 {
@@ -61,6 +61,43 @@ namespace Netnr.Blog.Application.Services
             listPath.AddRange(args);
             return ParsingTo.Combine(listPath.ToArray());
         }
+
+        #region XSS
+
+        private static HtmlSanitizer sanitizer;
+
+        public static HtmlSanitizer XssInstance
+        {
+            get
+            {
+                if (sanitizer == null)
+                {
+                    sanitizer = new HtmlSanitizer();
+
+                    sanitizer.AllowedAttributes.Add("style");
+                    sanitizer.AllowedAttributes.Add("class");
+                    sanitizer.AllowedSchemes.Add("mailto");
+                }
+
+                return sanitizer;
+            }
+        }
+
+        /// <summary>
+        /// XSS 过滤
+        /// </summary>
+        /// <param name="html"></param>
+        public static string XSS(string html)
+        {
+            if (!string.IsNullOrWhiteSpace(html))
+            {
+                html = XssInstance.Sanitize(html);
+            }
+
+            return html;
+        }
+
+        #endregion
 
         /// <summary>
         /// 获取所有标签
@@ -226,7 +263,7 @@ namespace Netnr.Blog.Application.Services
             {
                 try
                 {
-                    var kvs = await KeyValuesQuery(new List<string> { TagName });
+                    var kvs = await KeyValuesQuery([TagName]);
                     var jt = kvs.FirstOrDefault()?.KeyValue.DeJson();
                     if (jt != null)
                     {
@@ -523,7 +560,7 @@ namespace Netnr.Blog.Application.Services
         /// <returns></returns>
         public static int NewMessageQuery(int UserId)
         {
-            if (AppTo.GetValue<bool?>("DisableDatabaseWrite") == true)
+            if (AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") == true)
             {
                 return 0;
             }
@@ -1184,7 +1221,7 @@ namespace Netnr.Blog.Application.Services
             }
 
             //查询记录
-            if (AppTo.GetValue<bool?>("DisableDatabaseWrite") != true)
+            if (AppTo.GetValue<bool?>("ProgramParameters:DisableDatabaseWrite") != true)
             {
                 var ormo = new OperationRecord()
                 {

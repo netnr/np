@@ -4,14 +4,9 @@ namespace Netnr.Blog.Web.Controllers
     /// 记事本
     /// </summary>
     [Authorize]
-    public class NoteController : WebController
+    public class NoteController(ContextBase cb) : WebController
     {
-        public ContextBase db;
-
-        public NoteController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// 记事本

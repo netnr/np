@@ -3,14 +3,9 @@
     /// <summary>
     /// Guff
     /// </summary>
-    public class GuffController : Controller
+    public class GuffController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public GuffController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// Guff 首页
@@ -51,6 +46,9 @@
                 //add
                 if (string.IsNullOrWhiteSpace(mo.GrId))
                 {
+                    //xss
+                    mo.GrContent = CommonService.XSS(mo.GrContent);
+
                     mo.Uid = uinfo?.UserId;
                     mo.GrId = Guid.NewGuid().ToLongString();
                     mo.GrCreateTime = now;
@@ -99,7 +97,7 @@
                         currMo.GrTypeValue = ParsingTo.JsSafeJoin(mo.GrTypeValue);
                         currMo.GrObject = ParsingTo.JsSafeJoin(mo.GrObject);
 
-                        currMo.GrContent = mo.GrContent;
+                        currMo.GrContent = CommonService.XSS(mo.GrContent);
                         currMo.GrContentMd = mo.GrContentMd;
 
                         currMo.GrImage = ParsingTo.JsSafeJoin(mo.GrImage);
@@ -295,6 +293,9 @@
                         }
                         else
                         {
+                            //xss
+                            mo.UrContent = CommonService.XSS(mo.UrContent);
+
                             mo.Uid = uinfo?.UserId;
                             mo.UrTargetType = ConnectionTypes.GuffRecord.ToString();
                             mo.UrTargetId = id;

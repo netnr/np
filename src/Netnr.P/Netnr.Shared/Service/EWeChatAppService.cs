@@ -1,7 +1,5 @@
 ﻿#if Full || Service
 
-using System.Drawing.Drawing2D;
-
 namespace Netnr;
 
 /// <summary>
@@ -58,27 +56,30 @@ public class EWeChatAppService
             var hc = new HttpClient();
             var uri = $"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={accessToken}";
 
-            var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss dddd");
+            var now = DateTime.Now;
+            var weekArray = "日,一,二,三,四,五,六".Split(',');
+            var time = $"{now:yyyy-MM-dd HH:mm:ss} 周{weekArray[(int)now.DayOfWeek]}";
             var successCount = 0;
             var listResult = new List<JsonElement>();
 
             if (string.IsNullOrWhiteSpace(title))
             {
-                content = $"{now}\r\n\r\n{content}";
+                content = $"{time}\r\n\r\n{content}";
             }
             else
             {
-                content = $"{title}\r\n{now}\r\n\r\n{content}";
+                content = $"{title}\r\n{time}\r\n\r\n{content}";
             }
 
-            var groups = ParsingTo.SplitBySize(content, 2048);
-            await LockTo.RunAsync(nameof(MessageSend), 5000 * groups.Count, async () =>
+            var groups = ParsingTo.SplitByByteSize(content, 2048);
+            await LockTo.RunAsync(nameof(MessageSend), 10000 * groups.Count, async () =>
             {
                 for (int i = 0; i < groups.Count; i++)
                 {
                     if (i != 0)
                     {
-                        await Task.Delay(1000);
+                        // 拉长发送间隔，短了会出现顺序错误问题
+                        await Task.Delay(2000);
                     }
 
                     var postJson = new JsonObject

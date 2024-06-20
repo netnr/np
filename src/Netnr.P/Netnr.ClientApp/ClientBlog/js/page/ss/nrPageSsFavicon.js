@@ -30,7 +30,8 @@ let nrPage = {
             let ctx = domCanvas.getContext("2d");
             ctx.drawImage(nrVary.domImgPreview, 0, 0, nrVary.domImgPreview.naturalWidth, nrVary.domImgPreview.naturalHeight, 0, 0, size, size);
             domCanvas.toBlob(blob => {
-                nrcBase.download(blob, 'favicon.ico')
+                console.debug(blob)
+                nrcBase.downloadBlob(blob, 'favicon.ico')
             }, 'image/vnd.microsoft.icon', '-moz-parse-options:format=bmp;bpp=32');
 
             nrApp.setLoading(this, true);

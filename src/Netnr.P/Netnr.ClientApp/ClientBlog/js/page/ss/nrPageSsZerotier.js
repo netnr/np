@@ -29,11 +29,7 @@ let nrPage = {
 
     bindEvent: () => {
         //过滤
-        nrVary.domTxtFilter.addEventListener('input', async function () {
-            if (nrApp.tsGrid) {
-                nrApp.tsGrid.api.setQuickFilter(this.value);
-            }
-        });
+        nrApp.setQuickFilter(nrVary.domTxtFilter, nrApp.tsGrid);
 
         [nrVary.domTxtToken, nrVary.domTxtNetworkid].forEach(dom => {
             dom.addEventListener('input', async function () {
@@ -123,7 +119,7 @@ let nrPage = {
         });
 
         nrGrid.buildDom(nrVary.domGrid);
-        nrApp.tsGrid = await nrGrid.viewGrid(nrVary.domGrid, gridOptions);
+        nrApp.tsGrid = await nrGrid.createGrid(nrVary.domGrid, gridOptions);
     }
 }
 

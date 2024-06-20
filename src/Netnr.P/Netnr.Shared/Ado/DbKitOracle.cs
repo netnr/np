@@ -13,29 +13,30 @@ public partial class DbKit
     /// 表批量写入
     /// </summary>
     /// <param name="dt">数据表</param>
-    /// <param name="bulkCopy">设置表复制对象</param>
+    /// <param name="bulkCopyAction">设置表复制对象</param>
+    /// <param name="batchSize">每批行数，默认全部</param>
     /// <returns></returns>
-    public async Task<int> BulkCopyOracle(DataTable dt, Action<OracleBulkCopy> bulkCopy = null)
+    public async Task<int> BulkCopyOracle(DataTable dt, Action<OracleBulkCopy> bulkCopyAction = null, int batchSize = 0)
     {
         return await SafeConn(async () =>
         {
             var connection = (OracleConnection)ConnOption.Connection;
 
-            using var bulk = new OracleBulkCopy(connection)
+            using var bulkCopy = new OracleBulkCopy(connection)
             {
                 DestinationTableName = dt.TableName,
-                BatchSize = dt.Rows.Count,
+                BatchSize = batchSize > 0 ? batchSize : dt.Rows.Count,
                 BulkCopyTimeout = ConnOption.Timeout * 10
             };
 
-            bulkCopy?.Invoke(bulk);
+            bulkCopyAction?.Invoke(bulkCopy);
 
             foreach (DataColumn dc in dt.Columns)
             {
-                bulk.ColumnMappings.Add(dc.ColumnName, dc.ColumnName);
+                bulkCopy.ColumnMappings.Add(dc.ColumnName, dc.ColumnName);
             }
 
-            await Task.Run(() => bulk.WriteToServer(dt));
+            await Task.Run(() => bulkCopy.WriteToServer(dt));
 
             return dt.Rows.Count;
         });

@@ -9,6 +9,24 @@
     border: 1px solid var(--nmd-border);
 }
 
+/*提示*/
+.netnrmd-tooltip::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    opacity: .9;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 10px 15px;
+    pointer-events: none;
+    color: deeppink;
+    border: 2px solid var(--nmd-border);
+    background-color: var(--nmd-bg);
+    transform: translate(-50%, -50%);
+}
+
 /*全屏*/
 .netnrmd-fullscreen {
     position: fixed;
@@ -23,9 +41,9 @@
     border-color: transparent;
 }
 
-    .netnrmd-fullscreen .netnrmd-toolbar {
-        border-radius: 0;
-    }
+.netnrmd-fullscreen .netnrmd-toolbar {
+    border-radius: 0;
+}
 
 /*工具条容器*/
 .netnrmd-toolbar {
@@ -35,6 +53,7 @@
     background-color: var(--nmd-bg);
     border-bottom: 1px solid var(--nmd-border);
 }
+
 /*工具条*/
 .netnrmd-menu {
     margin: 0;
@@ -42,35 +61,36 @@
     list-style: none;
 }
 
-    .netnrmd-menu li {
-        float: left;
-        opacity: .8;
-        height: 28px;
-        padding: 3px;
-        margin: 3px 4px;
-        cursor: pointer;
-        user-select: none;
-        box-sizing: border-box;
-        border: 1px solid transparent;
-    }
+.netnrmd-menu li {
+    float: left;
+    opacity: .8;
+    height: 28px;
+    padding: 3px;
+    margin: 3px 4px;
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+}
 
-        .netnrmd-menu li.float-right {
-            float: right;
-        }
+.netnrmd-menu li.float-right {
+    float: right;
+}
 
-        .netnrmd-menu li svg {
-            height: 100%;
-            fill: currentColor;
-            text-align: center;
-            vertical-align: top;
-            pointer-events: none;
-            box-sizing: content-box;
-        }
+.netnrmd-menu li svg {
+    height: 100%;
+    fill: currentColor;
+    text-align: center;
+    vertical-align: top;
+    pointer-events: none;
+    box-sizing: content-box;
+}
 
-        .netnrmd-menu li:hover, .netnrmd-menu li.active {
-            opacity: 1;
-            color: orange;
-        }
+.netnrmd-menu li:hover,
+.netnrmd-menu li.active {
+    opacity: 1;
+    color: orange;
+}
 
 /*编辑容器*/
 .netnrmd-write {
@@ -81,10 +101,10 @@
     border-right: 1px solid var(--nmd-border);
 }
 
-    .netnrmd-write > * {
-        margin: 0;
-        padding: 0;
-    }
+.netnrmd-write>* {
+    margin: 0;
+    padding: 0;
+}
 
 /*渲染视图*/
 .netnrmd-view {
@@ -99,16 +119,17 @@
     background-color: var(--nmd-bg);
 }
 
-    /*编辑模式，限制图片最大高度，同步滚动效果更佳*/
-    .netnrmd-view img {
-        max-height: 160px;
-    }
+/*编辑模式，限制图片最大高度，同步滚动效果更佳*/
+.netnrmd-view img {
+    max-height: 160px;
+}
 
 /*最大编辑*/
 .netnrmd-write-w100 {
     width: 100%;
     border-right: none;
 }
+
 /*最大视图*/
 .netnrmd-view-w100 {
     width: 100%;
@@ -117,7 +138,7 @@
 }
 
 @media screen and (min-width: 1361px) {
-    .netnrmd-view-w100 > *:first-child {
+    .netnrmd-view-w100>*:first-child {
         width: 70%;
         flex: 1;
     }
@@ -155,51 +176,51 @@
     background-color: rgba(51, 51, 51, .6);
 }
 
-    .netnrmd-popup .np-card {
-        width: 100%;
-        max-width: 800px;
-        margin: 10vh auto 0;
-        border-radius: 6px;
-        color: var(--nmd-color);
-        background-color: var(--nmd-bg);
-    }
+.netnrmd-popup .np-card {
+    width: 100%;
+    max-width: 800px;
+    margin: 10vh auto 0;
+    border-radius: 6px;
+    color: var(--nmd-color);
+    background-color: var(--nmd-bg);
+}
 
-    .netnrmd-popup .np-header {
-        height: 40px;
-        padding: 0 15px;
-        line-height: 40px;
-        border-bottom: 1px solid var(--nmd-border);
-    }
+.netnrmd-popup .np-header {
+    height: 40px;
+    padding: 0 15px;
+    line-height: 40px;
+    border-bottom: 1px solid var(--nmd-border);
+}
 
-    .netnrmd-popup .np-close {
-        float: right;
-        outline: none;
-        font-size: 18px;
-        color: currentColor;
-        text-decoration: none;
-    }
+.netnrmd-popup .np-close {
+    float: right;
+    outline: none;
+    font-size: 18px;
+    color: currentColor;
+    text-decoration: none;
+}
 
-        .netnrmd-popup .np-close:hover {
-            color: orange;
-            text-decoration: none;
-        }
+.netnrmd-popup .np-close:hover {
+    color: orange;
+    text-decoration: none;
+}
 
-    .netnrmd-popup .np-body {
-        padding: 15px;
-        max-height: 66vh;
-        overflow-y: auto;
-        word-break: break-word;
-    }
+.netnrmd-popup .np-body {
+    padding: 15px;
+    max-height: 66vh;
+    overflow-y: auto;
+    word-break: break-word;
+}
 
-    .netnrmd-popup a {
-        color: #539bf5;
-        text-decoration: none;
-    }
+.netnrmd-popup a {
+    color: #539bf5;
+    text-decoration: none;
+}
 
-        .netnrmd-popup a:hover {
-            text-decoration: underline;
-            text-underline-position: under;
-        }
+.netnrmd-popup a:hover {
+    text-decoration: underline;
+    text-underline-position: under;
+}
 
 /*表情*/
 .netnrmd-emoji ul {
@@ -220,7 +241,7 @@
     box-sizing: border-box;
 }
 
-    .netnrmd-emoji li:hover {
-        transform: scale(1.6);
-        transition: transform .2s linear;
-    }
+.netnrmd-emoji li:hover {
+    transform: scale(1.6);
+    transition: transform .2s linear;
+}

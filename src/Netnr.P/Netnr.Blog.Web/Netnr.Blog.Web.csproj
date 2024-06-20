@@ -2,19 +2,20 @@
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
 		<!--<InvariantGlobalization>true</InvariantGlobalization>-->
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<!--<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;AGGrid;Drawing;DataKit;DKController;Web;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;AGGrid;Drawing;DataKit;DKController;Web;Logging;UAParser;NJson</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;AGGrid;Drawing;DataKit;DKController;Web;Logging</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;AGGrid;Drawing;DataKit;DKController;Web;Logging;UAParser;NJson</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
@@ -24,30 +25,26 @@
 
 	<ItemGroup>
 		<PackageReference Include="Baidu-AI" Version="4.15.6" />
-		<PackageReference Include="FluentScheduler" Version="5.5.1" />
-		<PackageReference Include="Markdig" Version="0.33.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.12">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="SkiaSharp" Version="2.88.6">
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
+		<PackageReference Include="Hangfire.InMemory" Version="0.10.3" />
+		<PackageReference Include="Markdig" Version="0.37.0" />
+		<PackageReference Include="SkiaSharp" Version="2.88.8">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.6">
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.8">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.5" />
+		<PackageReference Include="SkiaSharp.QrCode" Version="0.7.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.Blog.Application\Netnr.Blog.Application.csproj" />
-		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 	</ItemGroup>
 
-	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
-
 	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />
 
 </Project>

@@ -2,9 +2,8 @@ import { nrcBase } from "./nrcBase";
 import { nrcRely } from "./nrcRely";
 
 let nrXLSX = {
-    init: async () => {
-        await nrcRely.remote('XLSX');
-    },
+    tsLoaded: null,
+    rely: () => nrcRely.remote('XLSX'),
 
     /**
      * 导出
@@ -13,8 +12,7 @@ let nrXLSX = {
      * @param {*} fileName 下载文件名
      */
     exportExcel: async (firstRow, dataRows, fileName) => {
-
-        await nrXLSX.init();
+        await nrXLSX.rely();
 
         const workbook = XLSX.utils.book_new();
         const worksheet = XLSX.utils.aoa_to_sheet([[]]);
@@ -35,7 +33,7 @@ let nrXLSX = {
         const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-        nrcBase.download(blob, fileName || "excel.xlsx");
+        nrcBase.downloadBlob(blob, fileName || "excel.xlsx");
     }
 };
 

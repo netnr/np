@@ -2,19 +2,20 @@
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
-		<InvariantGlobalization>true</InvariantGlobalization>
+		<LangVersion>latest</LangVersion>
+		<!--<InvariantGlobalization>true</InvariantGlobalization>-->
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<!--<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Web;DataKit;DKController;Logging;Drawing</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Web;DataKit;DKController;Logging;Drawing;UAParser</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Web;DataKit;DKController;Logging;Drawing</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Web;DataKit;DKController;Logging;Drawing;UAParser</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
@@ -28,18 +29,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="FluentScheduler" Version="5.5.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.12">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="SkiaSharp" Version="2.88.6" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.6" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="SkiaSharp" Version="2.88.8" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.8" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Netnr.ResponseFramework.Application\Netnr.ResponseFramework.Application.csproj" />
-		<ProjectReference Include="..\Netnr.UAParser\Netnr.UAParser.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

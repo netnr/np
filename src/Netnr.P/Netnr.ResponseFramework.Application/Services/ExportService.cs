@@ -58,7 +58,7 @@ namespace Netnr.ResponseFramework.Application.Services
             }
 
             //剔除没在表配置的列
-            List<string> removeColNotExists = new();
+            List<string> removeColNotExists = [];
             foreach (DataColumn dc in dt.Columns)
             {
                 if (!listColumns.Where(x => x.ColField == dc.ColumnName).Any())

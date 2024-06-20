@@ -8,15 +8,18 @@ import { nrApp } from "../../../../frame/Bootstrap/nrApp";
 let nrPage = {
     pathname: ['/gist/index', '/gist/edit/*'],
 
-    tableKey: "NoteId",
+    tableKey: "GistId",
     rowId: 0,
     ckey: "/gist/index/content",
 
     init: async () => {
         nrVary.domEditor.innerHTML = nrApp.tsLoadingHtml;
-                
+
+        //初始化提示
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(dom => new bootstrap.Tooltip(dom));
+
         //初始化编辑器
-        await nrEditor.init();
+        await nrEditor.rely();
 
         let modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
         modesIds = modesIds.filter(x => !x.includes('.'));

@@ -280,15 +280,14 @@ var ndkFunction = {
 
         var rowData = [{ content: content }];
 
-        ndkVary.gridOpsOutput.rowData.unshift(rowData[0]);
-        ndkVary.gridOpsOutput.api.applyTransaction({
+        ndkVary.gridOpsOutput.applyTransaction({
             addIndex: 0,
             add: rowData
         });
 
         //闪烁行
-        var rowNode = ndkVary.gridOpsOutput.api.getDisplayedRowAtIndex(0);
-        ndkVary.gridOpsOutput.api.flashCells({ rowNodes: [rowNode] });
+        var rowNode = ndkVary.gridOpsOutput.getDisplayedRowAtIndex(0);
+        ndkVary.gridOpsOutput.flashCells({ rowNodes: [rowNode] });
     },
 
     /**

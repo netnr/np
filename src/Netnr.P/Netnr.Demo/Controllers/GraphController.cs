@@ -1,15 +1,12 @@
 ﻿using Netnr.Demo.Controllers.GraphDemo;
+using System.Drawing.Text;
 using System.Runtime.Versioning;
 
 namespace Netnr.Demo.Controllers
 {
-    public class GraphController : Controller
+    public class GraphController(IWebHostEnvironment host) : Controller
     {
-        public IWebHostEnvironment env;
-        public GraphController(IWebHostEnvironment host)
-        {
-            env = host;
-        }
+        public IWebHostEnvironment env = host;
 
         public IActionResult Index()
         {
@@ -29,7 +26,7 @@ namespace Netnr.Demo.Controllers
             num = Math.Max(num, 1);
 
             var code = Guid.NewGuid().ToString("N")[..4];
-            var c1 = new SixLaborsImageSharpDrawingController();
+            var c1 = new ImageSharpController();
             var c2 = new NetVipsController(env);
             var c3 = new SkiaSharpController(env);
             var c4 = new MagickNETController(env);
@@ -46,12 +43,12 @@ namespace Netnr.Demo.Controllers
                 {
                     c1.CreateImg(code);
                 }
-                dicout.Add("SixLabors.ImageSharp.Drawing", sw.ElapsedMilliseconds);
+                dicout.Add("ImageSharp", sw.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                dicout.Add("SixLabors.ImageSharp.Drawing", ex.Message);
+                dicout.Add("ImageSharp", ex.Message);
             }
 
             sw.Restart();
@@ -115,6 +112,18 @@ namespace Netnr.Demo.Controllers
             }
 
             return Json(dicout);
+        }
+
+        /// <summary>
+        /// 获取系统已安装字体列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [SupportedOSPlatform("windows")]
+        public IActionResult FontFamilyGet()
+        {
+            var installedFonts = new InstalledFontCollection();
+            return Content(installedFonts.Families.ToJson());
         }
     }
 }

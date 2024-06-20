@@ -1,19 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Client;
-using MiniExcelLibs;
-using System.Collections.Concurrent;
+﻿using MiniExcelLibs;
 using System.IO.Compression;
-using System.Threading.Tasks.Dataflow;
+using System.Collections.Concurrent;
 
-namespace Netnr.DataX.Application;
+namespace Netnr;
 
 /// <summary>
 /// Data
 /// </summary>
 public partial class MenuItemService
 {
-    [Display(Name = "Work", Description = "作业, 以 Work_ 开头", GroupName = "Data", AutoGenerateFilter = true,
-        ShortName = "work [Work_Name] [Work_2]", Prompt = "ndx task Task_Demo")]
+    [Display(Name = "Work", Description = "作业, 以 Work 开头", GroupName = "Data", AutoGenerateFilter = true,
+        ShortName = "work [Work_Name] [Work_2]", Prompt = "work Work_Demo")]
     public static async Task DataWork()
     {
         //配置
@@ -29,16 +26,16 @@ public partial class MenuItemService
         }
         else if (BaseTo.IsCmdArgs)
         {
-            working = DXService.CmdArgs;
+            working = ConsoleXTo.CmdArgs;
         }
         else
         {
-            var workIndex = DXService.ConsoleReadItem("选择作业", worksName);
+            var workIndex = ConsoleXTo.ConsoleReadItem("选择作业", worksName);
             var workName = worksName[workIndex - 1];
             working.Add(workName);
         }
 
-        ConsoleTo.LogColor($"\r\n开始作业({working.Count} 个): {string.Join(" ", working)}\r\n");
+        ConsoleTo.LogColor($"\r\nWorks({working.Count}) : {string.Join(" , ", working)}\r\n");
         for (int ti = 0; ti < working.Count; ti++)
         {
             var workName = working[ti];
@@ -48,159 +45,208 @@ public partial class MenuItemService
                 try
                 {
                     var taskJson = cc.Works[workName].AsObject();
-                    //方法
-                    var methods = taskJson.Select(p => p.Key).ToList();
+                    // 动作
+                    var actions = taskJson.Select(p => p.Key).ToList();
 
-                    ConsoleTo.LogColor($"开始 {workName} 作业，进度 {ti + 1}/{working.Count}\n");
+                    ConsoleTo.LogColor($"--- {workName}, work-progress: {ti + 1}/{working.Count}\n");
 
-                    for (int mi = 0; mi < methods.Count; mi++)
+                    for (int actionIndex = 0; actionIndex < actions.Count; actionIndex++)
                     {
-                        var methodName = methods[mi];
-                        ConsoleTo.LogColor($"开始 {methodName} 方法，进度 {mi + 1}/{methods.Count}\n");
+                        var actionName = actions[actionIndex];
+                        ConsoleTo.LogColor($"----- {actionName}，action-progress: {actionIndex + 1}/{actions.Count}\n");
 
                         //参数
-                        var parameters = taskJson[methodName];
+                        var parameters = taskJson[actionName];
 
-                        switch (methodName)
+                        if (actionName.StartsWith("ExportDatabase", StringComparison.OrdinalIgnoreCase))
                         {
-                            case "ExportDatabase":
+                            var mo = parameters.ToJson().DeJson<DataKitTransfer.ExportDatabase>();
+                            mo.PackagePath = ConsoleXTo.ParsePathVar(mo.PackagePath);
+
+                            //引用连接
+                            if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
                                 {
-                                    var mo = parameters.ToJson().DeJson<DataKitTransfer.ExportDatabase>();
-                                    mo.PackagePath = DXService.ParsePathVar(mo.PackagePath);
-
-                                    //引用连接
-                                    if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
-                                    {
-                                        var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
-                                        mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
-                                        if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
-                                        {
-                                            mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
-                                            mo.ReadConnectionInfo.DeepCopyNewInstance = true;
-                                        }
-                                    }
-
-                                    await DataKitTo.ExportDataTable(await mo.AsExportDataTable(), le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                                    mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                    mo.ReadConnectionInfo.DeepCopyNewInstance = true;
                                 }
-                                break;
-                            case "ExportDataTable":
+                            }
+
+                            await DataKitTo.ExportDataTable(await mo.AsExportDataTable(), le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                        }
+                        else if (actionName.StartsWith("ExportDataTable", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var mo = parameters.ToJson().DeJson<DataKitTransfer.ExportDataTable>();
+                            mo.PackagePath = ConsoleXTo.ParsePathVar(mo.PackagePath);
+
+                            //引用连接
+                            if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
                                 {
-                                    var mo = parameters.ToJson().DeJson<DataKitTransfer.ExportDataTable>();
-                                    mo.PackagePath = DXService.ParsePathVar(mo.PackagePath);
-
-                                    //引用连接
-                                    if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
-                                    {
-                                        var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
-                                        mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
-                                        if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
-                                        {
-                                            mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
-                                            mo.ReadConnectionInfo.DeepCopyNewInstance = true;
-                                        }
-                                    }
-
-                                    await DataKitTo.ExportDataTable(mo, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                                    mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                    mo.ReadConnectionInfo.DeepCopyNewInstance = true;
                                 }
-                                break;
-                            case "MigrateDatabase":
+                            }
+
+                            await DataKitTo.ExportDataTable(mo, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                        }
+                        else if (actionName.StartsWith("MigrateDatabase", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var mo = parameters.ToJson().DeJson<DataKitTransfer.MigrateDatabase>();
+
+                            //引用连接
+                            if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
                                 {
-                                    var mo = parameters.ToJson().DeJson<DataKitTransfer.MigrateDatabase>();
-
-                                    //引用连接
-                                    if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
-                                    {
-                                        var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
-                                        mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
-                                        if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
-                                        {
-                                            mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
-                                            mo.ReadConnectionInfo.DeepCopyNewInstance = true;
-                                        }
-                                    }
-                                    if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
-                                    {
-                                        var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
-                                        mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
-                                        if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
-                                        {
-                                            mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
-                                            mo.WriteConnectionInfo.DeepCopyNewInstance = true;
-                                        }
-                                    }
-
-                                    await DataKitTo.MigrateDataTable(await mo.AsMigrateDataTable(cc.MapingMatchPattern != "Same"), le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                                    mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                    mo.ReadConnectionInfo.DeepCopyNewInstance = true;
                                 }
-                                break;
-                            case "MigrateDataTable":
+                            }
+                            if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
                                 {
-                                    var mo = parameters.ToJson().DeJson<DataKitTransfer.MigrateDataTable>();
-
-                                    //引用连接
-                                    if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
-                                    {
-                                        var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
-                                        mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
-                                        if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
-                                        {
-                                            mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
-                                            mo.ReadConnectionInfo.DeepCopyNewInstance = true;
-                                        }
-                                    }
-                                    if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
-                                    {
-                                        var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
-                                        mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
-                                        if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
-                                        {
-                                            mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
-                                            mo.WriteConnectionInfo.DeepCopyNewInstance = true;
-                                        }
-                                    }
-
-                                    await DataKitTo.MigrateDataTable(mo, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                                    mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                    mo.WriteConnectionInfo.DeepCopyNewInstance = true;
                                 }
-                                break;
-                            case "ImportDatabase":
+                            }
+
+                            await DataKitTo.MigrateDataTable(await mo.AsMigrateDataTable(cc.MapingMatchPattern != "Same"), le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                        }
+                        else if (actionName.StartsWith("MigrateDataTable", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var mo = parameters.ToJson().DeJson<DataKitTransfer.MigrateDataTable>();
+
+                            //引用连接
+                            if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
                                 {
-                                    var mo = parameters.ToJson().DeJson<DataKitTransfer.ImportDatabase>();
-                                    mo.PackagePath = DXService.ParsePathVar(mo.PackagePath);
-
-                                    //引用连接
-                                    if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
-                                    {
-                                        var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
-                                        mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
-                                        if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
-                                        {
-                                            mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
-                                            mo.WriteConnectionInfo.DeepCopyNewInstance = true;
-                                        }
-                                    }
-
-                                    await DataKitTo.ImportDatabase(mo, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                                    mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                    mo.ReadConnectionInfo.DeepCopyNewInstance = true;
                                 }
-                                break;
-                            default:
-                                ConsoleTo.LogColor($"Not support {methodName}\n", ConsoleColor.Red);
-                                break;
+                            }
+                            if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
+                                {
+                                    mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                    mo.WriteConnectionInfo.DeepCopyNewInstance = true;
+                                }
+                            }
+
+                            await DataKitTo.MigrateDataTable(mo, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                        }
+                        else if (actionName.StartsWith("ImportDatabase", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var mo = parameters.ToJson().DeJson<DataKitTransfer.ImportDatabase>();
+                            mo.PackagePath = ConsoleXTo.ParsePathVar(mo.PackagePath);
+
+                            //引用连接
+                            if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
+                                {
+                                    mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                    mo.WriteConnectionInfo.DeepCopyNewInstance = true;
+                                }
+                            }
+
+                            await DataKitTo.ImportDatabase(mo, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                        }
+                        else if (actionName.StartsWith("SyncDatabase", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var mo = parameters.ToJson().DeJson<DataKitTransfer.SyncDatabase>();
+
+                            //引用连接
+                            if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
+                                {
+                                    mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                    mo.ReadConnectionInfo.DeepCopyNewInstance = true;
+                                }
+                            }
+                            if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
+                                {
+                                    mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                    mo.WriteConnectionInfo.DeepCopyNewInstance = true;
+                                }
+                            }
+
+                            await DataKitTo.SyncDataTable(await mo.AsSyncDataTable(), le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                        }
+                        else if (actionName.StartsWith("SyncDataTable", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var mo = parameters.ToJson().DeJson<DataKitTransfer.SyncDataTable>();
+
+                            //引用连接
+                            if (mo.ReadConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefReadConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefReadConnectionInfo);
+                                mo.ReadConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.ReadDatabaseName))
+                                {
+                                    mo.ReadConnectionInfo.DatabaseName = mo.ReadDatabaseName;
+                                    mo.ReadConnectionInfo.DeepCopyNewInstance = true;
+                                }
+                            }
+                            if (mo.WriteConnectionInfo == null && !string.IsNullOrWhiteSpace(mo.RefWriteConnectionInfo))
+                            {
+                                var refConn = cc.ListConnectionInfo.FirstOrDefault(x => x.ConnectionRemark == mo.RefWriteConnectionInfo);
+                                mo.WriteConnectionInfo = new DbKitConnectionOption().ToDeepCopy(refConn);
+                                if (!string.IsNullOrWhiteSpace(mo.WriteDatabaseName))
+                                {
+                                    mo.WriteConnectionInfo.DatabaseName = mo.WriteDatabaseName;
+                                    mo.WriteConnectionInfo.DeepCopyNewInstance = true;
+                                }
+                            }
+
+                            await DataKitTo.SyncDataTable(mo, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
+                        }
+                        else
+                        {
+                            ConsoleTo.LogColor($"Not support {actionName}\n", ConsoleColor.Red);
                         }
                     }
 
-                    ConsoleTo.LogColor($"\r\n完成 {workName} 作业\r\n");
+                    ConsoleTo.LogColor($"\r\nDone {workName}\r\n");
                 }
                 catch (Exception ex)
                 {
-                    ConsoleTo.LogError(ex, $"{nameof(DataWork)} 作业出错");
+                    ConsoleTo.LogError(ex, nameof(DataWork));
                 }
             }
             else
             {
-                ConsoleTo.LogColor($"无效作业（{workName}）", ConsoleColor.Red);
+                ConsoleTo.LogColor($"invalid: {workName}", ConsoleColor.Red);
             }
         }
 
-        ConsoleTo.LogColor($"\r\n作业全部完成\r\n");
+        ConsoleTo.LogColor($"\r\nDone Works\r\n");
     }
 
     [Display(Name = "Migrate Data", Description = "迁移数据", GroupName = "Data", AutoGenerateFilter = true)]
@@ -214,19 +260,20 @@ public partial class MenuItemService
 
         var mdt = new DataKitTransfer.MigrateDataTable
         {
-            ReadConnectionInfo = await DXService.ConsoleReadDatabase(cc, "读取库"),
-            WriteConnectionInfo = await DXService.ConsoleReadDatabase(cc, "写入库")
+            ReadConnectionInfo = await ConsoleXTo.ConsoleReadDatabase(cc, "读取库"),
+            WriteConnectionInfo = await ConsoleXTo.ConsoleReadDatabase(cc, "写入库")
         };
-        DXService.ViewConnectionOption(mdt.ReadConnectionInfo, mdt.WriteConnectionInfo);
+        ConsoleXTo.ViewConnectionOption(mdt.ReadConnectionInfo, mdt.WriteConnectionInfo);
 
-        if (DXService.ConsoleReadBool("数据库全表"))
+        if (ConsoleXTo.ConsoleReadBool("数据库全表"))
         {
             var mdb = new DataKitTransfer.MigrateDatabase
             {
                 ReadConnectionInfo = mdt.ReadConnectionInfo,
                 WriteConnectionInfo = mdt.WriteConnectionInfo,
-                ListIgnoreTableName = DXService.ConsoleReadJoin<string>("忽略表名，多个逗号分隔"),
-                WriteDeleteData = DXService.ConsoleReadBool("写入前清空表数据")
+                ListIgnoreTableName = ConsoleXTo.ConsoleReadJoin<string>("忽略表名，多个逗号分隔"),
+                StartTableName = ConsoleXTo.ConsoleReadString("指定读取源开始表名"),
+                WriteDeleteData = ConsoleXTo.ConsoleReadBool("写入前清空表数据")
             };
             mdt = await mdb.AsMigrateDataTable(cc.MapingMatchPattern != "Same");
         }
@@ -244,11 +291,11 @@ public partial class MenuItemService
             Console.Write($"清空写入表(可选, {clearTableSql}): ");
             rwi.WriteDeleteSQL = Console.ReadLine();
 
-            mdt.ListReadWrite = new List<DataKitTransfer.ReadWriteItem>() { rwi };
+            mdt.ListReadWrite = [rwi];
         }
 
         var vm = new ResultVM();
-        await DXService.TryAgain(async () =>
+        await ConsoleXTo.TryAgain(async () =>
         {
             vm = await DataKitTo.MigrateDataTable(mdt, le => ConsoleTo.LogColor(le.NewItems[0].ToString()));
         });
@@ -263,17 +310,17 @@ public partial class MenuItemService
 
         var edt = new DataKitTransfer.ExportDataTable()
         {
-            ReadConnectionInfo = await DXService.ConsoleReadDatabase(cc)
+            ReadConnectionInfo = await ConsoleXTo.ConsoleReadDatabase(cc)
         };
 
-        var etypeIndex = DXService.ConsoleReadItem("选择导出类型", new string[] { "仅表数据", "结构及数据" }, 2);
+        var etypeIndex = ConsoleXTo.ConsoleReadItem("选择导出类型", "仅表数据,结构及数据".Split(','), 2);
 
-        if (DXService.ConsoleReadBool("数据库全表"))
+        if (ConsoleXTo.ConsoleReadBool("数据库全表"))
         {
             var edb = new DataKitTransfer.ExportDatabase()
             {
                 ReadConnectionInfo = edt.ReadConnectionInfo,
-                ListIgnoreTableName = DXService.ConsoleReadJoin<string>("忽略表名，多个逗号分隔")
+                ListIgnoreTableName = ConsoleXTo.ConsoleReadJoin<string>("忽略表名，多个逗号分隔")
             };
             ConsoleTo.LogColor("读取表脚本构建");
             edt = await edb.AsExportDataTable();
@@ -281,15 +328,15 @@ public partial class MenuItemService
         else
         {
             //读取表
-            edt.ListReadDataSQL = DXService.ConsoleReadJoin<string>("读取表(SELECT * FROM dbo.Table1; SELECT * FROM Table2)", ";");
+            edt.ListReadDataSQL = ConsoleXTo.ConsoleReadJoin<string>("读取表(SELECT * FROM dbo.Table1; SELECT * FROM Table2)", ";");
         }
 
         edt.ExportType = "dataOnly,all".Split(',')[etypeIndex - 1];
-        edt.PackagePath = Path.Combine(ci.DXHub, DXService.NewFileName(edt.ReadConnectionInfo.ConnectionType, ".zip"));
-        edt.PackagePath = DXService.ConsoleReadPath("导出完整路径", 1, edt.PackagePath, false);
+        edt.PackagePath = Path.Combine(ci.DXHub, ConsoleXTo.NewFileName(edt.ReadConnectionInfo.ConnectionType, ".zip"));
+        edt.PackagePath = ConsoleXTo.ConsoleReadPath("导出完整路径", 1, edt.PackagePath, false);
 
         var vm = new ResultVM();
-        await DXService.TryAgain(async () =>
+        await ConsoleXTo.TryAgain(async () =>
         {
             vm = await DataKitTo.ExportDataTable(edt, le => ConsoleTo.LogColor($"{le.NewItems[0]}"));
         });
@@ -304,18 +351,18 @@ public partial class MenuItemService
 
         var idb = new DataKitTransfer.ImportDatabase()
         {
-            WriteConnectionInfo = await DXService.ConsoleReadDatabase(cc),
-            PackagePath = DXService.ConsoleReadPath("导入包(zip)", 1)
+            WriteConnectionInfo = await ConsoleXTo.ConsoleReadDatabase(cc),
+            PackagePath = ConsoleXTo.ConsoleReadPath("导入包(zip)", 1)
         };
         //没有 sql 文件，提示是否清空数据
         using var zipRead = ZipFile.OpenRead(idb.PackagePath);
         if (!zipRead.Entries.Any(x => x.Name.EndsWith(".sql")))
         {
-            idb.WriteDeleteData = DXService.ConsoleReadBool("写入前清空表数据");
+            idb.WriteDeleteData = ConsoleXTo.ConsoleReadBool("写入前清空表数据");
         }
 
         var vm = new ResultVM();
-        await DXService.TryAgain(async () =>
+        await ConsoleXTo.TryAgain(async () =>
         {
             vm = await DataKitTo.ImportDatabase(idb, cce =>
             {
@@ -333,28 +380,28 @@ public partial class MenuItemService
 
         var edt = new DataKitTransfer.ExportDataTable()
         {
-            ReadConnectionInfo = await DXService.ConsoleReadDatabase(cc)
+            ReadConnectionInfo = await ConsoleXTo.ConsoleReadDatabase(cc)
         };
 
-        if (DXService.ConsoleReadBool("数据库全表"))
+        if (ConsoleXTo.ConsoleReadBool("数据库全表"))
         {
             var edb = new DataKitTransfer.ExportDatabase()
             {
                 ReadConnectionInfo = edt.ReadConnectionInfo,
-                ListIgnoreTableName = DXService.ConsoleReadJoin<string>("忽略表名，多个逗号分隔")
+                ListIgnoreTableName = ConsoleXTo.ConsoleReadJoin<string>("忽略表名，多个逗号分隔")
             };
             edt = await edb.AsExportDataTable();
         }
         else
         {
             //读取表
-            edt.ListReadDataSQL = DXService.ConsoleReadJoin<string>("读取表(SELECT * FROM dbo.Table1; SELECT * FROM Table2)", ";");
+            edt.ListReadDataSQL = ConsoleXTo.ConsoleReadJoin<string>("读取表(SELECT * FROM dbo.Table1; SELECT * FROM Table2)", ";");
         }
 
-        edt.PackagePath = Path.Combine(ci.DXHub, DXService.NewFileName(edt.ReadConnectionInfo.ConnectionType, ".xlsx"));
-        edt.PackagePath = DXService.ConsoleReadPath("导出完整路径", 1, edt.PackagePath, false);
+        edt.PackagePath = Path.Combine(ci.DXHub, ConsoleXTo.NewFileName(edt.ReadConnectionInfo.ConnectionType, ".xlsx"));
+        edt.PackagePath = ConsoleXTo.ConsoleReadPath("导出完整路径", 1, edt.PackagePath, false);
 
-        await DXService.TryAgain(async () =>
+        await ConsoleXTo.TryAgain(async () =>
         {
             edt.ReadConnectionInfo.AutoClose = false;
             var dbKit = edt.ReadConnectionInfo.CreateDbInstance();
@@ -396,20 +443,23 @@ public partial class MenuItemService
 
         var idb = new DataKitTransfer.ImportDatabase()
         {
-            WriteConnectionInfo = await DXService.ConsoleReadDatabase(cc),
-            PackagePath = DXService.ConsoleReadPath("导入包(xlsx)", 1),
-            WriteDeleteData = DXService.ConsoleReadBool("写入前清空表数据")
+            WriteConnectionInfo = await ConsoleXTo.ConsoleReadDatabase(cc),
+            PackagePath = ConsoleXTo.ConsoleReadPath("导入包(xlsx)", 1),
+            WriteDeleteData = ConsoleXTo.ConsoleReadBool("写入前清空表数据")
         };
 
-        var listTableName = DXService.ConsoleReadJoin<string>("指定每个工作薄表名，按逗号分隔，默认工作薄名称)");
+        var listTableName = ConsoleXTo.ConsoleReadJoin<string>("指定每个工作薄表名，按逗号分隔，默认工作薄名称)");
 
         var vm = new ResultVM();
-        await DXService.TryAgain(async () =>
+        await ConsoleXTo.TryAgain(async () =>
         {
+            idb.WriteConnectionInfo.DeepCopyNewInstance = true;
             var dataKit = DataKitTo.CreateDataKitInstance(idb.WriteConnectionInfo);
-            var tables = await dataKit.GetTable(databaseName: idb.WriteDatabaseName);
+            //写入-批量
+            var dbKitBulk = idb.WriteConnectionInfo.CreateDbInstance();
+            dbKitBulk.ConnOption.AutoClose = false;
 
-            var isCopy = await dataKit.DbInstance.PreExecute() != -1; //预检通过
+            var tables = await dataKit.GetTable(databaseName: idb.WriteDatabaseName);
 
             var sheetNames = MiniExcel.GetSheetNames(idb.PackagePath);
             for (int i = 0; i < sheetNames.Count; i++)
@@ -488,7 +538,7 @@ public partial class MenuItemService
                             vm.PartTime();
                             ConsoleTo.LogColor($"导入表（{table}）分片：{batchIndex}（分片行：{dtWrite.Rows.Count}, 总行：{batchRows}）");
 
-                            await dataKit.DbInstance.BulkCopy(dtWrite, isCopy);
+                            await dbKitBulk.BulkCopy(dtWrite);
                             dtWrite.Clear();
 
                             ConsoleTo.LogColor($"导入表（{sntn}）分片成功，耗时：{vm.PartTimeFormat()}\n");
@@ -503,7 +553,7 @@ public partial class MenuItemService
                         vm.PartTime();
                         ConsoleTo.LogColor($"导入表（{sntn}）分片：{batchIndex}（分片行：{dtWrite.Rows.Count}, 总行：{batchRows}）");
 
-                        await dataKit.DbInstance.BulkCopy(dtWrite, isCopy);
+                        await dbKitBulk.BulkCopy(dtWrite);
                         dtWrite.Clear();
 
                         ConsoleTo.LogColor($"导入表（{sntn}）分片成功，耗时：{vm.PartTimeFormat()}\n");
@@ -514,6 +564,8 @@ public partial class MenuItemService
                     ConsoleTo.LogColor($"表（{sntn}）不存在", ConsoleColor.Red);
                 }
             }
+
+            await dbKitBulk.Close();
 
             ConsoleTo.LogColor($"导入完成,总耗时：{vm.UseTimeFormat}");
         });
@@ -526,12 +578,12 @@ public partial class MenuItemService
         var ci = new ConfigInit();
         var cc = ci.DXConfig;
 
-        var connOptionRead = await DXService.ConsoleReadDatabase(cc, "读取来源");
-        var connOptionWrite = await DXService.ConsoleReadDatabase(cc, "写入目标");
+        var connOptionRead = await ConsoleXTo.ConsoleReadDatabase(cc, "读取来源");
+        var connOptionWrite = await ConsoleXTo.ConsoleReadDatabase(cc, "写入目标");
 
-        DXService.ViewConnectionOption(connOptionRead, connOptionWrite);
+        ConsoleXTo.ViewConnectionOption(connOptionRead, connOptionWrite);
 
-        ConsoleTo.LogTag("读取表信息");
+        ConsoleTo.LogCard("读取表信息");
 
         var tableRead = await DataKitTo.CreateDataKitInstance(connOptionRead).GetTable();
         var tableWrite = await DataKitTo.CreateDataKitInstance(connOptionWrite).GetTable();
@@ -585,7 +637,7 @@ public partial class MenuItemService
         }
 
         //表映射文件名
-        var MappingTableName = DXService.NewFileName("MappingTable", ".json");
+        var MappingTableName = ConsoleXTo.NewFileName("MappingTable", ".json");
         var MappingTablePath = Path.Combine(ci.DXHub, MappingTableName);
 
         ConsoleTo.LogColor($"写入表映射: {MappingTablePath}", ConsoleColor.Cyan);
@@ -599,15 +651,15 @@ public partial class MenuItemService
         var ci = new ConfigInit();
         var cc = ci.DXConfig;
 
-        var connOptionRead = await DXService.ConsoleReadDatabase(cc, "读取来源");
-        var connOptionWrite = await DXService.ConsoleReadDatabase(cc, "写入目标");
+        var connOptionRead = await ConsoleXTo.ConsoleReadDatabase(cc, "读取来源");
+        var connOptionWrite = await ConsoleXTo.ConsoleReadDatabase(cc, "写入目标");
 
-        DXService.ViewConnectionOption(connOptionRead, connOptionWrite);
+        ConsoleXTo.ViewConnectionOption(connOptionRead, connOptionWrite);
 
-        var tableMapPath = DXService.ConsoleReadPath("表映射文件");
+        var tableMapPath = ConsoleXTo.ConsoleReadPath("表映射文件");
         var rws = File.ReadAllText(tableMapPath).DeJson<DataKitTransfer.ReadWriteItem[]>();
 
-        ConsoleTo.LogTag("读取列信息");
+        ConsoleTo.LogCard("读取列信息");
 
         var columnRead = await DataKitTo.CreateDataKitInstance(connOptionRead).GetColumn();
         var columnWrite = await DataKitTo.CreateDataKitInstance(connOptionWrite).GetColumn();
@@ -666,11 +718,11 @@ public partial class MenuItemService
         var cc = ci.DXConfig;
 
         //选择库
-        var connOption = await DXService.ConsoleReadDatabase(cc);
+        var connOption = await ConsoleXTo.ConsoleReadDatabase(cc);
         connOption.AutoClose = false;
         var dataKit = DataKitTo.CreateDataKitInstance(connOption);
 
-        var tableNames = DXService.ConsoleReadJoin<string>("指定表名，多个逗号分隔，默认全表");
+        var tableNames = ConsoleXTo.ConsoleReadJoin<string>("指定表名，多个逗号分隔，默认全表");
 
         var listTable = new List<DataKitTableResult>();
         var allTables = await dataKit.GetTable();
@@ -726,7 +778,7 @@ public partial class MenuItemService
         }
         await dataKit.Close();
 
-        var saveFile = Path.Combine(ci.DXHub, DXService.NewFileName("TableDDL", ".sql"));
+        var saveFile = Path.Combine(ci.DXHub, ConsoleXTo.NewFileName("TableDDL", ".sql"));
         File.WriteAllText(saveFile, string.Join("\r\n", vm.Log));
         ConsoleTo.LogColor($"\r\nDone! Saved to {saveFile}", ConsoleColor.Cyan);
     }
@@ -833,7 +885,7 @@ public partial class MenuItemService
         var cc = ci.DXConfig;
 
         //选择库
-        var connOption = await DXService.ConsoleReadDatabase(cc);
+        var connOption = await ConsoleXTo.ConsoleReadDatabase(cc);
         var dbKit = connOption.CreateDbInstance();
 
         switch (connOption.ConnectionType)
@@ -847,7 +899,7 @@ public partial class MenuItemService
             case DBTypes.MySQL:
             case DBTypes.MariaDB:
                 {
-                    if (await dbKit.PreExecute() == 0)
+                    if (await dbKit.PreBulkCopy() == 0)
                     {
                         ConsoleTo.LogColor($"\n没有需要优化的参数", ConsoleColor.Cyan);
                     }
@@ -870,7 +922,7 @@ public partial class MenuItemService
         var cc = ci.DXConfig;
 
         //选择库
-        var connOption = await DXService.ConsoleReadDatabase(cc);
+        var connOption = await ConsoleXTo.ConsoleReadDatabase(cc);
 
         Console.Write("脚本路径或SQL: ");
         var sqlOrPath = Console.ReadLine();
@@ -887,7 +939,7 @@ public partial class MenuItemService
         {
             var num = await dbKit.SqlExecuteNonQuery(sqlOrPath, cmdCall: async cmdOption =>
             {
-                if (DXService.ConsoleReadBool("开启事务"))
+                if (ConsoleXTo.ConsoleReadBool("开启事务"))
                 {
                     await cmdOption.OpenTransactionAsync();
                 }
@@ -900,109 +952,284 @@ public partial class MenuItemService
         }
     }
 
-    [Display(Name = "Full Text Search", Description = "全文检索", GroupName = "Data")]
+    [Display(Name = "Full Text Search", Description = "全文检索", GroupName = "Data", AutoGenerateFilter = true)]
     public static async Task FullTextSearch()
     {
         //配置
         var ci = new ConfigInit();
         var cc = ci.DXConfig;
 
+        //选择连接
+        var connOption = await ConsoleXTo.ConsoleReadDatabase(cc, isSelectDatabase: false);
+
         //选择库
-        var connOption = await DXService.ConsoleReadDatabase(cc);
+        var includeDatabase = new List<string>();
+        if (connOption.ConnectionType != DBTypes.Oracle)
+        {
+            do
+            {
+                var dataKit = DataKitTo.CreateDataKitInstance(connOption);
+                var listDatabaseName = await dataKit.GetDatabaseNameOnly();
+
+                Console.WriteLine("");
+                listDatabaseName.ForEach(Console.WriteLine);
+                Console.WriteLine("");
+
+                includeDatabase = ConsoleXTo.ConsoleReadJoin<string>("指定库名，多个逗号分隔");
+
+                //有效库名
+                var validDatabase = includeDatabase.Intersect(listDatabaseName).ToList();
+                if (validDatabase.Count != includeDatabase.Count)
+                {
+                    ConsoleTo.LogColor($"有效库名 {validDatabase.Count} 个\r\n", ConsoleColor.Green);
+                    includeDatabase = validDatabase;
+                }
+            } while (includeDatabase.Count == 0);
+        }
+        else
+        {
+            includeDatabase.Add(connOption.DatabaseName);
+        }
 
         //选择表
-        var tableMode = DXService.ConsoleReadItem("选择表", "所有表,指定表,排除表".Split(','));
+        var tableMode = ConsoleXTo.ConsoleReadItem("选择表", "所有表,指定表,排除表".Split(','));
         var includeTable = new List<string>(); //指定表
         var excludeTable = new List<string>(); //排除表
         if (tableMode == 2)
         {
-            includeTable = DXService.ConsoleReadJoin<string>("指定表名，多个逗号分隔");
+            includeTable = ConsoleXTo.ConsoleReadJoin<string>("指定表名，多个逗号分隔");
         }
         else if (tableMode == 3)
         {
-            excludeTable = DXService.ConsoleReadJoin<string>("排除表名，多个逗号分隔");
+            excludeTable = ConsoleXTo.ConsoleReadJoin<string>("排除表名，多个逗号分隔");
         }
 
-        var keys = DXService.ConsoleReadJoin<string>("关键词，多个逗号分隔");
+        var keys = ConsoleXTo.ConsoleReadJoin<string>("关键词，多个逗号分隔");
         if (keys.Count > 0)
         {
-            //跑表
-            var sw = Stopwatch.StartNew();
-
-            var dataKit = DataKitTo.CreateDataKitInstance(connOption);
-            dataKit.DbInstance.ConnOption.AutoClose = false;
-            var listTables = await dataKit.GetTable();
-            if (tableMode == 2)
+            foreach (var dbName in includeDatabase)
             {
-                listTables = listTables.Where(x => includeTable.Any(y =>
-                DbKitExtensions.SqlEqualSNTN(y, DbKitExtensions.SqlSNTN(x.TableName, x.SchemaName, connOption.ConnectionType))
-                )).ToList();
-            }
-            else if (tableMode == 3)
-            {
-                listTables = listTables.Where(x => !excludeTable.Any(y =>
-                DbKitExtensions.SqlEqualSNTN(y, DbKitExtensions.SqlSNTN(x.TableName, x.SchemaName, connOption.ConnectionType))
-                )).ToList();
-            }
-            ConsoleTo.LogTag($"开始检索 {listTables.Count} 张表");
-
-            //结果输出
-            var savePath = Path.Combine(ci.DXHub, DXService.NewFileName($"{nameof(FullTextSearch)}_{connOption.ConnectionType}_{connOption.DatabaseName}", ".log"));
-            //找到数量
-            var findCount = 0;
-
-            for (int i = 0; i < listTables.Count; i++)
-            {
-                var itemTable = listTables[i];
-                var sntn = DbKitExtensions.SqlSNTN(itemTable.TableName, itemTable.SchemaName, connOption.ConnectionType);
-                var sql = $"select * from {sntn}";
-                ConsoleTo.LogColor($"read SQL: {sql} , progress: {i + 1}/{listTables.Count}");
-
-                //表查找结果
-                var tableResult = new StringBuilder();
-                var findRows = 0;
-                var tableRows = 0;
-                await dataKit.DbInstance.SqlExecuteDataRow(sql, readRow: row =>
+                try
                 {
-                    tableRows++;
+                    //跑表
+                    var sw = Stopwatch.StartNew();
 
-                    var rowContent = row.ToJson();
-
-                    //搜索关键字
-                    var hasKeys = new List<string>();
-                    foreach (var key in keys)
+                    ConsoleTo.LogCard($"开始检索库 {dbName}");
+                    if (connOption.ConnectionType != DBTypes.Oracle)
                     {
-                        if (rowContent.Contains(key))
+                        connOption.DatabaseName = dbName;
+                        connOption.SetConnDatabaseName(dbName);
+                    }
+
+                    var dataKit = DataKitTo.CreateDataKitInstance(connOption);
+                    dataKit.DbInstance.ConnOption.AutoClose = false;
+                    var listTables = await dataKit.GetTable();
+                    if (tableMode == 2)
+                    {
+                        listTables = listTables.Where(x => includeTable.Any(y =>
+                        DbKitExtensions.SqlEqualSNTN(y, DbKitExtensions.SqlSNTN(x.TableName, x.SchemaName, connOption.ConnectionType))
+                        )).ToList();
+                    }
+                    else if (tableMode == 3)
+                    {
+                        listTables = listTables.Where(x => !excludeTable.Any(y =>
+                        DbKitExtensions.SqlEqualSNTN(y, DbKitExtensions.SqlSNTN(x.TableName, x.SchemaName, connOption.ConnectionType))
+                        )).ToList();
+                    }
+                    ConsoleTo.LogCard($"该库共计表 {listTables.Count} 张");
+                    if (listTables.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    //结果输出
+                    var savePath = Path.Combine(ci.DXHub, ConsoleXTo.NewFileName($"{nameof(FullTextSearch)}_{connOption.ConnectionType}_{connOption.DatabaseName}", ".sql"));
+                    //找到数量
+                    var findCount = 0;
+
+                    for (int i = 0; i < listTables.Count; i++)
+                    {
+                        var itemTable = listTables[i];
+                        var sntn = DbKitExtensions.SqlSNTN(itemTable.TableName, itemTable.SchemaName, connOption.ConnectionType);
+                        var sql = $"select * from {sntn}";
+                        ConsoleTo.LogColor($"read SQL: {sql} , progress: {i + 1}/{listTables.Count}");
+                        FileTo.WriteText($"----  {sntn}", savePath);
+
+                        //表查找结果
+                        var tableResult = new StringBuilder();
+                        var findRows = 0;
+                        var tableRows = 0;
+                        DataTable tableSchema = null;
+                        var tablePrimaryKey = new HashSet<string>();
+                        await dataKit.DbInstance.SqlExecuteDataRow(sql, readRow: row =>
                         {
-                            hasKeys.Add(key);
-                        }
-                    }
-                    if (hasKeys.Count > 0)
-                    {
-                        tableResult.AppendLine($"{string.Join(',', hasKeys)} => {sntn} => {rowContent}\r\n");
-                        findRows++;
-                        findCount++;
-                        ConsoleTo.LogColor($"已找到 {findCount} 条");
-                    }
+                            tableRows++;
 
-                    return Task.CompletedTask;
-                });
+                            //搜索关键字
+                            string rowResultSQL;
+                            var rowResultWhere = new Dictionary<string, string>();
+                            var rowResultColumns = new HashSet<string>();
+                            var rowResultColumnKeyContext = new HashSet<ValueTuple<string, string, string>>();
 
-                //写入表结果
-                var tableShow = $"检索表（{sntn}）{tableRows} 行, 找到 {findRows} 条\r\n";
-                ConsoleTo.LogColor(tableShow, ConsoleColor.Cyan);
-                tableResult.Insert(0, tableShow);
-                FileTo.WriteText(tableResult.ToString(), savePath);
+                            for (int i = 0; i < tableSchema.Columns.Count; i++)
+                            {
+                                var col = tableSchema.Columns[i];
+                                if (tablePrimaryKey.Contains(col.ColumnName))
+                                {
+                                    rowResultWhere[col.ColumnName] = row[i]?.ToString();
+                                }
+
+                                if (col.DataType == typeof(string))
+                                {
+                                    var val = row[i]?.ToString();
+                                    if (!string.IsNullOrWhiteSpace(val))
+                                    {
+                                        foreach (var key in keys)
+                                        {
+                                            int searchIndex = -1;
+                                            do
+                                            {
+                                                searchIndex = val.IndexOf(key, searchIndex + 1, StringComparison.OrdinalIgnoreCase);
+                                                if (searchIndex >= 0)
+                                                {
+                                                    rowResultColumns.Add(col.ColumnName);
+
+                                                    var truncationLength = 30;
+                                                    int startIndex = Math.Max(0, searchIndex - truncationLength);
+                                                    int endIndex = Math.Min(val.Length, searchIndex + key.Length + truncationLength);
+                                                    var truncationContext = val[startIndex..endIndex].Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
+                                                    rowResultColumnKeyContext.Add(new(col.ColumnName, key, truncationContext));
+                                                }
+                                            } while (searchIndex >= 0);
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (rowResultColumns.Count > 0)
+                            {
+                                rowResultSQL = $"select {string.Join(',', tablePrimaryKey.Concat(rowResultColumns).Distinct())} from {sntn} where {string.Join(" and ", rowResultWhere.Select(x => $"{x.Key}='{x.Value}'"))}";
+                                tableResult.AppendLine($"\r\n{rowResultSQL}");
+                                rowResultColumnKeyContext.ForEach(x =>
+                                {
+                                    tableResult.AppendLine($"-- column-key-context: {x.Item1} - {x.Item2} - {x.Item3}");
+                                });
+
+                                findRows++;
+                                findCount++;
+                                if (findRows <= 99)
+                                {
+                                    ConsoleTo.LogColor($"已找到 {findRows} 条");
+                                }
+                                else if (findRows == 100)
+                                {
+                                    ConsoleTo.LogColor($"已找到 99+ 条");
+                                }
+
+                                //1M
+                                if (tableResult.Length > 1048576)
+                                {
+                                    FileTo.WriteText(tableResult.ToString(), savePath);
+                                    tableResult.Clear();
+                                }
+                            }
+
+                            return Task.CompletedTask;
+                        }, schemaResult: schemaModel =>
+                        {
+                            tableSchema = schemaModel.Table.Clone();
+
+                            //取主键列或前两列为查询条件
+                            if (schemaModel.KeyColumns.Count > 0)
+                            {
+                                schemaModel.KeyColumns.ForEach(x =>
+                                {
+                                    tablePrimaryKey.Add(x.ColumnName);
+                                });
+                            }
+                            else
+                            {
+                                for (int i = 0; i < tableSchema.Columns.Count; i++)
+                                {
+                                    if (i < 3)
+                                    {
+                                        tablePrimaryKey.Add(tableSchema.Columns[i].ColumnName);
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            return Task.CompletedTask;
+                        });
+
+                        //写入表结果
+                        var tableShow = $"----  done  {sntn} {tableRows} rows , found {findRows}\r\n";
+                        ConsoleTo.LogColor(tableShow);
+                        tableResult.AppendLine(tableShow);
+                        FileTo.WriteText(tableResult.ToString(), savePath);
+                    }
+                    await dataKit.Close();
+
+                    var dbShow = $"----  总共找到 {findCount} 条, 详情: {savePath}\r\n";
+                    ConsoleTo.LogColor(dbShow);
+                    FileTo.WriteText(dbShow, savePath);
+
+                    sw.Stop();
+                    ConsoleTo.LogColor($"执行结束，共耗时：{sw.Elapsed}");
+                }
+                catch (Exception ex)
+                {
+                    ConsoleTo.LogError(ex);
+                }
             }
-            await dataKit.Close();
-
-            var dbShow = $"总共找到 {findCount} 条, 详情: {savePath}\r\n";
-            ConsoleTo.LogColor(dbShow, ConsoleColor.Cyan);
-            FileTo.WriteText(dbShow, savePath);
-
-            sw.Stop();
-            ConsoleTo.LogColor($"执行结束，共耗时：{sw.Elapsed}");
         }
     }
 
+    [Display(Name = "Generate CreateTable In ClickHouse", Description = "生成创建表", GroupName = "Data")]
+    public static async Task GenerateCreateTableInClickHouse()
+    {
+        var ci = new ConfigInit();
+        var cc = ci.DXConfig;
+
+        var connOption = await ConsoleXTo.ConsoleReadDatabase(cc, "读取库");
+        Console.Write("表名，多个逗号分隔: ");
+        var readTableName = Console.ReadLine();
+
+        if (!string.IsNullOrWhiteSpace(readTableName))
+        {
+            var listReadSQL = readTableName.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => $"SELECT * FROM {x} WHERE 1=2");
+
+            Console.Write("表名加前缀: ");
+            var tableNamePrefix = Console.ReadLine().Trim();
+
+            List<string> caseItem = ["LowerCase", "Same", "UpperCase"];
+            var caseIndex = ConsoleXTo.ConsoleReadItem("转换大小写", caseItem, 2);
+            var lowerCase = caseItem[caseIndex - 1];
+
+            var allowDBNull = ConsoleXTo.ConsoleReadBool("允许列值为 NULL");
+
+            var dbKit = connOption.CreateDbInstance();
+            var eds = await dbKit.SqlExecuteDataSet(string.Join(';', listReadSQL));
+
+            for (int i = 0; i < eds.Datas.Tables.Count; i++)
+            {
+                var dt = eds.Datas.Tables[i];
+                var schema = eds.Schemas.Tables[i];
+
+                var tableName = dt.TableName;
+                if (schema.Columns.Contains("BaseTableName"))
+                {
+                    tableName = schema.Rows[0]["BaseTableName"].ToString();
+                }
+                tableName = DbKitExtensions.CaseMapping(tableName, lowerCase);
+                tableName = $"{tableNamePrefix}{tableName}";
+
+                var createSQL = DataKitTo.ToClickHouseCreateSQL(dt, tableName, lowerCase: lowerCase, allowDBNull: allowDBNull);
+                ConsoleTo.LogCard($"Create table {tableName}", createSQL);
+            }
+        }
+    }
 }

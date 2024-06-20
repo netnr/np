@@ -132,7 +132,7 @@ var ndkAction = {
                 break;
             case "about":
                 {
-                    ndkFunction.alert(`<div style="font-size:var(--sl-font-size-x-large)">${ndkVary.name} <sl-badge variant="warning">v${nrcBase.version}</sl-badge></div>
+                    ndkFunction.alert(`<div>${ndkVary.name} <sl-badge>v${nrcBase.version}</sl-badge></div>
 <p><a href="https://github.com/netnr/np" target="_blank">https://github.com/netnr/np</a></p>
 <a href="https://zme.ink" target="_blank">Sponsors</a>`, ndkI18n.lg.about, '25vw');
                 }
@@ -244,7 +244,7 @@ var ndkAction = {
                         case "tp1-conns":
                             {
                                 //选中或范围项
-                                var edata = ndkVary.gridOpsConns.api.getSelectedRows()[0];
+                                var edata = ndkVary.gridOpsConns.getSelectedRows()[0];
                                 if (edata) {
                                     var tabTitle = ndkVary.iconSvg("plug-fill", edata.alias);
                                     var cp = { cobj: edata };
@@ -259,7 +259,7 @@ var ndkAction = {
                                 var cp = ndkStep.cpGet(1);
 
                                 //选中或范围项
-                                var edata = ndkVary.gridOpsDatabase.api.getSelectedRows()[0];
+                                var edata = ndkVary.gridOpsDatabase.getSelectedRows()[0];
                                 if (edata) {
                                     var tabTitle = ndkVary.iconSvg("server", edata.DatabaseName);
                                     cp.databaseName = edata.DatabaseName;
@@ -571,16 +571,14 @@ var ndkAction = {
                             grid.domGridExecuteSql.style.height = tableh;
 
                             //显示表格
-                            if (!grid.gridOps && grid.opsExecuteSql) {
+                            if (!grid.gridApi && grid.opsExecuteSql) {
                                 nrGrid.buildDom(grid.domGridExecuteSql);
-                                var gridOps = new agGrid.Grid(grid.domGridExecuteSql, grid.opsExecuteSql).gridOptions;
+                                let gridApi = nrGrid.createGrid(grid.domGridExecuteSql, grid.opsExecuteSql);
 
                                 //快捷搜索
-                                grid.domFilterExecuteSql.addEventListener('input', function () {
-                                    gridOps.api.setQuickFilter(this.value);
-                                }, false);
+                                nrApp.setQuickFilter(grid.domFilterExecuteSql, gridApi)
 
-                                grid.gridOps = gridOps;
+                                grid.gridApi = gridApi;
                             }
                         }
                     })

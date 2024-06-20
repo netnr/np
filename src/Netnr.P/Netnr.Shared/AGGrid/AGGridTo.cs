@@ -30,7 +30,7 @@ public static partial class AGGridTo
 
     public static class SortModelSortDirection
     {
-        public static HashSet<string> All { get; } = new() { Ascending, Descending };
+        public static HashSet<string> All { get; } = [Ascending, Descending];
 
         public const string Ascending = "asc";
         public const string Descending = "desc";
@@ -54,7 +54,7 @@ public static partial class AGGridTo
 
     public static class FilterModelFilterType
     {
-        public static HashSet<string> All { get; } = new() { Text, Number, Date, Boolean, Set };
+        public static HashSet<string> All { get; } = [Text, Number, Date, Boolean, Set];
 
         public const string Text = "text";
         public const string Number = "number";
@@ -65,13 +65,24 @@ public static partial class AGGridTo
 
     public static class FilterModelType
     {
-        public static HashSet<string> All { get; } = new()
-        {
-            Equals, NotEqual, Contains, NotContains,
-            StartsWith, EndsWith, LessThan, LessThanOrEqual,
-            GreaterThan, GreaterThanOrEqual, InRange,
-            Null, NotNull, Blank, NotBlank
-        };
+        public static HashSet<string> All { get; } =
+        [
+            Equals,
+            NotEqual,
+            Contains,
+            NotContains,
+            StartsWith,
+            EndsWith,
+            LessThan,
+            LessThanOrEqual,
+            GreaterThan,
+            GreaterThanOrEqual,
+            InRange,
+            Null,
+            NotNull,
+            Blank,
+            NotBlank
+        ];
 
         new public const string Equals = "equals";
         public const string NotEqual = "notEqual";
@@ -99,7 +110,7 @@ public static partial class AGGridTo
 
     public static class FilterModelOperator
     {
-        public static HashSet<string> All { get; } = new() { And, Or };
+        public static HashSet<string> All { get; } = [And, Or];
 
         public const string And = "AND";
         public const string Or = "OR";
@@ -121,8 +132,13 @@ public static partial class AGGridTo
 
     #region InfiniteScroll
 
+    private static readonly JsonSerializerOptions DeserializeGetRowsParams_jso = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     public static GetRowsParams DeserializeGetRowsParams(string json) =>
-        JsonSerializer.Deserialize<GetRowsParams>(json, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        JsonSerializer.Deserialize<GetRowsParams>(json, DeserializeGetRowsParams_jso);
 
     public static IQueryable<T> ToQueryableRows<T>(IQueryable<T> queryable, GetRowsParams getRowsParams, InfiniteRowModelOptions options, out IQueryable<T> queryableCount)
     {
@@ -227,27 +243,27 @@ public static partial class AGGridTo
     {
         return filterModel switch
         {
-            { Type: FilterModelType.Null or FilterModelType.NotNull } => Array.Empty<object>(),
+            { Type: FilterModelType.Null or FilterModelType.NotNull } => [],
 
-            { FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => new object[] { GetString(filterModel.Filter).ToLower() },
-            { FilterType: FilterModelFilterType.Text } => new object[] { GetString(filterModel.Filter) },
+            { FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => [GetString(filterModel.Filter).ToLower()],
+            { FilterType: FilterModelFilterType.Text } => [GetString(filterModel.Filter)],
 
-            { FilterType: FilterModelFilterType.Number, Type: FilterModelType.InRange } => new object[] { GetNumber(filterModel.Filter), filterModel.FilterTo },
-            { FilterType: FilterModelFilterType.Number } => new object[] { GetNumber(filterModel.Filter) },
+            { FilterType: FilterModelFilterType.Number, Type: FilterModelType.InRange } => [GetNumber(filterModel.Filter), filterModel.FilterTo],
+            { FilterType: FilterModelFilterType.Number } => [GetNumber(filterModel.Filter)],
 
-            { FilterType: FilterModelFilterType.Date, Type: FilterModelType.InRange } => new object[] { GetDate(filterModel.DateFrom), GetDate(filterModel.DateTo) },
-            { FilterType: FilterModelFilterType.Date } => new object[] { GetDate(filterModel.DateFrom) },
+            { FilterType: FilterModelFilterType.Date, Type: FilterModelType.InRange } => [GetDate(filterModel.DateFrom), GetDate(filterModel.DateTo)],
+            { FilterType: FilterModelFilterType.Date } => [GetDate(filterModel.DateFrom)],
 
-            { FilterType: FilterModelFilterType.Boolean } => new object[] { GetBoolean(filterModel.Filter) },
+            { FilterType: FilterModelFilterType.Boolean } => [GetBoolean(filterModel.Filter)],
 
-            { FilterType: FilterModelFilterType.Set } when options.CaseInsensitive => new object[] { filterModel.Values.Select(v => v?.ToLower()).ToList() },
-            { FilterType: FilterModelFilterType.Set } when colType == typeof(int?) => new object[] { filterModel.Values.Select(x => int.TryParse(x, out int xv) ? new int?(xv) : null).ToList() },
-            { FilterType: FilterModelFilterType.Set } when colType == typeof(int) => new object[] { filterModel.Values.Select(int.Parse).ToList() },
-            { FilterType: FilterModelFilterType.Set } when colType == typeof(long?) => new object[] { filterModel.Values.Select(x => long.TryParse(x, out long xv) ? new long?(xv) : null).ToList() },
-            { FilterType: FilterModelFilterType.Set } when colType == typeof(long) => new object[] { filterModel.Values.Select(long.Parse).ToList() },
-            { FilterType: FilterModelFilterType.Set } when colType == typeof(decimal?) => new object[] { filterModel.Values.Select(x => decimal.TryParse(x, out decimal xv) ? new decimal?(xv) : null).ToList() },
-            { FilterType: FilterModelFilterType.Set } when colType == typeof(decimal) => new object[] { filterModel.Values.Select(decimal.Parse).ToList() },
-            { FilterType: FilterModelFilterType.Set } => new object[] { filterModel.Values },
+            { FilterType: FilterModelFilterType.Set } when options.CaseInsensitive => [filterModel.Values.Select(v => v?.ToLower()).ToList()],
+            { FilterType: FilterModelFilterType.Set } when colType == typeof(int?) => [filterModel.Values.Select(x => int.TryParse(x, out int xv) ? new int?(xv) : null).ToList()],
+            { FilterType: FilterModelFilterType.Set } when colType == typeof(int) => [filterModel.Values.Select(int.Parse).ToList()],
+            { FilterType: FilterModelFilterType.Set } when colType == typeof(long?) => [filterModel.Values.Select(x => long.TryParse(x, out long xv) ? new long?(xv) : null).ToList()],
+            { FilterType: FilterModelFilterType.Set } when colType == typeof(long) => [filterModel.Values.Select(long.Parse).ToList()],
+            { FilterType: FilterModelFilterType.Set } when colType == typeof(decimal?) => [filterModel.Values.Select(x => decimal.TryParse(x, out decimal xv) ? new decimal?(xv) : null).ToList()],
+            { FilterType: FilterModelFilterType.Set } when colType == typeof(decimal) => [filterModel.Values.Select(decimal.Parse).ToList()],
+            { FilterType: FilterModelFilterType.Set } => [filterModel.Values],
 
             _ => throw new ArgumentException($"Unable to determine predicate arguments for {colId}. Most likely {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}) is unsupported. Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
         };

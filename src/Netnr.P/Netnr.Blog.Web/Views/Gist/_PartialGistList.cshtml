@@ -3,10 +3,10 @@
     var rows = Model.Rows as List<Gist>;
 
     //如果搜索只有一条，直接跳转
-    var search = ViewContext.HttpContext.Request.Query["k"];
+    var search = Context.Request.Query["k"];
     if (rows.Count == 1 && Model.Pag.PageNumber == 1 && !string.IsNullOrEmpty(search))
     {
-        ViewContext.HttpContext.Response.Redirect("/gist/code/" + rows.FirstOrDefault().GistCode);
+        Context.Response.Redirect("/gist/code/" + rows.FirstOrDefault().GistCode);
     }
 
     var nickname = ViewData["Nickname"]?.ToString() ?? "Discover";
@@ -58,7 +58,7 @@ else
                         <span>@item.GistRemark</span>
                     </div>
 
-                    @if (item.GistLanguage == "shell" && item.GistFilename.EndsWith(".cast"))
+                    @if (item.GistLanguage == "plaintext" && item.GistFilename.EndsWith(".cast"))
                     {
                         <a class="small" href="/gist/code/@item.GistCode">查看详情</a>
                     }

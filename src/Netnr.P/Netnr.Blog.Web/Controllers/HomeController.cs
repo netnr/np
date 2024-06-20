@@ -1,16 +1,13 @@
+using Ganss.Xss;
+
 namespace Netnr.Blog.Web.Controllers
 {
     /// <summary>
     /// 主体
     /// </summary>
-    public class HomeController : Controller
+    public class HomeController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public HomeController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// 首页
@@ -123,6 +120,9 @@ namespace Netnr.Blog.Web.Controllers
                     var lisTagId = new List<int>();
                     TagIds.Split(',').ForEach(x => lisTagId.Add(Convert.ToInt32(x)));
                     var lisTagName = (await CommonService.TagsQuery()).Where(x => lisTagId.Contains(x.TagId)).ToList();
+
+                    //xss
+                    mo.UwContent = CommonService.XSS(mo.UwContent);
 
                     mo.Uid = uinfo?.UserId;
                     mo.UwCreateTime = DateTime.Now;
@@ -246,6 +246,9 @@ namespace Netnr.Blog.Web.Controllers
                 {
                     mo.Uid = IdentityService.Get(HttpContext)?.UserId ?? 0;
                     var now = DateTime.Now;
+
+                    //xss
+                    mo.UrContent = CommonService.XSS(mo.UrContent);
 
                     //回复消息
                     um.UmId = Guid.NewGuid().ToLongString();

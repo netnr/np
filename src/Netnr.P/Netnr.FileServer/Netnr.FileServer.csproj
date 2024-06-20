@@ -9,12 +9,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Base;App;Web</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Base;Core;App;Web</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;ImportBase;ImportWeb;Base;App;Web</DefineConstants>
+		<DefineConstants>TRACE;ImportBase;ImportWeb;Base;Core;App;Web</DefineConstants>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
@@ -30,12 +30,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LiteDB" Version="5.0.17" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Netnr.Core\Netnr.Core.csproj" />
+		<PackageReference Include="LiteDB" Version="5.0.20" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 
 	<Import Project="..\Netnr.Shared\Netnr.Shared.projitems" Label="Shared" />

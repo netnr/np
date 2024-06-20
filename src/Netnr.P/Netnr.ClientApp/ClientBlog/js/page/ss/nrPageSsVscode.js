@@ -22,7 +22,7 @@ let nrPage = {
     init: async () => {
         //编辑器
         nrVary.domEditor.innerHTML = nrApp.tsLoadingHtml;
-        await nrEditor.init();
+        await nrEditor.rely();
         nrVary.domEditor.innerHTML = '';
 
         let modesIds = monaco.languages.getLanguages().map(lang => lang.id).sort();
@@ -344,7 +344,7 @@ let nrPage = {
         let ext = nrPage.languageExt[domItem.dataset.language] || domItem.dataset.language;
         let fileName = domItem.title + (domItem.title.endsWith(`.${ext}`) ? '' : `.${ext}`);
         let fileContent = await nrStorage.getItem(`${nrPage.ckeyFile}-${domItem.dataset.id}`);
-        nrcBase.download(fileContent, fileName);
+        nrcBase.downloadText(fileContent, fileName);
     },
 
     //vscode 语言对应文件扩展名称的所有键值对

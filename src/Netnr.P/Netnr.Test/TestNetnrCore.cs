@@ -130,7 +130,7 @@ namespace Netnr.Test
             Assert.NotEmpty(xmlPublicKey);
 
             var content1 = "abc 123 !@#";
-            var content2 = CalcTo.encoding.GetBytes(content1);
+            var content2 = CalcTo.DefaultEncoding.GetBytes(content1);
 
             var resultEncrypt1 = CalcTo.RSAEncrypt(xmlPublicKey, content1);
             var resultEncrypt2 = CalcTo.RSAEncrypt(xmlPublicKey, content2);
@@ -163,19 +163,13 @@ namespace Netnr.Test
         [Fact]
         public void CmdTo_2()
         {
-            var result = string.Empty;
+            var proc = CmdTo.BuildProcess("-V", @"curl");
+            proc.Start();
 
-            var psi = CmdTo.PSInfo("-V", @"curl");
+            var result = proc.StandardOutput.ReadToEnd();
+            proc.WaitForExit();
 
-            CmdTo.Execute(psi, (process, cr) =>
-            {
-                process.Start();
-
-                result = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-
-                process.Close();
-            });
+            proc.Close();
 
             Assert.StartsWith("curl", result);
         }
@@ -185,25 +179,25 @@ namespace Netnr.Test
         {
             var result = string.Empty;
 
-            var psi = CmdTo.PSInfo(@"-i", "ffmpeg");
-            psi.StandardErrorEncoding = Encoding.UTF8;
+            var proc = CmdTo.BuildProcess(@"-i", "ffmpeg");
+            proc.StartInfo.StandardErrorEncoding = Encoding.UTF8;
 
-            CmdTo.Execute(psi, (process, cr) =>
+            //错误信息输出
+            proc.ErrorDataReceived += (sender, output) =>
             {
-                //错误信息输出
-                process.ErrorDataReceived += (sender, output) =>
+                if (output.Data != null)
                 {
                     result += output.Data;
-                };
+                }
+            };
 
-                process.Start();//启动线程
+            proc.Start();//启动线程
 
-                process.BeginErrorReadLine();//开始异步读取错误信息
-                process.WaitForExit();//阻塞等待进程结束
+            proc.BeginErrorReadLine();//开始异步读取错误信息
+            proc.WaitForExit();//阻塞等待进程结束
 
-                process.Close();//关闭进程
-                process.Dispose();
-            });
+            proc.Close();//关闭进程
+            proc.Dispose();
 
             Assert.StartsWith("ffmpeg", result);
         }
@@ -257,8 +251,8 @@ namespace Netnr.Test
         {
             var list = new List<ResultVM>()
             {
-                new ResultVM(),
-                new ResultVM()
+                new(),
+                new()
             };
 
             var dt1 = list.ToDataTable();
@@ -345,33 +339,30 @@ namespace Netnr.Test
         }
 
         [Fact]
-        public void HttpTo_1_Get()
+        public async Task HttpTo_1_Get()
         {
             string url = "https://vv.video.qq.com/checktime?otype=json";
-            var result = HttpTo.Get(url);
+
+            var client = HttpTo.BuildClient();
+            var result = await client.GetStringAsync(url);
+
             Assert.Contains("QZOutputJson", result);
         }
 
         [Fact]
-        public void HttpTo_2_Post()
+        public async Task HttpTo_2_Post()
         {
             string url = "https://vv.video.qq.com/checktime?otype=json";
-            var result = HttpTo.Post(url, "");
+
+            var client = HttpTo.BuildClient();
+            var resp = await client.PostAsync(url, null);
+            var result = await resp.Content.ReadAsStringAsync();
+
             Assert.Contains("QZOutputJson", result);
         }
 
         [Fact]
-        public void HttpTo_9_Download()
-        {
-            string url = "https://img01.sogoucdn.com/app/a/100540022/2021053117531272442865.png";
-            var tmpPath = Path.GetTempFileName();
-            HttpTo.DownloadSave(url, tmpPath);
-
-            Assert.True(File.Exists(tmpPath));
-        }
-
-        [Fact]
-        public async void LockTo_1()
+        public async Task LockTo_1()
         {
             var st = Stopwatch.StartNew();
 
@@ -416,6 +407,21 @@ namespace Netnr.Test
         }
 
         [Fact]
+        public void LngLatTo_1()
+        {
+            double lng = 106.533115;
+            double lat = 29.349887;
+
+            var gcj = LngLatTo.Wgs84ToGcj02(lng, lat);
+            Assert.True(gcj.Length == 2);
+            Debug.WriteLine(string.Join(',', gcj));
+
+            var bd = LngLatTo.Gcj02ToBd09(gcj[0], gcj[1]);
+            Assert.True(bd.Length == 2);
+            Debug.WriteLine(string.Join(',', bd));
+        }
+
+        [Fact]
         public async Task MailTo_1()
         {
             try
@@ -429,8 +435,8 @@ namespace Netnr.Test
                     FromName = "Netnr",
                     Subject = "验证码",
                     Body = $"你的验证码为：<h2 style='text-align:center'>{RandomTo.NewNumber()}</h2>",
-                    ToMail = new List<string> { "netnr@tempmail.cn", "netnr@bccto.cc" },
-                    CcMail = new List<string> { "netnr@teml.net", "netnr@nqmo.com" }
+                    ToMail = ["netnr@tempmail.cn", "netnr@bccto.cc"],
+                    CcMail = ["netnr@teml.net", "netnr@nqmo.com"]
                 };
 
                 await MailTo.Send(model);

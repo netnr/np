@@ -171,7 +171,7 @@ let nrWeb = {
             if (["ArrowUp", "ArrowDown"].includes(event.code)) {
                 event.preventDefault();
                 nrWeb.searchArrow(event.code);
-            } else if (event.code == "Enter") {
+            } else if (event.key == "Enter") {
                 event.preventDefault();
                 let domActive = nrVary.domSearch.querySelector('a.active');
                 if (domActive) {
@@ -203,7 +203,7 @@ let nrWeb = {
                         ? nrVary.domTxtFilter.dataset.search
                         : nrVary.domTxtFilter.title;
                     nrWeb.searchLink(nrVary.domTxtFilter.dataset.search);
-                } else if (event.code == "Enter") {
+                } else if (event.key == "Enter") {
                     //确定
                     event.preventDefault();
                     if (!nrVary.domSearch.classList.contains('d-none')) {
@@ -653,7 +653,7 @@ let nrWeb = {
 
         //proxy
         if (nrVary.flagProxyUsed && !nrVary.flagLocalUsed) {
-            url = `${nrVary.flagProxyServer}${encodeURIComponent(url.replace("https://", ""))}`;
+            url = `${nrVary.flagProxyServer}${encodeURIComponent(url)}`;
         }
 
         let vm = await nrcBase.fetch(url, options);

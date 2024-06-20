@@ -1,6 +1,14 @@
-using Netnr.FileServer.Controllers;
+PMScriptTo.Init();
 
 var builder = WebApplication.CreateBuilder(args);
+if (!BaseTo.CommandLineArgs.Contains("--urls"))
+{
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        //Ëæ»ú¶Ë¿Ú
+        serverOptions.Listen(System.Net.IPAddress.Any, 0);
+    });
+}
 
 BaseTo.ReadyEncoding();
 
@@ -49,9 +57,9 @@ app.UseExceptionHandler(options =>
             vm.Data = ex.Error.ToTree();
         }
 
-        context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-        context.Response.Headers.Add("Access-Control-Allow-Methods", context.Request.Method);
-        context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+        context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+        context.Response.Headers.Append("Access-Control-Allow-Methods", context.Request.Method);
+        context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
         await context.Response.WriteAsync(vm.ToJson(true));
     });
 });
@@ -157,11 +165,11 @@ app.UseStaticFiles(new StaticFileOptions()
     ServeUnknownFileTypes = true,
     OnPrepareResponse = (resp) =>
     {
-        resp.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        resp.Context.Response.Headers.AccessControlAllowOrigin = "*";
 
         var maxAge = AppTo.GetValue<int>("StaticResource:TmpExpire");
         maxAge = maxAge == 0 ? 604800 : maxAge * 60;
-        resp.Context.Response.Headers["Cache-Control"] = $"public, max-age={maxAge}";
+        resp.Context.Response.Headers.CacheControl = $"public, max-age={maxAge}";
     }
 });
 

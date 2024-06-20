@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Xunit;
+﻿using Xunit;
 
 namespace Netnr.Test
 {
@@ -13,6 +12,8 @@ namespace Netnr.Test
             var ipq = new IPQuery(@"D:\tmp\res\cz\qqwry.dat", @"D:\tmp\res\cz\ipv6wry.db");
 
             new string[] {
+                "2408:8262:8460:5015:dae8:44ff:fe15:4aaf",
+                "2408:8207:3042:3c0:40b1:fdc6:4cf7:2eec",
                 "42.201.45.10", "36.132.150.90", "61.186.154.83",
                 "39.160.170.17", "125.86.94.191", "114.44.227.87",
                 "152.69.198.201", "110.165.32.0", "183.182.31.255",

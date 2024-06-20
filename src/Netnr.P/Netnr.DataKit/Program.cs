@@ -1,6 +1,14 @@
-using Netnr;
+PMScriptTo.Init(); 
 
 var builder = WebApplication.CreateBuilder(args);
+if (!BaseTo.CommandLineArgs.Contains("--urls"))
+{
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        //Ëæ»ú¶Ë¿Ú
+        serverOptions.Listen(System.Net.IPAddress.Any, 0);
+    });
+}
 
 BaseTo.ReadyEncoding();
 BaseTo.ReadyLegacyTimestamp();

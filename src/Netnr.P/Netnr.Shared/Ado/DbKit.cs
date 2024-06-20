@@ -27,7 +27,12 @@ public partial class DbKit
     /// <summary>
     /// 执行列表
     /// </summary>
-    public List<DbKitCommandOption> CommandList { get; set; } = new();
+    public List<DbKitCommandOption> CommandList { get; set; } = [];
+
+    /// <summary>
+    /// 环境变量，比如记录 MySQL local_infile 情况
+    /// </summary>
+    public Dictionary<string, string> DictVariable { get; set; } = [];
 
     /// <summary>
     /// 执行终止
@@ -372,8 +377,8 @@ public partial class DbKit
     /// <param name="parameters">参数</param>
     /// <param name="cmdCall">回调</param>
     /// <param name="readRow">行数据</param>
-    /// <param name="emptyTable">空表</param>
-    public async Task SqlExecuteDataRow(string sql, DbParameter[] parameters = null, Func<DbKitCommandOption, Task> cmdCall = null, Func<object[], Task> readRow = null, Func<DataTable, Task> emptyTable = null)
+    /// <param name="schemaResult">表架构 schemaResult:schemaModel=>{}</param>
+    public async Task SqlExecuteDataRow(string sql, DbParameter[] parameters = null, Func<DbKitCommandOption, Task> cmdCall = null, Func<object[], Task> readRow = null, Func<DbKitSchemaResult, Task> schemaResult = null)
     {
         await SafeConn(async () =>
         {
@@ -383,7 +388,7 @@ public partial class DbKit
                 await cmdCall.Invoke(cmdOption);
             }
 
-            await cmdOption.Command.ReaderDataRowAsync(readRow, emptyTable);
+            await cmdOption.Command.ReaderDataRowAsync(readRow, schemaResult);
 
             if (cmdOption.AutoCommit)
             {

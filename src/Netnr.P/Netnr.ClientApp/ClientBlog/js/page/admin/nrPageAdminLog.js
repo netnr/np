@@ -51,11 +51,10 @@ let nrPage = {
                 { field: "LogIp", },
                 { field: "LogReferer", width: 300, },
                 nrGrid.newColumnDate({
-                    field: "LogCreateTime", cellRenderer: params => {
-                        if (!params.node.group) {
-                            return new Date((params.value - 621355968000000000) / 10000).toISOString().replace("T", " ").replace("Z", "");
+                    field: "LogCreateTime", valueGetter: params => {
+                        if (params.data) {
+                            return new Date((params.data["LogCreateTime"] - 621355968000000000) / 10000).toISOString().replace("T", " ").replace("Z", "");
                         }
-                        return params.value;
                     },
                 }),
                 nrGrid.newColumnSet({ field: "LogGroup", enableRowGroup: true }, [{ value: 1, text: "用户" }, { value: 2, text: "爬虫" }, { value: -1, text: "异常" }, { value: 9, text: "记录" }]),
@@ -98,7 +97,7 @@ let nrPage = {
             nrcBase.setHeightFromBottom(nrVary.domGrid);
 
             //grid 显示
-            nrPage.grid1 = await nrGrid.viewGrid(nrVary.domGrid, gridOptions);
+            nrPage.grid1 = await nrGrid.createGrid(nrVary.domGrid, gridOptions);
         } catch (error) {
             nrApp.logError(error);
             nrVary.domGrid.innerHTML = nrApp.tsFailHtml;

@@ -56,8 +56,8 @@
                     Port = AppTo.GetValue<int>("ApiKey:Mail:Port"),
                     FromMail = AppTo.GetValue("ApiKey:Mail:FromMail"),
                     FromPassword = AppTo.GetValue("ApiKey:Mail:FromPassword"),
-                    FromName = AppTo.GetValue("Common:EnglishName"),
-                    Subject = title ?? AppTo.GetValue("Common:EnglishName"),
+                    FromName = AppTo.GetValue("ProgramParameters:EnglishName"),
+                    Subject = title ?? AppTo.GetValue("ProgramParameters:EnglishName"),
                     Body = content.Replace("\r\n", "<br/>"),
                     ToMail = toMails.Split(',').ToList()
                 };

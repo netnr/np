@@ -542,7 +542,7 @@
     .markdown-body pre {
         padding: 16px;
         overflow: auto;
-        font-size: 95%;
+        font-size: 98%;
         line-height: 1.45;
         background-color: var(--gm-canvas-subtle);
         border-radius: 6px;

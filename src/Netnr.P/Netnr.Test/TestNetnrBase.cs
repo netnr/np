@@ -20,8 +20,8 @@ namespace Netnr.Test
             var vm = new ResultVM();
             var list = new List<ResultVM>()
             {
-                new ResultVM(),
-                new ResultVM()
+                new(),
+                new()
             };
 
             var val1 = vm.ToJson();
@@ -49,10 +49,10 @@ namespace Netnr.Test
             list.Add(vm3);
             list.Add(vm4);
 
-            var result = TreeTo.ListToTree(list, "Data", "Code", new List<string> { "0" });
+            var result = TreeTo.ListToTree(list, "Data", "Code", ["0"]);
             Assert.NotEmpty(result);
 
-            var nodes = TreeTo.FindToTree(list, "Data", "Code", new List<string> { "12" });
+            var nodes = TreeTo.FindToTree(list, "Data", "Code", ["12"]);
             Assert.Single(nodes);
         }
     }

@@ -3,13 +3,11 @@ import { nrcRely } from "./nrcRely";
 
 // 图表
 let nrECharts = {
-
+    tsLoaded: null,
     /**
      * 资源依赖，默认远程，可重写为本地
      */
-    init: async () => {
-        await nrcRely.remote("echarts");
-    },
+    rely: async () => nrcRely.remote("echarts"),
 
     /**
      * 创建
@@ -19,7 +17,7 @@ let nrECharts = {
      * @returns 
      */
     bind: async (domChart, option, theme) => {
-        await nrECharts.init();
+        await nrECharts.rely();
 
         option = Object.assign({
             renderer: 'svg',

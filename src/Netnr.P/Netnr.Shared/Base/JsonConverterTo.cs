@@ -20,21 +20,16 @@ public class JsonConverterTo
     /// <summary>
     /// STJ 时间格式化
     /// </summary>
-    public class DateTimeJsonConverter : JsonConverter<DateTime>
+    /// <remarks>
+    /// 构造
+    /// </remarks>
+    /// <param name="formatter"></param>
+    public class DateTimeJsonConverter(string formatter = DefaultDateTimeFormatter) : JsonConverter<DateTime>
     {
         /// <summary>
         /// 格式
         /// </summary>
-        public string Formatter { get; set; }
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        /// <param name="formatter"></param>
-        public DateTimeJsonConverter(string formatter = DefaultDateTimeFormatter)
-        {
-            Formatter = formatter;
-        }
+        public string Formatter { get; set; } = formatter;
 
         /// <summary>
         /// 读取
@@ -62,7 +57,7 @@ public class JsonConverterTo
 
     /// <summary>
     /// STJ DataTable 数据表格式化
-    /// https://github.com/dotnet/docs/blob/main/docs/standard/serialization/system-text-json/snippets/system-text-json-how-to/csharp/RoundtripDataTable.cs
+    /// https://github.com/dotnet/docs/blob/main/docs/standard/serialization/system-text-json/snippets/how-to/csharp/RoundtripDataTable.cs
     /// </summary>
     public class DataTableJsonConverter : JsonConverter<DataTable>
     {
@@ -77,7 +72,7 @@ public class JsonConverterTo
         {
             using var jsonDoc = JsonDocument.ParseValue(ref reader);
             JsonElement rootElement = jsonDoc.RootElement;
-            DataTable dataTable = AsDataTable(rootElement);
+            DataTable dataTable = JsonElementToDataTable(rootElement);
             return dataTable;
         }
 
@@ -112,23 +107,21 @@ public class JsonConverterTo
                         double value => key => writer.WriteNumber(key, value),
                         float value => key => writer.WriteNumber(key, value),
                         short value => key => writer.WriteNumber(key, value),
-                        ushort value => key => writer.WriteNumber(key, value),
                         int value => key => writer.WriteNumber(key, value),
+                        ushort value => key => writer.WriteNumber(key, value),
                         uint value => key => writer.WriteNumber(key, value),
-
-                        //warning: JavaScript Number.MAX_SAFE_INTEGER=9007199254740991 use string
-                        long value => key => writer.WriteNumber(key, value),
                         ulong value => key => writer.WriteNumber(key, value),
 
                         // strings
                         DateTime value => key => writer.WriteString(key, value),
                         Guid value => key => writer.WriteString(key, value),
 
-                        // binary
+                        // more types
+                        //warning: JavaScript Number.MAX_SAFE_INTEGER=9007199254740991 use string
+                        long value => key => writer.WriteNumber(key, value),
                         byte[] value => key => writer.WriteBase64String(key, value),
-
-                        // null
                         DBNull value => writer.WriteNull,
+                        IEnumerable<string> value => key => writer.WriteString(key, string.Join(",", value)),
 
                         _ => key => writer.WriteString(key, row[column].ToString())
                     };
@@ -140,41 +133,20 @@ public class JsonConverterTo
     }
 
     /// <summary>
-    /// STJ DataSet 数据集格式化
+    /// 转 DataSet
     /// </summary>
-    public class DataSetJsonConverter : JsonConverter<DataSet>
+    /// <param name="dataRoot"></param>
+    /// <returns></returns>
+    public static DataSet JsonElementToDataSet(JsonElement dataRoot)
     {
-        /// <summary>
-        /// 读取
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public override DataSet Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        var dataSet = new DataSet();
+        foreach (var item in dataRoot.EnumerateObject())
         {
-            using var jsonDoc = JsonDocument.ParseValue(ref reader);
-            JsonElement rootElement = jsonDoc.RootElement;
-            DataSet dataSet = AsDataSet(rootElement);
-            return dataSet;
+            var dataTable = JsonElementToDataTable(item.Value);
+            dataTable.TableName = item.Name;
+            dataSet.Tables.Add(dataTable);
         }
-
-        /// <summary>
-        /// 写入
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="value"></param>
-        /// <param name="options"></param>
-        public override void Write(Utf8JsonWriter writer, DataSet value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            foreach (DataTable table in value.Tables)
-            {
-                writer.WritePropertyName(table.TableName);
-                JsonSerializer.Serialize(writer, table, options);
-            }
-            writer.WriteEndObject();
-        }
+        return dataSet;
     }
 
     /// <summary>
@@ -182,7 +154,7 @@ public class JsonConverterTo
     /// </summary>
     /// <param name="dataRoot"></param>
     /// <returns></returns>
-    public static DataTable AsDataTable(JsonElement dataRoot)
+    public static DataTable JsonElementToDataTable(JsonElement dataRoot)
     {
         var dataTable = new DataTable();
         bool firstPass = true;
@@ -195,9 +167,9 @@ public class JsonConverterTo
                 if (firstPass)
                 {
                     JsonElement colValue = col.Value;
-                    dataTable.Columns.Add(new DataColumn(col.Name, ValueKindAsType(colValue.ValueKind, colValue.ToString()!)));
+                    dataTable.Columns.Add(new DataColumn(col.Name, ValueKindToType(colValue.ValueKind, colValue.ToString()!)));
                 }
-                row[col.Name] = AsTypedValue(col.Value);
+                row[col.Name] = JsonElementToTypedValue(col.Value);
             }
             firstPass = false;
         }
@@ -205,24 +177,7 @@ public class JsonConverterTo
         return dataTable;
     }
 
-    /// <summary>
-    /// 转 DataSet
-    /// </summary>
-    /// <param name="dataRoot"></param>
-    /// <returns></returns>
-    public static DataSet AsDataSet(JsonElement dataRoot)
-    {
-        var dataSet = new DataSet();
-        foreach (var item in dataRoot.EnumerateObject())
-        {
-            var dataTable = AsDataTable(item.Value);
-            dataTable.TableName = item.Name;
-            dataSet.Tables.Add(dataTable);
-        }
-        return dataSet;
-    }
-
-    private static Type ValueKindAsType(JsonValueKind valueKind, string value)
+    private static Type ValueKindToType(JsonValueKind valueKind, string value)
     {
         switch (valueKind)
         {
@@ -245,7 +200,7 @@ public class JsonConverterTo
             case JsonValueKind.Object:
                 return typeof(object);
             case JsonValueKind.Array:
-                return typeof(System.Array);
+                return typeof(Array);
             case JsonValueKind.Null:
                 throw new NotSupportedException();
             default:
@@ -253,7 +208,7 @@ public class JsonConverterTo
         }
     }
 
-    private static object AsTypedValue(JsonElement jsonElement)
+    private static object JsonElementToTypedValue(JsonElement jsonElement)
     {
         switch (jsonElement.ValueKind)
         {
@@ -298,6 +253,44 @@ public class JsonConverterTo
                 return null;
             default:
                 return jsonElement.ToString();
+        }
+    }
+
+    /// <summary>
+    /// STJ DataSet 数据集格式化
+    /// </summary>
+    public class DataSetJsonConverter : JsonConverter<DataSet>
+    {
+        /// <summary>
+        /// 读取
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="typeToConvert"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public override DataSet Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using var jsonDoc = JsonDocument.ParseValue(ref reader);
+            JsonElement rootElement = jsonDoc.RootElement;
+            DataSet dataSet = JsonElementToDataSet(rootElement);
+            return dataSet;
+        }
+
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="options"></param>
+        public override void Write(Utf8JsonWriter writer, DataSet value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            foreach (DataTable table in value.Tables)
+            {
+                writer.WritePropertyName(table.TableName);
+                JsonSerializer.Serialize(writer, table, options);
+            }
+            writer.WriteEndObject();
         }
     }
 
@@ -421,15 +414,57 @@ public class JsonConverterTo
     /// </summary>
     public class IntPtrJsonConverter : JsonConverter<IntPtr>
     {
+        /// <summary>
+        /// 读取
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="typeToConvert"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public override IntPtr Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Null) return IntPtr.Zero;
             return new IntPtr(reader.GetInt64());
         }
 
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="options"></param>
         public override void Write(Utf8JsonWriter writer, IntPtr value, JsonSerializerOptions options)
         {
             writer.WriteNumberValue(value);
+        }
+    }
+
+    /// <summary>
+    /// Type
+    /// </summary>
+    public class TypeJsonConverter : JsonConverter<Type>
+    {
+        /// <summary>
+        /// 读取
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="typeToConvert"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public override Type Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="options"></param>
+        public override void Write(Utf8JsonWriter writer, Type value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.FullName);
         }
     }
 
@@ -455,6 +490,8 @@ public class JsonConverterTo
             PropertyNamingPolicy = null,
             //编码
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            //忽略循环引用
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
             //转换
             Converters =
             {
@@ -466,6 +503,7 @@ public class JsonConverterTo
                 new IPEndPointJsonConverter(),
                 new DirectoryInfoJsonConverter(),
                 new IntPtrJsonConverter(),
+                new TypeJsonConverter(),
             }
         };
 

@@ -1,13 +1,11 @@
 ﻿#if Full || Web
 
-using System.Reflection.PortableExecutable;
-
 namespace Netnr;
 
 /// <summary>
 /// 跨域中间件
 /// </summary>
-public class AllowCorsMiddleware
+public class AllowCorsMiddleware(RequestDelegate next, AllowCorsMiddleware.MiddlewareOptions options = null)
 {
     /// <summary>
     /// 中间件配置
@@ -15,26 +13,20 @@ public class AllowCorsMiddleware
     public class MiddlewareOptions
     {
         /// <summary>
-        /// 指定跨域源
+        /// 指定跨域源，默认 *
         /// </summary>
         public string CustomOrigin { get; set; }
     }
-    internal MiddlewareOptions Options { get; set; }
+    internal MiddlewareOptions Options { get; set; } = options ?? new();
 
-    private readonly RequestDelegate next;
-
-    public AllowCorsMiddleware(RequestDelegate next, MiddlewareOptions options = null)
-    {
-        Options = options ?? new();
-
-        this.next = next;
-    }
+    private readonly RequestDelegate next = next;
 
     public async Task Invoke(HttpContext context)
     {
         if (context.GetEndpoint()?.Metadata.GetMetadata<DisableCorsAttribute>() == null)
         {
             var allowHeaders = "Authorization,Content-Type";
+            //!! tus 访问头
             if (context.Request.Path.Value.Contains("Tus"))
             {
                 allowHeaders = "*";
@@ -42,13 +34,13 @@ public class AllowCorsMiddleware
 
             if (context.Request.Method.Equals("OPTIONS"))
             {
-                context.Response.Headers.Add("Access-Control-Allow-Origin", context.Request.Headers["Origin"]);
-                context.Response.Headers.Add("Access-Control-Allow-Methods", context.Request.Headers["Access-Control-Request-Method"]);
-                context.Response.Headers.Add("Access-Control-Allow-Headers", allowHeaders);
+                context.Response.Headers.Append("Access-Control-Allow-Origin", context.Request.Headers.Origin);
+                context.Response.Headers.Append("Access-Control-Allow-Methods", context.Request.Headers.AccessControlRequestMethod);
+                context.Response.Headers.Append("Access-Control-Allow-Headers", allowHeaders);
 
-                //预检缓存
-                context.Response.Headers.Add("Access-Control-Max-Age", "600");
-                context.Response.StatusCode = StatusCodes.Status200OK;
+                //预检缓存，单位：秒
+                context.Response.Headers.Append("Access-Control-Max-Age", "1800");
+                context.Response.StatusCode = StatusCodes.Status204NoContent;
 
                 return;
             }
@@ -56,26 +48,25 @@ public class AllowCorsMiddleware
             {
                 string allowOrigin = null;
 
-                // 未获取到源默认 *
-                var origin = context.Request.Headers["Origin"];
-                if (string.IsNullOrWhiteSpace(origin) || Options.CustomOrigin == "*")
+                var origin = context.Request.Headers.Origin;
+                if (string.IsNullOrWhiteSpace(Options.CustomOrigin) || Options.CustomOrigin == "*")
                 {
                     allowOrigin = "*";
                 }
-                else if (string.IsNullOrWhiteSpace(Options.CustomOrigin) || Options.CustomOrigin?.Contains(origin) == true)
+                else if (Options.CustomOrigin.Contains(origin))
                 {
                     allowOrigin = origin;
                 }
 
                 if (allowOrigin != null)
                 {
-                    context.Response.Headers.Add("Access-Control-Allow-Origin", allowOrigin);
-                    context.Response.Headers.Add("Access-Control-Allow-Methods", context.Request.Method);
-                    context.Response.Headers.Add("Access-Control-Allow-Headers", allowHeaders);
+                    context.Response.Headers.Append("Access-Control-Allow-Origin", allowOrigin);
+                    context.Response.Headers.Append("Access-Control-Allow-Methods", context.Request.Method);
+                    context.Response.Headers.Append("Access-Control-Allow-Headers", allowHeaders);
                     // 携带 cookie
                     if (allowOrigin != "*")
                     {
-                        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                        context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
                     }
                 }
 

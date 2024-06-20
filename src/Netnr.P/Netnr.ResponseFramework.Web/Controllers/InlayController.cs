@@ -8,14 +8,9 @@ namespace Netnr.ResponseFramework.Web.Controllers
     /// </summary>
     [Authorize]
     [Route("[controller]/[action]")]
-    public class InlayController : Controller
+    public class InlayController(ContextBase cb) : Controller
     {
-        public ContextBase db;
-
-        public InlayController(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         #region 配置表格
 

@@ -62,9 +62,9 @@ public class DataKitController : Controller
     /// <param name="conn">连接字符串</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ResultVM> DatabaseNameGet(DBTypes dbt, string conn)
+    public async Task<ResultVM> DatabaseNameOnlyGet(DBTypes dbt, string conn)
     {
-        return await Entry(dbt, conn, null, async dk => await dk.GetDatabaseName());
+        return await Entry(dbt, conn, null, async dk => await dk.GetDatabaseNameOnly());
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public class DataKitController : Controller
     [HttpGet]
     public async Task<ResultVM> TableGet(DBTypes dbt, string conn, string schemaName = null, string databaseName = null)
     {
-        return await Entry(dbt, conn, databaseName, async dk => await dk.GetTable(schemaName, databaseName));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.GetTable(schemaName, databaseName, false));
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public class DataKitController : Controller
     [HttpPost]
     public async Task<ResultVM> ColumnPost([FromForm] DBTypes dbt, [FromForm] string conn, [FromForm] string filterSchemaNameTableName = null, [FromForm] string databaseName = null)
     {
-        return await Entry(dbt, conn, databaseName, async dk => await dk.GetColumn(filterSchemaNameTableName, databaseName));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.GetColumn(filterSchemaNameTableName, databaseName, false));
     }
 
     /// <summary>
@@ -163,11 +163,12 @@ public class DataKitController : Controller
     /// <param name="conn">连接字符串</param>
     /// <param name="sql">脚本</param>
     /// <param name="databaseName">数据库名</param>
+    /// <param name="openTransaction">开启事物</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ResultVM> ExecuteSqlPost([FromForm] DBTypes dbt, [FromForm] string conn, [FromForm] string sql, [FromForm] string databaseName = null)
+    public async Task<ResultVM> ExecuteSqlPost([FromForm] DBTypes dbt, [FromForm] string conn, [FromForm] string sql, [FromForm] string databaseName = null, [FromForm] bool openTransaction = true)
     {
-        return await Entry(dbt, conn, databaseName, async dk => await dk.ExecuteSql(sql));
+        return await Entry(dbt, conn, databaseName, async dk => await dk.ExecuteSql(sql, openTransaction));
     }
 }
 

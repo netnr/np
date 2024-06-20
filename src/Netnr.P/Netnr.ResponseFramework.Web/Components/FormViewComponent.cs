@@ -5,13 +5,9 @@ namespace Netnr.ResponseFramework.Web.Components
     /// <summary>
     /// 表单视图组件
     /// </summary>
-    public class FormViewComponent : ViewComponent
+    public class FormViewComponent(ContextBase cb) : ViewComponent
     {
-        public ContextBase db;
-        public FormViewComponent(ContextBase cb)
-        {
-            db = cb;
-        }
+        public ContextBase db = cb;
 
         /// <summary>
         /// 表单、单据 组件

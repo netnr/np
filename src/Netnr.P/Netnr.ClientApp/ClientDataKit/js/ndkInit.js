@@ -10,7 +10,7 @@ import { ndkStorage } from './ndkStorage';
 import { ndkTab } from './ndkTab';
 import { ndkVary } from './ndkVary';
 import { ndkView } from './ndkView';
-import { nrTranslations } from '../../frame/Shoelace/nrTranslations';
+import { nrApp } from '../../frame/Shoelace/nrApp';
 
 // 初始化
 let ndkInit = {
@@ -18,7 +18,7 @@ let ndkInit = {
         await ndkStorage.init();
         ndkEditor.extend();
 
-        nrTranslations.registerTranslation(nrTranslations['zh-cn']);
+        import('@shoelace-style/shoelace/dist/translations/zh-cn');
         
         // 初始化语言
         var sobj = await ndkStorage.stepsGet();
@@ -401,8 +401,9 @@ let ndkInit = {
                 clearTimeout(event.target.si);
                 event.target.si = setTimeout(() => {
                     var gridOps = ndkVary[`gridOps${vkey}`];
-                    if (gridOps && gridOps.api) {
-                        gridOps.api.setQuickFilter(this.value);
+                    if (gridOps) {
+                        gridOps.updateGridOptions({ quickFilterText: this.value });
+                        // gridOps.setQuickFilter(this.value);
                         ndkStep.stepSave();
                     }
                 }, 200)
@@ -473,8 +474,7 @@ let ndkInit = {
                     var result = [
                         {
                             name: "清空", icon: ndkVary.iconSvg("trash"), action: function () {
-                                ndkVary.gridOpsOutput.rowData = [];
-                                ndkVary.gridOpsOutput.api.setRowData([]);
+                                ndkVary.gridOpsOutput.updateGridOptions({ rowData: [] });
                             }
                         },
                         {
@@ -501,9 +501,7 @@ let ndkInit = {
             ndkView.createGrid("output", opsQueue);
 
             //输出搜索
-            ndkVary.domFilterOutput.addEventListener('input', function () {
-                ndkVary.gridOpsOutput.api.setQuickFilter(this.value);
-            }, false);
+            nrApp.setQuickFilter(ndkVary.domFilterOutput, ndkVary.gridOpsOutput);
         }
         // 请求队列初始化
         if (ndkVary.gridOpsQueue == null) {

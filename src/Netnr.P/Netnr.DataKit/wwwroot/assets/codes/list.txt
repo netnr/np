@@ -1,4 +1,6 @@
 @_help.jsx
+csharp_admin_ctrl.jsx
+csharp_admin_js.jsx
 csharp_dal.jsx
 csharp_model.jsx
 csharp_nrf_cv.jsx

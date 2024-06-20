@@ -34,7 +34,7 @@ namespace Netnr
             /// <summary>
             /// 方法参数
             /// </summary>
-            public List<ParameterModel> ActionParameter { get; set; } = new();
+            public List<ParameterModel> ActionParameter { get; set; } = [];
         }
 
         /// <summary>

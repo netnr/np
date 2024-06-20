@@ -26,7 +26,7 @@ html[data-bs-theme="dark"] .choices__inner,
 html[data-bs-theme="dark"] .choices__input,
 html[data-bs-theme="dark"] .choices__list--dropdown {
     color: var(--bs-body-color);
-    background-color: var(--bs-body-bg);
+    background-color: var(--bs-body-bg) !important;
     border-color: var(--bs-border-color) !important;
 }
 

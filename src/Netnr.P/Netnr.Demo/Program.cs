@@ -1,4 +1,15 @@
+PMScriptTo.Init();
+AppContext.SetSwitch("System.Drawing.EnableUnixSupport", true);
+
 var builder = WebApplication.CreateBuilder(args);
+if (!BaseTo.CommandLineArgs.Contains("--urls"))
+{
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        //Ëæ»ú¶Ë¿Ú
+        serverOptions.Listen(System.Net.IPAddress.Any, 0);
+    });
+}
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

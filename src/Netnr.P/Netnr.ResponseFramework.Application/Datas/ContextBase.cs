@@ -2,13 +2,8 @@
 
 namespace Netnr.ResponseFramework.Application.Datas;
 
-public partial class ContextBase : DbContext
+public partial class ContextBase(DbContextOptions<ContextBase> options) : DbContext(options)
 {
-    public ContextBase(DbContextOptions<ContextBase> options)
-        : base(options)
-    {
-    }
-
     public virtual DbSet<SysButton> SysButton { get; set; }
 
     public virtual DbSet<SysDictionary> SysDictionary { get; set; }
@@ -220,7 +215,7 @@ public partial class ContextBase : DbContext
                 .HasMaxLength(200)
                 .HasComment("名称");
             entity.Property(e => e.SrStatus)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("状态，1启用");
         });
 
@@ -239,7 +234,7 @@ public partial class ContextBase : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.ColAlign).HasComment("对齐方式 1左，2中，3右");
             entity.Property(e => e.ColExport)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("1导出");
             entity.Property(e => e.ColField)
                 .HasMaxLength(200)
@@ -249,21 +244,21 @@ public partial class ContextBase : DbContext
                 .HasMaxLength(200)
                 .HasComment("格式化");
             entity.Property(e => e.ColFrozen)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("1冻结");
             entity.Property(e => e.ColHide).HasComment("1隐藏");
             entity.Property(e => e.ColOrder)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("排序");
             entity.Property(e => e.ColQuery)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("1查询");
             entity.Property(e => e.ColRelation)
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasComment("查询关系符");
             entity.Property(e => e.ColSort)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("1启用点击排序");
             entity.Property(e => e.ColTitle)
                 .HasMaxLength(200)
@@ -280,7 +275,7 @@ public partial class ContextBase : DbContext
                 .HasMaxLength(200)
                 .HasComment("输入框提示");
             entity.Property(e => e.FormRequired)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("1必填");
             entity.Property(e => e.FormSpan).HasComment("跨列");
             entity.Property(e => e.FormText).HasComment("显示文本");
@@ -327,7 +322,7 @@ public partial class ContextBase : DbContext
                 .IsUnicode(false)
                 .HasComment("登录标识");
             entity.Property(e => e.SuStatus)
-                .HasDefaultValueSql("((0))")
+                .HasDefaultValue(0)
                 .HasComment("状态，1正常");
         });
 
