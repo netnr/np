@@ -10,7 +10,7 @@
 
 **Blog**
 &nbsp; 个站
-&nbsp; https://www.netnr.com
+&nbsp; https://netnr.com
 &nbsp; https://netnr.zme.ink
 
 **KMS**

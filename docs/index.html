@@ -5,51 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="keywords" content="netnr,NET牛人" />
     <meta name="description" content="netnr,NET牛人,Netnr Project">
-
+    <link rel='shortcut icon' href='favicon.ico' type='image/x-icon' />
     <title>netnr</title>
 
-    <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
-</head>
-
-<body style="margin:0;padding:0;">
-    <!--主题响应-->
+    <style id="style0">
+        body::after {
+            position: fixed;
+            top: 2vh;
+            left: 1vw;
+            opacity: .8;
+            content: "loading";
+        }
+    </style>
     <script>
         if (document.cookie.includes(".theme=dark")) {
-            Object.assign(document.body.style, { backgroundColor: '#212529', color: '#adb5bd' });
+            document.getElementById("style0").innerHTML += "body { color: #d4d4d4; background-color: #0d1117 }";
+
             let domHtml = document.documentElement;
             domHtml.dataset.bsTheme = "dark";
             domHtml.className = domHtml.className.replace('light', 'dark');
         }
     </script>
+</head>
 
-    <!--Menu-->
+<body>
+
+    <!--menu-->
     <nav class="app-nav" style="display:none;">
-        <ul><li><a class="flag-theme" title="Theme"></a></li></ul>
+        <ul>
+            <li><a class="flag-theme" title="Theme"></a></li>
+        </ul>
     </nav>
 
-    <!--Main-->
-    <div id="app" style="margin:1em;font-size:1.2em;opacity:.8;">Loading ...</div>
+    <!--main-->
+    <div id="app"></div>
 
-    <link rel="stylesheet" href="static/docsify-better/docsify-better.css?1.0.3" />
+    <link rel="stylesheet" href="static/docsify-better/docsify-better.css?20241111" />
 
     <script>
         window.$docsify = {
-            repo: 'netnr',
+            repo: "netnr",
             noEmoji: true,
             auto2top: true,
+            subMaxLevel: 3,
             loadSidebar: true,
             relativePath: true,
             routerMode: "history",
-            markdown: {
-                renderer: {
-                    code: function (str, lang) {
-                        let htm = hljs.getLanguage(lang)
-                            ? hljs.highlight(str, { language: lang }).value
-                            : hljs.highlightAuto(str).value;
-                        return `<pre><code>${htm}</code></pre>`;
-                    }
-                }
-            },
+            markdown: { renderer: { code: (code, language) => `<pre><code>${codeToHtml(code, language)}</code></pre>` } },
             plugins: [
                 function (hook) {
                     // 每次开始解析 Markdown 内容时调用
@@ -59,50 +61,12 @@
 
                         return content;
                     });
-
-                    // 每次路由切换时数据全部加载完成后调用
-                    hook.doneEach(function () {
-                        let domMain = document.getElementById("main");
-                        let domContent = domMain.parentNode;
-                        let domToc = domContent.querySelector(".toc");
-                        if (!domToc) {
-                            domToc = document.createElement("div");
-                            domToc.className = "toc";
-                            domContent.appendChild(domToc);
-                        }
-                        domToc.innerHTML = "";
-
-                        tocbot.init({
-                            tocElement: domToc,
-                            contentElement: domMain,
-                            headingSelector: 'h3, h4, h5, h6'
-                        });
-
-                        let toclink = domToc.querySelectorAll('a');
-                        if (toclink.length) {
-                            toclink.forEach(item => {
-                                item.title = item.innerText;
-                                item.dataset.href = item.getAttribute('href');
-                                item.onclick = function () {
-                                    item.href = `${location.pathname}?id=${decodeURIComponent(item.hash).substring(1)}`;
-
-                                    setTimeout(() => { item.href = item.dataset.href }, 100);
-                                }
-                            })
-                        }
-
-                        if (toclink.length < 2 || document.body.scrollHeight - document.documentElement.clientHeight < 200) {
-                            domToc.style.transform = "translateY(-100vh)";
-                        } else {
-                            domToc.style.transform = "";
-                        }
-                    });
                 }
             ]
-        };
+        }
     </script>
 
-    <script src="static/docsify-better/docsify-better.js?1.0.3"></script>
+    <script src="static/docsify-better/docsify-better.js?20241111"></script>
 </body>
 
 </html>
